@@ -21,6 +21,7 @@ class FakeAccountRepository(
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
     val browserConnections = mutableListOf<AccountProvider>()
+    val browserCallbacks = mutableListOf<String>()
     val restoredCodes = mutableListOf<String>()
     var registrationCount = 0
     var recoveryCodeCreations = 0
@@ -71,6 +72,11 @@ class FakeAccountRepository(
     override suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit> {
         browserConnections += provider
         return connectResult.map { }
+    }
+
+    override suspend fun handleBrowserCallback(url: String): Result<Unit> {
+        browserCallbacks += url
+        return Result.success(Unit)
     }
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {

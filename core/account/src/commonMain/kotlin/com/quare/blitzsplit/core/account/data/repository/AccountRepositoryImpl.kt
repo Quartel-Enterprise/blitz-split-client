@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.account.data.repository
 
 import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
+import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -77,10 +78,27 @@ class AccountRepositoryImpl(
     override suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         if (current != null && current.socialProvider == null) {
-            remote.linkWithBrowser(provider)
+            linkWithBrowser(provider)
         } else {
+            local.update { account -> account.copy(pendingLinkProvider = null) }
             remote.signInWithBrowser(provider)
         }
+    }
+
+    /*
+     * Why: Supabase drops a callback's error while a session is signed in, as the anonymous one is
+     * during a link, so the app reads the URL itself. Like the ID token path, an identity that
+     * already belongs to another user signs in to that user, here with a second browser trip.
+     */
+    override suspend fun handleBrowserCallback(url: String): Result<Unit> = suspendRunCatching {
+        val callback = remote.readBrowserCallback(url) ?: return@suspendRunCatching
+        val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
+            ?: return@suspendRunCatching
+        // Why: cleared once the second trip has started, so a failed start can be retried with the same URL.
+        if (callback == BrowserCallback.IDENTITY_ALREADY_LINKED) {
+            remote.signInWithBrowser(linkingProvider)
+        }
+        local.update { account -> account.copy(pendingLinkProvider = null) }
     }
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
@@ -113,6 +131,16 @@ class AccountRepositoryImpl(
         local.update { account -> account.copy(recoveryCodePrompt = prompt.code) }
     }
 
+    private suspend fun linkWithBrowser(provider: AccountProvider) {
+        local.update { account -> account.copy(pendingLinkProvider = provider.code) }
+        try {
+            remote.linkWithBrowser(provider)
+        } catch (exception: Exception) {
+            local.update { account -> account.copy(pendingLinkProvider = null) }
+            throw exception
+        }
+    }
+
     private suspend fun signInLinkingFirst(
         provider: AccountProvider,
         idToken: String,
@@ -134,7 +162,7 @@ class AccountRepositoryImpl(
 
     // Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good.
     private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
-        user == null -> copy(userId = null, provider = null)
+        user == null -> copy(userId = null, provider = null, pendingLinkProvider = null)
 
         user.socialProvider != null -> copy(
             userId = user.userId,

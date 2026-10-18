@@ -89,6 +89,8 @@ class SupabaseAccountRemoteDataSource(
         auth.signInWith(provider.toIdTokenProvider())
     }
 
+    override fun readBrowserCallback(url: String): BrowserCallback? = SupabaseCallbackUrl.read(url)
+
     override suspend fun signInWithPassword(credentials: RecoveryCredentials) {
         auth.signInWith(Email) {
             email = credentials.email

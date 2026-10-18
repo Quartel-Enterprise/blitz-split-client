@@ -28,6 +28,8 @@ interface AccountRepository {
 
     suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit>
 
+    suspend fun handleBrowserCallback(url: String): Result<Unit>
+
     suspend fun restoreWithRecoveryCode(code: String): Result<Unit>
 
     suspend fun createRecoveryCode(): Result<String>

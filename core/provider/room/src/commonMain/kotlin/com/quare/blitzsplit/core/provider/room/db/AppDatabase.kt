@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.db
 
+import androidx.room3.AutoMigration
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
@@ -13,8 +14,11 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         ProfileEntity::class,
         AccountEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 @ConstructedBy(DatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

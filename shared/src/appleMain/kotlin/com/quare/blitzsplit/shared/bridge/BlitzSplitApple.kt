@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
@@ -10,6 +11,8 @@ import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import platform.Foundation.NSURL
@@ -19,6 +22,9 @@ import platform.Foundation.NSURL
  * screen's ViewModel comes from a plain function here, wrapped in the holder that clears it.
  */
 object BlitzSplitApple : KoinComponent {
+    // Why: the main thread, since a second browser trip opens Safari through UIApplication.
+    private val scope = MainScope()
+
     fun start() {
         startBlitzSplitKoin()
     }
@@ -43,5 +49,8 @@ object BlitzSplitApple : KoinComponent {
      */
     fun handleDeepLink(url: NSURL) {
         get<SupabaseClient>().handleDeeplinks(url)
+        val callbackUrl = url.absoluteString ?: return
+        val handleBrowserCallback = get<HandleBrowserCallback>()
+        scope.launch { handleBrowserCallback(callbackUrl) }
     }
 }

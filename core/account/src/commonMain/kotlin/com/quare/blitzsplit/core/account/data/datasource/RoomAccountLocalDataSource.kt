@@ -20,6 +20,7 @@ class RoomAccountLocalDataSource(
         provider = null,
         recoveryCode = null,
         recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
+        pendingLinkProvider = null,
     )
 
     override fun observe(): Flow<AccountEntity> = dao.observe().map { it ?: emptyAccount }
