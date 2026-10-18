@@ -1,0 +1,10 @@
+package com.quare.blitzsplit.shared.bridge
+
+import com.quare.blitzsplit.core.navigation.Route
+
+internal fun toRouteName(route: Route): String = when (route) {
+    Route.Welcome -> "welcome"
+    Route.ProfileSetup -> "profile-setup"
+    Route.Restore -> "restore"
+    Route.Groups -> "groups"
+}

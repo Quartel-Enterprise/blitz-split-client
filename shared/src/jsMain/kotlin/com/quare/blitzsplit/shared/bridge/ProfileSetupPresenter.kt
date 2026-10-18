@@ -1,0 +1,65 @@
+@file:JsExport
+
+package com.quare.blitzsplit.shared.bridge
+
+import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
+import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
+import kotlinx.coroutines.flow.map
+import org.koin.mp.KoinPlatform
+
+class JsProfileSetupState(
+    val name: String,
+    val avatarColor: String,
+    val avatarColors: Array<String>,
+    val avatarInitial: String,
+    val photoUrl: String?,
+    val showsNameTooShort: Boolean,
+    val canContinue: Boolean,
+    val isSaving: Boolean,
+)
+
+class ProfileSetupPresenter {
+    private val holder = ViewModelHolder(ProfileSetupViewModel::class) { KoinPlatform.getKoin().get() }
+    private val viewModel get() = holder.viewModel
+
+    fun observeState(onChange: (JsProfileSetupState) -> Unit): JsWatch {
+        val states = viewModel.uiState.map { state ->
+            JsProfileSetupState(
+                name = state.name,
+                avatarColor = state.avatarColor.code,
+                avatarColors = state.avatarColors.map(AvatarColor::code).toTypedArray(),
+                avatarInitial = state.avatarInitial,
+                photoUrl = state.photoUrl,
+                showsNameTooShort = state.showsNameTooShort,
+                canContinue = state.canContinue,
+                isSaving = state.isSaving,
+            )
+        }
+        val watch = FlowWatcher(states).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
+    fun changeName(name: String) {
+        viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged(name))
+    }
+
+    fun selectAvatarColor(colorCode: String) {
+        val color = AvatarColor.fromCodeOrNull(colorCode) ?: return
+        viewModel.onEvent(ProfileSetupUiEvent.OnAvatarColorSelected(color))
+    }
+
+    fun continueClicked() {
+        viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
+    }
+
+    fun back() {
+        viewModel.onEvent(ProfileSetupUiEvent.OnBackClicked)
+    }
+
+    fun dispose() {
+        holder.clear()
+    }
+}

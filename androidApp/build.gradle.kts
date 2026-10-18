@@ -1,0 +1,85 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
+}
+
+/*
+ * Populated only by the release workflow, which exports it after decoding the keystore from GitHub
+ * secrets. Every other release build is a compile check nobody ships.
+ */
+val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
+
+android {
+    namespace = "com.quare.blitzsplit"
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
+    defaultConfig {
+        // The legacy app's id: this app replaces it in the Play Store
+        applicationId = "com.quare.blitzsplit"
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
+        targetSdk = libs.versions.android.targetSdk
+            .get()
+            .toInt()
+        versionCode = project.property("versionCode").toString().toInt()
+        versionName = project.property("versionName").toString()
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    signingConfigs {
+        create("release") {
+            if (releaseKeystorePath != null) {
+                storeFile = file(releaseKeystorePath)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = if (releaseKeystorePath != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation(projects.shared)
+    implementation(projects.core.navigation)
+    implementation(projects.core.provider.supabase)
+
+    // Android UI
+    implementation(projects.android.designsystem)
+    implementation(projects.android.feature.welcome)
+    implementation(projects.android.feature.profileSetup)
+    implementation(projects.android.feature.restore)
+    implementation(projects.android.feature.recoveryCode)
+    implementation(projects.android.feature.groups)
+
+    // Koin
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose.viewmodel)
+
+    // Compose and Navigation 3
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.lifecycle.viewmodelNavigation3)
+    implementation(libs.navigation3.runtime)
+    implementation(libs.navigation3.ui)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+}

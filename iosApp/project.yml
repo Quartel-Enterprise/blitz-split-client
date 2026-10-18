@@ -1,0 +1,122 @@
+# XcodeGen spec of the Apple app (iOS, iPadOS and macOS). Generate the project with
+# ./iosApp/generate-project.sh, which reads the app version from ../version.properties.
+name: BoraRachar
+
+options:
+  bundleIdPrefix: com.quare
+  developmentLanguage: pt-BR
+  createIntermediateGroups: true
+  deploymentTarget:
+    # Liquid Glass (glassEffect, the glass tab bar and sheets) starts at iOS 26 and macOS 26
+    iOS: "26.0"
+    macOS: "26.0"
+
+settings:
+  base:
+    PRODUCT_NAME: BoraRachar
+    PRODUCT_MODULE_NAME: BoraRachar
+    # The legacy Blitz Split app's id and team: this app replaces it in the stores
+    PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit
+    DEVELOPMENT_TEAM: TTV2A365LG
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: ${BLITZSPLIT_VERSION_NAME}
+    CURRENT_PROJECT_VERSION: ${BLITZSPLIT_VERSION_CODE}
+    SWIFT_VERSION: "6.0"
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    # The Gradle task below runs outside the sandbox
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    # Shared is a static framework, so it is linked and never embedded. Room's sqlite-framework
+    # driver comes along with the bundled one and needs the system SQLite at link time.
+    FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+    OTHER_LDFLAGS: [-framework, Shared, -lsqlite3]
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_CFBundleDisplayName: Bora Rachar
+    INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
+    INFOPLIST_KEY_NSCameraUsageDescription: Para escanear o QR do aparelho antigo e trazer seus grupos.
+    INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+
+targetTemplates:
+  BoraRachar:
+    type: application
+    sources:
+      - path: Sources/Shared
+      - path: Resources
+    preBuildScripts:
+      - name: Build the Shared framework
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "YES" = "$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED" ]; then
+            echo "Skipping the Gradle build: OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED is YES"
+            exit 0
+          fi
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    info:
+      properties:
+        # borarachar://auth-callback brings back the browser sign in (Google)
+        CFBundleURLTypes:
+          - CFBundleURLName: com.quare.blitzsplit.auth
+            CFBundleURLSchemes: [borarachar]
+
+targets:
+  BoraRachar-iOS:
+    templates: [BoraRachar]
+    platform: iOS
+    sources:
+      - path: Sources/iOS
+    info:
+      path: Generated/iOS-Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1,2"
+    entitlements:
+      path: Generated/iOS.entitlements
+      properties:
+        com.apple.developer.applesignin: [Default]
+        # Lets the recovery code be saved to the Passwords app (needs the webcredentials entry of
+        # https://borarachar.com/.well-known/apple-app-site-association)
+        com.apple.developer.associated-domains: [webcredentials:borarachar.com]
+
+  BoraRachar-macOS:
+    templates: [BoraRachar]
+    platform: macOS
+    sources:
+      - path: Sources/macOS
+    info:
+      path: Generated/macOS-Info.plist
+    entitlements:
+      path: Generated/macOS.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.device.camera: true
+        com.apple.developer.applesignin: [Default]
+        com.apple.developer.associated-domains: [webcredentials:borarachar.com]
+
+schemes:
+  BoraRachar-iOS:
+    build:
+      targets:
+        BoraRachar-iOS: all
+    run:
+      config: Debug
+  BoraRachar-macOS:
+    build:
+      targets:
+        BoraRachar-macOS: all
+    run:
+      config: Debug

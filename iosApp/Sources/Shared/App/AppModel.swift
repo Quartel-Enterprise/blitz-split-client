@@ -1,0 +1,48 @@
+import Observation
+import Shared
+
+/// The app-wide ViewModel: whether the start route is known yet and the shared back stack, which
+/// the ViewModels move and SwiftUI only draws.
+@Observable
+final class AppModel {
+    private(set) var isReady: Bool
+    private(set) var backStack: [AppRoute]
+
+    @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
+    @ObservationIgnored private let watches = WatchBag()
+
+    init() {
+        let viewModel = holder.viewModel
+        isReady = (viewModel.uiState.value as? AppUiState) == .ready
+        backStack = Self.routes(of: viewModel.navigator.backStack.value)
+        watches.add(viewModel.stateWatcher.observe { [weak self] state in
+            self?.isReady = state == .ready
+        })
+        watches.add(viewModel.backStackWatcher.observe { [weak self] routes in
+            self?.backStack = Self.routes(of: routes)
+        })
+    }
+
+    var root: AppRoute {
+        backStack.first ?? .welcome
+    }
+
+    /// The entries above the root. A native back gesture shortens it, and the shared back stack
+    /// catches up with how many entries remain.
+    var path: [AppRoute] {
+        get { Array(backStack.dropFirst()) }
+        set {
+            guard newValue.count < backStack.count - 1 else { return }
+            holder.viewModel.navigator.popTo(size: Int32(newValue.count + 1))
+        }
+    }
+
+    isolated deinit {
+        holder.clear()
+    }
+
+    private static func routes(of value: Any?) -> [AppRoute] {
+        let routes = (value as? [Any])?.compactMap { $0 as? any Route } ?? []
+        return routes.isEmpty ? [.welcome] : routes.map { AppRoute($0) }
+    }
+}

@@ -1,0 +1,52 @@
+package com.quare.blitzsplit.navigation
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
+import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
+import com.quare.blitzsplit.android.feature.restore.RestoreScreen
+import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
+import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.shared.app.AppUiState
+import com.quare.blitzsplit.shared.app.AppViewModel
+import org.koin.compose.viewmodel.koinViewModel
+
+/*
+ * Why: the back stack lives in :core:navigation and the ViewModels move it; Navigation 3 only
+ * draws its entries, so Android walks the same flow as SwiftUI and React.
+ */
+@Composable
+fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
+    val uiState by appViewModel.uiState.collectAsStateWithLifecycle()
+    val backStack by appViewModel.navigator.backStack.collectAsStateWithLifecycle()
+    if (uiState == AppUiState.LOADING) {
+        // Why: the start route depends on whether a profile exists, read from Room in a moment.
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {}
+        return
+    }
+    NavDisplay(
+        backStack = backStack,
+        onBack = { appViewModel.navigator.navigateBack() },
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
+            rememberViewModelStoreNavEntryDecorator(),
+        ),
+        entryProvider = entryProvider {
+            entry<Route.Welcome> { WelcomeScreen() }
+            entry<Route.ProfileSetup> { ProfileSetupScreen() }
+            entry<Route.Restore> { RestoreScreen() }
+            entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+        },
+    )
+}

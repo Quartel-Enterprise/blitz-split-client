@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Guarde seu código de recuperação</string>
+    <string name="recovery_code_body">Você está usando sem conta. Este código recupera seus grupos se você trocar ou perder o aparelho.</string>
+    <string name="recovery_code_copy">Copiar código</string>
+    <string name="recovery_code_save_to_password_manager">Salvar no gerenciador de senhas</string>
+    <string name="recovery_code_connect_instead">Conectar Google ou Apple em vez disso</string>
+    <string name="recovery_code_connect_instead_body">Dispensa o código</string>
+    <string name="recovery_code_sign_in_failed">Não deu para conectar agora. Tente de novo.</string>
+    <string name="recovery_code_also_in_profile">Também fica em Perfil › Recuperação.</string>
+    <string name="recovery_code_remind_later">Lembrar depois</string>
+    <string name="recovery_code_saved">Já guardei</string>
+</resources>

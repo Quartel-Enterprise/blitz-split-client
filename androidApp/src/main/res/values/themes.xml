@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose draws everything; the window only needs the surface color so launch and rotation
+         never flash white in the dark theme (values-night). -->
+    <style name="Theme.BlitzSplit" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+    <color name="window_background">#F7F9FF</color>
+</resources>

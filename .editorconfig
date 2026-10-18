@@ -1,0 +1,93 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+# Kotlin files
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+ktlint_code_style = ktlint_official
+ktlint_standard_function-naming = disabled
+ktlint_standard_filename = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_when-entry-bracing = disabled
+ktlint_standard_no-unused-imports = enabled
+ktlint_function_signature_body_expression_wrapping = default
+# The test structure rules (docs/testing) are enabled for the test source sets below.
+ktlint_quare_test-name-given-when-then = disabled
+ktlint_quare_test-body-sections = disabled
+ktlint_quare_prepare-scenario-returns-unit = disabled
+ktlint_quare_prepare-scenario-last-member = disabled
+ktlint_quare_prepare-scenario-in-given = disabled
+
+# Test sources: fixtures and fakes are named after the value they produce
+# (versionDto(), passage(), day()), which is intentional and reads well in Given/When/Then.
+[**/src/{commonTest,jvmTest,androidHostTest,iosSimulatorArm64Test}/**]
+ktlint_quare_value-returning-function-naming = disabled
+
+# Comments are for tests (Given/When/Then), the :testing fake modules and the build: Gradle scripts and
+# build-logic. Production Kotlin keeps only // Why: comments (quare:comments-say-why).
+# The test structure rules (docs/testing) run here, and only here. The 600-line limit
+# (quare:max-file-length) is for production code: a test class grows with its scenarios.
+[**/src/{commonTest,jvmTest,androidHostTest,androidDeviceTest,iosTest,iosSimulatorArm64Test,test}/**]
+ktlint_quare_comments-say-why = disabled
+ktlint_quare_test-name-given-when-then = enabled
+ktlint_quare_test-body-sections = enabled
+ktlint_quare_prepare-scenario-returns-unit = enabled
+ktlint_quare_prepare-scenario-last-member = enabled
+ktlint_quare_prepare-scenario-in-given = enabled
+ktlint_quare_max-file-length = disabled
+
+[**/testing/src/**]
+ktlint_quare_comments-say-why = disabled
+
+[*.kts]
+ktlint_quare_comments-say-why = disabled
+
+[build-logic/**]
+ktlint_quare_comments-say-why = disabled
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Gradle files
+[*.{gradle,gradle.kts}]
+indent_style = space
+indent_size = 4
+
+# The SwiftUI app
+[*.swift]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+# The React app and XcodeGen spec
+[*.{ts,tsx,js,json,css,html,yml}]
+indent_style = space
+indent_size = 2
+
+[**/generated/**]
+generated_code = true
+ij_formatter_enabled = false
+ktlint = disabled
+
+[**/build/**]
+generated_code = true
+ij_formatter_enabled = false
+ktlint = disabled
+
+[**/buildkonfig/**]
+generated_code = true
+ij_formatter_enabled = false
+ktlint = disabled
