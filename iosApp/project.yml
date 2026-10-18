@@ -4,7 +4,8 @@ name: BoraRachar
 
 options:
   bundleIdPrefix: com.quare
-  developmentLanguage: pt-BR
+  # English is the source language and the fallback of every language but Portuguese (pt-BR)
+  developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:
     # Liquid Glass (glassEffect, the glass tab bar and sheets) starts at iOS 26 and macOS 26
@@ -32,10 +33,14 @@ settings:
     # driver comes along with the bundled one and needs the system SQLite at link time.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS: [-framework, Shared, -lsqlite3]
+    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR)
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
     GENERATE_INFOPLIST_FILE: YES
-    INFOPLIST_KEY_CFBundleDisplayName: Bora Rachar
+    # "Bora Rachar" only in Portuguese: Resources/InfoPlist.xcstrings localizes the name
+    INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
-    INFOPLIST_KEY_NSCameraUsageDescription: Para escanear o QR do aparelho antigo e trazer seus grupos.
+    INFOPLIST_KEY_NSCameraUsageDescription: To scan the QR code from your old device and bring your groups back.
     INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
 
 targetTemplates:

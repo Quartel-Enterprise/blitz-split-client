@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="designsystem_continue_with_google">Continuar com Google</string>
-    <string name="designsystem_continue_with_apple">Continuar com a Apple</string>
+    <string name="designsystem_continue_with_google">Continue with Google</string>
+    <string name="designsystem_continue_with_apple">Continue with Apple</string>
     <string name="designsystem_google_short">Google</string>
     <string name="designsystem_apple_short">Apple</string>
-    <string name="designsystem_back">Voltar</string>
+    <string name="designsystem_back">Back</string>
 </resources>

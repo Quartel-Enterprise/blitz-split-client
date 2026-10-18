@@ -23,9 +23,11 @@ The one idea behind all of them: Kotlin Multiplatform is shared **up to the View
 so the three platforms walk the same flow.
 
 Write code, comments, docs, commit messages and pull requests in English, even when the conversation is in
-another language. User-facing strings are the exception: they are written in pt-BR, in each platform's own place
-for them — `res/values/strings.xml` of the `:android:*` module, the SwiftUI `Text` / `Label` literals of the Apple
-app (its development language is pt-BR), and the screen's `.tsx` on the web. Never send UI copy from Kotlin: the
+another language. User-facing strings are the exception: each one exists in English (the fallback for every
+language but Portuguese) and Portuguese, in each platform's own place for them — `res/values/strings.xml` and
+`res/values-pt/strings.xml` of the `:android:*` module, the English SwiftUI literals of the Apple app with their
+pt-BR translation in `Localizable.xcstrings`, and the `en` / `pt` dictionaries of `webApp/src/i18n` on the web. The
+product is "Bora Rachar" in Portuguese and "Blitz Split" in English. Never send UI copy from Kotlin: the
 shared code hands the UIs enums and booleans (`RestoreError`, `SyncBadge`, `showsOfflineNotice`) and each platform
 picks its words.
 

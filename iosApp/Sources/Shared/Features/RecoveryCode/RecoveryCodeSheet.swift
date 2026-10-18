@@ -54,9 +54,9 @@ final class RecoveryCodeModel {
     }
 }
 
-/// "Guarde seu código de recuperação": a glass sheet on iPhone (floating when lying down), a form
+/// "Save your recovery code": a glass sheet on iPhone (floating when lying down), a form
 /// sheet on iPad and a sheet attached to the window top on the Mac. Dismissing it counts as
-/// "Lembrar depois", so the code comes back on the next launch.
+/// "Remind me later", so the code comes back on the next launch.
 struct RecoveryCodeSheet: View {
     @State private var model = RecoveryCodeModel()
     @State private var contentHeight: CGFloat = 560
@@ -99,10 +99,10 @@ private struct RecoveryCodeContent: View {
                     .font(.system(size: 34))
                     .foregroundStyle(Palette.accent)
                     .accessibilityHidden(true)
-                Text("Guarde seu código de recuperação")
+                Text("Save your recovery code")
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
-                Text("Você está usando sem conta. Este código recupera seus grupos se você trocar ou perder o \(DeviceName.current).")
+                Text("You're using it without an account. This code brings your groups back if you switch or lose your \(DeviceName.current).")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -115,7 +115,7 @@ private struct RecoveryCodeContent: View {
                             .tracking(2)
                             .textSelection(.enabled)
                         Spacer()
-                        Button(model.didCopy ? "Copiado" : "Copiar") {
+                        Button(model.didCopy ? "Copied" : "Copy" as LocalizedStringKey) {
                             model.send(RecoveryCodeUiEventOnCopyClicked.shared)
                         }
                         .buttonStyle(.borderless)
@@ -123,7 +123,7 @@ private struct RecoveryCodeContent: View {
                     .padding(.horizontal, 16)
                     .frame(minHeight: 64)
                     Divider()
-                    OptionRow(systemImage: "key.viewfinder", title: "Salvar no app Senhas") {
+                    OptionRow(systemImage: "key.viewfinder", title: "Save to the Passwords app") {
                         model.send(RecoveryCodeUiEventOnSaveToPasswordManagerClicked.shared)
                     }
                     Divider()
@@ -134,7 +134,7 @@ private struct RecoveryCodeContent: View {
                                 model.send(RecoveryCodeUiEventOnProviderClicked(provider: .apple))
                             }
                             GoogleButton(
-                                title: "Continuar com Google",
+                                title: "Continue with Google",
                                 isEnabled: state.areAccountButtonsEnabled,
                                 isLoading: state.connectingProvider == .google,
                             ) {
@@ -145,8 +145,8 @@ private struct RecoveryCodeContent: View {
                     } else {
                         OptionRow(
                             systemImage: "checkmark.shield",
-                            title: "Conectar Apple ou Google em vez disso",
-                            subtitle: "Dispensa o código",
+                            title: "Connect Apple or Google instead",
+                            subtitle: "No code needed",
                             isEnabled: state.isOnline,
                         ) {
                             withAnimation { model.send(RecoveryCodeUiEventOnConnectInsteadClicked.shared) }
@@ -155,11 +155,11 @@ private struct RecoveryCodeContent: View {
                 }
             }
             if state.hasSignInFailed {
-                Text("Não deu para conectar agora. Tente de novo.")
+                Text("Couldn't connect right now. Try again.")
                     .font(.footnote)
                     .foregroundStyle(Palette.negative)
             }
-            Text("Também fica em \(DeviceName.recoveryPlace).")
+            Text("It's also in \(DeviceName.recoveryPlace).")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             actions
@@ -170,10 +170,10 @@ private struct RecoveryCodeContent: View {
     private var actions: some View {
         #if os(iOS)
         VStack(spacing: 4) {
-            PrimaryButton(title: "Já guardei") {
+            PrimaryButton(title: "I've saved it") {
                 model.send(RecoveryCodeUiEventOnSavedClicked.shared)
             }
-            Button("Lembrar depois") {
+            Button("Remind me later") {
                 model.send(RecoveryCodeUiEventOnRemindLaterClicked.shared)
             }
             .buttonStyle(.borderless)
@@ -182,11 +182,11 @@ private struct RecoveryCodeContent: View {
         #else
         HStack {
             Spacer()
-            Button("Lembrar depois") {
+            Button("Remind me later") {
                 model.send(RecoveryCodeUiEventOnRemindLaterClicked.shared)
             }
             .keyboardShortcut(.cancelAction)
-            Button("Já guardei") {
+            Button("I've saved it") {
                 model.send(RecoveryCodeUiEventOnSavedClicked.shared)
             }
             .keyboardShortcut(.defaultAction)
@@ -198,8 +198,8 @@ private struct RecoveryCodeContent: View {
 
 private struct OptionRow: View {
     let systemImage: String
-    let title: String
-    var subtitle: String?
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey?
     var isEnabled = true
     let action: () -> Void
 

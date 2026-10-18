@@ -67,11 +67,13 @@ private fun FullShapeClusterHero(modifier: Modifier) {
                 .size(64.dp)
                 .background(colors.primary, MaterialShapes.Circle.toShape()),
         )
+        val symbol = rememberCurrencySymbol()
         Text(
-            text = "R$",
+            text = symbol,
             modifier = Modifier.offset(46.dp, 60.dp),
             color = colors.onPrimaryContainer,
-            fontSize = 30.sp,
+            fontSize = toCurrencyFontSize(symbol, 30.sp),
+            maxLines = 1,
             fontWeight = FontWeight.ExtraBold,
         )
     }
@@ -105,12 +107,19 @@ private fun CompactShapeClusterHero(modifier: Modifier) {
                 .background(colors.primary, MaterialShapes.Cookie9Sided.toShape()),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = "R$", color = colors.onPrimary, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+            val symbol = rememberCurrencySymbol()
+            Text(
+                text = symbol,
+                color = colors.onPrimary,
+                fontSize = toCurrencyFontSize(symbol, 18.sp),
+                fontWeight = FontWeight.ExtraBold,
+                maxLines = 1,
+            )
         }
     }
 }
 
-// Why: the "R$" cookie that heads the tablet pitch panel, whose own color would hide the cluster.
+// Why: the currency cookie that heads the tablet pitch panel, whose own color would hide the cluster.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CurrencyBadgeIcon(modifier: Modifier = Modifier) {
@@ -122,7 +131,14 @@ fun CurrencyBadgeIcon(modifier: Modifier = Modifier) {
             .background(colors.primary, MaterialShapes.Cookie9Sided.toShape()),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = "R$", color = colors.onPrimary, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold)
+        val symbol = rememberCurrencySymbol()
+        Text(
+            text = symbol,
+            color = colors.onPrimary,
+            fontSize = toCurrencyFontSize(symbol, 26.sp),
+            fontWeight = FontWeight.ExtraBold,
+            maxLines = 1,
+        )
     }
 }
 

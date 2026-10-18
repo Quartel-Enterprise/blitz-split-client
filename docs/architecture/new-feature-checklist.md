@@ -33,7 +33,7 @@ each platform.
       `@DevicePreviews` previews wrapped in `BlitzSplitTheme`
 - [ ] The `entry<Route.X>` in `AppNavDisplay`, or a slot the host screen takes when it is drawn inside another
       feature (as `GroupsScreen(recoveryCodeSheet = …)`)
-- [ ] Strings in pt-BR in the module's `res/values/strings.xml`
+- [ ] Strings in English in the module's `res/values/strings.xml` and in Portuguese in `res/values-pt/strings.xml`
 
 ### Apple
 
@@ -43,7 +43,7 @@ each platform.
       `stateWatcher`, `actionWatcher`, `send`, `isolated deinit { holder.clear() }`) and the `XView`; code that
       differs by platform goes behind `#if os(macOS)` or into `Sources/iOS` / `Sources/macOS`
 - [ ] The route in `AppRoute` and `RootView`, or the sheet where its host presents it
-- [ ] Strings in pt-BR in the SwiftUI literals; rerun `./iosApp/generate-project.sh` after adding files, then build
+- [ ] Strings as English SwiftUI literals with their pt-BR translation in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
       both `BoraRachar-iOS` and `BoraRachar-macOS`
 
 ### Web
@@ -54,7 +54,7 @@ each platform.
 - [ ] The route name in `RouteName.kt` and the case in `Screen` of `App.tsx`
 - [ ] `webApp/src/features/<name>/XScreen.tsx` with `usePresenter`, `useWatch`, `useActions` (and `useDraft` for
       text inputs), shadcn/ui components and Tailwind
-- [ ] Strings in pt-BR in the `.tsx`; `npm --prefix webApp run build` passes (it type-checks against the generated
+- [ ] Strings through `t()` with the key in both `src/i18n/en.ts` and `pt.ts`; `npm --prefix webApp run build` passes (it type-checks against the generated
       `.d.ts`)
 
 ### Before the PR

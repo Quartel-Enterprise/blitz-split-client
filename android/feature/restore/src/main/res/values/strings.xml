@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="restore_title">Trazer seus grupos</string>
-    <string name="restore_subtitle">Entrou com uma conta antes? É só entrar de novo. Se não, use o código de recuperação ou o QR do aparelho antigo.</string>
-    <string name="restore_no_connection_title">Sem conexão</string>
-    <string name="restore_no_connection_body">Entrar com conta ou código precisa de internet para baixar seus grupos. O que você digitou fica guardado.</string>
-    <string name="restore_code_label">Ou use o código de recuperação</string>
-    <string name="restore_code_hint">12 letras e números. Traços são opcionais.</string>
-    <string name="restore_scan_qr_title">Escanear QR do aparelho antigo</string>
-    <string name="restore_scan_qr_body">Lá: Perfil › Recuperação › Mostrar QR</string>
-    <string name="restore_recover">Recuperar</string>
-    <string name="restore_try_again">Tentar de novo</string>
-    <string name="restore_start_fresh">Começar do zero neste aparelho</string>
-    <string name="restore_error_invalid_code">Código não encontrado. Confira as letras e tente de novo.</string>
-    <string name="restore_error_too_many_attempts">Muitas tentativas. Espere alguns minutos e tente de novo.</string>
-    <string name="restore_error_sign_in_failed">Não deu para entrar agora. Tente de novo.</string>
-    <string name="restore_error_unknown">Algo deu errado. Tente de novo.</string>
+    <string name="restore_title">Bring your groups back</string>
+    <string name="restore_subtitle">Signed in with an account before? Just sign in again. If not, use the recovery code or the QR code from your old device.</string>
+    <string name="restore_no_connection_title">No connection</string>
+    <string name="restore_no_connection_body">Signing in with an account or a code needs the internet to download your groups. What you typed is kept.</string>
+    <string name="restore_code_label">Or use the recovery code</string>
+    <string name="restore_code_hint">12 letters and numbers. Dashes are optional.</string>
+    <string name="restore_scan_qr_title">Scan the QR code from your old device</string>
+    <string name="restore_scan_qr_body">There: Profile › Recovery › Show QR code</string>
+    <string name="restore_recover">Recover</string>
+    <string name="restore_try_again">Try again</string>
+    <string name="restore_start_fresh">Start fresh on this device</string>
+    <string name="restore_error_invalid_code">Code not found. Check the letters and try again.</string>
+    <string name="restore_error_too_many_attempts">Too many attempts. Wait a few minutes and try again.</string>
+    <string name="restore_error_sign_in_failed">Couldn\'t sign in right now. Try again.</string>
+    <string name="restore_error_unknown">Something went wrong. Try again.</string>
 </resources>

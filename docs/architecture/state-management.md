@@ -36,7 +36,7 @@ Rules derived from the state are **getters on the `UiState`**, never conditions 
 presenter all read `areAccountButtonsEnabled`, so the three agree by construction.
 
 UiState carries no copy. An error is an enum (`RestoreError`, `WelcomeError`) or a flag (`hasSignInFailed`), and a
-status is an enum (`SyncBadge`); each UI maps it to its pt-BR text. Use a `sealed interface` only when the screen
+status is an enum (`SyncBadge`); each UI maps it to its localized text. Use a `sealed interface` only when the screen
 has genuinely distinct shapes; an enum is enough for a status without data (`AppUiState.LOADING` / `READY`).
 
 ### UiEvent — what the person did

@@ -7,13 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
+import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { QrScannerDialog } from './QrScannerDialog'
 
-const codeErrors: Record<string, string> = {
-  INVALID_CODE: 'Código não encontrado. Confira as letras e tente de novo.',
-  TOO_MANY_ATTEMPTS: 'Muitas tentativas. Espere alguns minutos e tente de novo.',
-  UNKNOWN: 'Algo deu errado. Tente de novo.',
+const codeErrors: Record<string, MessageKey> = {
+  INVALID_CODE: 'restore_errorInvalidCode',
+  TOO_MANY_ATTEMPTS: 'restore_errorTooManyAttempts',
+  UNKNOWN: 'restore_errorUnknown',
 }
 
 export function RestoreScreen() {
@@ -23,23 +24,24 @@ export function RestoreScreen() {
   useActions(presenter, (p, onOpen: (open: boolean) => void) => p.observeOpenQrScanner(onOpen), () => setScanning(true))
   if (!presenter || !state) return null
 
-  const codeError = state.error ? codeErrors[state.error] : undefined
+  const codeErrorKey = state.error ? codeErrors[state.error] : undefined
+  const codeError = codeErrorKey ? t(codeErrorKey) : undefined
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
       <div className="flex w-full max-w-4xl flex-col gap-4">
         <Button variant="ghost" size="sm" className="-ml-2 self-start" onClick={() => presenter.back()}>
-          <ArrowLeft /> Voltar
+          <ArrowLeft /> {t('common_back')}
         </Button>
         <div className="grid overflow-hidden rounded-xl border bg-card shadow-sm md:grid-cols-2">
           <section className="flex flex-col gap-6 p-6 sm:p-8 md:border-r">
             <div className="flex flex-col gap-1.5">
-              <h1 className="text-2xl font-semibold tracking-tight">Trazer seus grupos</h1>
-              <p className="text-sm text-muted-foreground">Entrou com uma conta antes? É só entrar de novo. Se não, use o código de recuperação ou o QR do aparelho antigo.</p>
+              <h1 className="text-2xl font-semibold tracking-tight">{t('restore_title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('restore_subtitle')}</p>
             </div>
             <AccountButtons short isEnabled={state.areAccountButtonsEnabled} connectingProvider={state.connectingProvider} onClick={(provider) => presenter.clickProvider(provider)} />
-            {state.error === 'SIGN_IN_FAILED' && <p className="text-sm text-destructive">Não deu para entrar agora. Tente de novo.</p>}
+            {state.error === 'SIGN_IN_FAILED' && <p className="text-sm text-destructive">{t('common_signInFailed')}</p>}
             {state.showsOfflineNotice && (
-              <OfflineAlert>Entrar com conta ou código precisa de internet para baixar seus grupos. O que você digitou fica guardado.</OfflineAlert>
+              <OfflineAlert>{t('restore_offlineNotice')}</OfflineAlert>
             )}
           </section>
           <form
@@ -50,10 +52,10 @@ export function RestoreScreen() {
             }}
           >
             <div className="flex flex-col gap-2">
-              <Label htmlFor="recovery-code">Ou use o código de recuperação</Label>
+              <Label htmlFor="recovery-code">{t('restore_codeLabel')}</Label>
               <CodeInput value={state.code} hasError={codeError !== undefined} onChange={(value) => presenter.changeCode(value)} />
               <span id="recovery-code-help" className={cn('text-xs', codeError ? 'text-destructive' : 'text-muted-foreground')}>
-                {codeError ?? '12 letras e números. Traços são opcionais.'}
+                {codeError ?? t('restore_codeHint')}
               </span>
             </div>
             <button
@@ -65,8 +67,8 @@ export function RestoreScreen() {
                 <QrCode className="size-5" />
               </span>
               <span className="flex flex-1 flex-col">
-                <span className="font-medium">Escanear QR com a câmera</span>
-                <span className="text-xs text-muted-foreground">No aparelho antigo: Perfil › Recuperação › Mostrar QR</span>
+                <span className="font-medium">{t('restore_scanQrTitle')}</span>
+                <span className="text-xs text-muted-foreground">{t('restore_scanQrBody')}</span>
               </span>
               <ChevronRight className="size-4 text-muted-foreground" />
             </button>
@@ -74,16 +76,16 @@ export function RestoreScreen() {
               {state.showsOfflineNotice ? (
                 <>
                   <Button type="submit" size="lg">
-                    <RotateCw /> Tentar de novo
+                    <RotateCw /> {t('restore_tryAgain')}
                   </Button>
                   <Button type="button" variant="link" onClick={() => presenter.startFresh()}>
-                    Começar do zero neste navegador
+                    {t('restore_startFresh')}
                   </Button>
                 </>
               ) : (
                 <Button type="submit" size="lg" disabled={!state.canRestore}>
                   {state.isRestoring && <Loader2 className="animate-spin" />}
-                  Recuperar
+                  {t('restore_recover')}
                 </Button>
               )}
             </div>

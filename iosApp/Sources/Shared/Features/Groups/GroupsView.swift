@@ -30,7 +30,7 @@ final class GroupsModel {
     }
 }
 
-/// The tabs of the canvas. Only Grupos is built; the others answer "Em breve".
+/// The tabs of the canvas. Only Groups is built; the others answer "Coming soon".
 enum MainTab: Hashable {
     case groups
     case balances
@@ -46,19 +46,19 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: tabSelection) {
-            Tab("Grupos", systemImage: "person.3", value: MainTab.groups) {
+            Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
                 NavigationStack {
                     GroupsView(model: model)
                 }
             }
-            Tab("Saldos", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
-            Tab("Contatos", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
-            Tab("Atividade", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
+            Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
+            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
+            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
         }
         .tabViewStyle(.sidebarAdaptable)
         .overlay(alignment: .top) {
             if showsComingSoon {
-                Text("Em breve")
+                Text("Coming soon")
                     .font(.subheadline.weight(.semibold))
                     .padding(.horizontal, 18)
                     .padding(.vertical, 10)
@@ -74,8 +74,8 @@ struct MainTabView: View {
                 withAnimation { showsComingSoon = false }
             }
         }
-        // Shown once the first sync issued a code; the sheet settles the prompt itself ("Já guardei",
-        // "Lembrar depois" or a swipe down), which hides it here too.
+        // Shown once the first sync issued a code; the sheet settles the prompt itself ("I've saved it",
+        // "Remind me later" or a swipe down), which hides it here too.
         .onChange(of: model.state.showsRecoveryCodePrompt, initial: true) { _, isDue in
             showsRecoveryCode = isDue
         }
@@ -84,7 +84,7 @@ struct MainTabView: View {
         }
     }
 
-    // Selecting a tab that is not built yet keeps Grupos and says "Em breve".
+    // Selecting a tab that is not built yet keeps Groups and says "Coming soon".
     private var tabSelection: Binding<MainTab> {
         Binding(
             get: { .groups },
@@ -106,15 +106,15 @@ struct GroupsView: View {
     var body: some View {
         let state = model.state
         ContentUnavailableView {
-            Label("Nenhum grupo ainda", systemImage: "person.3")
+            Label("No groups yet", systemImage: "person.3")
         } description: {
-            Text("Crie um grupo para a viagem, a casa ou o churrasco. Dá para começar mesmo sem internet.")
+            Text("Create a group for the trip, the house or the barbecue. You can start even without internet.")
         } actions: {
             VStack(spacing: 10) {
-                PrimaryButton(title: "Criar grupo") {
+                PrimaryButton(title: "Create group") {
                     model.send(GroupsUiEventOnCreateGroupClicked.shared)
                 }
-                TintedButton(title: "Entrar com link ou QR") {
+                TintedButton(title: "Join with a link or QR code") {
                     model.send(GroupsUiEventOnJoinWithLinkClicked.shared)
                 }
             }
@@ -122,7 +122,7 @@ struct GroupsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
-        .navigationTitle("Grupos")
+        .navigationTitle("Groups")
         .navigationSubtitle(syncText(state.syncBadge))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -135,16 +135,16 @@ struct GroupsView: View {
                         .frame(width: 32, height: 32)
                         .background(state.avatarColor.container, in: .circle)
                 }
-                .accessibilityLabel("Perfil")
+                .accessibilityLabel("Profile")
             }
         }
     }
 
-    private func syncText(_ badge: SyncBadge) -> String {
+    private func syncText(_ badge: SyncBadge) -> LocalizedStringKey {
         switch badge {
-        case .offline: "Offline · tudo fica salvo no \(DeviceName.current)"
-        case .synced: "Sincronizado agora"
-        default: "Sincronizando…"
+        case .offline: "Offline · everything is saved on your \(DeviceName.current)"
+        case .synced: "Synced just now"
+        default: "Syncing…"
         }
     }
 }

@@ -2,9 +2,9 @@
 
 # Bora Rachar
 
-An app to split bills among friends, offline first and with an optional account. **Bora Rachar** is the product
-name people see; **Blitz Split** is the code name: the package `com.quare.blitzsplit`, the Gradle project, the
-`blitzsplit.*` convention plugins. The apps keep the legacy Blitz Split `applicationId` and bundle id, since they
+An app to split bills among friends, offline first and with an optional account. It is **Bora Rachar** in
+Portuguese and **Blitz Split** in every other language (English is the fallback); Blitz Split is also the code
+name: the package `com.quare.blitzsplit`, the Gradle project, the `blitzsplit.*` convention plugins. The apps keep the legacy Blitz Split `applicationId` and bundle id, since they
 replace it in the stores.
 
 ## Layout
@@ -44,7 +44,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   to the ViewModel, no SKIE, one back stack, offline first, auth and the recovery code) and how to apply them.
 - Product decisions, to follow on every platform:
   - The recovery code's "Conectar Google ou Apple em vez disso" expands in place into one button per provider
-    (`RecoveryCodeUiState.isConnectExpanded`), Google first on Android and web, Apple first on iOS and macOS.
+    (`RecoveryCodeUiState.isConnectExpanded`).
+  - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
+    iPad); Google comes first on Android and in any other browser.
+  - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
+    symbol of the device's region, `$` when there is none.
   - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the three not built yet
     answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.

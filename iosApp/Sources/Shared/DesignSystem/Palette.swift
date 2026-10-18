@@ -47,11 +47,11 @@ extension AvatarColor {
 
     var label: String {
         switch self {
-        case .peach: "Pêssego"
-        case .green: "Verde"
-        case .lilac: "Lilás"
-        case .sand: "Areia"
-        default: "Azul"
+        case .peach: String(localized: "Peach")
+        case .green: String(localized: "Green")
+        case .lilac: String(localized: "Lilac")
+        case .sand: String(localized: "Sand")
+        default: String(localized: "Blue")
         }
     }
 }

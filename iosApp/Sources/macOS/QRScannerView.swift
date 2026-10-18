@@ -2,7 +2,7 @@
 import SwiftUI
 import Vision
 
-/// Scans the old device's recovery QR with the Mac's camera ("Escanear QR com a câmera").
+/// Scans the old device's recovery QR with the Mac's camera ("Scan the QR code with the camera").
 struct QRScannerView: View {
     let onScanned: (String) -> Void
 
@@ -11,26 +11,26 @@ struct QRScannerView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Escanear QR com a câmera").font(.headline)
+            Text("Scan the QR code with the camera").font(.headline)
             Group {
                 if scanner.isAuthorized {
                     CameraPreview(session: scanner.session)
                         .clipShape(.rect(cornerRadius: 16))
                 } else {
                     ContentUnavailableView(
-                        "Câmera indisponível",
+                        "Camera unavailable",
                         systemImage: "camera.badge.ellipsis",
-                        description: Text("Permita o acesso à câmera em Ajustes do Sistema ou digite o código."),
+                        description: Text("Allow camera access in System Settings or type the code."),
                     )
                 }
             }
             .frame(width: 420, height: 315)
-            Text("No aparelho antigo: Perfil › Recuperação › Mostrar QR")
+            Text("On the old device: Profile › Recovery › Show QR code")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             HStack {
                 Spacer()
-                Button("Cancelar", role: .cancel) { dismiss() }
+                Button("Cancel", role: .cancel) { dismiss() }
                     .keyboardShortcut(.cancelAction)
             }
         }

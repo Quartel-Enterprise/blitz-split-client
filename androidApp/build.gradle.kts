@@ -26,6 +26,10 @@ android {
         versionCode = project.property("versionCode").toString().toInt()
         versionName = project.property("versionName").toString()
     }
+    // Lists English and Portuguese in the system's per-app language setting (Android 13+)
+    androidResources {
+        generateLocaleConfig = true
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
