@@ -107,6 +107,11 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+  /* Tailwind 4 gives buttons the default arrow; every clickable element here is a button. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
 }
 
 /* Avatars take their color pair from avatarStyle() (src/lib/avatar.ts). */
