@@ -2,29 +2,42 @@ import { Loader2, WifiOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
+import { regionCurrencySymbol } from '@/lib/currency'
+import { accountProviders, type AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
-/** The "R$" tile with the product name. */
+/**
+ * The tile with the region's currency symbol ("R$", "€", "CHF"…), with the product name: Bora Rachar
+ * in Portuguese, Blitz Split in every other language.
+ */
 export function BrandMark({ showsName = true, className }: { showsName?: boolean; className?: string }) {
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
-      <span aria-hidden className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
-        R$
+      <span
+        aria-hidden
+        className={cn(
+          'flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-bold whitespace-nowrap text-primary-foreground',
+          // Three-letter symbols like "CHF" would overflow a tile sized for "R$"
+          regionCurrencySymbol.length >= 3 ? 'text-[0.625rem] tracking-tight' : 'text-xs',
+        )}
+      >
+        {regionCurrencySymbol}
       </span>
-      {showsName && <span className="font-semibold">Bora Rachar</span>}
+      {showsName && <span className="font-semibold">{t('appName')}</span>}
     </div>
   )
 }
 
-/** "Sem conexão." where signing in or recovering needs the internet. */
+/** "No connection." where signing in or recovering needs the internet. */
 export function OfflineAlert({ children }: { children: ReactNode }) {
   return (
     <Alert role="alert">
       <WifiOff />
       <AlertDescription className="text-foreground">
         <p>
-          <strong className="font-semibold">Sem conexão.</strong> {children}
+          <strong className="font-semibold">{t('common_noConnection')}</strong> {children}
         </p>
       </AlertDescription>
     </Alert>
@@ -34,24 +47,37 @@ export function OfflineAlert({ children }: { children: ReactNode }) {
 interface AccountButtonsProps {
   isEnabled: boolean
   connectingProvider: string | null | undefined
-  onClick: (provider: 'google' | 'apple') => void
+  onClick: (provider: AccountProvider) => void
   short?: boolean
   className?: string
 }
 
-/** Google first on the web, as on Android. Both sign in through the browser here. */
+/** Apple first on Apple devices, Google first elsewhere. Both sign in through the browser here. */
 export function AccountButtons({ isEnabled, connectingProvider, onClick, short = false, className }: AccountButtonsProps) {
   return (
     <div className={cn(short ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2', className)}>
-      <Button variant="outline" size="lg" disabled={!isEnabled} onClick={() => onClick('google')}>
-        {connectingProvider === 'google' ? <Loader2 className="animate-spin" /> : <span aria-hidden className="font-extrabold">G</span>}
-        {short ? 'Google' : 'Continuar com Google'}
-      </Button>
-      <Button variant="outline" size="lg" disabled={!isEnabled} onClick={() => onClick('apple')}>
-        {connectingProvider === 'apple' ? <Loader2 className="animate-spin" /> : <AppleLogo />}
-        {short ? 'Apple' : 'Continuar com a Apple'}
-      </Button>
+      {accountProviders.map((provider) => (
+        <Button key={provider} variant="outline" size="lg" disabled={!isEnabled} onClick={() => onClick(provider)}>
+          {connectingProvider === provider ? <Loader2 className="animate-spin" /> : <ProviderLogo provider={provider} />}
+          {providerLabel(provider, short)}
+        </Button>
+      ))}
     </div>
+  )
+}
+
+/** "Google" / "Apple" when short, "Continue with Google" / "Continue with Apple" otherwise. */
+export function providerLabel(provider: AccountProvider, short = false): string {
+  if (provider === 'google') return t(short ? 'common_google' : 'common_continueWithGoogle')
+  return t(short ? 'common_apple' : 'common_continueWithApple')
+}
+
+function ProviderLogo({ provider }: { provider: AccountProvider }) {
+  if (provider === 'apple') return <AppleLogo />
+  return (
+    <span aria-hidden className="font-extrabold">
+      G
+    </span>
   )
 }
 
@@ -63,12 +89,12 @@ function AppleLogo() {
   )
 }
 
-/** "ou" between the account buttons and the account-free path. */
+/** "or" between the account buttons and the account-free path. */
 export function OrDivider() {
   return (
     <div aria-hidden className="flex items-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
       <span className="h-px flex-1 bg-border" />
-      ou
+      {t('common_or')}
       <span className="h-px flex-1 bg-border" />
     </div>
   )

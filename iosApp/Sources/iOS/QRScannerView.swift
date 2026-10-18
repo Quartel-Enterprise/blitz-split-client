@@ -18,17 +18,17 @@ struct QRScannerView: View {
                     .ignoresSafeArea()
                 } else {
                     ContentUnavailableView(
-                        "Câmera indisponível",
+                        "Camera unavailable",
                         systemImage: "camera.badge.ellipsis",
-                        description: Text("Permita o acesso à câmera em Ajustes ou digite o código."),
+                        description: Text("Allow camera access in Settings or type the code."),
                     )
                 }
             }
-            .navigationTitle("Escanear QR")
+            .navigationTitle("Scan QR code")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancelar", role: .cancel) { dismiss() }
+                    Button("Cancel", role: .cancel) { dismiss() }
                 }
             }
         }

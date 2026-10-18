@@ -11,7 +11,11 @@ import AppKit
 /// screenshot and brings it to the person's other Apple devices.
 enum RecoveryCodeSaver {
     private static let domain = "borarachar.com"
-    private static let account = "Bora Rachar · código de recuperação"
+    /// The entry's name in the Passwords app, in the app's language like the app name
+    /// ("Bora Rachar · código de recuperação" in Portuguese).
+    private static var account: String {
+        String(localized: "Blitz Split · recovery code")
+    }
 
     static func copy(_ code: String) {
         #if os(iOS)
@@ -44,7 +48,7 @@ enum RecoveryCodeSaver {
         SecItemDelete(query as CFDictionary)
         var item = query
         item[kSecValueData as String] = Data(code.utf8)
-        item[kSecAttrLabel as String] = "Bora Rachar"
+        item[kSecAttrLabel as String] = String(localized: "Blitz Split")
         return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
         #endif
     }

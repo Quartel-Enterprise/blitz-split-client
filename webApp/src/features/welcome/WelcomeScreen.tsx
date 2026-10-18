@@ -3,6 +3,7 @@ import { WelcomePresenter, type JsWelcomeState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, BrandMark, OfflineAlert, OrDivider } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { t } from '@/i18n'
 
 /** Welcome: a brand panel beside the actions on wide screens, on top of them when narrow. */
 export function WelcomeScreen() {
@@ -19,27 +20,27 @@ export function WelcomeScreen() {
             <div className="absolute top-4 left-25 size-22 rotate-14 rounded-[26px] bg-brand-shape" />
           </div>
           <ul className="relative flex flex-col gap-5 pt-16 text-sm md:pt-40">
-            <Benefit icon={<CloudOff className="size-5" />} title="Funciona sem internet" body="Tudo fica no navegador e sincroniza depois." />
-            <Benefit icon={<ShieldCheck className="size-5" />} title="Conta é opcional" body="Google ou Apple só servem para não perder nada ao trocar de aparelho." />
-            <Benefit icon={<Link2 className="size-5" />} title="Convide por link ou QR" body="Os amigos entram no grupo sem criar conta." />
+            <Benefit icon={<CloudOff className="size-5" />} title={t('welcome_offlineTitle')} body={t('welcome_offlineBody')} />
+            <Benefit icon={<ShieldCheck className="size-5" />} title={t('welcome_optionalTitle')} body={t('welcome_optionalBody')} />
+            <Benefit icon={<Link2 className="size-5" />} title={t('welcome_inviteTitle')} body={t('welcome_inviteBody')} />
           </ul>
         </aside>
         <section className="flex flex-col gap-6 p-6 sm:p-10">
           <BrandMark />
           <div className="flex flex-col gap-1.5">
-            <h1 className="text-2xl font-semibold tracking-tight">Racha a conta sem complicação</h1>
-            <p className="text-sm text-muted-foreground">Entre com uma conta para não perder nada ao trocar de aparelho, ou use sem conta.</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{t('welcome_title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('welcome_subtitle')}</p>
           </div>
-          {state.showsOfflineNotice && <OfflineAlert>Entrar com conta precisa de internet. Use sem conta agora e conecte depois em Perfil.</OfflineAlert>}
+          {state.showsOfflineNotice && <OfflineAlert>{t('welcome_offlineNotice')}</OfflineAlert>}
           <AccountButtons isEnabled={state.areAccountButtonsEnabled} connectingProvider={state.connectingProvider} onClick={(provider) => presenter.clickProvider(provider)} />
-          {state.hasSignInFailed && <p className="text-sm text-destructive">Não deu para entrar agora. Tente de novo.</p>}
+          {state.hasSignInFailed && <p className="text-sm text-destructive">{t('common_signInFailed')}</p>}
           <OrDivider />
           <div className="flex flex-col gap-2">
             <Button size="lg" onClick={() => presenter.useWithoutAccount()}>
-              Usar sem conta
+              {t('welcome_useWithoutAccount')}
             </Button>
             <Button variant="link" onClick={() => presenter.usedOnAnotherDevice()}>
-              Já usei em outro aparelho
+              {t('welcome_usedOnAnotherDevice')}
             </Button>
           </div>
         </section>

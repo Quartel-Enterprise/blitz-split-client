@@ -94,25 +94,25 @@ private struct WelcomePitch: View {
         VStack(alignment: alignment, spacing: 28) {
             VStack(alignment: alignment, spacing: 16) {
                 CurrencyBadge(size: isLarge ? 88 : 72)
-                Text("Racha a conta sem complicação")
+                Text("Split the bill, no hassle")
                     .font(isLarge ? .largeTitle.bold() : .title.bold())
                     .multilineTextAlignment(alignment == .center ? .center : .leading)
             }
             VStack(alignment: .leading, spacing: 16) {
                 BenefitRow(
                     systemImage: "wifi.slash",
-                    title: "Funciona sem internet",
-                    message: "Tudo fica no \(DeviceName.current) e sincroniza depois.",
+                    title: "Works offline",
+                    message: "Everything stays on your \(DeviceName.current) and syncs later.",
                 )
                 BenefitRow(
                     systemImage: "checkmark.shield",
-                    title: "Conta é opcional",
-                    message: "Apple ou Google só servem para não perder nada ao trocar de aparelho.",
+                    title: "An account is optional",
+                    message: "Apple or Google only keep you from losing anything when you switch devices.",
                 )
                 BenefitRow(
                     systemImage: "link",
-                    title: "Convide por link ou QR",
-                    message: "Os amigos entram no grupo sem criar conta.",
+                    title: "Invite with a link or QR code",
+                    message: "Friends join the group without creating an account.",
                 )
             }
             .padding(.horizontal, alignment == .center ? 12 : 0)
@@ -122,8 +122,8 @@ private struct WelcomePitch: View {
 
 private struct BenefitRow: View {
     let systemImage: String
-    let title: String
-    let message: String
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -148,9 +148,8 @@ private struct WelcomeActions: View {
         VStack(spacing: 10) {
             if state.showsOfflineNotice {
                 GlassNotice(
-                    title: "Sem conexão.",
-                    message: "Entrar com conta precisa de internet. Use sem conta agora e conecte depois em "
-                        + "\(DeviceName.accountPlace).",
+                    title: "No connection.",
+                    message: "Signing in with an account needs the internet. Use it without an account now and connect later in \(DeviceName.accountPlace).",
                 )
                 .transition(.opacity)
             }
@@ -159,22 +158,22 @@ private struct WelcomeActions: View {
                 model.send(WelcomeUiEventOnProviderClicked(provider: .apple))
             }
             GoogleButton(
-                title: "Continuar com Google",
+                title: "Continue with Google",
                 isEnabled: state.areAccountButtonsEnabled,
                 isLoading: state.connectingProvider == .google,
             ) {
                 model.send(WelcomeUiEventOnProviderClicked(provider: .google))
             }
             if state.error != nil {
-                Text("Não deu para entrar agora. Tente de novo.")
+                Text("Couldn't sign in right now. Try again.")
                     .font(.footnote)
                     .foregroundStyle(Palette.negative)
             }
             OrDivider()
-            TintedButton(title: "Usar sem conta") {
+            TintedButton(title: "Use without an account") {
                 model.send(WelcomeUiEventOnUseWithoutAccountClicked.shared)
             }
-            Button("Já usei em outro aparelho") {
+            Button("I've used it on another device") {
                 model.send(WelcomeUiEventOnUsedOnAnotherDeviceClicked.shared)
             }
             .buttonStyle(.borderless)

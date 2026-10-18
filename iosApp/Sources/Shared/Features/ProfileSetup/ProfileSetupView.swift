@@ -69,7 +69,7 @@ struct ProfileSetupView: View {
                             ProfileTitle(isLarge: false)
                             AvatarSection(model: model, avatarSize: 112)
                             NameSection(model: model) {
-                                // Why: the pinned "Continuar" would otherwise hide the field above the keyboard
+                                // Why: the pinned "Continue" would otherwise hide the field above the keyboard
                                 withAnimation { proxy.scrollTo(NameSection.scrollId, anchor: .center) }
                             }
                         }
@@ -85,18 +85,18 @@ struct ProfileSetupView: View {
     }
 }
 
-/// "Continuar" stays on screen below the scrolling content, above the keyboard when it is open.
+/// "Continue" stays on screen below the scrolling content, above the keyboard when it is open.
 private struct ProfileFooter: View {
     let model: ProfileSetupModel
 
     var body: some View {
         let state = model.state
         VStack(spacing: 10) {
-            Text("Fica salvo só neste \(DeviceName.current) por enquanto.")
+            Text("Saved only on this \(DeviceName.current) for now.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             PrimaryButton(
-                title: "Continuar",
+                title: "Continue",
                 isEnabled: state.canContinue,
                 isLoading: state.isSaving,
             ) {
@@ -115,9 +115,9 @@ private struct ProfileTitle: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Como seus amigos te chamam?")
+            Text("What do your friends call you?")
                 .font(isLarge ? .largeTitle.bold() : .title.bold())
-            Text("Seu nome aparece só para quem estiver nos seus grupos.")
+            Text("Only people in your groups see your name.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -138,7 +138,7 @@ private struct AvatarSection: View {
                 .frame(width: avatarSize, height: avatarSize)
                 .background(state.avatarColor.container, in: .circle)
                 .accessibilityHidden(true)
-            SectionCaption(text: "Cor do avatar")
+            SectionCaption(text: "Avatar color")
             GroupedCard {
                 HStack {
                     ForEach(state.avatarColors, id: \.self) { color in
@@ -152,7 +152,7 @@ private struct AvatarSection: View {
                 .padding(.vertical, 12)
             }
             .accessibilityElement(children: .contain)
-            .accessibilityLabel("Cor do avatar")
+            .accessibilityLabel("Avatar color")
         }
         .animation(.snappy, value: state.avatarColor)
     }
@@ -197,11 +197,11 @@ private struct NameSection: View {
     var body: some View {
         let state = model.state
         VStack(alignment: .leading, spacing: 7) {
-            SectionCaption(text: "Seu nome")
+            SectionCaption(text: "Your name")
             GroupedCard {
                 HStack(spacing: 8) {
                     TextField(
-                        "Ex.: Pierre",
+                        "John Doe",
                         text: Binding(
                             get: { model.state.name },
                             set: { model.send(ProfileSetupUiEventOnNameChanged(name: $0)) },
@@ -211,7 +211,7 @@ private struct NameSection: View {
                     .focused($isFocused)
                     .submitLabel(.done)
                     .onSubmit { model.send(ProfileSetupUiEventOnContinueClicked.shared) }
-                    .accessibilityLabel("Seu nome")
+                    .accessibilityLabel("Your name")
                     if state.showsNameTooShort {
                         Image(systemName: "exclamationmark.circle.fill")
                             .foregroundStyle(Palette.negative)
@@ -230,7 +230,7 @@ private struct NameSection: View {
                     onFocus()
                 }
             }
-            Text(state.showsNameTooShort ? "Digite pelo menos 2 letras." : "Você pode mudar depois em Perfil.")
+            Text(state.showsNameTooShort ? "Type at least 2 letters." : "You can change it later in Profile." as LocalizedStringKey)
                 .font(.footnote)
                 .foregroundStyle(state.showsNameTooShort ? Palette.negative : .secondary)
                 .padding(.horizontal, 20)

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { t } from '@/i18n'
 
 interface DetectedBarcode {
   rawValue: string
@@ -37,7 +38,7 @@ export function QrScannerDialog({ open, onOpenChange, onScanned }: QrScannerDial
     if (!open) return
     const Detector = window.BarcodeDetector
     if (!Detector || !navigator.mediaDevices?.getUserMedia) {
-      setProblem('Este navegador não lê QR pela câmera. Digite o código do aparelho antigo.')
+      setProblem(t('qrScanner_unsupported'))
       return
     }
     setProblem(null)
@@ -69,7 +70,7 @@ export function QrScannerDialog({ open, onOpenChange, onScanned }: QrScannerDial
         await video.current.play()
         frame = requestAnimationFrame(scan)
       })
-      .catch(() => setProblem('Não deu para abrir a câmera. Permita o acesso no navegador ou digite o código.'))
+      .catch(() => setProblem(t('qrScanner_cameraFailed')))
 
     return () => {
       isActive = false
@@ -82,8 +83,8 @@ export function QrScannerDialog({ open, onOpenChange, onScanned }: QrScannerDial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Escanear QR com a câmera</DialogTitle>
-          <DialogDescription>No aparelho antigo: Perfil › Recuperação › Mostrar QR</DialogDescription>
+          <DialogTitle>{t('restore_scanQrTitle')}</DialogTitle>
+          <DialogDescription>{t('restore_scanQrBody')}</DialogDescription>
         </DialogHeader>
         {problem ? (
           <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">{problem}</p>
@@ -92,7 +93,7 @@ export function QrScannerDialog({ open, onOpenChange, onScanned }: QrScannerDial
         )}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
+            {t('common_cancel')}
           </Button>
         </DialogFooter>
       </DialogContent>

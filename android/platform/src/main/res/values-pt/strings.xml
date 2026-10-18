@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Bora Rachar</string>
+    <string name="platform_recovery_code_account">Bora Rachar · código de recuperação</string>
+</resources>
