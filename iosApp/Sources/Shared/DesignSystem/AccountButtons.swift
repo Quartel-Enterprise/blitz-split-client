@@ -111,7 +111,7 @@ private struct AppleIDButtonRepresentable: NSViewRepresentable {
 
 /// Google signs in through the browser on Apple platforms, so its button is an ordinary one.
 struct GoogleButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let isEnabled: Bool
     let isLoading: Bool
     let action: () -> Void
@@ -122,7 +122,7 @@ struct GoogleButton: View {
                 if isLoading {
                     ProgressView().controlSize(.small)
                 } else {
-                    Text("G").fontWeight(.heavy)
+                    Text(verbatim: "G").fontWeight(.heavy)
                 }
                 Text(title)
             }

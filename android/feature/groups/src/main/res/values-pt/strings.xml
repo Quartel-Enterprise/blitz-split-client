@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="groups_title">Grupos</string>
+    <string name="groups_profile">Perfil</string>
+    <string name="groups_sync_offline">Offline · tudo fica salvo no aparelho</string>
+    <string name="groups_sync_syncing">Sincronizando…</string>
+    <string name="groups_sync_synced">Sincronizado agora</string>
+    <string name="groups_empty_title">Nenhum grupo ainda</string>
+    <string name="groups_empty_body">Crie um grupo para a viagem, a casa ou o churrasco. Dá para começar mesmo sem internet.</string>
+    <string name="groups_create">Criar grupo</string>
+    <string name="groups_join_with_link">Entrar com link ou QR</string>
+    <string name="groups_tab_groups">Grupos</string>
+    <string name="groups_tab_balances">Saldos</string>
+    <string name="groups_tab_contacts">Contatos</string>
+    <string name="groups_tab_activity">Atividade</string>
+    <string name="groups_coming_soon">Em breve</string>
+</resources>

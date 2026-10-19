@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="profile_setup_title">Como seus amigos te chamam?</string>
-    <string name="profile_setup_subtitle">Seu nome aparece só para quem estiver nos seus grupos.</string>
-    <string name="profile_setup_avatar_color">Cor do avatar</string>
-    <string name="profile_setup_name_label">Seu nome</string>
-    <string name="profile_setup_name_placeholder">Ex.: Pierre</string>
-    <string name="profile_setup_name_too_short">Digite pelo menos 2 letras.</string>
-    <string name="profile_setup_name_hint">Você pode mudar depois em Perfil.</string>
-    <string name="profile_setup_saved_locally">Fica salvo só neste aparelho por enquanto.</string>
-    <string name="profile_setup_continue">Continuar</string>
-    <string name="profile_setup_color_blue">Azul</string>
-    <string name="profile_setup_color_peach">Pêssego</string>
-    <string name="profile_setup_color_green">Verde</string>
-    <string name="profile_setup_color_lilac">Lilás</string>
-    <string name="profile_setup_color_sand">Areia</string>
+    <string name="profile_setup_title">What do your friends call you?</string>
+    <string name="profile_setup_subtitle">Only people in your groups see your name.</string>
+    <string name="profile_setup_avatar_color">Avatar color</string>
+    <string name="profile_setup_name_label">Your name</string>
+    <string name="profile_setup_name_placeholder">John Doe</string>
+    <string name="profile_setup_name_too_short">Type at least 2 letters.</string>
+    <string name="profile_setup_name_hint">You can change it later in Profile.</string>
+    <string name="profile_setup_saved_locally">Saved only on this device for now.</string>
+    <string name="profile_setup_continue">Continue</string>
+    <string name="profile_setup_color_blue">Blue</string>
+    <string name="profile_setup_color_peach">Peach</string>
+    <string name="profile_setup_color_green">Green</string>
+    <string name="profile_setup_color_lilac">Lilac</string>
+    <string name="profile_setup_color_sand">Sand</string>
 </resources>

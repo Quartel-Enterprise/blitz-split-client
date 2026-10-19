@@ -224,17 +224,17 @@ framework with Gradle first.
 ```bash
 ./iosApp/generate-project.sh
 xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
-  -destination 'generic/platform=iOS Simulator' -derivedDataPath iosApp/build/DerivedData build -quiet
+  -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
+  -derivedDataPath iosApp/build/DerivedData build -quiet
 xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS \
   -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData \
-  CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= build -quiet
+  CODE_SIGNING_ALLOWED=NO build -quiet
 ```
 
-The iOS build targets the simulator, so it needs neither a device nor a signing identity. The macOS
-build is signed ad hoc (`CODE_SIGN_IDENTITY=-`), so it doesn't need the team's certificate. If
-signing still fails on the entitlements that require a provisioning profile (Sign in with Apple,
-associated domains), build it again with `CODE_SIGNING_ALLOWED=NO` instead of the three signing
-settings: it still compiles and links everything, which is what this check is for. If XcodeGen is
+The iOS build targets the Apple silicon simulator only (`ARCHS=arm64`): `Shared` has no x86_64 simulator
+slice, so a generic destination that also asks for x86_64 fails in the Gradle phase. The macOS build skips
+signing, since Sign in with Apple and the associated domains need a provisioning profile even when signing ad
+hoc; it still compiles and links everything, which is what this check is for. If XcodeGen is
 missing, ask the user before installing it (`brew install xcodegen`).
 
 **Web UI**:

@@ -85,7 +85,7 @@ struct RestoreView: View {
                         .padding(.bottom, 24)
                     }
                     .scrollBounceBehavior(.basedOnSize)
-                    // "Recuperar" stays on screen, above the keyboard when it is open
+                    // "Recover" stays on screen, above the keyboard when it is open
                     RestoreActions(model: model)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 8)
@@ -112,9 +112,9 @@ private struct RestoreIntro: View {
         let state = model.state
         VStack(alignment: .leading, spacing: 18) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Trazer seus grupos")
+                Text("Bring your groups back")
                     .font(isLarge ? .largeTitle.bold() : .title.bold())
-                Text("Entrou com uma conta antes? É só entrar de novo. Se não, use o código de recuperação ou o QR do aparelho antigo.")
+                Text("Signed in with an account before? Just sign in again. If not, use the recovery code or the QR code from your old device.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -132,14 +132,14 @@ private struct RestoreIntro: View {
                 }
             }
             if state.error == .signInFailed {
-                Text("Não deu para entrar agora. Tente de novo.")
+                Text("Couldn't sign in right now. Try again.")
                     .font(.footnote)
                     .foregroundStyle(Palette.negative)
             }
             if state.showsOfflineNotice {
                 ConnectionCard(
-                    title: "Sem conexão",
-                    message: "Entrar com conta ou código precisa de internet para baixar seus grupos. O que você digitou fica guardado.",
+                    title: "No connection",
+                    message: "Signing in with an account or a code needs the internet to download your groups. What you typed is kept.",
                 )
                 .transition(.opacity)
             }
@@ -154,7 +154,7 @@ private struct RestoreCodeSection: View {
     var body: some View {
         let state = model.state
         VStack(alignment: .leading, spacing: 7) {
-            SectionCaption(text: "Ou use o código de recuperação")
+            SectionCaption(text: "Or use the recovery code")
             GroupedCard {
                 TextField(
                     "K7QM-4XPA-9TRE",
@@ -172,7 +172,7 @@ private struct RestoreCodeSection: View {
                 #endif
                 .submitLabel(.go)
                 .onSubmit { model.send(RestoreUiEventOnRestoreClicked.shared) }
-                .accessibilityLabel("Código de recuperação")
+                .accessibilityLabel("Recovery code")
                 .padding(.horizontal, 16)
                 .frame(minHeight: 56)
             }
@@ -207,19 +207,19 @@ private struct RestoreCodeSection: View {
         }
     }
 
-    private var scanTitle: String {
+    private var scanTitle: LocalizedStringKey {
         #if os(iOS)
-        "Escanear QR do aparelho antigo"
+        "Scan the QR code from your old device"
         #else
-        "Escanear QR com a câmera"
+        "Scan the QR code with the camera"
         #endif
     }
 
-    private var scanHint: String {
+    private var scanHint: LocalizedStringKey {
         #if os(iOS)
-        "Lá: Perfil › Recuperação › Mostrar QR"
+        "There: Profile › Recovery › Show QR code"
         #else
-        "No aparelho antigo: Perfil › Recuperação › Mostrar QR"
+        "On the old device: Profile › Recovery › Show QR code"
         #endif
     }
 
@@ -227,12 +227,12 @@ private struct RestoreCodeSection: View {
         error != nil && error != .signInFailed
     }
 
-    private func codeHint(for error: RestoreError?) -> String {
+    private func codeHint(for error: RestoreError?) -> LocalizedStringKey {
         switch error {
-        case .invalidCode: "Código não encontrado. Confira as letras e tente de novo."
-        case .tooManyAttempts: "Muitas tentativas. Espere alguns minutos e tente de novo."
-        case .unknown: "Algo deu errado. Tente de novo."
-        default: "12 letras e números. Traços são opcionais."
+        case .invalidCode: "Code not found. Check the letters and try again."
+        case .tooManyAttempts: "Too many attempts. Wait a few minutes and try again."
+        case .unknown: "Something went wrong. Try again."
+        default: "12 letters and numbers. Dashes are optional."
         }
     }
 }
@@ -244,15 +244,15 @@ private struct RestoreActions: View {
         let state = model.state
         VStack(spacing: 10) {
             if state.isOnline {
-                PrimaryButton(title: "Recuperar", isEnabled: state.canRestore, isLoading: state.isRestoring) {
+                PrimaryButton(title: "Recover", isEnabled: state.canRestore, isLoading: state.isRestoring) {
                     model.send(RestoreUiEventOnRestoreClicked.shared)
                 }
             } else {
                 // The connectivity observer flips the screen back by itself; the button reassures
-                PrimaryButton(title: "Tentar de novo", systemImage: "arrow.clockwise") {
+                PrimaryButton(title: "Try again", systemImage: "arrow.clockwise") {
                     model.send(RestoreUiEventOnRestoreClicked.shared)
                 }
-                Button("Começar do zero neste \(DeviceName.current)") {
+                Button("Start fresh on this \(DeviceName.current)") {
                     model.send(RestoreUiEventOnStartFreshClicked.shared)
                 }
                 .buttonStyle(.borderless)

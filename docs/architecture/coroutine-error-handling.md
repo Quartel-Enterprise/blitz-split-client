@@ -57,7 +57,7 @@ The custom ktlint rule `quare:suspend-run-catching` flags a `try` that rethrows 
 | Repository | Wraps every network operation in `suspendRunCatching` and returns `Result<T>`. A `try` that catches one specific domain exception inside it is a different intent and stays (`signInLinkingFirst` falls back on `IdentityAlreadyLinkedException`; `createRecoveryCode` settles the prompt and rethrows `SocialAccountHasNoRecoveryCodeException`) |
 | Use case | Passes the `Result` through, or adds its rule |
 | ViewModel | Never `try`s. Handles the `Result` with `onSuccess` / `onFailure` inside `viewModelScope.launch`, and maps the failure to UI state |
-| UI | Maps the UI error to pt-BR text |
+| UI | Maps the UI error to localized text |
 
 ## Mapping errors to the UI
 

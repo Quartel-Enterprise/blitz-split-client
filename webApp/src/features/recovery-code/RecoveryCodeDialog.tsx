@@ -3,18 +3,18 @@ import { RecoveryCodePresenter, type JsRecoveryCodeAction, type JsRecoveryCodeSt
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { providerLabel } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-
-const title = 'Guarde seu código de recuperação'
-const description = 'Você está usando sem conta. Este código recupera seus grupos se você limpar os dados do navegador ou trocar de aparelho.'
+import { t } from '@/i18n'
+import { accountProviders } from '@/lib/platform'
 
 /**
  * A dialog on desktop and tablet, a drawer on the phone. Without an account the data lives in the
  * browser, so instead of a password manager the code is offered as a file to download. Closing it
- * counts as "Lembrar depois", so it comes back on the next visit.
+ * counts as "Remind me later", so it comes back on the next visit.
  */
 export function RecoveryCodeDialog() {
   const presenter = usePresenter(() => new RecoveryCodePresenter())
@@ -22,7 +22,7 @@ export function RecoveryCodeDialog() {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: JsRecoveryCodeAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'copy') {
-      void navigator.clipboard.writeText(action.formattedCode).then(() => toast('Código copiado'))
+      void navigator.clipboard.writeText(action.formattedCode).then(() => toast(t('recoveryCode_copied')))
     } else if (action.type === 'download') {
       downloadCode(action.formattedCode)
     }
@@ -32,13 +32,15 @@ export function RecoveryCodeDialog() {
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.remindLater()
   }
+  const title = t('recoveryCode_title')
+  const description = t('recoveryCode_body')
   const body = <RecoveryCodeBody presenter={presenter} state={state} />
   const actions = (
     <>
       <Button variant="outline" onClick={() => presenter.remindLater()}>
-        Lembrar depois
+        {t('recoveryCode_remindLater')}
       </Button>
-      <Button onClick={() => presenter.saved()}>Já guardei</Button>
+      <Button onClick={() => presenter.saved()}>{t('recoveryCode_saved')}</Button>
     </>
   )
 
@@ -76,33 +78,31 @@ function RecoveryCodeBody({ presenter, state }: { presenter: RecoveryCodePresent
       <div className="flex items-center justify-between gap-2.5 rounded-lg border border-dashed border-muted-foreground/50 bg-muted py-2.5 pr-2.5 pl-3.5">
         <span className="font-mono text-xl font-semibold tracking-[0.12em]">{state.formattedCode}</span>
         <Button variant="outline" size="sm" onClick={() => presenter.copy()}>
-          <Copy /> Copiar
+          <Copy /> {t('recoveryCode_copy')}
         </Button>
       </div>
-      <Option icon={<Download className="size-4" />} title="Baixar como arquivo" onClick={() => presenter.download()} />
+      <Option icon={<Download className="size-4" />} title={t('recoveryCode_download')} onClick={() => presenter.download()} />
       {state.isConnectExpanded ? (
-        // Google first on the web, as on Android
+        // Apple first on Apple devices, Google first elsewhere
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" disabled={!state.areAccountButtonsEnabled} onClick={() => presenter.clickProvider('google')}>
-            {state.connectingProvider === 'google' && <Loader2 className="animate-spin" />}
-            Google
-          </Button>
-          <Button variant="outline" disabled={!state.areAccountButtonsEnabled} onClick={() => presenter.clickProvider('apple')}>
-            {state.connectingProvider === 'apple' && <Loader2 className="animate-spin" />}
-            Apple
-          </Button>
+          {accountProviders.map((provider) => (
+            <Button key={provider} variant="outline" disabled={!state.areAccountButtonsEnabled} onClick={() => presenter.clickProvider(provider)}>
+              {state.connectingProvider === provider && <Loader2 className="animate-spin" />}
+              {providerLabel(provider, true)}
+            </Button>
+          ))}
         </div>
       ) : (
         <Option
           icon={<ShieldCheck className="size-4" />}
-          title="Conectar Google ou Apple em vez disso"
-          subtitle="Dispensa o código"
+          title={t('recoveryCode_connectInstead')}
+          subtitle={t('recoveryCode_connectInsteadBody')}
           disabled={!state.areAccountButtonsEnabled}
           onClick={() => presenter.connectInstead()}
         />
       )}
-      {state.hasSignInFailed && <p className="text-sm text-destructive">Não deu para conectar agora. Tente de novo.</p>}
-      <span className="text-xs text-muted-foreground">Também fica em Perfil › Recuperação.</span>
+      {state.hasSignInFailed && <p className="text-sm text-destructive">{t('recoveryCode_signInFailed')}</p>}
+      <span className="text-xs text-muted-foreground">{t('recoveryCode_alsoInProfile')}</span>
     </div>
   )
 }
@@ -124,9 +124,9 @@ function Option({ icon, title, subtitle, disabled, onClick }: { icon: ReactNode;
 }
 
 function downloadCode(formattedCode: string) {
-  const text = `Bora Rachar · código de recuperação\n\n${formattedCode}\n\nUse em "Já usei em outro aparelho" para trazer seus grupos.\n`
+  const text = t('recoveryCode_fileText', { code: formattedCode })
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }))
-  const link = Object.assign(document.createElement('a'), { href: url, download: 'bora-rachar-codigo-de-recuperacao.txt' })
+  const link = Object.assign(document.createElement('a'), { href: url, download: t('recoveryCode_fileName') })
   link.click()
   URL.revokeObjectURL(url)
 }

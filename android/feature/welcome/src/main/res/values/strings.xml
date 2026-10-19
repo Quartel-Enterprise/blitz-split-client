@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="welcome_title">Racha a conta sem complicação</string>
-    <string name="welcome_offline_title">Funciona sem internet</string>
-    <string name="welcome_offline_body">Tudo fica no aparelho e sincroniza depois.</string>
-    <string name="welcome_optional_title">Conta é opcional</string>
-    <string name="welcome_optional_body">Google ou Apple só servem para não perder nada ao trocar de aparelho.</string>
-    <string name="welcome_invite_title">Convide por link ou QR</string>
-    <string name="welcome_invite_body">Os amigos entram no grupo sem criar conta.</string>
-    <string name="welcome_no_connection_title">Sem conexão.</string>
-    <string name="welcome_no_connection_body">Entrar com conta precisa de internet. Use sem conta agora e conecte depois em Perfil.</string>
-    <string name="welcome_or">ou</string>
-    <string name="welcome_use_without_account">Usar sem conta</string>
-    <string name="welcome_used_on_another_device">Já usei em outro aparelho</string>
-    <string name="welcome_sign_in_failed">Não deu para entrar agora. Tente de novo.</string>
+    <string name="welcome_title">Split the bill, no hassle</string>
+    <string name="welcome_offline_title">Works offline</string>
+    <string name="welcome_offline_body">Everything stays on your device and syncs later.</string>
+    <string name="welcome_optional_title">An account is optional</string>
+    <string name="welcome_optional_body">Google or Apple only keep you from losing anything when you switch devices.</string>
+    <string name="welcome_invite_title">Invite with a link or QR code</string>
+    <string name="welcome_invite_body">Friends join the group without creating an account.</string>
+    <string name="welcome_no_connection_title">No connection.</string>
+    <string name="welcome_no_connection_body">Signing in with an account needs the internet. Use it without an account now and connect later in Profile.</string>
+    <string name="welcome_or">or</string>
+    <string name="welcome_use_without_account">Use without an account</string>
+    <string name="welcome_used_on_another_device">I\'ve used it on another device</string>
+    <string name="welcome_sign_in_failed">Couldn\'t sign in right now. Try again.</string>
 </resources>

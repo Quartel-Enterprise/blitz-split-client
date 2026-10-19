@@ -287,7 +287,8 @@ No linter runs on Swift yet; follow what the app already does.
 - Liquid Glass is native (iOS and macOS 26): `.glassEffect`, the system tab bar and sheets, no fallbacks.
 - `///` doc comments explain a type's role and the why, as the Kotlin `// Why:` does; inline `//` comments only
   for a reason.
-- User-facing text is a pt-BR literal in `Text`, `Label`, `Tab` or `.navigationTitle`.
+- User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR
+  translation in `Localizable.xcstrings` (the development language is English).
 
 ## TypeScript and React
 
@@ -303,5 +304,6 @@ No linter runs on the web app yet; `tsc -b` (part of `npm run build`) is the che
 - A screen talks to Kotlin only through its presenter and the hooks in `src/bridge/usePresenter.ts`. It returns
   `null` until both the presenter and the first state exist.
 - JSDoc `/** */` on exported hooks and components explains the role and the why; inline `//` only for a reason.
-- User-facing text is a pt-BR literal in the `.tsx`. Enum names the presenter sends (`state.error`,
-  `state.syncBadge`) map to text in a `Record` at the top of the file.
+- User-facing text comes from `t('key')` (`src/i18n`), with the key in both the `en` and `pt` dictionaries (`tsc`
+  fails when one lacks a key). Enum names the presenter sends (`state.error`, `state.syncBadge`) map to keys in a
+  `Record` at the top of the file.

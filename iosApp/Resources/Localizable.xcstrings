@@ -1,0 +1,810 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ %@" : {
+      "comment" : "The bold title and the message of a notice, side by side",
+      "shouldTranslate" : false
+    },
+    "12 letters and numbers. Dashes are optional." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 letras e números. Traços são opcionais."
+          }
+        }
+      }
+    },
+    "Activity" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atividade"
+          }
+        }
+      }
+    },
+    "Allow camera access in Settings or type the code." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à câmera em Ajustes ou digite o código."
+          }
+        }
+      }
+    },
+    "Allow camera access in System Settings or type the code." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à câmera em Ajustes do Sistema ou digite o código."
+          }
+        }
+      }
+    },
+    "An account is optional" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta é opcional"
+          }
+        }
+      }
+    },
+    "Apple or Google only keep you from losing anything when you switch devices." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple ou Google só servem para não perder nada ao trocar de aparelho."
+          }
+        }
+      }
+    },
+    "Avatar color" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cor do avatar"
+          }
+        }
+      }
+    },
+    "Balances" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldos"
+          }
+        }
+      }
+    },
+    "Blitz Split" : {
+      "comment" : "The app name: Bora Rachar only in Portuguese, Blitz Split in every other language",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bora Rachar"
+          }
+        }
+      }
+    },
+    "Blitz Split · recovery code" : {
+      "comment" : "The recovery code's entry in the Passwords app",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bora Rachar · código de recuperação"
+          }
+        }
+      }
+    },
+    "Blue" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azul"
+          }
+        }
+      }
+    },
+    "Bring your groups back" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trazer seus grupos"
+          }
+        }
+      }
+    },
+    "Camera unavailable" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Câmera indisponível"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        }
+      }
+    },
+    "Code not found. Check the letters and try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código não encontrado. Confira as letras e tente de novo."
+          }
+        }
+      }
+    },
+    "Coming soon" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em breve"
+          }
+        }
+      }
+    },
+    "Connect Apple or Google instead" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar Apple ou Google em vez disso"
+          }
+        }
+      }
+    },
+    "Contacts" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contatos"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        }
+      }
+    },
+    "Continue with Google" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar com Google"
+          }
+        }
+      }
+    },
+    "Copied" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiado"
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar"
+          }
+        }
+      }
+    },
+    "Couldn't connect right now. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para conectar agora. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't sign in right now. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para entrar agora. Tente de novo."
+          }
+        }
+      }
+    },
+    "Create a group for the trip, the house or the barbecue. You can start even without internet." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crie um grupo para a viagem, a casa ou o churrasco. Dá para começar mesmo sem internet."
+          }
+        }
+      }
+    },
+    "Create group" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar grupo"
+          }
+        }
+      }
+    },
+    "Everything stays on your %@ and syncs later." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo fica no %@ e sincroniza depois."
+          }
+        }
+      }
+    },
+    "Friends join the group without creating an account." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os amigos entram no grupo sem criar conta."
+          }
+        }
+      }
+    },
+    "Google" : {
+      "shouldTranslate" : false
+    },
+    "Green" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verde"
+          }
+        }
+      }
+    },
+    "Groups" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupos"
+          }
+        }
+      }
+    },
+    "I've saved it" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já guardei"
+          }
+        }
+      }
+    },
+    "I've used it on another device" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já usei em outro aparelho"
+          }
+        }
+      }
+    },
+    "Invite with a link or QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convide por link ou QR"
+          }
+        }
+      }
+    },
+    "It's also in %@." : {
+      "comment" : "%@ is where the recovery code lives: Profile › Recovery on iOS, Settings › Recovery on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Também fica em %@."
+          }
+        }
+      }
+    },
+    "John Doe" : {
+      "comment" : "The name field's placeholder, the same in every language",
+      "shouldTranslate" : false
+    },
+    "Join with a link or QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar com link ou QR"
+          }
+        }
+      }
+    },
+    "K7QM-4XPA-9TRE" : {
+      "comment" : "An example recovery code, the placeholder of its field",
+      "shouldTranslate" : false
+    },
+    "Lilac" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lilás"
+          }
+        }
+      }
+    },
+    "No code needed" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispensa o código"
+          }
+        }
+      }
+    },
+    "No connection" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conexão"
+          }
+        }
+      }
+    },
+    "No connection." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conexão."
+          }
+        }
+      }
+    },
+    "No groups yet" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum grupo ainda"
+          }
+        }
+      }
+    },
+    "Offline · everything is saved on your %@" : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline · tudo fica salvo no %@"
+          }
+        }
+      }
+    },
+    "On the old device: Profile › Recovery › Show QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No aparelho antigo: Perfil › Recuperação › Mostrar QR"
+          }
+        }
+      }
+    },
+    "Only people in your groups see your name." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu nome aparece só para quem estiver nos seus grupos."
+          }
+        }
+      }
+    },
+    "Or use the recovery code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ou use o código de recuperação"
+          }
+        }
+      }
+    },
+    "Peach" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pêssego"
+          }
+        }
+      }
+    },
+    "Profile" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil"
+          }
+        }
+      }
+    },
+    "Profile › Recovery" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil › Recuperação"
+          }
+        }
+      }
+    },
+    "Recover" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recuperar"
+          }
+        }
+      }
+    },
+    "Recovery code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código de recuperação"
+          }
+        }
+      }
+    },
+    "Remind me later" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembrar depois"
+          }
+        }
+      }
+    },
+    "Sand" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Areia"
+          }
+        }
+      }
+    },
+    "Save to the Passwords app" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar no app Senhas"
+          }
+        }
+      }
+    },
+    "Save your recovery code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarde seu código de recuperação"
+          }
+        }
+      }
+    },
+    "Saved only on this %@ for now." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fica salvo só neste %@ por enquanto."
+          }
+        }
+      }
+    },
+    "Scan QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanear QR"
+          }
+        }
+      }
+    },
+    "Scan the QR code from your old device" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanear QR do aparelho antigo"
+          }
+        }
+      }
+    },
+    "Scan the QR code with the camera" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanear QR com a câmera"
+          }
+        }
+      }
+    },
+    "Settings › Account" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes › Conta"
+          }
+        }
+      }
+    },
+    "Settings › Recovery" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes › Recuperação"
+          }
+        }
+      }
+    },
+    "Signed in with an account before? Just sign in again. If not, use the recovery code or the QR code from your old device." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrou com uma conta antes? É só entrar de novo. Se não, use o código de recuperação ou o QR do aparelho antigo."
+          }
+        }
+      }
+    },
+    "Signing in with an account needs the internet. Use it without an account now and connect later in %@." : {
+      "comment" : "%@ is where the account is connected: Profile on iOS, Settings › Account on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar com conta precisa de internet. Use sem conta agora e conecte depois em %@."
+          }
+        }
+      }
+    },
+    "Signing in with an account or a code needs the internet to download your groups. What you typed is kept." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar com conta ou código precisa de internet para baixar seus grupos. O que você digitou fica guardado."
+          }
+        }
+      }
+    },
+    "Something went wrong. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo deu errado. Tente de novo."
+          }
+        }
+      }
+    },
+    "Split the bill, no hassle" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rache a conta sem complicação"
+          }
+        }
+      }
+    },
+    "Start fresh on this %@" : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Começar do zero neste %@"
+          }
+        }
+      }
+    },
+    "Synced just now" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizado agora"
+          }
+        }
+      }
+    },
+    "Syncing…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizando…"
+          }
+        }
+      }
+    },
+    "There: Profile › Recovery › Show QR code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lá: Perfil › Recuperação › Mostrar QR"
+          }
+        }
+      }
+    },
+    "Too many attempts. Wait a few minutes and try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muitas tentativas. Espere alguns minutos e tente de novo."
+          }
+        }
+      }
+    },
+    "Try again" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tentar de novo"
+          }
+        }
+      }
+    },
+    "Type at least 2 letters." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digite pelo menos 2 letras."
+          }
+        }
+      }
+    },
+    "Use without an account" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar sem conta"
+          }
+        }
+      }
+    },
+    "What do your friends call you?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como seus amigos te chamam?"
+          }
+        }
+      }
+    },
+    "Works offline" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funciona sem internet"
+          }
+        }
+      }
+    },
+    "You can change it later in Profile." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pode mudar depois em Perfil."
+          }
+        }
+      }
+    },
+    "You're using it without an account. This code brings your groups back if you switch or lose your %@." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você está usando sem conta. Este código recupera seus grupos se você trocar ou perder o %@."
+          }
+        }
+      }
+    },
+    "Your name" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu nome"
+          }
+        }
+      }
+    },
+    "or" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ou"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

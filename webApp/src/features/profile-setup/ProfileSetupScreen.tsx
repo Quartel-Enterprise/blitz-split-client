@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
-import { avatarColors, avatarStyle } from '@/lib/avatar'
+import { t } from '@/i18n'
+import { avatarColorLabel, avatarStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
 export function ProfileSetupScreen() {
@@ -28,16 +29,16 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
         }}
       >
         <Button type="button" variant="ghost" size="sm" className="-ml-2 self-start" onClick={() => presenter.back()}>
-          <ArrowLeft /> Voltar
+          <ArrowLeft /> {t('common_back')}
         </Button>
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-2xl font-semibold tracking-tight">Como seus amigos te chamam?</h1>
-          <p className="text-sm text-muted-foreground">Seu nome aparece só para quem estiver nos seus grupos.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('profileSetup_title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('profileSetup_subtitle')}</p>
         </div>
         <Avatar initial={state.avatarInitial} color={state.avatarColor} className="size-20 self-center text-3xl transition-colors" />
         <div className="flex flex-col gap-2">
           <span id="avatar-color" className="text-sm font-medium">
-            Cor do avatar
+            {t('profileSetup_avatarColor')}
           </span>
           <div role="radiogroup" aria-labelledby="avatar-color" className="flex gap-3">
             {state.avatarColors.map((code) => {
@@ -48,7 +49,7 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
                   type="button"
                   role="radio"
                   aria-checked={isSelected}
-                  aria-label={avatarColors[code]?.label ?? code}
+                  aria-label={avatarColorLabel(code)}
                   style={avatarStyle(code)}
                   onClick={() => presenter.selectAvatarColor(code)}
                   className={cn(
@@ -63,27 +64,27 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="profile-name">Seu nome</Label>
+          <Label htmlFor="profile-name">{t('profileSetup_nameLabel')}</Label>
           <Input
             id="profile-name"
             autoComplete="name"
-            placeholder="Ex.: Pierre"
+            placeholder={t('profileSetup_namePlaceholder')}
             value={name}
             aria-invalid={state.showsNameTooShort}
             aria-describedby="profile-name-help"
             onChange={(event) => setName(event.target.value)}
           />
           <span id="profile-name-help" role={state.showsNameTooShort ? 'alert' : undefined} className={cn('text-xs', state.showsNameTooShort ? 'text-destructive' : 'text-muted-foreground')}>
-            {state.showsNameTooShort ? 'Digite pelo menos 2 letras.' : 'Você pode mudar depois em Perfil.'}
+            {t(state.showsNameTooShort ? 'profileSetup_nameTooShort' : 'profileSetup_nameHint')}
           </span>
         </div>
         <div role="note" className="flex gap-2.5 rounded-lg bg-muted p-3 text-xs leading-relaxed text-muted-foreground">
           <Info className="mt-0.5 size-4 shrink-0" />
-          <span>Fica salvo só neste navegador por enquanto. Se você limpar os dados do site, o perfil some.</span>
+          <span>{t('profileSetup_savedLocally')}</span>
         </div>
         <Button type="submit" size="lg" disabled={!state.canContinue || state.isSaving}>
           {state.isSaving && <Loader2 className="animate-spin" />}
-          Continuar
+          {t('profileSetup_continue')}
         </Button>
       </form>
     </main>

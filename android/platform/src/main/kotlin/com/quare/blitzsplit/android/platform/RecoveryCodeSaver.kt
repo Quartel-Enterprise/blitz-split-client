@@ -12,7 +12,7 @@ class RecoveryCodeSaver(
 ) {
     fun copyToClipboard(code: String) {
         val clipboard = context.getSystemService(ClipboardManager::class.java)
-        clipboard.setPrimaryClip(ClipData.newPlainText(CLIP_LABEL, code))
+        clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.platform_app_name), code))
     }
 
     /*
@@ -20,17 +20,13 @@ class RecoveryCodeSaver(
      * code safer than a screenshot.
      */
     suspend fun saveToPasswordManager(code: String): Boolean = try {
-        CredentialManager
-            .create(
-                context,
-            ).createCredential(context, CreatePasswordRequest(id = ACCOUNT_ID, password = code))
+        val request = CreatePasswordRequest(
+            id = context.getString(R.string.platform_recovery_code_account),
+            password = code,
+        )
+        CredentialManager.create(context).createCredential(context, request)
         true
     } catch (failure: CreateCredentialException) {
         false
-    }
-
-    private companion object {
-        const val CLIP_LABEL = "Bora Rachar"
-        const val ACCOUNT_ID = "Bora Rachar · código de recuperação"
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Rache a conta sem complicação</string>
+    <string name="welcome_offline_title">Funciona sem internet</string>
+    <string name="welcome_offline_body">Tudo fica no aparelho e sincroniza depois.</string>
+    <string name="welcome_optional_title">Conta é opcional</string>
+    <string name="welcome_optional_body">Google ou Apple só servem para não perder nada ao trocar de aparelho.</string>
+    <string name="welcome_invite_title">Convide por link ou QR</string>
+    <string name="welcome_invite_body">Os amigos entram no grupo sem criar conta.</string>
+    <string name="welcome_no_connection_title">Sem conexão.</string>
+    <string name="welcome_no_connection_body">Entrar com conta precisa de internet. Use sem conta agora e conecte depois em Perfil.</string>
+    <string name="welcome_or">ou</string>
+    <string name="welcome_use_without_account">Usar sem conta</string>
+    <string name="welcome_used_on_another_device">Já usei em outro aparelho</string>
+    <string name="welcome_sign_in_failed">Não deu para entrar agora. Tente de novo.</string>
+</resources>
