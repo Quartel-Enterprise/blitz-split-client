@@ -127,6 +127,174 @@ class SyncCoordinatorTest {
         assertEquals(1, profile.uploadedUserIds.size)
     }
 
+    @Test
+    fun `GIVEN an anonymous user WHEN switching to the Google user of another device THEN syncs under it`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), profile.downloadedUserIds)
+        assertEquals(listOf(OTHER_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a Google user WHEN switching to another Apple user THEN syncs under the new user`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.APPLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), profile.downloadedUserIds)
+        assertEquals(listOf(OTHER_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN a recovery code restores another one THEN syncs under it`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status.value = AccountStatus.Anonymous(FakeAccountRepository.RESTORED_USER_ID)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.RESTORED_USER_ID), profile.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.RESTORED_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN switching to another user THEN syncs again under it`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID, OTHER_USER_ID), profile.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID, OTHER_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the other user profile fails to come down WHEN switching THEN pushes nothing over it`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        coordinator.start()
+        runCurrent()
+        profile.pullError = IllegalStateException("server down")
+
+        // When
+        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), profile.downloadedUserIds)
+        assertTrue(profile.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a device not registered yet WHEN the first sync registers it THEN syncs only once`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, online = false)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.registrationCount)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN Google links to the same user THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status.value = AccountStatus.Connected(FakeAccountRepository.ANONYMOUS_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(profile.downloadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an anonymous user offline WHEN starting THEN does not sync for the current user`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(profile.downloadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN signing out THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status.value = AccountStatus.LocalOnly
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(profile.downloadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a user who signed out WHEN signing in to another user THEN leaves the pull to the sign in screen`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+            coordinator.start()
+            runCurrent()
+            account.status.value = AccountStatus.LocalOnly
+            runCurrent()
+
+            // When
+            account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+            runCurrent()
+
+            // Then
+            assertEquals(0, account.registrationCount)
+            assertTrue(profile.downloadedUserIds.isEmpty())
+        }
+
+    private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photoUrl = null)
 
     private fun TestScope.prepareScenario(
@@ -144,5 +312,9 @@ class SyncCoordinatorTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
+    }
+
+    private companion object {
+        const val OTHER_USER_ID = "user-of-another-device"
     }
 }

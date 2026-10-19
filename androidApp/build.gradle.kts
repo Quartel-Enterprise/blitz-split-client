@@ -61,6 +61,7 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(projects.core.account)
     implementation(projects.core.navigation)
     implementation(projects.core.provider.supabase)
 

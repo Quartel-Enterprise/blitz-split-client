@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
+import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.account.domain.usecase.IssueRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCode
@@ -18,6 +19,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.HandleBrowserCallbackUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.IssueRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
@@ -40,6 +42,7 @@ val accountModule = module {
     factoryOf(::GetSessionUserUseCase).bind<GetSessionUser>()
     factoryOf(::ConnectWithIdTokenUseCase).bind<ConnectWithIdToken>()
     factoryOf(::ConnectWithBrowserUseCase).bind<ConnectWithBrowser>()
+    factoryOf(::HandleBrowserCallbackUseCase).bind<HandleBrowserCallback>()
     factoryOf(::RestoreWithRecoveryCodeUseCase).bind<RestoreWithRecoveryCode>()
     factoryOf(::IssueRecoveryCodeUseCase).bind<IssueRecoveryCode>()
 }

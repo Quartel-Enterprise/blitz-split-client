@@ -29,6 +29,9 @@ interface AccountRemoteDataSource {
 
     suspend fun signInWithBrowser(provider: AccountProvider)
 
+    // Why: null when the URL isn't an OAuth callback, such as a web page loaded without one.
+    fun readBrowserCallback(url: String): BrowserCallback?
+
     suspend fun signInWithPassword(credentials: RecoveryCredentials)
 
     suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials

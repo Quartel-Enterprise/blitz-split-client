@@ -118,6 +118,22 @@ as `borarachar://auth-callback` on the native apps (`MainActivity.handleAuthCall
 web. The Welcome and Restore ViewModels finish a browser sign in when they see `AccountStatus.Connected` while on
 top of the stack, since on the web the page reloaded in between.
 
+A browser link follows the ID token rule too, but supabase-kt drops the callback's error while a session is signed
+in, as the anonymous one is during a link. So each platform also hands the callback URL to `HandleBrowserCallback`
+(after `handleDeeplinks` on the native apps, the URL the page loaded with on the web), and
+`AccountRepositoryImpl.handleBrowserCallback` reads it itself (`SupabaseCallbackUrl`). The callback doesn't say
+which provider failed, so `signInWithBrowser` keeps the provider being linked in the account row
+(`pendingLinkProvider`), which survives the page reload and a process death. On `identity_already_exists` it signs
+in to the user that owns the identity with a second browser trip, started right away with no prompt, the same
+silent switch as the ID token path. The pending link is cleared once the callback is handled (after the second trip
+started), when the link can't start, and on sign out; a URL with none pending is ignored, so a reload never starts
+the trip twice. On the web the callback is the page itself, so only Supabase's full shape counts as one (`error`
+with `error_description`, or `access_token` with `refresh_token`): an unrelated `?code=` or `?error=` is not.
+
+A switch can land on any screen, the recovery code sheet included, which closes on that same update. So
+`SyncCoordinator` syncs again whenever the session moves from one user id to another, pulling the other user's
+profile before this device pushes; a link keeps the id and doesn't trigger it.
+
 After any sign in, `CompleteSignIn` pulls the account's profile: `PROFILE_RESTORED` goes straight to the groups,
 `NEEDS_PROFILE` to the profile setup. A failed pull fails the sign in and the screen shows its error: sending a
 returning user to the profile setup would make a new local profile that overwrites theirs on the next push.
