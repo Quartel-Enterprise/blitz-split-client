@@ -27,14 +27,14 @@ sqlite = "2.7.1"
 # KotlinX
 kotlinx-coroutines = "1.11.0"
 kotlinx-browser = "0.5.0"
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0"
 
 # Compose: only the Android app draws with Compose, so it takes the AndroidX artifacts straight
 # from their BOM.
 androidx-compose-bom = "2026.09.00"
 # The BOM pins the stable 1.4.0, which lacks the Material 3 Expressive APIs (MaterialExpressiveTheme,
 # MaterialShapes); they ship on the 1.5 pre-releases only.
-androidx-compose-material3 = "1.5.0-beta01"
+androidx-compose-material3 = "1.5.0-beta02"
 androidx-graphics-shapes = "1.1.0"
 
 # Third party
