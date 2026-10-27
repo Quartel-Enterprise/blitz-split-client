@@ -1,0 +1,55 @@
+name: claude-review
+
+# Reviews every pull request with Claude when it opens, fixes what it found, and pushes the fixes as
+# a commit to the pull request's branch. It then posts the findings as one review: the fixed ones in
+# its body, the ones left for the author as an inline comment each. It is a second opinion on top of
+# the review the create-pr skill already runs before the pull request opens. A draft is reviewed when
+# it is marked ready for review instead; a reopened pull request isn't. A draft marked ready a second
+# time is reviewed again, told what the earlier reviews found so it doesn't repeat them.
+#
+# The workflows that check the app wait for this review on the commit the pull request opened with
+# (review-gate.yml): when it pushes fixes, they run on the fix commit only; when it
+# pushes nothing, they run on the opening commit once it ends. Either way they are held while a
+# thread it opened is unresolved (run-checks.yml re-runs them once the threads are resolved).
+#
+# The job fails only when the run itself does (an expired token, the timeout), never because of what
+# the review found. The fix commit, like every push after the pull request opens, isn't reviewed
+# again: adding the ai-review label does (claude-review-on-request), and that review only comments.
+on:
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # GitHub withholds secrets from pull requests opened from forks, so the review can't run there.
+    if: >-
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      # The head commit, not GitHub's merge of it with main: the review's line numbers have to match the
+      # commit the comments are anchored to. No persisted credentials: checkout keeps GITHUB_TOKEN's
+      # header in a file of its own, which claude-code-action doesn't find when it swaps in the App's
+      # token, so git would keep sending the read-only token and the fix push would be refused.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: ./.github/actions/claude-review
+        with:
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          fix: 'true'

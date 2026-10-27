@@ -1,0 +1,66 @@
+name: static-analysis
+
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - '.github/workflows/static-analysis.yml'
+      - 'scripts/ktlint.sh'
+      - '**/*.kt'
+      - '**/*.kts'
+      - '.editorconfig'
+      - 'gradle/libs.versions.toml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/static-analysis.yml'
+      - 'scripts/ktlint.sh'
+      - '**/*.kt'
+      - '**/*.kts'
+      - '.editorconfig'
+      - 'gradle/libs.versions.toml'
+
+permissions:
+  contents: read
+
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
+  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  ktlint:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # The same script as locally, so CI runs the ruleset release the version catalog pins. The
+      # runner has gpg, so the jar is checked against its release signature, never only its SHA-1.
+      - name: Run ktlint
+        env:
+          KTLINT_REQUIRE_SIGNATURE: 'true'
+        run: ./scripts/ktlint.sh

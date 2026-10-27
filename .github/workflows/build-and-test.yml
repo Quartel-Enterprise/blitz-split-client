@@ -1,0 +1,139 @@
+name: build-and-test
+
+# The shared Kotlin's unit tests and coverage, the Android app and the web app. The Apple app isn't
+# built here: it needs a macOS runner, so create-pr builds it locally instead.
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'iosApp/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'iosApp/**'
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a cancelled run saves no Gradle cache, so main's entries would fall
+# behind and the next pull requests would recompile from scratch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
+  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  unit-tests:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      # jvmTest runs the commonTest of every module on the jvm target; koverVerifyCi holds the merged
+      # line coverage of core and feature at 80%.
+      - name: Run unit tests and verify coverage
+        run: ./gradlew jvmTest :koverVerifyCi :koverHtmlReportCi --continue
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-test-reports
+          path: '**/build/reports/tests/**'
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: build/reports/kover/
+
+  android:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
+      # instead of on a device. Without the signing secrets it is signed with the debug key, which
+      # is all a compile check needs.
+      - name: Assemble the Android release
+        run: ./gradlew :androidApp:assembleRelease
+
+  web:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: webApp/package-lock.json
+
+      # webApp depends on the JS library of :shared through a file: dependency, so the library is
+      # built before npm installs it.
+      - name: Build the shared JS library
+        run: npm --prefix webApp run shared
+
+      - name: Install the web dependencies
+        run: npm --prefix webApp ci
+
+      # tsc type checks the app against the library's TypeScript definitions, then Vite bundles it.
+      # Its prebuild builds the library again, up to date by now.
+      - name: Build the web app
+        run: npm --prefix webApp run build
