@@ -1,20 +1,22 @@
 package com.quare.blitzsplit.feature.groups
 
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
+import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -25,12 +27,15 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GroupsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
+    private lateinit var syncState: MutableStateFlow<SyncState?>
+    private var syncRequests = 0
     private lateinit var viewModel: GroupsViewModel
 
     @BeforeTest
@@ -44,27 +49,28 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN no internet WHEN the groups open THEN shows the offline badge`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(online = false)
+    fun `GIVEN no internet and a change in the queue WHEN the groups open THEN shows the offline badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false, syncState = SyncState.PENDING)
 
-        // When
-        val state = viewModel.uiState.value
+            // When
+            val state = viewModel.uiState.value
 
-        // Then
-        assertEquals(SyncBadge.OFFLINE, state.syncBadge)
-    }
+            // Then
+            assertEquals(SyncBadge.OFFLINE, state.syncBadge)
+        }
 
     @Test
-    fun `GIVEN the server knows the user WHEN online THEN shows the synced badge`() = runTest(testDispatcher) {
+    fun `GIVEN everything synced WHEN online THEN shows no sync badge`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = AccountStatus.Anonymous("user"))
+        prepareScenario(syncState = SyncState.SYNCED)
 
         // When
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(SyncBadge.SYNCED, state.syncBadge)
+        assertNull(state.syncBadge)
     }
 
     @Test
@@ -112,20 +118,194 @@ class GroupsViewModelTest {
             assertEquals(List<GroupsUiAction>(6) { GroupsUiAction.ShowComingSoon }, actions)
         }
 
+    @Test
+    fun `GIVEN no internet and everything synced WHEN the groups open THEN shows no sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false, syncState = SyncState.SYNCED)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN no internet and a sync running WHEN the groups open THEN shows the offline badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false, syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SyncBadge.OFFLINE, state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN no internet and a failed sync WHEN the groups open THEN shows the offline badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false, syncState = SyncState.FAILED)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SyncBadge.OFFLINE, state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN internet and no answer from the server WHEN the groups open THEN shows the failed badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SyncBadge.FAILED, state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN internet and a sync running WHEN the groups open THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN internet and a change in the queue WHEN the groups open THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.PENDING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN no sync state known yet WHEN the groups open offline THEN shows no sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false, syncState = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN the device goes offline THEN shows the offline badge`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.FAILED)
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncBadge.OFFLINE, viewModel.uiState.value.syncBadge)
+    }
+
+    @Test
+    fun `GIVEN a failed sync offline WHEN the device is back online THEN shows the failed badge again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+            isOnline.value = false
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals(SyncBadge.FAILED, viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN everything gets synced THEN hides the sync badge`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.FAILED)
+
+        // When
+        syncState.value = SyncState.SYNCED
+
+        // Then
+        assertNull(viewModel.uiState.value.syncBadge)
+    }
+
+    @Test
+    fun `GIVEN a change in the queue offline WHEN the device connects THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false, syncState = SyncState.PENDING)
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN tapping it THEN asks for one sync without saying coming soon`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+            val actions = mutableListOf<GroupsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnRetrySyncClicked)
+
+            // Then
+            assertEquals(1, syncRequests)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a sync running WHEN the retry arrives THEN asks for no other sync`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.SYNCING)
+        backgroundScope.launch { viewModel.uiState.collect {} }
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnRetrySyncClicked)
+
+        // Then
+        assertEquals(0, syncRequests)
+    }
+
     private fun prepareScenario(
         online: Boolean = true,
-        status: AccountStatus = AccountStatus.LocalOnly,
         prompt: RecoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
+        syncState: SyncState? = SyncState.SYNCED,
     ) {
-        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt.value = prompt }
+        account = FakeAccountRepository().also { it.recoveryCodePrompt.value = prompt }
         isOnline = MutableStateFlow(online)
+        this.syncState = MutableStateFlow(syncState)
+        syncRequests = 0
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("pierre", AvatarColor.GREEN, null)),
             ),
-            observeAccountStatus = ObserveAccountStatusUseCase(account),
             observeRecoveryCodePrompt = ObserveRecoveryCodePromptUseCase(account),
+            observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            retrySync = RetrySync { syncRequests++ },
         )
     }
 }

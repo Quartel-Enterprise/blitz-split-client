@@ -28,6 +28,7 @@ fun RestoreScreen(viewModel: RestoreViewModel = koinViewModel()) {
                     provider = AccountProvider.GOOGLE,
                     idToken = result.idToken,
                     rawNonce = result.rawNonce,
+                    fullName = null,
                 )
 
                 GoogleSignInResult.Cancelled -> RestoreUiEvent.OnNativeSignInCancelled

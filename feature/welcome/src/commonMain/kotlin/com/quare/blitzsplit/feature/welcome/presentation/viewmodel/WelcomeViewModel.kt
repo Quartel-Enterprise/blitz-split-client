@@ -103,8 +103,12 @@ class WelcomeViewModel(
     private fun handleIdToken(event: WelcomeUiEvent.OnIdTokenReceived) {
         isConnectingWithIdToken = true
         viewModelScope.launch {
-            connectWithIdToken(provider = event.provider, idToken = event.idToken, rawNonce = event.rawNonce)
-                .onSuccess { finishSignIn() }
+            connectWithIdToken(
+                provider = event.provider,
+                idToken = event.idToken,
+                rawNonce = event.rawNonce,
+                fullName = event.fullName,
+            ).onSuccess { finishSignIn() }
                 .onFailure { finishConnecting(error = WelcomeError.SIGN_IN_FAILED) }
             isConnectingWithIdToken = false
         }

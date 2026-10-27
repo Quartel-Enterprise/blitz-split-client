@@ -33,8 +33,8 @@ final class RestoreModel {
         case is RestoreUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
-                case let .success(idToken, rawNonce):
-                    send(RestoreUiEventOnIdTokenReceived(provider: .apple, idToken: idToken, rawNonce: rawNonce))
+                case let .success(idToken, rawNonce, fullName):
+                    send(RestoreUiEventOnIdTokenReceived(provider: .apple, idToken: idToken, rawNonce: rawNonce, fullName: fullName))
                 case .cancelled:
                     send(RestoreUiEventOnNativeSignInCancelled.shared)
                 case .failed:

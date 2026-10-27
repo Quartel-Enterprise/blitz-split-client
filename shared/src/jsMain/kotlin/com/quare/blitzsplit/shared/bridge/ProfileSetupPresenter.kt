@@ -18,7 +18,10 @@ class JsProfileSetupState(
     val photoUrl: String?,
     val isPreparingPhoto: Boolean,
     val showsPhotoError: Boolean,
-    val showsNameTooShort: Boolean,
+    // Why: null while the name is valid; otherwise the NameError's name.
+    val nameError: String?,
+    val nameMinLength: Int,
+    val nameMaxLength: Int,
     val canContinue: Boolean,
     val isSaving: Boolean,
 )
@@ -37,7 +40,9 @@ class ProfileSetupPresenter {
                 photoUrl = state.photoUrl,
                 isPreparingPhoto = state.isPreparingPhoto,
                 showsPhotoError = state.showsPhotoError,
-                showsNameTooShort = state.showsNameTooShort,
+                nameError = state.nameError?.name,
+                nameMinLength = state.nameMinLength,
+                nameMaxLength = state.nameMaxLength,
                 canContinue = state.canContinue,
                 isSaving = state.isSaving,
             )

@@ -111,11 +111,15 @@ class RecoveryCodeViewModel(
     // Why: once Google or Apple is linked the account mirror settles the prompt, which hides the sheet.
     private fun handleIdToken(event: RecoveryCodeUiEvent.OnIdTokenReceived) {
         viewModelScope.launch {
-            connectWithIdToken(provider = event.provider, idToken = event.idToken, rawNonce = event.rawNonce)
-                .onSuccess {
-                    completeSignIn()
-                    finishConnecting(hasFailed = false)
-                }.onFailure { finishConnecting(hasFailed = true) }
+            connectWithIdToken(
+                provider = event.provider,
+                idToken = event.idToken,
+                rawNonce = event.rawNonce,
+                fullName = event.fullName,
+            ).onSuccess {
+                completeSignIn()
+                finishConnecting(hasFailed = false)
+            }.onFailure { finishConnecting(hasFailed = true) }
         }
     }
 

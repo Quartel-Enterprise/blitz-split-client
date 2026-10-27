@@ -9,12 +9,12 @@ import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
+import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiState
 import kotlinx.coroutines.Job
@@ -41,7 +41,7 @@ class ProfileSetupViewModel(
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
-                showsNameTooShort = false,
+                nameError = null,
                 canContinue = false,
                 isSaving = false,
             ),
@@ -72,28 +72,39 @@ class ProfileSetupViewModel(
             val existing = observeProfile().first()
             val sessionUser = getSessionUser()
             val name = existing?.displayName ?: sessionUser?.displayName.orEmpty()
+            val validation = validateDisplayName(name)
             uiState.update { state ->
                 if (state.name.isNotEmpty()) return@update state
                 state.copy(
-                    name = name.take(DisplayNameRules.MAX_LENGTH),
+                    name = name,
                     avatarColor = existing?.avatarColor ?: state.avatarColor,
                     photo = state.photo ?: existing?.photo ?: sessionUser?.photoUrl?.let(ProfilePhoto::Remote),
-                    canContinue = validateDisplayName(name) == DisplayNameValidation.VALID,
+                    nameError = nameErrorOf(name, validation),
+                    canContinue = validation == DisplayNameValidation.VALID,
                 )
             }
         }
     }
 
+    // Why: a name over the limit stays as typed with an error, so a pasted or prefilled name is never cut unseen.
     private fun updateName(name: String) {
-        val limited = name.take(DisplayNameRules.MAX_LENGTH)
-        val validation = validateDisplayName(limited)
+        val validation = validateDisplayName(name)
         uiState.update { state ->
             state.copy(
-                name = limited,
-                showsNameTooShort = limited.isNotBlank() && validation == DisplayNameValidation.TOO_SHORT,
+                name = name,
+                nameError = nameErrorOf(name, validation),
                 canContinue = validation == DisplayNameValidation.VALID,
             )
         }
+    }
+
+    private fun nameErrorOf(
+        name: String,
+        validation: DisplayNameValidation,
+    ): NameError? = when {
+        validation == DisplayNameValidation.TOO_LONG -> NameError.TOO_LONG
+        validation == DisplayNameValidation.TOO_SHORT && name.isNotBlank() -> NameError.TOO_SHORT
+        else -> null
     }
 
     /*

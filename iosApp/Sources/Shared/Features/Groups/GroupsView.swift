@@ -125,6 +125,13 @@ struct GroupsView: View {
         .navigationTitle("Groups")
         .navigationSubtitle(syncText(state.syncBadge))
         .toolbar {
+            if state.canRetrySync {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Try again", systemImage: "arrow.clockwise") {
+                        model.send(GroupsUiEventOnRetrySyncClicked.shared)
+                    }
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     model.send(GroupsUiEventOnProfileClicked.shared)
@@ -140,11 +147,13 @@ struct GroupsView: View {
         }
     }
 
-    private func syncText(_ badge: SyncBadge) -> LocalizedStringKey {
+    // Everything synced shows no subtitle: the state only appears when it asks for attention.
+    private func syncText(_ badge: SyncBadge?) -> Text {
         switch badge {
-        case .offline: "Offline · everything is saved on your \(DeviceName.current)"
-        case .synced: "Synced just now"
-        default: "Syncing…"
+        case nil: Text(verbatim: "")
+        case .offline: Text("Offline · everything is saved on your \(DeviceName.current)")
+        case .failed: Text("No response from the server · try again")
+        default: Text("Syncing…")
         }
     }
 }

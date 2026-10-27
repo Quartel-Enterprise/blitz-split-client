@@ -18,6 +18,8 @@ sealed interface RecoveryCodeUiEvent : UiEvent {
         val provider: AccountProvider,
         val idToken: String,
         val rawNonce: String?,
+        // Why: only Apple's native sheet gives it, and only on the first sign in.
+        val fullName: String?,
     ) : RecoveryCodeUiEvent
 
     data object OnNativeSignInFailed : RecoveryCodeUiEvent

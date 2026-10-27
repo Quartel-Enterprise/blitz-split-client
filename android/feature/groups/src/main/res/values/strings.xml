@@ -4,7 +4,7 @@
     <string name="groups_profile">Profile</string>
     <string name="groups_sync_offline">Offline · everything is saved on your device</string>
     <string name="groups_sync_syncing">Syncing…</string>
-    <string name="groups_sync_synced">Synced just now</string>
+    <string name="groups_sync_failed">No response from the server · try again</string>
     <string name="groups_empty_title">No groups yet</string>
     <string name="groups_empty_body">Create a group for the trip, the house or the barbecue. You can start even without internet.</string>
     <string name="groups_create">Create group</string>

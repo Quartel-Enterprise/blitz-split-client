@@ -20,6 +20,7 @@ class FakeAccountRepository(
     var sessionUser: SessionUser? = null
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
+    val idTokenFullNames = mutableListOf<String?>()
     val browserConnections = mutableListOf<AccountProvider>()
     val browserCallbacks = mutableListOf<String>()
     val restoredCodes = mutableListOf<String>()
@@ -63,8 +64,10 @@ class FakeAccountRepository(
         provider: AccountProvider,
         idToken: String,
         rawNonce: String?,
+        fullName: String?,
     ): Result<ConnectResult> {
         idTokenConnections += provider to idToken
+        idTokenFullNames += fullName
         connectResult.onSuccess { status.value = AccountStatus.Connected(CONNECTED_USER_ID, provider) }
         return connectResult
     }

@@ -64,7 +64,12 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = anonymousUser)
 
         // When
-        val result = repository.signInWithIdToken(AccountProvider.GOOGLE, idToken = "token", rawNonce = "nonce")
+        val result = repository.signInWithIdToken(
+            AccountProvider.GOOGLE,
+            idToken = "token",
+            rawNonce = "nonce",
+            fullName = null,
+        )
 
         // Then
         assertEquals(ConnectResult.LINKED, result.getOrNull())
@@ -78,7 +83,12 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = anonymousUser, linkError = IdentityAlreadyLinkedException())
 
         // When
-        val result = repository.signInWithIdToken(AccountProvider.APPLE, idToken = "token", rawNonce = null)
+        val result = repository.signInWithIdToken(
+            AccountProvider.APPLE,
+            idToken = "token",
+            rawNonce = null,
+            fullName = null,
+        )
 
         // Then
         assertEquals(ConnectResult.SWITCHED, result.getOrNull())
@@ -91,7 +101,12 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = null)
 
         // When
-        val result = repository.signInWithIdToken(AccountProvider.GOOGLE, idToken = "token", rawNonce = null)
+        val result = repository.signInWithIdToken(
+            AccountProvider.GOOGLE,
+            idToken = "token",
+            rawNonce = null,
+            fullName = null,
+        )
 
         // Then
         assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
@@ -401,10 +416,240 @@ class AccountRepositoryImplTest {
         assertNull(local.get().pendingLinkProvider)
     }
 
+    @Test
+    fun `GIVEN no session and the Apple name WHEN signing in with Apple THEN keeps the name on the new user`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, idTokenUser = appleUserWithoutName)
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+            assertEquals(listOf(appleName), remote.savedDisplayNames)
+            assertEquals(appleName, repository.getCurrentUserOrNull()?.displayName)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user and the Apple name WHEN connecting Apple THEN keeps the name on the same user`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser)
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.LINKED, result.getOrNull())
+            assertEquals(listOf(appleName), remote.savedDisplayNames)
+            assertEquals(
+                AccountStatus.Connected("anonymous", AccountProvider.APPLE),
+                repository.observeStatus().first(),
+            )
+            assertEquals(appleName, repository.getCurrentUserOrNull()?.displayName)
+        }
+
+    @Test
+    fun `GIVEN an Apple identity of a user without a name WHEN connecting it THEN keeps the name on that user`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                linkError = IdentityAlreadyLinkedException(),
+                idTokenUser = appleUserWithoutName,
+            )
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertEquals(listOf(appleName), remote.savedDisplayNames)
+            assertEquals(
+                AccountStatus.Connected("apple-user", AccountProvider.APPLE),
+                repository.observeStatus().first(),
+            )
+            assertEquals(appleName, repository.getCurrentUserOrNull()?.displayName)
+        }
+
+    @Test
+    fun `GIVEN an Apple identity of a user with a name WHEN connecting it THEN keeps the name that user has`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                linkError = IdentityAlreadyLinkedException(),
+                idTokenUser = appleUserWithName,
+            )
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertTrue(remote.savedDisplayNames.isEmpty())
+            assertEquals("Pierre", repository.getCurrentUserOrNull()?.displayName)
+        }
+
+    @Test
+    fun `GIVEN a Google session WHEN switching to an Apple user without a name THEN keeps the Apple name on it`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser, idTokenUser = appleUserWithoutName)
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertEquals(listOf(appleName), remote.savedDisplayNames)
+            assertEquals(
+                AccountStatus.Connected("apple-user", AccountProvider.APPLE),
+                repository.observeStatus().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a Google session WHEN switching to an Apple user with a name THEN keeps the name that user has`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser, idTokenUser = appleUserWithName)
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertTrue(remote.savedDisplayNames.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no session and a Google user that has a name WHEN signing in with a name THEN keeps the Google name`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, idTokenUser = googleUser)
+
+            // When
+            val result = repository.signInWithIdToken(
+                AccountProvider.GOOGLE,
+                idToken = "token",
+                rawNonce = null,
+                fullName = appleName,
+            )
+
+            // Then
+            assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+            assertTrue(remote.savedDisplayNames.isEmpty())
+            assertEquals("Pierre", repository.getCurrentUserOrNull()?.displayName)
+        }
+
+    @Test
+    fun `GIVEN a later Apple sign in without a name WHEN signing in THEN saves no name`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, idTokenUser = appleUserWithoutName)
+
+        // When
+        val result = signInWithApple(fullName = null)
+
+        // Then
+        assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+        assertTrue(remote.savedDisplayNames.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an anonymous user connecting Google without a name WHEN linking THEN saves no name`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+
+        // When
+        val result = repository.signInWithIdToken(
+            AccountProvider.GOOGLE,
+            idToken = "token",
+            rawNonce = "nonce",
+            fullName = null,
+        )
+
+        // Then
+        assertEquals(ConnectResult.LINKED, result.getOrNull())
+        assertTrue(remote.savedDisplayNames.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN saving the name fails WHEN an anonymous user connects Apple THEN still links and mirrors the account`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser, saveDisplayNameError = IllegalStateException("offline"))
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.LINKED, result.getOrNull())
+            assertTrue(remote.savedDisplayNames.isEmpty())
+            assertEquals(
+                AccountStatus.Connected("anonymous", AccountProvider.APPLE),
+                repository.observeStatus().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN saving the name fails WHEN switching to an Apple user THEN still switches and mirrors the account`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                linkError = IdentityAlreadyLinkedException(),
+                idTokenUser = appleUserWithoutName,
+                saveDisplayNameError = IllegalStateException("offline"),
+            )
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertEquals(
+                AccountStatus.Connected("apple-user", AccountProvider.APPLE),
+                repository.observeStatus().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN linking Apple fails for another reason WHEN connecting it with the name THEN fails and saves no name`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser, linkError = IllegalStateException("offline"))
+
+            // When
+            val result = signInWithApple(fullName = appleName)
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertTrue(remote.savedDisplayNames.isEmpty())
+            assertTrue(remote.signedInTokens.isEmpty())
+            assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
+        }
+
     private val anonymousUser = SessionUser("anonymous", socialProvider = null, displayName = null, photoUrl = null)
 
     private val googleUser =
         SessionUser("user-1", socialProvider = AccountProvider.GOOGLE, displayName = "Pierre", photoUrl = null)
+
+    private val appleName = "Pierre Vieira"
+
+    private val appleUserWithoutName =
+        SessionUser("apple-user", socialProvider = AccountProvider.APPLE, displayName = null, photoUrl = null)
+
+    private val appleUserWithName =
+        SessionUser("apple-user", socialProvider = AccountProvider.APPLE, displayName = "Pierre", photoUrl = null)
+
+    private suspend fun signInWithApple(fullName: String?): Result<ConnectResult> = repository.signInWithIdToken(
+        AccountProvider.APPLE,
+        idToken = "token",
+        rawNonce = "nonce",
+        fullName = fullName,
+    )
 
     private fun prepareScenario(
         currentUser: SessionUser?,
@@ -413,9 +658,18 @@ class AccountRepositoryImplTest {
         pendingLinkProvider: AccountProvider? = null,
         callback: BrowserCallback? = null,
         browserSignInError: Throwable? = null,
+        idTokenUser: SessionUser? = null,
+        saveDisplayNameError: Throwable? = null,
     ) {
         local = FakeAccountLocalDataSource(pendingLinkProvider = pendingLinkProvider?.code)
-        remote = FakeAccountRemoteDataSource(currentUser, linkError, issueError, callback, browserSignInError)
+        remote = FakeAccountRemoteDataSource(
+            currentUser = currentUser,
+            linkError = linkError,
+            issueError = issueError,
+            callback = callback,
+            browserSignInError = browserSignInError,
+            idTokenUser = idTokenUser,
+        ).also { it.saveDisplayNameError = saveDisplayNameError }
         repository = AccountRepositoryImpl(local = local, remote = remote)
     }
 }
@@ -449,6 +703,8 @@ private class FakeAccountRemoteDataSource(
     private val issueError: Throwable?,
     private val callback: BrowserCallback?,
     private val browserSignInError: Throwable?,
+    // Why: the user the ID token belongs to, whom a sign in switches the session to; null keeps the session as is.
+    private val idTokenUser: SessionUser?,
 ) : AccountRemoteDataSource {
     val sessionUsers = MutableStateFlow<SessionUser?>(null)
     val linkedTokens = mutableListOf<String>()
@@ -457,6 +713,8 @@ private class FakeAccountRemoteDataSource(
     val browserLinks = mutableListOf<AccountProvider>()
     val browserSignIns = mutableListOf<AccountProvider>()
     val readCallbackUrls = mutableListOf<String>()
+    val savedDisplayNames = mutableListOf<String>()
+    var saveDisplayNameError: Throwable? = null
     var anonymousSignIns = 0
     var sessionUpdates: Flow<SessionUser?> = emptyFlow()
 
@@ -476,6 +734,7 @@ private class FakeAccountRemoteDataSource(
     ) {
         linkError?.let { throw it }
         linkedTokens += idToken
+        currentUser = currentUser?.copy(socialProvider = provider)
     }
 
     override suspend fun signInWithIdToken(
@@ -484,6 +743,13 @@ private class FakeAccountRemoteDataSource(
         rawNonce: String?,
     ) {
         signedInTokens += idToken
+        idTokenUser?.let { currentUser = it }
+    }
+
+    override suspend fun saveDisplayName(name: String) {
+        saveDisplayNameError?.let { throw it }
+        savedDisplayNames += name
+        currentUser = (currentUser ?: sessionUsers.value)?.copy(displayName = name)
     }
 
     override suspend fun linkWithBrowser(provider: AccountProvider) {
