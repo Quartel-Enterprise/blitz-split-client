@@ -47,10 +47,23 @@ The shared steps live in `.github/actions/claude-review`:
 The action hides Claude's output, since this repository's logs are public. A tool the review was denied shows as a
 warning on the run, with only its name: allow it in `action.yml` when the review needs it.
 
-The review's shell can still read the runner's environment and write files outside the checkout, through the
-read-only commands it is allowed. So the hook's scripts are copied to a read-only directory before the session
-starts, what the hook acts on comes in its arguments, and `post-review.sh` masks anything shaped like a Claude or
-GitHub token before posting. Only pull requests from branches of this repository are reviewed.
+The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection in a diff could
+ask the review to quote one in a public comment, or to overwrite what runs with the App's token. So:
+
+- The session reads files only through the Read, Grep and Glob tools, denied `/proc`, `/sys`, the checkout's `.git`
+  and the home's dot directories. Its Bash commands are `gh`'s read-only ones, which take the diff from GitHub
+  (`gh pr diff`), and git commands that print no file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
+  `git blame` all read or write a file they are given (`--no-index`, `--contents`, `--output`). A suggestion's lines
+  are read from a copy of the reviewed commit extracted before the session.
+- The hook's scripts are copied to a read-only directory, and what the hook acts on (when the review started,
+  whether it commits fixes) comes in its arguments. Its markers are checked before they count: the posting step
+  looks the review up on GitHub instead of trusting `.posted`, and a fix commit named by `.pushed` only counts when
+  it is the checkout's head on top of the reviewed commit.
+- `post-review.sh` masks anything shaped like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…,
+  a JWT, a Basic or Bearer header) before posting, and the hook's log goes through the same mask.
+
+An otherwise encoded token would still get through the mask: only branches of this repository are reviewed, never
+forks.
 
 ### Setup
 
