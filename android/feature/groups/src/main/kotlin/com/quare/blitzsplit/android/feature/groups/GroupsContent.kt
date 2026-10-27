@@ -45,6 +45,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -240,7 +241,7 @@ private fun SyncBadgeChip(
     val shape = MaterialTheme.shapes.small
     // Why: only the failed badge is a button; the others stay plain text for TalkBack, not a disabled button.
     val retryModifier = if (canRetry) {
-        Modifier.clip(shape).clickable(role = Role.Button, onClick = onRetry)
+        Modifier.minimumInteractiveComponentSize().clip(shape).clickable(role = Role.Button, onClick = onRetry)
     } else {
         Modifier
     }

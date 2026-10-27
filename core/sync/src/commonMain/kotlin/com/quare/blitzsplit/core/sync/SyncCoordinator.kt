@@ -36,14 +36,16 @@ class SyncCoordinator(
     private val requestedSyncs = MutableStateFlow(0)
     private val lastSyncFailed = MutableStateFlow(false)
 
+    // Why: offline, a failed sync is expected and only a change still waiting on the device is worth telling.
     fun observeState(): Flow<SyncState> = combine(
         requestedSyncs,
         lastSyncFailed,
         profileRepository.observeHasPendingChanges(),
-    ) { requested, failed, hasPendingChanges ->
+        connectivityObserver.observe(),
+    ) { requested, failed, hasPendingChanges, isOnline ->
         when {
             requested > 0 -> SyncState.SYNCING
-            failed -> SyncState.FAILED
+            failed && isOnline -> SyncState.FAILED
             hasPendingChanges -> SyncState.PENDING
             else -> SyncState.SYNCED
         }
@@ -82,7 +84,8 @@ class SyncCoordinator(
 
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
-     * and whenever a change is queued while it already can. Changes going out don't trigger one.
+     * and whenever a change is queued while it already can, also after a push that failed. Keying
+     * on the profile itself makes each new change count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
@@ -90,9 +93,9 @@ class SyncCoordinator(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
             profileRepository.observeHasPendingChanges(),
-        ) { isOnline, profile, hasPendingChanges -> (isOnline && profile != null) to hasPendingChanges }
+        ) { isOnline, profile, hasPendingChanges -> Triple(isOnline && profile != null, profile, hasPendingChanges) }
             .distinctUntilChanged()
-            .collect { (canSync, hasPendingChanges) ->
+            .collect { (canSync, _, hasPendingChanges) ->
                 val isDue = canSync && (!couldSync || hasPendingChanges)
                 couldSync = canSync
                 if (isDue) syncUntilSettled()
@@ -127,7 +130,7 @@ class SyncCoordinator(
             .collect { userId ->
                 val isSwitch = previousUserId != null && userId != null
                 previousUserId = userId
-                if (isSwitch) syncNow()
+                if (isSwitch) syncUntilSettled()
             }
     }
 

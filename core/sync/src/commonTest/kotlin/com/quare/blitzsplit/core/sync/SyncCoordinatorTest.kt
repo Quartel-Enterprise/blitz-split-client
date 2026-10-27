@@ -488,6 +488,56 @@ class SyncCoordinatorTest {
         assertEquals(SyncState.SYNCED, coordinator.observeState().first())
     }
 
+    @Test
+    fun `GIVEN a push that failed online WHEN another change is saved THEN pushes again`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        profile.pushError = IllegalStateException("no answer")
+        profile.saveProfile(pierre.copy(avatarColor = AvatarColor.GREEN))
+        runCurrent()
+        profile.pushError = null
+        val uploadsBefore = profile.uploadedUserIds.size
+
+        // When
+        profile.saveProfile(pierre.copy(avatarColor = AvatarColor.PEACH))
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, profile.uploadedUserIds.size)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a pull that failed with nothing pending WHEN the device goes offline THEN the sync state is synced`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = IllegalStateException("no answer")
+            coordinator.syncNow()
+
+            // When
+            isOnline.value = false
+
+            // Then
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        profile.pushError = IllegalStateException("no answer")
+        coordinator.syncNow()
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncState.PENDING, coordinator.observeState().first())
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
 
