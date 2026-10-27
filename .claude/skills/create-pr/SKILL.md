@@ -340,15 +340,18 @@ for _ in $(seq 20); do gh pr checks 2>/dev/null | grep -q . && break; sleep 3; d
 gh pr checks
 ```
 
-- **The repository has checks** (workflows under `.github/workflows`): wait for the required ones,
-  then merge.
+- **The repository has checks** (workflows under `.github/workflows`): wait for every one of them,
+  then merge. None is required in the ruleset, since every check workflow is path filtered (see
+  [docs/ci.md](../../../docs/ci.md#setup)), so `--required` would find nothing to wait for.
 
   ```bash
-  gh pr checks --watch --required --interval 10
+  gh pr checks --watch --interval 10
   gh pr merge --squash
   ```
 
-  If a required check fails, report it and stop.
+  If a check fails, report it and stop. A failed `wait for review` means the Claude review left
+  threads open: fix or answer them first. Right after the pull request opens, the review pushes its
+  fix commit, so watch again if the head moved.
 - **It has none** ("no checks reported", e.g. before CI is set up): the checks of step 8 are the
   only gate. Merge only if they ran and passed in this session for the commit being merged;
   otherwise run them again first.
