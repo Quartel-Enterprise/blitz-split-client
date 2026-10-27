@@ -53,8 +53,8 @@ ask the review to quote one in a public comment, or to overwrite what runs with 
 - The session reads files only through the Read, Grep and Glob tools, and only in the checkout and in a copy of the
   files the pull request changes, as of the reviewed commit (for the suggestions' lines). Every other path is
   denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `$RUNNER_TEMP` (where checkout keeps its
-  credentials), the checkout's `.git` and the home's dot directories. Neither review persists checkout's
-  credentials. The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub
+  credentials), the checkout's `.git` and the home's dot directories. `claude-review`'s checkout doesn't persist
+  its credentials. The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub
   (`gh pr diff`), and git commands that print no file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
   `git blame` all read or write a file they are given (`--no-index`, `--contents`, `--output`).
 - The hook's scripts are copied to a read-only directory outside the checkout, and what the hook acts on (when the
