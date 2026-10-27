@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
@@ -16,4 +17,7 @@ data class ProfileEntity(
     val photoUrl: String?,
     val updatedAt: Long,
     val pendingSync: Boolean,
+    // Why: a photo picked offline waits here (a 512x512 JPEG) until the sync uploads it.
+    @ColumnInfo(defaultValue = "NULL")
+    val pendingPhoto: ByteArray?,
 )

@@ -32,6 +32,8 @@ export const en = {
   profileSetup_title: 'What do your friends call you?',
   profileSetup_subtitle: 'Only people in your groups see your name.',
   profileSetup_avatarColor: 'Avatar color',
+  profileSetup_addPhoto: 'Add photo',
+  profileSetup_photoError: "Couldn't use this photo. Try another one.",
   profileSetup_nameLabel: 'Your name',
   profileSetup_namePlaceholder: 'John Doe',
   profileSetup_nameTooShort: 'Type at least 2 letters.',

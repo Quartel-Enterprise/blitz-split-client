@@ -6,6 +6,7 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 import kotlin.time.Duration.Companion.seconds
 
 internal fun createBlitzSplitSupabaseClient(): SupabaseClient = createSupabaseClient(
@@ -18,4 +19,5 @@ internal fun createBlitzSplitSupabaseClient(): SupabaseClient = createSupabaseCl
     }
     install(Postgrest)
     install(Functions)
+    install(Storage)
 }

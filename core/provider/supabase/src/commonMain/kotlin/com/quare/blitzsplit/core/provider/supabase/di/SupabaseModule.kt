@@ -8,6 +8,8 @@ import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
 import org.koin.dsl.module
 
 val supabaseModule = module {
@@ -15,4 +17,5 @@ val supabaseModule = module {
     single<Auth> { get<SupabaseClient>().auth }
     single<Postgrest> { get<SupabaseClient>().postgrest }
     single<Functions> { get<SupabaseClient>().functions }
+    single<Storage> { get<SupabaseClient>().storage }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -11,10 +12,13 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -25,6 +29,7 @@ class ProfileSetupViewModel(
     private val observeProfile: ObserveProfile,
     private val getSessionUser: GetSessionUser,
     private val validateDisplayName: ValidateDisplayName,
+    private val prepareProfilePhoto: PrepareProfilePhoto,
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
 ) : ViewModel() {
@@ -33,12 +38,16 @@ class ProfileSetupViewModel(
             ProfileSetupUiState(
                 name = "",
                 avatarColor = AvatarColor.default,
-                photoUrl = null,
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
                 showsNameTooShort = false,
                 canContinue = false,
                 isSaving = false,
             ),
         )
+
+    private var photoJob: Job? = null
 
     val stateWatcher: FlowWatcher<ProfileSetupUiState> = FlowWatcher(uiState)
 
@@ -50,6 +59,8 @@ class ProfileSetupViewModel(
         when (event) {
             is ProfileSetupUiEvent.OnNameChanged -> updateName(event.name)
             is ProfileSetupUiEvent.OnAvatarColorSelected -> uiState.update { it.copy(avatarColor = event.color) }
+            is ProfileSetupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
+            ProfileSetupUiEvent.OnPhotoUnreadable -> uiState.update { it.copy(showsPhotoError = true) }
             ProfileSetupUiEvent.OnContinueClicked -> save()
             ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBack()
         }
@@ -66,7 +77,7 @@ class ProfileSetupViewModel(
                 state.copy(
                     name = name.take(DisplayNameRules.MAX_LENGTH),
                     avatarColor = existing?.avatarColor ?: state.avatarColor,
-                    photoUrl = existing?.photoUrl ?: sessionUser?.photoUrl,
+                    photo = state.photo ?: existing?.photo ?: sessionUser?.photoUrl?.let(ProfilePhoto::Remote),
                     canContinue = validateDisplayName(name) == DisplayNameValidation.VALID,
                 )
             }
@@ -85,14 +96,39 @@ class ProfileSetupViewModel(
         }
     }
 
+    /*
+     * Why: a newer pick replaces the one still being prepared, and a failed one keeps the photo shown.
+     * Once Continue is waiting on a pick, a later one would cancel the photo being saved, so it is ignored.
+     */
+    private fun preparePhoto(source: ByteArray) {
+        if (uiState.value.isSaving) return
+        photoJob?.cancel()
+        uiState.update { it.copy(isPreparingPhoto = true, showsPhotoError = false) }
+        photoJob = viewModelScope.launch {
+            val result = prepareProfilePhoto(source)
+            ensureActive()
+            result
+                .onSuccess { photo -> uiState.update { it.copy(photo = photo, isPreparingPhoto = false) } }
+                .onFailure { uiState.update { it.copy(isPreparingPhoto = false, showsPhotoError = true) } }
+        }
+    }
+
+    /*
+     * Why: Continue right after a pick waits for the photo instead of saving the profile without it.
+     * If that pick fails, the screen stays so the error is seen; a later Continue saves without it.
+     */
     private fun save() {
-        val state = uiState.value
-        if (!state.canContinue || state.isSaving) return
+        if (!uiState.value.canContinue || uiState.value.isSaving) return
         uiState.update { it.copy(isSaving = true) }
+        val pickInProgress = photoJob?.takeIf { it.isActive }
         viewModelScope.launch {
-            saveProfile(
-                UserProfile(displayName = state.name, avatarColor = state.avatarColor, photoUrl = state.photoUrl),
-            )
+            pickInProgress?.join()
+            if (pickInProgress != null && uiState.value.showsPhotoError) {
+                uiState.update { it.copy(isSaving = false) }
+                return@launch
+            }
+            val state = uiState.value
+            saveProfile(UserProfile(displayName = state.name, avatarColor = state.avatarColor, photo = state.photo))
             navigator.replaceAll(Route.Groups)
         }
     }

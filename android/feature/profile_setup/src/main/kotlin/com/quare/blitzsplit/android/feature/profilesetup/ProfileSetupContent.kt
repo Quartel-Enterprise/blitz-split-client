@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.profilesetup
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -29,9 +31,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PhoneAndroid
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -68,6 +74,7 @@ private val tabletAvatarCardWidth = 340.dp
 fun ProfileSetupContent(
     state: ProfileSetupUiState,
     onEvent: (ProfileSetupUiEvent) -> Unit,
+    onAddPhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
@@ -81,11 +88,16 @@ fun ProfileSetupContent(
                 layout.isTablet && layout.isLandscape -> ProfileSetupTabletLandscapeLayout(
                     state = state,
                     onEvent = onEvent,
+                    onAddPhotoClick = onAddPhotoClick,
                 )
 
-                layout.isLandscape -> ProfileSetupPhoneLandscapeLayout(state = state, onEvent = onEvent)
+                layout.isLandscape -> ProfileSetupPhoneLandscapeLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    onAddPhotoClick = onAddPhotoClick,
+                )
 
-                else -> ProfileSetupSingleColumn(state = state, onEvent = onEvent)
+                else -> ProfileSetupSingleColumn(state = state, onEvent = onEvent, onAddPhotoClick = onAddPhotoClick)
             }
         }
     }
@@ -95,6 +107,7 @@ fun ProfileSetupContent(
 private fun ProfileSetupSingleColumn(
     state: ProfileSetupUiState,
     onEvent: (ProfileSetupUiEvent) -> Unit,
+    onAddPhotoClick: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column(modifier = Modifier.widthIn(max = singleColumnMaxWidth).fillMaxSize()) {
@@ -110,6 +123,7 @@ private fun ProfileSetupSingleColumn(
                 AvatarSection(
                     state = state,
                     onEvent = onEvent,
+                    onAddPhotoClick = onAddPhotoClick,
                     avatarSize = 112.dp,
                     swatchSpacing = 16.dp,
                     modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
@@ -133,6 +147,7 @@ private fun ProfileSetupSingleColumn(
 private fun ProfileSetupPhoneLandscapeLayout(
     state: ProfileSetupUiState,
     onEvent: (ProfileSetupUiEvent) -> Unit,
+    onAddPhotoClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -149,7 +164,13 @@ private fun ProfileSetupPhoneLandscapeLayout(
                     .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
-                AvatarSection(state = state, onEvent = onEvent, avatarSize = 104.dp, swatchSpacing = 10.dp)
+                AvatarSection(
+                    state = state,
+                    onEvent = onEvent,
+                    onAddPhotoClick = onAddPhotoClick,
+                    avatarSize = 104.dp,
+                    swatchSpacing = 10.dp,
+                )
             }
         }
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
@@ -172,6 +193,7 @@ private fun ProfileSetupPhoneLandscapeLayout(
 private fun ProfileSetupTabletLandscapeLayout(
     state: ProfileSetupUiState,
     onEvent: (ProfileSetupUiEvent) -> Unit,
+    onAddPhotoClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         BackButton(onEvent = onEvent, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
@@ -196,6 +218,7 @@ private fun ProfileSetupTabletLandscapeLayout(
                     AvatarSection(
                         state = state,
                         onEvent = onEvent,
+                        onAddPhotoClick = onAddPhotoClick,
                         avatarSize = 144.dp,
                         swatchSpacing = 12.dp,
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 40.dp),
@@ -244,6 +267,7 @@ private fun ProfileSetupTitle(isLarge: Boolean) {
 private fun AvatarSection(
     state: ProfileSetupUiState,
     onEvent: (ProfileSetupUiEvent) -> Unit,
+    onAddPhotoClick: () -> Unit,
     avatarSize: Dp,
     swatchSpacing: Dp,
     modifier: Modifier = Modifier,
@@ -253,7 +277,17 @@ private fun AvatarSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        AvatarBadge(initial = state.avatarInitial, color = state.avatarColor, size = avatarSize)
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AvatarWithPhotoButton(state = state, avatarSize = avatarSize, onAddPhotoClick = onAddPhotoClick)
+            if (state.showsPhotoError) {
+                Text(
+                    text = stringResource(R.string.profile_setup_photo_error),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
                 text = stringResource(R.string.profile_setup_avatar_color),
@@ -266,6 +300,45 @@ private fun AvatarSection(
                 colors = state.avatarColors,
                 spacing = swatchSpacing,
                 onEvent = onEvent,
+            )
+        }
+    }
+}
+
+// Why: the camera sits on the avatar's corner, as in the design, and the photo shows in the avatar itself.
+@Composable
+private fun AvatarWithPhotoButton(
+    state: ProfileSetupUiState,
+    avatarSize: Dp,
+    onAddPhotoClick: () -> Unit,
+) {
+    Box(modifier = Modifier.size(avatarSize)) {
+        AvatarBadge(
+            initial = state.avatarInitial,
+            color = state.avatarColor,
+            size = avatarSize,
+            photoUrl = state.photoUrl,
+        )
+        if (state.isPreparingPhoto) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+        FilledIconButton(
+            onClick = onAddPhotoClick,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = 4.dp, y = 4.dp)
+                .size(44.dp)
+                .border(3.dp, MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            ),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.PhotoCamera,
+                contentDescription = stringResource(R.string.profile_setup_add_photo),
+                modifier = Modifier.size(20.dp),
             )
         }
     }
@@ -404,12 +477,15 @@ private fun ProfileSetupPreview() {
             state = ProfileSetupUiState(
                 name = "Pierre",
                 avatarColor = AvatarColor.BLUE,
-                photoUrl = null,
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
                 showsNameTooShort = false,
                 canContinue = true,
                 isSaving = false,
             ),
             onEvent = {},
+            onAddPhotoClick = {},
         )
     }
 }
@@ -422,12 +498,15 @@ private fun ProfileSetupInvalidNamePreview() {
             state = ProfileSetupUiState(
                 name = "P",
                 avatarColor = AvatarColor.PEACH,
-                photoUrl = null,
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = true,
                 showsNameTooShort = true,
                 canContinue = false,
                 isSaving = false,
             ),
             onEvent = {},
+            onAddPhotoClick = {},
         )
     }
 }

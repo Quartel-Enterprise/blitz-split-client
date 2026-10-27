@@ -17,7 +17,8 @@ core/
 ├── sync/               # SyncCoordinator and the use cases that cross profile and account
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
-    └── supabase/       # SupabaseClient, Auth / Postgrest / Functions, SupabaseConfig (BuildKonfig)
+    ├── supabase/       # SupabaseClient, Auth / Postgrest / Functions / Storage, SupabaseConfig (BuildKonfig)
+    └── image/          # AvatarImageEncoder: any picked image to a 512x512 JPEG, per platform
 feature/                # Presentation only: ViewModel, UiState, UiEvent, UiAction, Koin module
 ├── welcome/
 ├── profile_setup/

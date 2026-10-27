@@ -30,14 +30,15 @@ changes included. Once a schema has shipped, change it with a migration instead.
 
 ### Supabase: the remote
 
-`:core:provider:supabase` builds one `SupabaseClient` (`createBlitzSplitSupabaseClient()`) with Auth, Postgrest and
-Functions, and binds each plugin on its own so data sources depend on `Auth`, `Postgrest` or `Functions`, never on
-the client. The URL, the publishable key and the Google web client id come from the BuildKonfig object
+`:core:provider:supabase` builds one `SupabaseClient` (`createBlitzSplitSupabaseClient()`) with Auth, Postgrest,
+Functions and Storage, and binds each plugin on its own so data sources depend on `Auth`, `Postgrest`, `Functions`
+or `Storage`, never on the client. The URL, the publishable key and the Google web client id come from the BuildKonfig object
 `SupabaseConfig` (see [getting-started.md](../getting-started.md#supabase)).
 
 | Remote data source | Talks to |
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
+| `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover` and `recovery-code` edge functions |
 
 The tables, functions and dashboard settings are documented in the `blitz-split-api` repository (`docs/auth.md`,
@@ -85,6 +86,11 @@ suspend fun syncNow(): Result<Unit> = syncLock.withLock {
   one is **not pending and strictly older** (`ProfileDao.applyRemote`), so a change made offline never loses to an
   older server value. The push upserts the pending row and `markSynced(syncedUpdatedAt)` clears the flag only if
   the row was not touched again while the push was in flight.
+- **Profile photo**: a photo picked in "Adicionar foto" is already a 512x512 JPEG (`PrepareProfilePhoto`, through
+  the `AvatarImageEncoder` of `:core:provider:image`) and waits in `profile.pendingPhoto` until the push. The push
+  uploads it first, sends its public URL (with `?v=<updatedAt>`, so caches fetch the new photo) as `avatar_url`,
+  and `markSynced` swaps the bytes for that URL in the same guarded update. Until then the UIs draw the bytes as a
+  data URI (`ProfileSetupUiState.photoUrl`).
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

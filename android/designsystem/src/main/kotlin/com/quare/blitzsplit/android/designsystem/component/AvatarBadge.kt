@@ -11,14 +11,18 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
 
+// Why: the initial stays under the photo, so it shows while the photo loads or when it fails to.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AvatarBadge(
@@ -26,12 +30,14 @@ fun AvatarBadge(
     color: AvatarColor,
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
+    photoUrl: String? = null,
 ) {
     val isDark = isSystemInDarkTheme()
+    val shape = MaterialShapes.Cookie9Sided.toShape()
     Box(
         modifier = modifier
             .size(size)
-            .background(color.toContainerColor(isDark), MaterialShapes.Cookie9Sided.toShape()),
+            .background(color.toContainerColor(isDark), shape),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -40,5 +46,13 @@ fun AvatarBadge(
             fontWeight = FontWeight.ExtraBold,
             fontSize = (size.value * 0.42f).sp,
         )
+        if (photoUrl != null) {
+            AsyncImage(
+                model = photoUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize().clip(shape),
+            )
+        }
     }
 }

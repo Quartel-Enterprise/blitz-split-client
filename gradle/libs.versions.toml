@@ -38,6 +38,7 @@ androidx-compose-material3 = "1.5.0-beta02"
 androidx-graphics-shapes = "1.1.0"
 
 # Third party
+coil = "3.6.3"
 googleid = "1.2.1"
 play-services-code-scanner = "16.1.0"
 kermit = "2.2.0"
@@ -111,11 +112,16 @@ ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 
+# Coil (image loading of the Android UI)
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
 # Supabase
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
 supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
 supabase-functions = { module = "io.github.jan-tennert.supabase:functions-kt" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
 
 # Quare
 quare-connectivity = { module = "software.quare:connectivity", version.ref = "quare-connectivity" }

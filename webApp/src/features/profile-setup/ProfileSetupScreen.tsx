@@ -1,4 +1,5 @@
-import { ArrowLeft, Check, Info, Loader2 } from 'lucide-react'
+import { ArrowLeft, Camera, Check, Info, Loader2 } from 'lucide-react'
+import { useRef } from 'react'
 import { ProfileSetupPresenter, type JsProfileSetupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -19,6 +20,7 @@ export function ProfileSetupScreen() {
 
 function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresenter; state: JsProfileSetupState }) {
   const [name, setName] = useDraft(state.name, (value) => presenter.changeName(value))
+  const photoInput = useRef<HTMLInputElement>(null)
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
       <form
@@ -35,7 +37,47 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
           <h1 className="text-2xl font-semibold tracking-tight">{t('profileSetup_title')}</h1>
           <p className="text-sm text-muted-foreground">{t('profileSetup_subtitle')}</p>
         </div>
-        <Avatar initial={state.avatarInitial} color={state.avatarColor} className="size-20 self-center text-3xl transition-colors" />
+        <div className="flex flex-col items-center gap-2">
+          <div className="relative">
+            <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-20 text-3xl transition-colors" />
+            {state.isPreparingPhoto && (
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/60">
+                <Loader2 className="size-6 animate-spin" />
+              </span>
+            )}
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              aria-label={t('profileSetup_addPhoto')}
+              className="absolute -right-2 -bottom-2 size-9 rounded-xl border-[3px] border-card"
+              onClick={() => photoInput.current?.click()}
+            >
+              <Camera className="size-4" />
+            </Button>
+            <input
+              ref={photoInput}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={async (event) => {
+                const file = event.target.files?.[0]
+                event.target.value = ''
+                if (!file) return
+                try {
+                  presenter.photoPicked(new Int8Array(await file.arrayBuffer()))
+                } catch {
+                  presenter.photoUnreadable()
+                }
+              }}
+            />
+          </div>
+          {state.showsPhotoError && (
+            <span role="alert" className="text-xs text-destructive">
+              {t('profileSetup_photoError')}
+            </span>
+          )}
+        </div>
         <div className="flex flex-col gap-2">
           <span id="avatar-color" className="text-sm font-medium">
             {t('profileSetup_avatarColor')}

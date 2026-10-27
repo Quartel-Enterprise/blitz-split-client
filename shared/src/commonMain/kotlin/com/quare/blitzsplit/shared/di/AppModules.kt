@@ -3,6 +3,7 @@ package com.quare.blitzsplit.shared.di
 import com.quare.blitzsplit.core.account.di.accountModule
 import com.quare.blitzsplit.core.navigation.di.navigationModule
 import com.quare.blitzsplit.core.profile.di.profileModule
+import com.quare.blitzsplit.core.provider.image.di.imageModule
 import com.quare.blitzsplit.core.provider.room.di.roomModule
 import com.quare.blitzsplit.core.provider.supabase.di.supabaseModule
 import com.quare.blitzsplit.core.sync.di.syncModule
@@ -33,6 +34,7 @@ val sharedModules: List<Module> = listOf(
     navigationModule,
     roomModule,
     supabaseModule,
+    imageModule,
     profileModule,
     accountModule,
     syncModule,

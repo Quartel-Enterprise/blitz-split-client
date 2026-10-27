@@ -10,7 +10,10 @@ interface ProfileLocalDataSource {
 
     suspend fun upsert(entity: ProfileEntity)
 
-    suspend fun markSynced(syncedUpdatedAt: Long)
+    suspend fun markSynced(
+        syncedUpdatedAt: Long,
+        photoUrl: String?,
+    )
 
     suspend fun applyRemote(entity: ProfileEntity)
 }

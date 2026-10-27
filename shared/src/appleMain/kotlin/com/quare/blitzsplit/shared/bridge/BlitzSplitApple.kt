@@ -11,11 +11,16 @@ import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import platform.Foundation.NSData
 import platform.Foundation.NSURL
+import platform.posix.memcpy
 
 /*
  * Why: the single entry point SwiftUI calls. Swift can't call reified Koin functions, so each
@@ -52,5 +57,11 @@ object BlitzSplitApple : KoinComponent {
         val callbackUrl = url.absoluteString ?: return
         val handleBrowserCallback = get<HandleBrowserCallback>()
         scope.launch { handleBrowserCallback(callbackUrl) }
+    }
+
+    // Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call.
+    @OptIn(ExperimentalForeignApi::class)
+    fun toByteArray(data: NSData): ByteArray = ByteArray(data.length.toInt()).apply {
+        if (isNotEmpty()) usePinned { pinned -> memcpy(pinned.addressOf(0), data.bytes, data.length) }
     }
 }
