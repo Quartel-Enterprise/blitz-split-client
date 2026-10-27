@@ -50,17 +50,20 @@ warning on the run, with only its name: allow it in `action.yml` when the review
 The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection in a diff could
 ask the review to quote one in a public comment, or to overwrite what runs with the App's token. So:
 
-- The session reads files only through the Read, Grep and Glob tools, denied `/proc`, `/sys`, the checkout's `.git`
-  and the home's dot directories. Its Bash commands are `gh`'s read-only ones, which take the diff from GitHub
+- The session reads files only through the Read, Grep and Glob tools, and only in the checkout and in a copy of the
+  files the pull request changes, as of the reviewed commit (for the suggestions' lines). Every other path is
+  denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `$RUNNER_TEMP` (where checkout keeps its
+  credentials), the checkout's `.git` and the home's dot directories. Neither review persists checkout's
+  credentials. The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub
   (`gh pr diff`), and git commands that print no file: `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
-  `git blame` all read or write a file they are given (`--no-index`, `--contents`, `--output`). A suggestion's lines
-  are read from a copy of the reviewed commit extracted before the session.
-- The hook's scripts are copied to a read-only directory, and what the hook acts on (when the review started,
-  whether it commits fixes) comes in its arguments. Its markers are checked before they count: the posting step
-  looks the review up on GitHub instead of trusting `.posted`, and a fix commit named by `.pushed` only counts when
-  it is the checkout's head on top of the reviewed commit.
+  `git blame` all read or write a file they are given (`--no-index`, `--contents`, `--output`).
+- The hook's scripts are copied to a read-only directory outside the checkout, and what the hook acts on (when the
+  review started, whether it commits fixes) comes in its arguments. The session can't write there, and the markers
+  are checked anyway: the posting step looks the review up on GitHub, on any commit, and only trusts `.posted` when
+  GitHub can't be read; a fix commit named by `.pushed` only counts when it is the checkout's head on top of the
+  reviewed commit.
 - `post-review.sh` masks anything shaped like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…,
-  a JWT, a Basic or Bearer header) before posting, and the hook's log goes through the same mask.
+  a JWT, a Basic or Bearer value with a digit) before posting, and the hook's log goes through the same mask.
 
 An otherwise encoded token would still get through the mask: only branches of this repository are reviewed, never
 forks.
