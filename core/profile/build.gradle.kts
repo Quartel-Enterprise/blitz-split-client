@@ -10,6 +10,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
+            implementation(projects.core.provider.image)
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

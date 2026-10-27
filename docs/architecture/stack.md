@@ -14,7 +14,7 @@ Versions live in `gradle/libs.versions.toml` and `webApp/package.json`; this is 
 - **Koin** for dependency injection
 - **Room 3** (`androidx.room3`, KMP) as the local source of truth on every platform, with the `androidx.sqlite`
   drivers: framework on Android, bundled on Apple and jvm, Web Worker on the web
-- **supabase-kt** (Auth, Postgrest, Functions) over Ktor, for the backend in the `blitz-split-api` repository
+- **supabase-kt** (Auth, Postgrest, Functions, Storage) over Ktor, for the backend in the `blitz-split-api` repository
 - **kotlinx.serialization** for the DTOs, **BuildKonfig** for the Supabase settings
 - **Quare connectivity** (`software.quare:connectivity`) for `NetworkConnectivityObserver`
 
@@ -24,6 +24,7 @@ Versions live in `gradle/libs.versions.toml` and `webApp/package.json`; this is 
   `MaterialExpressiveTheme`, `MotionScheme.expressive()`) and `androidx.graphics:graphics-shapes`
 - **Navigation 3** (`NavDisplay`) drawing the shared back stack
 - **Credential Manager** + `googleid` for the native Google sign in, Play services code scanner for the QR
+- **Coil 3** (`coil-compose`, `coil-network-okhttp`) for the avatar photo, a URL or the data URI of a picked one
 
 ### Apple (iOS, iPadOS, macOS 26)
 

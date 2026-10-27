@@ -19,9 +19,15 @@ interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: ProfileEntity)
 
-    // Why: a change made while the push was in flight keeps the row pending.
-    @Query("UPDATE profile SET pendingSync = 0 WHERE id = '$SINGLE_ROW_ID' AND updatedAt = :syncedUpdatedAt")
-    suspend fun markSynced(syncedUpdatedAt: Long)
+    // Why: a change made while the push was in flight keeps the row pending, and its photo with it.
+    @Query(
+        "UPDATE profile SET pendingSync = 0, pendingPhoto = NULL, photoUrl = :photoUrl " +
+            "WHERE id = '$SINGLE_ROW_ID' AND updatedAt = :syncedUpdatedAt",
+    )
+    suspend fun markSynced(
+        syncedUpdatedAt: Long,
+        photoUrl: String?,
+    )
 
     // Why: Last-Write-Wins, and a local change made offline never loses to an older server value.
     @Query(

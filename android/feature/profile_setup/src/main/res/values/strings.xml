@@ -3,6 +3,8 @@
     <string name="profile_setup_title">What do your friends call you?</string>
     <string name="profile_setup_subtitle">Only people in your groups see your name.</string>
     <string name="profile_setup_avatar_color">Avatar color</string>
+    <string name="profile_setup_add_photo">Add photo</string>
+    <string name="profile_setup_photo_error">Couldn\'t use this photo. Try another one.</string>
     <string name="profile_setup_name_label">Your name</string>
     <string name="profile_setup_name_placeholder">John Doe</string>
     <string name="profile_setup_name_too_short">Type at least 2 letters.</string>

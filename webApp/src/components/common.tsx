@@ -101,10 +101,22 @@ export function OrDivider() {
 }
 
 /** The person's avatar: their initial on their avatar color. */
-export function Avatar({ initial, color, className }: { initial: string; color: string; className?: string }) {
+/** The initial stays under the photo, so it shows while the photo loads or when it fails to. */
+export function Avatar({ initial, color, photoUrl, className }: { initial: string; color: string; photoUrl?: string | null; className?: string }) {
   return (
-    <span aria-hidden style={avatarStyle(color)} className={cn('avatar flex shrink-0 items-center justify-center rounded-full font-semibold', className)}>
+    <span aria-hidden style={avatarStyle(color)} className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold', className)}>
       {initial}
+      {photoUrl && (
+        <img
+          // Why: a new photo gets a fresh element, so one that failed before doesn't stay hidden.
+          key={photoUrl}
+          src={photoUrl}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="absolute inset-0 size-full object-cover"
+          onError={(event) => (event.currentTarget.hidden = true)}
+        />
+      )}
     </span>
   )
 }

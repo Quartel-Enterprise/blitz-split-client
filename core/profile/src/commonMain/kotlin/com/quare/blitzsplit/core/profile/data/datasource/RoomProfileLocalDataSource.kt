@@ -15,8 +15,11 @@ class RoomProfileLocalDataSource(
         dao.upsert(entity)
     }
 
-    override suspend fun markSynced(syncedUpdatedAt: Long) {
-        dao.markSynced(syncedUpdatedAt)
+    override suspend fun markSynced(
+        syncedUpdatedAt: Long,
+        photoUrl: String?,
+    ) {
+        dao.markSynced(syncedUpdatedAt = syncedUpdatedAt, photoUrl = photoUrl)
     }
 
     override suspend fun applyRemote(entity: ProfileEntity) {

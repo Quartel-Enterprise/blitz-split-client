@@ -16,6 +16,8 @@ class JsProfileSetupState(
     val avatarColors: Array<String>,
     val avatarInitial: String,
     val photoUrl: String?,
+    val isPreparingPhoto: Boolean,
+    val showsPhotoError: Boolean,
     val showsNameTooShort: Boolean,
     val canContinue: Boolean,
     val isSaving: Boolean,
@@ -33,6 +35,8 @@ class ProfileSetupPresenter {
                 avatarColors = state.avatarColors.map(AvatarColor::code).toTypedArray(),
                 avatarInitial = state.avatarInitial,
                 photoUrl = state.photoUrl,
+                isPreparingPhoto = state.isPreparingPhoto,
+                showsPhotoError = state.showsPhotoError,
                 showsNameTooShort = state.showsNameTooShort,
                 canContinue = state.canContinue,
                 isSaving = state.isSaving,
@@ -49,6 +53,15 @@ class ProfileSetupPresenter {
     fun selectAvatarColor(colorCode: String) {
         val color = AvatarColor.fromCodeOrNull(colorCode) ?: return
         viewModel.onEvent(ProfileSetupUiEvent.OnAvatarColorSelected(color))
+    }
+
+    // Why: a Kotlin ByteArray is an Int8Array in JS, so the file's bytes cross without a copy.
+    fun photoPicked(source: ByteArray) {
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(source))
+    }
+
+    fun photoUnreadable() {
+        viewModel.onEvent(ProfileSetupUiEvent.OnPhotoUnreadable)
     }
 
     fun continueClicked() {

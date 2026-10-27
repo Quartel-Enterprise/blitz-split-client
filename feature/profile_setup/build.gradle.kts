@@ -18,6 +18,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.account.testing)
             implementation(projects.core.profile.testing)
+            implementation(projects.core.provider.image)
         }
     }
 }

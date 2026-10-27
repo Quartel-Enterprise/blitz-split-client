@@ -33,6 +33,8 @@ export const pt: Record<MessageKey, string> = {
   profileSetup_title: 'Como seus amigos te chamam?',
   profileSetup_subtitle: 'Seu nome aparece só para quem estiver nos seus grupos.',
   profileSetup_avatarColor: 'Cor do avatar',
+  profileSetup_addPhoto: 'Adicionar foto',
+  profileSetup_photoError: 'Não deu para usar essa foto. Tente outra.',
   profileSetup_nameLabel: 'Seu nome',
   profileSetup_namePlaceholder: 'John Doe',
   profileSetup_nameTooShort: 'Digite pelo menos 2 letras.',

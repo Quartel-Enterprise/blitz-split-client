@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.profile.data.mapper
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.data.dto.ProfileDto
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
@@ -10,7 +11,7 @@ class ProfileMapperImpl : ProfileMapper {
     override fun toDomain(entity: ProfileEntity): UserProfile = UserProfile(
         displayName = entity.displayName,
         avatarColor = AvatarColor.fromCodeOrNull(entity.avatarColor) ?: AvatarColor.default,
-        photoUrl = entity.photoUrl,
+        photo = entity.pendingPhoto?.let(ProfilePhoto::Pending) ?: entity.photoUrl?.let(ProfilePhoto::Remote),
     )
 
     override fun toEntity(
@@ -21,9 +22,10 @@ class ProfileMapperImpl : ProfileMapper {
         id = SINGLE_ROW_ID,
         displayName = profile.displayName,
         avatarColor = profile.avatarColor.code,
-        photoUrl = profile.photoUrl,
+        photoUrl = (profile.photo as? ProfilePhoto.Remote)?.url,
         updatedAt = updatedAt,
         pendingSync = pendingSync,
+        pendingPhoto = (profile.photo as? ProfilePhoto.Pending)?.jpeg,
     )
 
     override fun toDto(
@@ -44,5 +46,6 @@ class ProfileMapperImpl : ProfileMapper {
         photoUrl = dto.avatarUrl,
         updatedAt = dto.updatedAt,
         pendingSync = false,
+        pendingPhoto = null,
     )
 }

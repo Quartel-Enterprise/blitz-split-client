@@ -12,6 +12,17 @@ sealed interface ProfileSetupUiEvent : UiEvent {
         val color: AvatarColor,
     ) : ProfileSetupUiEvent
 
+    /*
+     * Why: each UI opens its own picker straight from the tap (a browser only opens a file picker
+     * inside the click), and hands over the file it returned, in whatever format.
+     */
+    class OnPhotoPicked(
+        val source: ByteArray,
+    ) : ProfileSetupUiEvent
+
+    // Why: the picker returned an item the UI couldn't read, such as a cloud-only photo while offline.
+    data object OnPhotoUnreadable : ProfileSetupUiEvent
+
     data object OnContinueClicked : ProfileSetupUiEvent
 
     data object OnBackClicked : ProfileSetupUiEvent

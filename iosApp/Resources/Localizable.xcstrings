@@ -25,6 +25,16 @@
         }
       }
     },
+    "Add photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar foto"
+          }
+        }
+      }
+    },
     "Allow camera access in Settings or type the code." : {
       "localizations" : {
         "pt-BR" : {
@@ -243,6 +253,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para entrar agora. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't use this photo. Try another one." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para usar essa foto. Tente outra."
           }
         }
       }

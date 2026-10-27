@@ -1,4 +1,5 @@
 import Observation
+import PhotosUI
 import Shared
 import SwiftUI
 
@@ -129,15 +130,46 @@ private struct AvatarSection: View {
     let model: ProfileSetupModel
     let avatarSize: CGFloat
 
+    @State private var pickedPhoto: PhotosPickerItem?
+
     var body: some View {
         let state = model.state
         VStack(spacing: 14) {
-            Text(state.avatarInitial)
-                .font(.system(size: avatarSize * 0.42, weight: .bold))
-                .foregroundStyle(state.avatarColor.content)
-                .frame(width: avatarSize, height: avatarSize)
-                .background(state.avatarColor.container, in: .circle)
-                .accessibilityHidden(true)
+            ZStack(alignment: .bottomTrailing) {
+                AvatarPhoto(
+                    initial: state.avatarInitial,
+                    color: state.avatarColor,
+                    photoUrl: state.photoUrl,
+                    size: avatarSize,
+                )
+                .overlay {
+                    if state.isPreparingPhoto { ProgressView() }
+                }
+                // Why: the system picker needs no photo library permission and returns one image, or nothing.
+                PhotosPicker(selection: $pickedPhoto, matching: .images) {
+                    AddPhotoLabel()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Add photo")
+                .offset(x: 6, y: 6)
+            }
+            .onChange(of: pickedPhoto) { _, item in
+                guard let item else { return }
+                pickedPhoto = nil
+                Task {
+                    guard let data = try? await item.loadTransferable(type: Data.self) else {
+                        model.send(ProfileSetupUiEventOnPhotoUnreadable.shared)
+                        return
+                    }
+                    model.send(ProfileSetupUiEventOnPhotoPicked(source: BlitzSplitApple.shared.toByteArray(data: data)))
+                }
+            }
+            if state.showsPhotoError {
+                Text("Couldn't use this photo. Try another one.")
+                    .font(.footnote)
+                    .foregroundStyle(Palette.negative)
+                    .multilineTextAlignment(.center)
+            }
             SectionCaption(text: "Avatar color")
             GroupedCard {
                 HStack {
@@ -235,5 +267,48 @@ private struct NameSection: View {
                 .foregroundStyle(state.showsNameTooShort ? Palette.negative : .secondary)
                 .padding(.horizontal, 20)
         }
+    }
+}
+
+/// Its own view because the picker's label closure is Sendable, outside the main actor the palette lives on.
+private struct AddPhotoLabel: View {
+    var body: some View {
+        Image(systemName: "camera.fill")
+            .font(.system(size: 17, weight: .semibold))
+            .foregroundStyle(Palette.onAccent)
+            .frame(width: 44, height: 44)
+            .background(Palette.accent, in: .rect(cornerRadius: 14))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14).strokeBorder(Palette.groupedBackground, lineWidth: 3)
+            }
+    }
+}
+
+/// The initial stays under the photo, so it shows while the photo loads or when it fails to. A picked
+/// photo arrives as a data URI, which AsyncImage loads like any other URL.
+private struct AvatarPhoto: View {
+    let initial: String
+    let color: AvatarColor
+    let photoUrl: String?
+    let size: CGFloat
+
+    var body: some View {
+        Text(initial)
+            .font(.system(size: size * 0.42, weight: .bold))
+            .foregroundStyle(color.content)
+            .frame(width: size, height: size)
+            .background(color.container, in: .circle)
+            .overlay {
+                if let photoUrl, let url = URL(string: photoUrl) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.resizable().scaledToFill()
+                        }
+                    }
+                    .frame(width: size, height: size)
+                    .clipShape(.circle)
+                }
+            }
+            .accessibilityHidden(true)
     }
 }

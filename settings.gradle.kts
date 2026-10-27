@@ -48,6 +48,7 @@ include(":core:account:testing")
 include(":core:sync")
 include(":core:provider:room")
 include(":core:provider:supabase")
+include(":core:provider:image")
 
 // Features: presentation (ViewModel, UiState, UiEvent, UiAction) shared by every UI
 include(":feature:welcome")

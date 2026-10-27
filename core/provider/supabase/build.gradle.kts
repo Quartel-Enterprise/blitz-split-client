@@ -12,6 +12,7 @@ kotlin {
             api(libs.supabase.auth)
             api(libs.supabase.postgrest)
             api(libs.supabase.functions)
+            api(libs.supabase.storage)
             implementation(libs.ktor.client.core)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

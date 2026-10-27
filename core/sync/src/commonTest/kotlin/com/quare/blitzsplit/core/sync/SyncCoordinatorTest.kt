@@ -295,7 +295,7 @@ class SyncCoordinatorTest {
         }
 
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
-    private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photoUrl = null)
+    private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
 
     private fun TestScope.prepareScenario(
         storedProfile: UserProfile?,
