@@ -57,27 +57,42 @@ so nothing above it sees an HTTP status:
 ### The sync: `SyncCoordinator`
 
 `SyncCoordinator` (`:core:sync`) is a Koin singleton with its own `SupervisorJob` scope. `AppViewModel` calls
-`StartSync` on launch, and `start()` (idempotent) launches three things:
+`StartSync` on launch, and `start()` (idempotent) launches four things:
 
 1. `accountRepository.mirrorSession()`: copies every settled Supabase session (a user, or none after a sign out)
    into the `account` row, so the UI knows the account state offline.
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
-3. A collector of connectivity combined with the local profile: each time the device is online **and** a profile
-   exists, it runs `syncNow()`.
+3. `syncOnUserSwitch()`: when the session moves to another user, it syncs under the new one.
+4. `syncWhenDue()`: a collector of connectivity, the local profile and its pending changes. It syncs when the
+   device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
+   Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
 
-`syncNow()` runs under a `Mutex`, inside `suspendRunCatching`:
+`syncNow()` runs under a `Mutex`, inside `suspendRunCatching`, and records what the sync state needs:
 
 ```kotlin
-suspend fun syncNow(): Result<Unit> = syncLock.withLock {
-    suspendRunCatching {
-        profileRepository.observeProfile().first() ?: return@suspendRunCatching
-        val userId = accountRepository.ensureRegistered().getOrThrow()
-        profileRepository.downloadProfile(userId).getOrThrow()
-        profileRepository.uploadPendingProfile(userId).getOrThrow()
-        offerRecoveryCodeIfDue()
+suspend fun syncNow(): Result<Unit> {
+    requestedSyncs.update { it + 1 }
+    return try {
+        syncLock.withLock {
+            suspendRunCatching {
+                profileRepository.observeProfile().first() ?: return@suspendRunCatching
+                val userId = accountRepository.ensureRegistered().getOrThrow()
+                profileRepository.downloadProfile(userId).getOrThrow()
+                profileRepository.uploadPendingProfile(userId).getOrThrow()
+                offerRecoveryCodeIfDue()
+            }.also { result -> lastSyncFailed.value = result.isFailure }
+        }
+    } finally {
+        requestedSyncs.update { it - 1 }
     }
 }
 ```
+
+`observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
+running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet
+(`ProfileRepository.observeHasPendingChanges()`), and `SYNCED` otherwise. The home draws a badge only for the
+states that ask for attention, and its "try again" goes through `RetrySync`, which runs in the coordinator's scope
+so it outlives the screen.
 
 - **Register**: `ensureRegistered()` reuses the current session or signs in anonymously. The sync never registers
   an install that has no profile yet.
@@ -95,7 +110,9 @@ suspend fun syncNow(): Result<Unit> = syncLock.withLock {
   server for a recovery code.
 
 A new synced table follows the same shape: `updatedAt` and `pendingSync` columns, an `applyRemote` query with the
-same guard, a `markSynced` that compares `updatedAt`, and a pull and push step in `syncNow()`.
+same guard, a `markSynced` that compares `updatedAt`, and a pull and push step in `syncNow()`. Its pending flag
+also joins `observeHasPendingChanges()` in `observeState()` and `syncWhenDue()`, or its changes neither show as
+pending nor trigger a sync.
 
 ### Accounts: anonymous, linked, switched
 

@@ -440,6 +440,16 @@
         }
       }
     },
+    "No response from the server · try again" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem resposta do servidor · tentar de novo"
+          }
+        }
+      }
+    },
     "Offline · everything is saved on your %@" : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -694,16 +704,6 @@
         }
       }
     },
-    "Synced just now" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sincronizado agora"
-          }
-        }
-      }
-    },
     "Syncing…" : {
       "localizations" : {
         "pt-BR" : {
@@ -744,12 +744,22 @@
         }
       }
     },
-    "Type at least 2 letters." : {
+    "Type at least %lld letters." : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Digite pelo menos 2 letras."
+            "value" : "Digite pelo menos %lld letras."
+          }
+        }
+      }
+    },
+    "Use up to %lld characters." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use até %lld caracteres."
           }
         }
       }

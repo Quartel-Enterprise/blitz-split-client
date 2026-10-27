@@ -14,4 +14,6 @@ sealed interface GroupsUiEvent : UiEvent {
     data object OnContactsTabClicked : GroupsUiEvent
 
     data object OnActivityTabClicked : GroupsUiEvent
+
+    data object OnRetrySyncClicked : GroupsUiEvent
 }

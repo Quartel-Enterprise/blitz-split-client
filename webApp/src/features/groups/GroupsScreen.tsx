@@ -1,4 +1,4 @@
-import { CloudCheck, CloudOff, Plus, ReceiptText, RefreshCw, UserRound, Users, Wallet } from 'lucide-react'
+import { CloudOff, Plus, ReceiptText, RefreshCw, RotateCw, UserRound, Users, Wallet } from 'lucide-react'
 import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -23,10 +23,11 @@ const tabs: Tab[] = [
   { label: 'groups_tabActivity', icon: <ReceiptText className="size-4" />, open: (p) => p.openActivity() },
 ]
 
+// Everything synced has no badge: it only shows when the sync asks for attention.
 const syncLabels: Record<string, { label: MessageKey; icon: ReactNode }> = {
   OFFLINE: { label: 'groups_syncOffline', icon: <CloudOff className="size-3.5" /> },
   SYNCING: { label: 'groups_syncSyncing', icon: <RefreshCw className="size-3.5" /> },
-  SYNCED: { label: 'groups_syncSynced', icon: <CloudCheck className="size-3.5" /> },
+  FAILED: { label: 'groups_syncFailed', icon: <RotateCw className="size-3.5" /> },
 }
 
 /**
@@ -39,7 +40,7 @@ export function GroupsScreen() {
   useActions(presenter, (p, onShow: (show: boolean) => void) => p.observeComingSoon(onShow), () => toast(t('groups_comingSoon')))
   if (!presenter || !state) return null
 
-  const sync = syncLabels[state.syncBadge] ?? syncLabels.SYNCING
+  const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">
@@ -86,10 +87,12 @@ export function GroupsScreen() {
         <main className="flex flex-1 flex-col gap-6 p-4 sm:p-8">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-bold tracking-tight">{t('groups_title')}</h1>
-            <span className="inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground">
-              {sync.icon}
-              {t(sync.label)}
-            </span>
+            {sync && (
+              <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
+                {sync.icon}
+                {t(sync.label)}
+              </SyncBadge>
+            )}
           </div>
           <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
             <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
@@ -125,5 +128,19 @@ export function GroupsScreen() {
 
       {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     </div>
+  )
+}
+
+const syncBadgeClass = 'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground'
+
+function SyncBadge({ canRetry, onRetry, children }: { canRetry: boolean; onRetry: () => void; children: ReactNode }) {
+  if (!canRetry) return <span className={syncBadgeClass}>{children}</span>
+  return (
+    <button
+      onClick={onRetry}
+      className={cn(syncBadgeClass, 'outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring')}
+    >
+      {children}
+    </button>
   )
 }

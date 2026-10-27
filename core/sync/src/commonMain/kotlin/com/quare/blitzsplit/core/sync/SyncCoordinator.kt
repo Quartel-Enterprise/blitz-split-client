@@ -3,14 +3,17 @@ package com.quare.blitzsplit.core.sync
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -29,29 +32,78 @@ class SyncCoordinator(
     private val syncLock = Mutex()
     private var started = false
 
+    // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
+    private val requestedSyncs = MutableStateFlow(0)
+    private val lastSyncFailed = MutableStateFlow(false)
+
+    fun observeState(): Flow<SyncState> = combine(
+        requestedSyncs,
+        lastSyncFailed,
+        profileRepository.observeHasPendingChanges(),
+    ) { requested, failed, hasPendingChanges ->
+        when {
+            requested > 0 -> SyncState.SYNCING
+            failed -> SyncState.FAILED
+            hasPendingChanges -> SyncState.PENDING
+            else -> SyncState.SYNCED
+        }
+    }.distinctUntilChanged()
+
     fun start() {
         if (started) return
         started = true
         scope.launch { accountRepository.mirrorSession() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
-        scope.launch {
-            combine(connectivityObserver.observe(), profileRepository.observeProfile()) { isOnline, profile ->
-                isOnline && profile != null
-            }.distinctUntilChanged()
-                .filter { canSync -> canSync }
-                .collect { syncNow() }
+        scope.launch { syncWhenDue() }
+    }
+
+    // Why: the retry outlives the screen that asked for it, like every other sync.
+    fun retry() {
+        scope.launch { syncUntilSettled() }
+    }
+
+    suspend fun syncNow(): Result<Unit> {
+        requestedSyncs.update { it + 1 }
+        return try {
+            syncLock.withLock {
+                suspendRunCatching {
+                    profileRepository.observeProfile().first() ?: return@suspendRunCatching
+                    val userId = accountRepository.ensureRegistered().getOrThrow()
+                    profileRepository.downloadProfile(userId).getOrThrow()
+                    profileRepository.uploadPendingProfile(userId).getOrThrow()
+                    offerRecoveryCodeIfDue()
+                }.also { result -> lastSyncFailed.value = result.isFailure }
+            }
+        } finally {
+            requestedSyncs.update { it - 1 }
         }
     }
 
-    suspend fun syncNow(): Result<Unit> = syncLock.withLock {
-        suspendRunCatching {
-            profileRepository.observeProfile().first() ?: return@suspendRunCatching
-            val userId = accountRepository.ensureRegistered().getOrThrow()
-            profileRepository.downloadProfile(userId).getOrThrow()
-            profileRepository.uploadPendingProfile(userId).getOrThrow()
-            offerRecoveryCodeIfDue()
-        }
+    /*
+     * Why: a sync is due when the device can sync again (back online, or the first profile saved)
+     * and whenever a change is queued while it already can. Changes going out don't trigger one.
+     */
+    private suspend fun syncWhenDue() {
+        var couldSync = false
+        combine(
+            connectivityObserver.observe(),
+            profileRepository.observeProfile(),
+            profileRepository.observeHasPendingChanges(),
+        ) { isOnline, profile, hasPendingChanges -> (isOnline && profile != null) to hasPendingChanges }
+            .distinctUntilChanged()
+            .collect { (canSync, hasPendingChanges) ->
+                val isDue = canSync && (!couldSync || hasPendingChanges)
+                couldSync = canSync
+                if (isDue) syncUntilSettled()
+            }
+    }
+
+    // Why: a change saved while a push was in flight is still pending after it, so it goes in another round.
+    private suspend fun syncUntilSettled() {
+        do {
+            val result = syncNow()
+        } while (result.isSuccess && profileRepository.observeHasPendingChanges().first())
     }
 
     private suspend fun offerRecoveryCodeIfDue() {

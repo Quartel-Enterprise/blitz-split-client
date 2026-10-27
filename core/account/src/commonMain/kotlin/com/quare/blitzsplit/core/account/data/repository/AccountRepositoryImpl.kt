@@ -56,6 +56,7 @@ class AccountRepositoryImpl(
         provider: AccountProvider,
         idToken: String,
         rawNonce: String?,
+        fullName: String?,
     ): Result<ConnectResult> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         val result = when {
@@ -71,7 +72,11 @@ class AccountRepositoryImpl(
 
             else -> signInLinkingFirst(provider = provider, idToken = idToken, rawNonce = rawNonce)
         }
-        remote.getCurrentUserOrNull()?.let { user -> local.update { account -> account.toMirrorOf(user) } }
+        remote.getCurrentUserOrNull()?.let { user ->
+            local.update { account -> account.toMirrorOf(user) }
+            val givenName = fullName?.takeIf(String::isNotBlank)
+            if (user.displayName == null && givenName != null) keepNameGivenOnce(givenName)
+        }
         result
     }
 
@@ -129,6 +134,14 @@ class AccountRepositoryImpl(
 
     override suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt) {
         local.update { account -> account.copy(recoveryCodePrompt = prompt.code) }
+    }
+
+    /*
+     * Why: Apple tells the name only on the first sign in and leaves it out of the ID token, so the
+     * account keeps it for the profile prefill. A failure doesn't fail the sign in: the name can be typed.
+     */
+    private suspend fun keepNameGivenOnce(name: String) {
+        suspendRunCatching { remote.saveDisplayName(name) }
     }
 
     private suspend fun linkWithBrowser(provider: AccountProvider) {

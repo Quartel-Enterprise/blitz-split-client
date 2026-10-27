@@ -190,6 +190,26 @@ class RecoveryCodeViewModelTest {
         }
 
     @Test
+    fun `GIVEN the first Apple sign in WHEN the ID token arrives with the name THEN hands the name on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+                native = setOf(AccountProvider.APPLE),
+            )
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            viewModel.onEvent(
+                RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira"),
+            )
+
+            // Then
+            assertEquals(listOf<String?>("Pierre Vieira"), account.idTokenFullNames)
+        }
+
+    @Test
     fun `GIVEN the ID token arrives WHEN it connects THEN completes the sign in and settles the buttons`() =
         runTest(testDispatcher) {
             // Given
@@ -201,7 +221,7 @@ class RecoveryCodeViewModelTest {
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
 
             // When
-            viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce"))
+            viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null))
 
             // Then
             assertEquals(listOf(AccountProvider.APPLE to "token"), account.idTokenConnections)
@@ -220,7 +240,7 @@ class RecoveryCodeViewModelTest {
         )
 
         // When
-        viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null))
+        viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null))
 
         // Then
         assertTrue(viewModel.uiState.value.hasSignInFailed)

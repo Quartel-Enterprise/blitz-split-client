@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 
 class SupabaseAccountRemoteDataSource(
     private val auth: Auth,
@@ -81,6 +82,10 @@ class SupabaseAccountRemoteDataSource(
         }
     }
 
+    override suspend fun saveDisplayName(name: String) {
+        auth.updateUser { data { put(FULL_NAME_KEY, name) } }
+    }
+
     override suspend fun linkWithBrowser(provider: AccountProvider) {
         auth.linkIdentity(provider.toIdTokenProvider())
     }
@@ -127,7 +132,7 @@ class SupabaseAccountRemoteDataSource(
         socialProvider = user.identities.orEmpty().firstNotNullOfOrNull { identity ->
             AccountProvider.fromCodeOrNull(identity.provider)
         },
-        displayName = user.userMetadata.findString("full_name", "name"),
+        displayName = user.userMetadata.findString(FULL_NAME_KEY, "name"),
         photoUrl = user.userMetadata.findString("avatar_url", "picture"),
     )
 
@@ -145,6 +150,7 @@ class SupabaseAccountRemoteDataSource(
     }
 
     private companion object {
+        const val FULL_NAME_KEY = "full_name"
         const val RECOVER_FUNCTION = "recover"
         const val RECOVERY_CODE_FUNCTION = "recovery-code"
         const val HTTP_BAD_REQUEST = 400

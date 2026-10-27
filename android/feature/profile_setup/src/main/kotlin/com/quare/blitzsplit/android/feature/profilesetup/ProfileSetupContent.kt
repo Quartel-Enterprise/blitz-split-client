@@ -62,6 +62,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
@@ -356,15 +357,15 @@ private fun NameField(
         modifier = modifier.fillMaxWidth(),
         label = { Text(stringResource(R.string.profile_setup_name_label)) },
         placeholder = { Text(stringResource(R.string.profile_setup_name_placeholder)) },
-        isError = state.showsNameTooShort,
+        isError = state.nameError != null,
         singleLine = true,
         supportingText = {
-            val hint = if (state.showsNameTooShort) {
-                R.string.profile_setup_name_too_short
-            } else {
-                R.string.profile_setup_name_hint
+            val hint = when (state.nameError) {
+                NameError.TOO_SHORT -> stringResource(R.string.profile_setup_name_too_short, state.nameMinLength)
+                NameError.TOO_LONG -> stringResource(R.string.profile_setup_name_too_long, state.nameMaxLength)
+                null -> stringResource(R.string.profile_setup_name_hint)
             }
-            Text(stringResource(hint))
+            Text(hint)
         },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onEvent(ProfileSetupUiEvent.OnContinueClicked) }),
@@ -480,7 +481,7 @@ private fun ProfileSetupPreview() {
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
-                showsNameTooShort = false,
+                nameError = null,
                 canContinue = true,
                 isSaving = false,
             ),
@@ -501,7 +502,7 @@ private fun ProfileSetupInvalidNamePreview() {
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = true,
-                showsNameTooShort = true,
+                nameError = NameError.TOO_SHORT,
                 canContinue = false,
                 isSaving = false,
             ),

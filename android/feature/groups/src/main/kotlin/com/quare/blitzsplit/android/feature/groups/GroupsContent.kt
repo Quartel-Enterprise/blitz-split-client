@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.groups
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,12 +25,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.CloudDone
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.QrCode2
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -48,8 +49,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -201,7 +204,11 @@ private fun GroupsHeader(
         Row(verticalAlignment = Alignment.Top) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 title()
-                SyncBadgeChip(badge = state.syncBadge)
+                SyncBadgeChip(
+                    badge = state.syncBadge,
+                    canRetry = state.canRetrySync,
+                    onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+                )
             }
             profileButton()
         }
@@ -209,20 +216,31 @@ private fun GroupsHeader(
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { profileButton() }
             title()
-            SyncBadgeChip(badge = state.syncBadge)
+            SyncBadgeChip(
+                badge = state.syncBadge,
+                canRetry = state.canRetrySync,
+                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+            )
         }
     }
 }
 
 @Composable
-private fun SyncBadgeChip(badge: SyncBadge) {
+private fun SyncBadgeChip(
+    badge: SyncBadge?,
+    canRetry: Boolean,
+    onRetry: () -> Unit,
+) {
     val (icon, label) = when (badge) {
+        null -> return
         SyncBadge.OFFLINE -> Icons.Outlined.CloudOff to R.string.groups_sync_offline
         SyncBadge.SYNCING -> Icons.Outlined.CloudSync to R.string.groups_sync_syncing
-        SyncBadge.SYNCED -> Icons.Outlined.CloudDone to R.string.groups_sync_synced
+        SyncBadge.FAILED -> Icons.Outlined.Refresh to R.string.groups_sync_failed
     }
+    val shape = MaterialTheme.shapes.small
     Surface(
-        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.clip(shape).clickable(enabled = canRetry, role = Role.Button, onClick = onRetry),
+        shape = shape,
         color = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

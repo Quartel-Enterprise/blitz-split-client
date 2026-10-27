@@ -8,5 +8,6 @@ fun interface ConnectWithIdToken {
         provider: AccountProvider,
         idToken: String,
         rawNonce: String?,
+        fullName: String?,
     ): Result<ConnectResult>
 }

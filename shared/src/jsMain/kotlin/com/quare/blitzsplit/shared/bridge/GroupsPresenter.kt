@@ -12,7 +12,9 @@ import org.koin.mp.KoinPlatform
 class JsGroupsState(
     val avatarInitial: String,
     val avatarColor: String,
-    val syncBadge: String,
+    // Why: null when everything is synced, which draws no badge.
+    val syncBadge: String?,
+    val canRetrySync: Boolean,
     val showsRecoveryCodePrompt: Boolean,
 )
 
@@ -25,7 +27,8 @@ class GroupsPresenter {
             JsGroupsState(
                 avatarInitial = state.avatarInitial,
                 avatarColor = state.avatarColor.code,
-                syncBadge = state.syncBadge.name,
+                syncBadge = state.syncBadge?.name,
+                canRetrySync = state.canRetrySync,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
             )
         }
@@ -60,6 +63,10 @@ class GroupsPresenter {
 
     fun openActivity() {
         viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
+    }
+
+    fun retrySync() {
+        viewModel.onEvent(GroupsUiEvent.OnRetrySyncClicked)
     }
 
     fun dispose() {

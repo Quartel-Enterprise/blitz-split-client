@@ -244,7 +244,7 @@ private struct NameSection: View {
                     .submitLabel(.done)
                     .onSubmit { model.send(ProfileSetupUiEventOnContinueClicked.shared) }
                     .accessibilityLabel("Your name")
-                    if state.showsNameTooShort {
+                    if state.nameError != nil {
                         Image(systemName: "exclamationmark.circle.fill")
                             .foregroundStyle(Palette.negative)
                             .accessibilityHidden(true)
@@ -262,10 +262,18 @@ private struct NameSection: View {
                     onFocus()
                 }
             }
-            Text(state.showsNameTooShort ? "Type at least 2 letters." : "You can change it later in Profile." as LocalizedStringKey)
+            Text(nameHint(state))
                 .font(.footnote)
-                .foregroundStyle(state.showsNameTooShort ? Palette.negative : .secondary)
+                .foregroundStyle(state.nameError != nil ? Palette.negative : .secondary)
                 .padding(.horizontal, 20)
+        }
+    }
+
+    private func nameHint(_ state: ProfileSetupUiState) -> LocalizedStringKey {
+        switch state.nameError {
+        case .tooShort: "Type at least \(Int(state.nameMinLength)) letters."
+        case .tooLong: "Use up to \(Int(state.nameMaxLength)) characters."
+        default: "You can change it later in Profile."
         }
     }
 }

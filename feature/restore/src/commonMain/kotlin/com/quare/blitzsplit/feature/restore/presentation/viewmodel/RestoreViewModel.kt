@@ -139,8 +139,12 @@ class RestoreViewModel(
     private fun handleIdToken(event: RestoreUiEvent.OnIdTokenReceived) {
         isConnectingWithIdToken = true
         viewModelScope.launch {
-            connectWithIdToken(provider = event.provider, idToken = event.idToken, rawNonce = event.rawNonce)
-                .onSuccess { finishSignIn() }
+            connectWithIdToken(
+                provider = event.provider,
+                idToken = event.idToken,
+                rawNonce = event.rawNonce,
+                fullName = event.fullName,
+            ).onSuccess { finishSignIn() }
                 .onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
             isConnectingWithIdToken = false
         }

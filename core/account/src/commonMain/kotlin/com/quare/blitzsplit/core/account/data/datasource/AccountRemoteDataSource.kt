@@ -25,6 +25,8 @@ interface AccountRemoteDataSource {
         rawNonce: String?,
     )
 
+    suspend fun saveDisplayName(name: String)
+
     suspend fun linkWithBrowser(provider: AccountProvider)
 
     suspend fun signInWithBrowser(provider: AccountProvider)

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
-import { t } from '@/i18n'
+import { t, type MessageKey } from '@/i18n'
 import { avatarColorLabel, avatarStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
@@ -18,9 +18,15 @@ export function ProfileSetupScreen() {
   return <ProfileSetupForm presenter={presenter} state={state} />
 }
 
+const nameErrors: Record<string, MessageKey> = {
+  TOO_SHORT: 'profileSetup_nameTooShort',
+  TOO_LONG: 'profileSetup_nameTooLong',
+}
+
 function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresenter; state: JsProfileSetupState }) {
   const [name, setName] = useDraft(state.name, (value) => presenter.changeName(value))
   const photoInput = useRef<HTMLInputElement>(null)
+  const nameError = state.nameError ? nameErrors[state.nameError] : null
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
       <form
@@ -112,12 +118,12 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
             autoComplete="name"
             placeholder={t('profileSetup_namePlaceholder')}
             value={name}
-            aria-invalid={state.showsNameTooShort}
+            aria-invalid={nameError !== null}
             aria-describedby="profile-name-help"
             onChange={(event) => setName(event.target.value)}
           />
-          <span id="profile-name-help" role={state.showsNameTooShort ? 'alert' : undefined} className={cn('text-xs', state.showsNameTooShort ? 'text-destructive' : 'text-muted-foreground')}>
-            {t(state.showsNameTooShort ? 'profileSetup_nameTooShort' : 'profileSetup_nameHint')}
+          <span id="profile-name-help" role={nameError ? 'alert' : undefined} className={cn('text-xs', nameError ? 'text-destructive' : 'text-muted-foreground')}>
+            {t(nameError ?? 'profileSetup_nameHint', { min: state.nameMinLength, max: state.nameMaxLength })}
           </span>
         </div>
         <div role="note" className="flex gap-2.5 rounded-lg bg-muted p-3 text-xs leading-relaxed text-muted-foreground">

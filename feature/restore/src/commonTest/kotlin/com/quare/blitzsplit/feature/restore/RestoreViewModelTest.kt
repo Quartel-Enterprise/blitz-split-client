@@ -200,12 +200,27 @@ class RestoreViewModelTest {
         }
 
     @Test
+    fun `GIVEN the first Apple sign in WHEN the ID token arrives with the name THEN hands the name on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE)
+
+            // When
+            viewModel.onEvent(
+                RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira"),
+            )
+
+            // Then
+            assertEquals(listOf<String?>("Pierre Vieira"), account.idTokenFullNames)
+        }
+
+    @Test
     fun `GIVEN an account with a profile WHEN the ID token arrives THEN opens the groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario(outcome = SignInOutcome.PROFILE_RESTORED)
 
         // When
-        viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce"))
+        viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null))
 
         // Then
         assertEquals(listOf(AccountProvider.GOOGLE to "token"), account.idTokenConnections)
@@ -219,7 +234,7 @@ class RestoreViewModelTest {
             prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE)
 
             // When
-            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null))
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null, null))
 
             // Then
             assertEquals(Route.ProfileSetup, navigator.backStack.value.last())
@@ -246,7 +261,7 @@ class RestoreViewModelTest {
             prepareScenario(connectResult = Result.failure(IllegalStateException("rejected")))
 
             // When
-            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null))
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null))
 
             // Then
             assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)

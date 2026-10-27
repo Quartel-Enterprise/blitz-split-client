@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.provider.image.AvatarImageEncoder
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
+import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -74,7 +75,7 @@ class ProfileSetupViewModelTest {
         // Then
         assertEquals("", state.name)
         assertFalse(state.canContinue)
-        assertFalse(state.showsNameTooShort)
+        assertNull(state.nameError)
     }
 
     @Test
@@ -86,13 +87,13 @@ class ProfileSetupViewModelTest {
         viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("P"))
 
         // Then
-        assertTrue(viewModel.uiState.value.showsNameTooShort)
+        assertEquals(NameError.TOO_SHORT, viewModel.uiState.value.nameError)
         assertFalse(viewModel.uiState.value.canContinue)
         assertEquals("P", viewModel.uiState.value.avatarInitial)
     }
 
     @Test
-    fun `GIVEN a long paste WHEN typing THEN keeps the first 40 characters`() = runTest(testDispatcher) {
+    fun `GIVEN a long paste WHEN typing THEN keeps it whole with the too long error`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -100,8 +101,42 @@ class ProfileSetupViewModelTest {
         viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("a".repeat(60)))
 
         // Then
-        assertEquals(40, viewModel.uiState.value.name.length)
+        val state = viewModel.uiState.value
+        assertEquals(60, state.name.length)
+        assertEquals(NameError.TOO_LONG, state.nameError)
+        assertFalse(state.canContinue)
     }
+
+    @Test
+    fun `GIVEN a name too long WHEN shortened to 40 characters THEN hides the error and allows continuing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("a".repeat(41)))
+
+            // When
+            viewModel.onEvent(ProfileSetupUiEvent.OnNameChanged("a".repeat(40)))
+
+            // Then
+            assertNull(viewModel.uiState.value.nameError)
+            assertTrue(viewModel.uiState.value.canContinue)
+        }
+
+    @Test
+    fun `GIVEN a Google name over 40 characters WHEN the screen opens THEN prefills it whole with the error`() =
+        runTest(testDispatcher) {
+            // Given
+            val longName = "Pierre Vieira de Souza Albuquerque Cavalcanti"
+            prepareScenario(sessionUser = SessionUser("u", AccountProvider.GOOGLE, longName, null))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(longName, state.name)
+            assertEquals(NameError.TOO_LONG, state.nameError)
+            assertFalse(state.canContinue)
+        }
 
     @Test
     fun `GIVEN a valid name and color WHEN continuing THEN saves the profile and opens the groups`() =

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class ProfileRepositoryImpl(
@@ -19,6 +20,11 @@ class ProfileRepositoryImpl(
     private val currentTimeMillis: CurrentTimeMillis,
 ) : ProfileRepository {
     override fun observeProfile(): Flow<UserProfile?> = local.observe().map { entity -> entity?.let(mapper::toDomain) }
+
+    override fun observeHasPendingChanges(): Flow<Boolean> = local
+        .observe()
+        .map { entity -> entity?.pendingSync == true }
+        .distinctUntilChanged()
 
     override suspend fun saveProfile(profile: UserProfile) {
         local.upsert(mapper.toEntity(profile = profile, updatedAt = currentTimeMillis(), pendingSync = true))

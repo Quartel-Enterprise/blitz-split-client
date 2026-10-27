@@ -24,6 +24,7 @@ interface AccountRepository {
         provider: AccountProvider,
         idToken: String,
         rawNonce: String?,
+        fullName: String?,
     ): Result<ConnectResult>
 
     suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit>

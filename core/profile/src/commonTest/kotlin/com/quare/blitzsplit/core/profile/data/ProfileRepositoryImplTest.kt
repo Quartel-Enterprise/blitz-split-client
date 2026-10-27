@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -52,6 +53,30 @@ class ProfileRepositoryImplTest {
 
         // Then
         assertEquals(UserProfile("Pierre", AvatarColor.LILAC, photo = null), profile)
+    }
+
+    @Test
+    fun `GIVEN a profile saved offline WHEN observing pending changes THEN reports them`() = runTest {
+        // Given
+        prepareScenario(stored = entity(pendingSync = true))
+
+        // When
+        val hasPendingChanges = repository.observeHasPendingChanges().first()
+
+        // Then
+        assertTrue(hasPendingChanges)
+    }
+
+    @Test
+    fun `GIVEN no profile yet WHEN observing pending changes THEN reports none`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val hasPendingChanges = repository.observeHasPendingChanges().first()
+
+        // Then
+        assertFalse(hasPendingChanges)
     }
 
     @Test

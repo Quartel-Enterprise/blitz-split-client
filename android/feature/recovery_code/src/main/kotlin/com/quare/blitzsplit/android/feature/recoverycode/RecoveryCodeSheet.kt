@@ -104,6 +104,7 @@ private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
                     provider = AccountProvider.GOOGLE,
                     idToken = result.idToken,
                     rawNonce = result.rawNonce,
+                    fullName = null,
                 )
 
                 GoogleSignInResult.Cancelled -> RecoveryCodeUiEvent.OnNativeSignInCancelled

@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface ProfileRepository {
     fun observeProfile(): Flow<UserProfile?>
 
+    fun observeHasPendingChanges(): Flow<Boolean>
+
     suspend fun saveProfile(profile: UserProfile)
 
     suspend fun uploadPendingProfile(userId: String): Result<Unit>
