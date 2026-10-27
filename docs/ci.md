@@ -44,8 +44,10 @@ The shared steps live in `.github/actions/claude-review`:
 - `post-review.sh` posts every finding as one review, anchored to the reviewed commit; a finding outside the diff goes
   in the review body.
 
-The action hides Claude's output, since this repository's logs are public. A tool the review was denied shows as a
-warning on the run, with only its name: allow it in `action.yml` when the review needs it.
+The action hides Claude's output, since this repository's logs are public. A tool the review was denied, or a Bash
+command the guard refused, shows as a warning on the run, with only its name. Allow it only when it can neither read
+nor write a file it is given, nor print the environment, and then in the four places that list the commands
+together: `--allowedTools` in `action.yml`, `bash-guard.sh`, the prompt and this page.
 
 The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection in a diff could
 ask the review to quote one in a public comment, or to overwrite what runs with the App's token. So:
@@ -56,8 +58,8 @@ ask the review to quote one in a public comment, or to overwrite what runs with 
   its credentials), the checkout's `.git` and the home's files that hold credentials (`~/.ssh`, `~/.config`,
   `~/.gitconfig`, `~/.claude.json`…). Claude Code's own session folder (`~/.claude/projects`) stays readable, since a
   Bash output too long to show, such as a large `gh pr diff`, is saved there. A symlink the pull request adds that
-  leaves the checkout or enters its `.git` is removed for the review and restored before the fix commit.
-  `claude-review`'s checkout doesn't persist its credentials.
+  leaves the checkout or enters its `.git`, `.github` or `.claude` is removed for the review and restored before the
+  fix commit. `claude-review`'s checkout doesn't persist its credentials.
 - The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), plus
   `git status` and `git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
   `git blame` are left out, since they read or write a file they are given (`--no-index`, `--contents`,
@@ -82,9 +84,10 @@ ask the review to quote one in a public comment, or to overwrite what runs with 
 **What is left.** The tokens are still in the session's own environment: `claude-code-action` hands the session the
 OAuth token, and `gh` needs a GitHub token in its commands'. Every way to print them that a review found is closed,
 but an allowlist can't prove a listed command has no other way, and the mask only knows a token's plain shapes: one
-the model is talked into encoding still gets through. Only someone who can push a branch to this repository can try, since forks
-are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a new OAuth token
-with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the job.
+the model is talked into encoding still gets through. Only someone who can push a branch to this repository can
+try, since forks are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a
+new OAuth token with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the
+job.
 
 ### Setup
 
