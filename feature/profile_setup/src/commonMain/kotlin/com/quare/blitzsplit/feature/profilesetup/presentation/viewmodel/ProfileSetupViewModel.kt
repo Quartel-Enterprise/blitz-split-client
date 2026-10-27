@@ -79,7 +79,7 @@ class ProfileSetupViewModel(
                     name = name,
                     avatarColor = existing?.avatarColor ?: state.avatarColor,
                     photo = state.photo ?: existing?.photo ?: sessionUser?.photoUrl?.let(ProfilePhoto::Remote),
-                    nameError = NameError.TOO_LONG.takeIf { validation == DisplayNameValidation.TOO_LONG },
+                    nameError = nameErrorOf(name, validation),
                     canContinue = validation == DisplayNameValidation.VALID,
                 )
             }

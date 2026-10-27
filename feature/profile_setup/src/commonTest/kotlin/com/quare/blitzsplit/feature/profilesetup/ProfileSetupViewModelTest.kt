@@ -139,6 +139,21 @@ class ProfileSetupViewModelTest {
         }
 
     @Test
+    fun `GIVEN a one letter Google name WHEN the screen opens THEN prefills it with the too short error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(sessionUser = SessionUser("u", AccountProvider.GOOGLE, "P", null))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("P", state.name)
+            assertEquals(NameError.TOO_SHORT, state.nameError)
+            assertFalse(state.canContinue)
+        }
+
+    @Test
     fun `GIVEN a valid name and color WHEN continuing THEN saves the profile and opens the groups`() =
         runTest(testDispatcher) {
             // Given

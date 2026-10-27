@@ -238,8 +238,14 @@ private fun SyncBadgeChip(
         SyncBadge.FAILED -> Icons.Outlined.Refresh to R.string.groups_sync_failed
     }
     val shape = MaterialTheme.shapes.small
+    // Why: only the failed badge is a button; the others stay plain text for TalkBack, not a disabled button.
+    val retryModifier = if (canRetry) {
+        Modifier.clip(shape).clickable(role = Role.Button, onClick = onRetry)
+    } else {
+        Modifier
+    }
     Surface(
-        modifier = Modifier.clip(shape).clickable(enabled = canRetry, role = Role.Button, onClick = onRetry),
+        modifier = retryModifier,
         shape = shape,
         color = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
