@@ -44,13 +44,50 @@ The shared steps live in `.github/actions/claude-review`:
 - `post-review.sh` posts every finding as one review, anchored to the reviewed commit; a finding outside the diff goes
   in the review body.
 
-The action hides Claude's output, since this repository's logs are public. A tool the review was denied shows as a
-warning on the run, with only its name: allow it in `action.yml` when the review needs it.
+The action hides Claude's output, since this repository's logs are public. A tool the review was denied, or a Bash
+command the guard refused, shows as a warning on the run, with only its name. Allow it only when it can neither read
+nor write a file it is given, nor print the environment, and then in the four places that list the commands
+together: `--allowedTools` in `action.yml`, `bash-guard.sh`, the prompt and this page.
 
-The review's shell can still read the runner's environment and write files outside the checkout, through the
-read-only commands it is allowed. So the hook's scripts are copied to a read-only directory before the session
-starts, what the hook acts on comes in its arguments, and `post-review.sh` masks anything shaped like a Claude or
-GitHub token before posting. Only pull requests from branches of this repository are reviewed.
+The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection in a diff could
+ask the review to quote one in a public comment, or to overwrite what runs with the App's token. So:
+
+- The session reads files only through the Read, Grep and Glob tools, and only in the checkout and in a copy of the
+  files the pull request changes, as of the reviewed commit (for the suggestions' lines). Every other path is
+  denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `/tmp`, `$RUNNER_TEMP` (where checkout keeps
+  its credentials), the checkout's `.git` and the home's files that hold credentials (`~/.ssh`, `~/.config`,
+  `~/.gitconfig`, `~/.claude.json`…). Claude Code's own session folder (`~/.claude/projects`) stays readable, since a
+  Bash output too long to show, such as a large `gh pr diff`, is saved there. A symlink the pull request adds that
+  leaves the checkout or enters its `.git`, `.github` or `.claude` is removed for the review and restored before the
+  fix commit. `claude-review`'s checkout doesn't persist its credentials.
+- The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), plus
+  `git status` and `git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
+  `git blame` are left out, since they read or write a file they are given (`--no-index`, `--contents`,
+  `--output`). A PreToolUse hook (`bash-guard.sh`) decides before every Bash call, the read-only ones Claude Code
+  approves on its own included: it lets through only one plain line of those commands, with no quoting, expansion,
+  pipe or redirection, and none of `gh`'s `--jq`, `-q`, `--template` and `-t`, which read the environment, even
+  with a value attached. A search therefore runs without quotes. What it refuses shows as a warning on the run.
+- `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` keeps the Claude OAuth token out of the environment of every Bash command and
+  hook; the hook's log says whether it was there. The GitHub token `gh` needs stays. It runs every Bash command in
+  Claude Code's sandbox, so the action installs bubblewrap and socat first, and warns when the sandbox can't start.
+- The hook's scripts are copied to a read-only directory outside the checkout, and what the hook acts on (when the
+  review started, whether it commits fixes) comes in its arguments. The session can't write there, and the markers
+  are checked anyway: the posting step looks the review up on GitHub, on any commit, and only trusts `.posted` when
+  GitHub can't be read; a fix commit named by `.pushed` only counts when it is the checkout's head on top of the
+  reviewed commit.
+- `post-review.sh` masks anything shaped like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…,
+  a JWT, a Basic or Bearer value with a digit) before posting, and the hook's log goes through the same mask. So
+  does `commit-fixes.sh` for the fix commit's message, and it pushes nothing when a fix adds such a string.
+- Each review carries its workflow run in a hidden comment, so a run only takes its own review for posted, and only
+  from `claude[bot]` or `github-actions[bot]`.
+
+**What is left.** The tokens are still in the session's own environment: `claude-code-action` hands the session the
+OAuth token, and `gh` needs a GitHub token in its commands'. Every way to print them that a review found is closed,
+but an allowlist can't prove a listed command has no other way, and the mask only knows a token's plain shapes: one
+the model is talked into encoding still gets through. Only someone who can push a branch to this repository can
+try, since forks are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a
+new OAuth token with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the
+job.
 
 ### Setup
 

@@ -3,8 +3,9 @@
 # holds as one pull request review, through post-review.sh. It runs inside the session, so gh posts
 # with the Claude GitHub App's token, as claude[bot], before the action revokes it. The hook's JSON
 # arrives on stdin with the last assistant message; the transcript it names is the fallback, though
-# it may not hold that message yet. A marker file tells the action's own posting step the review is
-# already posted; a log file tells it what the hook saw (counts and sizes only: the session's output
+# it may not hold that message yet. A marker file tells a Stop that fires again the review is already
+# posted, though the action's posting step looks it up on GitHub instead; a log file tells that step
+# what the hook saw (counts and sizes only: the session's output
 # is hidden because the logs are public, and the log must not leak it). When the hook finds no
 # findings list, it posts nothing and leaves the posting to that step, which reads the reply from the
 # action's execution file instead. Whatever happens, the hook exits 0: it must never block the session
@@ -13,15 +14,21 @@
 #
 #   stop-hook.sh <state dir> <started> <fix: true|false>
 #
-# The scripts sit in a read-only directory, and the markers in the state directory. What the hook
-# acts on comes in its arguments, set by the action, since an allowed git diff --output can still
-# write a file there: a forged marker can at most stop a review from posting.
+# The scripts sit in a read-only directory, and the markers in the state directory, both outside the
+# checkout, where the session's tools can't write. What the hook acts on comes in its arguments, set
+# by the action, and a marker is checked before it counts, in case a later change lets the session
+# write there: the posting step looks the review up on GitHub rather than trusting .posted, and
+# post-review.sh only names a fix commit that is the checkout's head on top of the reviewed commit.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
-state=${1:?usage: stop-hook.sh <state dir> <started> <fix>}
+state=${1:-}
 started=${2:-}
 fix=${3:-false}
+if [ -z "$state" ] || [ ! -d "$state" ]; then
+  echo "stop-hook: no state directory, the action's posting step takes over" >&2
+  exit 0
+fi
 log="$state/.hook-log"
 note() { echo "stop-hook: $*" | tee -a "$log" >&2; }
 
@@ -44,6 +51,14 @@ if [ -z "${PR_HEAD_SHA:-}" ] && [ -n "${GITHUB_EVENT_PATH:-}" ] && [ -f "$GITHUB
   PR_HEAD_SHA=$(jq -r '.pull_request.head.sha // ""' "$GITHUB_EVENT_PATH")
   PR_BASE_SHA=$(jq -r '.pull_request.base.sha // ""' "$GITHUB_EVENT_PATH")
   export PR_HEAD_SHA PR_BASE_SHA
+fi
+
+# Whether CLAUDE_CODE_SUBPROCESS_ENV_SCRUB kept the OAuth token out of the hooks, as it does for Bash:
+# only present or absent, never the value.
+if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+  note "the Claude OAuth token is in the hook's environment"
+else
+  note "the Claude OAuth token is not in the hook's environment"
 fi
 
 replies=$(jq -r '.last_assistant_message // "" | select(length > 0) | @base64' <<< "$input")
@@ -88,7 +103,8 @@ if [ -n "$started" ] && url=$(STARTED="$started" "$dir/post-review.sh" --already
 fi
 
 # With fix, the fixes are pushed first, so the review can name their commit; a Stop that fires again
-# finds them pushed already.
+# finds them pushed already. After a failed attempt it tries again, and .commit-log then holds the
+# second attempt's error: the hook log keeps both.
 if [ "$fix" = true ] && [ ! -f "$state/.pushed" ]; then
   if sha=$("$dir/commit-fixes.sh" <<< "$findings" 2> "$state/.commit-log"); then
     echo "$sha" > "$state/.pushed"
