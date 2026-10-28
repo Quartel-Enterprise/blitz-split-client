@@ -266,53 +266,6 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a change not pushed yet WHEN switching to another user THEN lets the account profile replace it`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedProfile = pierre,
-                status = anonymous,
-                online = false,
-                pendingChanges = true,
-            )
-            coordinator.start()
-            runCurrent()
-
-            // When
-            account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
-            runCurrent()
-
-            // Then
-            assertEquals(listOf(0, 0), profile.pullCountsAtDeferral)
-            assertEquals(listOf(OTHER_USER_ID), profile.downloadedUserIds)
-        }
-
-    @Test
-    fun `GIVEN the deferral fails WHEN switching THEN skips that sync and still handles the next switch`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            status = anonymous,
-            online = false,
-            pendingChanges = true,
-        )
-        coordinator.start()
-        runCurrent()
-        profile.deferralError = IllegalStateException("disk full")
-        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
-        runCurrent()
-        profile.deferralError = null
-
-        // When
-        account.status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
-        runCurrent()
-
-        // Then
-        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.downloadedUserIds)
-        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
-    }
-
-    @Test
     fun `GIVEN a device not registered yet WHEN the first sync registers it THEN syncs only once`() = runTest {
         // Given
         prepareScenario(
@@ -350,7 +303,6 @@ class SyncCoordinatorTest {
         // Then
         assertEquals(0, account.registrationCount)
         assertTrue(profile.downloadedUserIds.isEmpty())
-        assertTrue(profile.pullCountsAtDeferral.isEmpty())
     }
 
     @Test

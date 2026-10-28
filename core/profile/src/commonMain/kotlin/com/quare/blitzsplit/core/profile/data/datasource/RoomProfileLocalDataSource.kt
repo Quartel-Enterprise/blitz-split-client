@@ -29,15 +29,27 @@ class RoomProfileLocalDataSource(
         dao.deleteAll()
     }
 
-    override suspend fun deferToRemote() {
-        dao.deferToRemote()
+    override suspend fun claimUnowned(ownerUserId: String) {
+        dao.claimUnowned(ownerUserId)
     }
 
-    override suspend fun reclaimDeferred(
+    override suspend fun replaceOtherUsersCopy(entity: ProfileEntity) {
+        dao.replaceOtherUsersCopy(
+            displayName = entity.displayName,
+            avatarColor = entity.avatarColor,
+            photoUrl = entity.photoUrl,
+            remoteUpdatedAt = entity.updatedAt,
+            ownerUserId = entity.ownerUserId,
+        )
+    }
+
+    override suspend fun reclaimOtherUsersCopy(
+        ownerUserId: String,
         updatedAt: Long,
         photoUrl: String?,
     ) {
-        dao.reclaimDeferred(
+        dao.reclaimOtherUsersCopy(
+            ownerUserId = ownerUserId,
             updatedAt = updatedAt,
             photoUrl = photoUrl,
         )
@@ -52,6 +64,7 @@ class RoomProfileLocalDataSource(
                 avatarColor = entity.avatarColor,
                 photoUrl = entity.photoUrl,
                 remoteUpdatedAt = entity.updatedAt,
+                ownerUserId = entity.ownerUserId,
             )
         }
     }

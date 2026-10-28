@@ -352,8 +352,9 @@ class AccountRepositoryImpl(
 
     /*
      * Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good. A
-     * session that ends on its own drops a scheduled sign out, which was for that account: the changes
-     * it waited on stay on the device.
+     * session that ends on its own, or switches to another user, drops a scheduled sign out, which was for
+     * that account: the changes it waited on stay on the device. Dropped in the same write as the switch,
+     * so no sync can sign out the new user in between.
      */
     private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
         user == null -> copy(
@@ -369,12 +370,14 @@ class AccountRepositoryImpl(
             provider = user.socialProvider.code,
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
             email = user.email,
+            signOutWhenSynced = signOutWhenSynced && userId == user.userId,
         )
 
         else -> copy(
             userId = user.userId,
             provider = null,
             email = null,
+            signOutWhenSynced = signOutWhenSynced && userId == user.userId,
         )
     }
 

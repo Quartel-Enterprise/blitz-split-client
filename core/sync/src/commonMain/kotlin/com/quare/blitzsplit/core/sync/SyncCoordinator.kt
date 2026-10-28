@@ -162,9 +162,9 @@ class SyncCoordinator(
     }
 
     /*
-     * Why: an identity that already belonged to another user switches the session to that user, whose
-     * profile replaces this device's, even a change not pushed yet. The deferral is stored before the pull,
-     * so a pull that fails can't let a later push overwrite it. A link keeps the same id.
+     * Why: an identity that already belonged to another user switches the session to that user, whose profile
+     * replaces this device's copy (see ProfileRepository.downloadProfile), so it syncs right away. A link keeps
+     * the same id.
      */
     private suspend fun syncOnUserSwitch() {
         var previousUserId: String? = null
@@ -175,18 +175,8 @@ class SyncCoordinator(
             .collect { userId ->
                 val isSwitch = previousUserId != null && userId != null
                 previousUserId = userId
-                if (isSwitch) runDeferralToAccount().onSuccess { syncUntilSettled() }
+                if (isSwitch) syncUntilSettled()
             }
-    }
-
-    /*
-     * Why: right away, so a sync already queued on the lock finds nothing to push under the new user, and again
-     * under the lock, so a pull of the previous user still in flight can't land after it. A failure skips the
-     * sync, which would push the copy over the account, and keeps the collector alive for the next switch.
-     */
-    private suspend fun runDeferralToAccount(): Result<Unit> = suspendRunCatching {
-        profileRepository.deferToAccountProfile()
-        syncLock.withLock { profileRepository.deferToAccountProfile() }
     }
 
     private fun userIdOrNull(status: AccountStatus): String? = when (status) {

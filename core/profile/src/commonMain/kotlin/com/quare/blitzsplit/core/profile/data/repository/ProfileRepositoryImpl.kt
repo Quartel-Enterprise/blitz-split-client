@@ -4,9 +4,10 @@ import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.dto.ProfileDto
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
-import com.quare.blitzsplit.core.provider.room.entity.DEFERRED_UPDATED_AT
+import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -27,18 +28,20 @@ class ProfileRepositoryImpl(
         .map { entity -> entity?.pendingSync == true }
         .distinctUntilChanged()
 
+    // Why: an edit keeps the copy its owner's, so one made to another user's copy still gives way to the account.
     override suspend fun saveProfile(profile: UserProfile) {
         local.upsert(
             mapper.toEntity(
                 profile = profile,
                 updatedAt = currentTimeMillis(),
                 pendingSync = true,
+                ownerUserId = local.get()?.ownerUserId,
             ),
         )
     }
 
     override suspend fun uploadPendingProfile(userId: String): Result<Unit> = suspendRunCatching {
-        val pending = local.get()?.takeIf { it.pendingSync } ?: return@suspendRunCatching
+        val pending = local.get()?.takeIf { it.pendingSync && it.ownerUserId == userId } ?: return@suspendRunCatching
         val photoUrl = pending.pendingPhoto?.let { jpeg -> uploadPhoto(userId, jpeg, pending.updatedAt) }
             ?: pending.photoUrl
         remote.upsert(
@@ -53,26 +56,53 @@ class ProfileRepositoryImpl(
         )
     }
 
+    /*
+     * Why: the copy is checked against the user this sync runs under, not a switch seen in memory, so a sync
+     * already in flight, a switch the app died in or a failed pull can't push another user's copy over it.
+     */
     override suspend fun downloadProfile(userId: String): Result<Unit> = suspendRunCatching {
         val remoteProfile = remote.fetch(userId)
-        if (remoteProfile != null) {
-            local.applyRemote(mapper.toEntity(remoteProfile))
+        val stored = local.get()
+        val owner = stored?.ownerUserId
+        if (owner != null && owner != userId) {
+            replaceOtherUsersCopy(
+                stored = stored,
+                userId = userId,
+                remoteProfile = remoteProfile,
+            )
         } else {
-            reclaimDeferred()
+            local.claimUnowned(userId)
+            remoteProfile?.let {
+                local.applyRemote(
+                    mapper.toEntity(
+                        dto = it,
+                        ownerUserId = userId,
+                    ),
+                )
+            }
         }
     }
 
     // Why: an uploaded photo is the previous user's object, so the account starts without it; another picture stays.
-    private suspend fun reclaimDeferred() {
-        val deferred = local.get()?.takeIf { !it.pendingSync && it.updatedAt == DEFERRED_UPDATED_AT } ?: return
-        local.reclaimDeferred(
-            updatedAt = currentTimeMillis(),
-            photoUrl = deferred.photoUrl?.takeUnless(photoRemote::isUploaded),
-        )
-    }
-
-    override suspend fun deferToAccountProfile() {
-        local.deferToRemote()
+    private suspend fun replaceOtherUsersCopy(
+        stored: ProfileEntity,
+        userId: String,
+        remoteProfile: ProfileDto?,
+    ) {
+        if (remoteProfile != null) {
+            local.replaceOtherUsersCopy(
+                mapper.toEntity(
+                    dto = remoteProfile,
+                    ownerUserId = userId,
+                ),
+            )
+        } else {
+            local.reclaimOtherUsersCopy(
+                ownerUserId = userId,
+                updatedAt = currentTimeMillis(),
+                photoUrl = stored.photoUrl?.takeUnless(photoRemote::isUploaded),
+            )
+        }
     }
 
     override suspend fun clear() {

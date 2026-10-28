@@ -12,13 +12,11 @@ interface ProfileRepository {
 
     suspend fun uploadPendingProfile(userId: String): Result<Unit>
 
-    suspend fun downloadProfile(userId: String): Result<Unit>
-
     /*
-     * Why: on a switch to another user the copy on the device was the previous user's, so the account's profile
-     * replaces it on the next pull, even over a change not pushed yet. It goes up only if the account has none.
+     * Why: a copy of another user's profile, after a switch, gives way to this user's, even a change not pushed
+     * yet, and goes up as this user's only if it has none on the server.
      */
-    suspend fun deferToAccountProfile()
+    suspend fun downloadProfile(userId: String): Result<Unit>
 
     // Why: a sign out leaves no copy of the profile on the device.
     suspend fun clear()

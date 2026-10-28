@@ -17,11 +17,7 @@ class FakeProfileRepository(
     val downloadedUserIds = mutableListOf<String>()
     var pushError: Throwable? = null
     var pullError: Throwable? = null
-    var deferralError: Throwable? = null
     var clearCount = 0
-
-    // Why: how many pulls came before each deferral, since the deferral has to precede the pull.
-    val pullCountsAtDeferral = mutableListOf<Int>()
 
     override fun observeProfile(): Flow<UserProfile?> = profile
 
@@ -43,13 +39,6 @@ class FakeProfileRepository(
     override suspend fun clear() {
         clearCount++
         profile.value = null
-        hasPendingChanges.value = false
-    }
-
-    // Why: like the repository, the copy on the device stops waiting to go up.
-    override suspend fun deferToAccountProfile() {
-        deferralError?.let { throw it }
-        pullCountsAtDeferral += downloadedUserIds.size
         hasPendingChanges.value = false
     }
 

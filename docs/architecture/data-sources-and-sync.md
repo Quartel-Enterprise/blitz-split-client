@@ -62,8 +62,8 @@ so nothing above it sees an HTTP status:
 1. `accountRepository.mirrorSession()`: copies every settled Supabase session (a user, or none after a sign out)
    into the `account` row, so the UI knows the account state offline.
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
-3. `syncOnUserSwitch()`: when the session moves to another user, the new user's profile replaces this device's,
-   and it syncs under the new one.
+3. `syncOnUserSwitch()`: when the session moves to another user, it syncs right away under the new one, whose
+   profile replaces this device's copy (see below).
 4. `syncWhenDue()`: a collector of connectivity, the local profile and its pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
@@ -170,15 +170,22 @@ reloads, so no trip survives it.
 A switch can land on any screen, the recovery code sheet included, which closes on that same update. So
 `SyncCoordinator` syncs again whenever the session moves from one user id to another, and the account's profile
 wins over the one on the device, even over a change not pushed yet: the copy on the device was the previous
-user's. Under the sync lock, before that pull, `ProfileRepository.deferToAccountProfile()` stores the copy as not
-pending with `updatedAt = 0` (`ProfileDao.deferToRemote`), so the next pull that succeeds applies the account's
-profile whatever its age, and a pull that fails leaves nothing to push over it. If the account has no profile on
-the server, the pull marks the deferred copy pending again with the current time (`ProfileDao.reclaimDeferred`),
-and it goes up as the account's. A photo already uploaded is the previous user's storage object, so it is dropped
-(`ProfilePhotoRemoteDataSource.isUploaded`); a Google or Apple picture, or a photo not uploaded yet, goes with it.
-A switch defers the copy twice: right away, so a sync already queued on the lock finds nothing to push, and again
-under the lock, so a pull of the previous user still in flight can't land after it. A link keeps the id and
-doesn't trigger any of this.
+user's. The profile row stores whose copy it is (`ProfileEntity.ownerUserId`), and every sync checks it against
+the user it runs under, rather than a switch seen in memory, so a sync already in flight, a switch the app died in
+or a pull that failed can't push another user's copy:
+
+- A copy of this user, or one made before its account (`NULL`, claimed by the first sync), follows Last-Write-Wins.
+- Another user's copy is replaced by the account's profile whatever its age, a change or a photo not pushed yet
+  included (`ProfileDao.replaceOtherUsersCopy`). An edit made to it keeps its owner, so it gives way too.
+- If the account has no profile on the server, another user's copy goes up as the account's
+  (`ProfileDao.reclaimOtherUsersCopy`). A photo already uploaded is the previous user's storage object, so it is
+  dropped (`ProfilePhotoRemoteDataSource.isUploaded`); a Google or Apple picture, or a photo not uploaded yet,
+  goes with it.
+- `uploadPendingProfile` pushes only a copy of the user it pushes for.
+
+A switch also drops a sign out scheduled with "Sair ao sincronizar", in the same write as the session's new user
+(`AccountRepositoryImpl.toMirrorOf`): it was for the previous account. A link keeps the id and doesn't trigger any
+of this.
 
 After any sign in, `CompleteSignIn` pulls the account's profile: `PROFILE_RESTORED` goes straight to the groups,
 `NEEDS_PROFILE` to the profile setup. A failed pull fails the sign in and the screen shows its error: sending a

@@ -27,6 +27,10 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
         }
 
+        jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+
         jsMain.dependencies {
             implementation(libs.androidx.sqlite.web)
         }
