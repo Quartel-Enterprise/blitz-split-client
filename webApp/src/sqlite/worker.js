@@ -2,10 +2,16 @@
 // https://github.com/danysantiago/room-web-demo (Apache-2.0), the reference worker for
 // androidx.sqlite's WebWorkerSQLiteDriver: runs SQLite WASM in a Web Worker and stores the database in OPFS
 // through the opfs-sahpool VFS, which is much faster than the default OPFS VFS and needs no COOP/COEP headers.
+// One tab at a time: see installSahPool.
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 
 let sqlite3 = null;
 let sahPool = null;
+let sahPoolError = null;
+
+const SAH_POOL_NAME = 'borarachar-sahpool';
+const SAH_POOL_ATTEMPTS = 50;
+const SAH_POOL_RETRY_DELAY_MS = 100;
 
 // Maps to track of active database connections and prepared statements by their unique IDs.
 const databases = new Map(); // stores databaseId -> SQLiteDbObject
@@ -18,9 +24,11 @@ let nextStatementId = 0;
 function openRequest(id, requestData) {
     try {
         const newDatabaseId = nextDatabaseId++;
-        const newDatabase = sahPool
-            ? new sahPool.OpfsSAHPoolDb(toPoolPath(requestData.fileName))
-            : new sqlite3.oo1.OpfsDb(requestData.fileName);
+        if (!sahPool) {
+            postMessage({'id': id, error: 'The database is unavailable: ' + sahPoolError});
+            return;
+        }
+        const newDatabase = new sahPool.OpfsSAHPoolDb(toPoolPath(requestData.fileName));
         databases.set(newDatabaseId, newDatabase);
         postMessage({'id': id, data: {'databaseId': newDatabaseId}});
     } catch (error) {
@@ -159,14 +167,34 @@ function toPoolPath(fileName) {
     return fileName.startsWith('/') ? fileName : '/' + fileName;
 }
 
-// The SAH pool holds exclusive OPFS handles, so only one tab can install it. Any other tab falls back to
-// the slower default OPFS VFS instead of failing. sqlite3 is only published once the VFS choice is made,
-// so no request is handled before it.
+// The SAH pool holds exclusive OPFS handles, so only one tab can install it: the page only starts this
+// worker once it holds the database lock (bridge/shared.ts). The tab that held it before (a reload, the
+// return from a sign in) may release its handles a moment after its lock, hence the retries. There is no
+// fallback VFS: the default OPFS one needs cross-origin isolation, which the app doesn't have, and would
+// keep a second, separate database anyway.
+async function installSahPool(instance) {
+    for (let attempt = 1; ; attempt++) {
+        try {
+            return await instance.installOpfsSAHPoolVfs({
+                name: SAH_POOL_NAME,
+                // Without it, a failed install deletes the pool, the user's data with it
+                preserveOnInitFailure: true,
+                forceReinitIfPreviouslyFailed: true,
+            });
+        } catch (error) {
+            if (attempt === SAH_POOL_ATTEMPTS) throw error;
+            await new Promise(resolve => setTimeout(resolve, SAH_POOL_RETRY_DELAY_MS));
+        }
+    }
+}
+
+// sqlite3 is only published once the pool is installed (or given up on), so no request is handled before it.
 sqlite3InitModule().then(async instance => {
     try {
-        sahPool = await instance.installOpfsSAHPoolVfs({ name: 'borarachar-sahpool' });
+        sahPool = await installSahPool(instance);
     } catch (error) {
-        console.warn('opfs-sahpool unavailable, falling back to the OPFS VFS: ' + error.message);
+        sahPoolError = error.message;
+        console.error('opfs-sahpool unavailable: ' + error.message);
     }
     sqlite3 = instance;
     while (messageQueue.length > 0) {
