@@ -2,9 +2,11 @@ package com.quare.blitzsplit.feature.welcome.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -37,6 +39,7 @@ class WelcomeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val observeAccountStatus: ObserveAccountStatus,
+    private val observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
     private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
     private val completeSignIn: CompleteSignIn,
     private val connectivityObserver: NetworkConnectivityObserver,
@@ -62,6 +65,7 @@ class WelcomeViewModel(
     init {
         observeConnectivity()
         observeBrowserSignIn()
+        endAbandonedBrowserSignIn()
         observeReturningSignIn()
     }
 
@@ -120,6 +124,16 @@ class WelcomeViewModel(
                     val isConnected = observeAccountStatus().first() is AccountStatus.Connected
                     if (!isConnected) finishConnecting(error = WelcomeError.SIGN_IN_FAILED)
                 }
+            }.launchIn(viewModelScope)
+    }
+
+    // Why: as with a cancelled native sheet, closing the browser isn't an error, while a failed callback is.
+    private fun endAbandonedBrowserSignIn() {
+        observeAbandonedBrowserSignIn()
+            .onEach { abandoned ->
+                finishConnecting(
+                    error = WelcomeError.SIGN_IN_FAILED.takeIf { abandoned == AbandonedBrowserSignIn.FAILED },
+                )
             }.launchIn(viewModelScope)
     }
 

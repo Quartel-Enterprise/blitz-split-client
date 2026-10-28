@@ -13,7 +13,9 @@ import io.ktor.http.parseQueryString
  * Why: Supabase Auth redirects a failed OAuth flow with error, error_code and error_description in
  * both the query and the fragment, and a successful one with a code (PKCE, the native apps) or the
  * tokens in the fragment (implicit, the web). On the web the callback is the page itself, so only
- * that full shape counts there: a page with an unrelated ?code= or ?error= isn't a callback.
+ * that full shape counts there: a page with an unrelated ?code= or ?error= isn't a callback. A
+ * person who cancels on the provider's page comes back with the provider's own error: Google's
+ * access_denied, Apple's user_cancelled_authorize.
  */
 internal object SupabaseCallbackUrl {
     fun read(url: String): BrowserCallback? = try {
@@ -33,6 +35,7 @@ internal object SupabaseCallbackUrl {
         val hasTokens = parsed.fragment[ACCESS_TOKEN] != null && parsed.fragment[REFRESH_TOKEN] != null
         return when {
             hasError && isIdentityTaken -> BrowserCallback.IDENTITY_ALREADY_LINKED
+            hasError && parsed.firstOrNull(ERROR) in CANCEL_ERRORS -> BrowserCallback.CANCELLED
             hasError -> BrowserCallback.FAILED
             hasCode || hasTokens -> BrowserCallback.SIGNED_IN
             else -> null
@@ -53,4 +56,5 @@ internal object SupabaseCallbackUrl {
     private const val CODE = "code"
     private const val ACCESS_TOKEN = "access_token"
     private const val REFRESH_TOKEN = "refresh_token"
+    private val CANCEL_ERRORS = setOf("access_denied", "user_cancelled_authorize")
 }

@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
+import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.navigation.AppNavDisplay
 import io.github.jan.supabase.SupabaseClient
@@ -17,6 +19,8 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
     private val supabase: SupabaseClient by inject()
     private val handleBrowserCallback: HandleBrowserCallback by inject()
+    private val handleAppPaused: HandleAppPaused by inject()
+    private val handleAppResumed: HandleAppResumed by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -35,6 +39,18 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         handleAuthCallback(intent)
+    }
+
+    // Why: the browser sign in opens over this activity, which pauses it.
+    override fun onPause() {
+        super.onPause()
+        handleAppPaused()
+    }
+
+    // Why: Android calls it after onNewIntent, so a browser sign in that came back with its callback isn't left open.
+    override fun onResume() {
+        super.onResume()
+        handleAppResumed()
     }
 
     private fun handleAuthCallback(intent: Intent) {

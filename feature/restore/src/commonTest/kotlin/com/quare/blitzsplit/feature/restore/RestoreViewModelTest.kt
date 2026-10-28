@@ -1,11 +1,13 @@
 package com.quare.blitzsplit.feature.restore
 
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.model.TooManyRecoveryAttemptsException
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
@@ -188,6 +190,37 @@ class RestoreViewModelTest {
         // Then
         assertEquals(listOf(AccountProvider.APPLE), account.browserConnections)
     }
+
+    @Test
+    fun `GIVEN a browser sign in WHEN its callback comes back failed THEN shows the error and enables them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            account.abandonedBrowserSignIns.emit(AbandonedBrowserSignIn.FAILED)
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in WHEN the browser closes without finishing THEN enables the buttons`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            account.abandonedBrowserSignIns.emit(AbandonedBrowserSignIn.CANCELLED)
+
+            // Then
+            assertNull(viewModel.uiState.value.connectingProvider)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+            assertNull(viewModel.uiState.value.error)
+        }
 
     @Test
     fun `GIVEN the browser sign in cannot start WHEN clicking a provider THEN shows the sign in error`() =
@@ -488,6 +521,7 @@ class RestoreViewModelTest {
             restoreWithRecoveryCode = RestoreWithRecoveryCodeUseCase(account),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
+            observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
             observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             completeSignIn = {

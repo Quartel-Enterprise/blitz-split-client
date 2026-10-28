@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.account.data.repository
 import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
@@ -17,15 +18,23 @@ import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
+@OptIn(ExperimentalAtomicApi::class)
 class AccountRepositoryImpl(
     private val local: AccountLocalDataSource,
     private val remote: AccountRemoteDataSource,
 ) : AccountRepository {
+    // Why: in memory, since a browser trip doesn't outlive the process that opened it.
+    private val browserTrip = AtomicReference(BrowserTrip.NONE)
+    private val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>(extraBufferCapacity = 1)
+
     /*
      * Why: from a browser callback that opened the app until the session it brings is mirrored, so the
      * screens show that sign in as under way across the page reload of the web. A callback the mirror
@@ -91,7 +100,7 @@ class AccountRepositoryImpl(
             linkWithBrowser(provider)
         } else {
             local.update { account -> account.copy(pendingLinkProvider = null, browserSignInProvider = provider.code) }
-            remote.signInWithBrowser(provider)
+            openBrowser { remote.signInWithBrowser(provider) }
         }
     }
 
@@ -100,17 +109,36 @@ class AccountRepositoryImpl(
      * during a link, so the app reads the URL itself. Like the ID token path, an identity that
      * already belongs to another user signs in to that user, here with a second browser trip.
      */
-    override suspend fun handleBrowserCallback(url: String): Result<Unit> = suspendRunCatching {
-        val callback = remote.readBrowserCallback(url) ?: return@suspendRunCatching
-        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn()
-        val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
-            ?: return@suspendRunCatching
-        // Why: cleared once the second trip has started, so a failed start can be retried with the same URL.
-        if (callback == BrowserCallback.IDENTITY_ALREADY_LINKED) {
-            remote.signInWithBrowser(linkingProvider)
-        }
-        local.update { account -> account.copy(pendingLinkProvider = null) }
+    override suspend fun handleBrowserCallback(url: String): Result<Unit> {
+        val callback = remote.readBrowserCallback(url) ?: return Result.success(Unit)
+        // Why: before any suspension, so the app resuming right after the callback finds the trip closed.
+        val wasBrowserOpen = browserTrip.exchange(BrowserTrip.NONE) != BrowserTrip.NONE
+        return suspendRunCatching { finishBrowserTrip(callback = callback, wasBrowserOpen = wasBrowserOpen) }
+            .onFailure {
+                // Why: no session will come to end the screens' wait, unless Supabase signed in or a second trip is open.
+                val endsNoSession = callback != BrowserCallback.SIGNED_IN && browserTrip.load() == BrowserTrip.NONE
+                if (wasBrowserOpen && endsNoSession) {
+                    abandonedBrowserSignIns.tryEmit(AbandonedBrowserSignIn.FAILED)
+                }
+            }
     }
+
+    // Why: the app leaves for the browser, so only a trip that saw it leave can have been abandoned.
+    override fun handleAppPaused() {
+        browserTrip.compareAndSet(BrowserTrip.OPEN, BrowserTrip.LEFT)
+    }
+
+    /*
+     * Why: the OAuth callback reaches the app before it resumes, so a browser still open once the app
+     * is back was closed without finishing, and no callback will end its sign in.
+     */
+    override fun handleAppResumed() {
+        if (browserTrip.compareAndSet(BrowserTrip.LEFT, BrowserTrip.NONE)) {
+            abandonedBrowserSignIns.tryEmit(AbandonedBrowserSignIn.CANCELLED)
+        }
+    }
+
+    override fun observeAbandonedBrowserSignIn(): Flow<AbandonedBrowserSignIn> = abandonedBrowserSignIns
 
     override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningSignIn
         .map { it.provider }
@@ -159,9 +187,40 @@ class AccountRepositoryImpl(
             account.copy(pendingLinkProvider = provider.code, browserSignInProvider = provider.code)
         }
         try {
-            remote.linkWithBrowser(provider)
+            openBrowser { remote.linkWithBrowser(provider) }
         } catch (exception: Exception) {
             local.update { account -> account.copy(pendingLinkProvider = null) }
+            throw exception
+        }
+    }
+
+    private suspend fun finishBrowserTrip(
+        callback: BrowserCallback,
+        wasBrowserOpen: Boolean,
+    ) {
+        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn()
+        val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
+        val startsSecondTrip = callback == BrowserCallback.IDENTITY_ALREADY_LINKED && linkingProvider != null
+        // Why: only a sign in leaves a session that ends the screens' wait, so any other callback ends it here.
+        val abandoned = when (callback) {
+            BrowserCallback.SIGNED_IN -> null
+            BrowserCallback.CANCELLED -> AbandonedBrowserSignIn.CANCELLED
+            BrowserCallback.FAILED -> AbandonedBrowserSignIn.FAILED
+            BrowserCallback.IDENTITY_ALREADY_LINKED -> AbandonedBrowserSignIn.FAILED.takeUnless { startsSecondTrip }
+        }
+        if (wasBrowserOpen && abandoned != null) abandonedBrowserSignIns.tryEmit(abandoned)
+        if (linkingProvider == null) return
+        // Why: cleared once the second trip has started, so a failed start can be retried with the same URL.
+        if (startsSecondTrip) openBrowser { remote.signInWithBrowser(linkingProvider) }
+        local.update { account -> account.copy(pendingLinkProvider = null) }
+    }
+
+    private suspend fun openBrowser(open: suspend () -> Unit) {
+        browserTrip.store(BrowserTrip.OPEN)
+        try {
+            open()
+        } catch (exception: Exception) {
+            browserTrip.store(BrowserTrip.NONE)
             throw exception
         }
     }
@@ -211,5 +270,11 @@ class AccountRepositoryImpl(
         )
 
         else -> copy(userId = user.userId, provider = null)
+    }
+
+    private enum class BrowserTrip {
+        NONE,
+        OPEN,
+        LEFT,
     }
 }

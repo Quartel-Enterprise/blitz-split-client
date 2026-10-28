@@ -153,6 +153,19 @@ started), when the link can't start, and on sign out; a URL with none pending is
 the trip twice. On the web the callback is the page itself, so only Supabase's full shape counts as one (`error`
 with `error_description`, or `access_token` with `refresh_token`): an unrelated `?code=` or `?error=` is not.
 
+A browser closed without finishing sends no callback at all, so the account layer also remembers, in memory, that a
+browser trip is open, and each native app reports leaving and coming back to the foreground: `MainActivity.onPause`
+and `onResume` on Android, `willResignActive` and `didBecomeActive` in `BoraRacharApp` on iOS and macOS
+(`HandleAppPaused`, `HandleAppResumed`). A trip that saw the app leave and is still open when the app is back was
+abandoned: `ObserveAbandonedBrowserSignIn` says `CANCELLED`, and the Welcome, Restore and recovery code ViewModels
+turn the spinner off with no error, as for a cancelled native sheet. This relies on the callback arriving before the
+app is reported active (Android calls `onNewIntent` before `onResume`, SwiftUI `onOpenURL` before
+`didBecomeActive`), and on `handleBrowserCallback` closing the trip before its first suspension, which is why both
+bridges run it on `Dispatchers.Main.immediate`. A callback that can't finish a sign in ends the wait too: a cancel on
+the provider's page (`access_denied`, Apple's `user_cancelled_authorize`) as `CANCELLED`, any other error, or a second
+trip that can't start, as `FAILED`, which shows the screen's sign in error. The web never reports either: the page
+reloads, so no trip survives it.
+
 A switch can land on any screen, the recovery code sheet included, which closes on that same update. So
 `SyncCoordinator` syncs again whenever the session moves from one user id to another, pulling the other user's
 profile before this device pushes; a link keeps the id and doesn't trigger it.

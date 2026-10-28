@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.account.domain.repository
 
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
@@ -29,6 +30,12 @@ interface AccountRepository {
     suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit>
 
     suspend fun handleBrowserCallback(url: String): Result<Unit>
+
+    fun handleAppPaused()
+
+    fun handleAppResumed()
+
+    fun observeAbandonedBrowserSignIn(): Flow<AbandonedBrowserSignIn>
 
     fun observeReturningBrowserSignIn(): Flow<AccountProvider?>
 

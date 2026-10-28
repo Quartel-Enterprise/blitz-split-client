@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
@@ -15,6 +16,9 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +40,8 @@ class AccountRepositoryImplTest {
     private lateinit var local: FakeAccountLocalDataSource
     private lateinit var remote: FakeAccountRemoteDataSource
     private lateinit var repository: AccountRepositoryImpl
+    private var abandonedSignIns = 0
+    private val abandoned = mutableListOf<AbandonedBrowserSignIn>()
 
     @Test
     fun `GIVEN no session WHEN ensuring registration THEN signs in anonymously and stores the user`() = runTest {
@@ -643,6 +649,649 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a Google sign in in the browser WHEN the app resumes without a callback THEN reports it abandoned`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(1, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN a Google session signing in to Apple in the browser WHEN the app resumes THEN reports it abandoned`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(1, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user linking Apple in the browser WHEN the app resumes THEN reports it abandoned`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(AccountProvider.APPLE), remote.browserLinks)
+            assertEquals(1, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN an abandoned sign in already reported WHEN the app resumes again THEN reports nothing more`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(1, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN no browser trip WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        observeAbandonedSignIns()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN the browser sign in failed to start WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, browserSignInError = IllegalStateException("browser unavailable"))
+        observeAbandonedSignIns()
+        val result = repository.signInWithBrowser(AccountProvider.GOOGLE)
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN the browser link failed to start WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, linkError = IllegalStateException("offline"))
+        observeAbandonedSignIns()
+        val result = repository.signInWithBrowser(AccountProvider.APPLE)
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a browser sign in whose callback signed in WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.SIGNED_IN)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.handleBrowserCallback(signInCallbackUrl)
+        runCurrent()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a browser link whose callback linked WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.handleBrowserCallback(signInCallbackUrl)
+        runCurrent()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a sign in callback still completing WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        local.reads = CompletableDeferred()
+        val completing = backgroundScope.launch(start = CoroutineStart.UNDISPATCHED) {
+            repository.handleBrowserCallback(signInCallbackUrl)
+        }
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertTrue(completing.isActive)
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a browser sign in WHEN the callback says it failed THEN reports it abandoned right away`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        val url = "borarachar://auth-callback?error=access_denied"
+
+        // When
+        val result = repository.handleBrowserCallback(url)
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a browser link WHEN the callback says it failed THEN reports it abandoned right away`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.FAILED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        val url = "borarachar://auth-callback?error=access_denied"
+
+        // When
+        val result = repository.handleBrowserCallback(url)
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, abandonedSignIns)
+        assertNull(local.get().pendingLinkProvider)
+    }
+
+    @Test
+    fun `GIVEN a failed callback already reported WHEN the app resumes THEN reports nothing more`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.handleBrowserCallback("borarachar://auth-callback?error=access_denied")
+        runCurrent()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(1, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a link whose identity belongs to another user WHEN the app resumes from that sign in THEN reports it`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+            runCurrent()
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(AccountProvider.APPLE), remote.browserSignIns)
+            assertNull(local.get().pendingLinkProvider)
+            assertEquals(1, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN the sign in to the identity owner signed in WHEN the app resumes THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+        remote.callback = BrowserCallback.SIGNED_IN
+        repository.handleBrowserCallback(signInCallbackUrl)
+        runCurrent()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(0, abandonedSignIns)
+    }
+
+    @Test
+    fun `GIVEN a link whose owner sign in fails to start WHEN the app resumes THEN reported it abandoned once`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                callback = BrowserCallback.IDENTITY_ALREADY_LINKED,
+                browserSignInError = IllegalStateException("browser unavailable"),
+            )
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+            val result =
+                repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(1, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in and a URL that is not a callback WHEN the app resumes THEN reports it abandoned`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, callback = null)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.handleBrowserCallback("https://app.example/")
+            runCurrent()
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(1, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN a sign in abandoned while nobody observed WHEN a screen starts observing THEN receives nothing`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+
+            // When
+            observeAbandonedSignIns()
+            runCurrent()
+
+            // Then
+            assertEquals(0, abandonedSignIns)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in just opened WHEN the app resumes without having left THEN reports nothing`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+
+            // When
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertTrue(abandoned.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a resume with the browser still open WHEN the app leaves and comes back THEN it was cancelled`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.handleAppResumed()
+            runCurrent()
+
+            // When
+            repository.handleAppPaused()
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(AbandonedBrowserSignIn.CANCELLED), abandoned)
+        }
+
+    @Test
+    fun `GIVEN a pause before the browser opened WHEN the app resumes without leaving THEN reports nothing`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            observeAbandonedSignIns()
+            repository.handleAppPaused()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+
+            // When
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertTrue(abandoned.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a browser sign in the app left for WHEN the app comes back without a callback THEN it was cancelled`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.handleAppPaused()
+
+            // When
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(AbandonedBrowserSignIn.CANCELLED), abandoned)
+        }
+
+    @Test
+    fun `GIVEN a link whose identity has an owner WHEN the return resumes the app THEN keeps the owner sign in open`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.handleAppPaused()
+            repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+
+            // When
+            repository.handleAppResumed()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(AccountProvider.APPLE), remote.browserSignIns)
+            assertTrue(abandoned.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the owner sign in kept open WHEN the app leaves and comes back THEN it was cancelled`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.handleAppPaused()
+        repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+        repository.handleAppResumed()
+        runCurrent()
+
+        // When
+        repository.handleAppPaused()
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(AbandonedBrowserSignIn.CANCELLED), abandoned)
+    }
+
+    @Test
+    fun `GIVEN a browser sign in WHEN the callback says the person cancelled THEN cancels at once`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.CANCELLED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.handleAppPaused()
+
+        // When
+        val result = repository.handleBrowserCallback("borarachar://auth-callback?error=access_denied")
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(AbandonedBrowserSignIn.CANCELLED), abandoned)
+    }
+
+    @Test
+    fun `GIVEN a browser link WHEN the callback says the person cancelled THEN cancels and clears the link`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.CANCELLED)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.handleAppPaused()
+
+            // When
+            val result = repository.handleBrowserCallback("borarachar://auth-callback?error=user_cancelled_authorize")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(AbandonedBrowserSignIn.CANCELLED), abandoned)
+            assertNull(local.get().pendingLinkProvider)
+            assertTrue(remote.browserSignIns.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a cancel callback already reported WHEN the app comes back THEN reports nothing more`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.CANCELLED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.handleAppPaused()
+        repository.handleBrowserCallback("borarachar://auth-callback?error=access_denied")
+        runCurrent()
+
+        // When
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(AbandonedBrowserSignIn.CANCELLED), abandoned)
+    }
+
+    @Test
+    fun `GIVEN a browser sign in WHEN the callback says it failed THEN reports a failure`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.handleAppPaused()
+
+        // When
+        repository.handleBrowserCallback("borarachar://auth-callback?error=server_error")
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(AbandonedBrowserSignIn.FAILED), abandoned)
+    }
+
+    @Test
+    fun `GIVEN a Google session signing in to Apple WHEN the identity has an owner THEN reports a failure`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.handleAppPaused()
+
+        // When
+        val result =
+            repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(AccountProvider.APPLE), remote.browserSignIns)
+        assertEquals(listOf(AbandonedBrowserSignIn.FAILED), abandoned)
+    }
+
+    @Test
+    fun `GIVEN a link whose owner sign in fails to start WHEN the callback arrives THEN reports a failure`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = anonymousUser,
+            callback = BrowserCallback.IDENTITY_ALREADY_LINKED,
+            browserSignInError = IllegalStateException("browser unavailable"),
+        )
+        observeAbandonedSignIns()
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.handleAppPaused()
+
+        // When
+        val result =
+            repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+        runCurrent()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(AbandonedBrowserSignIn.FAILED), abandoned)
+    }
+
+    @Test
+    fun `GIVEN an open browser trip and an unreadable account WHEN an error callback arrives THEN reports a failure`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.handleAppPaused()
+            local.getError = IllegalStateException("database closed")
+
+            // When
+            val result = repository.handleBrowserCallback("borarachar://auth-callback?error=server_error")
+            runCurrent()
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(listOf(AbandonedBrowserSignIn.FAILED), abandoned)
+        }
+
+    @Test
+    fun `GIVEN an open browser trip and an unreadable account WHEN a sign in callback arrives THEN reports nothing`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, callback = BrowserCallback.SIGNED_IN)
+            observeAbandonedSignIns()
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.handleAppPaused()
+            local.getError = IllegalStateException("database closed")
+
+            // When
+            val result = repository.handleBrowserCallback(signInCallbackUrl)
+            runCurrent()
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertTrue(abandoned.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a failed callback after a process death WHEN the app comes back THEN reports nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
+        observeAbandonedSignIns()
+        repository.handleBrowserCallback("borarachar://auth-callback?error=server_error")
+
+        // When
+        repository.handleAppResumed()
+        runCurrent()
+
+        // Then
+        assertTrue(abandoned.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no browser trip and an unreadable account WHEN a callback arrives THEN fails and reports nothing`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, callback = BrowserCallback.SIGNED_IN)
+            observeAbandonedSignIns()
+            local.getError = IllegalStateException("database closed")
+
+            // When
+            val result = repository.handleBrowserCallback(signInCallbackUrl)
+            runCurrent()
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertTrue(abandoned.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a pending link from before a process death WHEN the owner sign in fails THEN reports nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                pendingLinkProvider = AccountProvider.APPLE,
+                callback = BrowserCallback.IDENTITY_ALREADY_LINKED,
+                browserSignInError = IllegalStateException("browser unavailable"),
+            )
+            observeAbandonedSignIns()
+
+            // When
+            val result =
+                repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
+            runCurrent()
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertTrue(abandoned.isEmpty())
+        }
+
+    @Test
     fun `GIVEN linking Apple fails for another reason WHEN connecting it with the name THEN fails and saves no name`() =
         runTest {
             // Given
@@ -939,6 +1588,17 @@ class AccountRepositoryImplTest {
         runCurrent()
     }
 
+    private val signInCallbackUrl = "borarachar://auth-callback?code=abc"
+
+    private fun TestScope.observeAbandonedSignIns() {
+        backgroundScope.launch(start = CoroutineStart.UNDISPATCHED) {
+            repository.observeAbandonedBrowserSignIn().collect {
+                abandonedSignIns++
+                abandoned += it
+            }
+        }
+    }
+
     private suspend fun signInWithApple(fullName: String?): Result<ConnectResult> = repository.signInWithIdToken(
         AccountProvider.APPLE,
         idToken = "token",
@@ -980,6 +1640,11 @@ private class FakeAccountLocalDataSource(
     // Why: runs once, right before the next read of the row, so a test can interleave another coroutine there.
     var beforeNextGet: (suspend () -> Unit)? = null
 
+    // Why: a case sets it to hold reads, so a callback stays suspended midway while the app resumes.
+    var reads: Deferred<Unit>? = null
+
+    var getError: Throwable? = null
+
     private val row = MutableStateFlow(
         AccountEntity(
             id = "me",
@@ -996,6 +1661,8 @@ private class FakeAccountLocalDataSource(
 
     override suspend fun get(): AccountEntity {
         beforeNextGet?.also { beforeNextGet = null }?.invoke()
+        reads?.await()
+        getError?.let { throw it }
         return row.value
     }
 
@@ -1008,7 +1675,7 @@ private class FakeAccountRemoteDataSource(
     private var currentUser: SessionUser?,
     private val linkError: Throwable?,
     private val issueError: Throwable?,
-    private val callback: BrowserCallback?,
+    var callback: BrowserCallback?,
     private val browserSignInError: Throwable?,
     // Why: the user the ID token belongs to, whom a sign in switches the session to; null keeps the session as is.
     private val idTokenUser: SessionUser?,
