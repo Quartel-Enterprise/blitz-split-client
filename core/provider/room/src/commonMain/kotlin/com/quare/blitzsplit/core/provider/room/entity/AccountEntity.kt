@@ -17,4 +17,6 @@ data class AccountEntity(
     val recoveryCodePrompt: String,
     // Why: the provider an anonymous user is linking through the browser, since the callback doesn't say.
     val pendingLinkProvider: String?,
+    // Why: the provider of the last browser trip, sign in or link, since the callback doesn't say.
+    val browserSignInProvider: String?,
 )

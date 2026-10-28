@@ -110,9 +110,8 @@ class SyncCoordinator(
     }
 
     private suspend fun offerRecoveryCodeIfDue() {
-        val isAnonymous = accountRepository.observeStatus().first() is AccountStatus.Anonymous
-        val prompt = accountRepository.observeRecoveryCodePrompt().first()
-        if (isAnonymous && prompt == RecoveryCodePrompt.NOT_DUE) {
+        val account = accountRepository.observeAccount().first()
+        if (account.status is AccountStatus.Anonymous && account.recoveryCodePrompt == RecoveryCodePrompt.NOT_DUE) {
             accountRepository.createRecoveryCode()
         }
     }
@@ -142,7 +141,7 @@ class SyncCoordinator(
 
     // Why: "Lembrar depois" shows the code again on the next launch, not right away.
     private suspend fun reviveSnoozedPrompt() {
-        if (accountRepository.observeRecoveryCodePrompt().first() == RecoveryCodePrompt.SNOOZED) {
+        if (accountRepository.observeAccount().first().recoveryCodePrompt == RecoveryCodePrompt.SNOOZED) {
             accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.DUE)
         }
     }

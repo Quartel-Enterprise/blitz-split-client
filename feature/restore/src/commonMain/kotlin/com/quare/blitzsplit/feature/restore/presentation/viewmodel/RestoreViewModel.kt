@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -43,6 +45,7 @@ class RestoreViewModel(
     private val connectWithBrowser: ConnectWithBrowser,
     private val observeAccountStatus: ObserveAccountStatus,
     private val observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
+    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
     private val completeSignIn: CompleteSignIn,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val navigator: Navigator,
@@ -62,7 +65,13 @@ class RestoreViewModel(
     val uiAction: SharedFlow<RestoreUiAction>
         field = MutableSharedFlow<RestoreUiAction>()
 
-    private var isConnectingWithIdToken = false
+    /*
+     * Why: the status observer leaves alone a sign in this screen completes itself, both while it runs
+     * and for the Connected it produced, which Room may deliver once it has finished.
+     */
+    private var isSigningInDirectly = false
+    private var directlyCompletedStatus: AccountStatus? = null
+    private var returningProvider: AccountProvider? = null
 
     val stateWatcher: FlowWatcher<RestoreUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RestoreUiAction> = FlowWatcher(uiAction)
@@ -71,6 +80,7 @@ class RestoreViewModel(
         observeConnectivity()
         observeBrowserSignIn()
         endAbandonedBrowserSignIn()
+        observeReturningSignIn()
     }
 
     fun onEvent(event: RestoreUiEvent) {
@@ -100,9 +110,14 @@ class RestoreViewModel(
         observeAccountStatus()
             .distinctUntilChanged()
             .filterIsInstance<AccountStatus.Connected>()
-            .filter { !isConnectingWithIdToken && navigator.backStack.value.lastOrNull() == Route.Restore }
-            .onEach { finishSignIn() }
-            .launchIn(viewModelScope)
+            .filter { status ->
+                !isSigningInDirectly &&
+                    status != directlyCompletedStatus &&
+                    navigator.backStack.value.lastOrNull() == Route.Restore
+            }.onEach { status ->
+                uiState.update { it.copy(connectingProvider = it.connectingProvider ?: status.provider, error = null) }
+                finishSignIn()
+            }.launchIn(viewModelScope)
     }
 
     private fun updateCode(code: String) {
@@ -120,11 +135,13 @@ class RestoreViewModel(
         val state = uiState.value
         if (!state.canRestore) return
         uiState.update { it.copy(isRestoring = true, error = null) }
+        isSigningInDirectly = true
         viewModelScope.launch {
             restoreWithRecoveryCode(state.code)
-                .onSuccess { finishSignIn() }
+                .onSuccess { finishDirectSignIn() }
                 .onFailure { throwable -> uiState.update { it.copy(error = throwable.toRestoreError()) } }
             uiState.update { it.copy(isRestoring = false) }
+            isSigningInDirectly = false
         }
     }
 
@@ -135,6 +152,25 @@ class RestoreViewModel(
                 finishConnecting(
                     error = RestoreError.SIGN_IN_FAILED.takeIf { abandoned == AbandonedBrowserSignIn.FAILED },
                 )
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: on the web the callback reloads the page, so the sign in it brings back shows as under way
+     * from the first frame, and as failed if it ends without the account connecting.
+     */
+    private fun observeReturningSignIn() {
+        observeReturningBrowserSignIn()
+            .filter { navigator.backStack.value.lastOrNull() == Route.Restore }
+            .onEach { provider ->
+                if (provider != null) {
+                    returningProvider = provider
+                    uiState.update { it.copy(connectingProvider = it.connectingProvider ?: provider, error = null) }
+                } else if (returningProvider != null) {
+                    returningProvider = null
+                    val isConnected = observeAccountStatus().first() is AccountStatus.Connected
+                    if (!isConnected) finishConnecting(error = RestoreError.SIGN_IN_FAILED)
+                }
             }.launchIn(viewModelScope)
     }
 
@@ -151,17 +187,22 @@ class RestoreViewModel(
     }
 
     private fun handleIdToken(event: RestoreUiEvent.OnIdTokenReceived) {
-        isConnectingWithIdToken = true
+        isSigningInDirectly = true
         viewModelScope.launch {
             connectWithIdToken(
                 provider = event.provider,
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
-            ).onSuccess { finishSignIn() }
+            ).onSuccess { finishDirectSignIn() }
                 .onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
-            isConnectingWithIdToken = false
+            isSigningInDirectly = false
         }
+    }
+
+    private suspend fun finishDirectSignIn() {
+        directlyCompletedStatus = observeAccountStatus().first()
+        finishSignIn()
     }
 
     private suspend fun finishSignIn() {

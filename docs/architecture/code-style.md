@@ -28,9 +28,9 @@ body; a non-`Unit` function whose body is a single expression uses `=` (`quare:u
 
 ```kotlin
 // Correct
-override fun observeStatus(): Flow<AccountStatus> = local
+override fun observeAccount(): Flow<AccountSnapshot> = local
     .observe()
-    .map(::toStatus)
+    .map(::toSnapshot)
     .distinctUntilChanged()
 
 override suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt) {
@@ -38,7 +38,7 @@ override suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt) {
 }
 
 // Wrong
-override fun observeStatus() = local.observe().map(::toStatus)
+override fun observeAccount() = local.observe().map(::toSnapshot)
 override suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt) = local.update { ... }
 ```
 
@@ -141,7 +141,7 @@ constructor (`quare:redundant-sam-constructor-argument`): `completeSignIn = { ou
 ### Method references
 
 A lambda that only forwards its parameter becomes a reference (`quare:prefer-method-reference`, which only sees
-functions declared in the same file): `.map(::toStatus)`, `?.let(::toSessionUser)`, `onEvent = viewModel::onEvent`.
+functions declared in the same file): `.map(::toSnapshot)`, `?.let(::toSessionUser)`, `onEvent = viewModel::onEvent`.
 A `suspend` or `@Composable` callee keeps the lambda.
 
 ### Explicit backing fields
@@ -172,8 +172,7 @@ class RecoveryCodeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val completeSignIn: CompleteSignIn,
-    observeRecoveryCode: ObserveRecoveryCode,
-    observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
+    observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel()
 ```
@@ -237,7 +236,8 @@ inline fun <T> suspendRunCatching(block: () -> T): Result<T> = ...
 /*
  * Why: a browser sign in finishes when the OAuth callback comes back, after this ViewModel was
  * recreated on the web (the page reloads), so a Google or Apple session seen while this screen
- * is on top completes it. An ID token sign in completes on its own.
+ * is on top completes it, with a button busy for the wait: the clicked one, or after a reload the
+ * session's, which is its first identity. An ID token sign in completes on its own.
  */
 private fun observeBrowserSignIn() { ... }
 ```

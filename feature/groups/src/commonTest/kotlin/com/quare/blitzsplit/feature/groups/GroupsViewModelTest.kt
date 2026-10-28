@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.groups
 
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -447,7 +446,7 @@ class GroupsViewModelTest {
             prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
 
             // When
-            account.status.value =
+            account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
 
             // Then
@@ -461,7 +460,7 @@ class GroupsViewModelTest {
             prepareScenario(status = AccountStatus.LocalOnly)
 
             // When
-            account.status.value =
+            account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
 
             // Then
@@ -473,7 +472,7 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(status = AccountStatus.LocalOnly, profile = pierre.copy(photo = null))
-            account.status.value =
+            account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
 
             // When
@@ -495,15 +494,14 @@ class GroupsViewModelTest {
         status: AccountStatus = AccountStatus.LocalOnly,
         profile: UserProfile? = pierre,
     ) {
-        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt.value = prompt }
+        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
         syncRequests = 0
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(profiles),
-            observeAccountStatus = ObserveAccountStatusUseCase(account),
-            observeRecoveryCodePrompt = ObserveRecoveryCodePromptUseCase(account),
+            observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },

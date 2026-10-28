@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -18,8 +19,10 @@ import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
@@ -32,24 +35,26 @@ class AccountRepositoryImpl(
     private val browserTrip = AtomicReference(BrowserTrip.NONE)
     private val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>(extraBufferCapacity = 1)
 
-    override fun observeStatus(): Flow<AccountStatus> = local
+    /*
+     * Why: from a browser callback that opened the app until the session it brings is mirrored, so the
+     * screens show that sign in as under way across the page reload of the web. A callback the mirror
+     * already settled doesn't show it again once its provider is read.
+     */
+    private val returningSignIn = MutableStateFlow(ReturningSignIn(provider = null, isSettled = true))
+
+    override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
-        .map(::toStatus)
+        .map(::toSnapshot)
         .distinctUntilChanged()
 
-    override fun observeRecoveryCode(): Flow<String?> = local
-        .observe()
-        .map { it.recoveryCode }
-        .distinctUntilChanged()
-
-    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = local
-        .observe()
-        .map { RecoveryCodePrompt.fromCodeOrNull(it.recoveryCodePrompt) ?: RecoveryCodePrompt.NOT_DUE }
+    override fun observeStatus(): Flow<AccountStatus> = observeAccount()
+        .map { it.status }
         .distinctUntilChanged()
 
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }
+            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true)
         }
     }
 
@@ -94,7 +99,7 @@ class AccountRepositoryImpl(
         if (current != null && current.socialProvider == null) {
             linkWithBrowser(provider)
         } else {
-            local.update { account -> account.copy(pendingLinkProvider = null) }
+            local.update { account -> account.copy(pendingLinkProvider = null, browserSignInProvider = provider.code) }
             openBrowser { remote.signInWithBrowser(provider) }
         }
     }
@@ -135,6 +140,10 @@ class AccountRepositoryImpl(
 
     override fun observeAbandonedBrowserSignIn(): Flow<AbandonedBrowserSignIn> = abandonedBrowserSignIns
 
+    override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningSignIn
+        .map { it.provider }
+        .distinctUntilChanged()
+
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
         val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
         val credentials = remote.fetchRecoveryCredentials(normalized)
@@ -174,7 +183,9 @@ class AccountRepositoryImpl(
     }
 
     private suspend fun linkWithBrowser(provider: AccountProvider) {
-        local.update { account -> account.copy(pendingLinkProvider = provider.code) }
+        local.update { account ->
+            account.copy(pendingLinkProvider = provider.code, browserSignInProvider = provider.code)
+        }
         try {
             openBrowser { remote.linkWithBrowser(provider) }
         } catch (exception: Exception) {
@@ -187,6 +198,7 @@ class AccountRepositoryImpl(
         callback: BrowserCallback,
         wasBrowserOpen: Boolean,
     ) {
+        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn()
         val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
         val startsSecondTrip = callback == BrowserCallback.IDENTITY_ALREADY_LINKED && linkingProvider != null
         // Why: only a sign in leaves a session that ends the screens' wait, so any other callback ends it here.
@@ -213,6 +225,13 @@ class AccountRepositoryImpl(
         }
     }
 
+    // Why: reset first, so the mirror of this callback's session settles it even before the provider is read.
+    private suspend fun showReturningSignIn() {
+        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false)
+        val provider = local.get().browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
+        returningSignIn.update { current -> if (current.isSettled) current else current.copy(provider = provider) }
+    }
+
     private suspend fun signInLinkingFirst(
         provider: AccountProvider,
         idToken: String,
@@ -224,6 +243,14 @@ class AccountRepositoryImpl(
         remote.signInWithIdToken(provider = provider, idToken = idToken, rawNonce = rawNonce)
         ConnectResult.SWITCHED
     }
+
+    private fun toSnapshot(account: AccountEntity): AccountSnapshot = AccountSnapshot(
+        status = toStatus(account),
+        recoveryCode = account.recoveryCode,
+        recoveryCodePrompt = RecoveryCodePrompt
+            .fromCodeOrNull(account.recoveryCodePrompt)
+            ?: RecoveryCodePrompt.NOT_DUE,
+    )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
         val userId = account.userId ?: return AccountStatus.LocalOnly

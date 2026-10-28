@@ -14,9 +14,9 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.account.domain.usecase.IssueRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCode
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
@@ -28,8 +28,8 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.HandleBrowserCallba
 import com.quare.blitzsplit.core.account.domain.usecase.impl.IssueRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodeUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -42,8 +42,7 @@ val accountModule = module {
     singleOf(::SupabaseAccountRemoteDataSource).bind<AccountRemoteDataSource>()
     singleOf(::AccountRepositoryImpl).bind<AccountRepository>()
     factoryOf(::ObserveAccountStatusUseCase).bind<ObserveAccountStatus>()
-    factoryOf(::ObserveRecoveryCodeUseCase).bind<ObserveRecoveryCode>()
-    factoryOf(::ObserveRecoveryCodePromptUseCase).bind<ObserveRecoveryCodePrompt>()
+    factoryOf(::ObserveAccountUseCase).bind<ObserveAccount>()
     factoryOf(::UpdateRecoveryCodePromptUseCase).bind<UpdateRecoveryCodePrompt>()
     factoryOf(::GetSessionUserUseCase).bind<GetSessionUser>()
     factoryOf(::ConnectWithIdTokenUseCase).bind<ConnectWithIdToken>()
@@ -52,6 +51,7 @@ val accountModule = module {
     factoryOf(::HandleAppPausedUseCase).bind<HandleAppPaused>()
     factoryOf(::HandleAppResumedUseCase).bind<HandleAppResumed>()
     factoryOf(::ObserveAbandonedBrowserSignInUseCase).bind<ObserveAbandonedBrowserSignIn>()
+    factoryOf(::ObserveReturningBrowserSignInUseCase).bind<ObserveReturningBrowserSignIn>()
     factoryOf(::RestoreWithRecoveryCodeUseCase).bind<RestoreWithRecoveryCode>()
     factoryOf(::IssueRecoveryCodeUseCase).bind<IssueRecoveryCode>()
 }
