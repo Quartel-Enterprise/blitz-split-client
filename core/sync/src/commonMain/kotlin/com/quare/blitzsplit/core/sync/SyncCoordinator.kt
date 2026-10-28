@@ -75,11 +75,30 @@ class SyncCoordinator(
                     profileRepository.downloadProfile(userId).getOrThrow()
                     profileRepository.uploadPendingProfile(userId).getOrThrow()
                     offerRecoveryCodeIfDue()
+                    signOutIfScheduledAndSynced()
                 }.also { result -> lastSyncFailed.value = result.isFailure }
             }
         } finally {
             requestedSyncs.update { it - 1 }
         }
+    }
+
+    // Why: under the sync lock, so a push in flight ends before the copy it reads is gone.
+    suspend fun signOut(): Result<Unit> = syncLock.withLock { suspendRunCatching { clearSession() } }
+
+    /*
+     * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the
+     * session ends after the sync that empties the queue, now if nothing waits, or once back online.
+     */
+    fun signOutWhenSynced() {
+        scope.launch {
+            accountRepository.updateSignOutWhenSynced(isScheduled = true)
+            syncUntilSettled()
+        }
+    }
+
+    suspend fun cancelSignOutWhenSynced() {
+        accountRepository.updateSignOutWhenSynced(isScheduled = false)
     }
 
     /*
@@ -107,6 +126,21 @@ class SyncCoordinator(
         do {
             val result = syncNow()
         } while (result.isSuccess && profileRepository.observeHasPendingChanges().first())
+    }
+
+    private suspend fun signOutIfScheduledAndSynced() {
+        val isScheduled = accountRepository.observeAccount().first().signOutWhenSynced
+        if (isScheduled && !profileRepository.observeHasPendingChanges().first()) clearSession()
+    }
+
+    /*
+     * Why: the account goes first. If the profile then failed to clear, the person stays on the profile,
+     * now without an account, and can erase again; the other way round would leave a live Google or
+     * Apple session behind the welcome, where a new profile would overwrite the account's.
+     */
+    private suspend fun clearSession() {
+        accountRepository.signOut()
+        profileRepository.clear()
     }
 
     private suspend fun offerRecoveryCodeIfDue() {
@@ -139,10 +173,15 @@ class SyncCoordinator(
         is AccountStatus.Connected -> status.userId
     }
 
-    // Why: "Lembrar depois" shows the code again on the next launch, not right away.
+    /*
+     * Why: "Lembrar depois" shows the code again on the next launch, not right away. A saved code the
+     * app closed on while it was opened from the profile is still saved.
+     */
     private suspend fun reviveSnoozedPrompt() {
-        if (accountRepository.observeAccount().first().recoveryCodePrompt == RecoveryCodePrompt.SNOOZED) {
-            accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.DUE)
+        when (accountRepository.observeAccount().first().recoveryCodePrompt) {
+            RecoveryCodePrompt.SNOOZED -> accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.DUE)
+            RecoveryCodePrompt.REVIEW -> accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.SAVED)
+            else -> Unit
         }
     }
 }

@@ -52,6 +52,12 @@ class AppPresenter {
         return JsWatch(watch::cancel)
     }
 
+    // Why: "system", "light" or "dark"; the page follows the system's scheme only for "system".
+    fun observeTheme(onChange: (String) -> Unit): JsWatch {
+        val watch = FlowWatcher(holder.viewModel.theme.map { it.code }).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
     fun navigateBack() {
         navigator.navigateBack()
     }

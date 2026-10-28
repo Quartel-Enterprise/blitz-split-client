@@ -43,6 +43,10 @@ class ProfileRepositoryImpl(
         local.applyRemote(mapper.toEntity(remoteProfile))
     }
 
+    override suspend fun clear() {
+        local.clear()
+    }
+
     // Why: the URL of a new photo is the same path, so the version makes every cache fetch it again.
     private suspend fun uploadPhoto(
         userId: String,

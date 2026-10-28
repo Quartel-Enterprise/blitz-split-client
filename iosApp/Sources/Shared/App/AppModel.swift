@@ -1,5 +1,6 @@
 import Observation
 import Shared
+import SwiftUI
 
 /// The app-wide ViewModel: whether the start route is known yet and the shared back stack, which
 /// the ViewModels move and SwiftUI only draws.
@@ -7,6 +8,7 @@ import Shared
 final class AppModel {
     private(set) var isReady: Bool
     private(set) var backStack: [AppRoute]
+    private(set) var theme: ThemePreference
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -15,12 +17,25 @@ final class AppModel {
         let viewModel = holder.viewModel
         isReady = (viewModel.uiState.value as? AppUiState) == .ready
         backStack = Self.routes(of: viewModel.navigator.backStack.value)
+        theme = viewModel.theme.value as? ThemePreference ?? .system
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.isReady = state == .ready
         })
         watches.add(viewModel.backStackWatcher.observe { [weak self] routes in
             self?.backStack = Self.routes(of: routes)
         })
+        watches.add(viewModel.themeWatcher.observe { [weak self] theme in
+            self?.theme = theme
+        })
+    }
+
+    /// Light or Dark as picked in the profile, nil to follow the system.
+    var colorScheme: ColorScheme? {
+        switch theme {
+        case .light: .light
+        case .dark: .dark
+        default: nil
+        }
     }
 
     var root: AppRoute {

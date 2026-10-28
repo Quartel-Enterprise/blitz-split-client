@@ -4,7 +4,9 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
@@ -54,6 +56,11 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(RecoveryCodeViewModel::class) { get() }
 
     fun createGroupsViewModel(): ViewModelHolder<GroupsViewModel> = ViewModelHolder(GroupsViewModel::class) { get() }
+
+    fun createProfileViewModel(): ViewModelHolder<ProfileViewModel> = ViewModelHolder(ProfileViewModel::class) { get() }
+
+    fun createEditProfileViewModel(): ViewModelHolder<EditProfileViewModel> =
+        ViewModelHolder(EditProfileViewModel::class) { get() }
 
     /*
      * Why: Google signs in through the browser on Apple platforms, and its OAuth callback comes back

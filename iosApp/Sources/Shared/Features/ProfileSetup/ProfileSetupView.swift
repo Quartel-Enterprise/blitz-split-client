@@ -191,7 +191,7 @@ private struct AvatarSection: View {
     }
 }
 
-private struct ColorSwatch: View {
+struct ColorSwatch: View {
     let color: AvatarColor
     let isSelected: Bool
     let action: () -> Void

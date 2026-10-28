@@ -39,4 +39,7 @@ interface AccountRemoteDataSource {
     suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials
 
     suspend fun createRecoveryCode(): String
+
+    // Why: ends the session on this device even offline, when the server can't be told.
+    suspend fun signOut()
 }

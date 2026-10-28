@@ -22,6 +22,8 @@ class RoomAccountLocalDataSource(
         recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
         pendingLinkProvider = null,
         browserSignInProvider = null,
+        email = null,
+        signOutWhenSynced = false,
     )
 
     override fun observe(): Flow<AccountEntity> = dao.observe().map { it ?: emptyAccount }
@@ -31,6 +33,12 @@ class RoomAccountLocalDataSource(
     override suspend fun update(transform: (AccountEntity) -> AccountEntity) {
         writeLock.withLock {
             dao.upsert(transform(get()))
+        }
+    }
+
+    override suspend fun clear() {
+        writeLock.withLock {
+            dao.deleteAll()
         }
     }
 }

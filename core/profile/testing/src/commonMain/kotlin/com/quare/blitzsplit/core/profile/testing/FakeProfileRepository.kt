@@ -17,6 +17,7 @@ class FakeProfileRepository(
     val downloadedUserIds = mutableListOf<String>()
     var pushError: Throwable? = null
     var pullError: Throwable? = null
+    var clearCount = 0
 
     override fun observeProfile(): Flow<UserProfile?> = profile
 
@@ -33,6 +34,12 @@ class FakeProfileRepository(
         pushError?.let { return Result.failure(it) }
         hasPendingChanges.value = false
         return Result.success(Unit)
+    }
+
+    override suspend fun clear() {
+        clearCount++
+        profile.value = null
+        hasPendingChanges.value = false
     }
 
     override suspend fun downloadProfile(userId: String): Result<Unit> {

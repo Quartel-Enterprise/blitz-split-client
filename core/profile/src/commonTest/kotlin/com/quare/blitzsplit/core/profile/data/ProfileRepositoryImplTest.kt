@@ -277,6 +277,19 @@ class ProfileRepositoryImplTest {
         assertTrue(local.applied.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a stored profile WHEN clearing THEN leaves no profile on the device`() = runTest {
+        // Given
+        prepareScenario(stored = entity(pendingSync = true))
+
+        // When
+        repository.clear()
+
+        // Then
+        assertNull(repository.observeProfile().first())
+        assertFalse(repository.observeHasPendingChanges().first())
+    }
+
     private val jpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 1)
 
     private val newerJpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 2)
@@ -352,6 +365,10 @@ private class FakeProfileLocalDataSource(
 
     override suspend fun applyRemote(entity: ProfileEntity) {
         applied += entity
+    }
+
+    override suspend fun clear() {
+        row.value = null
     }
 }
 

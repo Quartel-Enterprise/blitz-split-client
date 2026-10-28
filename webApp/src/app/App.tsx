@@ -3,9 +3,11 @@ import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
+import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
+import { applyTheme } from '@/lib/theme'
 
 /**
  * The back stack lives in Kotlin and the ViewModels move it; React renders its last entry and keeps
@@ -15,6 +17,8 @@ export function App() {
   const app = usePresenter(() => new AppPresenter())
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
   const backStack = useWatch(app, (presenter, onChange: (routes: string[]) => void) => presenter.observeBackStack(onChange))
+  const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
+  useEffect(() => applyTheme(theme ?? 'system'), [theme])
   useBrowserHistory(app, backStack)
 
   if (!isReady || !backStack) return null
@@ -34,6 +38,10 @@ function Screen({ route }: { route: string }) {
       return <RestoreScreen />
     case 'groups':
       return <GroupsScreen />
+    // Why: the web edits name, photo and color inside the profile, so it never pushes the editor.
+    case 'profile':
+    case 'edit-profile':
+      return <ProfileScreen />
     default:
       return <WelcomeScreen />
   }

@@ -88,6 +88,18 @@ class RecoveryCodeViewModelTest {
     }
 
     @Test
+    fun `GIVEN a saved code opened for review WHEN reminding later THEN keeps it saved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.REVIEW)
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
+
+        // Then
+        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
+    }
+
+    @Test
     fun `GIVEN the sheet WHEN confirming it was saved THEN settles the prompt`() = runTest(testDispatcher) {
         // Given
         prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)

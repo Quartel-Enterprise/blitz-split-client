@@ -13,4 +13,7 @@ interface ProfileRepository {
     suspend fun uploadPendingProfile(userId: String): Result<Unit>
 
     suspend fun downloadProfile(userId: String): Result<Unit>
+
+    // Why: a sign out leaves no copy of the profile on the device.
+    suspend fun clear()
 }

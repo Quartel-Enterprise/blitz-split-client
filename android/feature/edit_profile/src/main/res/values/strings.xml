@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_profile_save">Save</string>
+    <string name="edit_profile_change_photo">Change photo</string>
+    <string name="edit_profile_take_photo">Take photo</string>
+    <string name="edit_profile_choose_photo">Choose from gallery</string>
+    <string name="edit_profile_remove_photo">Remove photo</string>
+    <string name="edit_profile_photo_error">Couldn\'t use this photo. Try another one.</string>
+    <string name="edit_profile_avatar_color">Avatar color</string>
+    <string name="edit_profile_avatar_color_hint">Shows when you have no photo.</string>
+    <string name="edit_profile_name_label">Your name</string>
+    <string name="edit_profile_name_hint">From %1$d to %2$d characters</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Type at least %d letters.</string>
+    <string name="edit_profile_name_too_long">Use up to %d characters.</string>
+    <string name="edit_profile_account_notice">Name and photo came from your %1$s account. Changing them here only applies to Blitz Split and doesn\'t change your %1$s account.</string>
+    <string name="edit_profile_footer">Only people in your groups see your name and photo.</string>
+    <string name="edit_profile_color_blue">Blue</string>
+    <string name="edit_profile_color_peach">Peach</string>
+    <string name="edit_profile_color_green">Green</string>
+    <string name="edit_profile_color_lilac">Lilac</string>
+    <string name="edit_profile_color_sand">Sand</string>
+</resources>

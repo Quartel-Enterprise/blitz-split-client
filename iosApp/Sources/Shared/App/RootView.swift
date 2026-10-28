@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack
-/// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac).
+/// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac) and push the
+/// profile inside the Groups tab.
 struct RootView: View {
     @State private var app = AppModel()
 
@@ -11,7 +12,7 @@ struct RootView: View {
                 // The start route depends on whether a profile exists, read from Room in a moment
                 Color.clear
             } else if app.root == .groups {
-                MainTabView()
+                MainTabView(path: $app.path)
             } else {
                 NavigationStack(path: $app.path) {
                     screen(for: app.root)
@@ -22,6 +23,7 @@ struct RootView: View {
             }
         }
         .tint(Palette.accent)
+        .preferredColorScheme(app.colorScheme)
         #if os(macOS)
         .frame(minWidth: 520, minHeight: 560)
         #endif
@@ -33,7 +35,9 @@ struct RootView: View {
         case .welcome: WelcomeView()
         case .profileSetup: ProfileSetupView()
         case .restore: RestoreView()
-        case .groups: MainTabView()
+        case .groups: MainTabView(path: $app.path)
+        case .profile: ProfileView()
+        case .editProfile: EditProfileView()
         }
     }
 }

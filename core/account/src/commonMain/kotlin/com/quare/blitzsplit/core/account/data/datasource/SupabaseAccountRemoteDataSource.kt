@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecoveryCodeException
 import com.quare.blitzsplit.core.account.domain.model.TooManyRecoveryAttemptsException
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.exception.AuthErrorCode
 import io.github.jan.supabase.auth.exception.AuthRestException
@@ -127,6 +128,11 @@ class SupabaseAccountRemoteDataSource(
         return json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
     }
 
+    override suspend fun signOut() {
+        suspendRunCatching { auth.signOut() }
+        auth.clearSession()
+    }
+
     private fun toSessionUser(user: UserInfo): SessionUser = SessionUser(
         userId = user.id,
         socialProvider = user.identities.orEmpty().firstNotNullOfOrNull { identity ->
@@ -134,6 +140,7 @@ class SupabaseAccountRemoteDataSource(
         },
         displayName = user.userMetadata.findString(FULL_NAME_KEY, "name"),
         photoUrl = user.userMetadata.findString("avatar_url", "picture"),
+        email = user.email?.takeIf(String::isNotBlank),
     )
 
     private fun JsonObject?.findString(vararg keys: String): String? = keys.firstNotNullOfOrNull { key ->

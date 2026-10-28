@@ -174,6 +174,16 @@ class AccountRepositoryImpl(
         local.update { account -> account.copy(recoveryCodePrompt = prompt.code) }
     }
 
+    override suspend fun updateSignOutWhenSynced(isScheduled: Boolean) {
+        local.update { account -> account.copy(signOutWhenSynced = isScheduled) }
+    }
+
+    // Why: the anonymous user stays on the server, where its recovery code still brings it back.
+    override suspend fun signOut() {
+        remote.signOut()
+        local.clear()
+    }
+
     /*
      * Why: Apple tells the name only on the first sign in and leaves it out of the ID token, so the
      * account keeps it for the profile prefill. A failure doesn't fail the sign in: the name can be typed.
@@ -250,6 +260,8 @@ class AccountRepositoryImpl(
         recoveryCodePrompt = RecoveryCodePrompt
             .fromCodeOrNull(account.recoveryCodePrompt)
             ?: RecoveryCodePrompt.NOT_DUE,
+        email = account.email,
+        signOutWhenSynced = account.signOutWhenSynced,
     )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
@@ -261,15 +273,16 @@ class AccountRepositoryImpl(
 
     // Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good.
     private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
-        user == null -> copy(userId = null, provider = null, pendingLinkProvider = null)
+        user == null -> copy(userId = null, provider = null, pendingLinkProvider = null, email = null)
 
         user.socialProvider != null -> copy(
             userId = user.userId,
             provider = user.socialProvider.code,
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
+            email = user.email,
         )
 
-        else -> copy(userId = user.userId, provider = null)
+        else -> copy(userId = user.userId, provider = null, email = null)
     }
 
     private enum class BrowserTrip {

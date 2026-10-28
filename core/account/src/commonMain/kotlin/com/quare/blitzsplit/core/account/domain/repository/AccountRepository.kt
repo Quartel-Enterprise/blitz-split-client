@@ -44,4 +44,8 @@ interface AccountRepository {
     suspend fun createRecoveryCode(): Result<String>
 
     suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt)
+
+    suspend fun updateSignOutWhenSynced(isScheduled: Boolean)
+
+    suspend fun signOut()
 }

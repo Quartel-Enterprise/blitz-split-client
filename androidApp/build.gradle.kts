@@ -63,6 +63,7 @@ dependencies {
     implementation(projects.shared)
     implementation(projects.core.account)
     implementation(projects.core.navigation)
+    implementation(projects.core.model)
     implementation(projects.core.provider.supabase)
 
     // Android UI
@@ -72,6 +73,8 @@ dependencies {
     implementation(projects.android.feature.restore)
     implementation(projects.android.feature.recoveryCode)
     implementation(projects.android.feature.groups)
+    implementation(projects.android.feature.profile)
+    implementation(projects.android.feature.editProfile)
 
     // Koin
     implementation(project.dependencies.platform(libs.koin.bom))
