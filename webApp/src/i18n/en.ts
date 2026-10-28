@@ -86,6 +86,8 @@ export const en = {
   groups_mainNavigation: 'Main navigation',
   groups_profile: 'Profile',
   groups_noAccount: 'No account',
+  groups_googleAccount: 'Google account',
+  groups_appleAccount: 'Apple account',
   groups_syncOffline: 'Offline · everything is saved in this browser',
   groups_syncSyncing: 'Syncing…',
   groups_syncFailed: 'No response from the server · try again',

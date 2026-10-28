@@ -87,6 +87,8 @@ export const pt: Record<MessageKey, string> = {
   groups_mainNavigation: 'Navegação principal',
   groups_profile: 'Perfil',
   groups_noAccount: 'Sem conta',
+  groups_googleAccount: 'Conta Google',
+  groups_appleAccount: 'Conta Apple',
   groups_syncOffline: 'Offline · tudo fica salvo neste navegador',
   groups_syncSyncing: 'Sincronizando…',
   groups_syncFailed: 'Sem resposta do servidor · tentar de novo',

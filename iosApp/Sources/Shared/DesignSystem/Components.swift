@@ -1,3 +1,4 @@
+import Shared
 import SwiftUI
 
 /// "No connection." over the welcome actions: a Liquid Glass notice, as the canvas draws it.
@@ -153,5 +154,35 @@ struct CurrencyBadge: View {
               !symbol.isEmpty,
               symbol != "¤" else { return "$" }
         return symbol
+    }
+}
+
+/// The initial stays under the photo, so it shows while the photo loads or when it fails to. A picked
+/// photo arrives as a data URI, which AsyncImage loads like any other URL. Without a font, the initial
+/// scales with the avatar.
+struct AvatarPhoto: View {
+    let initial: String
+    let color: AvatarColor
+    let photoUrl: String?
+    let size: CGFloat
+    var font: Font?
+
+    var body: some View {
+        Text(initial)
+            .font(font ?? .system(size: size * 0.42, weight: .bold))
+            .foregroundStyle(color.content)
+            .frame(width: size, height: size)
+            .background(color.container, in: .circle)
+            .overlay {
+                if let photoUrl, let url = URL(string: photoUrl) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.renderingMode(.original).resizable().scaledToFill()
+                        }
+                    }
+                    .frame(width: size, height: size)
+                    .clipShape(.circle)
+                }
+            }
     }
 }
