@@ -18,6 +18,7 @@ import com.quare.blitzsplit.feature.restore.presentation.model.RestoreError
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiAction
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiEvent
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ class RestoreViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: RestoreViewModel
     private val actions = mutableListOf<RestoreUiAction>()
+    private val profilePull = CompletableDeferred<Unit>()
 
     @BeforeTest
     fun setUp() {
@@ -269,7 +271,7 @@ class RestoreViewModelTest {
         }
 
     @Test
-    fun `GIVEN a native sign in in progress WHEN it fails THEN shows the error and enables the buttons`() =
+    fun `GIVEN a native sign in in progress WHEN it fails THEN shows the error and enables them`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(native = setOf(AccountProvider.GOOGLE))
@@ -336,6 +338,36 @@ class RestoreViewModelTest {
         assertEquals(listOf(Route.Groups), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN the page reloaded after the Google sign in WHEN connected THEN shows the spinner on Google`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isProfilePullPending = true)
+
+            // When
+            account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.connectingProvider)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+            assertFalse(viewModel.uiState.value.canRestore)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in waiting on the profile pull WHEN it fails THEN shows the error and enables them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"), isProfilePullPending = true)
+            account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+
+            // When
+            profilePull.complete(Unit)
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         outcome: SignInOutcome = SignInOutcome.PROFILE_RESTORED,
@@ -343,7 +375,9 @@ class RestoreViewModelTest {
         restoreError: Throwable? = null,
         native: Set<AccountProvider> = emptySet(),
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
+        isProfilePullPending: Boolean = false,
     ) {
+        if (!isProfilePullPending) profilePull.complete(Unit)
         account = FakeAccountRepository().also {
             it.restoreError = restoreError
             it.connectResult = connectResult
@@ -355,7 +389,10 @@ class RestoreViewModelTest {
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
-            completeSignIn = { profilePullError?.let { Result.failure(it) } ?: Result.success(outcome) },
+            completeSignIn = {
+                profilePull.await()
+                profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
+            },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
             navigator = navigator,
         )

@@ -77,15 +77,18 @@ class WelcomeViewModel(
     /*
      * Why: a browser sign in finishes when the OAuth callback comes back, after this ViewModel was
      * recreated on the web (the page reloads), so a Google or Apple session seen while this screen
-     * is on top completes it. An ID token sign in completes on its own.
+     * is on top completes it, with its button busy again for the wait. An ID token sign in completes
+     * on its own.
      */
     private fun observeBrowserSignIn() {
         observeAccountStatus()
             .distinctUntilChanged()
             .filterIsInstance<AccountStatus.Connected>()
             .filter { !isConnectingWithIdToken && navigator.backStack.value.lastOrNull() == Route.Welcome }
-            .onEach { finishSignIn() }
-            .launchIn(viewModelScope)
+            .onEach { status ->
+                uiState.update { it.copy(connectingProvider = status.provider, error = null) }
+                finishSignIn()
+            }.launchIn(viewModelScope)
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

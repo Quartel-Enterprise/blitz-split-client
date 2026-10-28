@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenU
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeError
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeUiAction
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeUiEvent
 import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -38,6 +40,7 @@ class WelcomeViewModelTest {
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var viewModel: WelcomeViewModel
     private val actions = mutableListOf<WelcomeUiAction>()
+    private val profilePull = CompletableDeferred<Unit>()
 
     @BeforeTest
     fun setUp() {
@@ -218,13 +221,44 @@ class WelcomeViewModelTest {
             assertEquals(Route.Restore, navigator.backStack.value.last())
         }
 
+    @Test
+    fun `GIVEN the page reloaded after the Apple sign in WHEN the account connects THEN shows the spinner on Apple`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isProfilePullPending = true)
+
+            // When
+            account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+
+            // Then
+            assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in waiting on the profile pull WHEN it completes THEN opens the profile setup`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE, isProfilePullPending = true)
+            account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+
+            // When
+            profilePull.complete(Unit)
+
+            // Then
+            assertEquals(listOf(Route.Welcome, Route.ProfileSetup), navigator.backStack.value)
+            assertNull(viewModel.uiState.value.connectingProvider)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         native: Set<AccountProvider> = emptySet(),
         outcome: SignInOutcome = SignInOutcome.NEEDS_PROFILE,
         profilePullError: Throwable? = null,
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
+        isProfilePullPending: Boolean = false,
     ) {
+        if (!isProfilePullPending) profilePull.complete(Unit)
         account = FakeAccountRepository().also { it.connectResult = connectResult }
         navigator = BackStackNavigator(startRoute = Route.Welcome)
         isOnline = MutableStateFlow(online)
@@ -233,7 +267,10 @@ class WelcomeViewModelTest {
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
-            completeSignIn = { profilePullError?.let { Result.failure(it) } ?: Result.success(outcome) },
+            completeSignIn = {
+                profilePull.await()
+                profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
+            },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             navigator = navigator,
         )

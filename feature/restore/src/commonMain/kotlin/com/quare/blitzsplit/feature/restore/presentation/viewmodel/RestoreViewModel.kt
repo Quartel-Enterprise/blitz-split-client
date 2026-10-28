@@ -97,8 +97,10 @@ class RestoreViewModel(
             .distinctUntilChanged()
             .filterIsInstance<AccountStatus.Connected>()
             .filter { !isConnectingWithIdToken && navigator.backStack.value.lastOrNull() == Route.Restore }
-            .onEach { finishSignIn() }
-            .launchIn(viewModelScope)
+            .onEach { status ->
+                uiState.update { it.copy(connectingProvider = status.provider, error = null) }
+                finishSignIn()
+            }.launchIn(viewModelScope)
     }
 
     private fun updateCode(code: String) {
