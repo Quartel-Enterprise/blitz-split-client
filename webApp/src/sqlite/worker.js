@@ -23,11 +23,11 @@ let nextStatementId = 0;
 
 function openRequest(id, requestData) {
     try {
-        const newDatabaseId = nextDatabaseId++;
         if (!sahPool) {
             postMessage({'id': id, error: 'The database is unavailable: ' + sahPoolError});
             return;
         }
+        const newDatabaseId = nextDatabaseId++;
         const newDatabase = new sahPool.OpfsSAHPoolDb(toPoolPath(requestData.fileName));
         databases.set(newDatabaseId, newDatabase);
         postMessage({'id': id, data: {'databaseId': newDatabaseId}});
