@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
+import com.quare.blitzsplit.core.sync.signin.ProviderSignInImpl
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeError
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeUiAction
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeUiEvent
@@ -372,19 +373,21 @@ class WelcomeViewModelTest {
         navigator = BackStackNavigator(startRoute = Route.Welcome)
         isOnline = MutableStateFlow(online)
         viewModel = WelcomeViewModel(
-            nativeSignIn = NativeSignIn(native),
-            connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
-            observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
-            observeAccountStatus = ObserveAccountStatusUseCase(account),
-            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
-            completeSignIn = {
-                profilePullCount++
-                profilePull.await()
-                profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
-            },
-            connectivityObserver = NetworkConnectivityObserver { isOnline },
+            providerSignIn = ProviderSignInImpl(
+                nativeSignIn = NativeSignIn(native),
+                connectWithIdToken = ConnectWithIdTokenUseCase(account),
+                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                completeSignIn = {
+                    profilePullCount++
+                    profilePull.await()
+                    profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
+                },
+                observeAccountStatus = ObserveAccountStatusUseCase(account),
+                observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
+                observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
+            ),
             navigator = navigator,
+            connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
