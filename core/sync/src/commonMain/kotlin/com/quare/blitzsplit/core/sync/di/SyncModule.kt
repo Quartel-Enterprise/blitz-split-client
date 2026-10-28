@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.core.sync.di
 
 import com.quare.blitzsplit.core.sync.SyncCoordinator
+import com.quare.blitzsplit.core.sync.connect.ProviderConnector
+import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -33,6 +35,8 @@ val syncModule = module {
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }
+    // Why: a factory, so each screen keeps its own link under way.
+    factoryOf(::ProviderConnectorImpl).bind<ProviderConnector>()
     factoryOf(::SyncNowUseCase).bind<SyncNow>()
     factoryOf(::StartSyncUseCase).bind<StartSync>()
     factoryOf(::CompleteSignInUseCase).bind<CompleteSignIn>()
