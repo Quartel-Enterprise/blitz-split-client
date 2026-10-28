@@ -61,12 +61,14 @@ class ProviderSignInImpl(
 
     override suspend fun signInDirectly(signIn: suspend () -> Result<*>): Result<SignInStep> {
         isSigningInDirectly = true
-        val step = signIn().map {
-            directlyCompletedStatus = observeAccountStatus().first()
-            completeSignIn().toSignInStep()
+        return try {
+            signIn().map {
+                directlyCompletedStatus = observeAccountStatus().first()
+                completeSignIn().toSignInStep()
+            }
+        } finally {
+            isSigningInDirectly = false
         }
-        isSigningInDirectly = false
-        return step
     }
 
     override fun observeBrowserSignIn(
