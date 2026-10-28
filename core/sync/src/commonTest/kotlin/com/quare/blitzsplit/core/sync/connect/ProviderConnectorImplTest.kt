@@ -11,6 +11,8 @@ import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 class ProviderConnectorImplTest {
     private lateinit var connector: ProviderConnectorImpl
@@ -44,7 +46,32 @@ class ProviderConnectorImplTest {
         assertEquals(listOf(AccountProvider.APPLE), nativeLaunches)
     }
 
-    private fun prepareScenario(native: Set<AccountProvider> = emptySet()) {
+    @Test
+    fun `GIVEN the pull fails WHEN the id token comes in THEN the link ends without failing`() = runTest {
+        // Given
+        prepareScenario(
+            native = setOf(AccountProvider.APPLE),
+            signInOutcome = Result.failure(IllegalStateException("pull failed")),
+        )
+        connector.connect(AccountProvider.APPLE, nativeLaunches::add)
+
+        // When
+        connector.onIdTokenReceived(
+            provider = AccountProvider.APPLE,
+            idToken = "id-token",
+            rawNonce = null,
+            fullName = null,
+        )
+
+        // Then
+        assertNull(connector.connection.value.connectingProvider)
+        assertFalse(connector.connection.value.hasFailed)
+    }
+
+    private fun prepareScenario(
+        native: Set<AccountProvider> = emptySet(),
+        signInOutcome: Result<SignInOutcome> = Result.success(SignInOutcome.PROFILE_RESTORED),
+    ) {
         val account = FakeAccountRepository()
         connector = ProviderConnectorImpl(
             nativeSignIn = NativeSignIn(native),
@@ -53,7 +80,7 @@ class ProviderConnectorImplTest {
                 browserLinks += provider
                 Result.success(Unit)
             },
-            completeSignIn = { Result.success(SignInOutcome.PROFILE_RESTORED) },
+            completeSignIn = { signInOutcome },
             observeAccount = ObserveAccountUseCase(account),
             observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),

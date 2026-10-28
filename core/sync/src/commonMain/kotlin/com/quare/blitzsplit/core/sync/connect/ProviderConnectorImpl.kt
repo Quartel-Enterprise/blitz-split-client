@@ -64,7 +64,8 @@ class ProviderConnectorImpl(
     /*
      * Why: the link stands once the identity is in, so a failed pull doesn't fail it. The recovery code and the
      * profile already have a profile, so no step asks for a new one, and every sync pushes nothing when its
-     * pull fails. A switch to another user starts one right away, whose failure shows on the sync badge.
+     * pull fails. A switch from one user's session to another's starts one right away, whose failure shows on
+     * the sync badge; a sign in from a local only profile waits for the next sync that is due.
      */
     override suspend fun onIdTokenReceived(
         provider: AccountProvider,
