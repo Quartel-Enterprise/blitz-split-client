@@ -18,7 +18,10 @@ export function App() {
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
   const backStack = useWatch(app, (presenter, onChange: (routes: string[]) => void) => presenter.observeBackStack(onChange))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
-  useEffect(() => applyTheme(theme ?? 'system'), [theme])
+  // The theme is the database's once the app is ready; until then the last visit's stays painted.
+  useEffect(() => {
+    if (isReady && theme) applyTheme(theme)
+  }, [isReady, theme])
   useBrowserHistory(app, backStack)
 
   if (!isReady || !backStack) return null

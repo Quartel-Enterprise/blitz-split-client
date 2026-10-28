@@ -40,7 +40,8 @@ class AccountRepositoryImpl(
      * screens show that sign in as under way across the page reload of the web. A callback the mirror
      * already settled doesn't show it again once its provider is read.
      */
-    private val returningSignIn = MutableStateFlow(ReturningSignIn(provider = null, isSettled = true))
+    private val returningSignIn =
+        MutableStateFlow(ReturningSignIn(provider = null, isSettled = true, isRelaunch = false))
 
     override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
@@ -54,7 +55,7 @@ class AccountRepositoryImpl(
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }
-            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true)
+            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true, isRelaunch = false)
         }
     }
 
@@ -144,6 +145,10 @@ class AccountRepositoryImpl(
         .map { it.provider }
         .distinctUntilChanged()
 
+    override fun observeRelaunchingBrowserSignIn(): Flow<AccountProvider?> = returningSignIn
+        .map { returning -> returning.provider?.takeIf { returning.isRelaunch } }
+        .distinctUntilChanged()
+
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
         val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
         val credentials = remote.fetchRecoveryCredentials(normalized)
@@ -208,7 +213,7 @@ class AccountRepositoryImpl(
         callback: BrowserCallback,
         wasBrowserOpen: Boolean,
     ) {
-        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn()
+        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn(isRelaunch = !wasBrowserOpen)
         val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
         val startsSecondTrip = callback == BrowserCallback.IDENTITY_ALREADY_LINKED && linkingProvider != null
         // Why: only a sign in leaves a session that ends the screens' wait, so any other callback ends it here.
@@ -236,8 +241,8 @@ class AccountRepositoryImpl(
     }
 
     // Why: reset first, so the mirror of this callback's session settles it even before the provider is read.
-    private suspend fun showReturningSignIn() {
-        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false)
+    private suspend fun showReturningSignIn(isRelaunch: Boolean) {
+        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false, isRelaunch = isRelaunch)
         val provider = local.get().browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
         returningSignIn.update { current -> if (current.isSettled) current else current.copy(provider = provider) }
     }
@@ -271,9 +276,19 @@ class AccountRepositoryImpl(
         return AccountStatus.Connected(userId = userId, provider = provider)
     }
 
-    // Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good.
+    /*
+     * Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good. A
+     * session that ends on its own drops a scheduled sign out, which was for that account: the changes
+     * it waited on stay on the device.
+     */
     private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
-        user == null -> copy(userId = null, provider = null, pendingLinkProvider = null, email = null)
+        user == null -> copy(
+            userId = null,
+            provider = null,
+            pendingLinkProvider = null,
+            email = null,
+            signOutWhenSynced = false,
+        )
 
         user.socialProvider != null -> copy(
             userId = user.userId,

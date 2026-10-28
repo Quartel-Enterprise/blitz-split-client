@@ -39,6 +39,9 @@ interface AccountRepository {
 
     fun observeReturningBrowserSignIn(): Flow<AccountProvider?>
 
+    // Why: only the sign ins whose callback started the app again, which lands on the start screen.
+    fun observeRelaunchingBrowserSignIn(): Flow<AccountProvider?>
+
     suspend fun restoreWithRecoveryCode(code: String): Result<Unit>
 
     suspend fun createRecoveryCode(): Result<String>

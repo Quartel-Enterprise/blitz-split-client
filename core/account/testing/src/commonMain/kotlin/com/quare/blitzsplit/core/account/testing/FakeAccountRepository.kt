@@ -66,6 +66,7 @@ class FakeAccountRepository(
     var sessionUser: SessionUser? = null
     val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>()
     val returningBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
+    val relaunchingBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
     val idTokenFullNames = mutableListOf<String?>()
@@ -160,6 +161,8 @@ class FakeAccountRepository(
     override fun observeAbandonedBrowserSignIn(): Flow<AbandonedBrowserSignIn> = abandonedBrowserSignIns
 
     override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningBrowserSignIn
+
+    override fun observeRelaunchingBrowserSignIn(): Flow<AccountProvider?> = relaunchingBrowserSignIn
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code

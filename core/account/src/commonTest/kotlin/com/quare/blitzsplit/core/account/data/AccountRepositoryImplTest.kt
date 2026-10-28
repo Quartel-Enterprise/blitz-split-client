@@ -1790,6 +1790,59 @@ class AccountRepositoryImplTest {
             assertTrue(before.signOutWhenSynced)
         }
 
+    @Test
+    fun `GIVEN a Google sign in and its session WHEN the session ends on its own THEN drops the scheduled sign out`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startMirroring()
+            sessions.emit(googleUserWithEmail)
+            runCurrent()
+            repository.updateSignOutWhenSynced(true)
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertFalse(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN a Google sign in from before the app started WHEN its callback arrives THEN shows it as relaunching`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                browserSignInProvider = AccountProvider.GOOGLE,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            val url = "https://app.example/#access_token=abc"
+
+            // When
+            repository.handleBrowserCallback(url)
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, repository.observeRelaunchingBrowserSignIn().first())
+        }
+
+    @Test
+    fun `GIVEN an Apple link opened by this app WHEN its callback arrives THEN shows it only as returning`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        val url = "https://app.example/#access_token=abc"
+
+        // When
+        repository.handleBrowserCallback(url)
+
+        // Then
+        assertEquals(AccountProvider.APPLE, repository.observeReturningBrowserSignIn().first())
+        assertNull(repository.observeRelaunchingBrowserSignIn().first())
+    }
+
     private val anonymousUser =
         SessionUser("anonymous", socialProvider = null, displayName = null, photoUrl = null, email = null)
 
