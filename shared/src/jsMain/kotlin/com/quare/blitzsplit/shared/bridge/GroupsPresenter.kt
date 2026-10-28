@@ -10,8 +10,12 @@ import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
 
 class JsGroupsState(
+    val displayName: String,
     val avatarInitial: String,
     val avatarColor: String,
+    val photoUrl: String?,
+    // Why: "google" or "apple", null while there is no account.
+    val accountProvider: String?,
     // Why: null when everything is synced, which draws no badge.
     val syncBadge: String?,
     val canRetrySync: Boolean,
@@ -25,8 +29,11 @@ class GroupsPresenter {
     fun observeState(onChange: (JsGroupsState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsGroupsState(
+                displayName = state.displayName,
                 avatarInitial = state.avatarInitial,
                 avatarColor = state.avatarColor.code,
+                photoUrl = state.photoUrl,
+                accountProvider = state.accountProvider?.code,
                 syncBadge = state.syncBadge?.name,
                 canRetrySync = state.canRetrySync,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,

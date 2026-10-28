@@ -136,11 +136,13 @@ struct GroupsView: View {
                 Button {
                     model.send(GroupsUiEventOnProfileClicked.shared)
                 } label: {
-                    Text(state.avatarInitial)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(state.avatarColor.content)
-                        .frame(width: 32, height: 32)
-                        .background(state.avatarColor.container, in: .circle)
+                    AvatarPhoto(
+                        initial: state.avatarInitial,
+                        color: state.avatarColor,
+                        photoUrl: state.photoUrl,
+                        size: 32,
+                        font: .subheadline.weight(.semibold),
+                    )
                 }
                 .accessibilityLabel("Profile")
             }

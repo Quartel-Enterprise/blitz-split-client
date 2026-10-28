@@ -4,8 +4,7 @@ import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodeUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
@@ -83,7 +82,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
 
         // Then
-        assertEquals(RecoveryCodePrompt.SNOOZED, account.recoveryCodePrompt.value)
+        assertEquals(RecoveryCodePrompt.SNOOZED, account.recoveryCodePrompt)
     }
 
     @Test
@@ -95,7 +94,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnSavedClicked)
 
         // Then
-        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt.value)
+        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
     }
 
     @Test
@@ -308,7 +307,7 @@ class RecoveryCodeViewModelTest {
             account.returningBrowserSignIn.value = AccountProvider.APPLE
 
             // When
-            account.recoveryCodePrompt.value = RecoveryCodePrompt.SAVED
+            account.recoveryCodePrompt = RecoveryCodePrompt.SAVED
             account.returningBrowserSignIn.value = null
 
             // Then
@@ -324,14 +323,13 @@ class RecoveryCodeViewModelTest {
     ) {
         completedSignIns = 0
         account = FakeAccountRepository().also {
-            it.recoveryCode.value = code
-            it.recoveryCodePrompt.value = prompt
+            it.recoveryCode = code
+            it.recoveryCodePrompt = prompt
             it.connectResult = connectResult
         }
         viewModel = RecoveryCodeViewModel(
             nativeSignIn = NativeSignIn(native),
-            observeRecoveryCode = ObserveRecoveryCodeUseCase(account),
-            observeRecoveryCodePrompt = ObserveRecoveryCodePromptUseCase(account),
+            observeAccount = ObserveAccountUseCase(account),
             observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),

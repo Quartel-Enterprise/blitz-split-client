@@ -7,6 +7,7 @@ import { Avatar, BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
+import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
 interface Tab {
@@ -22,6 +23,12 @@ const tabs: Tab[] = [
   { label: 'groups_tabContacts', icon: <UserRound className="size-4" />, open: (p) => p.openContacts() },
   { label: 'groups_tabActivity', icon: <ReceiptText className="size-4" />, open: (p) => p.openActivity() },
 ]
+
+// The canvas names the account under the profile; "No account" covers both local only and anonymous.
+const accountLabels: Record<AccountProvider, MessageKey> = {
+  google: 'groups_googleAccount',
+  apple: 'groups_appleAccount',
+}
 
 // Everything synced has no badge: it only shows when the sync asks for attention.
 const syncLabels: Record<string, { label: MessageKey; icon: ReactNode }> = {
@@ -41,6 +48,7 @@ export function GroupsScreen() {
   if (!presenter || !state) return null
 
   const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null
+  const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">
@@ -65,13 +73,15 @@ export function GroupsScreen() {
         </nav>
         <button
           onClick={() => presenter.openProfile()}
-          aria-label={t('groups_profile')}
           className="mt-auto flex h-12 items-center justify-center gap-2.5 rounded-lg px-1.5 text-left outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start"
         >
-          <Avatar initial={state.avatarInitial} color={state.avatarColor} className="size-7 text-xs" />
-          <span className="hidden flex-col lg:flex">
-            <span className="text-sm font-medium">{t('groups_profile')}</span>
-            <span className="text-xs text-muted-foreground">{t('groups_noAccount')}</span>
+          <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-7 text-xs" />
+          {/* Why: the rail hides the name and account only visually, so they stay the button's accessible name. */}
+          {/* Why: the name and account say whose profile it is; this says what the button opens. */}
+          {state.displayName && <span className="sr-only">{t('groups_profile')}</span>}
+          <span className="sr-only min-w-0 flex-col lg:not-sr-only lg:flex">
+            <span className="truncate text-sm font-medium">{state.displayName || t('groups_profile')}</span>
+            <span className="text-xs text-muted-foreground">{t(account)}</span>
           </span>
         </button>
       </aside>
@@ -80,7 +90,7 @@ export function GroupsScreen() {
         <header className="flex h-14 items-center gap-2.5 border-b px-4 md:hidden">
           <BrandMark className="mr-auto" />
           <button aria-label={t('groups_profile')} onClick={() => presenter.openProfile()} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
-            <Avatar initial={state.avatarInitial} color={state.avatarColor} className="size-9 text-sm" />
+            <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-9 text-sm" />
           </button>
         </header>
 

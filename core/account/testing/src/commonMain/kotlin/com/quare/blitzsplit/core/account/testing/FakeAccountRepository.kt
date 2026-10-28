@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.account.testing
 
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
@@ -8,18 +9,40 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 // In-memory AccountRepository: public state a test can set and read, every call recorded, and
 // public vars to make a call fail.
 class FakeAccountRepository(
     initialStatus: AccountStatus = AccountStatus.LocalOnly,
 ) : AccountRepository {
-    val status = MutableStateFlow(initialStatus)
-    val recoveryCode = MutableStateFlow<String?>(null)
-    val recoveryCodePrompt = MutableStateFlow(RecoveryCodePrompt.NOT_DUE)
+    // Why: one flow, like the single Room row, so a write never shows a half-updated snapshot.
+    val snapshot = MutableStateFlow(
+        AccountSnapshot(status = initialStatus, recoveryCode = null, recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE),
+    )
+
+    var status: AccountStatus
+        get() = snapshot.value.status
+        set(value) {
+            snapshot.update { it.copy(status = value) }
+        }
+
+    var recoveryCode: String?
+        get() = snapshot.value.recoveryCode
+        set(value) {
+            snapshot.update { it.copy(recoveryCode = value) }
+        }
+
+    var recoveryCodePrompt: RecoveryCodePrompt
+        get() = snapshot.value.recoveryCodePrompt
+        set(value) {
+            snapshot.update { it.copy(recoveryCodePrompt = value) }
+        }
     var sessionUser: SessionUser? = null
     val returningBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
 
@@ -42,25 +65,23 @@ class FakeAccountRepository(
     private val requeriedStatus = MutableStateFlow(initialStatus)
     var createRecoveryCodeResult: Result<String> = Result.success("K7QM4XPA9TRE")
 
+    override fun observeAccount(): Flow<AccountSnapshot> = snapshot
+
     override fun observeStatus(): Flow<AccountStatus> = if (defersStatusUpdates) {
         flow {
-            emit(status.value)
+            emit(status)
             emitAll(requeriedStatus.drop(1))
         }
     } else {
-        status
+        snapshot.map { it.status }.distinctUntilChanged()
     }
 
     fun requeryStatus() {
-        requeriedStatus.value = status.value
+        requeriedStatus.value = status
     }
 
-    override fun observeRecoveryCode(): Flow<String?> = recoveryCode
-
-    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = recoveryCodePrompt
-
     override suspend fun mirrorSession() {
-        status.collect { }
+        snapshot.collect { }
     }
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = sessionUser
@@ -68,14 +89,14 @@ class FakeAccountRepository(
     override suspend fun ensureRegistered(): Result<String> {
         registrationCount++
         registerError?.let { return Result.failure(it) }
-        val current = status.value
+        val current = status
         return when (current) {
             is AccountStatus.Anonymous -> Result.success(current.userId)
 
             is AccountStatus.Connected -> Result.success(current.userId)
 
             AccountStatus.LocalOnly -> {
-                status.value = AccountStatus.Anonymous(ANONYMOUS_USER_ID)
+                status = AccountStatus.Anonymous(ANONYMOUS_USER_ID)
                 Result.success(ANONYMOUS_USER_ID)
             }
         }
@@ -89,7 +110,7 @@ class FakeAccountRepository(
     ): Result<ConnectResult> {
         idTokenConnections += provider to idToken
         idTokenFullNames += fullName
-        connectResult.onSuccess { status.value = AccountStatus.Connected(CONNECTED_USER_ID, provider) }
+        connectResult.onSuccess { status = AccountStatus.Connected(CONNECTED_USER_ID, provider) }
         return connectResult
     }
 
@@ -108,21 +129,20 @@ class FakeAccountRepository(
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code
         restoreError?.let { return Result.failure(it) }
-        status.value = restoredStatus
+        status = restoredStatus
         return Result.success(Unit)
     }
 
     override suspend fun createRecoveryCode(): Result<String> {
         recoveryCodeCreations++
         createRecoveryCodeResult.onSuccess { code ->
-            recoveryCode.value = code
-            recoveryCodePrompt.value = RecoveryCodePrompt.DUE
+            snapshot.update { it.copy(recoveryCode = code, recoveryCodePrompt = RecoveryCodePrompt.DUE) }
         }
         return createRecoveryCodeResult
     }
 
     override suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt) {
-        recoveryCodePrompt.value = prompt
+        recoveryCodePrompt = prompt
     }
 
     companion object {

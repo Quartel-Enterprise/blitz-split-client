@@ -1,6 +1,5 @@
-package com.quare.blitzsplit.feature.profilesetup.presentation.mapper
+package com.quare.blitzsplit.core.model
 
-import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

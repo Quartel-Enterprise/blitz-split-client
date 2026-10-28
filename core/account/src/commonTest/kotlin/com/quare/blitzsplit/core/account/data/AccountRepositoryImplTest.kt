@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -125,7 +126,7 @@ class AccountRepositoryImplTest {
 
             // Then
             assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
-            assertEquals(RecoveryCodePrompt.SAVED, repository.observeRecoveryCodePrompt().first())
+            assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
         }
 
     @Test
@@ -138,8 +139,29 @@ class AccountRepositoryImplTest {
 
         // Then
         assertEquals("K7QM4XPA9TRE", result.getOrNull())
-        assertEquals("K7QM4XPA9TRE", repository.observeRecoveryCode().first())
-        assertEquals(RecoveryCodePrompt.DUE, repository.observeRecoveryCodePrompt().first())
+        assertEquals("K7QM4XPA9TRE", repository.observeAccount().first().recoveryCode)
+        assertEquals(RecoveryCodePrompt.DUE, repository.observeAccount().first().recoveryCodePrompt)
+    }
+
+    @Test
+    fun `GIVEN a recovery code WHEN observing the account THEN emits the status code and prompt together`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        repository.ensureRegistered()
+        repository.createRecoveryCode()
+
+        // When
+        val account = repository.observeAccount().first()
+
+        // Then
+        assertEquals(
+            AccountSnapshot(
+                status = AccountStatus.Anonymous("anonymous"),
+                recoveryCode = "K7QM4XPA9TRE",
+                recoveryCodePrompt = RecoveryCodePrompt.DUE,
+            ),
+            account,
+        )
     }
 
     @Test
@@ -152,7 +174,7 @@ class AccountRepositoryImplTest {
 
         // Then
         assertIs<SocialAccountHasNoRecoveryCodeException>(result.exceptionOrNull())
-        assertEquals(RecoveryCodePrompt.SAVED, repository.observeRecoveryCodePrompt().first())
+        assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
     }
 
     @Test
@@ -180,7 +202,7 @@ class AccountRepositoryImplTest {
         assertTrue(result.isSuccess)
         assertEquals(listOf("K7QM4XPA9TRE"), remote.exchangedCodes)
         assertEquals(AccountStatus.Anonymous("restored"), repository.observeStatus().first())
-        assertEquals(RecoveryCodePrompt.SAVED, repository.observeRecoveryCodePrompt().first())
+        assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
     }
 
     @Test

@@ -230,7 +230,7 @@ class WelcomeViewModelTest {
             prepareScenario(isProfilePullPending = true)
 
             // When
-            account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+            account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
 
             // Then
             assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
@@ -242,7 +242,7 @@ class WelcomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE, isProfilePullPending = true)
-            account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            account.status = AccountStatus.Connected("user", AccountProvider.GOOGLE)
 
             // When
             profilePull.complete(Unit)
@@ -260,7 +260,7 @@ class WelcomeViewModelTest {
             viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.APPLE))
 
             // When
-            account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            account.status = AccountStatus.Connected("user", AccountProvider.GOOGLE)
 
             // Then
             assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)

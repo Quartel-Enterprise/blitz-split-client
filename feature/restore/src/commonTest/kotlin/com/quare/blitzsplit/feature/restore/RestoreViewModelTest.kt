@@ -334,7 +334,7 @@ class RestoreViewModelTest {
         prepareScenario(outcome = SignInOutcome.PROFILE_RESTORED)
 
         // When
-        account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+        account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
 
         // Then
         assertEquals(listOf(Route.Groups), navigator.backStack.value)
@@ -348,7 +348,7 @@ class RestoreViewModelTest {
             viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
 
             // When
-            account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            account.status = AccountStatus.Connected("user", AccountProvider.GOOGLE)
 
             // Then
             assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.connectingProvider)
@@ -361,7 +361,7 @@ class RestoreViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(profilePullError = IllegalStateException("offline"), isProfilePullPending = true)
-            account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+            account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
 
             // When
             profilePull.complete(Unit)
@@ -445,7 +445,7 @@ class RestoreViewModelTest {
             account.returningBrowserSignIn.value = AccountProvider.APPLE
 
             // When
-            account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+            account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
             account.returningBrowserSignIn.value = null
 
             // Then

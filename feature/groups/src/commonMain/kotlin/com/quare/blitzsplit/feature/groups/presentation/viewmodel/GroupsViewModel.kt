@@ -2,10 +2,12 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -27,15 +29,18 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GroupsViewModel(
     private val retrySync: RetrySync,
     observeProfile: ObserveProfile,
-    observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
+    observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
             GroupsUiState(
+                displayName = "",
                 avatarInitial = "",
                 avatarColor = AvatarColor.default,
+                photoUrl = null,
+                accountProvider = null,
                 syncBadge = null,
                 showsRecoveryCodePrompt = false,
             ),
@@ -50,20 +55,19 @@ class GroupsViewModel(
     init {
         combine(
             observeProfile(),
-            observeRecoveryCodePrompt(),
+            observeAccount(),
             observeSyncState(),
             connectivityObserver.observe(),
-        ) { profile, prompt, syncState, isOnline ->
+        ) { profile, account, syncState, isOnline ->
+            val displayName = profile?.displayName?.trim().orEmpty()
             GroupsUiState(
-                avatarInitial = profile
-                    ?.displayName
-                    ?.trim()
-                    ?.firstOrNull()
-                    ?.uppercase()
-                    .orEmpty(),
+                displayName = displayName,
+                avatarInitial = displayName.firstOrNull()?.uppercase().orEmpty(),
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
+                photoUrl = profile?.photo?.toImageUrl(),
+                accountProvider = (account.status as? AccountStatus.Connected)?.provider,
                 syncBadge = syncBadgeOf(syncState = syncState, isOnline = isOnline),
-                showsRecoveryCodePrompt = prompt == RecoveryCodePrompt.DUE,
+                showsRecoveryCodePrompt = account.recoveryCodePrompt == RecoveryCodePrompt.DUE,
             )
         }.onEach { state -> uiState.value = state }
             .launchIn(viewModelScope)

@@ -11,9 +11,8 @@ import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.account.domain.usecase.IssueRecoveryCode
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCode
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
@@ -23,8 +22,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCa
 import com.quare.blitzsplit.core.account.domain.usecase.impl.HandleBrowserCallbackUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.IssueRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodeUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
@@ -38,8 +36,7 @@ val accountModule = module {
     singleOf(::SupabaseAccountRemoteDataSource).bind<AccountRemoteDataSource>()
     singleOf(::AccountRepositoryImpl).bind<AccountRepository>()
     factoryOf(::ObserveAccountStatusUseCase).bind<ObserveAccountStatus>()
-    factoryOf(::ObserveRecoveryCodeUseCase).bind<ObserveRecoveryCode>()
-    factoryOf(::ObserveRecoveryCodePromptUseCase).bind<ObserveRecoveryCodePrompt>()
+    factoryOf(::ObserveAccountUseCase).bind<ObserveAccount>()
     factoryOf(::UpdateRecoveryCodePromptUseCase).bind<UpdateRecoveryCodePrompt>()
     factoryOf(::GetSessionUserUseCase).bind<GetSessionUser>()
     factoryOf(::ConnectWithIdTokenUseCase).bind<ConnectWithIdToken>()

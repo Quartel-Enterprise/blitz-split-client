@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.account.data.repository
 import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -16,8 +17,8 @@ import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
@@ -32,19 +33,13 @@ class AccountRepositoryImpl(
      */
     private val returningSignIn = MutableStateFlow(ReturningSignIn(provider = null, isSettled = true))
 
-    override fun observeStatus(): Flow<AccountStatus> = local
+    override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
-        .map(::toStatus)
+        .map(::toSnapshot)
         .distinctUntilChanged()
 
-    override fun observeRecoveryCode(): Flow<String?> = local
-        .observe()
-        .map { it.recoveryCode }
-        .distinctUntilChanged()
-
-    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = local
-        .observe()
-        .map { RecoveryCodePrompt.fromCodeOrNull(it.recoveryCodePrompt) ?: RecoveryCodePrompt.NOT_DUE }
+    override fun observeStatus(): Flow<AccountStatus> = observeAccount()
+        .map { it.status }
         .distinctUntilChanged()
 
     override suspend fun mirrorSession() {
@@ -190,6 +185,14 @@ class AccountRepositoryImpl(
         ConnectResult.SWITCHED
     }
 
+    private fun toSnapshot(account: AccountEntity): AccountSnapshot = AccountSnapshot(
+        status = toStatus(account),
+        recoveryCode = account.recoveryCode,
+        recoveryCodePrompt = RecoveryCodePrompt
+            .fromCodeOrNull(account.recoveryCodePrompt)
+            ?: RecoveryCodePrompt.NOT_DUE,
+    )
+
     private fun toStatus(account: AccountEntity): AccountStatus {
         val userId = account.userId ?: return AccountStatus.LocalOnly
         val provider = account.provider?.let(AccountProvider::fromCodeOrNull)
@@ -210,8 +213,3 @@ class AccountRepositoryImpl(
         else -> copy(userId = user.userId, provider = null)
     }
 }
-
-private data class ReturningSignIn(
-    val provider: AccountProvider?,
-    val isSettled: Boolean,
-)

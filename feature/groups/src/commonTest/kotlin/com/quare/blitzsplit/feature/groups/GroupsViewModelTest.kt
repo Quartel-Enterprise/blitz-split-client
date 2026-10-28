@@ -1,8 +1,11 @@
 package com.quare.blitzsplit.feature.groups
 
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
@@ -33,6 +36,7 @@ import kotlin.test.assertTrue
 class GroupsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
+    private lateinit var profiles: FakeProfileRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState?>
     private var syncRequests = 0
@@ -76,7 +80,7 @@ class GroupsViewModelTest {
     @Test
     fun `GIVEN a profile WHEN the groups open THEN draws its initial and color`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(profile = pierre.copy(displayName = "pierre"))
 
         // When
         val state = viewModel.uiState.value
@@ -289,20 +293,215 @@ class GroupsViewModelTest {
         assertEquals(0, syncRequests)
     }
 
+    @Test
+    fun `GIVEN a name typed with spaces around it WHEN the groups open THEN shows the trimmed name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(displayName = "  Pierre Vieira  "))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("Pierre Vieira", state.displayName)
+            assertEquals("P", state.avatarInitial)
+        }
+
+    @Test
+    fun `GIVEN no profile yet WHEN the groups open THEN shows no name and no photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(profile = null)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals("", state.displayName)
+        assertNull(state.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a profile without a photo WHEN the groups open THEN shows no photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(profile = pierre.copy(photo = null))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals("Pierre", state.displayName)
+        assertNull(state.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN the Google photo WHEN the groups open THEN shows the photo from its URL`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(profile = pierre.copy(photo = ProfilePhoto.Remote(googlePhotoUrl)))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(googlePhotoUrl, state.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a photo picked here and not uploaded yet WHEN the groups open THEN shows it as a JPEG data URI`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(photo = ProfilePhoto.Pending(byteArrayOf(1, 2, 3))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("data:image/jpeg;base64,AQID", state.photoUrl)
+        }
+
+    @Test
+    fun `GIVEN a profile without a photo WHEN the photo arrives with the profile sync THEN shows the photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(photo = null))
+
+            // When
+            profiles.profile.value = pierre.copy(photo = ProfilePhoto.Remote(googlePhotoUrl))
+
+            // Then
+            assertEquals(googlePhotoUrl, viewModel.uiState.value.photoUrl)
+        }
+
+    @Test
+    fun `GIVEN no profile yet WHEN the profile arrives THEN shows its name and photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(profile = null)
+
+        // When
+        profiles.profile.value = pierre.copy(photo = ProfilePhoto.Remote(googlePhotoUrl))
+
+        // Then
+        assertEquals("Pierre", viewModel.uiState.value.displayName)
+        assertEquals(googlePhotoUrl, viewModel.uiState.value.photoUrl)
+    }
+
+    @Test
+    fun `GIVEN a local only install never synced WHEN the groups open THEN shows no account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN the groups open THEN shows no account`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.accountProvider)
+    }
+
+    @Test
+    fun `GIVEN an account connected with Google WHEN the groups open THEN shows the Google account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, state.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN an account connected with Apple WHEN the groups open THEN shows the Apple account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(AccountProvider.APPLE, state.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN the groups open with an anonymous account WHEN signing in with Google THEN shows the Google account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
+
+            // When
+            account.status =
+                AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN the groups open on a local only install WHEN signing in with Apple THEN shows the Apple account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+
+            // When
+            account.status =
+                AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
+
+            // Then
+            assertEquals(AccountProvider.APPLE, viewModel.uiState.value.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN a Google sign in on an open home WHEN the profile sync brings its photo THEN shows both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly, profile = pierre.copy(photo = null))
+            account.status =
+                AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
+
+            // When
+            profiles.profile.value = pierre.copy(photo = ProfilePhoto.Remote(googlePhotoUrl))
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.accountProvider)
+            assertEquals(googlePhotoUrl, viewModel.uiState.value.photoUrl)
+        }
+
+    private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
+
+    private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
+
     private fun prepareScenario(
         online: Boolean = true,
         prompt: RecoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
         syncState: SyncState? = SyncState.SYNCED,
+        status: AccountStatus = AccountStatus.LocalOnly,
+        profile: UserProfile? = pierre,
     ) {
-        account = FakeAccountRepository().also { it.recoveryCodePrompt.value = prompt }
+        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
+        profiles = FakeProfileRepository(profile)
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
         syncRequests = 0
         viewModel = GroupsViewModel(
-            observeProfile = ObserveProfileUseCase(
-                FakeProfileRepository(UserProfile("pierre", AvatarColor.GREEN, null)),
-            ),
-            observeRecoveryCodePrompt = ObserveRecoveryCodePromptUseCase(account),
+            observeProfile = ObserveProfileUseCase(profiles),
+            observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },
