@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.dto.ProfileDto
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapperImpl
 import com.quare.blitzsplit.core.profile.data.repository.ProfileRepositoryImpl
+import com.quare.blitzsplit.core.provider.room.entity.DEFERRED_UPDATED_AT
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -330,6 +331,92 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a change not pushed yet WHEN deferring to the account profile THEN it stops waiting to go up`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    pendingSync = true,
+                    updatedAt = 50L,
+                    pendingPhoto = jpeg,
+                ),
+            )
+
+            // When
+            repository.deferToAccountProfile()
+
+            // Then
+            val stored = local.row.value
+            assertEquals(false, stored?.pendingSync)
+            assertEquals(DEFERRED_UPDATED_AT, stored?.updatedAt)
+            assertFalse(repository.observeHasPendingChanges().first())
+        }
+
+    @Test
+    fun `GIVEN a deferred copy and an account without a profile WHEN pulling THEN it goes up as the account profile`() =
+        runTest {
+            // Given
+            prepareScenario(
+                now = 2_000L,
+                stored = entity(
+                    pendingSync = true,
+                    pendingPhoto = jpeg,
+                ),
+                remoteProfile = null,
+            )
+            repository.deferToAccountProfile()
+
+            // When
+            repository.downloadProfile(userId = "user-1")
+            repository.uploadPendingProfile(userId = "user-1")
+
+            // Then
+            assertEquals("Pierre", remote.upserted.single().displayName)
+            assertContentEquals(jpeg, photoRemote.uploads.single().second)
+        }
+
+    @Test
+    fun `GIVEN a deferred copy with an uploaded photo WHEN the account has no profile THEN drops the photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    pendingSync = false,
+                    photoUrl = "$UPLOADED_URL?v=1",
+                ),
+                remoteProfile = null,
+            )
+            repository.deferToAccountProfile()
+
+            // When
+            repository.downloadProfile(userId = "user-2")
+            repository.uploadPendingProfile(userId = "user-2")
+
+            // Then
+            assertNull(remote.upserted.single().avatarUrl)
+        }
+
+    @Test
+    fun `GIVEN a deferred copy with a Google photo WHEN the account has no profile THEN keeps the photo`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                pendingSync = false,
+                photoUrl = GOOGLE_URL,
+            ),
+            remoteProfile = null,
+        )
+        repository.deferToAccountProfile()
+
+        // When
+        repository.downloadProfile(userId = "user-2")
+        repository.uploadPendingProfile(userId = "user-2")
+
+        // Then
+        assertEquals(GOOGLE_URL, remote.upserted.single().avatarUrl)
+    }
+
+    @Test
     fun `GIVEN a stored profile WHEN clearing THEN leaves no profile on the device`() = runTest {
         // Given
         prepareScenario(stored = entity(pendingSync = true))
@@ -423,6 +510,28 @@ private class FakeProfileLocalDataSource(
         applied += entity
     }
 
+    override suspend fun deferToRemote() {
+        row.value = row.value?.copy(
+            pendingSync = false,
+            updatedAt = DEFERRED_UPDATED_AT,
+        )
+    }
+
+    // Why: like the DAO, only a deferred copy goes back to pending.
+    override suspend fun reclaimDeferred(
+        updatedAt: Long,
+        photoUrl: String?,
+    ) {
+        row.value = row.value
+            ?.takeIf { !it.pendingSync && it.updatedAt == DEFERRED_UPDATED_AT }
+            ?.copy(
+                pendingSync = true,
+                updatedAt = updatedAt,
+                photoUrl = photoUrl,
+            )
+            ?: row.value
+    }
+
     override suspend fun clear() {
         row.value = null
     }
@@ -456,4 +565,6 @@ private class FakeProfilePhotoRemoteDataSource : ProfilePhotoRemoteDataSource {
         uploads += userId to jpeg
         return "https://storage/avatars/$userId/avatar.jpg"
     }
+
+    override fun isUploaded(url: String): Boolean = url.startsWith("https://storage/avatars/")
 }

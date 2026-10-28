@@ -53,8 +53,25 @@ class ProfileRepositoryImpl(
     }
 
     override suspend fun downloadProfile(userId: String): Result<Unit> = suspendRunCatching {
-        val remoteProfile = remote.fetch(userId) ?: return@suspendRunCatching
-        local.applyRemote(mapper.toEntity(remoteProfile))
+        val remoteProfile = remote.fetch(userId)
+        if (remoteProfile != null) {
+            local.applyRemote(mapper.toEntity(remoteProfile))
+        } else {
+            reclaimDeferred()
+        }
+    }
+
+    // Why: an uploaded photo is the previous user's object, so the account starts without it; another picture stays.
+    private suspend fun reclaimDeferred() {
+        val deferred = local.get() ?: return
+        local.reclaimDeferred(
+            updatedAt = currentTimeMillis(),
+            photoUrl = deferred.photoUrl?.takeUnless(photoRemote::isUploaded),
+        )
+    }
+
+    override suspend fun deferToAccountProfile() {
+        local.deferToRemote()
     }
 
     override suspend fun clear() {

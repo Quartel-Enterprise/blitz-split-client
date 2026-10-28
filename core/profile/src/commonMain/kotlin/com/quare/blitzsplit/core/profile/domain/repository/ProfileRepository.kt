@@ -14,6 +14,12 @@ interface ProfileRepository {
 
     suspend fun downloadProfile(userId: String): Result<Unit>
 
+    /*
+     * Why: on a switch to another user the copy on the device was the previous user's, so the account's profile
+     * replaces it on the next pull, even over a change not pushed yet. It goes up only if the account has none.
+     */
+    suspend fun deferToAccountProfile()
+
     // Why: a sign out leaves no copy of the profile on the device.
     suspend fun clear()
 }

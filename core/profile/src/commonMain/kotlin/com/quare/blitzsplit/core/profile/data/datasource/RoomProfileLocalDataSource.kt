@@ -29,6 +29,20 @@ class RoomProfileLocalDataSource(
         dao.deleteAll()
     }
 
+    override suspend fun deferToRemote() {
+        dao.deferToRemote()
+    }
+
+    override suspend fun reclaimDeferred(
+        updatedAt: Long,
+        photoUrl: String?,
+    ) {
+        dao.reclaimDeferred(
+            updatedAt = updatedAt,
+            photoUrl = photoUrl,
+        )
+    }
+
     override suspend fun applyRemote(entity: ProfileEntity) {
         if (dao.get() == null) {
             dao.upsert(entity)

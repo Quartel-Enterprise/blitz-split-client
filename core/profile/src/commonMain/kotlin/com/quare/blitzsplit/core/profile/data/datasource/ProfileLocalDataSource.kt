@@ -17,5 +17,12 @@ interface ProfileLocalDataSource {
 
     suspend fun applyRemote(entity: ProfileEntity)
 
+    suspend fun deferToRemote()
+
+    suspend fun reclaimDeferred(
+        updatedAt: Long,
+        photoUrl: String?,
+    )
+
     suspend fun clear()
 }

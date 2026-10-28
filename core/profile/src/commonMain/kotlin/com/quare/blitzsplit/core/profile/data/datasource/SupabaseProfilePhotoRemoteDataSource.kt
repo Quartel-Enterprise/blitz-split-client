@@ -19,6 +19,9 @@ class SupabaseProfilePhotoRemoteDataSource(
         return bucket.publicUrl(path)
     }
 
+    override fun isUploaded(url: String): Boolean =
+        url.startsWith(storage.from(BUCKET).publicUrl(FILE_NAME).removeSuffix(FILE_NAME))
+
     private companion object {
         const val BUCKET = "avatars"
         const val FILE_NAME = "avatar.jpg"
