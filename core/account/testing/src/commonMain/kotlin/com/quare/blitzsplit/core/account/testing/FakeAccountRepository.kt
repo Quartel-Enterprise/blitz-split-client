@@ -43,8 +43,6 @@ class FakeAccountRepository(
 
     override fun observeStatus(): Flow<AccountStatus> = status
 
-    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = recoveryCodePrompt
-
     override suspend fun mirrorSession() {
         status.collect { }
     }

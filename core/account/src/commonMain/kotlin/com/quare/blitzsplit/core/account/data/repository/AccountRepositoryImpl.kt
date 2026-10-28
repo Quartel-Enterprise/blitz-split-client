@@ -33,10 +33,6 @@ class AccountRepositoryImpl(
         .map { it.status }
         .distinctUntilChanged()
 
-    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = observeAccount()
-        .map { it.recoveryCodePrompt }
-        .distinctUntilChanged()
-
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }

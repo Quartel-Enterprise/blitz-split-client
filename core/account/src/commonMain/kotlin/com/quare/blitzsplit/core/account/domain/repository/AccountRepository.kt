@@ -13,8 +13,6 @@ interface AccountRepository {
 
     fun observeStatus(): Flow<AccountStatus>
 
-    fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt>
-
     suspend fun mirrorSession()
 
     suspend fun getCurrentUserOrNull(): SessionUser?

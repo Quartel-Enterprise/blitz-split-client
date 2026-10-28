@@ -126,7 +126,7 @@ class AccountRepositoryImplTest {
 
             // Then
             assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
-            assertEquals(RecoveryCodePrompt.SAVED, repository.observeRecoveryCodePrompt().first())
+            assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
         }
 
     @Test
@@ -140,7 +140,7 @@ class AccountRepositoryImplTest {
         // Then
         assertEquals("K7QM4XPA9TRE", result.getOrNull())
         assertEquals("K7QM4XPA9TRE", repository.observeAccount().first().recoveryCode)
-        assertEquals(RecoveryCodePrompt.DUE, repository.observeRecoveryCodePrompt().first())
+        assertEquals(RecoveryCodePrompt.DUE, repository.observeAccount().first().recoveryCodePrompt)
     }
 
     @Test
@@ -174,7 +174,7 @@ class AccountRepositoryImplTest {
 
         // Then
         assertIs<SocialAccountHasNoRecoveryCodeException>(result.exceptionOrNull())
-        assertEquals(RecoveryCodePrompt.SAVED, repository.observeRecoveryCodePrompt().first())
+        assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
     }
 
     @Test
@@ -202,7 +202,7 @@ class AccountRepositoryImplTest {
         assertTrue(result.isSuccess)
         assertEquals(listOf("K7QM4XPA9TRE"), remote.exchangedCodes)
         assertEquals(AccountStatus.Anonymous("restored"), repository.observeStatus().first())
-        assertEquals(RecoveryCodePrompt.SAVED, repository.observeRecoveryCodePrompt().first())
+        assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
     }
 
     @Test
