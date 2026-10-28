@@ -685,6 +685,7 @@ private class FakeAccountLocalDataSource(
             recoveryCode = null,
             recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
             pendingLinkProvider = pendingLinkProvider,
+            browserSignInProvider = null,
         ),
     )
 

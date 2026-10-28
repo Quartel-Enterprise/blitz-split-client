@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.account.domain.model.TooManyRecoveryAttemptsExc
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -422,6 +423,51 @@ class RestoreViewModelTest {
             assertEquals(1, profilePullCount)
         }
 
+    @Test
+    fun `GIVEN the page reloaded on a Google callback WHEN not mirrored yet THEN shows the spinner on Google`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            account.returningBrowserSignIn.value = AccountProvider.GOOGLE
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.connectingProvider)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a returning Apple sign in WHEN its session connects THEN keeps the spinner for the profile pull`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isProfilePullPending = true)
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // When
+            account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
+            assertNull(viewModel.uiState.value.error)
+        }
+
+    @Test
+    fun `GIVEN a returning Apple sign in WHEN it ends without connecting THEN shows the sign in error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // When
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         outcome: SignInOutcome = SignInOutcome.PROFILE_RESTORED,
@@ -443,6 +489,7 @@ class RestoreViewModelTest {
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
+            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             completeSignIn = {
                 profilePullCount++
                 profilePull.await()

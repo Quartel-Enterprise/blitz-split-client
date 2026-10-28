@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -282,6 +283,49 @@ class WelcomeViewModelTest {
             assertEquals(1, profilePullCount)
         }
 
+    @Test
+    fun `GIVEN the page reloaded on an Apple callback WHEN not mirrored yet THEN shows the spinner on Apple`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // Then
+            assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a returning Google sign in WHEN it ends without connecting THEN shows the sign in error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            account.returningBrowserSignIn.value = AccountProvider.GOOGLE
+
+            // When
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertEquals(WelcomeError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN a browser sign in returns THEN leaves the buttons idle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Restore)
+
+            // When
+            account.returningBrowserSignIn.value = AccountProvider.GOOGLE
+
+            // Then
+            assertNull(viewModel.uiState.value.connectingProvider)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         native: Set<AccountProvider> = emptySet(),
@@ -299,6 +343,7 @@ class WelcomeViewModelTest {
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
+            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             completeSignIn = {
                 profilePullCount++
                 profilePull.await()

@@ -31,6 +31,8 @@ interface AccountRepository {
 
     suspend fun handleBrowserCallback(url: String): Result<Unit>
 
+    fun observeReturningBrowserSignIn(): Flow<AccountProvider?>
+
     suspend fun restoreWithRecoveryCode(code: String): Result<Unit>
 
     suspend fun createRecoveryCode(): Result<String>

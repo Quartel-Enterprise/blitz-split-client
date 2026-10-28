@@ -21,6 +21,7 @@ class FakeAccountRepository(
     val recoveryCode = MutableStateFlow<String?>(null)
     val recoveryCodePrompt = MutableStateFlow(RecoveryCodePrompt.NOT_DUE)
     var sessionUser: SessionUser? = null
+    val returningBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
     val idTokenFullNames = mutableListOf<String?>()
@@ -101,6 +102,8 @@ class FakeAccountRepository(
         browserCallbacks += url
         return Result.success(Unit)
     }
+
+    override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningBrowserSignIn
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code

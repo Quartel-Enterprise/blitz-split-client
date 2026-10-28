@@ -17,12 +17,21 @@ import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 class AccountRepositoryImpl(
     private val local: AccountLocalDataSource,
     private val remote: AccountRemoteDataSource,
 ) : AccountRepository {
+    /*
+     * Why: from a browser callback that opened the app until the session it brings is mirrored, so the
+     * screens show that sign in as under way across the page reload of the web. A callback the mirror
+     * already settled doesn't show it again once its provider is read.
+     */
+    private val returningSignIn = MutableStateFlow(ReturningSignIn(provider = null, isSettled = true))
+
     override fun observeStatus(): Flow<AccountStatus> = local
         .observe()
         .map(::toStatus)
@@ -41,6 +50,7 @@ class AccountRepositoryImpl(
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }
+            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true)
         }
     }
 
@@ -85,7 +95,7 @@ class AccountRepositoryImpl(
         if (current != null && current.socialProvider == null) {
             linkWithBrowser(provider)
         } else {
-            local.update { account -> account.copy(pendingLinkProvider = null) }
+            local.update { account -> account.copy(pendingLinkProvider = null, browserSignInProvider = provider.code) }
             remote.signInWithBrowser(provider)
         }
     }
@@ -97,6 +107,7 @@ class AccountRepositoryImpl(
      */
     override suspend fun handleBrowserCallback(url: String): Result<Unit> = suspendRunCatching {
         val callback = remote.readBrowserCallback(url) ?: return@suspendRunCatching
+        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn()
         val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
             ?: return@suspendRunCatching
         // Why: cleared once the second trip has started, so a failed start can be retried with the same URL.
@@ -105,6 +116,10 @@ class AccountRepositoryImpl(
         }
         local.update { account -> account.copy(pendingLinkProvider = null) }
     }
+
+    override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningSignIn
+        .map { it.provider }
+        .distinctUntilChanged()
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
         val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
@@ -145,13 +160,22 @@ class AccountRepositoryImpl(
     }
 
     private suspend fun linkWithBrowser(provider: AccountProvider) {
-        local.update { account -> account.copy(pendingLinkProvider = provider.code) }
+        local.update { account ->
+            account.copy(pendingLinkProvider = provider.code, browserSignInProvider = provider.code)
+        }
         try {
             remote.linkWithBrowser(provider)
         } catch (exception: Exception) {
             local.update { account -> account.copy(pendingLinkProvider = null) }
             throw exception
         }
+    }
+
+    // Why: reset first, so the mirror of this callback's session settles it even before the provider is read.
+    private suspend fun showReturningSignIn() {
+        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false)
+        val provider = local.get().browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
+        returningSignIn.update { current -> if (current.isSettled) current else current.copy(provider = provider) }
     }
 
     private suspend fun signInLinkingFirst(
@@ -186,3 +210,8 @@ class AccountRepositoryImpl(
         else -> copy(userId = user.userId, provider = null)
     }
 }
+
+private data class ReturningSignIn(
+    val provider: AccountProvider?,
+    val isSettled: Boolean,
+)

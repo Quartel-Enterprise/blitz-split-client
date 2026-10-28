@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -41,6 +42,7 @@ class RestoreViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val observeAccountStatus: ObserveAccountStatus,
+    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
     private val completeSignIn: CompleteSignIn,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val navigator: Navigator,
@@ -66,6 +68,7 @@ class RestoreViewModel(
      */
     private var isSigningInDirectly = false
     private var directlyCompletedStatus: AccountStatus? = null
+    private var returningProvider: AccountProvider? = null
 
     val stateWatcher: FlowWatcher<RestoreUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RestoreUiAction> = FlowWatcher(uiAction)
@@ -73,6 +76,7 @@ class RestoreViewModel(
     init {
         observeConnectivity()
         observeBrowserSignIn()
+        observeReturningSignIn()
     }
 
     fun onEvent(event: RestoreUiEvent) {
@@ -135,6 +139,25 @@ class RestoreViewModel(
             uiState.update { it.copy(isRestoring = false) }
             isSigningInDirectly = false
         }
+    }
+
+    /*
+     * Why: on the web the callback reloads the page, so the sign in it brings back shows as under way
+     * from the first frame, and as failed if it ends without the account connecting.
+     */
+    private fun observeReturningSignIn() {
+        observeReturningBrowserSignIn()
+            .filter { navigator.backStack.value.lastOrNull() == Route.Restore }
+            .onEach { provider ->
+                if (provider != null) {
+                    returningProvider = provider
+                    uiState.update { it.copy(connectingProvider = it.connectingProvider ?: provider, error = null) }
+                } else if (returningProvider != null) {
+                    returningProvider = null
+                    val isConnected = observeAccountStatus().first() is AccountStatus.Connected
+                    if (!isConnected) finishConnecting(error = RestoreError.SIGN_IN_FAILED)
+                }
+            }.launchIn(viewModelScope)
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {
