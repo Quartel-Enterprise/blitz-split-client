@@ -77,6 +77,8 @@ export function GroupsScreen() {
         >
           <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-7 text-xs" />
           {/* Why: the rail hides the name and account only visually, so they stay the button's accessible name. */}
+          {/* Why: the name and account say whose profile it is; this says what the button opens. */}
+          {state.displayName && <span className="sr-only">{t('groups_profile')}</span>}
           <span className="sr-only min-w-0 flex-col lg:not-sr-only lg:flex">
             <span className="truncate text-sm font-medium">{state.displayName || t('groups_profile')}</span>
             <span className="text-xs text-muted-foreground">{t(account)}</span>

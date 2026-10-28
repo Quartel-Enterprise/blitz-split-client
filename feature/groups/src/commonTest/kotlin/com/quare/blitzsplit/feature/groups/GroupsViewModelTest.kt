@@ -318,7 +318,6 @@ class GroupsViewModelTest {
 
         // Then
         assertEquals("", state.displayName)
-        assertNull(state.photo)
         assertNull(state.photoUrl)
     }
 
@@ -332,7 +331,6 @@ class GroupsViewModelTest {
 
         // Then
         assertEquals("Pierre", state.displayName)
-        assertNull(state.photo)
         assertNull(state.photoUrl)
     }
 
@@ -345,7 +343,6 @@ class GroupsViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(ProfilePhoto.Remote(googlePhotoUrl), state.photo)
         assertEquals(googlePhotoUrl, state.photoUrl)
     }
 

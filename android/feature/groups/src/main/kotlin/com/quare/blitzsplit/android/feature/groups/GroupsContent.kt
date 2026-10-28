@@ -405,7 +405,7 @@ private fun GroupsOfflinePreview() {
                 displayName = "Pierre",
                 avatarInitial = "P",
                 avatarColor = AvatarColor.BLUE,
-                photo = null,
+                photoUrl = null,
                 accountProvider = null,
                 syncBadge = SyncBadge.OFFLINE,
                 showsRecoveryCodePrompt = false,

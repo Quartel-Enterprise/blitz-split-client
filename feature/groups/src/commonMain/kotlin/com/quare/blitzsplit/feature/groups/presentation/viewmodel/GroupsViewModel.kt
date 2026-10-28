@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -40,7 +41,7 @@ class GroupsViewModel(
                 displayName = "",
                 avatarInitial = "",
                 avatarColor = AvatarColor.default,
-                photo = null,
+                photoUrl = null,
                 accountProvider = null,
                 syncBadge = null,
                 showsRecoveryCodePrompt = false,
@@ -66,7 +67,7 @@ class GroupsViewModel(
                 displayName = displayName,
                 avatarInitial = displayName.firstOrNull()?.uppercase().orEmpty(),
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                photo = profile?.photo,
+                photoUrl = profile?.photo?.toImageUrl(),
                 accountProvider = (accountStatus as? AccountStatus.Connected)?.provider,
                 syncBadge = syncBadgeOf(syncState = syncState, isOnline = isOnline),
                 showsRecoveryCodePrompt = prompt == RecoveryCodePrompt.DUE,
