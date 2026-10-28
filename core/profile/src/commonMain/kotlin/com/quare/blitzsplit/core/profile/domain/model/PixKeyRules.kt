@@ -59,13 +59,7 @@ internal object PixKeyRules {
             )
         }
 
-        PaymentKeyType.PHONE -> {
-            val digits = extractPhoneDigits(input).take(PHONE_LENGTH)
-            PaymentKeyInput(
-                text = formatPhone(digits),
-                isComplete = digits.length == PHONE_LENGTH,
-            )
-        }
+        PaymentKeyType.PHONE -> formatPhoneInput(input)
 
         PaymentKeyType.RANDOM -> PaymentKeyInput(
             text = input,
@@ -75,6 +69,27 @@ internal object PixKeyRules {
         else -> PaymentKeyInput(
             text = input,
             isComplete = false,
+        )
+    }
+
+    // Why: a "+" or "+5" being typed stays as is, and another country's number is left whole to show its error.
+    private fun formatPhoneInput(input: String): PaymentKeyInput {
+        val digits =
+            extractPhoneDigits(input)?.take(PHONE_LENGTH) ?: return PaymentKeyInput(
+                text = input,
+                isComplete = true,
+            )
+        if (digits.isEmpty() &&
+            input.trim().startsWith("+")
+        ) {
+            return PaymentKeyInput(
+                text = input.trim(),
+                isComplete = false,
+            )
+        }
+        return PaymentKeyInput(
+            text = formatPhone(digits),
+            isComplete = digits.length == PHONE_LENGTH,
         )
     }
 
@@ -101,7 +116,7 @@ internal object PixKeyRules {
     }
 
     private fun validatePhone(input: String): PaymentKeyValidation {
-        val digits = extractPhoneDigits(input)
+        val digits = extractPhoneDigits(input).orEmpty()
         val isPhone = digits.length == PHONE_LENGTH && digits.take(2).toInt() in DDDS && digits[2] == '9'
         return if (isPhone) {
             PaymentKeyValidation.Valid("+$COUNTRY_CODE$digits", PaymentKeyFormat.PHONE)
@@ -110,14 +125,24 @@ internal object PixKeyRules {
         }
     }
 
-    // Why: "+55" in front, as the mask writes it or a pasted number has it, is the country, not the DDD.
-    private fun extractPhoneDigits(input: String): String {
+    /*
+     * Why: "+55" in front, as the mask writes it or a pasted number has it, is the country, not the DDD. Null for
+     * a number with another country code, which no Pix phone key has.
+     */
+    private fun extractPhoneDigits(input: String): String? {
         val text = input.trim()
         val digits = text.filter(Char::isDigit)
         return when {
-            text.startsWith("+$COUNTRY_CODE") -> digits.removePrefix(COUNTRY_CODE)
-            digits.length > PHONE_LENGTH && digits.startsWith(COUNTRY_CODE) -> digits.removePrefix(COUNTRY_CODE)
-            else -> digits
+            !text.startsWith("+") && digits.length > PHONE_LENGTH && digits.startsWith(COUNTRY_CODE) ->
+                digits.removePrefix(COUNTRY_CODE)
+
+            !text.startsWith("+") -> digits
+
+            digits.startsWith(COUNTRY_CODE) -> digits.removePrefix(COUNTRY_CODE)
+
+            COUNTRY_CODE.startsWith(digits) -> ""
+
+            else -> null
         }
     }
 
@@ -170,7 +195,7 @@ internal object PixKeyRules {
         value: String,
     ): String = when (type) {
         PaymentKeyType.CPF -> formatCpf(value)
-        PaymentKeyType.PHONE -> formatPhone(extractPhoneDigits(value))
+        PaymentKeyType.PHONE -> extractPhoneDigits(value)?.let(::formatPhone) ?: value
         else -> value
     }
 }

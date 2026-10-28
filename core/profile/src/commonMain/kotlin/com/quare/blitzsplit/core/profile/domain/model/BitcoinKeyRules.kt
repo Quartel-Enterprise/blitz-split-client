@@ -58,9 +58,13 @@ internal object BitcoinKeyRules {
     private fun validateLightning(input: String): PaymentKeyValidation {
         val text = toBareKey(input).lowercase()
         return when {
-            INVOICE_PREFIXES.any(text::startsWith) -> toInvalid(PaymentKeyError.LIGHTNING_INVOICE)
+            // Why: before the invoice check, so a Lightning Address like "lnbcfan@wallet.com" stays valid.
             ADDRESS.matches(text) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LIGHTNING_ADDRESS)
+
+            INVOICE_PREFIXES.any(text::startsWith) -> toInvalid(PaymentKeyError.LIGHTNING_INVOICE)
+
             isLnurl(text) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LNURL)
+
             else -> toInvalid(PaymentKeyError.INVALID_LIGHTNING)
         }
     }
