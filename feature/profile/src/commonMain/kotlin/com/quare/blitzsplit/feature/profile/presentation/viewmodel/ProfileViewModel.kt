@@ -2,14 +2,8 @@ package com.quare.blitzsplit.feature.profile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
-import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
-import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
-import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -25,8 +19,8 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileCha
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
-import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -45,7 +39,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -54,23 +47,18 @@ import software.quare.connectivity.NetworkConnectivityObserver
 
 class ProfileViewModel(
     private val navigator: Navigator,
-    private val nativeSignIn: NativeSignIn,
-    private val connectWithIdToken: ConnectWithIdToken,
-    private val connectWithBrowser: ConnectWithBrowser,
-    private val completeSignIn: CompleteSignIn,
-    private val observeAccount: ObserveAccount,
-    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
+    private val providerConnector: ProviderConnector,
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val updateThemePreference: UpdateThemePreference,
     private val retrySync: RetrySync,
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
+    observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
     observePendingProfileChanges: ObservePendingProfileChanges,
     observeSyncState: ObserveSyncState,
     observeThemePreference: ObserveThemePreference,
-    observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<ProfileUiState>
@@ -102,7 +90,6 @@ class ProfileViewModel(
     val uiAction: SharedFlow<ProfileUiAction>
         field = MutableSharedFlow<ProfileUiAction>()
 
-    private var returningProvider: AccountProvider? = null
     private var recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE
 
     val stateWatcher: FlowWatcher<ProfileUiState> = FlowWatcher(uiState)
@@ -138,11 +125,19 @@ class ProfileViewModel(
         observeThemePreference()
             .onEach { theme -> uiState.update { it.copy(theme = theme) } }
             .launchIn(viewModelScope)
-        // Why: as with a cancelled native sheet, closing the browser isn't a failure, while a failed callback is.
-        observeAbandonedBrowserSignIn()
-            .onEach { abandoned -> finishConnecting(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED) }
+        providerConnector.connection
+            .onEach { connection ->
+                uiState.update {
+                    it.copy(
+                        connectingProvider = connection.connectingProvider,
+                        hasSignInFailed = connection.hasFailed,
+                        isConnectExpanded = connection.isExpanded,
+                    )
+                }
+            }.launchIn(viewModelScope)
+        providerConnector
+            .observeBrowserSignIn { account -> account.status is AccountStatus.Connected }
             .launchIn(viewModelScope)
-        observeReturningSignIn()
     }
 
     fun onEvent(event: ProfileUiEvent) {
@@ -154,8 +149,8 @@ class ProfileViewModel(
             ProfileUiEvent.OnConnectClicked -> expandConnect()
             is ProfileUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
             is ProfileUiEvent.OnIdTokenReceived -> handleIdToken(event)
-            ProfileUiEvent.OnNativeSignInFailed -> finishConnecting(hasFailed = true)
-            ProfileUiEvent.OnNativeSignInCancelled -> finishConnecting(hasFailed = false)
+            ProfileUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
+            ProfileUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
@@ -234,7 +229,7 @@ class ProfileViewModel(
     }
 
     private fun expandConnect() {
-        if (uiState.value.canConnect) uiState.update { it.copy(isConnectExpanded = true) }
+        if (uiState.value.canConnect) providerConnector.expand()
     }
 
     private fun connectInstead() {
@@ -242,6 +237,7 @@ class ProfileViewModel(
         uiState.update {
             it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false, isConnectExpanded = true)
         }
+        providerConnector.expand()
     }
 
     private fun showSignOutDialog() {
@@ -283,57 +279,26 @@ class ProfileViewModel(
         }
     }
 
-    /*
-     * Why: on the web the link's callback reloads the page, so the link shows as under way meanwhile,
-     * and as failed if it ends without Google or Apple connected.
-     */
-    private fun observeReturningSignIn() {
-        observeReturningBrowserSignIn()
-            .onEach { provider ->
-                if (provider != null) {
-                    returningProvider = provider
-                    uiState.update {
-                        it.copy(
-                            connectingProvider = it.connectingProvider ?: provider,
-                            hasSignInFailed = false,
-                            isConnectExpanded = true,
-                        )
-                    }
-                } else if (returningProvider != null) {
-                    returningProvider = null
-                    finishConnecting(hasFailed = observeAccount().first().status !is AccountStatus.Connected)
-                }
-            }.launchIn(viewModelScope)
-    }
-
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
+        // Why: sign out checks connectingProvider, so it is set at the tap, before the connector's copy lands.
         uiState.update { it.copy(connectingProvider = provider, hasSignInFailed = false) }
-        viewModelScope.launch {
-            if (provider in nativeSignIn.providers) {
-                uiAction.emit(ProfileUiAction.LaunchNativeSignIn(provider))
-            } else {
-                connectWithBrowser(provider).onFailure { finishConnecting(hasFailed = true) }
-            }
-        }
+        viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
+    }
+
+    private suspend fun launchNativeSignIn(provider: AccountProvider) {
+        uiAction.emit(ProfileUiAction.LaunchNativeSignIn(provider))
     }
 
     private fun handleIdToken(event: ProfileUiEvent.OnIdTokenReceived) {
         viewModelScope.launch {
-            connectWithIdToken(
+            providerConnector.onIdTokenReceived(
                 provider = event.provider,
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
-            ).onSuccess {
-                completeSignIn()
-                finishConnecting(hasFailed = false)
-            }.onFailure { finishConnecting(hasFailed = true) }
+            )
         }
-    }
-
-    private fun finishConnecting(hasFailed: Boolean) {
-        uiState.update { it.copy(connectingProvider = null, hasSignInFailed = hasFailed) }
     }
 
     private fun emit(action: ProfileUiAction) {

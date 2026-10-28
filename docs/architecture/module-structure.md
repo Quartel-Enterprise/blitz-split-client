@@ -14,7 +14,7 @@ core/
 │   └── testing/        # FakeProfileRepository, for other modules' tests
 ├── account/            # Account domain + data: session mirror, sign in, recovery code
 │   └── testing/        # FakeAccountRepository
-├── sync/               # SyncCoordinator and the use cases that cross profile and account
+├── sync/               # SyncCoordinator, ProviderConnector and the use cases that cross profile and account
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
     ├── supabase/       # SupabaseClient, Auth / Postgrest / Functions / Storage, SupabaseConfig (BuildKonfig)
@@ -108,6 +108,7 @@ src/commonMain/kotlin/com/quare/blitzsplit/core/<name>/
 │   ├── dto/             # @Serializable wire models
 │   ├── mapper/          # DTO / entity ↔ domain
 │   └── repository/      # XRepositoryImpl
+├── connect/             # :core:sync only: ProviderConnector, the Google or Apple link state every screen shares
 ├── di/                  # One Koin module
 └── domain/
     ├── model/           # Domain models and exceptions

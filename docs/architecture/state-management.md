@@ -150,7 +150,9 @@ class WelcomeViewModel(
   `viewModelScope.launch { }`. Results come back as `Result` and are handled with `onSuccess` / `onFailure` (see
   [coroutine-error-handling.md](coroutine-error-handling.md)).
 - Guards live in the ViewModel too: `handleProviderClicked` returns early when `areAccountButtonsEnabled` is false,
-  so a double tap on any platform does nothing.
+  so a double tap on any platform does nothing. A screen whose link state comes from `ProviderConnector` still sets
+  `connectingProvider` at the tap, since its copy of the connector's state lands a moment later; the connector also
+  refuses a second link while one is under way.
 
 ### How each UI observes it
 

@@ -57,6 +57,16 @@ A use case that reads two core modules lives in a core module above both. `:core
 and `:core:profile`, so `CompleteSignIn` (pull the profile after any sign in) and the `SyncCoordinator` wrappers
 `StartSync` and `SyncNow` live there.
 
+### Connecting Google or Apple
+
+A screen that offers Google or Apple to a profile without them drives `ProviderConnector` (`:core:sync`, a Koin
+factory, so each screen has its own) instead of the connect use cases: the provider click (native sheet or browser),
+the ID token and `CompleteSignIn`, the browser sign in that returns after the web reload, and the one abandoned. The
+ViewModel copies `connection` into its `UiState`, launches the calls in `viewModelScope` (and `observeBrowserSignIn`
+with `launchIn`), and keeps only its own guards (offline, a sign out under way) and what counts as finished for
+`observeBrowserSignIn`: the recovery code waits for the prompt to be settled, the profile for Google or Apple
+connected.
+
 ### Many use cases in one ViewModel
 
 ViewModels take each use case as its own constructor parameter (`RestoreViewModel` takes eight). If a constructor
