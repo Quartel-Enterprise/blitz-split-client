@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -268,6 +269,52 @@ class RecoveryCodeViewModelTest {
             assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
         }
 
+    @Test
+    fun `GIVEN the page reloaded on a Google link callback WHEN the sheet shows THEN shows the spinner on Google`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+
+            // When
+            account.returningBrowserSignIn.value = AccountProvider.GOOGLE
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.connectingProvider)
+            assertTrue(viewModel.uiState.value.isConnectExpanded)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a returning Google link WHEN it ends with the prompt still due THEN shows the failure`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            account.returningBrowserSignIn.value = AccountProvider.GOOGLE
+
+            // When
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasSignInFailed)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a returning Apple link WHEN it ends with the prompt settled THEN shows no failure`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // When
+            account.recoveryCodePrompt = RecoveryCodePrompt.SAVED
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasSignInFailed)
+            assertNull(viewModel.uiState.value.connectingProvider)
+        }
+
     private fun TestScope.prepareScenario(
         code: String?,
         prompt: RecoveryCodePrompt,
@@ -283,6 +330,7 @@ class RecoveryCodeViewModelTest {
         viewModel = RecoveryCodeViewModel(
             nativeSignIn = NativeSignIn(native),
             observeAccount = ObserveAccountUseCase(account),
+            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),

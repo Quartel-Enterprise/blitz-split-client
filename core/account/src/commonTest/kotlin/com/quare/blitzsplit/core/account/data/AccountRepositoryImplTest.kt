@@ -16,11 +16,16 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -653,6 +658,265 @@ class AccountRepositoryImplTest {
             assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
         }
 
+    @Test
+    fun `GIVEN no session WHEN signing in with Google in the browser THEN remembers Google as the browser sign in`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+
+            // When
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE.code, local.get().browserSignInProvider)
+        }
+
+    @Test
+    fun `GIVEN a Google session WHEN signing in with Apple in the browser THEN remembers the Apple browser sign in`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser, browserSignInProvider = AccountProvider.GOOGLE)
+
+            // When
+            repository.signInWithBrowser(AccountProvider.APPLE)
+
+            // Then
+            assertEquals(AccountProvider.APPLE.code, local.get().browserSignInProvider)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN linking Google in the browser THEN remembers Google as the browser sign in`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser)
+
+            // When
+            repository.signInWithBrowser(AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(listOf(AccountProvider.GOOGLE), remote.browserLinks)
+            assertEquals(AccountProvider.GOOGLE.code, local.get().browserSignInProvider)
+            assertEquals(AccountProvider.GOOGLE.code, local.get().pendingLinkProvider)
+        }
+
+    @Test
+    fun `GIVEN an app start without a callback WHEN observing the returning browser sign in THEN there is none`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, browserSignInProvider = AccountProvider.GOOGLE)
+
+            // When
+            val returning = repository.observeReturningBrowserSignIn().first()
+
+            // Then
+            assertNull(returning)
+        }
+
+    @Test
+    fun `GIVEN a Google browser sign in WHEN its callback arrives THEN shows Google as the returning sign in`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                browserSignInProvider = AccountProvider.GOOGLE,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            val url = "https://app.example/#access_token=abc"
+
+            // When
+            val result = repository.handleBrowserCallback(url)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(AccountProvider.GOOGLE, repository.observeReturningBrowserSignIn().first())
+        }
+
+    @Test
+    fun `GIVEN an anonymous user linking Apple in the browser WHEN its callback arrives THEN shows Apple`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
+        repository.signInWithBrowser(AccountProvider.APPLE)
+        val url = "https://app.example/#access_token=abc"
+
+        // When
+        repository.handleBrowserCallback(url)
+
+        // Then
+        assertEquals(AccountProvider.APPLE, repository.observeReturningBrowserSignIn().first())
+        assertNull(local.get().pendingLinkProvider)
+    }
+
+    @Test
+    fun `GIVEN a returning Google sign in WHEN the Google session is mirrored THEN the returning sign in ends`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                browserSignInProvider = AccountProvider.GOOGLE,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            startMirroring()
+            repository.handleBrowserCallback("https://app.example/#access_token=abc")
+
+            // When
+            sessions.emit(googleUser)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeReturningBrowserSignIn().first())
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
+        }
+
+    @Test
+    fun `GIVEN a returning Apple sign in WHEN an anonymous session is mirrored THEN the returning sign in ends`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                browserSignInProvider = AccountProvider.APPLE,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            startMirroring()
+            repository.handleBrowserCallback("https://app.example/#access_token=abc")
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeReturningBrowserSignIn().first())
+        }
+
+    @Test
+    fun `GIVEN a returning Google sign in WHEN no session is mirrored THEN the returning sign in ends`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.GOOGLE,
+            callback = BrowserCallback.SIGNED_IN,
+        )
+        startMirroring()
+        repository.handleBrowserCallback("https://app.example/#access_token=abc")
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        assertNull(repository.observeReturningBrowserSignIn().first())
+    }
+
+    @Test
+    fun `GIVEN the session mirrored before the saved provider is read WHEN the callback arrives THEN shows nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                browserSignInProvider = AccountProvider.GOOGLE,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            startMirroring()
+            local.beforeNextGet = {
+                sessions.emit(googleUser)
+                yield()
+            }
+
+            // When
+            repository.handleBrowserCallback("https://app.example/#access_token=abc")
+
+            // Then
+            assertNull(repository.observeReturningBrowserSignIn().first())
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
+        }
+
+    @Test
+    fun `GIVEN a Google browser sign in WHEN a URL that is not a callback arrives THEN shows no returning sign in`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, browserSignInProvider = AccountProvider.GOOGLE, callback = null)
+            val url = "https://app.example/"
+
+            // When
+            repository.handleBrowserCallback(url)
+
+            // Then
+            assertNull(repository.observeReturningBrowserSignIn().first())
+        }
+
+    @Test
+    fun `GIVEN a Google browser sign in WHEN its callback failed THEN shows no returning sign in`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.GOOGLE,
+            callback = BrowserCallback.FAILED,
+        )
+        val url = "https://app.example/#error=access_denied"
+
+        // When
+        repository.handleBrowserCallback(url)
+
+        // Then
+        assertNull(repository.observeReturningBrowserSignIn().first())
+    }
+
+    @Test
+    fun `GIVEN a pending Apple link WHEN the identity belongs to another user THEN shows no returning sign in`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                pendingLinkProvider = AccountProvider.APPLE,
+                browserSignInProvider = AccountProvider.APPLE,
+                callback = BrowserCallback.IDENTITY_ALREADY_LINKED,
+            )
+            val url = "https://app.example/#error_code=identity_already_exists"
+
+            // When
+            repository.handleBrowserCallback(url)
+
+            // Then
+            assertNull(repository.observeReturningBrowserSignIn().first())
+            assertEquals(listOf(AccountProvider.APPLE), remote.browserSignIns)
+        }
+
+    @Test
+    fun `GIVEN an old install with no saved browser sign in WHEN a sign in callback arrives THEN shows nothing`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null, callback = BrowserCallback.SIGNED_IN)
+            val url = "https://app.example/#access_token=abc"
+
+            // When
+            val result = repository.handleBrowserCallback(url)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(repository.observeReturningBrowserSignIn().first())
+        }
+
+    @Test
+    fun `GIVEN an earlier returning sign in already mirrored WHEN a second callback arrives THEN shows it again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = googleUser,
+                browserSignInProvider = AccountProvider.GOOGLE,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            startMirroring()
+            repository.handleBrowserCallback("borarachar://auth-callback?code=first")
+            sessions.emit(googleUser)
+            runCurrent()
+            repository.signInWithBrowser(AccountProvider.APPLE)
+
+            // When
+            repository.handleBrowserCallback("borarachar://auth-callback?code=second")
+
+            // Then
+            assertEquals(AccountProvider.APPLE, repository.observeReturningBrowserSignIn().first())
+        }
+
     private val anonymousUser = SessionUser("anonymous", socialProvider = null, displayName = null, photoUrl = null)
 
     private val googleUser =
@@ -666,6 +930,15 @@ class AccountRepositoryImplTest {
     private val appleUserWithName =
         SessionUser("apple-user", socialProvider = AccountProvider.APPLE, displayName = "Pierre", photoUrl = null)
 
+    // Why: a session flow the test emits into while mirrorSession collects it in the background.
+    private val sessions = MutableSharedFlow<SessionUser?>()
+
+    private fun TestScope.startMirroring() {
+        remote.sessionUpdates = sessions
+        backgroundScope.launch { repository.mirrorSession() }
+        runCurrent()
+    }
+
     private suspend fun signInWithApple(fullName: String?): Result<ConnectResult> = repository.signInWithIdToken(
         AccountProvider.APPLE,
         idToken = "token",
@@ -678,12 +951,16 @@ class AccountRepositoryImplTest {
         linkError: Throwable? = null,
         issueError: Throwable? = null,
         pendingLinkProvider: AccountProvider? = null,
+        browserSignInProvider: AccountProvider? = null,
         callback: BrowserCallback? = null,
         browserSignInError: Throwable? = null,
         idTokenUser: SessionUser? = null,
         saveDisplayNameError: Throwable? = null,
     ) {
-        local = FakeAccountLocalDataSource(pendingLinkProvider = pendingLinkProvider?.code)
+        local = FakeAccountLocalDataSource(
+            pendingLinkProvider = pendingLinkProvider?.code,
+            browserSignInProvider = browserSignInProvider?.code,
+        )
         remote = FakeAccountRemoteDataSource(
             currentUser = currentUser,
             linkError = linkError,
@@ -698,7 +975,11 @@ class AccountRepositoryImplTest {
 
 private class FakeAccountLocalDataSource(
     pendingLinkProvider: String?,
+    browserSignInProvider: String?,
 ) : AccountLocalDataSource {
+    // Why: runs once, right before the next read of the row, so a test can interleave another coroutine there.
+    var beforeNextGet: (suspend () -> Unit)? = null
+
     private val row = MutableStateFlow(
         AccountEntity(
             id = "me",
@@ -707,12 +988,16 @@ private class FakeAccountLocalDataSource(
             recoveryCode = null,
             recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
             pendingLinkProvider = pendingLinkProvider,
+            browserSignInProvider = browserSignInProvider,
         ),
     )
 
     override fun observe(): Flow<AccountEntity> = row
 
-    override suspend fun get(): AccountEntity = row.value
+    override suspend fun get(): AccountEntity {
+        beforeNextGet?.also { beforeNextGet = null }?.invoke()
+        return row.value
+    }
 
     override suspend fun update(transform: (AccountEntity) -> AccountEntity) {
         row.value = transform(row.value)

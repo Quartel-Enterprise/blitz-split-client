@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -35,6 +37,7 @@ class WelcomeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val observeAccountStatus: ObserveAccountStatus,
+    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
     private val completeSignIn: CompleteSignIn,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val navigator: Navigator,
@@ -45,7 +48,13 @@ class WelcomeViewModel(
     val uiAction: SharedFlow<WelcomeUiAction>
         field = MutableSharedFlow<WelcomeUiAction>()
 
-    private var isConnectingWithIdToken = false
+    /*
+     * Why: the status observer leaves alone a sign in this screen completes itself, both while it runs
+     * and for the Connected it produced, which Room may deliver once it has finished.
+     */
+    private var isSigningInDirectly = false
+    private var directlyCompletedStatus: AccountStatus? = null
+    private var returningProvider: AccountProvider? = null
 
     val stateWatcher: FlowWatcher<WelcomeUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<WelcomeUiAction> = FlowWatcher(uiAction)
@@ -53,6 +62,7 @@ class WelcomeViewModel(
     init {
         observeConnectivity()
         observeBrowserSignIn()
+        observeReturningSignIn()
     }
 
     fun onEvent(event: WelcomeUiEvent) {
@@ -77,15 +87,40 @@ class WelcomeViewModel(
     /*
      * Why: a browser sign in finishes when the OAuth callback comes back, after this ViewModel was
      * recreated on the web (the page reloads), so a Google or Apple session seen while this screen
-     * is on top completes it. An ID token sign in completes on its own.
+     * is on top completes it, with a button busy for the wait: the clicked one, or after a reload the
+     * session's, which is its first identity. An ID token sign in completes on its own.
      */
     private fun observeBrowserSignIn() {
         observeAccountStatus()
             .distinctUntilChanged()
             .filterIsInstance<AccountStatus.Connected>()
-            .filter { !isConnectingWithIdToken && navigator.backStack.value.lastOrNull() == Route.Welcome }
-            .onEach { finishSignIn() }
-            .launchIn(viewModelScope)
+            .filter { status ->
+                !isSigningInDirectly &&
+                    status != directlyCompletedStatus &&
+                    navigator.backStack.value.lastOrNull() == Route.Welcome
+            }.onEach { status ->
+                uiState.update { it.copy(connectingProvider = it.connectingProvider ?: status.provider, error = null) }
+                finishSignIn()
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: on the web the callback reloads the page, so the sign in it brings back shows as under way
+     * from the first frame, and as failed if it ends without the account connecting.
+     */
+    private fun observeReturningSignIn() {
+        observeReturningBrowserSignIn()
+            .filter { navigator.backStack.value.lastOrNull() == Route.Welcome }
+            .onEach { provider ->
+                if (provider != null) {
+                    returningProvider = provider
+                    uiState.update { it.copy(connectingProvider = it.connectingProvider ?: provider, error = null) }
+                } else if (returningProvider != null) {
+                    returningProvider = null
+                    val isConnected = observeAccountStatus().first() is AccountStatus.Connected
+                    if (!isConnected) finishConnecting(error = WelcomeError.SIGN_IN_FAILED)
+                }
+            }.launchIn(viewModelScope)
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {
@@ -101,17 +136,22 @@ class WelcomeViewModel(
     }
 
     private fun handleIdToken(event: WelcomeUiEvent.OnIdTokenReceived) {
-        isConnectingWithIdToken = true
+        isSigningInDirectly = true
         viewModelScope.launch {
             connectWithIdToken(
                 provider = event.provider,
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
-            ).onSuccess { finishSignIn() }
+            ).onSuccess { finishDirectSignIn() }
                 .onFailure { finishConnecting(error = WelcomeError.SIGN_IN_FAILED) }
-            isConnectingWithIdToken = false
+            isSigningInDirectly = false
         }
+    }
+
+    private suspend fun finishDirectSignIn() {
+        directlyCompletedStatus = observeAccountStatus().first()
+        finishSignIn()
     }
 
     private suspend fun finishSignIn() {

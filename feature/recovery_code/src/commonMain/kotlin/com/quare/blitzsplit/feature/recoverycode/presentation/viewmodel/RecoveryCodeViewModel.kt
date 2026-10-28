@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -31,7 +33,8 @@ class RecoveryCodeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val completeSignIn: CompleteSignIn,
-    observeAccount: ObserveAccount,
+    private val observeAccount: ObserveAccount,
+    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RecoveryCodeUiState>
@@ -48,6 +51,8 @@ class RecoveryCodeViewModel(
 
     val uiAction: SharedFlow<RecoveryCodeUiAction>
         field = MutableSharedFlow<RecoveryCodeUiAction>()
+
+    private var returningProvider: AccountProvider? = null
 
     val stateWatcher: FlowWatcher<RecoveryCodeUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RecoveryCodeUiAction> = FlowWatcher(uiAction)
@@ -66,6 +71,7 @@ class RecoveryCodeViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
+        observeReturningSignIn()
     }
 
     fun onEvent(event: RecoveryCodeUiEvent) {
@@ -95,6 +101,32 @@ class RecoveryCodeViewModel(
     private fun emitWithCode(action: (String) -> RecoveryCodeUiAction) {
         val code = uiState.value.formattedCode ?: return
         viewModelScope.launch { uiAction.emit(action(code)) }
+    }
+
+    /*
+     * Why: on the web the link's callback reloads the page and the sheet shows again until the account
+     * mirror settles the prompt, so the link shows as under way meanwhile, and as failed if it ends
+     * with the prompt still unsettled.
+     */
+    private fun observeReturningSignIn() {
+        observeReturningBrowserSignIn()
+            .onEach { provider ->
+                if (provider != null) {
+                    returningProvider = provider
+                    uiState.update {
+                        it.copy(
+                            connectingProvider = it.connectingProvider ?: provider,
+                            hasSignInFailed = false,
+                            isConnectExpanded = true,
+                        )
+                    }
+                } else if (returningProvider != null) {
+                    returningProvider = null
+                    finishConnecting(
+                        hasFailed = observeAccount().first().recoveryCodePrompt != RecoveryCodePrompt.SAVED,
+                    )
+                }
+            }.launchIn(viewModelScope)
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

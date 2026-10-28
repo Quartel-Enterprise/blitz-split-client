@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.account.domain.model.TooManyRecoveryAttemptsExc
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -18,6 +19,7 @@ import com.quare.blitzsplit.feature.restore.presentation.model.RestoreError
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiAction
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiEvent
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -41,6 +43,8 @@ class RestoreViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: RestoreViewModel
     private val actions = mutableListOf<RestoreUiAction>()
+    private val profilePull = CompletableDeferred<Unit>()
+    private var profilePullCount = 0
 
     @BeforeTest
     fun setUp() {
@@ -336,6 +340,134 @@ class RestoreViewModelTest {
         assertEquals(listOf(Route.Groups), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN the page reloaded after the Google sign in WHEN connected THEN shows the spinner on Google`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isProfilePullPending = true)
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+
+            // When
+            account.status = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.connectingProvider)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+            assertFalse(viewModel.uiState.value.canRestore)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in waiting on the profile pull WHEN it fails THEN shows the error and enables them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"), isProfilePullPending = true)
+            account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
+
+            // When
+            profilePull.complete(Unit)
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN the code of an account with Google WHEN restoring THEN finishes the sign in once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE, isProfilePullPending = true)
+            account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+            // When
+            profilePull.complete(Unit)
+
+            // Then
+            assertEquals(listOf(Route.Welcome, Route.Restore, Route.ProfileSetup), navigator.backStack.value)
+            assertNull(viewModel.uiState.value.connectingProvider)
+        }
+
+    @Test
+    fun `GIVEN a code restore whose profile pull failed WHEN the Google status arrives late THEN keeps the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"))
+            account.defersStatusUpdates = true
+            account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+            // When
+            account.requeryStatus()
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertNull(viewModel.uiState.value.connectingProvider)
+            assertEquals(1, profilePullCount)
+        }
+
+    @Test
+    fun `GIVEN an ID token sign in whose profile pull failed WHEN the status arrives late THEN keeps the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"))
+            account.defersStatusUpdates = true
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null))
+
+            // When
+            account.requeryStatus()
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertEquals(1, profilePullCount)
+        }
+
+    @Test
+    fun `GIVEN the page reloaded on a Google callback WHEN not mirrored yet THEN shows the spinner on Google`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            account.returningBrowserSignIn.value = AccountProvider.GOOGLE
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.connectingProvider)
+            assertFalse(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a returning Apple sign in WHEN its session connects THEN keeps the spinner for the profile pull`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isProfilePullPending = true)
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // When
+            account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
+            assertNull(viewModel.uiState.value.error)
+        }
+
+    @Test
+    fun `GIVEN a returning Apple sign in WHEN it ends without connecting THEN shows the sign in error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // When
+            account.returningBrowserSignIn.value = null
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         outcome: SignInOutcome = SignInOutcome.PROFILE_RESTORED,
@@ -343,7 +475,9 @@ class RestoreViewModelTest {
         restoreError: Throwable? = null,
         native: Set<AccountProvider> = emptySet(),
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
+        isProfilePullPending: Boolean = false,
     ) {
+        if (!isProfilePullPending) profilePull.complete(Unit)
         account = FakeAccountRepository().also {
             it.restoreError = restoreError
             it.connectResult = connectResult
@@ -355,7 +489,12 @@ class RestoreViewModelTest {
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
-            completeSignIn = { profilePullError?.let { Result.failure(it) } ?: Result.success(outcome) },
+            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
+            completeSignIn = {
+                profilePullCount++
+                profilePull.await()
+                profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
+            },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
             navigator = navigator,
         )

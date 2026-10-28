@@ -10,6 +10,9 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
@@ -41,6 +44,7 @@ class FakeAccountRepository(
             snapshot.update { it.copy(recoveryCodePrompt = value) }
         }
     var sessionUser: SessionUser? = null
+    val returningBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
     val idTokenFullNames = mutableListOf<String?>()
@@ -53,13 +57,28 @@ class FakeAccountRepository(
     var connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED)
     var registerError: Throwable? = null
     var restoreError: Throwable? = null
+    var restoredStatus: AccountStatus = AccountStatus.Anonymous(RESTORED_USER_ID)
+
+    // Why: like Room, a new query reads the status as it is, while an open one sees a write only once
+    // requeryStatus() runs, so a test can deliver a status late.
+    var defersStatusUpdates = false
+    private val requeriedStatus = MutableStateFlow(initialStatus)
     var createRecoveryCodeResult: Result<String> = Result.success("K7QM4XPA9TRE")
 
     override fun observeAccount(): Flow<AccountSnapshot> = snapshot
 
-    override fun observeStatus(): Flow<AccountStatus> = snapshot
-        .map { it.status }
-        .distinctUntilChanged()
+    override fun observeStatus(): Flow<AccountStatus> = if (defersStatusUpdates) {
+        flow {
+            emit(status)
+            emitAll(requeriedStatus.drop(1))
+        }
+    } else {
+        snapshot.map { it.status }.distinctUntilChanged()
+    }
+
+    fun requeryStatus() {
+        requeriedStatus.value = status
+    }
 
     override suspend fun mirrorSession() {
         snapshot.collect { }
@@ -105,10 +124,12 @@ class FakeAccountRepository(
         return Result.success(Unit)
     }
 
+    override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningBrowserSignIn
+
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code
         restoreError?.let { return Result.failure(it) }
-        status = AccountStatus.Anonymous(RESTORED_USER_ID)
+        status = restoredStatus
         return Result.success(Unit)
     }
 
