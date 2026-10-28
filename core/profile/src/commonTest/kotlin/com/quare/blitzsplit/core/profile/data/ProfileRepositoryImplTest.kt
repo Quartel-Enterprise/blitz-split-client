@@ -380,6 +380,7 @@ class ProfileRepositoryImplTest {
         runTest {
             // Given
             prepareScenario(
+                now = 2_000L,
                 stored = entity(
                     pendingSync = false,
                     photoUrl = "$UPLOADED_URL?v=1",
@@ -400,6 +401,7 @@ class ProfileRepositoryImplTest {
     fun `GIVEN a deferred copy with a Google photo WHEN the account has no profile THEN keeps the photo`() = runTest {
         // Given
         prepareScenario(
+            now = 2_000L,
             stored = entity(
                 pendingSync = false,
                 photoUrl = GOOGLE_URL,

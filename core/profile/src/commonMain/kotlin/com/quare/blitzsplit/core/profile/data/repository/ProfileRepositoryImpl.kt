@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataS
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.provider.room.entity.DEFERRED_UPDATED_AT
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -63,7 +64,7 @@ class ProfileRepositoryImpl(
 
     // Why: an uploaded photo is the previous user's object, so the account starts without it; another picture stays.
     private suspend fun reclaimDeferred() {
-        val deferred = local.get() ?: return
+        val deferred = local.get()?.takeIf { !it.pendingSync && it.updatedAt == DEFERRED_UPDATED_AT } ?: return
         local.reclaimDeferred(
             updatedAt = currentTimeMillis(),
             photoUrl = deferred.photoUrl?.takeUnless(photoRemote::isUploaded),
