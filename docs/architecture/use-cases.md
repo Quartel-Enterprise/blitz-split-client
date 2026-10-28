@@ -67,9 +67,19 @@ with `launchIn`), and keeps only its own guards (offline, a sign out under way) 
 `observeBrowserSignIn`: the recovery code waits for the prompt to be settled, the profile for Google or Apple
 connected.
 
+A screen that signs in with Google or Apple (the welcome, the restore) drives `ProviderSignIn` the same way
+(`:core:sync`, a Koin factory): the provider click, the ID token, the browser sign in seen as
+`AccountStatus.Connected` or returning after the web reload, the one abandoned, and `CompleteSignIn`. A sign in the
+screen completes itself (the recovery code) goes through `signInDirectly`, so the browser observer leaves it alone.
+Unlike `ProviderConnector` it keeps no state on screen: each call reports a `SignInStep` (`Started` on a provider,
+`SignedIn` with the `SignInOutcome`, `Ended` failed or not), and the ViewModel turns it into its own
+`connectingProvider`, its own error enum (the restore's also holds the recovery code's errors, which the person
+dismisses) and its own navigation. It still sets `connectingProvider` at the tap, and passes `observeBrowserSignIn`
+whether it is on top of the stack, since `:core:sync` doesn't see the `Navigator`.
+
 ### Many use cases in one ViewModel
 
-ViewModels take each use case as its own constructor parameter (`RestoreViewModel` takes eight). If a constructor
+ViewModels take each use case as its own constructor parameter (`ProfileViewModel` takes fourteen). If a constructor
 ever reaches Koin's limit for `viewModelOf`, group the use cases in a `FeatureUseCases` data class bound with
 `factoryOf(::FeatureUseCases)`.
 

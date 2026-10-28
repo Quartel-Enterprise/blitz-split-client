@@ -138,8 +138,8 @@ path to take. With an ID token, `AccountRepositoryImpl.signInWithIdToken` decide
 With the browser, an anonymous user links (`linkIdentity`) and anyone else signs in. The OAuth callback comes back
 as `borarachar://auth-callback` on the native apps (`MainActivity.handleAuthCallback`,
 `BlitzSplitApple.handleDeepLink` from `onOpenURL`, both calling `handleDeeplinks`) and as the page itself on the
-web. The Welcome and Restore ViewModels finish a browser sign in when they see `AccountStatus.Connected` while on
-top of the stack, since on the web the page reloaded in between.
+web. `ProviderSignIn` (for the Welcome and Restore ViewModels) finishes a browser sign in when it sees
+`AccountStatus.Connected` while the screen is on top of the stack, since on the web the page reloaded in between.
 
 A browser link follows the ID token rule too, but supabase-kt drops the callback's error while a session is signed
 in, as the anonymous one is during a link. So each platform also hands the callback URL to `HandleBrowserCallback`
@@ -157,8 +157,8 @@ A browser closed without finishing sends no callback at all, so the account laye
 browser trip is open, and each native app reports leaving and coming back to the foreground: `MainActivity.onPause`
 and `onResume` on Android, `willResignActive` and `didBecomeActive` in `BoraRacharApp` on iOS and macOS
 (`HandleAppPaused`, `HandleAppResumed`). A trip that saw the app leave and is still open when the app is back was
-abandoned: `ObserveAbandonedBrowserSignIn` says `CANCELLED`, and the Welcome and Restore ViewModels and
-`ProviderConnector` (for the recovery code and the profile) turn the spinner off with no error, as for a cancelled
+abandoned: `ObserveAbandonedBrowserSignIn` says `CANCELLED`, and `ProviderSignIn` (for the welcome and the restore)
+and `ProviderConnector` (for the recovery code and the profile) turn the spinner off with no error, as for a cancelled
 native sheet. This relies on the callback arriving before the app is reported active (Android calls `onNewIntent`
 before `onResume`, SwiftUI `onOpenURL` before `didBecomeActive`), and on `handleBrowserCallback` closing the trip
 before its first suspension, which is why both bridges run it on `Dispatchers.Main.immediate`. A callback that can't finish a sign in ends the wait too: a cancel on
