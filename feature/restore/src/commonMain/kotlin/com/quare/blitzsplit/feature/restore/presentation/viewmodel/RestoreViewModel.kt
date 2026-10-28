@@ -92,13 +92,20 @@ class RestoreViewModel(
             .launchIn(viewModelScope)
     }
 
+    /*
+     * Why: a recovery code of an account later linked to Google or Apple mirrors Connected too, and its restore
+     * completes the sign in on its own, as an ID token sign in does.
+     */
     private fun observeBrowserSignIn() {
         observeAccountStatus()
             .distinctUntilChanged()
             .filterIsInstance<AccountStatus.Connected>()
-            .filter { !isConnectingWithIdToken && navigator.backStack.value.lastOrNull() == Route.Restore }
-            .onEach { status ->
-                uiState.update { it.copy(connectingProvider = status.provider, error = null) }
+            .filter {
+                !isConnectingWithIdToken &&
+                    !uiState.value.isRestoring &&
+                    navigator.backStack.value.lastOrNull() == Route.Restore
+            }.onEach { status ->
+                uiState.update { it.copy(connectingProvider = it.connectingProvider ?: status.provider, error = null) }
                 finishSignIn()
             }.launchIn(viewModelScope)
     }

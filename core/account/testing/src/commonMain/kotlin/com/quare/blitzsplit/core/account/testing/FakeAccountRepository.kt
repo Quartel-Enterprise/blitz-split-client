@@ -30,6 +30,7 @@ class FakeAccountRepository(
     var connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED)
     var registerError: Throwable? = null
     var restoreError: Throwable? = null
+    var restoredStatus: AccountStatus = AccountStatus.Anonymous(RESTORED_USER_ID)
     var createRecoveryCodeResult: Result<String> = Result.success("K7QM4XPA9TRE")
 
     override fun observeStatus(): Flow<AccountStatus> = status
@@ -85,7 +86,7 @@ class FakeAccountRepository(
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code
         restoreError?.let { return Result.failure(it) }
-        status.value = AccountStatus.Anonymous(RESTORED_USER_ID)
+        status.value = restoredStatus
         return Result.success(Unit)
     }
 

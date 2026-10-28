@@ -250,6 +250,20 @@ class WelcomeViewModelTest {
             assertNull(viewModel.uiState.value.connectingProvider)
         }
 
+    @Test
+    fun `GIVEN Apple clicked for the browser sign in WHEN connected as Google THEN keeps the spinner on Apple`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isProfilePullPending = true)
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         native: Set<AccountProvider> = emptySet(),

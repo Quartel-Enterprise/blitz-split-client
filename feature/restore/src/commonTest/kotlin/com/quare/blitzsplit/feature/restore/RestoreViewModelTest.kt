@@ -343,6 +343,7 @@ class RestoreViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isProfilePullPending = true)
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
 
             // When
             account.status.value = AccountStatus.Connected("user", AccountProvider.GOOGLE)
@@ -366,6 +367,23 @@ class RestoreViewModelTest {
             // Then
             assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
             assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN the code of an account with Google WHEN restoring THEN finishes the sign in once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE, isProfilePullPending = true)
+            account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+            // When
+            profilePull.complete(Unit)
+
+            // Then
+            assertEquals(listOf(Route.Welcome, Route.Restore, Route.ProfileSetup), navigator.backStack.value)
+            assertNull(viewModel.uiState.value.connectingProvider)
         }
 
     private fun TestScope.prepareScenario(
