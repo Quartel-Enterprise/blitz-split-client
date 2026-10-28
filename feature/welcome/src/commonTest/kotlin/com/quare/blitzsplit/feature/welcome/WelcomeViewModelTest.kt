@@ -41,6 +41,7 @@ class WelcomeViewModelTest {
     private lateinit var viewModel: WelcomeViewModel
     private val actions = mutableListOf<WelcomeUiAction>()
     private val profilePull = CompletableDeferred<Unit>()
+    private var profilePullCount = 0
 
     @BeforeTest
     fun setUp() {
@@ -264,6 +265,23 @@ class WelcomeViewModelTest {
             assertEquals(AccountProvider.APPLE, viewModel.uiState.value.connectingProvider)
         }
 
+    @Test
+    fun `GIVEN an ID token sign in whose profile pull failed WHEN the status arrives late THEN keeps the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"))
+            account.defersStatusUpdates = true
+            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null))
+
+            // When
+            account.requeryStatus()
+
+            // Then
+            assertEquals(WelcomeError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertNull(viewModel.uiState.value.connectingProvider)
+            assertEquals(1, profilePullCount)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         native: Set<AccountProvider> = emptySet(),
@@ -282,6 +300,7 @@ class WelcomeViewModelTest {
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
             completeSignIn = {
+                profilePullCount++
                 profilePull.await()
                 profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
             },

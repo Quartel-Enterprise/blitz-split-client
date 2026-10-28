@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -59,7 +60,12 @@ class RestoreViewModel(
     val uiAction: SharedFlow<RestoreUiAction>
         field = MutableSharedFlow<RestoreUiAction>()
 
-    private var isConnectingWithIdToken = false
+    /*
+     * Why: the status observer leaves alone a sign in this screen completes itself, both while it runs
+     * and for the Connected it produced, which Room may deliver once it has finished.
+     */
+    private var isSigningInDirectly = false
+    private var directlyCompletedStatus: AccountStatus? = null
 
     val stateWatcher: FlowWatcher<RestoreUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RestoreUiAction> = FlowWatcher(uiAction)
@@ -92,17 +98,13 @@ class RestoreViewModel(
             .launchIn(viewModelScope)
     }
 
-    /*
-     * Why: a recovery code of an account later linked to Google or Apple mirrors Connected too, and its restore
-     * completes the sign in on its own, as an ID token sign in does.
-     */
     private fun observeBrowserSignIn() {
         observeAccountStatus()
             .distinctUntilChanged()
             .filterIsInstance<AccountStatus.Connected>()
-            .filter {
-                !isConnectingWithIdToken &&
-                    !uiState.value.isRestoring &&
+            .filter { status ->
+                !isSigningInDirectly &&
+                    status != directlyCompletedStatus &&
                     navigator.backStack.value.lastOrNull() == Route.Restore
             }.onEach { status ->
                 uiState.update { it.copy(connectingProvider = it.connectingProvider ?: status.provider, error = null) }
@@ -125,11 +127,13 @@ class RestoreViewModel(
         val state = uiState.value
         if (!state.canRestore) return
         uiState.update { it.copy(isRestoring = true, error = null) }
+        isSigningInDirectly = true
         viewModelScope.launch {
             restoreWithRecoveryCode(state.code)
-                .onSuccess { finishSignIn() }
+                .onSuccess { finishDirectSignIn() }
                 .onFailure { throwable -> uiState.update { it.copy(error = throwable.toRestoreError()) } }
             uiState.update { it.copy(isRestoring = false) }
+            isSigningInDirectly = false
         }
     }
 
@@ -146,17 +150,22 @@ class RestoreViewModel(
     }
 
     private fun handleIdToken(event: RestoreUiEvent.OnIdTokenReceived) {
-        isConnectingWithIdToken = true
+        isSigningInDirectly = true
         viewModelScope.launch {
             connectWithIdToken(
                 provider = event.provider,
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
-            ).onSuccess { finishSignIn() }
+            ).onSuccess { finishDirectSignIn() }
                 .onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
-            isConnectingWithIdToken = false
+            isSigningInDirectly = false
         }
+    }
+
+    private suspend fun finishDirectSignIn() {
+        directlyCompletedStatus = observeAccountStatus().first()
+        finishSignIn()
     }
 
     private suspend fun finishSignIn() {

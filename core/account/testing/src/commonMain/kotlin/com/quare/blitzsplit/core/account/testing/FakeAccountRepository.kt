@@ -8,6 +8,9 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 
 // In-memory AccountRepository: public state a test can set and read, every call recorded, and
 // public vars to make a call fail.
@@ -31,9 +34,25 @@ class FakeAccountRepository(
     var registerError: Throwable? = null
     var restoreError: Throwable? = null
     var restoredStatus: AccountStatus = AccountStatus.Anonymous(RESTORED_USER_ID)
+
+    // Why: like Room, a new query reads the status as it is, while an open one sees a write only once
+    // requeryStatus() runs, so a test can deliver a status late.
+    var defersStatusUpdates = false
+    private val requeriedStatus = MutableStateFlow(initialStatus)
     var createRecoveryCodeResult: Result<String> = Result.success("K7QM4XPA9TRE")
 
-    override fun observeStatus(): Flow<AccountStatus> = status
+    override fun observeStatus(): Flow<AccountStatus> = if (defersStatusUpdates) {
+        flow {
+            emit(status.value)
+            emitAll(requeriedStatus.drop(1))
+        }
+    } else {
+        status
+    }
+
+    fun requeryStatus() {
+        requeriedStatus.value = status.value
+    }
 
     override fun observeRecoveryCode(): Flow<String?> = recoveryCode
 

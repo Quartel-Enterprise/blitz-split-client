@@ -43,6 +43,7 @@ class RestoreViewModelTest {
     private lateinit var viewModel: RestoreViewModel
     private val actions = mutableListOf<RestoreUiAction>()
     private val profilePull = CompletableDeferred<Unit>()
+    private var profilePullCount = 0
 
     @BeforeTest
     fun setUp() {
@@ -271,7 +272,7 @@ class RestoreViewModelTest {
         }
 
     @Test
-    fun `GIVEN a native sign in in progress WHEN it fails THEN shows the error and enables them`() =
+    fun `GIVEN a native sign in in progress WHEN it fails THEN shows the error and enables the buttons`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(native = setOf(AccountProvider.GOOGLE))
@@ -386,6 +387,41 @@ class RestoreViewModelTest {
             assertNull(viewModel.uiState.value.connectingProvider)
         }
 
+    @Test
+    fun `GIVEN a code restore whose profile pull failed WHEN the Google status arrives late THEN keeps the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"))
+            account.defersStatusUpdates = true
+            account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
+            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+            // When
+            account.requeryStatus()
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertNull(viewModel.uiState.value.connectingProvider)
+            assertEquals(1, profilePullCount)
+        }
+
+    @Test
+    fun `GIVEN an ID token sign in whose profile pull failed WHEN the status arrives late THEN keeps the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profilePullError = IllegalStateException("offline"))
+            account.defersStatusUpdates = true
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null))
+
+            // When
+            account.requeryStatus()
+
+            // Then
+            assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
+            assertEquals(1, profilePullCount)
+        }
+
     private fun TestScope.prepareScenario(
         online: Boolean = true,
         outcome: SignInOutcome = SignInOutcome.PROFILE_RESTORED,
@@ -408,6 +444,7 @@ class RestoreViewModelTest {
             connectWithBrowser = ConnectWithBrowserUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
             completeSignIn = {
+                profilePullCount++
                 profilePull.await()
                 profilePullError?.let { Result.failure(it) } ?: Result.success(outcome)
             },
