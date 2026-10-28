@@ -145,6 +145,8 @@ export const pt: Record<MessageKey, string> = {
   profile_signOutPendingBody: 'Seus dados ficam neste navegador até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local.',
   profile_signOutPendingBodyOffline: 'Você está sem internet. Seus dados ficam neste navegador até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local.',
   profile_signOutWhenSynced: 'Sair ao sincronizar',
+  profile_signOutNow: 'Sair agora e perder as alterações',
+  profile_signOutFailed: 'Não deu para sair. Tente de novo.',
   profile_eraseTitle: 'Apagar o perfil deste navegador?',
   profile_eraseBody: 'Você usa sem conta. Ao sair, seu perfil e seus dados somem deste navegador. Para voltar, só com o código de recuperação.',
   profile_eraseBodyNoCode: 'Você usa sem conta e ainda não sincronizou, então não há código de recuperação. Ao sair, seu perfil some de vez.',
@@ -152,6 +154,8 @@ export const pt: Record<MessageKey, string> = {
   profile_eraseNoCodeAck: 'Entendo que não dá para recuperar',
   profile_eraseConnectInstead: 'Conectar Google ou Apple em vez disso',
   profile_eraseConfirm: 'Apagar e sair',
+  profile_erasePendingOne: '{count} alteração ainda não subiu e será perdida.',
+  profile_erasePendingOther: '{count} alterações ainda não subiram e serão perdidas.',
 
   editProfile_changePhoto: 'Trocar foto',
   editProfile_removePhoto: 'Remover foto',

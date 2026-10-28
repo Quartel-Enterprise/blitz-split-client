@@ -398,7 +398,7 @@ private fun SyncRow(
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     val supporting = when (syncStatus) {
-        ProfileSyncStatus.WAITING -> if (state.pendingChangeCount > 0) {
+        ProfileSyncStatus.WAITING -> if (state.hasPendingChanges) {
             pluralStringResource(R.plurals.profile_sync_waiting, state.pendingChangeCount, state.pendingChangeCount)
         } else {
             stringResource(R.string.profile_sync_waiting_empty)
@@ -548,6 +548,7 @@ internal fun createPreviewProfileState(
     connectingProvider = null,
     hasSignInFailed = false,
     isSigningOut = false,
+    hasSignOutFailed = false,
 )
 
 @DevicePreviews

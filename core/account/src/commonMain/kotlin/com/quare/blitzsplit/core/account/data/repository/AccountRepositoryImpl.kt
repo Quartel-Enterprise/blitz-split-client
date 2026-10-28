@@ -41,7 +41,7 @@ class AccountRepositoryImpl(
      * already settled doesn't show it again once its provider is read.
      */
     private val returningSignIn =
-        MutableStateFlow(ReturningSignIn(provider = null, isSettled = true, isRelaunch = false))
+        MutableStateFlow(ReturningSignIn(provider = null, isSettled = true, returnsToProfile = false))
 
     override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
@@ -55,7 +55,7 @@ class AccountRepositoryImpl(
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }
-            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true, isRelaunch = false)
+            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true, returnsToProfile = false)
         }
     }
 
@@ -95,12 +95,21 @@ class AccountRepositoryImpl(
         result
     }
 
-    override suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit> = suspendRunCatching {
+    override suspend fun signInWithBrowser(
+        provider: AccountProvider,
+        isFromProfile: Boolean,
+    ): Result<Unit> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         if (current != null && current.socialProvider == null) {
-            linkWithBrowser(provider)
+            linkWithBrowser(provider = provider, isFromProfile = isFromProfile)
         } else {
-            local.update { account -> account.copy(pendingLinkProvider = null, browserSignInProvider = provider.code) }
+            local.update { account ->
+                account.copy(
+                    pendingLinkProvider = null,
+                    browserSignInProvider = provider.code,
+                    browserSignInFromProfile = isFromProfile,
+                )
+            }
             openBrowser { remote.signInWithBrowser(provider) }
         }
     }
@@ -145,8 +154,8 @@ class AccountRepositoryImpl(
         .map { it.provider }
         .distinctUntilChanged()
 
-    override fun observeRelaunchingBrowserSignIn(): Flow<AccountProvider?> = returningSignIn
-        .map { returning -> returning.provider?.takeIf { returning.isRelaunch } }
+    override fun observeBrowserSignInReturningToProfile(): Flow<AccountProvider?> = returningSignIn
+        .map { returning -> returning.provider?.takeIf { returning.returnsToProfile } }
         .distinctUntilChanged()
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
@@ -197,9 +206,16 @@ class AccountRepositoryImpl(
         suspendRunCatching { remote.saveDisplayName(name) }
     }
 
-    private suspend fun linkWithBrowser(provider: AccountProvider) {
+    private suspend fun linkWithBrowser(
+        provider: AccountProvider,
+        isFromProfile: Boolean,
+    ) {
         local.update { account ->
-            account.copy(pendingLinkProvider = provider.code, browserSignInProvider = provider.code)
+            account.copy(
+                pendingLinkProvider = provider.code,
+                browserSignInProvider = provider.code,
+                browserSignInFromProfile = isFromProfile,
+            )
         }
         try {
             openBrowser { remote.linkWithBrowser(provider) }
@@ -242,9 +258,13 @@ class AccountRepositoryImpl(
 
     // Why: reset first, so the mirror of this callback's session settles it even before the provider is read.
     private suspend fun showReturningSignIn(isRelaunch: Boolean) {
-        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false, isRelaunch = isRelaunch)
-        val provider = local.get().browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
-        returningSignIn.update { current -> if (current.isSettled) current else current.copy(provider = provider) }
+        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false, returnsToProfile = false)
+        val account = local.get()
+        val provider = account.browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
+        val returnsToProfile = isRelaunch && account.browserSignInFromProfile
+        returningSignIn.update { current ->
+            if (current.isSettled) current else current.copy(provider = provider, returnsToProfile = returnsToProfile)
+        }
     }
 
     private suspend fun signInLinkingFirst(

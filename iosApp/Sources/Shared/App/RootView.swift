@@ -23,7 +23,9 @@ struct RootView: View {
             }
         }
         .tint(Palette.accent)
-        .preferredColorScheme(app.colorScheme)
+        .onChange(of: app.theme, initial: true) { _, theme in
+            WindowAppearance.apply(theme)
+        }
         #if os(macOS)
         .frame(minWidth: 520, minHeight: 560)
         #endif

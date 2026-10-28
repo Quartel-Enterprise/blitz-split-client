@@ -261,6 +261,90 @@ class ProfileUiStateTest {
         assertFalse(canSignOut)
     }
 
+    @Test
+    fun `GIVEN a profile change not uploaded WHEN warning before erasing THEN says there are pending changes`() {
+        // Given
+        val profile = state(pendingChanges = listOf(PendingChange.PROFILE))
+
+        // When
+        val hasPending = profile.hasPendingChanges
+
+        // Then
+        assertTrue(hasPending)
+    }
+
+    @Test
+    fun `GIVEN nothing left to upload WHEN warning before erasing THEN says there are no pending changes`() {
+        // Given
+        val profile = state(pendingChanges = emptyList())
+
+        // When
+        val hasPending = profile.hasPendingChanges
+
+        // Then
+        assertFalse(hasPending)
+    }
+
+    @Test
+    fun `GIVEN a recovery code WHEN drawing the profile THEN has a code to show`() {
+        // Given
+        val profile = state(formattedRecoveryCode = "K7QM-4XPA-9TRE")
+
+        // When
+        val hasCode = profile.hasRecoveryCode
+
+        // Then
+        assertTrue(hasCode)
+    }
+
+    @Test
+    fun `GIVEN no recovery code WHEN drawing the profile THEN has no code to show`() {
+        // Given
+        val profile = state(formattedRecoveryCode = null)
+
+        // When
+        val hasCode = profile.hasRecoveryCode
+
+        // Then
+        assertFalse(hasCode)
+    }
+
+    @Test
+    fun `GIVEN no account and a recovery code WHEN drawing the account section THEN shows the recovery code row`() {
+        // Given
+        val profile = state(accountProvider = null, formattedRecoveryCode = "K7QM-4XPA-9TRE")
+
+        // When
+        val showsRow = profile.showsRecoveryCodeRow
+
+        // Then
+        assertTrue(showsRow)
+    }
+
+    @Test
+    fun `GIVEN no account and no recovery code WHEN drawing the account section THEN hides the recovery code row`() {
+        // Given
+        val profile = state(accountProvider = null, formattedRecoveryCode = null)
+
+        // When
+        val showsRow = profile.showsRecoveryCodeRow
+
+        // Then
+        assertFalse(showsRow)
+    }
+
+    @Test
+    fun `GIVEN Apple and a recovery code WHEN drawing the account section THEN hides the recovery code row`() {
+        // Given
+        val profile = state(accountProvider = AccountProvider.APPLE, formattedRecoveryCode = "K7QM-4XPA-9TRE")
+
+        // When
+        val showsRow = profile.showsRecoveryCodeRow
+
+        // Then
+        assertFalse(showsRow)
+    }
+
     private fun state(
         displayName: String = "Pierre",
         isOnline: Boolean = true,
@@ -272,6 +356,7 @@ class ProfileUiStateTest {
         isSignOutScheduled: Boolean = false,
         accountProvider: AccountProvider? = null,
         isConnectExpanded: Boolean = false,
+        formattedRecoveryCode: String? = null,
     ): ProfileUiState = ProfileUiState(
         displayName = displayName,
         avatarColor = AvatarColor.GREEN,
@@ -279,7 +364,7 @@ class ProfileUiStateTest {
         accountProvider = accountProvider,
         hasAnonymousId = false,
         maskedEmail = null,
-        formattedRecoveryCode = null,
+        formattedRecoveryCode = formattedRecoveryCode,
         showsRecoveryCodePrompt = false,
         isOnline = isOnline,
         syncStatus = syncStatus,
@@ -292,5 +377,6 @@ class ProfileUiStateTest {
         connectingProvider = connectingProvider,
         hasSignInFailed = false,
         isSigningOut = isSigningOut,
+        hasSignOutFailed = false,
     )
 }

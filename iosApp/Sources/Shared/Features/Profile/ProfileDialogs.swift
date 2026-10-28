@@ -26,15 +26,25 @@ private struct ProfileDialogsModifier: ViewModifier {
                 }
             } message: {
                 let provider = state.accountProvider?.displayName ?? ""
-                Text("Everything is synced with your \(provider) account. When you sign out, we erase the copy on this \(DeviceName.current). Your groups come back when you sign in again.")
+                if state.hasSignOutFailed {
+                    Text("Couldn't sign out. Try again.")
+                } else {
+                    Text("Everything is synced with your \(provider) account. When you sign out, we erase the copy on this \(DeviceName.current). Your groups come back when you sign in again.")
+                }
             }
             .alert(pendingTitle(count: Int(state.pendingChangeCount)), isPresented: isPresented(.signOutPending)) {
                 Button("Cancel", role: .cancel) {}
                 Button("Sign out once synced") {
                     model.send(ProfileUiEventOnSignOutWhenSyncedClicked.shared)
                 }
+                // A sync that never succeeds (offline for good, a rejected push) can't keep the person signed in
+                Button("Sign out now and lose the changes", role: .destructive) {
+                    model.send(ProfileUiEventOnSignOutNowClicked.shared)
+                }
             } message: {
-                if state.isOnline {
+                if state.hasSignOutFailed {
+                    Text("Couldn't sign out. Try again.")
+                } else if state.isOnline {
                     Text("Your data stays on this \(DeviceName.current) until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.")
                 } else {
                     Text("You're offline. Your data stays on this \(DeviceName.current) until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.")
@@ -50,11 +60,14 @@ private struct ProfileDialogsModifier: ViewModifier {
     }
 
     /// An alert closes itself on any of its buttons, so the close waits for the button's own event to
-    /// reach the ViewModel first, and the Sign out alert, which can't show progress, stays hidden while
+    /// reach the ViewModel first, and the sign out alerts, which can't show progress, stay hidden while
     /// signing out.
     private func isPresented(_ dialog: ProfileDialog) -> Binding<Bool> {
         Binding(
-            get: { model.state.dialog == dialog && !(dialog == .signOut && model.state.isSigningOut) },
+            get: {
+                let isAlert = dialog == .signOut || dialog == .signOutPending
+                return model.state.dialog == dialog && !(isAlert && model.state.isSigningOut)
+            },
             set: { isPresented in
                 guard !isPresented else { return }
                 DispatchQueue.main.async {
@@ -79,6 +92,10 @@ private struct EraseProfileSheet: View {
         NavigationStack {
             Form {
                 Section {
+                    if state.hasPendingChanges {
+                        Text("\(Int(state.pendingChangeCount)) changes haven't uploaded yet and will be lost.")
+                            .foregroundStyle(.red)
+                    }
                     if let code = state.formattedRecoveryCode {
                         Text("You use it without an account. When you leave, your profile and your data are gone from this \(DeviceName.current). To come back, you need the recovery code.")
                         HStack {
@@ -96,7 +113,7 @@ private struct EraseProfileSheet: View {
                         Text("You use it without an account and haven't synced yet, so there is no recovery code. When you leave, your profile is gone for good.")
                     }
                     Toggle(
-                        state.formattedRecoveryCode != nil
+                        state.hasRecoveryCode
                             ? "I kept the code somewhere safe" as LocalizedStringKey
                             : "I understand it can't be recovered",
                         isOn: Binding(
@@ -120,6 +137,10 @@ private struct EraseProfileSheet: View {
                         }
                     }
                     .disabled(!state.canErase)
+                } footer: {
+                    if state.hasSignOutFailed {
+                        Text("Couldn't sign out. Try again.").foregroundStyle(.red)
+                    }
                 }
             }
             .formStyle(.grouped)

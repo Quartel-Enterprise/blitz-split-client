@@ -53,7 +53,7 @@ internal fun ProfileDialogsOverlay(
             title = { Text(stringResource(R.string.profile_sign_out_title)) },
             text = {
                 val provider = state.accountProvider?.let { stringResource(it.labelRes) }.orEmpty()
-                Text(stringResource(R.string.profile_sign_out_body, provider))
+                DialogBodyColumn(text = stringResource(R.string.profile_sign_out_body, provider), state = state)
             },
             confirmButton = {
                 TextButton(
@@ -79,19 +79,25 @@ internal fun ProfileDialogsOverlay(
                 )
             },
             text = {
-                Text(
-                    stringResource(
-                        if (state.isOnline) {
-                            R.string.profile_sign_out_pending_body
-                        } else {
-                            R.string.profile_sign_out_pending_body_offline
-                        },
-                    ),
-                )
+                val bodyRes = if (state.isOnline) {
+                    R.string.profile_sign_out_pending_body
+                } else {
+                    R.string.profile_sign_out_pending_body_offline
+                }
+                DialogBodyColumn(text = stringResource(bodyRes), state = state)
             },
             confirmButton = {
-                TextButton(onClick = { onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked) }) {
-                    Text(stringResource(R.string.profile_sign_out_when_synced))
+                // Why: a sync that never succeeds (offline for good, a rejected push) can't keep the person signed in.
+                Column(horizontalAlignment = Alignment.End) {
+                    TextButton(
+                        onClick = { onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked) },
+                        enabled = !state.isSigningOut,
+                    ) { Text(stringResource(R.string.profile_sign_out_when_synced)) }
+                    TextButton(
+                        onClick = { onEvent(ProfileUiEvent.OnSignOutNowClicked) },
+                        enabled = !state.isSigningOut,
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    ) { Text(stringResource(R.string.profile_sign_out_now)) }
                 }
             },
             dismissButton = {
@@ -116,7 +122,7 @@ private fun EraseProfileDialog(
     onDismiss: () -> Unit,
 ) {
     val code = state.formattedRecoveryCode
-    val bodyRes = if (code != null) R.string.profile_erase_body else R.string.profile_erase_body_no_code
+    val bodyRes = if (state.hasRecoveryCode) R.string.profile_erase_body else R.string.profile_erase_body_no_code
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.profile_erase_title)) },
@@ -126,6 +132,16 @@ private fun EraseProfileDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(stringResource(bodyRes))
+                if (state.hasPendingChanges) {
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.profile_erase_pending_warning,
+                            state.pendingChangeCount,
+                            state.pendingChangeCount,
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
                 if (code != null) RecoveryCodeBox(code = code, onEvent = onEvent)
                 Row(
                     modifier = Modifier
@@ -140,7 +156,11 @@ private fun EraseProfileDialog(
                     Checkbox(checked = state.hasConfirmedCodeSaved, onCheckedChange = null)
                     Text(
                         text = stringResource(
-                            if (code != null) R.string.profile_erase_code_saved else R.string.profile_erase_no_code_ack,
+                            if (state.hasRecoveryCode) {
+                                R.string.profile_erase_code_saved
+                            } else {
+                                R.string.profile_erase_no_code_ack
+                            },
                         ),
                         modifier = Modifier.padding(start = 12.dp),
                         style = MaterialTheme.typography.bodyMedium,
@@ -150,6 +170,7 @@ private fun EraseProfileDialog(
                     onClick = { onEvent(ProfileUiEvent.OnConnectInsteadClicked) },
                     enabled = state.canConnect,
                 ) { Text(stringResource(R.string.profile_erase_connect_instead)) }
+                if (state.hasSignOutFailed) SignOutFailedText()
             }
         },
         confirmButton = {
@@ -162,6 +183,26 @@ private fun EraseProfileDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_cancel)) }
         },
+    )
+}
+
+@Composable
+private fun DialogBodyColumn(
+    text: String,
+    state: ProfileUiState,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(text)
+        if (state.hasSignOutFailed) SignOutFailedText()
+    }
+}
+
+@Composable
+private fun SignOutFailedText() {
+    Text(
+        text = stringResource(R.string.profile_sign_out_failed),
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodyMedium,
     )
 }
 

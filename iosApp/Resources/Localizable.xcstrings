@@ -56,6 +56,46 @@
         }
       }
     },
+    "%lld changes haven't uploaded yet and will be lost." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld change hasn't uploaded yet and will be lost."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld changes haven't uploaded yet and will be lost."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alteração ainda não subiu e será perdida."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alterações ainda não subiram e serão perdidas."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld changes in the queue" : {
       "localizations" : {
         "en" : {
@@ -415,6 +455,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para entrar agora. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't sign out. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para sair. Tente de novo."
           }
         }
       }
@@ -1055,6 +1105,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sair"
+          }
+        }
+      }
+    },
+    "Sign out now and lose the changes" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair agora e perder as alterações"
           }
         }
       }

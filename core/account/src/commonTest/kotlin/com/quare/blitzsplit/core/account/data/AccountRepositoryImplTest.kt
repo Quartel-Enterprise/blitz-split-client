@@ -226,7 +226,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = anonymousUser)
 
             // When
-            val result = repository.signInWithBrowser(AccountProvider.APPLE)
+            val result = repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // Then
             assertTrue(result.isSuccess)
@@ -241,7 +241,7 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = null)
 
         // When
-        val result = repository.signInWithBrowser(AccountProvider.GOOGLE)
+        val result = repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
         // Then
         assertTrue(result.isSuccess)
@@ -256,7 +256,7 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = googleUser)
 
         // When
-        val result = repository.signInWithBrowser(AccountProvider.APPLE)
+        val result = repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
         // Then
         assertTrue(result.isSuccess)
@@ -272,7 +272,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = null, pendingLinkProvider = AccountProvider.GOOGLE)
 
             // When
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // Then
             assertEquals(listOf(AccountProvider.APPLE), remote.browserSignIns)
@@ -432,7 +432,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = anonymousUser, linkError = IllegalStateException("offline"))
 
             // When
-            val result = repository.signInWithBrowser(AccountProvider.APPLE)
+            val result = repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // Then
             assertIs<IllegalStateException>(result.exceptionOrNull())
@@ -657,7 +657,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
             // When
             repository.handleAppPaused()
@@ -674,7 +674,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = googleUser)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // When
             repository.handleAppPaused()
@@ -691,7 +691,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = anonymousUser)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // When
             repository.handleAppPaused()
@@ -708,7 +708,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         repository.handleAppPaused()
         repository.handleAppResumed()
         runCurrent()
@@ -742,7 +742,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, browserSignInError = IllegalStateException("browser unavailable"))
         observeAbandonedSignIns()
-        val result = repository.signInWithBrowser(AccountProvider.GOOGLE)
+        val result = repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
         // When
         repository.handleAppPaused()
@@ -759,7 +759,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser, linkError = IllegalStateException("offline"))
         observeAbandonedSignIns()
-        val result = repository.signInWithBrowser(AccountProvider.APPLE)
+        val result = repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
         // When
         repository.handleAppPaused()
@@ -776,7 +776,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, callback = BrowserCallback.SIGNED_IN)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         repository.handleBrowserCallback(signInCallbackUrl)
         runCurrent()
 
@@ -794,7 +794,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         repository.handleBrowserCallback(signInCallbackUrl)
         runCurrent()
 
@@ -812,7 +812,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         local.reads = CompletableDeferred()
         val completing = backgroundScope.launch(start = CoroutineStart.UNDISPATCHED) {
             repository.handleBrowserCallback(signInCallbackUrl)
@@ -833,7 +833,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         val url = "borarachar://auth-callback?error=access_denied"
 
         // When
@@ -850,7 +850,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.FAILED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         val url = "borarachar://auth-callback?error=access_denied"
 
         // When
@@ -868,7 +868,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         repository.handleBrowserCallback("borarachar://auth-callback?error=access_denied")
         runCurrent()
 
@@ -887,7 +887,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
             repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
             runCurrent()
 
@@ -907,7 +907,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
         remote.callback = BrowserCallback.SIGNED_IN
         repository.handleBrowserCallback(signInCallbackUrl)
@@ -932,7 +932,7 @@ class AccountRepositoryImplTest {
                 browserSignInError = IllegalStateException("browser unavailable"),
             )
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
             val result =
                 repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
 
@@ -952,7 +952,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null, callback = null)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
             repository.handleBrowserCallback("https://app.example/")
             runCurrent()
 
@@ -970,7 +970,7 @@ class AccountRepositoryImplTest {
         runTest {
             // Given
             prepareScenario(currentUser = null)
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
             repository.handleAppPaused()
             repository.handleAppResumed()
 
@@ -988,7 +988,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
             // When
             repository.handleAppResumed()
@@ -1004,7 +1004,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
             repository.handleAppResumed()
             runCurrent()
 
@@ -1024,7 +1024,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = null)
             observeAbandonedSignIns()
             repository.handleAppPaused()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
             // When
             repository.handleAppResumed()
@@ -1040,7 +1040,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
             repository.handleAppPaused()
 
             // When
@@ -1057,7 +1057,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
             repository.handleAppPaused()
             repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
 
@@ -1075,7 +1075,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         repository.handleAppPaused()
         repository.handleBrowserCallback("borarachar://auth-callback?error_code=identity_already_exists")
         repository.handleAppResumed()
@@ -1095,7 +1095,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, callback = BrowserCallback.CANCELLED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         repository.handleAppPaused()
 
         // When
@@ -1113,7 +1113,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.CANCELLED)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
             repository.handleAppPaused()
 
             // When
@@ -1132,7 +1132,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, callback = BrowserCallback.CANCELLED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         repository.handleAppPaused()
         repository.handleBrowserCallback("borarachar://auth-callback?error=access_denied")
         runCurrent()
@@ -1150,7 +1150,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.GOOGLE)
+        repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
         repository.handleAppPaused()
 
         // When
@@ -1166,7 +1166,7 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = googleUser, callback = BrowserCallback.IDENTITY_ALREADY_LINKED)
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         repository.handleAppPaused()
 
         // When
@@ -1189,7 +1189,7 @@ class AccountRepositoryImplTest {
             browserSignInError = IllegalStateException("browser unavailable"),
         )
         observeAbandonedSignIns()
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         repository.handleAppPaused()
 
         // When
@@ -1208,7 +1208,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null, callback = BrowserCallback.FAILED)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
             repository.handleAppPaused()
             local.getError = IllegalStateException("database closed")
 
@@ -1227,7 +1227,7 @@ class AccountRepositoryImplTest {
             // Given
             prepareScenario(currentUser = null, callback = BrowserCallback.SIGNED_IN)
             observeAbandonedSignIns()
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
             repository.handleAppPaused()
             local.getError = IllegalStateException("database closed")
 
@@ -1317,7 +1317,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = null)
 
             // When
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
             // Then
             assertEquals(AccountProvider.GOOGLE.code, local.get().browserSignInProvider)
@@ -1330,7 +1330,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = googleUser, browserSignInProvider = AccountProvider.GOOGLE)
 
             // When
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // Then
             assertEquals(AccountProvider.APPLE.code, local.get().browserSignInProvider)
@@ -1343,7 +1343,7 @@ class AccountRepositoryImplTest {
             prepareScenario(currentUser = anonymousUser)
 
             // When
-            repository.signInWithBrowser(AccountProvider.GOOGLE)
+            repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
 
             // Then
             assertEquals(listOf(AccountProvider.GOOGLE), remote.browserLinks)
@@ -1387,7 +1387,7 @@ class AccountRepositoryImplTest {
     fun `GIVEN an anonymous user linking Apple in the browser WHEN its callback arrives THEN shows Apple`() = runTest {
         // Given
         prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
-        repository.signInWithBrowser(AccountProvider.APPLE)
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
         val url = "https://app.example/#access_token=abc"
 
         // When
@@ -1560,7 +1560,7 @@ class AccountRepositoryImplTest {
             repository.handleBrowserCallback("borarachar://auth-callback?code=first")
             sessions.emit(googleUser)
             runCurrent()
-            repository.signInWithBrowser(AccountProvider.APPLE)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
 
             // When
             repository.handleBrowserCallback("borarachar://auth-callback?code=second")
@@ -1811,7 +1811,26 @@ class AccountRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN a Google sign in from before the app started WHEN its callback arrives THEN shows it as relaunching`() =
+    fun `GIVEN a sign in left from the profile WHEN its callback relaunches the app THEN returns to the profile`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                browserSignInProvider = AccountProvider.GOOGLE,
+                browserSignInFromProfile = true,
+                callback = BrowserCallback.SIGNED_IN,
+            )
+            val url = "https://app.example/#access_token=abc"
+
+            // When
+            repository.handleBrowserCallback(url)
+
+            // Then
+            assertEquals(AccountProvider.GOOGLE, repository.observeBrowserSignInReturningToProfile().first())
+        }
+
+    @Test
+    fun `GIVEN a sign in left from the groups WHEN its callback relaunches the app THEN stays where it lands`() =
         runTest {
             // Given
             prepareScenario(
@@ -1825,23 +1844,26 @@ class AccountRepositoryImplTest {
             repository.handleBrowserCallback(url)
 
             // Then
-            assertEquals(AccountProvider.GOOGLE, repository.observeRelaunchingBrowserSignIn().first())
+            assertEquals(AccountProvider.GOOGLE, repository.observeReturningBrowserSignIn().first())
+            assertNull(repository.observeBrowserSignInReturningToProfile().first())
         }
 
     @Test
-    fun `GIVEN an Apple link opened by this app WHEN its callback arrives THEN shows it only as returning`() = runTest {
-        // Given
-        prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
-        repository.signInWithBrowser(AccountProvider.APPLE)
-        val url = "https://app.example/#access_token=abc"
+    fun `GIVEN a profile link opened by this app WHEN its callback arrives THEN keeps the profile on screen`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser, callback = BrowserCallback.SIGNED_IN)
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = true)
+            val url = "https://app.example/#access_token=abc"
 
-        // When
-        repository.handleBrowserCallback(url)
+            // When
+            repository.handleBrowserCallback(url)
 
-        // Then
-        assertEquals(AccountProvider.APPLE, repository.observeReturningBrowserSignIn().first())
-        assertNull(repository.observeRelaunchingBrowserSignIn().first())
-    }
+            // Then
+            assertTrue(local.get().browserSignInFromProfile)
+            assertEquals(AccountProvider.APPLE, repository.observeReturningBrowserSignIn().first())
+            assertNull(repository.observeBrowserSignInReturningToProfile().first())
+        }
 
     private val anonymousUser =
         SessionUser("anonymous", socialProvider = null, displayName = null, photoUrl = null, email = null)
@@ -1933,6 +1955,7 @@ class AccountRepositoryImplTest {
         issueError: Throwable? = null,
         pendingLinkProvider: AccountProvider? = null,
         browserSignInProvider: AccountProvider? = null,
+        browserSignInFromProfile: Boolean = false,
         callback: BrowserCallback? = null,
         browserSignInError: Throwable? = null,
         idTokenUser: SessionUser? = null,
@@ -1941,6 +1964,7 @@ class AccountRepositoryImplTest {
         local = FakeAccountLocalDataSource(
             pendingLinkProvider = pendingLinkProvider?.code,
             browserSignInProvider = browserSignInProvider?.code,
+            browserSignInFromProfile = browserSignInFromProfile,
         )
         remote = FakeAccountRemoteDataSource(
             currentUser = currentUser,
@@ -1957,6 +1981,7 @@ class AccountRepositoryImplTest {
 private class FakeAccountLocalDataSource(
     pendingLinkProvider: String?,
     browserSignInProvider: String?,
+    browserSignInFromProfile: Boolean,
 ) : AccountLocalDataSource {
     // Why: runs once, right before the next read of the row, so a test can interleave another coroutine there.
     var beforeNextGet: (suspend () -> Unit)? = null
@@ -1975,6 +2000,7 @@ private class FakeAccountLocalDataSource(
             recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
             pendingLinkProvider = pendingLinkProvider,
             browserSignInProvider = browserSignInProvider,
+            browserSignInFromProfile = browserSignInFromProfile,
             email = null,
             signOutWhenSynced = false,
         ),

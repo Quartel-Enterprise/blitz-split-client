@@ -8,7 +8,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -45,10 +45,9 @@ class MainActivity : ComponentActivity() {
                 ThemePreference.DARK -> true
             }
             // Why: the status and navigation bar icons follow the app's theme, not only the system's.
-            DisposableEffect(isDark) {
+            LaunchedEffect(isDark) {
                 val barStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { isDark }
                 enableEdgeToEdge(statusBarStyle = barStyle, navigationBarStyle = barStyle)
-                onDispose {}
             }
             BlitzSplitTheme(isDark = isDark) {
                 AppNavDisplay(appViewModel = appViewModel)

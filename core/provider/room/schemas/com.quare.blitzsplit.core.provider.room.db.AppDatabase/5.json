@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "f818aba66a82d00503c3c4e2aa436bc0",
+    "identityHash": "e90b9885f96f613e78d60c4dc9383e76",
     "entities": [
       {
         "tableName": "profile",
@@ -59,7 +59,7 @@
       },
       {
         "tableName": "account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` TEXT, `provider` TEXT, `recoveryCode` TEXT, `recoveryCodePrompt` TEXT NOT NULL, `pendingLinkProvider` TEXT, `browserSignInProvider` TEXT, `email` TEXT DEFAULT NULL, `signOutWhenSynced` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` TEXT, `provider` TEXT, `recoveryCode` TEXT, `recoveryCodePrompt` TEXT NOT NULL, `pendingLinkProvider` TEXT, `browserSignInProvider` TEXT, `browserSignInFromProfile` INTEGER NOT NULL DEFAULT 0, `email` TEXT DEFAULT NULL, `signOutWhenSynced` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -97,6 +97,13 @@
             "fieldPath": "browserSignInProvider",
             "columnName": "browserSignInProvider",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "browserSignInFromProfile",
+            "columnName": "browserSignInFromProfile",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "email",
@@ -146,7 +153,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f818aba66a82d00503c3c4e2aa436bc0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e90b9885f96f613e78d60c4dc9383e76')"
     ]
   }
 }

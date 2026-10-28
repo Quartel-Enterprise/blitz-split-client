@@ -20,6 +20,9 @@ data class AccountEntity(
     val pendingLinkProvider: String?,
     // Why: the provider of the last browser trip, sign in or link, since the callback doesn't say.
     val browserSignInProvider: String?,
+    // Why: the web reloads the page on the callback, so the trip remembers that it left from the profile.
+    @ColumnInfo(defaultValue = "0")
+    val browserSignInFromProfile: Boolean,
     // Why: shown masked in the profile, and only to the person; null without Google or Apple.
     @ColumnInfo(defaultValue = "NULL")
     val email: String?,

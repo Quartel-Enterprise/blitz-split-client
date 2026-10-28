@@ -246,7 +246,7 @@ private struct AccountSection: View {
                     }
                 } label: {
                     Text("Sync")
-                    syncText(syncStatus, count: Int(state.pendingChangeCount))
+                    syncText(syncStatus, hasPendingChanges: state.hasPendingChanges, count: Int(state.pendingChangeCount))
                 }
             }
             if state.isSignOutScheduled {
@@ -261,11 +261,11 @@ private struct AccountSection: View {
         }
     }
 
-    private func syncText(_ status: ProfileSyncStatus, count: Int) -> Text {
+    private func syncText(_ status: ProfileSyncStatus, hasPendingChanges: Bool, count: Int) -> Text {
         switch status {
         case .syncing: Text("Syncing…")
         case .failed: Text("No response from the server")
-        default: count > 0 ? Text("\(count) changes in the queue") : Text("Waiting to sync")
+        default: hasPendingChanges ? Text("\(count) changes in the queue") : Text("Waiting to sync")
         }
     }
 }

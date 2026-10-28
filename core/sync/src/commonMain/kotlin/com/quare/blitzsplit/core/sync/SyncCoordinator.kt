@@ -134,11 +134,14 @@ class SyncCoordinator(
         } while (result.isSuccess && profileRepository.observeHasPendingChanges().first())
     }
 
-    // Why: only a Google or Apple account schedules it, and the profile comes back only with that account.
+    /*
+     * Why: only a Google or Apple account schedules it, and the profile comes back only with that account.
+     * The schedule is read last, right before the session ends, so a cancel up to then still keeps it.
+     */
     private suspend fun signOutIfScheduledAndSynced() {
+        if (profileRepository.observeHasPendingChanges().first()) return
         val account = accountRepository.observeAccount().first()
-        val isScheduled = account.signOutWhenSynced && account.status is AccountStatus.Connected
-        if (isScheduled && !profileRepository.observeHasPendingChanges().first()) clearSession()
+        if (account.signOutWhenSynced && account.status is AccountStatus.Connected) clearSession()
     }
 
     /*

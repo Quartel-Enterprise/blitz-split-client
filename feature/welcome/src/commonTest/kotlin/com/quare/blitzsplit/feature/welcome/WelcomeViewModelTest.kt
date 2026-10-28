@@ -374,7 +374,7 @@ class WelcomeViewModelTest {
         viewModel = WelcomeViewModel(
             nativeSignIn = NativeSignIn(native),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account),
+            connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
             observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             observeAccountStatus = ObserveAccountStatusUseCase(account),
             observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),

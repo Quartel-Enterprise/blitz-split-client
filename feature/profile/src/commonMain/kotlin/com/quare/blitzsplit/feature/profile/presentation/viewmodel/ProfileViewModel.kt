@@ -95,6 +95,7 @@ class ProfileViewModel(
                 connectingProvider = null,
                 hasSignInFailed = false,
                 isSigningOut = false,
+                hasSignOutFailed = false,
             ),
         )
 
@@ -163,6 +164,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()
             ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT) clearSession()
             ProfileUiEvent.OnSignOutWhenSyncedClicked -> scheduleSignOut()
+            ProfileUiEvent.OnSignOutNowClicked -> signOutNow()
             ProfileUiEvent.OnCancelScheduledSignOutClicked -> cancelScheduledSignOut()
             is ProfileUiEvent.OnCodeSavedChanged -> confirmCodeSaved(event.isChecked)
             ProfileUiEvent.OnCopyCodeClicked -> copyCode()
@@ -237,7 +239,9 @@ class ProfileViewModel(
 
     private fun connectInstead() {
         if (!uiState.value.canConnect) return
-        uiState.update { it.copy(dialog = null, hasConfirmedCodeSaved = false, isConnectExpanded = true) }
+        uiState.update {
+            it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false, isConnectExpanded = true)
+        }
     }
 
     private fun showSignOutDialog() {
@@ -247,18 +251,22 @@ class ProfileViewModel(
     }
 
     private fun showDialog(dialog: ProfileDialog) {
-        uiState.update { it.copy(dialog = dialog, hasConfirmedCodeSaved = false) }
+        uiState.update { it.copy(dialog = dialog, hasConfirmedCodeSaved = false, hasSignOutFailed = false) }
     }
 
     private fun closeDialog() {
         if (uiState.value.isSigningOut) return
-        uiState.update { it.copy(dialog = null, hasConfirmedCodeSaved = false) }
+        uiState.update { it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false) }
     }
 
     private fun scheduleSignOut() {
         if (uiState.value.dialog != ProfileDialog.SIGN_OUT_PENDING) return
         signOutWhenSynced()
-        uiState.update { it.copy(dialog = null) }
+        uiState.update { it.copy(dialog = null, hasSignOutFailed = false) }
+    }
+
+    private fun signOutNow() {
+        if (uiState.value.dialog == ProfileDialog.SIGN_OUT_PENDING) clearSession()
     }
 
     private fun eraseProfile() {
@@ -269,9 +277,9 @@ class ProfileViewModel(
     // Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here.
     private fun clearSession() {
         if (uiState.value.isSigningOut) return
-        uiState.update { it.copy(isSigningOut = true) }
+        uiState.update { it.copy(isSigningOut = true, hasSignOutFailed = false) }
         viewModelScope.launch {
-            signOut().onFailure { uiState.update { it.copy(isSigningOut = false) } }
+            signOut().onFailure { uiState.update { it.copy(isSigningOut = false, hasSignOutFailed = true) } }
         }
     }
 

@@ -79,7 +79,7 @@ production configurations only (`api`, `implementation`, `commonMain*`, `android
 | `:(?!\S*:testing ).* -X> :.*:testing` | A `:testing` module is only ever a test dependency |
 
 An `:android:feature:x` module depends on its own `:feature:x` only (plus `:android:platform` when it needs a
-native sign in, the password manager or the scanner). The graph check does not catch an edge to another feature's
+native sign in, the password manager, the scanner, the camera or a picked photo's bytes). The graph check does not catch an edge to another feature's
 presentation module, so the review does.
 
 When two features need the same thing, it goes down, never sideways:

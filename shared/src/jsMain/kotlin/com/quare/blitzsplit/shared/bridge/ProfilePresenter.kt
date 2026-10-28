@@ -19,8 +19,10 @@ class JsProfileState(
     val photoUrl: String?,
     // Why: "google" or "apple", null while there is no account.
     val accountProvider: String?,
+    val hasAccount: Boolean,
     val maskedEmail: String?,
     val formattedRecoveryCode: String?,
+    val hasRecoveryCode: Boolean,
     val showsRecoveryCodeRow: Boolean,
     val showsRecoveryCodePrompt: Boolean,
     val showsOfflineNotice: Boolean,
@@ -28,6 +30,7 @@ class JsProfileState(
     val syncStatus: String?,
     val showsProfilePending: Boolean,
     val pendingChangeCount: Int,
+    val hasPendingChanges: Boolean,
     val canRetrySync: Boolean,
     val isSignOutScheduled: Boolean,
     val theme: String,
@@ -43,6 +46,7 @@ class JsProfileState(
     val connectingProvider: String?,
     val hasSignInFailed: Boolean,
     val isSigningOut: Boolean,
+    val hasSignOutFailed: Boolean,
 )
 
 class JsProfileAction(
@@ -63,14 +67,17 @@ class ProfilePresenter {
                 avatarColor = state.avatarColor.code,
                 photoUrl = state.photoUrl,
                 accountProvider = state.accountProvider?.code,
+                hasAccount = state.hasAccount,
                 maskedEmail = state.maskedEmail,
                 formattedRecoveryCode = state.formattedRecoveryCode,
+                hasRecoveryCode = state.hasRecoveryCode,
                 showsRecoveryCodeRow = state.showsRecoveryCodeRow,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
                 showsOfflineNotice = state.showsOfflineNotice,
                 syncStatus = state.syncStatus?.name,
                 showsProfilePending = state.showsProfilePending,
                 pendingChangeCount = state.pendingChangeCount,
+                hasPendingChanges = state.hasPendingChanges,
                 canRetrySync = state.canRetrySync,
                 isSignOutScheduled = state.isSignOutScheduled,
                 theme = state.theme.code,
@@ -85,6 +92,7 @@ class ProfilePresenter {
                 connectingProvider = state.connectingProvider?.code,
                 hasSignInFailed = state.hasSignInFailed,
                 isSigningOut = state.isSigningOut,
+                hasSignOutFailed = state.hasSignOutFailed,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -154,6 +162,10 @@ class ProfilePresenter {
 
     fun signOutWhenSynced() {
         viewModel.onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked)
+    }
+
+    fun signOutNow() {
+        viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
     }
 
     fun cancelScheduledSignOut() {

@@ -144,6 +144,8 @@ export const en = {
   profile_signOutPendingBody: 'Your data stays in this browser until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.',
   profile_signOutPendingBodyOffline: "You're offline. Your data stays in this browser until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.",
   profile_signOutWhenSynced: 'Sign out once synced',
+  profile_signOutNow: 'Sign out now and lose the changes',
+  profile_signOutFailed: "Couldn't sign out. Try again.",
   profile_eraseTitle: 'Erase the profile from this browser?',
   profile_eraseBody: 'You use it without an account. When you leave, your profile and your data are gone from this browser. To come back, you need the recovery code.',
   profile_eraseBodyNoCode: "You use it without an account and haven't synced yet, so there is no recovery code. When you leave, your profile is gone for good.",
@@ -151,6 +153,8 @@ export const en = {
   profile_eraseNoCodeAck: "I understand it can't be recovered",
   profile_eraseConnectInstead: 'Connect Google or Apple instead',
   profile_eraseConfirm: 'Erase and sign out',
+  profile_erasePendingOne: "{count} change hasn't uploaded yet and will be lost.",
+  profile_erasePendingOther: "{count} changes haven't uploaded yet and will be lost.",
 
   editProfile_changePhoto: 'Change photo',
   editProfile_removePhoto: 'Remove photo',

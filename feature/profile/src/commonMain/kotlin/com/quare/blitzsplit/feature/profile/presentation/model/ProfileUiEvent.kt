@@ -49,6 +49,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data object OnSignOutWhenSyncedClicked : ProfileUiEvent
 
+    // Why: "Sair agora e perder as alterações", for a sync that may never succeed (offline for good, a rejected push).
+    data object OnSignOutNowClicked : ProfileUiEvent
+
     data object OnCancelScheduledSignOutClicked : ProfileUiEvent
 
     data class OnCodeSavedChanged(

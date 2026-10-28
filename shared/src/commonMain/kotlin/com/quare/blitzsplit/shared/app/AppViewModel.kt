@@ -2,9 +2,7 @@ package com.quare.blitzsplit.shared.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRelaunchingBrowserSignIn
-import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -15,22 +13,22 @@ import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.launch
 
 class AppViewModel(
     private val observeProfile: ObserveProfile,
     val navigator: Navigator,
-    private val observeAccount: ObserveAccount,
-    private val observeRelaunchingBrowserSignIn: ObserveRelaunchingBrowserSignIn,
-    private val startSync: StartSync,
+    private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
     private val observeThemePreference: ObserveThemePreference,
+    startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
         field = MutableStateFlow(AppUiState.LOADING)
@@ -45,24 +43,19 @@ class AppViewModel(
     val themeWatcher: FlowWatcher<ThemePreference> = FlowWatcher(theme)
 
     init {
+        startSync()
         followTheme()
-        start()
+        resolveStartRoute()
+        returnToProfileOnBrowserSignIn()
         returnToWelcomeOnceErased()
     }
 
-    /*
-     * Why: the prompt is read before the sync starts, which settles a snoozed or reviewed prompt and
-     * mirrors a returning session as saved, so it still tells where a browser sign in was started.
-     */
-    private fun start() {
+    private fun resolveStartRoute() {
         viewModelScope.launch {
-            val startPrompt = observeAccount().first().recoveryCodePrompt
-            startSync()
             val hasProfile = observeProfile().first() != null
             navigator.replaceAll(if (hasProfile) Route.Groups else Route.Welcome)
             isThemeKnown.await()
             uiState.value = AppUiState.READY
-            if (startPrompt != RecoveryCodePrompt.DUE) returnToProfileOnRelaunchingSignIn()
         }
     }
 
@@ -76,14 +69,14 @@ class AppViewModel(
     }
 
     /*
-     * Why: a browser callback that starts the app again (the web reloads the page) lands on the groups.
-     * Unless the recovery code sheet was asking for it there, the link was started from the profile,
-     * which comes back to show it under way and how it ends.
+     * Why: a browser callback that starts the app again (the web reloads the page) lands on the groups,
+     * so a link left from the profile goes back there to show it under way and how it ends.
      */
-    private fun returnToProfileOnRelaunchingSignIn() {
-        observeRelaunchingBrowserSignIn()
+    private fun returnToProfileOnBrowserSignIn() {
+        observeBrowserSignInReturningToProfile()
             .filterNotNull()
             .onEach {
+                uiState.first { it == AppUiState.READY }
                 if (navigator.backStack.value.lastOrNull() == Route.Groups) navigator.navigate(Route.Profile)
             }.launchIn(viewModelScope)
     }
@@ -92,9 +85,10 @@ class AppViewModel(
     private fun returnToWelcomeOnceErased() {
         observeProfile()
             .map { profile -> profile != null }
-            .runningFold(false to false) { (_, had), has -> had to has }
-            .drop(1)
-            .onEach { (had, has) -> if (had && !has) navigator.replaceAll(Route.Welcome) }
+            .distinctUntilChanged()
+            .dropWhile { hasProfile -> !hasProfile }
+            .filter { hasProfile -> !hasProfile }
+            .onEach { navigator.replaceAll(Route.Welcome) }
             .launchIn(viewModelScope)
     }
 }

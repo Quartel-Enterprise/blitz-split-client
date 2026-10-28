@@ -31,6 +31,8 @@ data class ProfileUiState(
     val connectingProvider: AccountProvider?,
     val hasSignInFailed: Boolean,
     val isSigningOut: Boolean,
+    // Why: each UI says it in its own words, in the dialog that stays open for another try.
+    val hasSignOutFailed: Boolean,
 ) {
     val avatarInitial: String
         get() = displayName
@@ -44,7 +46,7 @@ data class ProfileUiState(
 
     // Why: only an anonymous user that synced has a code; a local only one has nothing to recover with.
     val showsRecoveryCodeRow: Boolean
-        get() = !hasAccount && formattedRecoveryCode != null
+        get() = !hasAccount && hasRecoveryCode
 
     val showsOfflineNotice: Boolean
         get() = !isOnline
@@ -54,6 +56,13 @@ data class ProfileUiState(
 
     val pendingChangeCount: Int
         get() = pendingChanges.size
+
+    // Why: the erase dialog warns that these are lost, since the recovery code brings back only what went up.
+    val hasPendingChanges: Boolean
+        get() = pendingChanges.isNotEmpty()
+
+    val hasRecoveryCode: Boolean
+        get() = formattedRecoveryCode != null
 
     val canRetrySync: Boolean
         get() = syncStatus == ProfileSyncStatus.FAILED

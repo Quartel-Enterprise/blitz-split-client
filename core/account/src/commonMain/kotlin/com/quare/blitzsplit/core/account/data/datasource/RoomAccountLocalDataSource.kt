@@ -22,6 +22,7 @@ class RoomAccountLocalDataSource(
         recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
         pendingLinkProvider = null,
         browserSignInProvider = null,
+        browserSignInFromProfile = false,
         email = null,
         signOutWhenSynced = false,
     )

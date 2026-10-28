@@ -25,6 +25,7 @@ export function ProfileDialogs({ presenter, state }: { presenter: ProfilePresent
           title={t('profile_signOutTitle')}
           description={t('profile_signOutBody', { provider: providerLabel(state.accountProvider as AccountProvider, true) })}
           onClose={onClose}
+          body={state.hasSignOutFailed && <SignOutFailed />}
         >
           <Button variant="outline" onClick={onClose}>
             {t('common_cancel')}
@@ -41,11 +42,19 @@ export function ProfileDialogs({ presenter, state }: { presenter: ProfilePresent
           title={t(state.pendingChangeCount === 1 ? 'profile_signOutPendingTitleOne' : 'profile_signOutPendingTitleOther', { count: state.pendingChangeCount })}
           description={t(state.showsOfflineNotice ? 'profile_signOutPendingBodyOffline' : 'profile_signOutPendingBody')}
           onClose={onClose}
+          body={state.hasSignOutFailed && <SignOutFailed />}
         >
           <Button variant="outline" onClick={onClose}>
             {t('common_cancel')}
           </Button>
-          <Button onClick={() => presenter.signOutWhenSynced()}>{t('profile_signOutWhenSynced')}</Button>
+          {/* A sync that never succeeds (offline for good, a rejected push) can't keep the person signed in */}
+          <Button variant="destructive" disabled={state.isSigningOut} onClick={() => presenter.signOutNow()}>
+            {state.isSigningOut && <Loader2 className="animate-spin" />}
+            {t('profile_signOutNow')}
+          </Button>
+          <Button disabled={state.isSigningOut} onClick={() => presenter.signOutWhenSynced()}>
+            {t('profile_signOutWhenSynced')}
+          </Button>
         </ResponsiveDialog>
       )
     case 'ERASE_PROFILE':
@@ -64,10 +73,15 @@ function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfileP
   return (
     <ResponsiveDialog
       title={t('profile_eraseTitle')}
-      description={t(code ? 'profile_eraseBody' : 'profile_eraseBodyNoCode')}
+      description={t(state.hasRecoveryCode ? 'profile_eraseBody' : 'profile_eraseBodyNoCode')}
       onClose={onClose}
       body={
         <div className="flex flex-col gap-3">
+          {state.hasPendingChanges && (
+            <p className="text-sm text-destructive">
+              {t(state.pendingChangeCount === 1 ? 'profile_erasePendingOne' : 'profile_erasePendingOther', { count: state.pendingChangeCount })}
+            </p>
+          )}
           {code && (
             <div className="flex items-center justify-between gap-2.5 rounded-lg border border-dashed border-muted-foreground/50 bg-muted py-2.5 pr-2.5 pl-3.5">
               <span className="font-mono text-xl font-semibold tracking-[0.12em]">{code}</span>
@@ -83,11 +97,12 @@ function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfileP
               checked={state.hasConfirmedCodeSaved}
               onChange={(event) => presenter.codeSavedChanged(event.target.checked)}
             />
-            {t(code ? 'profile_eraseCodeSaved' : 'profile_eraseNoCodeAck')}
+            {t(state.hasRecoveryCode ? 'profile_eraseCodeSaved' : 'profile_eraseNoCodeAck')}
           </label>
           <Button variant="link" className="self-start px-0" disabled={!state.canConnect} onClick={() => presenter.connectInstead()}>
             {t('profile_eraseConnectInstead')}
           </Button>
+          {state.hasSignOutFailed && <SignOutFailed />}
         </div>
       }
     >
@@ -99,6 +114,14 @@ function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfileP
         {t('profile_eraseConfirm')}
       </Button>
     </ResponsiveDialog>
+  )
+}
+
+function SignOutFailed() {
+  return (
+    <p role="alert" className="text-sm text-destructive">
+      {t('profile_signOutFailed')}
+    </p>
   )
 }
 

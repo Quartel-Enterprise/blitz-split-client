@@ -27,7 +27,10 @@ interface AccountRepository {
         fullName: String?,
     ): Result<ConnectResult>
 
-    suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit>
+    suspend fun signInWithBrowser(
+        provider: AccountProvider,
+        isFromProfile: Boolean,
+    ): Result<Unit>
 
     suspend fun handleBrowserCallback(url: String): Result<Unit>
 
@@ -39,8 +42,8 @@ interface AccountRepository {
 
     fun observeReturningBrowserSignIn(): Flow<AccountProvider?>
 
-    // Why: only the sign ins whose callback started the app again, which lands on the start screen.
-    fun observeRelaunchingBrowserSignIn(): Flow<AccountProvider?>
+    // Why: a sign in left from the profile whose callback started the app again, which lands on the groups.
+    fun observeBrowserSignInReturningToProfile(): Flow<AccountProvider?>
 
     suspend fun restoreWithRecoveryCode(code: String): Result<Unit>
 

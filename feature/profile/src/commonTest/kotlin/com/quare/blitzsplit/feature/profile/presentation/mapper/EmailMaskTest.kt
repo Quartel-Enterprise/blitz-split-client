@@ -29,7 +29,7 @@ class EmailMaskTest {
     }
 
     @Test
-    fun `GIVEN an address without an at sign WHEN masking it THEN keeps only its first character`() {
+    fun `GIVEN an address without an at sign WHEN masking it THEN shows only the mask`() {
         // Given
         val email = "pierre"
 
@@ -37,11 +37,11 @@ class EmailMaskTest {
         val masked = email.toMaskedEmail()
 
         // Then
-        assertEquals("p•••", masked)
+        assertEquals("•••", masked)
     }
 
     @Test
-    fun `GIVEN an address starting with the at sign WHEN masking it THEN keeps only its first character`() {
+    fun `GIVEN an address starting with the at sign WHEN masking it THEN keeps the domain after the mask`() {
         // Given
         val email = "@gmail.com"
 
@@ -49,6 +49,6 @@ class EmailMaskTest {
         val masked = email.toMaskedEmail()
 
         // Then
-        assertEquals("@•••", masked)
+        assertEquals("•••@gmail.com", masked)
     }
 }

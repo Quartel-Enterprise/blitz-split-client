@@ -29,15 +29,6 @@ final class AppModel {
         })
     }
 
-    /// Light or Dark as picked in the profile, nil to follow the system.
-    var colorScheme: ColorScheme? {
-        switch theme {
-        case .light: .light
-        case .dark: .dark
-        default: nil
-        }
-    }
-
     var root: AppRoute {
         backStack.first ?? .welcome
     }

@@ -70,7 +70,7 @@ export function ProfileScreen() {
               disabled={!state.canSignOut}
               onClick={() => presenter.signOut()}
             >
-              <LogOut /> {t(state.accountProvider ? 'profile_signOut' : 'profile_eraseAndSignOut')}
+              <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
             </Button>
           </div>
         </div>
@@ -160,7 +160,7 @@ function syncDetail(state: JsProfileState): string {
     case 'FAILED':
       return t('profile_syncFailed')
     default:
-      if (state.pendingChangeCount === 0) return t('profile_syncWaitingEmpty')
+      if (!state.hasPendingChanges) return t('profile_syncWaitingEmpty')
       return t(state.pendingChangeCount === 1 ? 'profile_syncWaitingOne' : 'profile_syncWaitingOther', { count: state.pendingChangeCount })
   }
 }

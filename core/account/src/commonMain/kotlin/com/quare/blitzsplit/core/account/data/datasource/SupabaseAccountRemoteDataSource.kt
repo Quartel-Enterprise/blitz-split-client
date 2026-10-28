@@ -28,11 +28,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import kotlin.time.Duration.Companion.seconds
 
 class SupabaseAccountRemoteDataSource(
     private val auth: Auth,
@@ -128,8 +130,11 @@ class SupabaseAccountRemoteDataSource(
         return json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
     }
 
+    // Why: the server only revokes the session, so a slow or captive network can't hold the sign out for long.
+    private val remoteSignOutTimeout = 5.seconds
+
     override suspend fun signOut() {
-        suspendRunCatching { auth.signOut() }
+        suspendRunCatching { withTimeoutOrNull(remoteSignOutTimeout) { auth.signOut() } }
         auth.clearSession()
     }
 

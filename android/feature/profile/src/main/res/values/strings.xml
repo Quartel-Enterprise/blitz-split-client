@@ -51,6 +51,8 @@
     <string name="profile_sign_out_pending_body_offline">You\'re offline. Your data stays on this device until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.</string>
     <string name="profile_sign_out_pending_body">Your data stays on this device until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.</string>
     <string name="profile_sign_out_when_synced">Sign out once synced</string>
+    <string name="profile_sign_out_now">Sign out now and lose the changes</string>
+    <string name="profile_sign_out_failed">Couldn\'t sign out. Try again.</string>
     <string name="profile_erase_title">Erase the profile from this device?</string>
     <string name="profile_erase_body">You use the app without an account. When you leave, your profile and your data are gone from here. To come back, you need the recovery code.</string>
     <string name="profile_erase_body_no_code">You use the app without an account and haven\'t synced yet, so there is no recovery code. When you leave, your profile is gone for good.</string>
@@ -58,5 +60,9 @@
     <string name="profile_erase_no_code_ack">I understand it can\'t be recovered</string>
     <string name="profile_erase_connect_instead">Connect Google or Apple instead</string>
     <string name="profile_erase_confirm">Erase and sign out</string>
+    <plurals name="profile_erase_pending_warning">
+        <item quantity="one">%d change hasn\'t uploaded yet and will be lost.</item>
+        <item quantity="other">%d changes haven\'t uploaded yet and will be lost.</item>
+    </plurals>
     <string name="profile_copy_code">Copy code</string>
 </resources>

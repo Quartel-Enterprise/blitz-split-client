@@ -72,6 +72,8 @@ class ProfileViewModelTest {
     private var signOutWhenSyncedCalls = 0
     private var cancelSignOutWhenSyncedCalls = 0
     private var completedSignIns = 0
+    private var signOutError: Throwable? = null
+    private var signOutHangs = false
 
     @BeforeTest
     fun setUp() {
@@ -1565,6 +1567,460 @@ class ProfileViewModelTest {
             assertTrue(viewModel.uiState.value.isSigningOut)
         }
 
+    @Test
+    fun `GIVEN the pending changes dialog WHEN signing out now THEN signs out once and shows it under way`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutHangs = true)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+            assertEquals(0, signOutWhenSyncedCalls)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+            assertEquals(ProfileDialog.SIGN_OUT_PENDING, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Apple changes not uploaded and no internet WHEN signing out now THEN signs out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithApple,
+                hasPendingProfile = true,
+                syncState = SyncState.PENDING,
+                online = false,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+        }
+
+    @Test
+    fun `GIVEN a failed sync with changes not uploaded WHEN signing out now THEN signs out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, syncState = SyncState.FAILED)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+        }
+
+    @Test
+    fun `GIVEN the pending changes dialog WHEN the sign out now succeeds THEN shows no sign out error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a sign out now under way WHEN signing out now again THEN does not sign out twice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutHangs = true)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN a sign out now arrives THEN does not sign out`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+        // Then
+        assertEquals(0, signOutCalls)
+        assertFalse(viewModel.uiState.value.isSigningOut)
+    }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN a sign out now arrives THEN does not sign out and stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(0, signOutCalls)
+            assertFalse(viewModel.uiState.value.isSigningOut)
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog with the code kept WHEN a sign out now arrives THEN does not sign out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous, code = recoveryCode, hasPendingProfile = true)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(0, signOutCalls)
+            assertFalse(viewModel.uiState.value.isSigningOut)
+            assertEquals(ProfileDialog.ERASE_PROFILE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN a local only user in the erase dialog WHEN a sign out now arrives THEN does not sign out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly, code = null)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(0, signOutCalls)
+        }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN a sign out now arrives THEN does not sign out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(0, signOutCalls)
+            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN the server fails the sign out THEN says so and keeps the dialog open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasSignOutFailed)
+            assertFalse(viewModel.uiState.value.isSigningOut)
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the pending changes dialog WHEN the sign out now fails THEN says so and keeps the dialog open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(1, signOutCalls)
+            assertTrue(viewModel.uiState.value.hasSignOutFailed)
+            assertFalse(viewModel.uiState.value.isSigningOut)
+            assertEquals(ProfileDialog.SIGN_OUT_PENDING, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog WHEN the server fails the erase THEN says so and keeps the dialog open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasSignOutFailed)
+            assertFalse(viewModel.uiState.value.isSigningOut)
+            assertEquals(ProfileDialog.ERASE_PROFILE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN the sign out succeeds THEN shows no sign out error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithApple)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN the erase dialog of a local only user WHEN the erase succeeds THEN shows no sign out error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly, code = null)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN confirming again THEN hides the error while it signs out again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+            signOutError = null
+            signOutHangs = true
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertEquals(2, signOutCalls)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out now WHEN signing out now again THEN hides the error while it signs out again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+            signOutError = null
+            signOutHangs = true
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // Then
+            assertEquals(2, signOutCalls)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+        }
+
+    @Test
+    fun `GIVEN a failed erase WHEN erasing again THEN hides the error while it erases again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+            signOutError = null
+            signOutHangs = true
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // Then
+            assertEquals(2, signOutCalls)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN trying again and failing again THEN says so again`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+        // Then
+        assertEquals(2, signOutCalls)
+        assertTrue(viewModel.uiState.value.hasSignOutFailed)
+        assertFalse(viewModel.uiState.value.isSigningOut)
+    }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN dismissing the dialog THEN closes it and clears the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out now WHEN dismissing the dialog THEN closes it and clears the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out WHEN tapping who sees your profile THEN explains it without the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed erase WHEN tapping sign out again THEN asks to erase without the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.ERASE_PROFILE, viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed erase WHEN choosing to connect instead THEN closes the dialog and clears the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
+            viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnConnectInsteadClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed sign out now WHEN signing out once synced THEN closes the dialog and clears the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked)
+
+            // Then
+            assertEquals(1, signOutWhenSyncedCalls)
+            assertNull(viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasSignOutFailed)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user with changes not uploaded WHEN the profile opens THEN warns they are pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous, code = recoveryCode, hasPendingProfile = true)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.hasPendingChanges)
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
@@ -1600,6 +2056,8 @@ class ProfileViewModelTest {
         signOutWhenSyncedCalls = 0
         cancelSignOutWhenSyncedCalls = 0
         completedSignIns = 0
+        this@ProfileViewModelTest.signOutError = signOutError
+        this@ProfileViewModelTest.signOutHangs = signOutHangs
         account = FakeAccountRepository(initialStatus = status).also {
             it.email = email
             it.recoveryCode = code
@@ -1616,7 +2074,7 @@ class ProfileViewModelTest {
             navigator = navigator,
             nativeSignIn = NativeSignIn(native),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account),
+            connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
             completeSignIn = {
                 completedSignIns++
                 Result.success(SignInOutcome.PROFILE_RESTORED)
@@ -1628,8 +2086,8 @@ class ProfileViewModelTest {
             retrySync = RetrySync { syncRetries++ },
             signOut = SignOut {
                 signOutCalls++
-                if (signOutHangs) awaitCancellation()
-                signOutError?.let { Result.failure(it) } ?: Result.success(Unit)
+                if (this@ProfileViewModelTest.signOutHangs) awaitCancellation()
+                this@ProfileViewModelTest.signOutError?.let { Result.failure(it) } ?: Result.success(Unit)
             },
             signOutWhenSynced = SignOutWhenSynced { signOutWhenSyncedCalls++ },
             cancelSignOutWhenSynced = CancelSignOutWhenSynced { cancelSignOutWhenSyncedCalls++ },
