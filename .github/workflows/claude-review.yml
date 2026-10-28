@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: ./.github/actions/claude-review
+      - uses: Quartel-Enterprise/claude-review/review@1.0.1
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           fix: 'true'
