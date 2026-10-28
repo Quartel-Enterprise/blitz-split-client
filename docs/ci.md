@@ -52,14 +52,15 @@ together: `--allowedTools` in `action.yml`, `bash-guard.sh`, the prompt and this
 The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection in a diff could
 ask the review to quote one in a public comment, or to overwrite what runs with the App's token. So:
 
-- The session reads files only through the Read, Grep and Glob tools, and only in the checkout and in a copy of the
+- The session reads files only through the Read, Grep and Glob tools (`--tools` names them, since Claude Code's
+  native Linux build leaves Grep and Glob out otherwise), and only in the checkout and in a copy of the
   files the pull request changes, as of the reviewed commit (for the suggestions' lines). Every other path is
   denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `/tmp`, `$RUNNER_TEMP` (where checkout keeps
   its credentials), the checkout's `.git` and the home's files that hold credentials (`~/.ssh`, `~/.config`,
   `~/.gitconfig`, `~/.claude.json`…). Claude Code's own session folder (`~/.claude/projects`) stays readable, since a
   Bash output too long to show, such as a large `gh pr diff`, is saved there. A symlink the pull request adds that
   leaves the checkout or enters its `.git`, `.github` or `.claude` is removed for the review and restored before the
-  fix commit. `claude-review`'s checkout doesn't persist its credentials.
+  fix commit. Neither review's checkout persists its credentials.
 - The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), plus
   `git status` and `git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
   `git blame` are left out, since they read or write a file they are given (`--no-index`, `--contents`,
