@@ -61,7 +61,7 @@ class SupabaseCallbackUrlTest {
     @Test
     fun `GIVEN a web callback with an error and no error code WHEN reading THEN the sign in failed`() {
         // Given
-        val url = "https://app.example/#error=access_denied&error_description=The+user+denied+the+request"
+        val url = "https://app.example/#error=server_error&error_description=Unable+to+exchange+external+code"
 
         // When
         val callback = SupabaseCallbackUrl.read(url)
@@ -182,7 +182,7 @@ class SupabaseCallbackUrlTest {
     @Test
     fun `GIVEN the app callback with an error and no description WHEN reading THEN the sign in failed`() {
         // Given
-        val url = "borarachar://auth-callback?error=access_denied"
+        val url = "borarachar://auth-callback?error=server_error"
 
         // When
         val callback = SupabaseCallbackUrl.read(url)
@@ -213,5 +213,162 @@ class SupabaseCallbackUrlTest {
 
         // Then
         assertNull(callback)
+    }
+
+    @Test
+    fun `GIVEN the app callback with Google cancel in the query WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "borarachar://auth-callback?error=access_denied"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN the app callback with Google cancel in the fragment WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "borarachar://auth-callback#error=access_denied"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN the app callback with Apple cancel in the query WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "borarachar://auth-callback?error=user_cancelled_authorize"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN the app callback with Apple cancel in the fragment WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "borarachar://auth-callback#error=user_cancelled_authorize"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN a web callback with Google cancel in the fragment WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "https://app.example/#error=access_denied&error_description=The+user+denied+access"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN a web callback with Google cancel in the query WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "https://app.example/?error=access_denied&error_description=The+user+denied+access"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN a web callback with Apple cancel in the fragment WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "https://app.example/#error=user_cancelled_authorize&error_description=user_cancelled_authorize"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN a web callback with Apple cancel in the query WHEN reading THEN the sign in was cancelled`() {
+        // Given
+        val url = "https://app.example/?error=user_cancelled_authorize&error_description=user_cancelled_authorize"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.CANCELLED, callback)
+    }
+
+    @Test
+    fun `GIVEN a web page with Google cancel and no description WHEN reading THEN it is not a callback`() {
+        // Given
+        val url = "https://app.example/#error=access_denied"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertNull(callback)
+    }
+
+    @Test
+    fun `GIVEN a web page with Apple cancel and no description WHEN reading THEN it is not a callback`() {
+        // Given
+        val url = "https://app.example/?error=user_cancelled_authorize"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertNull(callback)
+    }
+
+    @Test
+    fun `GIVEN access denied with identity already exists WHEN reading THEN it is already linked`() {
+        // Given
+        val url = "borarachar://auth-callback?error=access_denied&error_code=identity_already_exists"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.IDENTITY_ALREADY_LINKED, callback)
+    }
+
+    @Test
+    fun `GIVEN a web callback with access denied and identity already exists WHEN reading THEN it is already linked`() {
+        // Given
+        val url = "https://app.example/#error=access_denied&error_code=identity_already_exists" +
+            "&error_description=Identity+is+already+linked+to+another+user"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.IDENTITY_ALREADY_LINKED, callback)
+    }
+
+    @Test
+    fun `GIVEN the app callback with a server error and a description WHEN reading THEN the sign in failed`() {
+        // Given
+        val url = "borarachar://auth-callback?error=server_error&error_description=Unable+to+exchange+external+code"
+
+        // When
+        val callback = SupabaseCallbackUrl.read(url)
+
+        // Then
+        assertEquals(BrowserCallback.FAILED, callback)
     }
 }

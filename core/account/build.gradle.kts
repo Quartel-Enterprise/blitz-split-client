@@ -16,6 +16,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
+            implementation(projects.core.account.testing)
         }
     }
 }

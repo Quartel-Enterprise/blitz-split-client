@@ -2,9 +2,11 @@ package com.quare.blitzsplit.feature.welcome.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -35,6 +37,7 @@ class WelcomeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val observeAccountStatus: ObserveAccountStatus,
+    private val observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
     private val completeSignIn: CompleteSignIn,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val navigator: Navigator,
@@ -53,6 +56,7 @@ class WelcomeViewModel(
     init {
         observeConnectivity()
         observeBrowserSignIn()
+        endAbandonedBrowserSignIn()
     }
 
     fun onEvent(event: WelcomeUiEvent) {
@@ -86,6 +90,16 @@ class WelcomeViewModel(
             .filter { !isConnectingWithIdToken && navigator.backStack.value.lastOrNull() == Route.Welcome }
             .onEach { finishSignIn() }
             .launchIn(viewModelScope)
+    }
+
+    // Why: as with a cancelled native sheet, closing the browser isn't an error, while a failed callback is.
+    private fun endAbandonedBrowserSignIn() {
+        observeAbandonedBrowserSignIn()
+            .onEach { abandoned ->
+                finishConnecting(
+                    error = WelcomeError.SIGN_IN_FAILED.takeIf { abandoned == AbandonedBrowserSignIn.FAILED },
+                )
+            }.launchIn(viewModelScope)
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

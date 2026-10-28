@@ -1,9 +1,11 @@
 package com.quare.blitzsplit.feature.recoverycode
 
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
@@ -172,6 +174,37 @@ class RecoveryCodeViewModelTest {
         }
 
     @Test
+    fun `GIVEN a browser sign in WHEN its callback comes back failed THEN shows the error and enables them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            account.abandonedBrowserSignIns.emit(AbandonedBrowserSignIn.FAILED)
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasSignInFailed)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+        }
+
+    @Test
+    fun `GIVEN a browser sign in WHEN the browser closes without finishing THEN enables the buttons`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            account.abandonedBrowserSignIns.emit(AbandonedBrowserSignIn.CANCELLED)
+
+            // Then
+            assertNull(viewModel.uiState.value.connectingProvider)
+            assertTrue(viewModel.uiState.value.areAccountButtonsEnabled)
+            assertFalse(viewModel.uiState.value.hasSignInFailed)
+        }
+
+    @Test
     fun `GIVEN the browser sign in cannot start WHEN choosing a provider THEN shows the failure`() =
         runTest(testDispatcher) {
             // Given
@@ -288,6 +321,7 @@ class RecoveryCodeViewModelTest {
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
+            observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             completeSignIn = {
                 completedSignIns++
                 Result.success(SignInOutcome.PROFILE_RESTORED)

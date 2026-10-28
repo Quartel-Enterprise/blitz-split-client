@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
+import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -14,8 +16,10 @@ import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import platform.Foundation.NSData
@@ -27,8 +31,11 @@ import platform.posix.memcpy
  * screen's ViewModel comes from a plain function here, wrapped in the holder that clears it.
  */
 object BlitzSplitApple : KoinComponent {
-    // Why: the main thread, since a second browser trip opens Safari through UIApplication.
-    private val scope = MainScope()
+    /*
+     * Why: the main thread, since a second browser trip opens Safari through UIApplication, and at
+     * once, so the callback closes the browser trip before handleAppResumed runs.
+     */
+    private val scope = MainScope() + Dispatchers.Main.immediate
 
     fun start() {
         startBlitzSplitKoin()
@@ -57,6 +64,16 @@ object BlitzSplitApple : KoinComponent {
         val callbackUrl = url.absoluteString ?: return
         val handleBrowserCallback = get<HandleBrowserCallback>()
         scope.launch { handleBrowserCallback(callbackUrl) }
+    }
+
+    // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
+    fun handleAppPaused() {
+        get<HandleAppPaused>().invoke()
+    }
+
+    // Why: after any handleDeepLink the return brought, so a browser closed without finishing ends its sign in.
+    fun handleAppResumed() {
+        get<HandleAppResumed>().invoke()
     }
 
     // Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call.

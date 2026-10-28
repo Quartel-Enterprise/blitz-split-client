@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.account.testing
 
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
@@ -7,6 +8,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 // In-memory AccountRepository: public state a test can set and read, every call recorded, and
@@ -18,6 +20,7 @@ class FakeAccountRepository(
     val recoveryCode = MutableStateFlow<String?>(null)
     val recoveryCodePrompt = MutableStateFlow(RecoveryCodePrompt.NOT_DUE)
     var sessionUser: SessionUser? = null
+    val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>()
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
     val idTokenFullNames = mutableListOf<String?>()
@@ -26,6 +29,8 @@ class FakeAccountRepository(
     val restoredCodes = mutableListOf<String>()
     var registrationCount = 0
     var recoveryCodeCreations = 0
+    var appPauseCount = 0
+    var appResumeCount = 0
 
     var connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED)
     var registerError: Throwable? = null
@@ -81,6 +86,16 @@ class FakeAccountRepository(
         browserCallbacks += url
         return Result.success(Unit)
     }
+
+    override fun handleAppPaused() {
+        appPauseCount++
+    }
+
+    override fun handleAppResumed() {
+        appResumeCount++
+    }
+
+    override fun observeAbandonedBrowserSignIn(): Flow<AbandonedBrowserSignIn> = abandonedBrowserSignIns
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code

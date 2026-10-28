@@ -2,9 +2,11 @@ package com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
@@ -34,6 +36,7 @@ class RecoveryCodeViewModel(
     private val completeSignIn: CompleteSignIn,
     observeRecoveryCode: ObserveRecoveryCode,
     observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
+    observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RecoveryCodeUiState>
@@ -64,6 +67,10 @@ class RecoveryCodeViewModel(
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
+            .launchIn(viewModelScope)
+        // Why: as with a cancelled native sheet, closing the browser isn't a failure, while a failed callback is.
+        observeAbandonedBrowserSignIn()
+            .onEach { abandoned -> finishConnecting(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED) }
             .launchIn(viewModelScope)
     }
 
