@@ -135,9 +135,9 @@ class ProfileViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
-        viewModelScope.launch {
-            providerConnector.observeBrowserSignIn { account -> account.status is AccountStatus.Connected }
-        }
+        providerConnector
+            .observeBrowserSignIn { account -> account.status is AccountStatus.Connected }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: ProfileUiEvent) {
@@ -234,7 +234,9 @@ class ProfileViewModel(
 
     private fun connectInstead() {
         if (!uiState.value.canConnect) return
-        uiState.update { it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false) }
+        uiState.update {
+            it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false, isConnectExpanded = true)
+        }
         providerConnector.expand()
     }
 
@@ -279,6 +281,8 @@ class ProfileViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
+        // Why: sign out checks connectingProvider, so it is set at the tap, before the connector's copy lands.
+        uiState.update { it.copy(connectingProvider = provider, hasSignInFailed = false) }
         viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
     }
 

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync.connect
 
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.model.AccountProvider
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /*
@@ -28,5 +29,5 @@ interface ProviderConnector {
 
     fun finishConnecting(hasFailed: Boolean)
 
-    suspend fun observeBrowserSignIn(hasConnected: (AccountSnapshot) -> Boolean)
+    fun observeBrowserSignIn(hasConnected: (AccountSnapshot) -> Boolean): Flow<Unit>
 }

@@ -74,9 +74,9 @@ class RecoveryCodeViewModel(
                 }
             }.launchIn(viewModelScope)
         // Why: after the web reload the sheet shows again until the account mirror settles the prompt.
-        viewModelScope.launch {
-            providerConnector.observeBrowserSignIn { account -> account.recoveryCodePrompt == RecoveryCodePrompt.SAVED }
-        }
+        providerConnector
+            .observeBrowserSignIn { account -> account.recoveryCodePrompt == RecoveryCodePrompt.SAVED }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: RecoveryCodeUiEvent) {
@@ -110,6 +110,8 @@ class RecoveryCodeViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
+        // Why: the buttons check connectingProvider, so it is set at the tap, before the connector's copy lands.
+        uiState.update { it.copy(connectingProvider = provider, hasSignInFailed = false) }
         viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
     }
 

@@ -10,12 +10,12 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 
 class ProviderConnectorImpl(
@@ -82,27 +82,29 @@ class ProviderConnectorImpl(
      * failed if it ends without the account the screen waits for. As with a cancelled native sheet, closing
      * the browser isn't a failure, while a failed callback is.
      */
-    override suspend fun observeBrowserSignIn(hasConnected: (AccountSnapshot) -> Boolean) {
-        coroutineScope {
-            observeAbandonedBrowserSignIn()
-                .onEach { abandoned -> finishConnecting(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED) }
-                .launchIn(this)
-            observeReturningBrowserSignIn()
-                .onEach { provider ->
-                    if (provider != null) {
-                        returningProvider = provider
-                        connection.update {
-                            it.copy(
-                                connectingProvider = it.connectingProvider ?: provider,
-                                hasFailed = false,
-                                isExpanded = true,
-                            )
-                        }
-                    } else if (returningProvider != null) {
-                        returningProvider = null
-                        finishConnecting(hasFailed = !hasConnected(observeAccount().first()))
-                    }
-                }.launchIn(this)
+    override fun observeBrowserSignIn(hasConnected: (AccountSnapshot) -> Boolean): Flow<Unit> = merge(
+        observeAbandonedBrowserSignIn().map { abandoned ->
+            finishConnecting(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED)
+        },
+        observeReturningBrowserSignIn().map { provider -> handleReturningSignIn(provider, hasConnected) },
+    )
+
+    private suspend fun handleReturningSignIn(
+        provider: AccountProvider?,
+        hasConnected: (AccountSnapshot) -> Boolean,
+    ) {
+        if (provider != null) {
+            returningProvider = provider
+            connection.update {
+                it.copy(
+                    connectingProvider = it.connectingProvider ?: provider,
+                    hasFailed = false,
+                    isExpanded = true,
+                )
+            }
+        } else if (returningProvider != null) {
+            returningProvider = null
+            finishConnecting(hasFailed = !hasConnected(observeAccount().first()))
         }
     }
 }
