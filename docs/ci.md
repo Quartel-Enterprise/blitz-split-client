@@ -11,6 +11,7 @@ review that runs before them.
 | `claude-review` | A pull request opened, or a draft marked ready | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
+| `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
 
 The Apple app isn't built here, since it needs a macOS runner: `create-pr` builds both schemes locally.
 
@@ -33,62 +34,19 @@ Both fail only when the run itself does (an expired token, the 30-minute timeout
 They are skipped on pull requests from forks, which get no secrets. The action refuses to run when the pull request
 changes the workflow file that started it, so a change to either review workflow can only be tried after it merges.
 
-The shared steps live in `.github/actions/claude-review`:
-
-- `action.yml` hands the review the earlier findings, runs `anthropics/claude-code-action` with a read-only tool
-  allowlist (plus `Edit` inside the checkout with `fix`, never under `.git`, `.github` or `.claude`), and posts the
-  findings with the workflow's token when the session didn't.
-- `stop-hook.sh`, the session's Stop hook, reads the findings JSON the model ends its reply with, runs
-  `commit-fixes.sh`, then `post-review.sh`. It runs inside the session, so it posts and pushes as `claude[bot]` with
-  the Claude GitHub App's token, and the push starts the pull request's workflows on the fix commit.
-- `post-review.sh` posts every finding as one review, anchored to the reviewed commit; a finding outside the diff goes
-  in the review body.
+The review, the gate and the threads lookups are the `review`, `gate` and `threads` actions of
+[Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterprise/claude-review), shared with
+bible-planner-mobile-client. Every `uses:` of them (`claude-review.yml`, `claude-review-on-request.yml`,
+`review-gate.yml`, `run-checks.yml`) pins the same exact release: a fix there ships as a release, then a bump of all
+of them here, which `claude-review-refs` checks. What runs comes from that release, never from the pull request under
+review, so a pull request can't change the review that judges it. How the review works, which Bash commands it may
+run and how it keeps the tokens out of its comments are in that repository's README.
 
 The action hides Claude's output, since this repository's logs are public. A tool the review was denied, or a Bash
-command the guard refused, shows as a warning on the run, with only its name. Allow it only when it can neither read
-nor write a file it is given, nor print the environment, and then in the four places that list the commands
-together: `--allowedTools` in `action.yml`, `bash-guard.sh`, the prompt and this page.
-
-The runner's environment holds the Claude OAuth token and the GitHub tokens, and a prompt injection in a diff could
-ask the review to quote one in a public comment, or to overwrite what runs with the App's token. So:
-
-- The session reads files only through the Read, Grep and Glob tools (`--tools` names them, since Claude Code's
-  native Linux build leaves Grep and Glob out otherwise), and only in the checkout and in a copy of the
-  files the pull request changes, as of the reviewed commit (for the suggestions' lines). Every other path is
-  denied, and the deny rules repeat it for `/proc`, `/sys`, `/etc`, `/tmp`, `$RUNNER_TEMP` (where checkout keeps
-  its credentials), the checkout's `.git` and the home's files that hold credentials (`~/.ssh`, `~/.config`,
-  `~/.gitconfig`, `~/.claude.json`…). Claude Code's own session folder (`~/.claude/projects`) stays readable, since a
-  Bash output too long to show, such as a large `gh pr diff`, is saved there. A symlink the pull request adds that
-  leaves the checkout or enters its `.git`, `.github` or `.claude` is removed for the review and restored before the
-  fix commit. Neither review's checkout persists its credentials.
-- The session's Bash commands are `gh`'s read-only ones, which take the diff from GitHub (`gh pr diff`), plus
-  `git status` and `git branch --show-current`. `cat`, `grep`, `jq`, `git diff`, `git log`, `git show` and
-  `git blame` are left out, since they read or write a file they are given (`--no-index`, `--contents`,
-  `--output`). A PreToolUse hook (`bash-guard.sh`) decides before every Bash call, the read-only ones Claude Code
-  approves on its own included: it lets through only one plain line of those commands, with no quoting, expansion,
-  pipe or redirection, and none of `gh`'s `--jq`, `-q`, `--template` and `-t`, which read the environment, even
-  with a value attached. A search therefore runs without quotes. What it refuses shows as a warning on the run.
-- `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` keeps the Claude OAuth token out of the environment of every Bash command and
-  hook; the hook's log says whether it was there. The GitHub token `gh` needs stays. It runs every Bash command in
-  Claude Code's sandbox, so the action installs bubblewrap and socat first, and warns when the sandbox can't start.
-- The hook's scripts are copied to a read-only directory outside the checkout, and what the hook acts on (when the
-  review started, whether it commits fixes) comes in its arguments. The session can't write there, and the markers
-  are checked anyway: the posting step looks the review up on GitHub, on any commit, and only trusts `.posted` when
-  GitHub can't be read; a fix commit named by `.pushed` only counts when it is the checkout's head on top of the
-  reviewed commit.
-- `post-review.sh` masks anything shaped like a token (Claude's `sk-ant-`, GitHub's `ghs_`, `ghp_`, `github_pat_`…,
-  a JWT, a Basic or Bearer value with a digit) before posting, and the hook's log goes through the same mask. So
-  does `commit-fixes.sh` for the fix commit's message, and it pushes nothing when a fix adds such a string.
-- Each review carries its workflow run in a hidden comment, so a run only takes its own review for posted, and only
-  from `claude[bot]` or `github-actions[bot]`.
-
-**What is left.** The tokens are still in the session's own environment: `claude-code-action` hands the session the
-OAuth token, and `gh` needs a GitHub token in its commands'. Every way to print them that a review found is closed,
-but an allowlist can't prove a listed command has no other way, and the mask only knows a token's plain shapes: one
-the model is talked into encoding still gets through. Only someone who can push a branch to this repository can
-try, since forks are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a
-new OAuth token with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the
-job.
+command its guard refused, shows as a warning on the run; allowing one is a change to the shared repository (see its
+README, "Security"). Only someone who can push a branch to this repository can try a prompt injection, since forks
+are never reviewed. If a token ever shows up in a comment, a commit or a log, revoke it: create a new OAuth token
+with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub tokens expire with the job.
 
 ### Setup
 
@@ -115,7 +73,8 @@ commit, again on the fix commit):
 
 - `build-and-test`, `static-analysis` and `module-graph` start with a `review-gate` job, the reusable
   `review-gate.yml`. On the commit a pull request opened with or a draft was marked ready on, and on the review's
-  fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end. When the
+  fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end (on a draft
+  marked ready, only a run that event created, never the one skipped while it was a draft). When the
   head moved meanwhile (the fix commit), it skips the checks here: they run on the new commit. Every other event (an
   author's push, a reopened pull request, `main`) skips the gate, and the checks run right away. A draft, a fork, a
   failed or cancelled review, one still running after 40 minutes or GitHub's API failing three times in a row let
@@ -125,8 +84,10 @@ commit, again on the fix commit):
   runs them. Resolving the threads without a push (a finding answered instead of fixed) starts no workflow: add the
   `run-checks` label, which re-runs every held run of the head commit, or comments when a thread is still open.
 
-`scripts/review_gate.sh` holds what these workflows agree on: which threads are the review's, and which runs were
-held.
+`review-gate.yml` is a thin wrapper of the shared `gate` action, which waits and counts the threads; the wrapper
+only fails the hold, in its `Hold for the open threads` step. The shared `threads` action holds what `run-checks`
+agrees on with the gate: which threads are the review's, and which runs were held (any failed run of the commit whose
+`Hold for the open threads` step failed, so no list of the gated workflows has to be kept).
 
 The fix commit isn't built before the push, since the review has no Gradle: a fix that breaks the build or ktlint
 shows up in the checks of the fix commit. The local branch is one commit behind afterwards, so pull before pushing to
@@ -137,7 +98,6 @@ it again.
 - Scope it with `paths` or `paths-ignore`, so a docs-only change doesn't run a build.
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a cancelled run saves
   no cache.
-- If it checks the app on pull requests, start it with the `review-gate` job, with the same `if` as the other
-  callers, make its other jobs need it, and add it to `GATED` in `scripts/review_gate.sh`, or `run-checks` won't
-  re-run it when the gate held it.
+- If it checks the app on pull requests, start it with the `review-gate` job, with the same `pull_request` types
+  and `if` as the other callers, and make its other jobs need it.
 - Set up Gradle through `./.github/actions/gradle` and pass `secrets.GRADLE_ENCRYPTION_KEY`.
