@@ -91,8 +91,8 @@ npm --prefix webApp run build
 
 Both rebuild the shared library first (the `predev` and `prebuild` scripts). Vite serves on
 http://localhost:5173. The local database lives in the browser's OPFS storage for that origin, and only one tab can
-hold it at a time: keep a single tab open, and clear it from DevTools → Application → Storage → Clear site data to
-start over.
+hold it at a time: a second tab says the app is open in another tab and opens once the first closes, as soon as
+it's visible. Clear the database from DevTools → Application → Storage → Clear site data to start over.
 
 ## Check your change
 

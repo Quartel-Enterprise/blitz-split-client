@@ -18,6 +18,9 @@ export const pt: Record<MessageKey, string> = {
   common_close: 'Fechar',
   common_cancel: 'Cancelar',
 
+  otherTab_title: 'O Bora Rachar está aberto em outra aba',
+  otherTab_body: 'Feche aquela aba ou continue usando ela. Esta abre sozinha assim que a outra fechar.',
+
   welcome_title: 'Rache a conta sem complicação',
   welcome_subtitle: 'Entre com uma conta para não perder nada ao trocar de aparelho, ou use sem conta.',
   welcome_offlineTitle: 'Funciona sem internet',
