@@ -291,32 +291,3 @@ private struct AddPhotoLabel: View {
             }
     }
 }
-
-/// The initial stays under the photo, so it shows while the photo loads or when it fails to. A picked
-/// photo arrives as a data URI, which AsyncImage loads like any other URL.
-private struct AvatarPhoto: View {
-    let initial: String
-    let color: AvatarColor
-    let photoUrl: String?
-    let size: CGFloat
-
-    var body: some View {
-        Text(initial)
-            .font(.system(size: size * 0.42, weight: .bold))
-            .foregroundStyle(color.content)
-            .frame(width: size, height: size)
-            .background(color.container, in: .circle)
-            .overlay {
-                if let photoUrl, let url = URL(string: photoUrl) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image.resizable().scaledToFill()
-                        }
-                    }
-                    .frame(width: size, height: size)
-                    .clipShape(.circle)
-                }
-            }
-            .accessibilityHidden(true)
-    }
-}

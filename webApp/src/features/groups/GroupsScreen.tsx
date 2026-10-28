@@ -23,6 +23,12 @@ const tabs: Tab[] = [
   { label: 'groups_tabActivity', icon: <ReceiptText className="size-4" />, open: (p) => p.openActivity() },
 ]
 
+// The canvas names the account under the profile; "No account" covers both local only and anonymous.
+const accountLabels: Record<string, MessageKey> = {
+  google: 'groups_googleAccount',
+  apple: 'groups_appleAccount',
+}
+
 // Everything synced has no badge: it only shows when the sync asks for attention.
 const syncLabels: Record<string, { label: MessageKey; icon: ReactNode }> = {
   OFFLINE: { label: 'groups_syncOffline', icon: <CloudOff className="size-3.5" /> },
@@ -41,6 +47,7 @@ export function GroupsScreen() {
   if (!presenter || !state) return null
 
   const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null
+  const account = (state.accountProvider && accountLabels[state.accountProvider]) || 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">
@@ -68,10 +75,10 @@ export function GroupsScreen() {
           aria-label={t('groups_profile')}
           className="mt-auto flex h-12 items-center justify-center gap-2.5 rounded-lg px-1.5 text-left outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start"
         >
-          <Avatar initial={state.avatarInitial} color={state.avatarColor} className="size-7 text-xs" />
-          <span className="hidden flex-col lg:flex">
-            <span className="text-sm font-medium">{t('groups_profile')}</span>
-            <span className="text-xs text-muted-foreground">{t('groups_noAccount')}</span>
+          <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-7 text-xs" />
+          <span className="hidden min-w-0 flex-col lg:flex">
+            <span className="truncate text-sm font-medium">{state.displayName || t('groups_profile')}</span>
+            <span className="text-xs text-muted-foreground">{t(account)}</span>
           </span>
         </button>
       </aside>
@@ -80,7 +87,7 @@ export function GroupsScreen() {
         <header className="flex h-14 items-center gap-2.5 border-b px-4 md:hidden">
           <BrandMark className="mr-auto" />
           <button aria-label={t('groups_profile')} onClick={() => presenter.openProfile()} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
-            <Avatar initial={state.avatarInitial} color={state.avatarColor} className="size-9 text-sm" />
+            <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-9 text-sm" />
           </button>
         </header>
 

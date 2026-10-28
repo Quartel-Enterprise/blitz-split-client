@@ -2,8 +2,8 @@ package com.quare.blitzsplit.feature.profilesetup.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ProfilePhoto
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
-import com.quare.blitzsplit.feature.profilesetup.presentation.mapper.toImageUrl
 
 data class ProfileSetupUiState(
     val name: String,

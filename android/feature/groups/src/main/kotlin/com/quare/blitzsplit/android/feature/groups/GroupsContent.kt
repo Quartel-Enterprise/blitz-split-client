@@ -187,6 +187,7 @@ private fun GroupsHeader(
                 initial = state.avatarInitial,
                 color = state.avatarColor,
                 modifier = Modifier.semantics { contentDescription = profileLabel },
+                photoUrl = state.photoUrl,
             )
         }
     }
@@ -401,8 +402,11 @@ private fun GroupsOfflinePreview() {
     BlitzSplitTheme {
         GroupsContent(
             state = GroupsUiState(
+                displayName = "Pierre",
                 avatarInitial = "P",
                 avatarColor = AvatarColor.BLUE,
+                photo = null,
+                accountProvider = null,
                 syncBadge = SyncBadge.OFFLINE,
                 showsRecoveryCodePrompt = false,
             ),

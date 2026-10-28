@@ -2,7 +2,9 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
@@ -27,6 +29,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GroupsViewModel(
     private val retrySync: RetrySync,
     observeProfile: ObserveProfile,
+    observeAccountStatus: ObserveAccountStatus,
     observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
     observeSyncState: ObserveSyncState,
     connectivityObserver: NetworkConnectivityObserver,
@@ -34,8 +37,11 @@ class GroupsViewModel(
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
             GroupsUiState(
+                displayName = "",
                 avatarInitial = "",
                 avatarColor = AvatarColor.default,
+                photo = null,
+                accountProvider = null,
                 syncBadge = null,
                 showsRecoveryCodePrompt = false,
             ),
@@ -50,11 +56,13 @@ class GroupsViewModel(
     init {
         combine(
             observeProfile(),
+            observeAccountStatus(),
             observeRecoveryCodePrompt(),
             observeSyncState(),
             connectivityObserver.observe(),
-        ) { profile, prompt, syncState, isOnline ->
+        ) { profile, accountStatus, prompt, syncState, isOnline ->
             GroupsUiState(
+                displayName = profile?.displayName?.trim().orEmpty(),
                 avatarInitial = profile
                     ?.displayName
                     ?.trim()
@@ -62,6 +70,8 @@ class GroupsViewModel(
                     ?.uppercase()
                     .orEmpty(),
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
+                photo = profile?.photo,
+                accountProvider = (accountStatus as? AccountStatus.Connected)?.provider,
                 syncBadge = syncBadgeOf(syncState = syncState, isOnline = isOnline),
                 showsRecoveryCodePrompt = prompt == RecoveryCodePrompt.DUE,
             )
