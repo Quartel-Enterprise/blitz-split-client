@@ -66,8 +66,8 @@ class RestoreViewModelTest {
 ```
 
 A ViewModel that drives `ProviderSignIn` or `ProviderConnector` gets the real implementation over the fakes, so its
-tests walk the whole sign in. The navigator starts where the screen really is in the flow (`Welcome`, then `Restore`), so a test can assert that
-back returns to `listOf(Route.Welcome)` and that a restore leaves only `listOf(Route.Groups)`.
+tests walk the whole sign in. The navigator starts where the screen really is in the flow (`Welcome`, then `Restore`),
+so a test can assert that back returns to `listOf(Route.Welcome)` and that a restore leaves only `listOf(Route.Groups)`.
 
 ## A repository and its data sources
 

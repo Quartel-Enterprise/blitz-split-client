@@ -14,7 +14,7 @@ core/
 │   └── testing/        # FakeProfileRepository, for other modules' tests
 ├── account/            # Account domain + data: session mirror, sign in, recovery code
 │   └── testing/        # FakeAccountRepository
-├── sync/               # SyncCoordinator, ProviderConnector, ProviderSignIn and the use cases that cross profile and account
+├── sync/               # SyncCoordinator, ProviderConnector, ProviderSignIn, use cases across profile and account
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
     ├── supabase/       # SupabaseClient, Auth / Postgrest / Functions / Storage, SupabaseConfig (BuildKonfig)
