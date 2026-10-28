@@ -12,6 +12,10 @@ interface ProfileRepository {
 
     suspend fun uploadPendingProfile(userId: String): Result<Unit>
 
+    /*
+     * Why: a copy of another user's profile, after a switch, gives way to this user's, even a change not pushed
+     * yet, and goes up as this user's only if it has none on the server.
+     */
     suspend fun downloadProfile(userId: String): Result<Unit>
 
     // Why: a sign out leaves no copy of the profile on the device.

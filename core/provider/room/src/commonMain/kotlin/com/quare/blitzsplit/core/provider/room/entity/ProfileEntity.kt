@@ -20,4 +20,11 @@ data class ProfileEntity(
     // Why: a photo picked offline waits here (a 512x512 JPEG) until the sync uploads it.
     @ColumnInfo(defaultValue = "NULL")
     val pendingPhoto: ByteArray?,
+    /*
+     * Why: the user whose profile this copy is, so a sync under another user (after a switch, even one the app
+     * died in) takes the account's profile instead of pushing this one. Null until a sync claims it, as for a
+     * profile made before its account.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val ownerUserId: String?,
 )

@@ -18,6 +18,7 @@ class ProfileMapperImpl : ProfileMapper {
         profile: UserProfile,
         updatedAt: Long,
         pendingSync: Boolean,
+        ownerUserId: String?,
     ): ProfileEntity = ProfileEntity(
         id = SINGLE_ROW_ID,
         displayName = profile.displayName,
@@ -26,6 +27,7 @@ class ProfileMapperImpl : ProfileMapper {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         pendingPhoto = (profile.photo as? ProfilePhoto.Pending)?.jpeg,
+        ownerUserId = ownerUserId,
     )
 
     override fun toDto(
@@ -39,7 +41,10 @@ class ProfileMapperImpl : ProfileMapper {
         updatedAt = entity.updatedAt,
     )
 
-    override fun toEntity(dto: ProfileDto): ProfileEntity = ProfileEntity(
+    override fun toEntity(
+        dto: ProfileDto,
+        ownerUserId: String,
+    ): ProfileEntity = ProfileEntity(
         id = SINGLE_ROW_ID,
         displayName = dto.displayName,
         avatarColor = dto.avatarColor,
@@ -47,5 +52,6 @@ class ProfileMapperImpl : ProfileMapper {
         updatedAt = dto.updatedAt,
         pendingSync = false,
         pendingPhoto = null,
+        ownerUserId = ownerUserId,
     )
 }

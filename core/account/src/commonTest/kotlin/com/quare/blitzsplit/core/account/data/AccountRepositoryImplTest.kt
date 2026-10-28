@@ -1942,6 +1942,43 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a Google account with a scheduled sign out WHEN the session switches to another user THEN drops it`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startMirroring()
+            sessions.emit(googleUserWithEmail)
+            runCurrent()
+            repository.updateSignOutWhenSynced(true)
+
+            // When
+            sessions.emit(appleUserWithEmail)
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.Connected("apple-user", AccountProvider.APPLE), account.status)
+            assertFalse(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN a Google account with a scheduled sign out WHEN its session refreshes THEN keeps it`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+        sessions.emit(googleUserWithEmail)
+        runCurrent()
+        repository.updateSignOutWhenSynced(true)
+
+        // When
+        sessions.emit(googleUserWithEmail.copy(displayName = "Pierre Vieira"))
+        runCurrent()
+
+        // Then
+        assertTrue(repository.observeAccount().first().signOutWhenSynced)
+    }
+
+    @Test
     fun `GIVEN a sign in left from the profile WHEN its callback relaunches the app THEN returns to the profile`() =
         runTest {
             // Given

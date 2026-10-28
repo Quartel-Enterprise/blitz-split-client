@@ -29,6 +29,32 @@ class RoomProfileLocalDataSource(
         dao.deleteAll()
     }
 
+    override suspend fun claimUnowned(ownerUserId: String) {
+        dao.claimUnowned(ownerUserId)
+    }
+
+    override suspend fun replaceOtherUsersCopy(entity: ProfileEntity) {
+        dao.replaceOtherUsersCopy(
+            displayName = entity.displayName,
+            avatarColor = entity.avatarColor,
+            photoUrl = entity.photoUrl,
+            remoteUpdatedAt = entity.updatedAt,
+            ownerUserId = entity.ownerUserId,
+        )
+    }
+
+    override suspend fun reclaimOtherUsersCopy(
+        ownerUserId: String,
+        updatedAt: Long,
+        photoUrl: String?,
+    ) {
+        dao.reclaimOtherUsersCopy(
+            ownerUserId = ownerUserId,
+            updatedAt = updatedAt,
+            photoUrl = photoUrl,
+        )
+    }
+
     override suspend fun applyRemote(entity: ProfileEntity) {
         if (dao.get() == null) {
             dao.upsert(entity)
@@ -38,6 +64,7 @@ class RoomProfileLocalDataSource(
                 avatarColor = entity.avatarColor,
                 photoUrl = entity.photoUrl,
                 remoteUpdatedAt = entity.updatedAt,
+                ownerUserId = entity.ownerUserId,
             )
         }
     }

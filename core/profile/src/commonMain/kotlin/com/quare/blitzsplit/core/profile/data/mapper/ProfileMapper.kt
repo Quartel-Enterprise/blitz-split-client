@@ -11,6 +11,7 @@ interface ProfileMapper {
         profile: UserProfile,
         updatedAt: Long,
         pendingSync: Boolean,
+        ownerUserId: String?,
     ): ProfileEntity
 
     fun toDto(
@@ -18,5 +19,8 @@ interface ProfileMapper {
         userId: String,
     ): ProfileDto
 
-    fun toEntity(dto: ProfileDto): ProfileEntity
+    fun toEntity(
+        dto: ProfileDto,
+        ownerUserId: String,
+    ): ProfileEntity
 }

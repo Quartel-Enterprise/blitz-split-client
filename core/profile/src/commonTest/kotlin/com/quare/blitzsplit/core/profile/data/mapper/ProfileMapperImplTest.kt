@@ -63,6 +63,7 @@ class ProfileMapperImplTest {
             profile = profile,
             updatedAt = 7L,
             pendingSync = true,
+            ownerUserId = "user-1",
         )
 
         // Then
@@ -80,6 +81,7 @@ class ProfileMapperImplTest {
             profile = profile,
             updatedAt = 7L,
             pendingSync = true,
+            ownerUserId = "user-1",
         )
 
         // Then
@@ -97,6 +99,7 @@ class ProfileMapperImplTest {
             profile = profile,
             updatedAt = 7L,
             pendingSync = true,
+            ownerUserId = "user-1",
         )
 
         // Then
@@ -110,9 +113,13 @@ class ProfileMapperImplTest {
         val dto = ProfileDto("user-1", "Larissa", "peach", OLD_URL, 99L)
 
         // When
-        val row = mapper.toEntity(dto)
+        val row = mapper.toEntity(
+            dto = dto,
+            ownerUserId = "user-1",
+        )
 
         // Then
+        assertEquals("user-1", row.ownerUserId)
         assertEquals(OLD_URL, row.photoUrl)
         assertNull(row.pendingPhoto)
         assertFalse(row.pendingSync)
@@ -147,6 +154,7 @@ class ProfileMapperImplTest {
         updatedAt = 1L,
         pendingSync = false,
         pendingPhoto = pendingPhoto,
+        ownerUserId = "user-1",
     )
 
     private companion object {

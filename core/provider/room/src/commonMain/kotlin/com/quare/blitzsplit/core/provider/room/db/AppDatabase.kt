@@ -17,7 +17,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         AccountEntity::class,
         DeviceSettingsEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -35,6 +35,10 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         AutoMigration(
             from = 4,
             to = 5,
+        ),
+        AutoMigration(
+            from = 5,
+            to = 6,
         ),
     ],
 )

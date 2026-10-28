@@ -162,8 +162,9 @@ class SyncCoordinator(
     }
 
     /*
-     * Why: an identity that already belonged to another user switches the session to that user,
-     * whose profile has to come down before this device's is pushed. A link keeps the same id.
+     * Why: an identity that already belonged to another user switches the session to that user, whose profile
+     * replaces this device's copy (see ProfileRepository.downloadProfile), so it syncs right away. A link keeps
+     * the same id.
      */
     private suspend fun syncOnUserSwitch() {
         var previousUserId: String? = null

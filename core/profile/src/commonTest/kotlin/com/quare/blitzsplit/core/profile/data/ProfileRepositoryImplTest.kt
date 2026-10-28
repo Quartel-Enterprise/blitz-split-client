@@ -330,6 +330,165 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a profile made before its account WHEN pulling THEN it becomes this user profile and goes up`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    pendingSync = true,
+                    ownerUserId = null,
+                ),
+            )
+
+            // When
+            repository.downloadProfile(userId = "user-1")
+            repository.uploadPendingProfile(userId = "user-1")
+
+            // Then
+            assertEquals("user-1", local.row.value?.ownerUserId)
+            assertEquals("user-1", remote.upserted.single().id)
+        }
+
+    @Test
+    fun `GIVEN a copy of this user WHEN pulling THEN applies the server profile under the same owner`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(pendingSync = false),
+            remoteProfile = ProfileDto("user-1", "Larissa", "peach", null, 99L),
+        )
+
+        // When
+        repository.downloadProfile(userId = "user-1")
+
+        // Then
+        assertEquals("user-1", local.applied.single().ownerUserId)
+        assertTrue(local.replaced.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN another user copy with a change not pushed yet WHEN pulling THEN the account profile replaces it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    pendingSync = true,
+                    updatedAt = 50L,
+                    pendingPhoto = jpeg,
+                ),
+                remoteProfile = ProfileDto("user-2", "Larissa", "peach", null, 10L),
+            )
+
+            // When
+            repository.downloadProfile(userId = "user-2")
+
+            // Then
+            val stored = local.row.value
+            assertEquals("Larissa", stored?.displayName)
+            assertEquals(10L, stored?.updatedAt)
+            assertEquals(false, stored?.pendingSync)
+            assertNull(stored?.pendingPhoto)
+            assertEquals("user-2", stored?.ownerUserId)
+            assertTrue(local.applied.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another user copy not pushed yet WHEN pushing under this user THEN pushes nothing`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                pendingSync = true,
+                pendingPhoto = jpeg,
+            ),
+        )
+
+        // When
+        val result = repository.uploadPendingProfile(userId = "user-2")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.upserted.isEmpty())
+        assertTrue(photoRemote.uploads.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN another user copy WHEN saving an edit THEN the copy stays that user`() = runTest {
+        // Given
+        prepareScenario(stored = entity(pendingSync = false))
+
+        // When
+        repository.saveProfile(UserProfile("Pierre Vieira", AvatarColor.GREEN, photo = null))
+
+        // Then
+        assertEquals("user-1", local.row.value?.ownerUserId)
+    }
+
+    @Test
+    fun `GIVEN another user copy and an account without a profile WHEN pulling THEN it goes up as the account one`() =
+        runTest {
+            // Given
+            prepareScenario(
+                now = 2_000L,
+                stored = entity(
+                    pendingSync = true,
+                    pendingPhoto = jpeg,
+                ),
+                remoteProfile = null,
+            )
+
+            // When
+            repository.downloadProfile(userId = "user-2")
+            repository.uploadPendingProfile(userId = "user-2")
+
+            // Then
+            val upserted = remote.upserted.single()
+            assertEquals("user-2", upserted.id)
+            assertEquals("Pierre", upserted.displayName)
+            assertEquals("user-2", photoRemote.uploads.single().first)
+            assertContentEquals(jpeg, photoRemote.uploads.single().second)
+        }
+
+    @Test
+    fun `GIVEN another user copy with an uploaded photo WHEN the account has no profile THEN drops the photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                now = 2_000L,
+                stored = entity(
+                    pendingSync = false,
+                    photoUrl = "$UPLOADED_URL?v=1",
+                ),
+                remoteProfile = null,
+            )
+
+            // When
+            repository.downloadProfile(userId = "user-2")
+            repository.uploadPendingProfile(userId = "user-2")
+
+            // Then
+            assertNull(remote.upserted.single().avatarUrl)
+        }
+
+    @Test
+    fun `GIVEN another user copy with a Google photo WHEN the account has no profile THEN keeps the photo`() = runTest {
+        // Given
+        prepareScenario(
+            now = 2_000L,
+            stored = entity(
+                pendingSync = false,
+                photoUrl = GOOGLE_URL,
+            ),
+            remoteProfile = null,
+        )
+
+        // When
+        repository.downloadProfile(userId = "user-2")
+        repository.uploadPendingProfile(userId = "user-2")
+
+        // Then
+        assertEquals(GOOGLE_URL, remote.upserted.single().avatarUrl)
+    }
+
+    @Test
     fun `GIVEN a stored profile WHEN clearing THEN leaves no profile on the device`() = runTest {
         // Given
         prepareScenario(stored = entity(pendingSync = true))
@@ -351,6 +510,7 @@ class ProfileRepositoryImplTest {
         updatedAt: Long = 1L,
         photoUrl: String? = null,
         pendingPhoto: ByteArray? = null,
+        ownerUserId: String? = "user-1",
     ): ProfileEntity = ProfileEntity(
         id = "me",
         displayName = "Pierre",
@@ -359,6 +519,7 @@ class ProfileRepositoryImplTest {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         pendingPhoto = pendingPhoto,
+        ownerUserId = ownerUserId,
     )
 
     private fun prepareScenario(
@@ -393,6 +554,7 @@ private class FakeProfileLocalDataSource(
     val markedSynced = mutableListOf<Long>()
     val syncedPhotoUrls = mutableListOf<String?>()
     val applied = mutableListOf<ProfileEntity>()
+    val replaced = mutableListOf<ProfileEntity>()
 
     override fun observe(): Flow<ProfileEntity?> = row
 
@@ -422,6 +584,38 @@ private class FakeProfileLocalDataSource(
     override suspend fun applyRemote(entity: ProfileEntity) {
         applied += entity
     }
+
+    // Why: the guards below mirror the DAO's, which the Room tests check against SQLite.
+    override suspend fun claimUnowned(ownerUserId: String) {
+        row.value = row.value?.let { if (it.ownerUserId == null) it.copy(ownerUserId = ownerUserId) else it }
+    }
+
+    override suspend fun replaceOtherUsersCopy(entity: ProfileEntity) {
+        replaced += entity
+        row.value = row.value
+            ?.takeIf { it.isOwnedByAnotherThan(entity.ownerUserId) }
+            ?.let { entity }
+            ?: row.value
+    }
+
+    override suspend fun reclaimOtherUsersCopy(
+        ownerUserId: String,
+        updatedAt: Long,
+        photoUrl: String?,
+    ) {
+        row.value = row.value
+            ?.takeIf { it.isOwnedByAnotherThan(ownerUserId) }
+            ?.copy(
+                pendingSync = true,
+                updatedAt = updatedAt,
+                photoUrl = photoUrl,
+                ownerUserId = ownerUserId,
+            )
+            ?: row.value
+    }
+
+    private fun ProfileEntity.isOwnedByAnotherThan(userId: String?): Boolean =
+        ownerUserId != null && userId != null && ownerUserId != userId
 
     override suspend fun clear() {
         row.value = null
@@ -456,4 +650,6 @@ private class FakeProfilePhotoRemoteDataSource : ProfilePhotoRemoteDataSource {
         uploads += userId to jpeg
         return "https://storage/avatars/$userId/avatar.jpg"
     }
+
+    override fun isUploaded(url: String): Boolean = url.startsWith("https://storage/avatars/")
 }
