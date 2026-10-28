@@ -38,7 +38,8 @@ The review, the gate and the threads lookups are the `review`, `gate` and `threa
 [Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterprise/claude-review), shared with
 bible-planner-mobile-client. Every `uses:` of them (`claude-review.yml`, `claude-review-on-request.yml`,
 `review-gate.yml`, `run-checks.yml`) pins the same exact release: a fix there ships as a release, then a bump of all
-of them here, which `claude-review-refs` checks. What runs comes from that release, never from the pull request under
+of them here, which `claude-review-refs` checks. Dependabot opens that bump as one pull request the day after a
+release (`.github/dependabot.yml`), and the review skips it. What runs comes from that release, never from the pull request under
 review, so a pull request can't change the review that judges it. How the review works, which Bash commands it may
 run and how it keeps the tokens out of its comments are in that repository's README.
 
