@@ -167,11 +167,8 @@ parameter (`quare:redundant-private-constructor-property`), and properties come 
 
 ```kotlin
 class RecoveryCodeViewModel(
-    private val nativeSignIn: NativeSignIn,
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
-    private val connectWithIdToken: ConnectWithIdToken,
-    private val connectWithBrowser: ConnectWithBrowser,
-    private val completeSignIn: CompleteSignIn,
+    private val providerConnector: ProviderConnector,
     observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel()

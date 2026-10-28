@@ -2,18 +2,12 @@ package com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
-import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
-import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
-import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
+import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
@@ -22,7 +16,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -30,14 +23,9 @@ import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 
 class RecoveryCodeViewModel(
-    private val nativeSignIn: NativeSignIn,
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
-    private val connectWithIdToken: ConnectWithIdToken,
-    private val connectWithBrowser: ConnectWithBrowser,
-    private val completeSignIn: CompleteSignIn,
-    private val observeAccount: ObserveAccount,
-    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
-    observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
+    private val providerConnector: ProviderConnector,
+    observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RecoveryCodeUiState>
@@ -54,8 +42,6 @@ class RecoveryCodeViewModel(
 
     val uiAction: SharedFlow<RecoveryCodeUiAction>
         field = MutableSharedFlow<RecoveryCodeUiAction>()
-
-    private var returningProvider: AccountProvider? = null
 
     private var prompt = RecoveryCodePrompt.NOT_DUE
 
@@ -77,11 +63,20 @@ class RecoveryCodeViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        // Why: as with a cancelled native sheet, closing the browser isn't a failure, while a failed callback is.
-        observeAbandonedBrowserSignIn()
-            .onEach { abandoned -> finishConnecting(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED) }
+        providerConnector.connection
+            .onEach { connection ->
+                uiState.update {
+                    it.copy(
+                        connectingProvider = connection.connectingProvider,
+                        hasSignInFailed = connection.hasFailed,
+                        isConnectExpanded = connection.isExpanded,
+                    )
+                }
+            }.launchIn(viewModelScope)
+        // Why: after the web reload the sheet shows again until the account mirror settles the prompt.
+        providerConnector
+            .observeBrowserSignIn { account -> account.recoveryCodePrompt == RecoveryCodePrompt.SAVED }
             .launchIn(viewModelScope)
-        observeReturningSignIn()
     }
 
     fun onEvent(event: RecoveryCodeUiEvent) {
@@ -92,15 +87,15 @@ class RecoveryCodeViewModel(
                 RecoveryCodeUiAction::SaveToPasswordManager,
             )
 
-            RecoveryCodeUiEvent.OnConnectInsteadClicked -> uiState.update { it.copy(isConnectExpanded = true) }
+            RecoveryCodeUiEvent.OnConnectInsteadClicked -> providerConnector.expand()
 
             is RecoveryCodeUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
 
             is RecoveryCodeUiEvent.OnIdTokenReceived -> handleIdToken(event)
 
-            RecoveryCodeUiEvent.OnNativeSignInFailed -> finishConnecting(hasFailed = true)
+            RecoveryCodeUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
 
-            RecoveryCodeUiEvent.OnNativeSignInCancelled -> finishConnecting(hasFailed = false)
+            RecoveryCodeUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
 
             RecoveryCodeUiEvent.OnRemindLaterClicked -> remindLater()
 
@@ -113,69 +108,30 @@ class RecoveryCodeViewModel(
         viewModelScope.launch { uiAction.emit(action(code)) }
     }
 
-    /*
-     * Why: on the web the link's callback reloads the page and the sheet shows again until the account
-     * mirror settles the prompt, so the link shows as under way meanwhile, and as failed if it ends
-     * with the prompt still unsettled.
-     */
-    private fun observeReturningSignIn() {
-        observeReturningBrowserSignIn()
-            .onEach { provider ->
-                if (provider != null) {
-                    returningProvider = provider
-                    uiState.update {
-                        it.copy(
-                            connectingProvider = it.connectingProvider ?: provider,
-                            hasSignInFailed = false,
-                            isConnectExpanded = true,
-                        )
-                    }
-                } else if (returningProvider != null) {
-                    returningProvider = null
-                    finishConnecting(
-                        hasFailed = observeAccount().first().recoveryCodePrompt != RecoveryCodePrompt.SAVED,
-                    )
-                }
-            }.launchIn(viewModelScope)
-    }
-
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
+        // Why: the buttons check connectingProvider, so it is set at the tap, before the connector's copy lands.
         uiState.update {
             it.copy(
                 connectingProvider = provider,
                 hasSignInFailed = false,
             )
         }
-        viewModelScope.launch {
-            if (provider in nativeSignIn.providers) {
-                uiAction.emit(RecoveryCodeUiAction.LaunchNativeSignIn(provider))
-            } else {
-                connectWithBrowser(provider).onFailure { finishConnecting(hasFailed = true) }
-            }
-        }
+        viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
+    }
+
+    private suspend fun launchNativeSignIn(provider: AccountProvider) {
+        uiAction.emit(RecoveryCodeUiAction.LaunchNativeSignIn(provider))
     }
 
     // Why: once Google or Apple is linked the account mirror settles the prompt, which hides the sheet.
     private fun handleIdToken(event: RecoveryCodeUiEvent.OnIdTokenReceived) {
         viewModelScope.launch {
-            connectWithIdToken(
+            providerConnector.onIdTokenReceived(
                 provider = event.provider,
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
-            ).onSuccess {
-                completeSignIn()
-                finishConnecting(hasFailed = false)
-            }.onFailure { finishConnecting(hasFailed = true) }
-        }
-    }
-
-    private fun finishConnecting(hasFailed: Boolean) {
-        uiState.update {
-            it.copy(
-                connectingProvider = null,
-                hasSignInFailed = hasFailed,
             )
         }
     }

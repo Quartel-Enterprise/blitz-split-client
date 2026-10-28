@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
@@ -417,17 +418,20 @@ class RecoveryCodeViewModelTest {
             it.connectResult = connectResult
         }
         viewModel = RecoveryCodeViewModel(
-            nativeSignIn = NativeSignIn(native),
-            observeAccount = ObserveAccountUseCase(account),
-            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
-            connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account, BackStackNavigator(startRoute = Route.Groups)),
-            observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
-            completeSignIn = {
-                completedSignIns++
-                Result.success(SignInOutcome.PROFILE_RESTORED)
-            },
+            providerConnector = ProviderConnectorImpl(
+                nativeSignIn = NativeSignIn(native),
+                connectWithIdToken = ConnectWithIdTokenUseCase(account),
+                connectWithBrowser = ConnectWithBrowserUseCase(account, BackStackNavigator(startRoute = Route.Groups)),
+                completeSignIn = {
+                    completedSignIns++
+                    Result.success(SignInOutcome.PROFILE_RESTORED)
+                },
+                observeAccount = ObserveAccountUseCase(account),
+                observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
+                observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
+            ),
+            observeAccount = ObserveAccountUseCase(account),
             connectivityObserver = NetworkConnectivityObserver { flowOf(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

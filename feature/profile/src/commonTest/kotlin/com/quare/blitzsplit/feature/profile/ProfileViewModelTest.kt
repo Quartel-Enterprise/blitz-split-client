@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -2312,15 +2313,18 @@ class ProfileViewModelTest {
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
             navigator = navigator,
-            nativeSignIn = NativeSignIn(native),
-            connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
-            completeSignIn = {
-                completedSignIns++
-                Result.success(SignInOutcome.PROFILE_RESTORED)
-            },
-            observeAccount = ObserveAccountUseCase(account),
-            observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
+            providerConnector = ProviderConnectorImpl(
+                nativeSignIn = NativeSignIn(native),
+                connectWithIdToken = ConnectWithIdTokenUseCase(account),
+                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                completeSignIn = {
+                    completedSignIns++
+                    Result.success(SignInOutcome.PROFILE_RESTORED)
+                },
+                observeAccount = ObserveAccountUseCase(account),
+                observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
+                observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
+            ),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             updateThemePreference = UpdateThemePreference { storedTheme.value = it },
             retrySync = RetrySync { syncRetries++ },
@@ -2331,11 +2335,11 @@ class ProfileViewModelTest {
             },
             signOutWhenSynced = SignOutWhenSynced { signOutWhenSyncedCalls++ },
             cancelSignOutWhenSynced = CancelSignOutWhenSynced { cancelSignOutWhenSyncedCalls++ },
+            observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),
             observeSyncState = ObserveSyncState { this@ProfileViewModelTest.syncState },
             observeThemePreference = ObserveThemePreference { storedTheme.filterNotNull() },
-            observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
