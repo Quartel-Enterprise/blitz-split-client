@@ -48,7 +48,7 @@ export function GroupsScreen() {
   if (!presenter || !state) return null
 
   const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null
-  const account = state.accountProvider ? accountLabels[state.accountProvider as AccountProvider] : 'groups_noAccount'
+  const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">

@@ -81,7 +81,7 @@ class GroupsViewModelTest {
     @Test
     fun `GIVEN a profile WHEN the groups open THEN draws its initial and color`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(profile = pierre.copy(displayName = "pierre"))
 
         // When
         val state = viewModel.uiState.value
@@ -305,6 +305,7 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals("Pierre Vieira", state.displayName)
+            assertEquals("P", state.avatarInitial)
         }
 
     @Test

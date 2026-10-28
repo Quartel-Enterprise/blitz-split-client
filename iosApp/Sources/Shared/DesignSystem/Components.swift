@@ -177,7 +177,7 @@ struct AvatarPhoto: View {
                 if let photoUrl, let url = URL(string: photoUrl) {
                     AsyncImage(url: url) { phase in
                         if let image = phase.image {
-                            image.resizable().scaledToFill()
+                            image.renderingMode(.original).resizable().scaledToFill()
                         }
                     }
                     .frame(width: size, height: size)
