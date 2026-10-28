@@ -2,8 +2,14 @@ import { startBlitzSplit } from 'blitzsplit-shared'
 
 const DATABASE_LOCK = 'borarachar-database'
 
-// Held until the tab closes or navigates away; the browser then releases the lock on its own
-const untilTheTabCloses = new Promise<never>(() => {})
+/*
+ * Held until the tab closes or navigates away; the browser then releases the lock on its own. A page
+ * kept in the back/forward cache isn't gone, though, so it lets go itself (see releaseOnPageCache).
+ */
+let releaseLock = () => {}
+const untilTheTabCloses = new Promise<void>((resolve) => {
+  releaseLock = resolve
+})
 
 let starting: Promise<void> | null = null
 
@@ -23,12 +29,47 @@ export function startShared(onWaiting: () => void): Promise<void> {
 
 async function start(onWaiting: () => void) {
   // Browsers without Web Locks also predate the OPFS handles the worker needs; let the worker report it
-  if (navigator.locks && !(await takeLockIfFree())) {
-    onWaiting()
-    await waitForLockWhileVisible()
+  if (navigator.locks) {
+    // A tab opening in the background (session restore, a link opened in a new tab) would otherwise
+    // take the lock in the moment the tab in use reloads or comes back from a sign in
+    await untilVisible()
+    if (!(await takeLockIfFree())) {
+      onWaiting()
+      await waitForLockWhileVisible()
+    }
   }
   const worker = new Worker(new URL('../sqlite/worker.js', import.meta.url), { type: 'module' })
+  releaseOnPageCache(worker)
   startBlitzSplit(worker)
+}
+
+function untilVisible(): Promise<void> {
+  if (document.visibilityState === 'visible') return Promise.resolve()
+  return new Promise((resolve) => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      resolve()
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+  })
+}
+
+/**
+ * Why: a browser that keeps this page in its back/forward cache (leaving for a sign in, say) would
+ * keep the lock and the worker's file handles too, and the page the sign in returns to would wait
+ * for itself. So the page ends the worker and frees the lock when cached, and starts over if it's
+ * brought back.
+ */
+function releaseOnPageCache(worker: Worker) {
+  window.addEventListener('pagehide', (event) => {
+    if (!event.persisted) return
+    worker.terminate()
+    releaseLock()
+  })
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) window.location.reload()
+  })
 }
 
 function takeLockIfFree(): Promise<boolean> {

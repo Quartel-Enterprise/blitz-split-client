@@ -177,15 +177,23 @@ async function installSahPool(instance) {
         try {
             return await instance.installOpfsSAHPoolVfs({
                 name: SAH_POOL_NAME,
-                // Without it, a failed install deletes the pool, the user's data with it
+                // Without it, a failed install deletes the pool, the user's data with it. A failed install
+                // still releases the handles it got (acquireAccessHandles), so the next attempt starts clean
                 preserveOnInitFailure: true,
                 forceReinitIfPreviouslyFailed: true,
             });
         } catch (error) {
-            if (attempt === SAH_POOL_ATTEMPTS) throw error;
+            if (!isHandleBusy(error) || attempt === SAH_POOL_ATTEMPTS) throw error;
             await new Promise(resolve => setTimeout(resolve, SAH_POOL_RETRY_DELAY_MS));
         }
     }
+}
+
+// Only a handle another context still holds is worth waiting for: the File System spec reports it as
+// NoModificationAllowedError, and older engines as InvalidStateError. No OPFS, private browsing or a full quota
+// fail at once.
+function isHandleBusy(error) {
+    return error?.name === 'NoModificationAllowedError' || error?.name === 'InvalidStateError';
 }
 
 // sqlite3 is only published once the pool is installed (or given up on), so no request is handled before it.
