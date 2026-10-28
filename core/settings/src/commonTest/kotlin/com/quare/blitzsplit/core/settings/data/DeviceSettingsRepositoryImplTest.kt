@@ -143,7 +143,10 @@ class DeviceSettingsRepositoryImplTest {
             assertEquals(listOf(ThemePreference.SYSTEM), observed)
         }
 
-    private fun settings(theme: String): DeviceSettingsEntity = DeviceSettingsEntity(id = SINGLE_ROW_ID, theme = theme)
+    private fun settings(theme: String): DeviceSettingsEntity = DeviceSettingsEntity(
+        id = SINGLE_ROW_ID,
+        theme = theme,
+    )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
         local = FakeDeviceSettingsLocalDataSource(stored)

@@ -17,7 +17,10 @@ class ProfileMapperImplTest {
     @Test
     fun `GIVEN a row with a pending photo and an old url WHEN mapping to the domain THEN the pending photo wins`() {
         // Given
-        val stored = entity(photoUrl = OLD_URL, pendingPhoto = jpeg)
+        val stored = entity(
+            photoUrl = OLD_URL,
+            pendingPhoto = jpeg,
+        )
 
         // When
         val profile = mapper.toDomain(stored)
@@ -56,7 +59,11 @@ class ProfileMapperImplTest {
         val profile = UserProfile("Pierre", AvatarColor.LILAC, photo = ProfilePhoto.Pending(jpeg))
 
         // When
-        val row = mapper.toEntity(profile = profile, updatedAt = 7L, pendingSync = true)
+        val row = mapper.toEntity(
+            profile = profile,
+            updatedAt = 7L,
+            pendingSync = true,
+        )
 
         // Then
         assertContentEquals(jpeg, row.pendingPhoto)
@@ -69,7 +76,11 @@ class ProfileMapperImplTest {
         val profile = UserProfile("Pierre", AvatarColor.LILAC, photo = ProfilePhoto.Remote(OLD_URL))
 
         // When
-        val row = mapper.toEntity(profile = profile, updatedAt = 7L, pendingSync = true)
+        val row = mapper.toEntity(
+            profile = profile,
+            updatedAt = 7L,
+            pendingSync = true,
+        )
 
         // Then
         assertEquals(OLD_URL, row.photoUrl)
@@ -82,7 +93,11 @@ class ProfileMapperImplTest {
         val profile = UserProfile("Pierre", AvatarColor.LILAC, photo = null)
 
         // When
-        val row = mapper.toEntity(profile = profile, updatedAt = 7L, pendingSync = true)
+        val row = mapper.toEntity(
+            profile = profile,
+            updatedAt = 7L,
+            pendingSync = true,
+        )
 
         // Then
         assertNull(row.photoUrl)
@@ -110,7 +125,10 @@ class ProfileMapperImplTest {
         val stored = entity(photoUrl = OLD_URL)
 
         // When
-        val dto = mapper.toDto(entity = stored, userId = "user-1")
+        val dto = mapper.toDto(
+            entity = stored,
+            userId = "user-1",
+        )
 
         // Then
         assertEquals(ProfileDto("user-1", "Pierre", "lilac", OLD_URL, 1L), dto)

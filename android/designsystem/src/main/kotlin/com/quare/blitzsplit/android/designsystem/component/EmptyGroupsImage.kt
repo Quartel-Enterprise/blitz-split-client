@@ -24,8 +24,10 @@ fun EmptyGroupsImage(
     val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
-            .size(width = 160.dp * scale, height = 120.dp * scale)
-            .clearAndSetSemantics { },
+            .size(
+                width = 160.dp * scale,
+                height = 120.dp * scale,
+            ).clearAndSetSemantics { },
     ) {
         Box(
             Modifier

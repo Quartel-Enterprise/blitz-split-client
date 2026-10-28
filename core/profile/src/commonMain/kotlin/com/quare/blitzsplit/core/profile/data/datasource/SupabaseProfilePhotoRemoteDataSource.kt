@@ -12,7 +12,10 @@ class SupabaseProfilePhotoRemoteDataSource(
     ): String {
         val bucket = storage.from(BUCKET)
         val path = "$userId/$FILE_NAME"
-        bucket.upload(path = path, data = jpeg) { upsert = true }
+        bucket.upload(
+            path = path,
+            data = jpeg,
+        ) { upsert = true }
         return bucket.publicUrl(path)
     }
 

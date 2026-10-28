@@ -144,10 +144,17 @@ private fun GroupsPane(
             .fillMaxSize()
             // Why: a tablet centres the card in the space left, which needs a bounded height.
             .then(if (layout.isTablet) Modifier else Modifier.verticalScroll(rememberScrollState()))
-            .padding(horizontal = horizontalPadding, vertical = if (layout.usesNavigationRail) 28.dp else 16.dp),
+            .padding(
+                horizontal = horizontalPadding,
+                vertical = if (layout.usesNavigationRail) 28.dp else 16.dp,
+            ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        GroupsHeader(state = state, onEvent = onEvent, layout = layout)
+        GroupsHeader(
+            state = state,
+            onEvent = onEvent,
+            layout = layout,
+        )
         when {
             layout.isTablet -> Box(
                 modifier = Modifier
@@ -156,10 +163,18 @@ private fun GroupsPane(
                     .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
-                EmptyGroupsCard(onEvent = onEvent, isHorizontal = false, isLarge = true)
+                EmptyGroupsCard(
+                    onEvent = onEvent,
+                    isHorizontal = false,
+                    isLarge = true,
+                )
             }
 
-            layout.isLandscape -> EmptyGroupsCard(onEvent = onEvent, isHorizontal = true, isLarge = false)
+            layout.isLandscape -> EmptyGroupsCard(
+                onEvent = onEvent,
+                isHorizontal = true,
+                isLarge = false,
+            )
 
             else -> EmptyGroupsCard(
                 onEvent = onEvent,
@@ -204,7 +219,10 @@ private fun GroupsHeader(
     }
     if (layout.usesNavigationRail) {
         Row(verticalAlignment = Alignment.Top) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
                 title()
                 SyncBadgeChip(
                     badge = state.syncBadge,
@@ -216,7 +234,10 @@ private fun GroupsHeader(
         }
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { profileButton() }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd,
+            ) { profileButton() }
             title()
             SyncBadgeChip(
                 badge = state.syncBadge,
@@ -242,7 +263,10 @@ private fun SyncBadgeChip(
     val shape = MaterialTheme.shapes.small
     // Why: only the failed badge is a button; the others stay plain text for TalkBack, not a disabled button.
     val retryModifier = if (canRetry) {
-        Modifier.minimumInteractiveComponentSize().clip(shape).clickable(role = Role.Button, onClick = onRetry)
+        Modifier.minimumInteractiveComponentSize().clip(shape).clickable(
+            role = Role.Button,
+            onClick = onRetry,
+        )
     } else {
         Modifier
     }
@@ -254,12 +278,22 @@ private fun SyncBadgeChip(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
-            modifier = Modifier.height(32.dp).padding(start = 8.dp, end = 12.dp),
+            modifier = Modifier.height(32.dp).padding(
+                start = 8.dp,
+                end = 12.dp,
+            ),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(text = stringResource(label), style = MaterialTheme.typography.labelLarge)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = stringResource(label),
+                style = MaterialTheme.typography.labelLarge,
+            )
         }
     }
 }
@@ -280,14 +314,26 @@ private fun EmptyGroupsCard(
     ) {
         if (isHorizontal) {
             Row(
-                modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp),
+                modifier = Modifier.padding(
+                    horizontal = 28.dp,
+                    vertical = 24.dp,
+                ),
                 horizontalArrangement = Arrangement.spacedBy(28.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 EmptyGroupsImage(scale = 0.94f)
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    EmptyGroupsText(textAlign = TextAlign.Start, isLarge = false)
-                    Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    EmptyGroupsText(
+                        textAlign = TextAlign.Start,
+                        isLarge = false,
+                    )
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
                         CreateGroupButton(onEvent = onEvent)
                         JoinWithLinkButton(onEvent = onEvent)
                     }
@@ -303,16 +349,31 @@ private fun EmptyGroupsCard(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 EmptyGroupsImage(scale = if (isLarge) 1.18f else 1f)
-                EmptyGroupsText(textAlign = TextAlign.Center, isLarge = isLarge)
+                EmptyGroupsText(
+                    textAlign = TextAlign.Center,
+                    isLarge = isLarge,
+                )
                 if (isLarge) {
-                    Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
                         CreateGroupButton(onEvent = onEvent)
                         JoinWithLinkButton(onEvent = onEvent)
                     }
                 } else {
-                    Column(modifier = Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        CreateGroupButton(onEvent = onEvent, modifier = Modifier.fillMaxWidth())
-                        JoinWithLinkButton(onEvent = onEvent, modifier = Modifier.fillMaxWidth())
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        CreateGroupButton(
+                            onEvent = onEvent,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        JoinWithLinkButton(
+                            onEvent = onEvent,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
             }
@@ -346,9 +407,18 @@ private fun CreateGroupButton(
     onEvent: (GroupsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Button(onClick = { onEvent(GroupsUiEvent.OnCreateGroupClicked) }, modifier = modifier.height(56.dp)) {
-        Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
-        Text(text = stringResource(R.string.groups_create), modifier = Modifier.padding(start = 8.dp))
+    Button(
+        onClick = { onEvent(GroupsUiEvent.OnCreateGroupClicked) },
+        modifier = modifier.height(56.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Add,
+            contentDescription = null,
+        )
+        Text(
+            text = stringResource(R.string.groups_create),
+            modifier = Modifier.padding(start = 8.dp),
+        )
     }
 }
 
@@ -357,9 +427,18 @@ private fun JoinWithLinkButton(
     onEvent: (GroupsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FilledTonalButton(onClick = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) }, modifier = modifier.height(56.dp)) {
-        Icon(imageVector = Icons.Outlined.QrCode2, contentDescription = null)
-        Text(text = stringResource(R.string.groups_join_with_link), modifier = Modifier.padding(start = 8.dp))
+    FilledTonalButton(
+        onClick = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) },
+        modifier = modifier.height(56.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.QrCode2,
+            contentDescription = null,
+        )
+        Text(
+            text = stringResource(R.string.groups_join_with_link),
+            modifier = Modifier.padding(start = 8.dp),
+        )
     }
 }
 
@@ -370,7 +449,12 @@ private fun GroupsNavigationBar(onEvent: (GroupsUiEvent) -> Unit) {
             NavigationBarItem(
                 selected = tab == GroupsTab.GROUPS,
                 onClick = { tab.event?.let(onEvent) },
-                icon = { Icon(imageVector = tab.icon, contentDescription = null) },
+                icon = {
+                    Icon(
+                        imageVector = tab.icon,
+                        contentDescription = null,
+                    )
+                },
                 label = { Text(stringResource(tab.label)) },
             )
         }
@@ -383,12 +467,20 @@ private fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
         modifier = Modifier.fillMaxHeight(),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
-        Column(modifier = Modifier.padding(top = 32.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(
+            modifier = Modifier.padding(top = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             GroupsTab.entries.forEach { tab ->
                 NavigationRailItem(
                     selected = tab == GroupsTab.GROUPS,
                     onClick = { tab.event?.let(onEvent) },
-                    icon = { Icon(imageVector = tab.icon, contentDescription = null) },
+                    icon = {
+                        Icon(
+                            imageVector = tab.icon,
+                            contentDescription = null,
+                        )
+                    },
                     label = { Text(stringResource(tab.label)) },
                 )
             }

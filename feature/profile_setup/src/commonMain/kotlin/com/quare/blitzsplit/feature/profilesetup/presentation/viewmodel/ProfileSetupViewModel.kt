@@ -114,13 +114,31 @@ class ProfileSetupViewModel(
     private fun preparePhoto(source: ByteArray) {
         if (uiState.value.isSaving) return
         photoJob?.cancel()
-        uiState.update { it.copy(isPreparingPhoto = true, showsPhotoError = false) }
+        uiState.update {
+            it.copy(
+                isPreparingPhoto = true,
+                showsPhotoError = false,
+            )
+        }
         photoJob = viewModelScope.launch {
             val result = prepareProfilePhoto(source)
             ensureActive()
             result
-                .onSuccess { photo -> uiState.update { it.copy(photo = photo, isPreparingPhoto = false) } }
-                .onFailure { uiState.update { it.copy(isPreparingPhoto = false, showsPhotoError = true) } }
+                .onSuccess { photo ->
+                    uiState.update {
+                        it.copy(
+                            photo = photo,
+                            isPreparingPhoto = false,
+                        )
+                    }
+                }.onFailure {
+                    uiState.update {
+                        it.copy(
+                            isPreparingPhoto = false,
+                            showsPhotoError = true,
+                        )
+                    }
+                }
         }
     }
 
@@ -139,7 +157,13 @@ class ProfileSetupViewModel(
                 return@launch
             }
             val state = uiState.value
-            saveProfile(UserProfile(displayName = state.name, avatarColor = state.avatarColor, photo = state.photo))
+            saveProfile(
+                UserProfile(
+                    displayName = state.name,
+                    avatarColor = state.avatarColor,
+                    photo = state.photo,
+                ),
+            )
             navigator.replaceAll(Route.Groups)
         }
     }

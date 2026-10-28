@@ -18,7 +18,10 @@ class JvmAvatarImageEncoderTest {
     @Test
     fun `GIVEN a wide PNG WHEN encoding THEN returns its centered square as a 512 JPEG`() = runTest {
         // Given
-        val source = png(width = 1200, height = 600) { x, _ -> if (x in 300 until 900) Color.BLUE else Color.RED }
+        val source = png(
+            width = 1200,
+            height = 600,
+        ) { x, _ -> if (x in 300 until 900) Color.BLUE else Color.RED }
 
         // When
         val jpeg = encoder(source)
@@ -34,7 +37,11 @@ class JvmAvatarImageEncoderTest {
     @Test
     fun `GIVEN a transparent PNG WHEN encoding THEN puts it on white`() = runTest {
         // Given
-        val source = png(width = 600, height = 600, type = BufferedImage.TYPE_INT_ARGB) { _, _ -> Color(0, 0, 0, 0) }
+        val source = png(
+            width = 600,
+            height = 600,
+            type = BufferedImage.TYPE_INT_ARGB,
+        ) { _, _ -> Color(0, 0, 0, 0) }
 
         // When
         val jpeg = encoder(source)

@@ -72,7 +72,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a Google account WHEN syncing THEN never issues a recovery code`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = AccountStatus.Connected("user", AccountProvider.GOOGLE))
+        prepareScenario(
+            storedProfile = pierre,
+            status = AccountStatus.Connected("user", AccountProvider.GOOGLE),
+        )
 
         // When
         coordinator.syncNow()
@@ -84,7 +87,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN the code was already shown WHEN syncing THEN does not issue another`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, prompt = RecoveryCodePrompt.SAVED)
+        prepareScenario(
+            storedProfile = pierre,
+            prompt = RecoveryCodePrompt.SAVED,
+        )
 
         // When
         coordinator.syncNow()
@@ -110,7 +116,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a snoozed prompt WHEN starting THEN makes it due again`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, prompt = RecoveryCodePrompt.SNOOZED, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            prompt = RecoveryCodePrompt.SNOOZED,
+            online = false,
+        )
 
         // When
         coordinator.start()
@@ -123,7 +133,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a saved code left open for review WHEN starting THEN keeps it saved`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, prompt = RecoveryCodePrompt.REVIEW, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            prompt = RecoveryCodePrompt.REVIEW,
+            online = false,
+        )
 
         // When
         coordinator.start()
@@ -136,7 +150,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an offline start WHEN the device comes online THEN syncs`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
 
@@ -151,7 +168,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an anonymous user WHEN switching to the Google user of another device THEN syncs under it`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
 
@@ -187,7 +208,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an anonymous user WHEN a recovery code restores another one THEN syncs under it`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
 
@@ -203,7 +228,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an online start already synced WHEN switching to another user THEN syncs again under it`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
         coordinator.start()
         runCurrent()
 
@@ -219,7 +247,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN the other user profile fails to come down WHEN switching THEN pushes nothing over it`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
         profile.pullError = IllegalStateException("server down")
@@ -236,7 +268,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a device not registered yet WHEN the first sync registers it THEN syncs only once`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
 
@@ -253,7 +288,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an anonymous user WHEN Google links to the same user THEN does not sync`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
 
@@ -269,7 +308,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an anonymous user offline WHEN starting THEN does not sync for the current user`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
 
         // When
         coordinator.start()
@@ -283,7 +326,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an anonymous user WHEN signing out THEN does not sync`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
 
@@ -300,7 +347,11 @@ class SyncCoordinatorTest {
     fun `GIVEN a user who signed out WHEN signing in to another user THEN leaves the pull to the sign in screen`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = anonymous, online = false)
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                online = false,
+            )
             coordinator.start()
             runCurrent()
             account.status = AccountStatus.LocalOnly
@@ -332,7 +383,10 @@ class SyncCoordinatorTest {
     fun `GIVEN a profile saved offline on the first launch WHEN observing the sync state THEN it is pending`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = null, online = false)
+            prepareScenario(
+                storedProfile = null,
+                online = false,
+            )
             coordinator.start()
             runCurrent()
             profile.saveProfile(pierre)
@@ -348,7 +402,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a pending change WHEN the sync pushes it THEN the sync state is synced`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
 
         // When
         coordinator.syncNow()
@@ -360,7 +417,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a pending change and the push fails WHEN syncing THEN the sync state is failed`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
         profile.pushError = IllegalStateException("server down")
 
         // When
@@ -373,7 +433,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN the server does not register the device WHEN syncing THEN the sync state is failed`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
         account.registerError = IllegalStateException("server down")
 
         // When
@@ -399,7 +462,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a sync that failed WHEN a retry succeeds THEN the sync state is synced`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
         profile.pushError = IllegalStateException("server down")
         coordinator.syncNow()
         profile.pushError = null
@@ -427,7 +493,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a pending change WHEN a sync is in flight THEN the sync state is syncing`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true, pullHangs = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+            pullHangs = true,
+        )
         backgroundScope.launch { coordinator.syncNow() }
         runCurrent()
 
@@ -441,7 +511,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN the last sync failed WHEN another sync is in flight THEN the sync state is syncing`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true, pullHangs = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+            pullHangs = true,
+        )
         account.registerError = IllegalStateException("server down")
         coordinator.syncNow()
         account.registerError = null
@@ -459,7 +533,11 @@ class SyncCoordinatorTest {
     fun `GIVEN a sync in flight with a pending change WHEN it is cancelled THEN the sync state is back to pending`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, pendingChanges = true, pullHangs = true)
+            prepareScenario(
+                storedProfile = pierre,
+                pendingChanges = true,
+                pullHangs = true,
+            )
             val sync = backgroundScope.launch { coordinator.syncNow() }
             runCurrent()
 
@@ -491,7 +569,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a push that failed WHEN retrying after the server is back THEN the sync state is synced`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
         profile.pushError = IllegalStateException("no answer")
         coordinator.syncNow()
         profile.pushError = null
@@ -543,7 +624,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+        )
         profile.pushError = IllegalStateException("no answer")
         coordinator.syncNow()
 
@@ -557,7 +641,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a Google account WHEN signing out THEN goes back to local only and erases the profile`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
 
         // When
         coordinator.signOut()
@@ -572,7 +659,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN the session fails to end WHEN signing out THEN fails and keeps the profile`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
         account.signOutError = IllegalStateException("database closed")
 
         // When
@@ -587,7 +677,10 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN an anonymous account WHEN signing out THEN goes back to local only and erases the profile`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
 
         // When
         coordinator.signOut()
@@ -600,7 +693,12 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a sync in flight WHEN signing out THEN erases nothing until it ends`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = anonymous, pendingChanges = true, pullHangs = true)
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            pendingChanges = true,
+            pullHangs = true,
+        )
         backgroundScope.launch { coordinator.syncNow() }
         runCurrent()
 
@@ -618,7 +716,12 @@ class SyncCoordinatorTest {
     fun `GIVEN a sign out waiting on a sync WHEN the sync ends THEN pushes the change and then erases the copy`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = anonymous, pendingChanges = true, pullHangs = true)
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                pendingChanges = true,
+                pullHangs = true,
+            )
             backgroundScope.launch { coordinator.syncNow() }
             runCurrent()
             backgroundScope.launch { coordinator.signOut() }
@@ -637,7 +740,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a sign out waiting on a sync WHEN the screen that asked leaves THEN still erases the copy`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google, pullHangs = true)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pullHangs = true,
+        )
         backgroundScope.launch { coordinator.syncNow() }
         runCurrent()
         val caller = backgroundScope.launch { coordinator.signOut() }
@@ -657,7 +764,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a queued change online WHEN signing out once synced THEN pushes it and signs out`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+        )
 
         // When
         coordinator.signOutWhenSynced()
@@ -675,7 +786,11 @@ class SyncCoordinatorTest {
     fun `GIVEN an anonymous account with a queued change WHEN signing out once synced THEN pushes it and stays`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = anonymous, pendingChanges = true)
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                pendingChanges = true,
+            )
 
             // When
             coordinator.signOutWhenSynced()
@@ -692,7 +807,11 @@ class SyncCoordinatorTest {
     fun `GIVEN the push fails WHEN signing out once synced THEN keeps the session the profile and the schedule`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+            )
             profile.pushError = IllegalStateException("server down")
 
             // When
@@ -711,7 +830,12 @@ class SyncCoordinatorTest {
     fun `GIVEN the device is offline WHEN signing out once synced THEN records the schedule and erases nothing`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, online = false)
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+                online = false,
+            )
             profile.pullError = noConnection
 
             // When
@@ -730,7 +854,12 @@ class SyncCoordinatorTest {
     fun `GIVEN a sign out scheduled offline WHEN the device comes online THEN pushes the change and signs out`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, online = false)
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+                online = false,
+            )
             coordinator.start()
             runCurrent()
             profile.pullError = noConnection
@@ -752,7 +881,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a sign out scheduled and a push that failed WHEN a retry succeeds THEN signs out`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+        )
         profile.pushError = IllegalStateException("server down")
         coordinator.signOutWhenSynced()
         runCurrent()
@@ -772,7 +905,12 @@ class SyncCoordinatorTest {
     fun `GIVEN a sign out scheduled on an earlier launch WHEN the app starts online THEN pushes and signs out`() =
         runTest {
             // Given
-            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, signOutScheduled = true)
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+                signOutScheduled = true,
+            )
 
             // When
             coordinator.start()
@@ -808,7 +946,12 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a sign out scheduled WHEN cancelling it THEN the schedule is off`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, signOutScheduled = true)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+            signOutScheduled = true,
+        )
 
         // When
         coordinator.cancelSignOutWhenSynced()
@@ -820,7 +963,12 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN a cancelled offline sign out WHEN the device comes online THEN syncs without signing out`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, online = false)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+            online = false,
+        )
         coordinator.start()
         runCurrent()
         profile.pullError = noConnection
@@ -843,7 +991,11 @@ class SyncCoordinatorTest {
     @Test
     fun `GIVEN no sign out scheduled WHEN a sync succeeds THEN keeps the session and the profile`() = runTest {
         // Given
-        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingChanges = true,
+        )
 
         // When
         val result = coordinator.syncNow()

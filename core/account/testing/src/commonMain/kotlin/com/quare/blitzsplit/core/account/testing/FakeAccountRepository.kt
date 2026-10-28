@@ -179,7 +179,12 @@ class FakeAccountRepository(
     override suspend fun createRecoveryCode(): Result<String> {
         recoveryCodeCreations++
         createRecoveryCodeResult.onSuccess { code ->
-            snapshot.update { it.copy(recoveryCode = code, recoveryCodePrompt = RecoveryCodePrompt.DUE) }
+            snapshot.update {
+                it.copy(
+                    recoveryCode = code,
+                    recoveryCodePrompt = RecoveryCodePrompt.DUE,
+                )
+            }
         }
         return createRecoveryCodeResult
     }

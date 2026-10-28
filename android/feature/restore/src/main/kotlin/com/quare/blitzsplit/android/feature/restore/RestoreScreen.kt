@@ -49,5 +49,8 @@ fun RestoreScreen(viewModel: RestoreViewModel = koinViewModel()) {
             }
         }
     }
-    RestoreContent(state = state, onEvent = viewModel::onEvent)
+    RestoreContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
 }

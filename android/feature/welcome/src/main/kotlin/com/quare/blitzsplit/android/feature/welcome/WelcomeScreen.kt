@@ -38,5 +38,8 @@ fun WelcomeScreen(viewModel: WelcomeViewModel = koinViewModel()) {
             }
         }
     }
-    WelcomeContent(state = state, onEvent = viewModel::onEvent)
+    WelcomeContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
 }

@@ -62,22 +62,56 @@ fun RecoveryCodeContent(
     modifier: Modifier = Modifier,
 ) {
     if (layout.usesTwoColumns && !layout.isTablet) {
-        Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 RecoveryCodeHeader(isCompact = true)
-                RecoveryCodeBox(formattedCode = formattedCode, onEvent = onEvent, isCompact = true)
+                RecoveryCodeBox(
+                    formattedCode = formattedCode,
+                    onEvent = onEvent,
+                    isCompact = true,
+                )
             }
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                RecoveryCodeOptionsColumn(state = state, onEvent = onEvent, isSideBySide = false)
-                RecoveryCodeActionsRow(onEvent = onEvent, isEndAligned = false)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                RecoveryCodeOptionsColumn(
+                    state = state,
+                    onEvent = onEvent,
+                    isSideBySide = false,
+                )
+                RecoveryCodeActionsRow(
+                    onEvent = onEvent,
+                    isEndAligned = false,
+                )
             }
         }
     } else {
-        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             RecoveryCodeHeader(isCompact = false)
-            RecoveryCodeBox(formattedCode = formattedCode, onEvent = onEvent, isCompact = false)
-            RecoveryCodeOptionsColumn(state = state, onEvent = onEvent, isSideBySide = layout.isTablet)
-            RecoveryCodeActionsRow(onEvent = onEvent, isEndAligned = layout.isTablet)
+            RecoveryCodeBox(
+                formattedCode = formattedCode,
+                onEvent = onEvent,
+                isCompact = false,
+            )
+            RecoveryCodeOptionsColumn(
+                state = state,
+                onEvent = onEvent,
+                isSideBySide = layout.isTablet,
+            )
+            RecoveryCodeActionsRow(
+                onEvent = onEvent,
+                isEndAligned = layout.isTablet,
+            )
         }
     }
 }
@@ -92,7 +126,10 @@ private fun RecoveryCodeHeader(isCompact: Boolean) {
             contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(imageVector = Icons.Outlined.Key, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Outlined.Key,
+                    contentDescription = null,
+                )
             }
         }
         Text(
@@ -127,7 +164,12 @@ private fun RecoveryCodeBox(
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx())),
                     ),
                 )
-            }.padding(start = 18.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
+            }.padding(
+                start = 18.dp,
+                end = 12.dp,
+                top = 12.dp,
+                bottom = 12.dp,
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -179,13 +221,19 @@ private fun RecoveryCodeOptionsColumn(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // Why: a tablet dialog has room for both options on one row, as the design draws it.
         if (isSideBySide && !state.isConnectExpanded) {
-            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 saveOption(Modifier.weight(1f).fillMaxHeight())
                 connectOption(Modifier.weight(1f).fillMaxHeight())
             }
         } else {
             saveOption(Modifier)
-            AnimatedContent(targetState = state.isConnectExpanded, label = "connectInstead") { isExpanded ->
+            AnimatedContent(
+                targetState = state.isConnectExpanded,
+                label = "connectInstead",
+            ) { isExpanded ->
                 if (isExpanded) {
                     // Why: Google first on Android, as the design asks.
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -238,14 +286,22 @@ private fun OptionButton(
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 12.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            Text(text = title, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleSmall,
+            )
             if (subtitle != null) {
                 Text(
                     text = subtitle,
@@ -271,7 +327,11 @@ private fun RecoveryCodeActionsRow(
             onClick = { onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked) },
             modifier = fill.height(52.dp),
         ) {
-            Text(text = stringResource(R.string.recovery_code_remind_later), textAlign = TextAlign.Center, maxLines = 1)
+            Text(
+                text = stringResource(R.string.recovery_code_remind_later),
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+            )
         }
         Button(
             onClick = { onEvent(RecoveryCodeUiEvent.OnSavedClicked) },
