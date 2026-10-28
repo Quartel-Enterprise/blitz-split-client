@@ -94,26 +94,45 @@ class EditProfileViewModel(
             val name = if (state.name.trim() == previous.displayName) profile.displayName else state.name
             val color = if (state.avatarColor == previous.avatarColor) profile.avatarColor else state.avatarColor
             val photo = if (state.photo == previous.photo) profile.photo else state.photo
-            state.withName(name).copy(avatarColor = color, photo = photo)
+            state.withName(name).copy(
+                avatarColor = color,
+                photo = photo,
+            )
         }
     }
 
     // Why: the picker's last answer wins, so a pick still being prepared stops instead of replacing the error.
     private fun showPhotoUnreadable() {
         photoJob?.cancel()
-        uiState.update { it.copy(isPreparingPhoto = false, showsPhotoError = true) }
+        uiState.update {
+            it.copy(
+                isPreparingPhoto = false,
+                showsPhotoError = true,
+            )
+        }
     }
 
     private fun discard() {
         val profile = saved ?: return
         photoJob?.cancel()
-        uiState.update { it.withProfile(profile).copy(isPreparingPhoto = false, showsPhotoError = false) }
+        uiState.update {
+            it.withProfile(profile).copy(
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+            )
+        }
     }
 
     private fun removePhoto() {
         if (uiState.value.isSaving) return
         photoJob?.cancel()
-        edit { it.copy(photo = null, isPreparingPhoto = false, showsPhotoError = false) }
+        edit {
+            it.copy(
+                photo = null,
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+            )
+        }
     }
 
     /*
@@ -123,13 +142,31 @@ class EditProfileViewModel(
     private fun preparePhoto(source: ByteArray) {
         if (uiState.value.isSaving) return
         photoJob?.cancel()
-        uiState.update { it.copy(isPreparingPhoto = true, showsPhotoError = false) }
+        uiState.update {
+            it.copy(
+                isPreparingPhoto = true,
+                showsPhotoError = false,
+            )
+        }
         photoJob = viewModelScope.launch {
             val result = prepareProfilePhoto(source)
             ensureActive()
             result
-                .onSuccess { photo -> edit { it.copy(photo = photo, isPreparingPhoto = false) } }
-                .onFailure { uiState.update { it.copy(isPreparingPhoto = false, showsPhotoError = true) } }
+                .onSuccess { photo ->
+                    edit {
+                        it.copy(
+                            photo = photo,
+                            isPreparingPhoto = false,
+                        )
+                    }
+                }.onFailure {
+                    uiState.update {
+                        it.copy(
+                            isPreparingPhoto = false,
+                            showsPhotoError = true,
+                        )
+                    }
+                }
         }
     }
 
@@ -163,7 +200,11 @@ class EditProfileViewModel(
     }
 
     private fun EditProfileUiState.withProfile(profile: UserProfile): EditProfileUiState = withName(profile.displayName)
-        .copy(avatarColor = profile.avatarColor, photo = profile.photo, hasChanges = false)
+        .copy(
+            avatarColor = profile.avatarColor,
+            photo = profile.photo,
+            hasChanges = false,
+        )
 
     private fun EditProfileUiState.withName(name: String): EditProfileUiState {
         val validation = validateDisplayName(name)

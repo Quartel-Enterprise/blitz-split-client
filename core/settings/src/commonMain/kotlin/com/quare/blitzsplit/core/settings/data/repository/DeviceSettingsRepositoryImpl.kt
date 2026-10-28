@@ -19,6 +19,11 @@ class DeviceSettingsRepositoryImpl(
         .distinctUntilChanged()
 
     override suspend fun updateTheme(theme: ThemePreference) {
-        local.upsert(DeviceSettingsEntity(id = SINGLE_ROW_ID, theme = theme.code))
+        local.upsert(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = theme.code,
+            ),
+        )
     }
 }

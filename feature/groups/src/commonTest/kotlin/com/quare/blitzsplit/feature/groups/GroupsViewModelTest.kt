@@ -59,7 +59,10 @@ class GroupsViewModelTest {
     fun `GIVEN no internet and a change in the queue WHEN the groups open THEN shows the offline badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(online = false, syncState = SyncState.PENDING)
+            prepareScenario(
+                online = false,
+                syncState = SyncState.PENDING,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -153,7 +156,10 @@ class GroupsViewModelTest {
     fun `GIVEN no internet and everything synced WHEN the groups open THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(online = false, syncState = SyncState.SYNCED)
+            prepareScenario(
+                online = false,
+                syncState = SyncState.SYNCED,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -166,7 +172,10 @@ class GroupsViewModelTest {
     fun `GIVEN no internet and a sync running WHEN the groups open THEN shows the offline badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(online = false, syncState = SyncState.SYNCING)
+            prepareScenario(
+                online = false,
+                syncState = SyncState.SYNCING,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -179,7 +188,10 @@ class GroupsViewModelTest {
     fun `GIVEN no internet and a failed sync WHEN the groups open THEN shows the offline badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(online = false, syncState = SyncState.FAILED)
+            prepareScenario(
+                online = false,
+                syncState = SyncState.FAILED,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -231,7 +243,10 @@ class GroupsViewModelTest {
     fun `GIVEN no sync state known yet WHEN the groups open offline THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(online = false, syncState = null)
+            prepareScenario(
+                online = false,
+                syncState = null,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -282,7 +297,10 @@ class GroupsViewModelTest {
     fun `GIVEN a change in the queue offline WHEN the device connects THEN shows the syncing badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(online = false, syncState = SyncState.PENDING)
+            prepareScenario(
+                online = false,
+                syncState = SyncState.PENDING,
+            )
 
             // When
             isOnline.value = true
@@ -498,7 +516,10 @@ class GroupsViewModelTest {
     fun `GIVEN a Google sign in on an open home WHEN the profile sync brings its photo THEN shows both`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = AccountStatus.LocalOnly, profile = pierre.copy(photo = null))
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                profile = pierre.copy(photo = null),
+            )
             account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
 

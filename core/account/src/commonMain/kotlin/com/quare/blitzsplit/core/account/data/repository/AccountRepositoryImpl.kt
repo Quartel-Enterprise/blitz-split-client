@@ -41,7 +41,13 @@ class AccountRepositoryImpl(
      * already settled doesn't show it again once its provider is read.
      */
     private val returningSignIn =
-        MutableStateFlow(ReturningSignIn(provider = null, isSettled = true, returnsToProfile = false))
+        MutableStateFlow(
+            ReturningSignIn(
+                provider = null,
+                isSettled = true,
+                returnsToProfile = false,
+            ),
+        )
 
     override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
@@ -55,7 +61,11 @@ class AccountRepositoryImpl(
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }
-            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true, returnsToProfile = false)
+            returningSignIn.value = ReturningSignIn(
+                provider = null,
+                isSettled = true,
+                returnsToProfile = false,
+            )
         }
     }
 
@@ -76,16 +86,28 @@ class AccountRepositoryImpl(
         val current = remote.getCurrentUserOrNull()
         val result = when {
             current == null -> {
-                remote.signInWithIdToken(provider = provider, idToken = idToken, rawNonce = rawNonce)
+                remote.signInWithIdToken(
+                    provider = provider,
+                    idToken = idToken,
+                    rawNonce = rawNonce,
+                )
                 ConnectResult.SIGNED_IN
             }
 
             current.socialProvider != null -> {
-                remote.signInWithIdToken(provider = provider, idToken = idToken, rawNonce = rawNonce)
+                remote.signInWithIdToken(
+                    provider = provider,
+                    idToken = idToken,
+                    rawNonce = rawNonce,
+                )
                 ConnectResult.SWITCHED
             }
 
-            else -> signInLinkingFirst(provider = provider, idToken = idToken, rawNonce = rawNonce)
+            else -> signInLinkingFirst(
+                provider = provider,
+                idToken = idToken,
+                rawNonce = rawNonce,
+            )
         }
         remote.getCurrentUserOrNull()?.let { user ->
             local.update { account -> account.toMirrorOf(user) }
@@ -101,7 +123,10 @@ class AccountRepositoryImpl(
     ): Result<Unit> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         if (current != null && current.socialProvider == null) {
-            linkWithBrowser(provider = provider, isFromProfile = isFromProfile)
+            linkWithBrowser(
+                provider = provider,
+                isFromProfile = isFromProfile,
+            )
         } else {
             local.update { account ->
                 account.copy(
@@ -123,14 +148,18 @@ class AccountRepositoryImpl(
         val callback = remote.readBrowserCallback(url) ?: return Result.success(Unit)
         // Why: before any suspension, so the app resuming right after the callback finds the trip closed.
         val wasBrowserOpen = browserTrip.exchange(BrowserTrip.NONE) != BrowserTrip.NONE
-        return suspendRunCatching { finishBrowserTrip(callback = callback, wasBrowserOpen = wasBrowserOpen) }
-            .onFailure {
-                // Why: no session will come to end the screens' wait, unless Supabase signed in or a second trip is open.
-                val endsNoSession = callback != BrowserCallback.SIGNED_IN && browserTrip.load() == BrowserTrip.NONE
-                if (wasBrowserOpen && endsNoSession) {
-                    abandonedBrowserSignIns.tryEmit(AbandonedBrowserSignIn.FAILED)
-                }
+        return suspendRunCatching {
+            finishBrowserTrip(
+                callback = callback,
+                wasBrowserOpen = wasBrowserOpen,
+            )
+        }.onFailure {
+            // Why: no session will come to end the screens' wait, unless Supabase signed in or a second trip is open.
+            val endsNoSession = callback != BrowserCallback.SIGNED_IN && browserTrip.load() == BrowserTrip.NONE
+            if (wasBrowserOpen && endsNoSession) {
+                abandonedBrowserSignIns.tryEmit(AbandonedBrowserSignIn.FAILED)
             }
+        }
     }
 
     // Why: the app leaves for the browser, so only a trip that saw it leave can have been abandoned.
@@ -175,7 +204,10 @@ class AccountRepositoryImpl(
         try {
             val code = remote.createRecoveryCode()
             local.update { account ->
-                account.copy(recoveryCode = code, recoveryCodePrompt = RecoveryCodePrompt.DUE.code)
+                account.copy(
+                    recoveryCode = code,
+                    recoveryCodePrompt = RecoveryCodePrompt.DUE.code,
+                )
             }
             code
         } catch (exception: SocialAccountHasNoRecoveryCodeException) {
@@ -258,12 +290,23 @@ class AccountRepositoryImpl(
 
     // Why: reset first, so the mirror of this callback's session settles it even before the provider is read.
     private suspend fun showReturningSignIn(isRelaunch: Boolean) {
-        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false, returnsToProfile = false)
+        returningSignIn.value = ReturningSignIn(
+            provider = null,
+            isSettled = false,
+            returnsToProfile = false,
+        )
         val account = local.get()
         val provider = account.browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
         val returnsToProfile = isRelaunch && account.browserSignInFromProfile
         returningSignIn.update { current ->
-            if (current.isSettled) current else current.copy(provider = provider, returnsToProfile = returnsToProfile)
+            if (current.isSettled) {
+                current
+            } else {
+                current.copy(
+                    provider = provider,
+                    returnsToProfile = returnsToProfile,
+                )
+            }
         }
     }
 
@@ -272,10 +315,18 @@ class AccountRepositoryImpl(
         idToken: String,
         rawNonce: String?,
     ): ConnectResult = try {
-        remote.linkIdToken(provider = provider, idToken = idToken, rawNonce = rawNonce)
+        remote.linkIdToken(
+            provider = provider,
+            idToken = idToken,
+            rawNonce = rawNonce,
+        )
         ConnectResult.LINKED
     } catch (alreadyLinked: IdentityAlreadyLinkedException) {
-        remote.signInWithIdToken(provider = provider, idToken = idToken, rawNonce = rawNonce)
+        remote.signInWithIdToken(
+            provider = provider,
+            idToken = idToken,
+            rawNonce = rawNonce,
+        )
         ConnectResult.SWITCHED
     }
 
@@ -293,7 +344,10 @@ class AccountRepositoryImpl(
         val userId = account.userId ?: return AccountStatus.LocalOnly
         val provider = account.provider?.let(AccountProvider::fromCodeOrNull)
             ?: return AccountStatus.Anonymous(userId)
-        return AccountStatus.Connected(userId = userId, provider = provider)
+        return AccountStatus.Connected(
+            userId = userId,
+            provider = provider,
+        )
     }
 
     /*
@@ -317,7 +371,11 @@ class AccountRepositoryImpl(
             email = user.email,
         )
 
-        else -> copy(userId = user.userId, provider = null, email = null)
+        else -> copy(
+            userId = user.userId,
+            provider = null,
+            email = null,
+        )
     }
 
     private enum class BrowserTrip {

@@ -240,7 +240,12 @@ class ProfileViewModel(
     private fun connectInstead() {
         if (!uiState.value.canConnect) return
         uiState.update {
-            it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false, isConnectExpanded = true)
+            it.copy(
+                dialog = null,
+                hasConfirmedCodeSaved = false,
+                hasSignOutFailed = false,
+                isConnectExpanded = true,
+            )
         }
     }
 
@@ -251,18 +256,35 @@ class ProfileViewModel(
     }
 
     private fun showDialog(dialog: ProfileDialog) {
-        uiState.update { it.copy(dialog = dialog, hasConfirmedCodeSaved = false, hasSignOutFailed = false) }
+        uiState.update {
+            it.copy(
+                dialog = dialog,
+                hasConfirmedCodeSaved = false,
+                hasSignOutFailed = false,
+            )
+        }
     }
 
     private fun closeDialog() {
         if (uiState.value.isSigningOut) return
-        uiState.update { it.copy(dialog = null, hasConfirmedCodeSaved = false, hasSignOutFailed = false) }
+        uiState.update {
+            it.copy(
+                dialog = null,
+                hasConfirmedCodeSaved = false,
+                hasSignOutFailed = false,
+            )
+        }
     }
 
     private fun scheduleSignOut() {
         if (uiState.value.dialog != ProfileDialog.SIGN_OUT_PENDING) return
         signOutWhenSynced()
-        uiState.update { it.copy(dialog = null, hasSignOutFailed = false) }
+        uiState.update {
+            it.copy(
+                dialog = null,
+                hasSignOutFailed = false,
+            )
+        }
     }
 
     private fun signOutNow() {
@@ -277,9 +299,21 @@ class ProfileViewModel(
     // Why: once the profile is gone the app returns to the welcome, so only a failure needs handling here.
     private fun clearSession() {
         if (uiState.value.isSigningOut) return
-        uiState.update { it.copy(isSigningOut = true, hasSignOutFailed = false) }
+        uiState.update {
+            it.copy(
+                isSigningOut = true,
+                hasSignOutFailed = false,
+            )
+        }
         viewModelScope.launch {
-            signOut().onFailure { uiState.update { it.copy(isSigningOut = false, hasSignOutFailed = true) } }
+            signOut().onFailure {
+                uiState.update {
+                    it.copy(
+                        isSigningOut = false,
+                        hasSignOutFailed = true,
+                    )
+                }
+            }
         }
     }
 
@@ -308,7 +342,12 @@ class ProfileViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
-        uiState.update { it.copy(connectingProvider = provider, hasSignInFailed = false) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                hasSignInFailed = false,
+            )
+        }
         viewModelScope.launch {
             if (provider in nativeSignIn.providers) {
                 uiAction.emit(ProfileUiAction.LaunchNativeSignIn(provider))
@@ -333,7 +372,12 @@ class ProfileViewModel(
     }
 
     private fun finishConnecting(hasFailed: Boolean) {
-        uiState.update { it.copy(connectingProvider = null, hasSignInFailed = hasFailed) }
+        uiState.update {
+            it.copy(
+                connectingProvider = null,
+                hasSignInFailed = hasFailed,
+            )
+        }
     }
 
     private fun emit(action: ProfileUiAction) {

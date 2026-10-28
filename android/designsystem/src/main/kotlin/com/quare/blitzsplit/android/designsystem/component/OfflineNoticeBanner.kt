@@ -41,7 +41,10 @@ fun OfflineNoticeBanner(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Top,
         ) {
-            Icon(imageVector = Icons.Outlined.CloudOff, contentDescription = null)
+            Icon(
+                imageVector = Icons.Outlined.CloudOff,
+                contentDescription = null,
+            )
             Text(
                 text = "$title $message",
                 style = if (isCompact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,

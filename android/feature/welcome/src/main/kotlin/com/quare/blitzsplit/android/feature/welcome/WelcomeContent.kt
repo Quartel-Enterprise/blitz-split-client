@@ -62,12 +62,27 @@ fun WelcomeContent(
     onEvent: (WelcomeUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface,
+    ) {
         AdaptiveScreen(modifier = Modifier.fillMaxSize().safeDrawingPadding()) { layout ->
             when {
-                layout.isTablet && layout.isLandscape -> WelcomeTabletLandscapeLayout(state = state, onEvent = onEvent)
-                layout.isLandscape -> WelcomePhoneLandscapeLayout(state = state, onEvent = onEvent)
-                else -> WelcomeSingleColumn(state = state, onEvent = onEvent, layout = layout)
+                layout.isTablet && layout.isLandscape -> WelcomeTabletLandscapeLayout(
+                    state = state,
+                    onEvent = onEvent,
+                )
+
+                layout.isLandscape -> WelcomePhoneLandscapeLayout(
+                    state = state,
+                    onEvent = onEvent,
+                )
+
+                else -> WelcomeSingleColumn(
+                    state = state,
+                    onEvent = onEvent,
+                    layout = layout,
+                )
             }
         }
     }
@@ -79,7 +94,10 @@ private fun WelcomeSingleColumn(
     onEvent: (WelcomeUiEvent) -> Unit,
     layout: DeviceLayout,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         Column(
             modifier = Modifier
                 .widthIn(max = singleColumnMaxWidth)
@@ -94,7 +112,11 @@ private fun WelcomeSingleColumn(
                 ShapeClusterHero(modifier = Modifier.padding(horizontal = 16.dp))
                 Text(
                     text = stringResource(R.string.welcome_title),
-                    modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp),
+                    modifier = Modifier.padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 8.dp,
+                    ),
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.ExtraBold,
                 )
@@ -103,7 +125,11 @@ private fun WelcomeSingleColumn(
                     tileColor = MaterialTheme.colorScheme.secondaryContainer,
                     iconColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     bodyColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp),
+                    modifier = Modifier.padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 24.dp,
+                    ),
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -126,7 +152,12 @@ private fun WelcomePhoneLandscapeLayout(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 32.dp, end = 32.dp, top = 16.dp, bottom = 12.dp),
+            .padding(
+                start = 32.dp,
+                end = 32.dp,
+                top = 16.dp,
+                bottom = 12.dp,
+            ),
         horizontalArrangement = Arrangement.spacedBy(48.dp),
     ) {
         Column(
@@ -156,7 +187,12 @@ private fun WelcomePhoneLandscapeLayout(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
         ) {
-            WelcomeActionsSection(state = state, onEvent = onEvent, buttonHeight = 48.dp, isCompact = true)
+            WelcomeActionsSection(
+                state = state,
+                onEvent = onEvent,
+                buttonHeight = 48.dp,
+                isCompact = true,
+            )
         }
     }
 }
@@ -166,7 +202,10 @@ private fun WelcomeTabletLandscapeLayout(
     state: WelcomeUiState,
     onEvent: (WelcomeUiEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         Row(
             modifier = Modifier.widthIn(max = twoColumnsMaxWidth).fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(48.dp),
@@ -199,11 +238,19 @@ private fun WelcomePitchPanel(modifier: Modifier = Modifier) {
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ) {
         Box {
-            PanelCornerShapesImage(modifier = Modifier.align(Alignment.TopEnd).offset(x = 40.dp, y = (-40).dp))
+            PanelCornerShapesImage(
+                modifier = Modifier.align(Alignment.TopEnd).offset(
+                    x = 40.dp,
+                    y = (-40).dp,
+                ),
+            )
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 48.dp, vertical = 40.dp),
+                    .padding(
+                        horizontal = 48.dp,
+                        vertical = 40.dp,
+                    ),
                 verticalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterVertically),
             ) {
                 CurrencyBadgeIcon()
@@ -233,7 +280,10 @@ private fun WelcomeBenefitsList(
     modifier: Modifier = Modifier,
     spacing: Dp = 14.dp,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spacing),
+    ) {
         BenefitItem(
             Icons.Outlined.CloudOff,
             R.string.welcome_offline_title,
@@ -272,7 +322,10 @@ private fun WelcomeActionsSection(
     modifier: Modifier = Modifier,
     isCompact: Boolean = false,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 10.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(if (isCompact) 8.dp else 10.dp),
+    ) {
         AnimatedVisibility(visible = state.showsOfflineNotice) {
             OfflineNoticeBanner(
                 title = stringResource(R.string.welcome_no_connection_title),
@@ -301,7 +354,10 @@ private fun WelcomeActionsSection(
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
             Text(
                 text = stringResource(R.string.welcome_or),
@@ -348,12 +404,22 @@ private fun BenefitItem(
             contentColor = iconColor,
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(imageVector = icon, contentDescription = null)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                )
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(text = stringResource(title), style = MaterialTheme.typography.titleSmall)
-            Text(text = stringResource(body), style = MaterialTheme.typography.bodyMedium, color = bodyColor)
+            Text(
+                text = stringResource(title),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Text(
+                text = stringResource(body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = bodyColor,
+            )
         }
     }
 }
@@ -363,7 +429,11 @@ private fun BenefitItem(
 private fun WelcomeOnlinePreview() {
     BlitzSplitTheme {
         WelcomeContent(
-            state = WelcomeUiState(isOnline = true, connectingProvider = null, error = null),
+            state = WelcomeUiState(
+                isOnline = true,
+                connectingProvider = null,
+                error = null,
+            ),
             onEvent = {},
         )
     }
@@ -374,7 +444,11 @@ private fun WelcomeOnlinePreview() {
 private fun WelcomeOfflinePreview() {
     BlitzSplitTheme {
         WelcomeContent(
-            state = WelcomeUiState(isOnline = false, connectingProvider = null, error = null),
+            state = WelcomeUiState(
+                isOnline = false,
+                connectingProvider = null,
+                error = null,
+            ),
             onEvent = {},
         )
     }

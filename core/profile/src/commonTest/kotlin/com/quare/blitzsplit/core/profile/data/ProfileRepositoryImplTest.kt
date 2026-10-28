@@ -82,7 +82,12 @@ class ProfileRepositoryImplTest {
     @Test
     fun `GIVEN a pending profile WHEN pushing THEN upserts it under the user id and marks it synced`() = runTest {
         // Given
-        prepareScenario(stored = entity(pendingSync = true, updatedAt = 42L))
+        prepareScenario(
+            stored = entity(
+                pendingSync = true,
+                updatedAt = 42L,
+            ),
+        )
 
         // When
         val result = repository.uploadPendingProfile(userId = "user-1")
@@ -108,7 +113,10 @@ class ProfileRepositoryImplTest {
     @Test
     fun `GIVEN the server fails WHEN pushing THEN keeps the profile pending and returns the failure`() = runTest {
         // Given
-        prepareScenario(stored = entity(pendingSync = true), remoteError = IllegalStateException("offline"))
+        prepareScenario(
+            stored = entity(pendingSync = true),
+            remoteError = IllegalStateException("offline"),
+        )
 
         // When
         val result = repository.uploadPendingProfile(userId = "user-1")
@@ -136,7 +144,13 @@ class ProfileRepositoryImplTest {
     @Test
     fun `GIVEN a pending photo WHEN pushing THEN uploads its bytes under the user id`() = runTest {
         // Given
-        prepareScenario(stored = entity(pendingSync = true, updatedAt = 42L, pendingPhoto = jpeg))
+        prepareScenario(
+            stored = entity(
+                pendingSync = true,
+                updatedAt = 42L,
+                pendingPhoto = jpeg,
+            ),
+        )
 
         // When
         val result = repository.uploadPendingProfile(userId = "user-1")
@@ -152,7 +166,13 @@ class ProfileRepositoryImplTest {
     fun `GIVEN a pending photo WHEN pushing THEN upserts the uploaded url versioned by the row update time`() =
         runTest {
             // Given
-            prepareScenario(stored = entity(pendingSync = true, updatedAt = 42L, pendingPhoto = jpeg))
+            prepareScenario(
+                stored = entity(
+                    pendingSync = true,
+                    updatedAt = 42L,
+                    pendingPhoto = jpeg,
+                ),
+            )
 
             // When
             repository.uploadPendingProfile(userId = "user-1")
@@ -164,7 +184,13 @@ class ProfileRepositoryImplTest {
     @Test
     fun `GIVEN a pending photo WHEN pushing THEN swaps the bytes for the versioned url`() = runTest {
         // Given
-        prepareScenario(stored = entity(pendingSync = true, updatedAt = 42L, pendingPhoto = jpeg))
+        prepareScenario(
+            stored = entity(
+                pendingSync = true,
+                updatedAt = 42L,
+                pendingPhoto = jpeg,
+            ),
+        )
 
         // When
         repository.uploadPendingProfile(userId = "user-1")
@@ -180,7 +206,13 @@ class ProfileRepositoryImplTest {
     @Test
     fun `GIVEN a pending profile with a Google photo WHEN pushing THEN keeps its url and uploads nothing`() = runTest {
         // Given
-        prepareScenario(stored = entity(pendingSync = true, updatedAt = 42L, photoUrl = GOOGLE_URL))
+        prepareScenario(
+            stored = entity(
+                pendingSync = true,
+                updatedAt = 42L,
+                photoUrl = GOOGLE_URL,
+            ),
+        )
 
         // When
         val result = repository.uploadPendingProfile(userId = "user-1")
@@ -196,7 +228,11 @@ class ProfileRepositoryImplTest {
     fun `GIVEN the photo upload fails WHEN pushing THEN upserts nothing and keeps the photo pending`() = runTest {
         // Given
         prepareScenario(
-            stored = entity(pendingSync = true, updatedAt = 42L, pendingPhoto = jpeg),
+            stored = entity(
+                pendingSync = true,
+                updatedAt = 42L,
+                pendingPhoto = jpeg,
+            ),
             photoUploadError = IllegalStateException("storage down"),
         )
 
@@ -216,7 +252,11 @@ class ProfileRepositoryImplTest {
     fun `GIVEN a photo upload that failed WHEN pushing again THEN retries the upload`() = runTest {
         // Given
         prepareScenario(
-            stored = entity(pendingSync = true, updatedAt = 42L, pendingPhoto = jpeg),
+            stored = entity(
+                pendingSync = true,
+                updatedAt = 42L,
+                pendingPhoto = jpeg,
+            ),
             photoUploadError = IllegalStateException("storage down"),
         )
         repository.uploadPendingProfile(userId = "user-1")
@@ -236,9 +276,21 @@ class ProfileRepositoryImplTest {
     fun `GIVEN a new photo is picked while the old one uploads WHEN pushing THEN keeps the new one pending`() =
         runTest {
             // Given
-            prepareScenario(stored = entity(pendingSync = true, updatedAt = 42L, pendingPhoto = jpeg))
+            prepareScenario(
+                stored = entity(
+                    pendingSync = true,
+                    updatedAt = 42L,
+                    pendingPhoto = jpeg,
+                ),
+            )
             photoRemote.onUpload =
-                { local.row.value = entity(pendingSync = true, updatedAt = 50L, pendingPhoto = newerJpeg) }
+                {
+                    local.row.value = entity(
+                        pendingSync = true,
+                        updatedAt = 50L,
+                        pendingPhoto = newerJpeg,
+                    )
+                }
 
             // When
             repository.uploadPendingProfile(userId = "user-1")
@@ -359,7 +411,11 @@ private class FakeProfileLocalDataSource(
         // Why: like the DAO, a row edited while the push was in flight stays pending with its photo.
         row.value = row.value
             ?.takeIf { it.updatedAt == syncedUpdatedAt }
-            ?.copy(pendingSync = false, pendingPhoto = null, photoUrl = photoUrl)
+            ?.copy(
+                pendingSync = false,
+                pendingPhoto = null,
+                photoUrl = photoUrl,
+            )
             ?: row.value
     }
 

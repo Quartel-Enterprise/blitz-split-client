@@ -68,7 +68,10 @@ class GroupsViewModel(
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
                 photoUrl = profile?.photo?.toImageUrl(),
                 accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                syncBadge = syncBadgeOf(syncState = syncState, isOnline = isOnline),
+                syncBadge = syncBadgeOf(
+                    syncState = syncState,
+                    isOnline = isOnline,
+                ),
                 showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
             )
         }.onEach { state -> uiState.value = state }

@@ -726,7 +726,10 @@ class EditProfileViewModelTest {
     @Test
     fun `GIVEN a pick being prepared WHEN discarding THEN stops preparing it`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(pushed = false, holdsPhotos = true)
+        prepareScenario(
+            pushed = false,
+            holdsPhotos = true,
+        )
         viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
 
         // When
@@ -742,7 +745,10 @@ class EditProfileViewModelTest {
     fun `GIVEN a pick discarded while being prepared WHEN the pick finishes THEN keeps the saved photo`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(pushed = false, holdsPhotos = true)
+            prepareScenario(
+                pushed = false,
+                holdsPhotos = true,
+            )
             viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(photoSource))
             viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
 
@@ -867,7 +873,10 @@ class EditProfileViewModelTest {
         runTest(testDispatcher) {
             // Given
             val pending = ProfilePhoto.Pending(jpegOf(photoSource))
-            prepareScenario(storedProfile = pierre.copy(photo = pending), pushed = false)
+            prepareScenario(
+                storedProfile = pierre.copy(photo = pending),
+                pushed = false,
+            )
             viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
             profiles.profile.value = pierre.copy(photo = ProfilePhoto.Remote(UPLOADED_PHOTO_URL))
 
@@ -875,7 +884,10 @@ class EditProfileViewModelTest {
             viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
 
             // Then
-            val expected = pierre.copy(displayName = "Pierre Vieira", photo = ProfilePhoto.Remote(UPLOADED_PHOTO_URL))
+            val expected = pierre.copy(
+                displayName = "Pierre Vieira",
+                photo = ProfilePhoto.Remote(UPLOADED_PHOTO_URL),
+            )
             assertEquals(listOf(expected), profiles.savedProfiles)
         }
 
@@ -883,7 +895,10 @@ class EditProfileViewModelTest {
     fun `GIVEN a save under way inline WHEN typing another name THEN keeps it as a change once saved`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(pushed = false, holdsSave = true)
+            prepareScenario(
+                pushed = false,
+                holdsSave = true,
+            )
             viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
             viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
             viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre V."))

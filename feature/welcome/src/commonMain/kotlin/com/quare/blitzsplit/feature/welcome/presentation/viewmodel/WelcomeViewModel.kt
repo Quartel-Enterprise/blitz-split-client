@@ -46,7 +46,13 @@ class WelcomeViewModel(
     private val navigator: Navigator,
 ) : ViewModel() {
     val uiState: StateFlow<WelcomeUiState>
-        field = MutableStateFlow(WelcomeUiState(isOnline = true, connectingProvider = null, error = null))
+        field = MutableStateFlow(
+            WelcomeUiState(
+                isOnline = true,
+                connectingProvider = null,
+                error = null,
+            ),
+        )
 
     val uiAction: SharedFlow<WelcomeUiAction>
         field = MutableSharedFlow<WelcomeUiAction>()
@@ -103,7 +109,12 @@ class WelcomeViewModel(
                     status != directlyCompletedStatus &&
                     navigator.backStack.value.lastOrNull() == Route.Welcome
             }.onEach { status ->
-                uiState.update { it.copy(connectingProvider = it.connectingProvider ?: status.provider, error = null) }
+                uiState.update {
+                    it.copy(
+                        connectingProvider = it.connectingProvider ?: status.provider,
+                        error = null,
+                    )
+                }
                 finishSignIn()
             }.launchIn(viewModelScope)
     }
@@ -118,7 +129,12 @@ class WelcomeViewModel(
             .onEach { provider ->
                 if (provider != null) {
                     returningProvider = provider
-                    uiState.update { it.copy(connectingProvider = it.connectingProvider ?: provider, error = null) }
+                    uiState.update {
+                        it.copy(
+                            connectingProvider = it.connectingProvider ?: provider,
+                            error = null,
+                        )
+                    }
                 } else if (returningProvider != null) {
                     returningProvider = null
                     val isConnected = observeAccountStatus().first() is AccountStatus.Connected
@@ -139,7 +155,12 @@ class WelcomeViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
-        uiState.update { it.copy(connectingProvider = provider, error = null) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                error = null,
+            )
+        }
         viewModelScope.launch {
             if (provider in nativeSignIn.providers) {
                 uiAction.emit(WelcomeUiAction.LaunchNativeSignIn(provider))
@@ -180,6 +201,11 @@ class WelcomeViewModel(
     }
 
     private fun finishConnecting(error: WelcomeError?) {
-        uiState.update { it.copy(connectingProvider = null, error = error) }
+        uiState.update {
+            it.copy(
+                connectingProvider = null,
+                error = error,
+            )
+        }
     }
 }

@@ -78,7 +78,10 @@ fun ProfileSetupContent(
     onAddPhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface,
+    ) {
         AdaptiveScreen(
             modifier = Modifier
                 .fillMaxSize()
@@ -98,7 +101,11 @@ fun ProfileSetupContent(
                     onAddPhotoClick = onAddPhotoClick,
                 )
 
-                else -> ProfileSetupSingleColumn(state = state, onEvent = onEvent, onAddPhotoClick = onAddPhotoClick)
+                else -> ProfileSetupSingleColumn(
+                    state = state,
+                    onEvent = onEvent,
+                    onAddPhotoClick = onAddPhotoClick,
+                )
             }
         }
     }
@@ -110,9 +117,15 @@ private fun ProfileSetupSingleColumn(
     onEvent: (ProfileSetupUiEvent) -> Unit,
     onAddPhotoClick: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         Column(modifier = Modifier.widthIn(max = singleColumnMaxWidth).fillMaxSize()) {
-            BackButton(onEvent = onEvent, modifier = Modifier.padding(8.dp))
+            BackButton(
+                onEvent = onEvent,
+                modifier = Modifier.padding(8.dp),
+            )
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -129,7 +142,11 @@ private fun ProfileSetupSingleColumn(
                     swatchSpacing = 16.dp,
                     modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
                 )
-                NameField(state = state, onEvent = onEvent, modifier = Modifier.padding(top = 12.dp))
+                NameField(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
             }
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -137,7 +154,11 @@ private fun ProfileSetupSingleColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 SavedLocallyLabel()
-                ContinueButton(state = state, onEvent = onEvent, modifier = Modifier.fillMaxWidth())
+                ContinueButton(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }
@@ -153,11 +174,19 @@ private fun ProfileSetupPhoneLandscapeLayout(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 32.dp, end = 32.dp, top = 8.dp, bottom = 16.dp),
+            .padding(
+                start = 32.dp,
+                end = 32.dp,
+                top = 8.dp,
+                bottom = 16.dp,
+            ),
         horizontalArrangement = Arrangement.spacedBy(48.dp),
     ) {
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            BackButton(onEvent = onEvent, modifier = Modifier.offset(x = (-12).dp))
+            BackButton(
+                onEvent = onEvent,
+                modifier = Modifier.offset(x = (-12).dp),
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -183,9 +212,16 @@ private fun ProfileSetupPhoneLandscapeLayout(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 ProfileSetupTitle(isLarge = false)
-                NameField(state = state, onEvent = onEvent, modifier = Modifier.padding(top = 16.dp))
+                NameField(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(top = 16.dp),
+                )
             }
-            ProfileSetupFooterRow(state = state, onEvent = onEvent)
+            ProfileSetupFooterRow(
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -197,13 +233,23 @@ private fun ProfileSetupTabletLandscapeLayout(
     onAddPhotoClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        BackButton(onEvent = onEvent, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+        BackButton(
+            onEvent = onEvent,
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp,
+            ),
+        )
         Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(start = 48.dp, end = 48.dp, bottom = 24.dp),
+                .padding(
+                    start = 48.dp,
+                    end = 48.dp,
+                    bottom = 24.dp,
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Row(
@@ -222,13 +268,27 @@ private fun ProfileSetupTabletLandscapeLayout(
                         onAddPhotoClick = onAddPhotoClick,
                         avatarSize = 144.dp,
                         swatchSpacing = 12.dp,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 40.dp),
+                        modifier = Modifier.padding(
+                            horizontal = 24.dp,
+                            vertical = 40.dp,
+                        ),
                     )
                 }
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
                     ProfileSetupTitle(isLarge = true)
-                    NameField(state = state, onEvent = onEvent, modifier = Modifier.padding(top = 22.dp))
-                    ProfileSetupFooterRow(state = state, onEvent = onEvent, modifier = Modifier.padding(top = 28.dp))
+                    NameField(
+                        state = state,
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(top = 22.dp),
+                    )
+                    ProfileSetupFooterRow(
+                        state = state,
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(top = 28.dp),
+                    )
                 }
             }
         }
@@ -240,7 +300,10 @@ private fun BackButton(
     onEvent: (ProfileSetupUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = { onEvent(ProfileSetupUiEvent.OnBackClicked) }, modifier = modifier) {
+    IconButton(
+        onClick = { onEvent(ProfileSetupUiEvent.OnBackClicked) },
+        modifier = modifier,
+    ) {
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
             contentDescription = stringResource(DesignR.string.designsystem_back),
@@ -278,8 +341,15 @@ private fun AvatarSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            AvatarWithPhotoButton(state = state, avatarSize = avatarSize, onAddPhotoClick = onAddPhotoClick)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            AvatarWithPhotoButton(
+                state = state,
+                avatarSize = avatarSize,
+                onAddPhotoClick = onAddPhotoClick,
+            )
             if (state.showsPhotoError) {
                 Text(
                     text = stringResource(R.string.profile_setup_photo_error),
@@ -289,7 +359,10 @@ private fun AvatarSection(
                 )
             }
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
             Text(
                 text = stringResource(R.string.profile_setup_avatar_color),
                 textAlign = TextAlign.Center,
@@ -327,8 +400,10 @@ private fun AvatarWithPhotoButton(
             onClick = onAddPhotoClick,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .offset(x = 4.dp, y = 4.dp)
-                .size(44.dp)
+                .offset(
+                    x = 4.dp,
+                    y = 4.dp,
+                ).size(44.dp)
                 .border(3.dp, MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             colors = IconButtonDefaults.filledIconButtonColors(
@@ -367,7 +442,10 @@ private fun NameField(
             }
             Text(hint)
         },
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = ImeAction.Done,
+        ),
         keyboardActions = KeyboardActions(onDone = { onEvent(ProfileSetupUiEvent.OnContinueClicked) }),
     )
 }
@@ -379,7 +457,11 @@ private fun SavedLocallyLabel(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Outlined.PhoneAndroid, contentDescription = null, modifier = Modifier.size(16.dp))
+        Icon(
+            Icons.Outlined.PhoneAndroid,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+        )
         Text(
             text = stringResource(R.string.profile_setup_saved_locally),
             style = MaterialTheme.typography.bodySmall,
@@ -400,7 +482,10 @@ private fun ProfileSetupFooterRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SavedLocallyLabel(modifier = Modifier.weight(1f))
-        ContinueButton(state = state, onEvent = onEvent)
+        ContinueButton(
+            state = state,
+            onEvent = onEvent,
+        )
     }
 }
 

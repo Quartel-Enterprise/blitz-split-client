@@ -115,14 +115,23 @@ class RestoreViewModel(
                     status != directlyCompletedStatus &&
                     navigator.backStack.value.lastOrNull() == Route.Restore
             }.onEach { status ->
-                uiState.update { it.copy(connectingProvider = it.connectingProvider ?: status.provider, error = null) }
+                uiState.update {
+                    it.copy(
+                        connectingProvider = it.connectingProvider ?: status.provider,
+                        error = null,
+                    )
+                }
                 finishSignIn()
             }.launchIn(viewModelScope)
     }
 
     private fun updateCode(code: String) {
         uiState.update {
-            it.copy(code = code, isCodeComplete = RecoveryCodeFormat.normalize(code) != null, error = null)
+            it.copy(
+                code = code,
+                isCodeComplete = RecoveryCodeFormat.normalize(code) != null,
+                error = null,
+            )
         }
     }
 
@@ -134,7 +143,12 @@ class RestoreViewModel(
     private fun restore() {
         val state = uiState.value
         if (!state.canRestore) return
-        uiState.update { it.copy(isRestoring = true, error = null) }
+        uiState.update {
+            it.copy(
+                isRestoring = true,
+                error = null,
+            )
+        }
         isSigningInDirectly = true
         viewModelScope.launch {
             restoreWithRecoveryCode(state.code)
@@ -165,7 +179,12 @@ class RestoreViewModel(
             .onEach { provider ->
                 if (provider != null) {
                     returningProvider = provider
-                    uiState.update { it.copy(connectingProvider = it.connectingProvider ?: provider, error = null) }
+                    uiState.update {
+                        it.copy(
+                            connectingProvider = it.connectingProvider ?: provider,
+                            error = null,
+                        )
+                    }
                 } else if (returningProvider != null) {
                     returningProvider = null
                     val isConnected = observeAccountStatus().first() is AccountStatus.Connected
@@ -176,7 +195,12 @@ class RestoreViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
-        uiState.update { it.copy(connectingProvider = provider, error = null) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                error = null,
+            )
+        }
         viewModelScope.launch {
             if (provider in nativeSignIn.providers) {
                 uiAction.emit(RestoreUiAction.LaunchNativeSignIn(provider))
@@ -217,7 +241,12 @@ class RestoreViewModel(
     }
 
     private fun finishConnecting(error: RestoreError?) {
-        uiState.update { it.copy(connectingProvider = null, error = error) }
+        uiState.update {
+            it.copy(
+                connectingProvider = null,
+                error = error,
+            )
+        }
     }
 
     private fun emitAction(action: RestoreUiAction) {

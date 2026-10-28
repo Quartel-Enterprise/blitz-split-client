@@ -63,7 +63,10 @@ class SupabaseAccountRemoteDataSource(
         rawNonce: String?,
     ) {
         try {
-            auth.linkIdentityWithIdToken(provider = provider.toIdTokenProvider(), idToken = idToken) {
+            auth.linkIdentityWithIdToken(
+                provider = provider.toIdTokenProvider(),
+                idToken = idToken,
+            ) {
                 nonce = rawNonce
             }
             auth.retrieveUserForCurrentSession(updateSession = true)
@@ -108,7 +111,10 @@ class SupabaseAccountRemoteDataSource(
 
     override suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials {
         val response = try {
-            functions.invoke(function = RECOVER_FUNCTION, body = RecoverRequestDto(code = code))
+            functions.invoke(
+                function = RECOVER_FUNCTION,
+                body = RecoverRequestDto(code = code),
+            )
         } catch (exception: RestException) {
             throw when (exception.statusCode) {
                 HTTP_BAD_REQUEST, HTTP_NOT_FOUND -> InvalidRecoveryCodeException()
@@ -117,7 +123,10 @@ class SupabaseAccountRemoteDataSource(
             }
         }
         val dto = json.decodeFromString<RecoverResponseDto>(response.bodyAsText())
-        return RecoveryCredentials(email = dto.email, password = dto.password)
+        return RecoveryCredentials(
+            email = dto.email,
+            password = dto.password,
+        )
     }
 
     override suspend fun createRecoveryCode(): String {

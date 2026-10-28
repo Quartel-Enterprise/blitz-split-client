@@ -33,6 +33,10 @@ fun GroupsScreen(
             }
         }
     }
-    GroupsContent(state = state, onEvent = viewModel::onEvent, snackbarHostState = snackbarHostState)
+    GroupsContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
+    )
     if (state.showsRecoveryCodePrompt) recoveryCodeSheet()
 }

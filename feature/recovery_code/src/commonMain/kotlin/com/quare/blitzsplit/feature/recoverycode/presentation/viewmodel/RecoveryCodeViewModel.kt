@@ -141,7 +141,12 @@ class RecoveryCodeViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
-        uiState.update { it.copy(connectingProvider = provider, hasSignInFailed = false) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                hasSignInFailed = false,
+            )
+        }
         viewModelScope.launch {
             if (provider in nativeSignIn.providers) {
                 uiAction.emit(RecoveryCodeUiAction.LaunchNativeSignIn(provider))
@@ -167,7 +172,12 @@ class RecoveryCodeViewModel(
     }
 
     private fun finishConnecting(hasFailed: Boolean) {
-        uiState.update { it.copy(connectingProvider = null, hasSignInFailed = hasFailed) }
+        uiState.update {
+            it.copy(
+                connectingProvider = null,
+                hasSignInFailed = hasFailed,
+            )
+        }
     }
 
     // Why: a code already saved stays saved; only one never saved comes back on the next launch.
