@@ -77,7 +77,7 @@ What differs by platform is an `internal expect val … : Module` with one `actu
 
 - `platformModule` (`:shared`) binds `NativeSignIn`, the providers whose native button returns an ID token:
   `GOOGLE` on Android, `APPLE` on Apple, none on JS and jvm. The Welcome and Restore ViewModels and
-  `ProviderConnector` read it to choose between emitting `LaunchNativeSignIn` and starting the browser sign in.
+  `ProviderConnector` read it to choose between the native sheet (`LaunchNativeSignIn`) and the browser sign in.
 - `platformRoomModule` (`:core:provider:room`) binds the `RoomDatabase.Builder<AppDatabase>` of each platform
   (see [data-sources-and-sync.md](data-sources-and-sync.md#room-the-source-of-truth)).
 

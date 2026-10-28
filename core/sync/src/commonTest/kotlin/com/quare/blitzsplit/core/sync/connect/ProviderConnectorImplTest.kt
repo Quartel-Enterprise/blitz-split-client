@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ProviderConnectorImplTest {
-    private lateinit var account: FakeAccountRepository
     private lateinit var connector: ProviderConnectorImpl
     private val nativeLaunches = mutableListOf<AccountProvider>()
     private val browserLinks = mutableListOf<AccountProvider>()
@@ -46,9 +45,7 @@ class ProviderConnectorImplTest {
     }
 
     private fun prepareScenario(native: Set<AccountProvider> = emptySet()) {
-        nativeLaunches.clear()
-        browserLinks.clear()
-        account = FakeAccountRepository()
+        val account = FakeAccountRepository()
         connector = ProviderConnectorImpl(
             nativeSignIn = NativeSignIn(native),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
