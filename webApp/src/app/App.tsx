@@ -25,7 +25,7 @@ export function App() {
   return (
     <>
       <Screen route={backStack[backStack.length - 1]} />
-      <Toaster position="top-center" />
+      <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
 }

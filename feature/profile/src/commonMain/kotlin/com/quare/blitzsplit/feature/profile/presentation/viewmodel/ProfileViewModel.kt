@@ -206,13 +206,8 @@ class ProfileViewModel(
 
     // Why: a code already saved opens for review, so closing it with "Lembrar depois" leaves it saved.
     private fun showRecoveryCode() {
-        val prompt = if (recoveryCodePrompt ==
-            RecoveryCodePrompt.SAVED
-        ) {
-            RecoveryCodePrompt.REVIEW
-        } else {
-            RecoveryCodePrompt.DUE
-        }
+        val isSaved = recoveryCodePrompt == RecoveryCodePrompt.SAVED
+        val prompt = if (isSaved) RecoveryCodePrompt.REVIEW else RecoveryCodePrompt.DUE
         viewModelScope.launch { updateRecoveryCodePrompt(prompt) }
     }
 

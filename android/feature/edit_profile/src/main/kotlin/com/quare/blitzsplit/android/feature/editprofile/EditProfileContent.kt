@@ -84,7 +84,8 @@ private val avatarSize = 120.dp
 fun EditProfileContent(
     state: EditProfileUiState,
     onEvent: (EditProfileUiEvent) -> Unit,
-    onTakePhotoClick: () -> Unit,
+    // Why: null on a device that can't take a photo, which only offers choosing one.
+    onTakePhotoClick: (() -> Unit)?,
     onChoosePhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -359,15 +360,17 @@ private fun AvatarColorRow(
 private fun PhotoMenuSheet(
     hasPhoto: Boolean,
     onDismiss: () -> Unit,
-    onTakePhotoClick: () -> Unit,
+    onTakePhotoClick: (() -> Unit)?,
     onChoosePhotoClick: () -> Unit,
     onRemoveClick: () -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.navigationBarsPadding().padding(bottom = 16.dp)) {
-            PhotoMenuItem(Icons.Outlined.PhotoCamera, R.string.edit_profile_take_photo) {
-                onDismiss()
-                onTakePhotoClick()
+            if (onTakePhotoClick != null) {
+                PhotoMenuItem(Icons.Outlined.PhotoCamera, R.string.edit_profile_take_photo) {
+                    onDismiss()
+                    onTakePhotoClick()
+                }
             }
             PhotoMenuItem(Icons.Outlined.PhotoLibrary, R.string.edit_profile_choose_photo) {
                 onDismiss()

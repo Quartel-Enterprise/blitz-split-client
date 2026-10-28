@@ -635,6 +635,27 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN a sign out waiting on a sync WHEN the screen that asked leaves THEN still erases the copy`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = google, pullHangs = true)
+            backgroundScope.launch { coordinator.syncNow() }
+            runCurrent()
+            val caller = backgroundScope.launch { coordinator.signOut() }
+            runCurrent()
+
+            // When
+            caller.cancel()
+            pullGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(1, account.signOutCount)
+            assertEquals(1, profile.clearCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
     fun `GIVEN a queued change online WHEN signing out once synced THEN pushes it and signs out`() = runTest {
         // Given
         prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)

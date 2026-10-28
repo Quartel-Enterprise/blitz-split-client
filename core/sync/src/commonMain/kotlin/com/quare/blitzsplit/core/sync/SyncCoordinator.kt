@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -83,8 +84,13 @@ class SyncCoordinator(
         }
     }
 
-    // Why: under the sync lock, so a push in flight ends before the copy it reads is gone.
-    suspend fun signOut(): Result<Unit> = syncLock.withLock { suspendRunCatching { clearSession() } }
+    /*
+     * Why: under the sync lock, so a push in flight ends before the copy it reads is gone. In the app's
+     * scope, so leaving the screen midway can't end the account and keep the profile.
+     */
+    suspend fun signOut(): Result<Unit> = scope
+        .async { syncLock.withLock { suspendRunCatching { clearSession() } } }
+        .await()
 
     /*
      * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the

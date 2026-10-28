@@ -91,18 +91,10 @@ class EditProfileViewModel(
         saved = profile
         edit { state ->
             if (previous == null) return@edit state.withProfile(profile)
-            state
-                .withName(if (state.name.trim() == previous.displayName) profile.displayName else state.name)
-                .copy(
-                    avatarColor = if (state.avatarColor ==
-                        previous.avatarColor
-                    ) {
-                        profile.avatarColor
-                    } else {
-                        state.avatarColor
-                    },
-                    photo = if (state.photo == previous.photo) profile.photo else state.photo,
-                )
+            val name = if (state.name.trim() == previous.displayName) profile.displayName else state.name
+            val color = if (state.avatarColor == previous.avatarColor) profile.avatarColor else state.avatarColor
+            val photo = if (state.photo == previous.photo) profile.photo else state.photo
+            state.withName(name).copy(avatarColor = color, photo = photo)
         }
     }
 

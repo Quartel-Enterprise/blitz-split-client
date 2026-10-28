@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.android.feature.editprofile
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -9,6 +11,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,11 +45,23 @@ fun EditProfileScreen(viewModel: EditProfileViewModel = koinViewModel()) {
         bitmap ?: return@rememberLauncherForActivityResult
         scope.launch { onPicked(bitmap.toJpeg()) }
     }
+    // Why: a device without a camera, or without a camera app, can't take one, as iOS hides it too.
+    val hasCamera = remember(context) { context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) }
     BackHandler { viewModel.onEvent(EditProfileUiEvent.OnBackClicked) }
     EditProfileContent(
         state = state,
         onEvent = viewModel::onEvent,
-        onTakePhotoClick = { camera.launch(null) },
+        onTakePhotoClick = if (hasCamera) {
+            {
+                try {
+                    camera.launch(null)
+                } catch (_: ActivityNotFoundException) {
+                    viewModel.onEvent(EditProfileUiEvent.OnPhotoUnreadable)
+                }
+            }
+        } else {
+            null
+        },
         onChoosePhotoClick = {
             photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         },

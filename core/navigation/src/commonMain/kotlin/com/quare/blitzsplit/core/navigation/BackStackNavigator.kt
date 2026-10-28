@@ -12,8 +12,9 @@ class BackStackNavigator(
 
     override val backStack: StateFlow<List<Route>> = entries.asStateFlow()
 
+    // Why: a double tap would push the same screen twice, and Navigation 3 keys each entry by its route.
     override fun navigate(route: Route) {
-        entries.update { stack -> stack + route }
+        entries.update { stack -> if (stack.lastOrNull() == route) stack else stack + route }
     }
 
     override fun navigateBack() {

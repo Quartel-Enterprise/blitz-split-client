@@ -116,6 +116,7 @@ private fun EraseProfileDialog(
     onDismiss: () -> Unit,
 ) {
     val code = state.formattedRecoveryCode
+    val bodyRes = if (code != null) R.string.profile_erase_body else R.string.profile_erase_body_no_code
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.profile_erase_title)) },
@@ -124,17 +125,7 @@ private fun EraseProfileDialog(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text(
-                    stringResource(
-                        if (code !=
-                            null
-                        ) {
-                            R.string.profile_erase_body
-                        } else {
-                            R.string.profile_erase_body_no_code
-                        },
-                    ),
-                )
+                Text(stringResource(bodyRes))
                 if (code != null) RecoveryCodeBox(code = code, onEvent = onEvent)
                 Row(
                     modifier = Modifier
