@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.account.domain.repository
 
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -8,11 +9,9 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
+    fun observeAccount(): Flow<AccountSnapshot>
+
     fun observeStatus(): Flow<AccountStatus>
-
-    fun observeRecoveryCode(): Flow<String?>
-
-    fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt>
 
     suspend fun mirrorSession()
 

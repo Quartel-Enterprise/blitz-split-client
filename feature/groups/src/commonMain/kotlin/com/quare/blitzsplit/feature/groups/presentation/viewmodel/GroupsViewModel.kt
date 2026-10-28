@@ -2,8 +2,7 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -30,8 +29,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GroupsViewModel(
     private val retrySync: RetrySync,
     observeProfile: ObserveProfile,
-    observeAccountStatus: ObserveAccountStatus,
-    observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
+    observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
@@ -57,20 +55,19 @@ class GroupsViewModel(
     init {
         combine(
             observeProfile(),
-            observeAccountStatus(),
-            observeRecoveryCodePrompt(),
+            observeAccount(),
             observeSyncState(),
             connectivityObserver.observe(),
-        ) { profile, accountStatus, prompt, syncState, isOnline ->
+        ) { profile, account, syncState, isOnline ->
             val displayName = profile?.displayName?.trim().orEmpty()
             GroupsUiState(
                 displayName = displayName,
                 avatarInitial = displayName.firstOrNull()?.uppercase().orEmpty(),
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
                 photoUrl = profile?.photo?.toImageUrl(),
-                accountProvider = (accountStatus as? AccountStatus.Connected)?.provider,
+                accountProvider = (account.status as? AccountStatus.Connected)?.provider,
                 syncBadge = syncBadgeOf(syncState = syncState, isOnline = isOnline),
-                showsRecoveryCodePrompt = prompt == RecoveryCodePrompt.DUE,
+                showsRecoveryCodePrompt = account.recoveryCodePrompt == RecoveryCodePrompt.DUE,
             )
         }.onEach { state -> uiState.value = state }
             .launchIn(viewModelScope)
