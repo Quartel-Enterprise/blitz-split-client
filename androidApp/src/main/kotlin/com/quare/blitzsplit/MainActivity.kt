@@ -1,20 +1,29 @@
 package com.quare.blitzsplit
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.navigation.AppNavDisplay
+import com.quare.blitzsplit.shared.app.AppViewModel
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.compose.viewmodel.koinViewModel
 
 class MainActivity : ComponentActivity() {
     private val supabase: SupabaseClient by inject()
@@ -28,8 +37,20 @@ class MainActivity : ComponentActivity() {
         // Why: a recreated activity keeps the intent that launched it, an old callback by now.
         if (savedInstanceState == null) handleAuthCallback(intent)
         setContent {
-            BlitzSplitTheme {
-                AppNavDisplay()
+            val appViewModel: AppViewModel = koinViewModel()
+            val theme by appViewModel.theme.collectAsStateWithLifecycle()
+            val isDark = when (theme) {
+                ThemePreference.SYSTEM -> isSystemInDarkTheme()
+                ThemePreference.LIGHT -> false
+                ThemePreference.DARK -> true
+            }
+            // Why: the status and navigation bar icons follow the app's theme, not only the system's.
+            LaunchedEffect(isDark) {
+                val barStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { isDark }
+                enableEdgeToEdge(statusBarStyle = barStyle, navigationBarStyle = barStyle)
+            }
+            BlitzSplitTheme(isDark = isDark) {
+                AppNavDisplay(appViewModel = appViewModel)
             }
         }
     }

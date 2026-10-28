@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -32,7 +32,7 @@ fun AvatarBadge(
     size: Dp = 40.dp,
     photoUrl: String? = null,
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = LocalIsDarkTheme.current
     val shape = MaterialShapes.Cookie9Sided.toShape()
     Box(
         modifier = modifier

@@ -8,7 +8,7 @@ import {
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  // The app follows the system appearance, so the toasts do too
+  // The system appearance by default; the app passes the profile's theme
   return (
     <Sonner
       theme="system"

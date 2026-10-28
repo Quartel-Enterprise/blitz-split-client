@@ -25,7 +25,13 @@ class FakeAccountRepository(
 ) : AccountRepository {
     // Why: one flow, like the single Room row, so a write never shows a half-updated snapshot.
     val snapshot = MutableStateFlow(
-        AccountSnapshot(status = initialStatus, recoveryCode = null, recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE),
+        AccountSnapshot(
+            status = initialStatus,
+            recoveryCode = null,
+            recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
+            email = null,
+            signOutWhenSynced = false,
+        ),
     )
 
     var status: AccountStatus
@@ -45,11 +51,25 @@ class FakeAccountRepository(
         set(value) {
             snapshot.update { it.copy(recoveryCodePrompt = value) }
         }
+
+    var email: String?
+        get() = snapshot.value.email
+        set(value) {
+            snapshot.update { it.copy(email = value) }
+        }
+
+    var signOutWhenSynced: Boolean
+        get() = snapshot.value.signOutWhenSynced
+        set(value) {
+            snapshot.update { it.copy(signOutWhenSynced = value) }
+        }
     var sessionUser: SessionUser? = null
     val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>()
     val returningBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
+    val browserSignInReturningToProfile = MutableStateFlow<AccountProvider?>(null)
 
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
+    val browserConnectionsFromProfile = mutableListOf<Boolean>()
     val idTokenFullNames = mutableListOf<String?>()
     val browserConnections = mutableListOf<AccountProvider>()
     val browserCallbacks = mutableListOf<String>()
@@ -58,10 +78,12 @@ class FakeAccountRepository(
     var recoveryCodeCreations = 0
     var appPauseCount = 0
     var appResumeCount = 0
+    var signOutCount = 0
 
     var connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED)
     var registerError: Throwable? = null
     var restoreError: Throwable? = null
+    var signOutError: Throwable? = null
     var restoredStatus: AccountStatus = AccountStatus.Anonymous(RESTORED_USER_ID)
 
     // Why: like Room, a new query reads the status as it is, while an open one sees a write only once
@@ -119,8 +141,12 @@ class FakeAccountRepository(
         return connectResult
     }
 
-    override suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit> {
+    override suspend fun signInWithBrowser(
+        provider: AccountProvider,
+        isFromProfile: Boolean,
+    ): Result<Unit> {
         browserConnections += provider
+        browserConnectionsFromProfile += isFromProfile
         return connectResult.map { }
     }
 
@@ -141,6 +167,8 @@ class FakeAccountRepository(
 
     override fun observeReturningBrowserSignIn(): Flow<AccountProvider?> = returningBrowserSignIn
 
+    override fun observeBrowserSignInReturningToProfile(): Flow<AccountProvider?> = browserSignInReturningToProfile
+
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code
         restoreError?.let { return Result.failure(it) }
@@ -158,6 +186,24 @@ class FakeAccountRepository(
 
     override suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt) {
         recoveryCodePrompt = prompt
+    }
+
+    override suspend fun updateSignOutWhenSynced(isScheduled: Boolean) {
+        signOutWhenSynced = isScheduled
+    }
+
+    // Why: like the real one, back to the empty row of a fresh install.
+    override suspend fun signOut() {
+        signOutCount++
+        signOutError?.let { throw it }
+        sessionUser = null
+        snapshot.value = AccountSnapshot(
+            status = AccountStatus.LocalOnly,
+            recoveryCode = null,
+            recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
+            email = null,
+            signOutWhenSynced = false,
+        )
     }
 
     companion object {

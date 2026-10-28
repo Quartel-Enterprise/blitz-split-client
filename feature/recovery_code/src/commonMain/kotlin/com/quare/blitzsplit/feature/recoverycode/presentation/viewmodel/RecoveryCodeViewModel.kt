@@ -57,16 +57,19 @@ class RecoveryCodeViewModel(
 
     private var returningProvider: AccountProvider? = null
 
+    private var prompt = RecoveryCodePrompt.NOT_DUE
+
     val stateWatcher: FlowWatcher<RecoveryCodeUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RecoveryCodeUiAction> = FlowWatcher(uiAction)
 
     init {
         observeAccount()
             .onEach { account ->
+                prompt = account.recoveryCodePrompt
                 uiState.update {
                     it.copy(
                         formattedCode = account.recoveryCode?.let(RecoveryCodeFormat::format),
-                        isPromptDue = account.recoveryCodePrompt == RecoveryCodePrompt.DUE,
+                        isPromptDue = account.recoveryCodePrompt.isShown,
                     )
                 }
             }.launchIn(viewModelScope)
@@ -99,7 +102,7 @@ class RecoveryCodeViewModel(
 
             RecoveryCodeUiEvent.OnNativeSignInCancelled -> finishConnecting(hasFailed = false)
 
-            RecoveryCodeUiEvent.OnRemindLaterClicked -> updatePrompt(RecoveryCodePrompt.SNOOZED)
+            RecoveryCodeUiEvent.OnRemindLaterClicked -> remindLater()
 
             RecoveryCodeUiEvent.OnSavedClicked -> updatePrompt(RecoveryCodePrompt.SAVED)
         }
@@ -165,6 +168,11 @@ class RecoveryCodeViewModel(
 
     private fun finishConnecting(hasFailed: Boolean) {
         uiState.update { it.copy(connectingProvider = null, hasSignInFailed = hasFailed) }
+    }
+
+    // Why: a code already saved stays saved; only one never saved comes back on the next launch.
+    private fun remindLater() {
+        updatePrompt(if (prompt == RecoveryCodePrompt.REVIEW) RecoveryCodePrompt.SAVED else RecoveryCodePrompt.SNOOZED)
     }
 
     private fun updatePrompt(prompt: RecoveryCodePrompt) {

@@ -40,6 +40,9 @@ enum MainTab: Hashable {
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable).
 struct MainTabView: View {
+    /// The shared back stack above the groups: the profile and its editor.
+    @Binding var path: [AppRoute]
+
     @State private var model = GroupsModel()
     @State private var showsComingSoon = false
     @State private var showsRecoveryCode = false
@@ -47,8 +50,14 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: tabSelection) {
             Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
-                NavigationStack {
+                NavigationStack(path: $path) {
                     GroupsView(model: model)
+                        .navigationDestination(for: AppRoute.self) { route in
+                            switch route {
+                            case .editProfile: EditProfileView()
+                            default: ProfileView()
+                            }
+                        }
                 }
             }
             Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }

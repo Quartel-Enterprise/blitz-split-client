@@ -5,12 +5,153 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ · only you see it" : {
+      "comment" : "%@ is the masked email of the Google or Apple account",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · só você vê"
+          }
+        }
+      }
+    },
+    "%lld changes haven't uploaded yet" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld change hasn't uploaded yet"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld changes haven't uploaded yet"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alteração ainda não subiu"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alterações ainda não subiram"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld changes haven't uploaded yet and will be lost." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld change hasn't uploaded yet and will be lost."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld changes haven't uploaded yet and will be lost."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alteração ainda não subiu e será perdida."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alterações ainda não subiram e serão perdidas."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld changes in the queue" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld change in the queue"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld changes in the queue"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alteração na fila"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld alterações na fila"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "12 letters and numbers. Dashes are optional." : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "12 letras e números. Traços são opcionais."
+          }
+        }
+      }
+    },
+    "Account and sync" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta e sincronização"
           }
         }
       }
@@ -61,6 +202,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conta é opcional"
+          }
+        }
+      }
+    },
+    "Anonymous ID of this %@" : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID anônimo deste %@"
+          }
+        }
+      }
+    },
+    "Appearance" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aparência"
           }
         }
       }
@@ -157,6 +319,26 @@
         }
       }
     },
+    "Changed · waiting to upload" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alterado · aguardando envio"
+          }
+        }
+      }
+    },
+    "Choose photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher foto"
+          }
+        }
+      }
+    },
     "Code not found. Check the letters and try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -177,12 +359,32 @@
         }
       }
     },
+    "Connect" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar"
+          }
+        }
+      }
+    },
     "Connect Apple or Google instead" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conectar Apple ou Google em vez disso"
+          }
+        }
+      }
+    },
+    "Connected" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectada"
           }
         }
       }
@@ -257,6 +459,16 @@
         }
       }
     },
+    "Couldn't sign out. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para sair. Tente de novo."
+          }
+        }
+      }
+    },
     "Couldn't use this photo. Try another one." : {
       "localizations" : {
         "pt-BR" : {
@@ -287,6 +499,89 @@
         }
       }
     },
+    "Dark" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuro"
+          }
+        }
+      }
+    },
+    "Edit freely: it stays saved on this %@ and goes up when the connection is back." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pode editar à vontade: fica salvo neste %@ e sobe quando a conexão voltar."
+          }
+        }
+      }
+    },
+    "Edit photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar foto"
+          }
+        }
+      }
+    },
+    "Edit profile" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar perfil"
+          }
+        }
+      }
+    },
+    "Erase and sign out" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar e sair"
+          }
+        }
+      }
+    },
+    "Erase profile and sign out" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar perfil e sair"
+          }
+        }
+      }
+    },
+    "Erase the profile from this %@?" : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar o perfil deste %@?"
+          }
+        }
+      }
+    },
+    "Everything is synced with your %@ account. When you sign out, we erase the copy on this %@. Your groups come back when you sign in again." : {
+      "comment" : "The first %@ is Google or Apple, the second the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Está tudo sincronizado com sua conta %1$@. Ao sair, apagamos a cópia deste %2$@. Seus grupos voltam quando você entrar de novo."
+          }
+        }
+      }
+    },
     "Everything stays on your %@ and syncs later." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -308,8 +603,28 @@
         }
       }
     },
+    "From %lld to %lld characters" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De %1$lld a %2$lld caracteres"
+          }
+        }
+      }
+    },
     "Google" : {
       "shouldTranslate" : false
+    },
+    "Got it" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entendi"
+          }
+        }
+      }
     },
     "Green" : {
       "localizations" : {
@@ -327,6 +642,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grupos"
+          }
+        }
+      }
+    },
+    "I kept the code somewhere safe" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardei o código em um lugar seguro"
+          }
+        }
+      }
+    },
+    "I understand it can't be recovered" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entendo que não dá para recuperar"
           }
         }
       }
@@ -390,12 +725,53 @@
       "comment" : "An example recovery code, the placeholder of its field",
       "shouldTranslate" : false
     },
+    "Light" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claro"
+          }
+        }
+      }
+    },
     "Lilac" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lilás"
+          }
+        }
+      }
+    },
+    "Name and photo came from your %@ account. Changing them here only applies to Blitz Split and doesn't change your %@ account." : {
+      "comment" : "Both %@ are the account: Google or Apple",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome e foto vieram da sua conta %1$@. Mudar aqui vale só no Bora Rachar e não altera sua conta %2$@."
+          }
+        }
+      }
+    },
+    "Name, photo and avatar color" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome, foto e cor do avatar"
+          }
+        }
+      }
+    },
+    "No account" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conta"
           }
         }
       }
@@ -440,6 +816,26 @@
         }
       }
     },
+    "No internet." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet."
+          }
+        }
+      }
+    },
+    "No response from the server" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem resposta do servidor"
+          }
+        }
+      }
+    },
     "No response from the server · try again" : {
       "localizations" : {
         "pt-BR" : {
@@ -471,6 +867,16 @@
         }
       }
     },
+    "Only people in your groups see your name and photo." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só quem está nos seus grupos vê seu nome e foto."
+          }
+        }
+      }
+    },
     "Only people in your groups see your name." : {
       "localizations" : {
         "pt-BR" : {
@@ -497,6 +903,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pêssego"
+          }
+        }
+      }
+    },
+    "Preferences" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferências"
+          }
+        }
+      }
+    },
+    "Privacy and about" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacidade e sobre"
+          }
+        }
+      }
+    },
+    "Privacy policy" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de privacidade"
           }
         }
       }
@@ -551,12 +987,32 @@
         }
       }
     },
+    "Remove photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover foto"
+          }
+        }
+      }
+    },
     "Sand" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Areia"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar"
           }
         }
       }
@@ -577,6 +1033,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guarde seu código de recuperação"
+          }
+        }
+      }
+    },
+    "Saved only on this %@ for now" : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fica salvo só neste %@ por enquanto"
           }
         }
       }
@@ -622,22 +1089,62 @@
         }
       }
     },
-    "Settings › Account" : {
+    "Shows when you have no photo." : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajustes › Conta"
+            "value" : "Aparece quando você está sem foto."
           }
         }
       }
     },
-    "Settings › Recovery" : {
+    "Sign out" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajustes › Recuperação"
+            "value" : "Sair"
+          }
+        }
+      }
+    },
+    "Sign out now and lose the changes" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair agora e perder as alterações"
+          }
+        }
+      }
+    },
+    "Sign out once synced" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair ao sincronizar"
+          }
+        }
+      }
+    },
+    "Sign out scheduled" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saída agendada"
+          }
+        }
+      }
+    },
+    "Sign out?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair da conta?"
           }
         }
       }
@@ -673,6 +1180,16 @@
         }
       }
     },
+    "Signs out as soon as everything is uploaded" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sai assim que tudo subir"
+          }
+        }
+      }
+    },
     "Something went wrong. Try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -704,12 +1221,52 @@
         }
       }
     },
+    "Sync" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronização"
+          }
+        }
+      }
+    },
     "Syncing…" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sincronizando…"
+          }
+        }
+      }
+    },
+    "System" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sistema"
+          }
+        }
+      }
+    },
+    "Take photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar foto"
+          }
+        }
+      }
+    },
+    "Terms of use" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termos de uso"
           }
         }
       }
@@ -774,12 +1331,52 @@
         }
       }
     },
+    "Version" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versão"
+          }
+        }
+      }
+    },
+    "View and keep · restores on another device" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver e guardar · recupera em outro aparelho"
+          }
+        }
+      }
+    },
+    "Waiting to sync" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguardando sincronizar"
+          }
+        }
+      }
+    },
     "What do your friends call you?" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Como seus amigos te chamam?"
+          }
+        }
+      }
+    },
+    "Who sees your profile" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem vê seu perfil"
           }
         }
       }
@@ -804,6 +1401,38 @@
         }
       }
     },
+    "You use it without an account and haven't synced yet, so there is no recovery code. When you leave, your profile is gone for good." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você usa sem conta e ainda não sincronizou, então não há código de recuperação. Ao sair, seu perfil some de vez."
+          }
+        }
+      }
+    },
+    "You use it without an account. When you leave, your profile and your data are gone from this %@. To come back, you need the recovery code." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você usa sem conta. Ao sair, seu perfil e seus dados somem deste %@. Para voltar, só com o código de recuperação."
+          }
+        }
+      }
+    },
+    "You're offline. Your data stays on this %@ until the sync finishes. Once everything is uploaded, we sign out and erase the local copy." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você está sem internet. Seus dados ficam neste %@ até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local."
+          }
+        }
+      }
+    },
     "You're using it without an account. This code brings your groups back if you switch or lose your %@." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -815,12 +1444,33 @@
         }
       }
     },
+    "Your data stays on this %@ until the sync finishes. Once everything is uploaded, we sign out and erase the local copy." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus dados ficam neste %@ até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local."
+          }
+        }
+      }
+    },
     "Your name" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seu nome"
+          }
+        }
+      }
+    },
+    "Your name, your photo and your payment keys only show to people in your groups. Anyone who shares no group with you sees nothing." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu nome, sua foto e suas chaves de pagamento aparecem só para quem está nos seus grupos. Quem não divide nenhum grupo com você não vê nada."
           }
         }
       }

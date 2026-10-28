@@ -7,4 +7,5 @@ data class SessionUser(
     val socialProvider: AccountProvider?,
     val displayName: String?,
     val photoUrl: String?,
+    val email: String?,
 )

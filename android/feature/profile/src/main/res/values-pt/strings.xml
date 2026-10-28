@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_title">Perfil</string>
+    <string name="profile_edit_subtitle">Nome, foto e cor do avatar</string>
+    <string name="profile_edit">Editar perfil</string>
+    <string name="profile_pending">Alterado · aguardando envio</string>
+    <string name="profile_visibility">Quem vê seu perfil</string>
+    <string name="profile_visibility_body">Seu nome, sua foto e suas chaves de pagamento aparecem só para quem está nos seus grupos. Quem não divide nenhum grupo com você não vê nada.</string>
+    <string name="profile_visibility_ok">Entendi</string>
+    <string name="profile_offline_title">Sem internet.</string>
+    <string name="profile_offline_body">Pode editar à vontade: fica salvo neste aparelho e sobe quando a conexão voltar.</string>
+    <string name="profile_section_account">Conta e sincronização</string>
+    <string name="profile_account_connected_detail">%1$s · só você vê</string>
+    <string name="profile_account_connected">Conectada</string>
+    <string name="profile_account_none">Sem conta</string>
+    <string name="profile_account_none_detail">ID anônimo deste aparelho</string>
+    <string name="profile_account_local_detail">Fica salvo só neste aparelho por enquanto</string>
+    <string name="profile_connect">Conectar</string>
+    <string name="profile_connect_failed">Não deu para conectar. Tente de novo.</string>
+    <string name="profile_recovery_code">Código de recuperação</string>
+    <string name="profile_recovery_code_detail">Ver e guardar · recupera em outro aparelho</string>
+    <string name="profile_sync">Sincronização</string>
+    <plurals name="profile_sync_waiting">
+        <item quantity="one">%d alteração na fila</item>
+        <item quantity="other">%d alterações na fila</item>
+    </plurals>
+    <string name="profile_sync_waiting_empty">Aguardando sincronizar</string>
+    <string name="profile_sync_syncing">Sincronizando…</string>
+    <string name="profile_sync_failed">Sem resposta do servidor</string>
+    <string name="profile_sync_retry">Tentar de novo</string>
+    <string name="profile_sign_out_scheduled">Saída agendada</string>
+    <string name="profile_sign_out_scheduled_detail">Sai assim que tudo subir</string>
+    <string name="profile_cancel">Cancelar</string>
+    <string name="profile_section_preferences">Preferências</string>
+    <string name="profile_appearance">Aparência</string>
+    <string name="profile_theme_system">Sistema</string>
+    <string name="profile_theme_light">Claro</string>
+    <string name="profile_theme_dark">Escuro</string>
+    <string name="profile_section_about">Privacidade e sobre</string>
+    <string name="profile_privacy_policy">Política de privacidade</string>
+    <string name="profile_terms">Termos de uso</string>
+    <string name="profile_version">Versão</string>
+    <string name="profile_sign_out">Sair</string>
+    <string name="profile_erase_and_sign_out">Apagar perfil e sair</string>
+    <string name="profile_sign_out_title">Sair da conta?</string>
+    <string name="profile_sign_out_body">Está tudo sincronizado com sua conta %1$s. Ao sair, apagamos a cópia deste aparelho. Seus grupos voltam quando você entrar de novo.</string>
+    <plurals name="profile_sign_out_pending_title">
+        <item quantity="one">%d alteração ainda não subiu</item>
+        <item quantity="other">%d alterações ainda não subiram</item>
+    </plurals>
+    <string name="profile_sign_out_pending_body_offline">Você está sem internet. Seus dados ficam neste aparelho até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local.</string>
+    <string name="profile_sign_out_pending_body">Seus dados ficam neste aparelho até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local.</string>
+    <string name="profile_sign_out_when_synced">Sair ao sincronizar</string>
+    <string name="profile_sign_out_now">Sair agora e perder as alterações</string>
+    <string name="profile_sign_out_failed">Não deu para sair. Tente de novo.</string>
+    <string name="profile_erase_title">Apagar o perfil deste aparelho?</string>
+    <string name="profile_erase_body">Você usa sem conta. Ao sair, seu perfil e seus dados somem daqui. Para voltar, só com o código de recuperação.</string>
+    <string name="profile_erase_body_no_code">Você usa sem conta e ainda não sincronizou, então não há código de recuperação. Ao sair, seu perfil some de vez.</string>
+    <string name="profile_erase_code_saved">Guardei o código em um lugar seguro</string>
+    <string name="profile_erase_no_code_ack">Entendo que não dá para recuperar</string>
+    <string name="profile_erase_connect_instead">Conectar Google ou Apple em vez disso</string>
+    <string name="profile_erase_confirm">Apagar e sair</string>
+    <plurals name="profile_erase_pending_warning">
+        <item quantity="one">%d alteração ainda não subiu e será perdida.</item>
+        <item quantity="other">%d alterações ainda não subiram e serão perdidas.</item>
+    </plurals>
+    <string name="profile_copy_code">Copiar código</string>
+</resources>

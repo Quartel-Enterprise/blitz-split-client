@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.navigation.BackStackNavigator
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -40,6 +42,7 @@ class GroupsViewModelTest {
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState?>
     private var syncRequests = 0
+    private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupsViewModel
 
     @BeforeTest
@@ -91,6 +94,19 @@ class GroupsViewModelTest {
     }
 
     @Test
+    fun `GIVEN a saved code opened for review WHEN the groups show THEN asks for the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(prompt = RecoveryCodePrompt.REVIEW)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsRecoveryCodePrompt)
+        }
+
+    @Test
     fun `GIVEN a due recovery code WHEN the groups open THEN asks for the sheet`() = runTest(testDispatcher) {
         // Given
         prepareScenario(prompt = RecoveryCodePrompt.DUE)
@@ -113,14 +129,25 @@ class GroupsViewModelTest {
             // When
             viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
             viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
-            viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<GroupsUiAction>(6) { GroupsUiAction.ShowComingSoon }, actions)
+            assertEquals(List<GroupsUiAction>(5) { GroupsUiAction.ShowComingSoon }, actions)
         }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the profile THEN opens the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN no internet and everything synced WHEN the groups open THEN shows no sync badge`() =
@@ -499,12 +526,14 @@ class GroupsViewModelTest {
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
         syncRequests = 0
+        navigator = BackStackNavigator(startRoute = Route.Groups)
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },
+            navigator = navigator,
         )
     }
 }

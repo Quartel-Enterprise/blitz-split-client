@@ -13,6 +13,8 @@ private val exportedToApple = listOf(
     projects.feature.restore,
     projects.feature.recoveryCode,
     projects.feature.groups,
+    projects.feature.profile,
+    projects.feature.editProfile,
 )
 
 kotlin {
@@ -37,6 +39,7 @@ kotlin {
             implementation(projects.core.account)
             implementation(projects.core.profile)
             implementation(projects.core.sync)
+            implementation(projects.core.settings)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.image)

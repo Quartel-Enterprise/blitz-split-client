@@ -10,10 +10,12 @@ import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapperImpl
 import com.quare.blitzsplit.core.profile.data.repository.ProfileRepositoryImpl
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SaveProfileUseCase
@@ -30,6 +32,7 @@ val profileModule = module {
     singleOf(::ProfileMapperImpl).bind<ProfileMapper>()
     singleOf(::ProfileRepositoryImpl).bind<ProfileRepository>()
     factoryOf(::ObserveProfileUseCase).bind<ObserveProfile>()
+    factoryOf(::ObservePendingProfileChangesUseCase).bind<ObservePendingProfileChanges>()
     factoryOf(::SaveProfileUseCase).bind<SaveProfile>()
     factoryOf(::PrepareProfilePhotoUseCase).bind<PrepareProfilePhoto>()
     factoryOf(::ValidateDisplayNameUseCase).bind<ValidateDisplayName>()

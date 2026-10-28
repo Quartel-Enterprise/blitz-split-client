@@ -16,4 +16,6 @@ interface ProfileLocalDataSource {
     )
 
     suspend fun applyRemote(entity: ProfileEntity)
+
+    suspend fun clear()
 }

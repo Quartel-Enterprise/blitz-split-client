@@ -40,7 +40,7 @@ settings:
     # "Bora Rachar" only in Portuguese: Resources/InfoPlist.xcstrings localizes the name
     INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
-    INFOPLIST_KEY_NSCameraUsageDescription: To scan the QR code from your old device and bring your groups back.
+    INFOPLIST_KEY_NSCameraUsageDescription: To scan the QR code from your old device and to take your profile photo.
     INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
 
 targetTemplates:

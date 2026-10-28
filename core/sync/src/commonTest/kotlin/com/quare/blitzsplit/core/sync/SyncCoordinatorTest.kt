@@ -9,7 +9,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
-import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -19,6 +19,8 @@ import kotlinx.coroutines.test.runTest
 import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SyncCoordinatorTest {
@@ -26,6 +28,7 @@ class SyncCoordinatorTest {
     private lateinit var profile: FakeProfileRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var coordinator: SyncCoordinator
+    private lateinit var pullGate: CompletableDeferred<Unit>
 
     @Test
     fun `GIVEN no profile WHEN syncing THEN does not register with the server`() = runTest {
@@ -115,6 +118,19 @@ class SyncCoordinatorTest {
 
         // Then
         assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+    }
+
+    @Test
+    fun `GIVEN a saved code left open for review WHEN starting THEN keeps it saved`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, prompt = RecoveryCodePrompt.REVIEW, online = false)
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
     }
 
     @Test
@@ -538,8 +554,312 @@ class SyncCoordinatorTest {
         assertEquals(SyncState.PENDING, coordinator.observeState().first())
     }
 
+    @Test
+    fun `GIVEN a Google account WHEN signing out THEN goes back to local only and erases the profile`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google)
+
+        // When
+        coordinator.signOut()
+
+        // Then
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertEquals(1, profile.clearCount)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN the session fails to end WHEN signing out THEN fails and keeps the profile`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google)
+        account.signOutError = IllegalStateException("database closed")
+
+        // When
+        val result = coordinator.signOut()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(0, profile.clearCount)
+        assertEquals(pierre, profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN signing out THEN goes back to local only and erases the profile`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous)
+
+        // When
+        coordinator.signOut()
+
+        // Then
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN a sync in flight WHEN signing out THEN erases nothing until it ends`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = anonymous, pendingChanges = true, pullHangs = true)
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+
+        // When
+        backgroundScope.launch { coordinator.signOut() }
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.signOutCount)
+        assertEquals(0, profile.clearCount)
+        assertEquals(pierre, profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN a sign out waiting on a sync WHEN the sync ends THEN pushes the change and then erases the copy`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = anonymous, pendingChanges = true, pullHangs = true)
+            backgroundScope.launch { coordinator.syncNow() }
+            runCurrent()
+            backgroundScope.launch { coordinator.signOut() }
+            runCurrent()
+
+            // When
+            pullGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN a sign out waiting on a sync WHEN the screen that asked leaves THEN still erases the copy`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google, pullHangs = true)
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        val caller = backgroundScope.launch { coordinator.signOut() }
+        runCurrent()
+
+        // When
+        caller.cancel()
+        pullGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.signOutCount)
+        assertEquals(1, profile.clearCount)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN a queued change online WHEN signing out once synced THEN pushes it and signs out`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+
+        // When
+        coordinator.signOutWhenSynced()
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(profile.profile.value)
+        assertFalse(account.signOutWhenSynced)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account with a queued change WHEN signing out once synced THEN pushes it and stays`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = anonymous, pendingChanges = true)
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+            assertEquals(0, account.signOutCount)
+            assertEquals(anonymous, account.status)
+            assertEquals(pierre, profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN the push fails WHEN signing out once synced THEN keeps the session the profile and the schedule`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+            profile.pushError = IllegalStateException("server down")
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(0, account.signOutCount)
+            assertEquals(google, account.status)
+            assertEquals(0, profile.clearCount)
+            assertEquals(pierre, profile.profile.value)
+            assertTrue(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN the device is offline WHEN signing out once synced THEN records the schedule and erases nothing`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, online = false)
+            profile.pullError = noConnection
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertTrue(account.signOutWhenSynced)
+            assertEquals(0, account.signOutCount)
+            assertEquals(google, account.status)
+            assertEquals(pierre, profile.profile.value)
+            assertTrue(profile.hasPendingChanges.value)
+        }
+
+    @Test
+    fun `GIVEN a sign out scheduled offline WHEN the device comes online THEN pushes the change and signs out`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, online = false)
+            coordinator.start()
+            runCurrent()
+            profile.pullError = noConnection
+            coordinator.signOutWhenSynced()
+            runCurrent()
+            profile.pullError = null
+
+            // When
+            isOnline.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN a sign out scheduled and a push that failed WHEN a retry succeeds THEN signs out`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+        profile.pushError = IllegalStateException("server down")
+        coordinator.signOutWhenSynced()
+        runCurrent()
+        profile.pushError = null
+
+        // When
+        coordinator.retry()
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled on an earlier launch WHEN the app starts online THEN pushes and signs out`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, signOutScheduled = true)
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN a change queued while the push is in flight WHEN signing out once synced THEN pushes it before`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingChanges = true,
+                changeQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(2, profile.uploadedUserIds.size)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN a sign out scheduled WHEN cancelling it THEN the schedule is off`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, signOutScheduled = true)
+
+        // When
+        coordinator.cancelSignOutWhenSynced()
+
+        // Then
+        assertFalse(account.signOutWhenSynced)
+    }
+
+    @Test
+    fun `GIVEN a cancelled offline sign out WHEN the device comes online THEN syncs without signing out`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true, online = false)
+        coordinator.start()
+        runCurrent()
+        profile.pullError = noConnection
+        coordinator.signOutWhenSynced()
+        runCurrent()
+        profile.pullError = null
+        coordinator.cancelSignOutWhenSynced()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), profile.uploadedUserIds)
+        assertEquals(0, account.signOutCount)
+        assertEquals(google, account.status)
+        assertEquals(pierre, profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN no sign out scheduled WHEN a sync succeeds THEN keeps the session and the profile`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre, status = google, pendingChanges = true)
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(0, account.signOutCount)
+        assertEquals(0, profile.clearCount)
+        assertEquals(google, account.status)
+        assertEquals(pierre, profile.profile.value)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
+    private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
+    private val noConnection = IllegalStateException("no connection")
 
     private fun TestScope.prepareScenario(
         storedProfile: UserProfile?,
@@ -548,14 +868,24 @@ class SyncCoordinatorTest {
         online: Boolean = true,
         pendingChanges: Boolean = false,
         pullHangs: Boolean = false,
+        signOutScheduled: Boolean = false,
+        changeQueuedDuringFirstPush: Boolean = false,
     ) {
-        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
+        account = FakeAccountRepository(initialStatus = status).also {
+            it.recoveryCodePrompt = prompt
+            it.signOutWhenSynced = signOutScheduled
+        }
         profile =
             FakeProfileRepository(initialProfile = storedProfile).also { it.hasPendingChanges.value = pendingChanges }
         isOnline = MutableStateFlow(online)
+        pullGate = CompletableDeferred()
         coordinator = SyncCoordinator(
             accountRepository = account,
-            profileRepository = if (pullHangs) HangingPullProfileRepository(profile) else profile,
+            profileRepository = when {
+                pullHangs -> GatedPullProfileRepository(profile, pullGate)
+                changeQueuedDuringFirstPush -> ChangeDuringFirstPushProfileRepository(profile)
+                else -> profile
+            },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
@@ -566,12 +896,25 @@ class SyncCoordinatorTest {
     }
 }
 
-// Why: holds a sync mid-flight, so a test can read the state while it runs or cancel it.
-private class HangingPullProfileRepository(
+// Why: holds a sync mid-flight until the gate opens, so a test can read the state while it runs,
+// cancel it, or let it finish.
+private class GatedPullProfileRepository(
     private val delegate: FakeProfileRepository,
+    private val gate: CompletableDeferred<Unit>,
 ) : ProfileRepository by delegate {
     override suspend fun downloadProfile(userId: String): Result<Unit> {
-        delegate.downloadedUserIds += userId
-        awaitCancellation()
+        gate.await()
+        return delegate.downloadProfile(userId)
+    }
+}
+
+// Why: a change saved while the first push is in flight, so the queue is not empty once it ends.
+private class ChangeDuringFirstPushProfileRepository(
+    private val delegate: FakeProfileRepository,
+) : ProfileRepository by delegate {
+    override suspend fun uploadPendingProfile(userId: String): Result<Unit> {
+        val result = delegate.uploadPendingProfile(userId)
+        if (delegate.uploadedUserIds.size == 1) delegate.hasPendingChanges.value = true
+        return result
     }
 }

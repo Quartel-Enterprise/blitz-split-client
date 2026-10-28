@@ -40,7 +40,8 @@ class AccountRepositoryImpl(
      * screens show that sign in as under way across the page reload of the web. A callback the mirror
      * already settled doesn't show it again once its provider is read.
      */
-    private val returningSignIn = MutableStateFlow(ReturningSignIn(provider = null, isSettled = true))
+    private val returningSignIn =
+        MutableStateFlow(ReturningSignIn(provider = null, isSettled = true, returnsToProfile = false))
 
     override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
@@ -54,7 +55,7 @@ class AccountRepositoryImpl(
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
             local.update { account -> account.toMirrorOf(user) }
-            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true)
+            returningSignIn.value = ReturningSignIn(provider = null, isSettled = true, returnsToProfile = false)
         }
     }
 
@@ -94,12 +95,21 @@ class AccountRepositoryImpl(
         result
     }
 
-    override suspend fun signInWithBrowser(provider: AccountProvider): Result<Unit> = suspendRunCatching {
+    override suspend fun signInWithBrowser(
+        provider: AccountProvider,
+        isFromProfile: Boolean,
+    ): Result<Unit> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         if (current != null && current.socialProvider == null) {
-            linkWithBrowser(provider)
+            linkWithBrowser(provider = provider, isFromProfile = isFromProfile)
         } else {
-            local.update { account -> account.copy(pendingLinkProvider = null, browserSignInProvider = provider.code) }
+            local.update { account ->
+                account.copy(
+                    pendingLinkProvider = null,
+                    browserSignInProvider = provider.code,
+                    browserSignInFromProfile = isFromProfile,
+                )
+            }
             openBrowser { remote.signInWithBrowser(provider) }
         }
     }
@@ -144,6 +154,10 @@ class AccountRepositoryImpl(
         .map { it.provider }
         .distinctUntilChanged()
 
+    override fun observeBrowserSignInReturningToProfile(): Flow<AccountProvider?> = returningSignIn
+        .map { returning -> returning.provider?.takeIf { returning.returnsToProfile } }
+        .distinctUntilChanged()
+
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
         val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
         val credentials = remote.fetchRecoveryCredentials(normalized)
@@ -174,6 +188,16 @@ class AccountRepositoryImpl(
         local.update { account -> account.copy(recoveryCodePrompt = prompt.code) }
     }
 
+    override suspend fun updateSignOutWhenSynced(isScheduled: Boolean) {
+        local.update { account -> account.copy(signOutWhenSynced = isScheduled) }
+    }
+
+    // Why: the anonymous user stays on the server, where its recovery code still brings it back.
+    override suspend fun signOut() {
+        remote.signOut()
+        local.clear()
+    }
+
     /*
      * Why: Apple tells the name only on the first sign in and leaves it out of the ID token, so the
      * account keeps it for the profile prefill. A failure doesn't fail the sign in: the name can be typed.
@@ -182,9 +206,16 @@ class AccountRepositoryImpl(
         suspendRunCatching { remote.saveDisplayName(name) }
     }
 
-    private suspend fun linkWithBrowser(provider: AccountProvider) {
+    private suspend fun linkWithBrowser(
+        provider: AccountProvider,
+        isFromProfile: Boolean,
+    ) {
         local.update { account ->
-            account.copy(pendingLinkProvider = provider.code, browserSignInProvider = provider.code)
+            account.copy(
+                pendingLinkProvider = provider.code,
+                browserSignInProvider = provider.code,
+                browserSignInFromProfile = isFromProfile,
+            )
         }
         try {
             openBrowser { remote.linkWithBrowser(provider) }
@@ -198,7 +229,7 @@ class AccountRepositoryImpl(
         callback: BrowserCallback,
         wasBrowserOpen: Boolean,
     ) {
-        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn()
+        if (callback == BrowserCallback.SIGNED_IN) showReturningSignIn(isRelaunch = !wasBrowserOpen)
         val linkingProvider = local.get().pendingLinkProvider?.let(AccountProvider::fromCodeOrNull)
         val startsSecondTrip = callback == BrowserCallback.IDENTITY_ALREADY_LINKED && linkingProvider != null
         // Why: only a sign in leaves a session that ends the screens' wait, so any other callback ends it here.
@@ -226,10 +257,14 @@ class AccountRepositoryImpl(
     }
 
     // Why: reset first, so the mirror of this callback's session settles it even before the provider is read.
-    private suspend fun showReturningSignIn() {
-        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false)
-        val provider = local.get().browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
-        returningSignIn.update { current -> if (current.isSettled) current else current.copy(provider = provider) }
+    private suspend fun showReturningSignIn(isRelaunch: Boolean) {
+        returningSignIn.value = ReturningSignIn(provider = null, isSettled = false, returnsToProfile = false)
+        val account = local.get()
+        val provider = account.browserSignInProvider?.let(AccountProvider::fromCodeOrNull) ?: return
+        val returnsToProfile = isRelaunch && account.browserSignInFromProfile
+        returningSignIn.update { current ->
+            if (current.isSettled) current else current.copy(provider = provider, returnsToProfile = returnsToProfile)
+        }
     }
 
     private suspend fun signInLinkingFirst(
@@ -250,6 +285,8 @@ class AccountRepositoryImpl(
         recoveryCodePrompt = RecoveryCodePrompt
             .fromCodeOrNull(account.recoveryCodePrompt)
             ?: RecoveryCodePrompt.NOT_DUE,
+        email = account.email,
+        signOutWhenSynced = account.signOutWhenSynced,
     )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
@@ -259,17 +296,28 @@ class AccountRepositoryImpl(
         return AccountStatus.Connected(userId = userId, provider = provider)
     }
 
-    // Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good.
+    /*
+     * Why: a Google or Apple account replaces the recovery code, so its prompt is settled for good. A
+     * session that ends on its own drops a scheduled sign out, which was for that account: the changes
+     * it waited on stay on the device.
+     */
     private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
-        user == null -> copy(userId = null, provider = null, pendingLinkProvider = null)
+        user == null -> copy(
+            userId = null,
+            provider = null,
+            pendingLinkProvider = null,
+            email = null,
+            signOutWhenSynced = false,
+        )
 
         user.socialProvider != null -> copy(
             userId = user.userId,
             provider = user.socialProvider.code,
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
+            email = user.email,
         )
 
-        else -> copy(userId = user.userId, provider = null)
+        else -> copy(userId = user.userId, provider = null, email = null)
     }
 
     private enum class BrowserTrip {

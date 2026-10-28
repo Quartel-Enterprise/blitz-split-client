@@ -9,4 +9,7 @@ interface AccountLocalDataSource {
     suspend fun get(): AccountEntity
 
     suspend fun update(transform: (AccountEntity) -> AccountEntity)
+
+    // Why: back to the state of a fresh install, as the empty row reads.
+    suspend fun clear()
 }

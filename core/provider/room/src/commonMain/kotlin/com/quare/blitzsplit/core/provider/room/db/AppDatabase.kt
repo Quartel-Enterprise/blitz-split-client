@@ -5,21 +5,25 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
+import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
+import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 
 @Database(
     entities = [
         ProfileEntity::class,
         AccountEntity::class,
+        DeviceSettingsEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -27,4 +31,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
 
     abstract fun accountDao(): AccountDao
+
+    abstract fun deviceSettingsDao(): DeviceSettingsDao
 }

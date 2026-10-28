@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecoveryCodeException
 import com.quare.blitzsplit.core.account.domain.model.TooManyRecoveryAttemptsException
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.exception.AuthErrorCode
 import io.github.jan.supabase.auth.exception.AuthRestException
@@ -27,11 +28,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import kotlin.time.Duration.Companion.seconds
 
 class SupabaseAccountRemoteDataSource(
     private val auth: Auth,
@@ -127,6 +130,14 @@ class SupabaseAccountRemoteDataSource(
         return json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
     }
 
+    // Why: the server only revokes the session, so a slow or captive network can't hold the sign out for long.
+    private val remoteSignOutTimeout = 5.seconds
+
+    override suspend fun signOut() {
+        suspendRunCatching { withTimeoutOrNull(remoteSignOutTimeout) { auth.signOut() } }
+        auth.clearSession()
+    }
+
     private fun toSessionUser(user: UserInfo): SessionUser = SessionUser(
         userId = user.id,
         socialProvider = user.identities.orEmpty().firstNotNullOfOrNull { identity ->
@@ -134,6 +145,7 @@ class SupabaseAccountRemoteDataSource(
         },
         displayName = user.userMetadata.findString(FULL_NAME_KEY, "name"),
         photoUrl = user.userMetadata.findString("avatar_url", "picture"),
+        email = user.email?.takeIf(String::isNotBlank),
     )
 
     private fun JsonObject?.findString(vararg keys: String): String? = keys.firstNotNullOfOrNull { key ->

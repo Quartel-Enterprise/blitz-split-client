@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="edit_profile_save">Salvar</string>
+    <string name="edit_profile_change_photo">Trocar foto</string>
+    <string name="edit_profile_take_photo">Tirar foto</string>
+    <string name="edit_profile_choose_photo">Escolher da galeria</string>
+    <string name="edit_profile_remove_photo">Remover foto</string>
+    <string name="edit_profile_photo_error">Não deu para usar essa foto. Tente outra.</string>
+    <string name="edit_profile_avatar_color">Cor do avatar</string>
+    <string name="edit_profile_avatar_color_hint">Aparece quando você está sem foto.</string>
+    <string name="edit_profile_name_label">Seu nome</string>
+    <string name="edit_profile_name_hint">De %1$d a %2$d caracteres</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Digite pelo menos %d letras.</string>
+    <string name="edit_profile_name_too_long">Use até %d caracteres.</string>
+    <string name="edit_profile_account_notice">Nome e foto vieram da sua conta %1$s. Mudar aqui vale só no Bora Rachar e não altera sua conta %1$s.</string>
+    <string name="edit_profile_footer">Só quem está nos seus grupos vê seu nome e foto.</string>
+    <string name="edit_profile_color_blue">Azul</string>
+    <string name="edit_profile_color_peach">Pêssego</string>
+    <string name="edit_profile_color_green">Verde</string>
+    <string name="edit_profile_color_lilac">Lilás</string>
+    <string name="edit_profile_color_sand">Areia</string>
+</resources>

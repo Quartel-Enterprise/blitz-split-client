@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.IssueRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
@@ -29,6 +30,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.IssueRecoveryCodeUs
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveBrowserSignInReturningToProfileUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
@@ -52,6 +54,7 @@ val accountModule = module {
     factoryOf(::HandleAppResumedUseCase).bind<HandleAppResumed>()
     factoryOf(::ObserveAbandonedBrowserSignInUseCase).bind<ObserveAbandonedBrowserSignIn>()
     factoryOf(::ObserveReturningBrowserSignInUseCase).bind<ObserveReturningBrowserSignIn>()
+    factoryOf(::ObserveBrowserSignInReturningToProfileUseCase).bind<ObserveBrowserSignInReturningToProfile>()
     factoryOf(::RestoreWithRecoveryCodeUseCase).bind<RestoreWithRecoveryCode>()
     factoryOf(::IssueRecoveryCodeUseCase).bind<IssueRecoveryCode>()
 }

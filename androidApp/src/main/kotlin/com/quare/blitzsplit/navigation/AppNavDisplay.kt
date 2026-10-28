@@ -12,7 +12,9 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
@@ -47,6 +49,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
             entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+            entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+            entry<Route.EditProfile> { EditProfileScreen() }
         },
     )
 }

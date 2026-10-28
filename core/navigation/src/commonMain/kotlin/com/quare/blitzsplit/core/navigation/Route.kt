@@ -13,4 +13,8 @@ sealed interface Route {
     data object Restore : Route
 
     data object Groups : Route
+
+    data object Profile : Route
+
+    data object EditProfile : Route
 }

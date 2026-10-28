@@ -19,6 +19,19 @@ class BackStackNavigatorTest {
     }
 
     @Test
+    fun `GIVEN a route on top WHEN navigating to it again THEN does not push it twice`() {
+        // Given
+        prepareScenario(startRoute = Route.Groups)
+        navigator.navigate(Route.Profile)
+
+        // When
+        navigator.navigate(Route.Profile)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN only the start route WHEN navigating back THEN keeps it`() {
         // Given
         prepareScenario(startRoute = Route.Welcome)

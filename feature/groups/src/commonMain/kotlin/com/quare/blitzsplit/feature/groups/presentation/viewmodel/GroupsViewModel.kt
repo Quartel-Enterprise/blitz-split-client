@@ -5,9 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
+import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -28,6 +29,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 
 class GroupsViewModel(
     private val retrySync: RetrySync,
+    private val navigator: Navigator,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
@@ -67,7 +69,7 @@ class GroupsViewModel(
                 photoUrl = profile?.photo?.toImageUrl(),
                 accountProvider = (account.status as? AccountStatus.Connected)?.provider,
                 syncBadge = syncBadgeOf(syncState = syncState, isOnline = isOnline),
-                showsRecoveryCodePrompt = account.recoveryCodePrompt == RecoveryCodePrompt.DUE,
+                showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
             )
         }.onEach { state -> uiState.value = state }
             .launchIn(viewModelScope)
@@ -77,9 +79,10 @@ class GroupsViewModel(
         when (event) {
             GroupsUiEvent.OnRetrySyncClicked -> if (uiState.value.canRetrySync) retrySync()
 
+            GroupsUiEvent.OnProfileClicked -> navigator.navigate(Route.Profile)
+
             GroupsUiEvent.OnCreateGroupClicked,
             GroupsUiEvent.OnJoinWithLinkClicked,
-            GroupsUiEvent.OnProfileClicked,
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,

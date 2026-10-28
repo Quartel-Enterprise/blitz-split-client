@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -75,11 +76,35 @@ class SyncCoordinator(
                     profileRepository.downloadProfile(userId).getOrThrow()
                     profileRepository.uploadPendingProfile(userId).getOrThrow()
                     offerRecoveryCodeIfDue()
+                    signOutIfScheduledAndSynced()
                 }.also { result -> lastSyncFailed.value = result.isFailure }
             }
         } finally {
             requestedSyncs.update { it - 1 }
         }
+    }
+
+    /*
+     * Why: under the sync lock, so a push in flight ends before the copy it reads is gone. In the app's
+     * scope, so leaving the screen midway can't end the account and keep the profile.
+     */
+    suspend fun signOut(): Result<Unit> = scope
+        .async { syncLock.withLock { suspendRunCatching { clearSession() } } }
+        .await()
+
+    /*
+     * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the
+     * session ends after the sync that empties the queue, now if nothing waits, or once back online.
+     */
+    fun signOutWhenSynced() {
+        scope.launch {
+            accountRepository.updateSignOutWhenSynced(isScheduled = true)
+            syncUntilSettled()
+        }
+    }
+
+    suspend fun cancelSignOutWhenSynced() {
+        accountRepository.updateSignOutWhenSynced(isScheduled = false)
     }
 
     /*
@@ -107,6 +132,26 @@ class SyncCoordinator(
         do {
             val result = syncNow()
         } while (result.isSuccess && profileRepository.observeHasPendingChanges().first())
+    }
+
+    /*
+     * Why: only a Google or Apple account schedules it, and the profile comes back only with that account.
+     * The schedule is read last, right before the session ends, so a cancel up to then still keeps it.
+     */
+    private suspend fun signOutIfScheduledAndSynced() {
+        if (profileRepository.observeHasPendingChanges().first()) return
+        val account = accountRepository.observeAccount().first()
+        if (account.signOutWhenSynced && account.status is AccountStatus.Connected) clearSession()
+    }
+
+    /*
+     * Why: the account goes first. If the profile then failed to clear, the person stays on the profile,
+     * now without an account, and can erase again; the other way round would leave a live Google or
+     * Apple session behind the welcome, where a new profile would overwrite the account's.
+     */
+    private suspend fun clearSession() {
+        accountRepository.signOut()
+        profileRepository.clear()
     }
 
     private suspend fun offerRecoveryCodeIfDue() {
@@ -139,10 +184,15 @@ class SyncCoordinator(
         is AccountStatus.Connected -> status.userId
     }
 
-    // Why: "Lembrar depois" shows the code again on the next launch, not right away.
+    /*
+     * Why: "Lembrar depois" shows the code again on the next launch, not right away. A saved code the
+     * app closed on while it was opened from the profile is still saved.
+     */
     private suspend fun reviveSnoozedPrompt() {
-        if (accountRepository.observeAccount().first().recoveryCodePrompt == RecoveryCodePrompt.SNOOZED) {
-            accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.DUE)
+        when (accountRepository.observeAccount().first().recoveryCodePrompt) {
+            RecoveryCodePrompt.SNOOZED -> accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.DUE)
+            RecoveryCodePrompt.REVIEW -> accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.SAVED)
+            else -> Unit
         }
     }
 }

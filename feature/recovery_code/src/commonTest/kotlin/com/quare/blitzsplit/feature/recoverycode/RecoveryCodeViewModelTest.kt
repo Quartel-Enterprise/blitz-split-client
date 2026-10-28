@@ -12,6 +12,8 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodeP
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import com.quare.blitzsplit.core.navigation.BackStackNavigator
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
@@ -85,6 +87,18 @@ class RecoveryCodeViewModelTest {
 
         // Then
         assertEquals(RecoveryCodePrompt.SNOOZED, account.recoveryCodePrompt)
+    }
+
+    @Test
+    fun `GIVEN a saved code opened for review WHEN reminding later THEN keeps it saved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.REVIEW)
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
+
+        // Then
+        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
     }
 
     @Test
@@ -366,7 +380,7 @@ class RecoveryCodeViewModelTest {
             observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account),
+            connectWithBrowser = ConnectWithBrowserUseCase(account, BackStackNavigator(startRoute = Route.Groups)),
             observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             completeSignIn = {
                 completedSignIns++

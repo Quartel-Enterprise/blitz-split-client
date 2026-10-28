@@ -15,21 +15,13 @@ enum DeviceName {
         #endif
     }
 
-    /// Where the person connects an account later ("Profile" on iOS, "Settings › Account" on the Mac).
+    /// Where the person connects an account later: the profile, pushed over the groups everywhere.
     static var accountPlace: String {
-        #if os(iOS)
         String(localized: "Profile")
-        #else
-        String(localized: "Settings › Account")
-        #endif
     }
 
     /// Where the recovery code stays available after the sheet.
     static var recoveryPlace: String {
-        #if os(iOS)
         String(localized: "Profile › Recovery")
-        #else
-        String(localized: "Settings › Recovery")
-        #endif
     }
 }
