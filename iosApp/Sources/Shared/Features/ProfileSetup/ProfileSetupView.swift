@@ -142,6 +142,7 @@ private struct AvatarSection: View {
                     photoUrl: state.photoUrl,
                     size: avatarSize,
                 )
+                .accessibilityHidden(true)
                 .overlay {
                     if state.isPreparingPhoto { ProgressView() }
                 }

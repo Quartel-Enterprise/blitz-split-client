@@ -1,3 +1,4 @@
+import Shared
 import SwiftUI
 
 /// "No connection." over the welcome actions: a Liquid Glass notice, as the canvas draws it.
@@ -157,16 +158,18 @@ struct CurrencyBadge: View {
 }
 
 /// The initial stays under the photo, so it shows while the photo loads or when it fails to. A picked
-/// photo arrives as a data URI, which AsyncImage loads like any other URL.
+/// photo arrives as a data URI, which AsyncImage loads like any other URL. Without a font, the initial
+/// scales with the avatar.
 struct AvatarPhoto: View {
     let initial: String
     let color: AvatarColor
     let photoUrl: String?
     let size: CGFloat
+    var font: Font?
 
     var body: some View {
         Text(initial)
-            .font(.system(size: size * 0.42, weight: .bold))
+            .font(font ?? .system(size: size * 0.42, weight: .bold))
             .foregroundStyle(color.content)
             .frame(width: size, height: size)
             .background(color.container, in: .circle)
@@ -181,6 +184,5 @@ struct AvatarPhoto: View {
                     .clipShape(.circle)
                 }
             }
-            .accessibilityHidden(true)
     }
 }

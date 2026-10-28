@@ -7,6 +7,7 @@ import { Avatar, BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
+import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
 interface Tab {
@@ -24,7 +25,7 @@ const tabs: Tab[] = [
 ]
 
 // The canvas names the account under the profile; "No account" covers both local only and anonymous.
-const accountLabels: Record<string, MessageKey> = {
+const accountLabels: Record<AccountProvider, MessageKey> = {
   google: 'groups_googleAccount',
   apple: 'groups_appleAccount',
 }
@@ -47,7 +48,7 @@ export function GroupsScreen() {
   if (!presenter || !state) return null
 
   const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null
-  const account = (state.accountProvider && accountLabels[state.accountProvider]) || 'groups_noAccount'
+  const account = state.accountProvider ? accountLabels[state.accountProvider as AccountProvider] : 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">
@@ -72,11 +73,11 @@ export function GroupsScreen() {
         </nav>
         <button
           onClick={() => presenter.openProfile()}
-          aria-label={t('groups_profile')}
           className="mt-auto flex h-12 items-center justify-center gap-2.5 rounded-lg px-1.5 text-left outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start"
         >
           <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-7 text-xs" />
-          <span className="hidden min-w-0 flex-col lg:flex">
+          {/* Why: the rail hides the name and account only visually, so they stay the button's accessible name. */}
+          <span className="sr-only min-w-0 flex-col lg:not-sr-only lg:flex">
             <span className="truncate text-sm font-medium">{state.displayName || t('groups_profile')}</span>
             <span className="text-xs text-muted-foreground">{t(account)}</span>
           </span>

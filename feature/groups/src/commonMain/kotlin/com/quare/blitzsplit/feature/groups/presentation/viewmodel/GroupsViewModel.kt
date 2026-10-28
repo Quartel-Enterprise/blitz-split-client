@@ -61,14 +61,10 @@ class GroupsViewModel(
             observeSyncState(),
             connectivityObserver.observe(),
         ) { profile, accountStatus, prompt, syncState, isOnline ->
+            val displayName = profile?.displayName?.trim().orEmpty()
             GroupsUiState(
-                displayName = profile?.displayName?.trim().orEmpty(),
-                avatarInitial = profile
-                    ?.displayName
-                    ?.trim()
-                    ?.firstOrNull()
-                    ?.uppercase()
-                    .orEmpty(),
+                displayName = displayName,
+                avatarInitial = displayName.firstOrNull()?.uppercase().orEmpty(),
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
                 photo = profile?.photo,
                 accountProvider = (accountStatus as? AccountStatus.Connected)?.provider,

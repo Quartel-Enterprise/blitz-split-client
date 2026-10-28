@@ -141,6 +141,7 @@ struct GroupsView: View {
                         color: state.avatarColor,
                         photoUrl: state.photoUrl,
                         size: 32,
+                        font: .subheadline.weight(.semibold),
                     )
                 }
                 .accessibilityLabel("Profile")
