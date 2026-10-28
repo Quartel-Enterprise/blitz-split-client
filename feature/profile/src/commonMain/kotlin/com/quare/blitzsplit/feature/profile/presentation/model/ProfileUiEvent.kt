@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.presentation.UiEvent
 
@@ -30,6 +31,15 @@ sealed interface ProfileUiEvent : UiEvent {
     data object OnNativeSignInFailed : ProfileUiEvent
 
     data object OnNativeSignInCancelled : ProfileUiEvent
+
+    // Why: each UI asks Pix or Bitcoin first, in its own native menu.
+    data class OnAddPaymentKeyClicked(
+        val method: PaymentMethod,
+    ) : ProfileUiEvent
+
+    data class OnPaymentKeyClicked(
+        val keyId: String,
+    ) : ProfileUiEvent
 
     data object OnRecoveryCodeClicked : ProfileUiEvent
 

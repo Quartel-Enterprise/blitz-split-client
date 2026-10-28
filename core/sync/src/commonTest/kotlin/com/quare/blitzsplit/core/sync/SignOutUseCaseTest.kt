@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class SignOutUseCaseTest {
+    private val paymentKeys = FakePaymentKeyRepository()
+
     private lateinit var account: FakeAccountRepository
     private lateinit var profile: FakeProfileRepository
     private lateinit var useCase: SignOutUseCase
@@ -44,6 +47,7 @@ class SignOutUseCaseTest {
             SyncCoordinator(
                 accountRepository = account,
                 profileRepository = profile,
+                paymentKeyRepository = paymentKeys,
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),

@@ -21,6 +21,8 @@ data class ProfileUiState(
     val isOnline: Boolean,
     val syncStatus: ProfileSyncStatus?,
     val pendingChanges: List<PendingChange>,
+    // Why: Pix first, each method's default first, as the settle screen offers them.
+    val paymentKeys: List<PaymentKeyItem>,
     val isSignOutScheduled: Boolean,
     val theme: ThemePreference,
     val dialog: ProfileDialog?,

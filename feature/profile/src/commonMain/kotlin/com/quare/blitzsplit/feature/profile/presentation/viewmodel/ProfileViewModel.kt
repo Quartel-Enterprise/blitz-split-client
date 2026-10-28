@@ -8,6 +8,8 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PaymentKey
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
@@ -15,8 +17,12 @@ import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKeyChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
@@ -27,7 +33,9 @@ import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
+import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
+import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
@@ -54,9 +62,12 @@ class ProfileViewModel(
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
+    private val validatePaymentKey: ValidatePaymentKey,
     observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
     observePendingProfileChanges: ObservePendingProfileChanges,
+    observePaymentKeys: ObservePaymentKeys,
+    observePendingPaymentKeyChanges: ObservePendingPaymentKeyChanges,
     observeSyncState: ObserveSyncState,
     observeThemePreference: ObserveThemePreference,
     connectivityObserver: NetworkConnectivityObserver,
@@ -75,6 +86,7 @@ class ProfileViewModel(
                 isOnline = true,
                 syncStatus = null,
                 pendingChanges = emptyList(),
+                paymentKeys = emptyList(),
                 isSignOutScheduled = false,
                 theme = ThemePreference.SYSTEM,
                 dialog = null,
@@ -112,16 +124,23 @@ class ProfileViewModel(
         combine(
             observeSyncState(),
             observePendingProfileChanges(),
+            observePendingPaymentKeyChanges(),
             connectivityObserver.observe(),
-        ) { syncState, hasPendingProfile, isOnline ->
+        ) { syncState, hasPendingProfile, hasPendingKeys, isOnline ->
             uiState.update {
                 it.copy(
                     isOnline = isOnline,
                     syncStatus = syncStatusOf(syncState),
-                    pendingChanges = if (hasPendingProfile) listOf(PendingChange.PROFILE) else emptyList(),
+                    pendingChanges = listOfNotNull(
+                        PendingChange.PROFILE.takeIf { hasPendingProfile },
+                        PendingChange.PAYMENT_KEYS.takeIf { hasPendingKeys },
+                    ),
                 )
             }
         }.launchIn(viewModelScope)
+        observePaymentKeys()
+            .onEach { keys -> uiState.update { it.copy(paymentKeys = keys.mapNotNull(::toItem)) } }
+            .launchIn(viewModelScope)
         observeThemePreference()
             .onEach { theme -> uiState.update { it.copy(theme = theme) } }
             .launchIn(viewModelScope)
@@ -151,6 +170,8 @@ class ProfileViewModel(
             is ProfileUiEvent.OnIdTokenReceived -> handleIdToken(event)
             ProfileUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
             ProfileUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
+            is ProfileUiEvent.OnAddPaymentKeyClicked -> openPaymentKey(event.method, keyId = null)
+            is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
@@ -199,6 +220,36 @@ class ProfileViewModel(
         !state.hasAccount -> ProfileDialog.ERASE_PROFILE
         state.pendingChangeCount > 0 -> ProfileDialog.SIGN_OUT_PENDING
         else -> ProfileDialog.SIGN_OUT
+    }
+
+    private fun openSavedPaymentKey(keyId: String) {
+        val key = uiState.value.paymentKeys.find { it.id == keyId } ?: return
+        openPaymentKey(key.type.method, keyId)
+    }
+
+    private fun openPaymentKey(
+        method: PaymentMethod,
+        keyId: String?,
+    ) {
+        navigator.navigate(
+            Route.PaymentKey(
+                method = method,
+                keyId = keyId,
+            ),
+        )
+    }
+
+    // Why: a stored key that no longer passes the rules (from a newer app, say) isn't shown rather than crash.
+    private fun toItem(key: PaymentKey): PaymentKeyItem? {
+        val validation = validatePaymentKey(key.type, key.value, otherKeys = emptyList())
+        val format = (validation as? PaymentKeyValidation.Valid)?.format ?: return null
+        return PaymentKeyItem(
+            id = key.id,
+            type = key.type,
+            format = format,
+            maskedValue = key.value.toMaskedPaymentKey(format),
+            isDefault = key.isDefault,
+        )
     }
 
     // Why: a code already saved opens for review, so closing it with "Lembrar depois" leaves it saved.

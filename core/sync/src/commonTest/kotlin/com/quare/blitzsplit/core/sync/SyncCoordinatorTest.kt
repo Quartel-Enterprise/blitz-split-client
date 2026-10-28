@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SyncCoordinatorTest {
+    private val paymentKeys = FakePaymentKeyRepository()
+
     private lateinit var account: FakeAccountRepository
     private lateinit var profile: FakeProfileRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -1038,6 +1041,7 @@ class SyncCoordinatorTest {
                 changeQueuedDuringFirstPush -> ChangeDuringFirstPushProfileRepository(profile)
                 else -> profile
             },
+            paymentKeyRepository = paymentKeys,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
