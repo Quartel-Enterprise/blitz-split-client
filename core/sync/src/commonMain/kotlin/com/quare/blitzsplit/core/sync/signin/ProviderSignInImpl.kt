@@ -76,10 +76,13 @@ class ProviderSignInImpl(
         onStep: (SignInStep) -> Unit,
     ): Flow<Unit> = merge(
         observeConnectedStatus(isShown, onStep),
-        observeAbandonedBrowserSignIn().map { abandoned ->
-            // Why: as with a cancelled native sheet, closing the browser isn't an error, while a failed callback is.
-            onStep(SignInStep.Ended(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED))
-        },
+        observeAbandonedBrowserSignIn()
+            // Why: the trip ends app-wide, so only the screen on top, the one that started it, shows its end.
+            .filter { isShown() }
+            .map { abandoned ->
+                // Why: as with a cancelled native sheet, closing the browser isn't an error, while a failed callback is.
+                onStep(SignInStep.Ended(hasFailed = abandoned == AbandonedBrowserSignIn.FAILED))
+            },
         observeReturningSignIn(isShown, onStep),
     )
 

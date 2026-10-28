@@ -146,6 +146,20 @@ class WelcomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN the restore screen on top WHEN its browser sign in fails THEN leaves the welcome without an error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Restore)
+
+            // When
+            account.abandonedBrowserSignIns.emit(AbandonedBrowserSignIn.FAILED)
+
+            // Then
+            assertNull(viewModel.uiState.value.error)
+        }
+
+    @Test
     fun `GIVEN the first Apple sign in WHEN the ID token arrives with the name THEN hands the name on`() =
         runTest(testDispatcher) {
             // Given

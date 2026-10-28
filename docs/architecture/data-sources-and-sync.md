@@ -157,10 +157,11 @@ A browser closed without finishing sends no callback at all, so the account laye
 browser trip is open, and each native app reports leaving and coming back to the foreground: `MainActivity.onPause`
 and `onResume` on Android, `willResignActive` and `didBecomeActive` in `BoraRacharApp` on iOS and macOS
 (`HandleAppPaused`, `HandleAppResumed`). A trip that saw the app leave and is still open when the app is back was
-abandoned: `ObserveAbandonedBrowserSignIn` says `CANCELLED`, `ProviderSignIn` reports it to the welcome and the
-restore as an `Ended` that didn't fail, and they and `ProviderConnector` (for the recovery code and the profile) turn
-the spinner off with no error, as for a cancelled native sheet. This relies on the callback arriving before the app is reported active (Android calls `onNewIntent`
-before `onResume`, SwiftUI `onOpenURL` before `didBecomeActive`), and on `handleBrowserCallback` closing the trip
+abandoned: `ObserveAbandonedBrowserSignIn` says `CANCELLED`, `ProviderSignIn` reports it as an `Ended` that didn't
+fail to the welcome or the restore, whichever is on top of the stack (the one that started the trip, not one left
+under it), and they and `ProviderConnector` (for the recovery code and the profile) turn the spinner off with no
+error, as for a cancelled native sheet. This relies on the callback arriving before the app is reported active
+(Android calls `onNewIntent` before `onResume`, SwiftUI `onOpenURL` before `didBecomeActive`), and on `handleBrowserCallback` closing the trip
 before its first suspension, which is why both bridges run it on `Dispatchers.Main.immediate`. A callback that can't finish a sign in ends the wait too: a cancel on
 the provider's page (`access_denied`, Apple's `user_cancelled_authorize`) as `CANCELLED`, any other error, or a second
 trip that can't start, as `FAILED`, which shows the screen's sign in error. The web never reports either: the page
