@@ -95,16 +95,18 @@ calls the `Navigator` (see [navigation.md](navigation.md)).
 
 ```kotlin
 class WelcomeViewModel(
-    private val nativeSignIn: NativeSignIn,
-    private val connectWithIdToken: ConnectWithIdToken,
-    private val connectWithBrowser: ConnectWithBrowser,
-    private val observeAccountStatus: ObserveAccountStatus,
-    private val completeSignIn: CompleteSignIn,
-    private val connectivityObserver: NetworkConnectivityObserver,
+    private val providerSignIn: ProviderSignIn,
     private val navigator: Navigator,
+    connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<WelcomeUiState>
-        field = MutableStateFlow(WelcomeUiState(isOnline = true, connectingProvider = null, error = null))
+        field = MutableStateFlow(
+            WelcomeUiState(
+                isOnline = true,
+                connectingProvider = null,
+                error = null,
+            ),
+        )
 
     val uiAction: SharedFlow<WelcomeUiAction>
         field = MutableSharedFlow<WelcomeUiAction>()
@@ -113,8 +115,15 @@ class WelcomeViewModel(
     val actionWatcher: FlowWatcher<WelcomeUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeConnectivity()
-        observeBrowserSignIn()
+        connectivityObserver
+            .observe()
+            .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
+            .launchIn(viewModelScope)
+        providerSignIn
+            .observeBrowserSignIn(
+                isShown = { navigator.backStack.value.lastOrNull() == Route.Welcome },
+                onStep = ::handleSignInStep,
+            ).launchIn(viewModelScope)
     }
 
     fun onEvent(event: WelcomeUiEvent) {
@@ -127,13 +136,6 @@ class WelcomeViewModel(
             WelcomeUiEvent.OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)
             WelcomeUiEvent.OnErrorDismissed -> uiState.update { it.copy(error = null) }
         }
-    }
-
-    private fun observeConnectivity() {
-        connectivityObserver
-            .observe()
-            .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
-            .launchIn(viewModelScope)
     }
 }
 ```
@@ -152,7 +154,8 @@ class WelcomeViewModel(
 - Guards live in the ViewModel too: `handleProviderClicked` returns early when `areAccountButtonsEnabled` is false,
   so a double tap on any platform does nothing. A screen whose link state comes from `ProviderConnector` still sets
   `connectingProvider` at the tap, since its copy of the connector's state lands a moment later; the connector also
-  refuses a second link while one is under way.
+  refuses a second link while one is under way. A screen that signs in through `ProviderSignIn` sets it at the tap
+  too, since that state is only the screen's.
 
 ### How each UI observes it
 

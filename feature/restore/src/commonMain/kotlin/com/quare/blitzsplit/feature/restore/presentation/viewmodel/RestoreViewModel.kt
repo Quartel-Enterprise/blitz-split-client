@@ -2,21 +2,14 @@ package com.quare.blitzsplit.feature.restore.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
-import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
-import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
-import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAbandonedBrowserSignIn
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
-import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
+import com.quare.blitzsplit.core.sync.signin.ProviderSignIn
+import com.quare.blitzsplit.core.sync.signin.SignInStep
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.restore.presentation.mapper.toRecoveryCodeFromQr
 import com.quare.blitzsplit.feature.restore.presentation.mapper.toRestoreError
@@ -28,10 +21,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -39,16 +28,10 @@ import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 
 class RestoreViewModel(
-    private val nativeSignIn: NativeSignIn,
+    private val providerSignIn: ProviderSignIn,
     private val restoreWithRecoveryCode: RestoreWithRecoveryCode,
-    private val connectWithIdToken: ConnectWithIdToken,
-    private val connectWithBrowser: ConnectWithBrowser,
-    private val observeAccountStatus: ObserveAccountStatus,
-    private val observeAbandonedBrowserSignIn: ObserveAbandonedBrowserSignIn,
-    private val observeReturningBrowserSignIn: ObserveReturningBrowserSignIn,
-    private val completeSignIn: CompleteSignIn,
-    private val connectivityObserver: NetworkConnectivityObserver,
     private val navigator: Navigator,
+    connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RestoreUiState>
         field = MutableStateFlow(
@@ -65,22 +48,19 @@ class RestoreViewModel(
     val uiAction: SharedFlow<RestoreUiAction>
         field = MutableSharedFlow<RestoreUiAction>()
 
-    /*
-     * Why: the status observer leaves alone a sign in this screen completes itself, both while it runs
-     * and for the Connected it produced, which Room may deliver once it has finished.
-     */
-    private var isSigningInDirectly = false
-    private var directlyCompletedStatus: AccountStatus? = null
-    private var returningProvider: AccountProvider? = null
-
     val stateWatcher: FlowWatcher<RestoreUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RestoreUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeConnectivity()
-        observeBrowserSignIn()
-        endAbandonedBrowserSignIn()
-        observeReturningSignIn()
+        connectivityObserver
+            .observe()
+            .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
+            .launchIn(viewModelScope)
+        providerSignIn
+            .observeBrowserSignIn(
+                isShown = { navigator.backStack.value.lastOrNull() == Route.Restore },
+                onStep = ::handleSignInStep,
+            ).launchIn(viewModelScope)
     }
 
     fun onEvent(event: RestoreUiEvent) {
@@ -97,32 +77,6 @@ class RestoreViewModel(
             RestoreUiEvent.OnBackClicked -> navigator.navigateBack()
             RestoreUiEvent.OnErrorDismissed -> uiState.update { it.copy(error = null) }
         }
-    }
-
-    private fun observeConnectivity() {
-        connectivityObserver
-            .observe()
-            .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
-            .launchIn(viewModelScope)
-    }
-
-    private fun observeBrowserSignIn() {
-        observeAccountStatus()
-            .distinctUntilChanged()
-            .filterIsInstance<AccountStatus.Connected>()
-            .filter { status ->
-                !isSigningInDirectly &&
-                    status != directlyCompletedStatus &&
-                    navigator.backStack.value.lastOrNull() == Route.Restore
-            }.onEach { status ->
-                uiState.update {
-                    it.copy(
-                        connectingProvider = it.connectingProvider ?: status.provider,
-                        error = null,
-                    )
-                }
-                finishSignIn()
-            }.launchIn(viewModelScope)
     }
 
     private fun updateCode(code: String) {
@@ -149,48 +103,13 @@ class RestoreViewModel(
                 error = null,
             )
         }
-        isSigningInDirectly = true
         viewModelScope.launch {
-            restoreWithRecoveryCode(state.code)
-                .onSuccess { finishDirectSignIn() }
+            providerSignIn
+                .signInDirectly { restoreWithRecoveryCode(state.code) }
+                .onSuccess(::handleSignInStep)
                 .onFailure { throwable -> uiState.update { it.copy(error = throwable.toRestoreError()) } }
             uiState.update { it.copy(isRestoring = false) }
-            isSigningInDirectly = false
         }
-    }
-
-    // Why: as with a cancelled native sheet, closing the browser isn't an error, while a failed callback is.
-    private fun endAbandonedBrowserSignIn() {
-        observeAbandonedBrowserSignIn()
-            .onEach { abandoned ->
-                finishConnecting(
-                    error = RestoreError.SIGN_IN_FAILED.takeIf { abandoned == AbandonedBrowserSignIn.FAILED },
-                )
-            }.launchIn(viewModelScope)
-    }
-
-    /*
-     * Why: on the web the callback reloads the page, so the sign in it brings back shows as under way
-     * from the first frame, and as failed if it ends without the account connecting.
-     */
-    private fun observeReturningSignIn() {
-        observeReturningBrowserSignIn()
-            .filter { navigator.backStack.value.lastOrNull() == Route.Restore }
-            .onEach { provider ->
-                if (provider != null) {
-                    returningProvider = provider
-                    uiState.update {
-                        it.copy(
-                            connectingProvider = it.connectingProvider ?: provider,
-                            error = null,
-                        )
-                    }
-                } else if (returningProvider != null) {
-                    returningProvider = null
-                    val isConnected = observeAccountStatus().first() is AccountStatus.Connected
-                    if (!isConnected) finishConnecting(error = RestoreError.SIGN_IN_FAILED)
-                }
-            }.launchIn(viewModelScope)
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {
@@ -202,42 +121,47 @@ class RestoreViewModel(
             )
         }
         viewModelScope.launch {
-            if (provider in nativeSignIn.providers) {
-                uiAction.emit(RestoreUiAction.LaunchNativeSignIn(provider))
-            } else {
-                connectWithBrowser(provider).onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
-            }
+            providerSignIn
+                .signIn(provider, ::launchNativeSignIn)
+                .onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
         }
     }
 
+    private suspend fun launchNativeSignIn(provider: AccountProvider) {
+        uiAction.emit(RestoreUiAction.LaunchNativeSignIn(provider))
+    }
+
     private fun handleIdToken(event: RestoreUiEvent.OnIdTokenReceived) {
-        isSigningInDirectly = true
         viewModelScope.launch {
-            connectWithIdToken(
+            val step = providerSignIn.onIdTokenReceived(
                 provider = event.provider,
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
-            ).onSuccess { finishDirectSignIn() }
-                .onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
-            isSigningInDirectly = false
+            )
+            handleSignInStep(step)
         }
     }
 
-    private suspend fun finishDirectSignIn() {
-        directlyCompletedStatus = observeAccountStatus().first()
-        finishSignIn()
-    }
+    private fun handleSignInStep(step: SignInStep) {
+        when (step) {
+            is SignInStep.Started -> uiState.update {
+                it.copy(
+                    connectingProvider = it.connectingProvider ?: step.provider,
+                    error = null,
+                )
+            }
 
-    private suspend fun finishSignIn() {
-        completeSignIn()
-            .onSuccess { outcome ->
+            is SignInStep.SignedIn -> {
                 finishConnecting(error = null)
-                when (outcome) {
+                when (step.outcome) {
                     SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Groups)
                     SignInOutcome.NEEDS_PROFILE -> navigator.navigate(Route.ProfileSetup)
                 }
-            }.onFailure { finishConnecting(error = RestoreError.SIGN_IN_FAILED) }
+            }
+
+            is SignInStep.Ended -> finishConnecting(error = RestoreError.SIGN_IN_FAILED.takeIf { step.hasFailed })
+        }
     }
 
     private fun finishConnecting(error: RestoreError?) {

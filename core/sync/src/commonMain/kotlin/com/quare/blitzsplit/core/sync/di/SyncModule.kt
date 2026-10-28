@@ -19,6 +19,8 @@ import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutWhenSyncedUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.StartSyncUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SyncNowUseCase
+import com.quare.blitzsplit.core.sync.signin.ProviderSignIn
+import com.quare.blitzsplit.core.sync.signin.ProviderSignInImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -35,8 +37,9 @@ val syncModule = module {
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }
-    // Why: a factory, so each screen keeps its own link under way.
+    // Why: factories, so each screen keeps its own link or sign in under way.
     factoryOf(::ProviderConnectorImpl).bind<ProviderConnector>()
+    factoryOf(::ProviderSignInImpl).bind<ProviderSignIn>()
     factoryOf(::SyncNowUseCase).bind<SyncNow>()
     factoryOf(::StartSyncUseCase).bind<StartSync>()
     factoryOf(::CompleteSignInUseCase).bind<CompleteSignIn>()
