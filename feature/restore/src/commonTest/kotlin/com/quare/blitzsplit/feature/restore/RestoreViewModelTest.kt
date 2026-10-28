@@ -330,7 +330,7 @@ class RestoreViewModelTest {
         prepareScenario(outcome = SignInOutcome.PROFILE_RESTORED)
 
         // When
-        account.status.value = AccountStatus.Connected("user", AccountProvider.APPLE)
+        account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
 
         // Then
         assertEquals(listOf(Route.Groups), navigator.backStack.value)

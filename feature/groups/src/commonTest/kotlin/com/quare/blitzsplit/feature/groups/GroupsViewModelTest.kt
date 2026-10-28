@@ -446,7 +446,7 @@ class GroupsViewModelTest {
             prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
 
             // When
-            account.status.value =
+            account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
 
             // Then
@@ -460,7 +460,7 @@ class GroupsViewModelTest {
             prepareScenario(status = AccountStatus.LocalOnly)
 
             // When
-            account.status.value =
+            account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
 
             // Then
@@ -472,7 +472,7 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(status = AccountStatus.LocalOnly, profile = pierre.copy(photo = null))
-            account.status.value =
+            account.status =
                 AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
 
             // When
@@ -494,7 +494,7 @@ class GroupsViewModelTest {
         status: AccountStatus = AccountStatus.LocalOnly,
         profile: UserProfile? = pierre,
     ) {
-        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt.value = prompt }
+        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)

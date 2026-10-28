@@ -63,7 +63,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertEquals(1, account.recoveryCodeCreations)
-        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt.value)
+        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
     }
 
     @Test
@@ -114,7 +114,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // Then
-        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt.value)
+        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
     }
 
     @Test
@@ -140,7 +140,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // When
-        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
         runCurrent()
 
         // Then
@@ -160,7 +160,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // When
-        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.APPLE)
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.APPLE)
         runCurrent()
 
         // Then
@@ -176,7 +176,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // When
-        account.status.value = AccountStatus.Anonymous(FakeAccountRepository.RESTORED_USER_ID)
+        account.status = AccountStatus.Anonymous(FakeAccountRepository.RESTORED_USER_ID)
         runCurrent()
 
         // Then
@@ -192,7 +192,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // When
-        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
         runCurrent()
 
         // Then
@@ -209,7 +209,7 @@ class SyncCoordinatorTest {
         profile.pullError = IllegalStateException("server down")
 
         // When
-        account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
         runCurrent()
 
         // Then
@@ -242,7 +242,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // When
-        account.status.value = AccountStatus.Connected(FakeAccountRepository.ANONYMOUS_USER_ID, AccountProvider.GOOGLE)
+        account.status = AccountStatus.Connected(FakeAccountRepository.ANONYMOUS_USER_ID, AccountProvider.GOOGLE)
         runCurrent()
 
         // Then
@@ -272,7 +272,7 @@ class SyncCoordinatorTest {
         runCurrent()
 
         // When
-        account.status.value = AccountStatus.LocalOnly
+        account.status = AccountStatus.LocalOnly
         runCurrent()
 
         // Then
@@ -287,11 +287,11 @@ class SyncCoordinatorTest {
             prepareScenario(storedProfile = pierre, status = anonymous, online = false)
             coordinator.start()
             runCurrent()
-            account.status.value = AccountStatus.LocalOnly
+            account.status = AccountStatus.LocalOnly
             runCurrent()
 
             // When
-            account.status.value = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+            account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
             runCurrent()
 
             // Then
@@ -549,7 +549,7 @@ class SyncCoordinatorTest {
         pendingChanges: Boolean = false,
         pullHangs: Boolean = false,
     ) {
-        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt.value = prompt }
+        account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profile =
             FakeProfileRepository(initialProfile = storedProfile).also { it.hasPendingChanges.value = pendingChanges }
         isOnline = MutableStateFlow(online)

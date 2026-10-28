@@ -81,7 +81,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
 
         // Then
-        assertEquals(RecoveryCodePrompt.SNOOZED, account.recoveryCodePrompt.value)
+        assertEquals(RecoveryCodePrompt.SNOOZED, account.recoveryCodePrompt)
     }
 
     @Test
@@ -93,7 +93,7 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnSavedClicked)
 
         // Then
-        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt.value)
+        assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
     }
 
     @Test
@@ -276,8 +276,8 @@ class RecoveryCodeViewModelTest {
     ) {
         completedSignIns = 0
         account = FakeAccountRepository().also {
-            it.recoveryCode.value = code
-            it.recoveryCodePrompt.value = prompt
+            it.recoveryCode = code
+            it.recoveryCodePrompt = prompt
             it.connectResult = connectResult
         }
         viewModel = RecoveryCodeViewModel(
