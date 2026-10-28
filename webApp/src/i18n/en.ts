@@ -17,6 +17,9 @@ export const en = {
   common_close: 'Close',
   common_cancel: 'Cancel',
 
+  otherTab_title: 'Blitz Split is open in another tab',
+  otherTab_body: 'Close that tab, or keep using it. This one opens on its own as soon as the other closes.',
+
   welcome_title: 'Split the bill, no hassle',
   welcome_subtitle: "Sign in with an account so you don't lose anything when you switch devices, or use it without one.",
   welcome_offlineTitle: 'Works offline',
