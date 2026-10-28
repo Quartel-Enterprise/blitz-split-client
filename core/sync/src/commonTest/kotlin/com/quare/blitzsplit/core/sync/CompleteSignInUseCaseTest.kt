@@ -29,7 +29,10 @@ class CompleteSignInUseCaseTest {
     @Test
     fun `GIVEN a returning account WHEN completing the sign in THEN pulls its profile and restores it`() = runTest {
         // Given
-        prepareScenario(sessionUser = googleUser, storedProfile = pierre)
+        prepareScenario(
+            sessionUser = googleUser,
+            storedProfile = pierre,
+        )
 
         // When
         val outcome = useCase()
@@ -42,7 +45,10 @@ class CompleteSignInUseCaseTest {
     @Test
     fun `GIVEN a new account WHEN completing the sign in THEN asks for a profile`() = runTest {
         // Given
-        prepareScenario(sessionUser = googleUser, storedProfile = null)
+        prepareScenario(
+            sessionUser = googleUser,
+            storedProfile = null,
+        )
 
         // When
         val outcome = useCase()
@@ -56,7 +62,11 @@ class CompleteSignInUseCaseTest {
         runTest {
             // Given
             val error = IllegalStateException("offline")
-            prepareScenario(sessionUser = googleUser, storedProfile = null, pullError = error)
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = null,
+                pullError = error,
+            )
 
             // When
             val outcome = useCase()
@@ -68,7 +78,10 @@ class CompleteSignInUseCaseTest {
     @Test
     fun `GIVEN no session WHEN completing the sign in THEN pulls nothing`() = runTest {
         // Given
-        prepareScenario(sessionUser = null, storedProfile = null)
+        prepareScenario(
+            sessionUser = null,
+            storedProfile = null,
+        )
 
         // When
         useCase()
@@ -84,6 +97,9 @@ class CompleteSignInUseCaseTest {
     ) {
         account = FakeAccountRepository().also { it.sessionUser = sessionUser }
         profile = FakeProfileRepository(storedProfile).also { it.pullError = pullError }
-        useCase = CompleteSignInUseCase(accountRepository = account, profileRepository = profile)
+        useCase = CompleteSignInUseCase(
+            accountRepository = account,
+            profileRepository = profile,
+        )
     }
 }

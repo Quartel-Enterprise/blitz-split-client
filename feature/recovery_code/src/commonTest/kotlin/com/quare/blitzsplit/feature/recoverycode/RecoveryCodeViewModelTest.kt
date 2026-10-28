@@ -56,7 +56,10 @@ class RecoveryCodeViewModelTest {
     @Test
     fun `GIVEN an issued code WHEN observing THEN shows it grouped and the prompt as due`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
 
         // When
         val state = viewModel.uiState.value
@@ -69,7 +72,10 @@ class RecoveryCodeViewModelTest {
     @Test
     fun `GIVEN the code WHEN copying THEN asks the platform to copy the grouped code`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
 
         // When
         viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
@@ -81,7 +87,10 @@ class RecoveryCodeViewModelTest {
     @Test
     fun `GIVEN the sheet WHEN reminding later THEN snoozes the prompt`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
 
         // When
         viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
@@ -93,7 +102,10 @@ class RecoveryCodeViewModelTest {
     @Test
     fun `GIVEN a saved code opened for review WHEN reminding later THEN keeps it saved`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.REVIEW)
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.REVIEW,
+        )
 
         // When
         viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked)
@@ -105,7 +117,10 @@ class RecoveryCodeViewModelTest {
     @Test
     fun `GIVEN the sheet WHEN confirming it was saved THEN settles the prompt`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+        prepareScenario(
+            code = "K7QM4XPA9TRE",
+            prompt = RecoveryCodePrompt.DUE,
+        )
 
         // When
         viewModel.onEvent(RecoveryCodeUiEvent.OnSavedClicked)
@@ -138,7 +153,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the code WHEN saving to the password manager THEN hands the grouped code to the platform`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
 
             // When
             viewModel.onEvent(RecoveryCodeUiEvent.OnSaveToPasswordManagerClicked)
@@ -154,7 +172,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the sheet WHEN choosing to connect an account instead THEN shows one button per provider`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
 
             // When
             viewModel.onEvent(RecoveryCodeUiEvent.OnConnectInsteadClicked)
@@ -166,7 +187,10 @@ class RecoveryCodeViewModelTest {
     @Test
     fun `GIVEN no code yet WHEN copying THEN does nothing`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(code = null, prompt = RecoveryCodePrompt.NOT_DUE)
+        prepareScenario(
+            code = null,
+            prompt = RecoveryCodePrompt.NOT_DUE,
+        )
 
         // When
         viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
@@ -179,7 +203,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN Google is not native WHEN choosing to connect it THEN starts the browser sign in`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
 
             // When
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
@@ -192,7 +219,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN a browser sign in WHEN its callback comes back failed THEN shows the error and enables them`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
 
             // When
@@ -207,7 +237,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN a browser sign in WHEN the browser closes without finishing THEN enables the buttons`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
 
             // When
@@ -321,7 +354,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the page reloaded on a Google link callback WHEN the sheet shows THEN shows the spinner on Google`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
 
             // When
             account.returningBrowserSignIn.value = AccountProvider.GOOGLE
@@ -336,7 +372,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN a returning Google link WHEN it ends with the prompt still due THEN shows the failure`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
             account.returningBrowserSignIn.value = AccountProvider.GOOGLE
 
             // When
@@ -351,7 +390,10 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN a returning Apple link WHEN it ends with the prompt settled THEN shows no failure`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(code = "K7QM4XPA9TRE", prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                code = "K7QM4XPA9TRE",
+                prompt = RecoveryCodePrompt.DUE,
+            )
             account.returningBrowserSignIn.value = AccountProvider.APPLE
 
             // When

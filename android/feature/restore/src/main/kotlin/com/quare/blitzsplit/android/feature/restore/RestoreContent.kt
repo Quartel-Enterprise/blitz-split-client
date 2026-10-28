@@ -69,7 +69,10 @@ fun RestoreContent(
     onEvent: (RestoreUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface,
+    ) {
         AdaptiveScreen(modifier = Modifier.fillMaxSize()) { layout ->
             Column(
                 modifier = Modifier
@@ -79,11 +82,24 @@ fun RestoreContent(
             ) {
                 // Why: a phone lying down has no height to spare, so its back button heads the left column.
                 val isPhoneLandscape = layout.isLandscape && !layout.isTablet
-                if (!isPhoneLandscape) RestoreBackButton(onEvent = onEvent, modifier = Modifier.padding(8.dp))
+                if (!isPhoneLandscape) {
+                    RestoreBackButton(
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(8.dp),
+                    )
+                }
                 if (layout.usesTwoColumns) {
-                    RestoreTwoColumnsLayout(state = state, onEvent = onEvent, layout = layout)
+                    RestoreTwoColumnsLayout(
+                        state = state,
+                        onEvent = onEvent,
+                        layout = layout,
+                    )
                 } else {
-                    RestoreSingleColumnLayout(state = state, onEvent = onEvent, layout = layout)
+                    RestoreSingleColumnLayout(
+                        state = state,
+                        onEvent = onEvent,
+                        layout = layout,
+                    )
                 }
             }
         }
@@ -95,7 +111,10 @@ private fun RestoreBackButton(
     onEvent: (RestoreUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = { onEvent(RestoreUiEvent.OnBackClicked) }, modifier = modifier) {
+    IconButton(
+        onClick = { onEvent(RestoreUiEvent.OnBackClicked) },
+        modifier = modifier,
+    ) {
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
             contentDescription = stringResource(DesignR.string.designsystem_back),
@@ -123,10 +142,21 @@ private fun ColumnScope.RestoreSingleColumnLayout(
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                RestoreIntroSection(state = state, onEvent = onEvent, layout = layout)
-                RestoreCodeSection(state = state, onEvent = onEvent)
+                RestoreIntroSection(
+                    state = state,
+                    onEvent = onEvent,
+                    layout = layout,
+                )
+                RestoreCodeSection(
+                    state = state,
+                    onEvent = onEvent,
+                )
             }
-            RestoreActionsSection(state = state, onEvent = onEvent, modifier = Modifier.padding(24.dp))
+            RestoreActionsSection(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier.padding(24.dp),
+            )
         }
     }
 }
@@ -146,7 +176,10 @@ private fun ColumnScope.RestoreTwoColumnsLayout(
             .weight(1f)
             .fillMaxWidth()
             .padding(horizontal = if (layout.isTablet) 48.dp else 24.dp)
-            .padding(top = if (layout.isTablet) 0.dp else 8.dp, bottom = 16.dp),
+            .padding(
+                top = if (layout.isTablet) 0.dp else 8.dp,
+                bottom = 16.dp,
+            ),
         contentAlignment = if (layout.isTablet) Alignment.Center else Alignment.TopCenter,
     ) {
         // Why: on a phone the actions sit at the bottom of the right column; a tablet centres both.
@@ -162,8 +195,17 @@ private fun ColumnScope.RestoreTwoColumnsLayout(
                     .weight(1f)
                     .verticalScroll(rememberScrollState()),
             ) {
-                if (!layout.isTablet) RestoreBackButton(onEvent = onEvent, modifier = Modifier.offset(x = (-12).dp))
-                RestoreIntroSection(state = state, onEvent = onEvent, layout = layout)
+                if (!layout.isTablet) {
+                    RestoreBackButton(
+                        onEvent = onEvent,
+                        modifier = Modifier.offset(x = (-12).dp),
+                    )
+                }
+                RestoreIntroSection(
+                    state = state,
+                    onEvent = onEvent,
+                    layout = layout,
+                )
             }
             val codeColumn: @Composable ColumnScope.() -> Unit = {
                 // Why: lines the code field up with the title, past the back button of the left column.
@@ -173,10 +215,17 @@ private fun ColumnScope.RestoreTwoColumnsLayout(
                         .weight(1f, fill = fillsHeight)
                         .verticalScroll(rememberScrollState()),
                 ) {
-                    RestoreCodeSection(state = state, onEvent = onEvent)
+                    RestoreCodeSection(
+                        state = state,
+                        onEvent = onEvent,
+                    )
                 }
                 Spacer(modifier = Modifier.height(if (layout.isTablet) 24.dp else 12.dp))
-                RestoreActionsSection(state = state, onEvent = onEvent, isCompact = !layout.isTablet)
+                RestoreActionsSection(
+                    state = state,
+                    onEvent = onEvent,
+                    isCompact = !layout.isTablet,
+                )
             }
             if (layout.isTablet) {
                 Surface(
@@ -184,10 +233,16 @@ private fun ColumnScope.RestoreTwoColumnsLayout(
                     shape = MaterialTheme.shapes.extraLarge,
                     color = MaterialTheme.colorScheme.surfaceContainerLowest,
                 ) {
-                    Column(modifier = Modifier.padding(28.dp), content = codeColumn)
+                    Column(
+                        modifier = Modifier.padding(28.dp),
+                        content = codeColumn,
+                    )
                 }
             } else {
-                Column(modifier = Modifier.weight(1f).fillMaxHeight(), content = codeColumn)
+                Column(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    content = codeColumn,
+                )
             }
         }
     }
@@ -295,7 +350,10 @@ private fun RestoreCodeSection(
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                    vertical = 14.dp,
+                ),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -306,7 +364,10 @@ private fun RestoreCodeSection(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(imageVector = Icons.Outlined.QrCodeScanner, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Outlined.QrCodeScanner,
+                            contentDescription = null,
+                        )
                     }
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -334,7 +395,10 @@ private fun RestoreActionsSection(
 ) {
     if (isCompact && !state.isOnline) {
         // Why: a phone lying down puts both offline actions on one row, as the design does.
-        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             TextButton(
                 onClick = { onEvent(RestoreUiEvent.OnStartFreshClicked) },
                 modifier = Modifier.weight(1.2f).height(48.dp),
@@ -349,14 +413,23 @@ private fun RestoreActionsSection(
                 onClick = { onEvent(RestoreUiEvent.OnRestoreClicked) },
                 modifier = Modifier.weight(1f).height(48.dp),
             ) {
-                Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
-                Text(text = stringResource(R.string.restore_try_again), modifier = Modifier.padding(start = 8.dp))
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = null,
+                )
+                Text(
+                    text = stringResource(R.string.restore_try_again),
+                    modifier = Modifier.padding(start = 8.dp),
+                )
             }
         }
         return
     }
     val buttonHeight = if (isCompact) 48.dp else 56.dp
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         if (state.isOnline) {
             Button(
                 onClick = { onEvent(RestoreUiEvent.OnRestoreClicked) },
@@ -364,9 +437,15 @@ private fun RestoreActionsSection(
                 modifier = Modifier.fillMaxWidth().height(buttonHeight),
             ) {
                 if (state.isRestoring) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp,
+                    )
                 } else {
-                    Text(text = stringResource(R.string.restore_recover), style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = stringResource(R.string.restore_recover),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
                 }
             }
         } else {
@@ -378,14 +457,20 @@ private fun RestoreActionsSection(
                 onClick = { onEvent(RestoreUiEvent.OnRestoreClicked) },
                 modifier = Modifier.fillMaxWidth().height(buttonHeight),
             ) {
-                Icon(imageVector = Icons.Outlined.Refresh, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = null,
+                )
                 Text(
                     text = stringResource(R.string.restore_try_again),
                     modifier = Modifier.padding(start = 8.dp),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
-            TextButton(onClick = { onEvent(RestoreUiEvent.OnStartFreshClicked) }, modifier = Modifier.fillMaxWidth()) {
+            TextButton(
+                onClick = { onEvent(RestoreUiEvent.OnStartFreshClicked) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Text(text = stringResource(R.string.restore_start_fresh))
             }
         }
@@ -405,7 +490,10 @@ private val RestoreError.codeErrorRes: Int?
 @Composable
 private fun RestoreOnlinePreview() {
     BlitzSplitTheme {
-        RestoreContent(state = createPreviewState(isOnline = true), onEvent = {})
+        RestoreContent(
+            state = createPreviewState(isOnline = true),
+            onEvent = {},
+        )
     }
 }
 
@@ -413,7 +501,10 @@ private fun RestoreOnlinePreview() {
 @Composable
 private fun RestoreOfflinePreview() {
     BlitzSplitTheme {
-        RestoreContent(state = createPreviewState(isOnline = false), onEvent = {})
+        RestoreContent(
+            state = createPreviewState(isOnline = false),
+            onEvent = {},
+        )
     }
 }
 

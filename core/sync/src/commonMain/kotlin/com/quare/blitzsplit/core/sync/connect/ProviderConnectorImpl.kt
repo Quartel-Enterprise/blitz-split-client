@@ -48,7 +48,12 @@ class ProviderConnectorImpl(
         launchNativeSignIn: suspend (AccountProvider) -> Unit,
     ) {
         if (connection.value.connectingProvider != null) return
-        connection.update { it.copy(connectingProvider = provider, hasFailed = false) }
+        connection.update {
+            it.copy(
+                connectingProvider = provider,
+                hasFailed = false,
+            )
+        }
         if (provider in nativeSignIn.providers) {
             launchNativeSignIn(provider)
         } else {
@@ -74,7 +79,12 @@ class ProviderConnectorImpl(
     }
 
     override fun finishConnecting(hasFailed: Boolean) {
-        connection.update { it.copy(connectingProvider = null, hasFailed = hasFailed) }
+        connection.update {
+            it.copy(
+                connectingProvider = null,
+                hasFailed = hasFailed,
+            )
+        }
     }
 
     /*

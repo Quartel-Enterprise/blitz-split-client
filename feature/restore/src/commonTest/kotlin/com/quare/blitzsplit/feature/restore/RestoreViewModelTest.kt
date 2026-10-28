@@ -394,7 +394,10 @@ class RestoreViewModelTest {
     fun `GIVEN a browser sign in waiting on the profile pull WHEN it fails THEN shows the error and enables them`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(profilePullError = IllegalStateException("offline"), isProfilePullPending = true)
+            prepareScenario(
+                profilePullError = IllegalStateException("offline"),
+                isProfilePullPending = true,
+            )
             account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
 
             // When
@@ -409,7 +412,10 @@ class RestoreViewModelTest {
     fun `GIVEN the code of an account with Google WHEN restoring THEN finishes the sign in once`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE, isProfilePullPending = true)
+            prepareScenario(
+                outcome = SignInOutcome.NEEDS_PROFILE,
+                isProfilePullPending = true,
+            )
             account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
             viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
             viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)

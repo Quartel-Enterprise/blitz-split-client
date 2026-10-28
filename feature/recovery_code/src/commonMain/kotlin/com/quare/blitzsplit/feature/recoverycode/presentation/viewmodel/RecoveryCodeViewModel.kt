@@ -111,7 +111,12 @@ class RecoveryCodeViewModel(
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
         // Why: the buttons check connectingProvider, so it is set at the tap, before the connector's copy lands.
-        uiState.update { it.copy(connectingProvider = provider, hasSignInFailed = false) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                hasSignInFailed = false,
+            )
+        }
         viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
     }
 

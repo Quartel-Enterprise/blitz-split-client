@@ -29,7 +29,13 @@ class WelcomeViewModel(
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<WelcomeUiState>
-        field = MutableStateFlow(WelcomeUiState(isOnline = true, connectingProvider = null, error = null))
+        field = MutableStateFlow(
+            WelcomeUiState(
+                isOnline = true,
+                connectingProvider = null,
+                error = null,
+            ),
+        )
 
     val uiAction: SharedFlow<WelcomeUiAction>
         field = MutableSharedFlow<WelcomeUiAction>()
@@ -63,7 +69,12 @@ class WelcomeViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
-        uiState.update { it.copy(connectingProvider = provider, error = null) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                error = null,
+            )
+        }
         viewModelScope.launch {
             providerSignIn
                 .signIn(provider, ::launchNativeSignIn)
@@ -90,7 +101,10 @@ class WelcomeViewModel(
     private fun handleSignInStep(step: SignInStep) {
         when (step) {
             is SignInStep.Started -> uiState.update {
-                it.copy(connectingProvider = it.connectingProvider ?: step.provider, error = null)
+                it.copy(
+                    connectingProvider = it.connectingProvider ?: step.provider,
+                    error = null,
+                )
             }
 
             is SignInStep.SignedIn -> {
@@ -106,6 +120,11 @@ class WelcomeViewModel(
     }
 
     private fun finishConnecting(error: WelcomeError?) {
-        uiState.update { it.copy(connectingProvider = null, error = error) }
+        uiState.update {
+            it.copy(
+                connectingProvider = null,
+                error = error,
+            )
+        }
     }
 }

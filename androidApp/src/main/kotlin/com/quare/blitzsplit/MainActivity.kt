@@ -47,7 +47,10 @@ class MainActivity : ComponentActivity() {
             // Why: the status and navigation bar icons follow the app's theme, not only the system's.
             LaunchedEffect(isDark) {
                 val barStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { isDark }
-                enableEdgeToEdge(statusBarStyle = barStyle, navigationBarStyle = barStyle)
+                enableEdgeToEdge(
+                    statusBarStyle = barStyle,
+                    navigationBarStyle = barStyle,
+                )
             }
             BlitzSplitTheme(isDark = isDark) {
                 AppNavDisplay(appViewModel = appViewModel)

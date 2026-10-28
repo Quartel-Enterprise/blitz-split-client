@@ -18,18 +18,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.Badge
-import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,19 +37,15 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -106,9 +96,17 @@ fun ProfileContent(
     ) { padding ->
         AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding)) { layout ->
             if (layout.usesTwoColumns) {
-                ProfileTwoColumnLayout(state = state, appVersion = appVersion, onEvent = onEvent)
+                ProfileTwoColumnLayout(
+                    state = state,
+                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
             } else {
-                ProfileSingleColumn(state = state, appVersion = appVersion, onEvent = onEvent)
+                ProfileSingleColumn(
+                    state = state,
+                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
             }
         }
     }
@@ -120,20 +118,41 @@ private fun ProfileSingleColumn(
     appVersion: String,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         Column(
             modifier = Modifier
                 .widthIn(max = singleColumnMaxWidth)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp,
+                ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            ProfileHeader(state = state, onEvent = onEvent)
-            AccountSection(state = state, onEvent = onEvent)
-            PreferencesSection(state = state, onEvent = onEvent)
-            AboutSection(appVersion = appVersion, onEvent = onEvent)
-            SignOutButton(state = state, onEvent = onEvent)
+            ProfileHeader(
+                state = state,
+                onEvent = onEvent,
+            )
+            AccountSection(
+                state = state,
+                onEvent = onEvent,
+            )
+            PreferencesSection(
+                state = state,
+                onEvent = onEvent,
+            )
+            AboutSection(
+                appVersion = appVersion,
+                onEvent = onEvent,
+            )
+            SignOutButton(
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -145,7 +164,10 @@ private fun ProfileTwoColumnLayout(
     appVersion: String,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         Row(
             modifier = Modifier
                 .widthIn(max = twoColumnsMaxWidth)
@@ -160,8 +182,14 @@ private fun ProfileTwoColumnLayout(
                     .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                ProfileHeader(state = state, onEvent = onEvent)
-                AccountSection(state = state, onEvent = onEvent)
+                ProfileHeader(
+                    state = state,
+                    onEvent = onEvent,
+                )
+                AccountSection(
+                    state = state,
+                    onEvent = onEvent,
+                )
             }
             Column(
                 modifier = Modifier
@@ -170,9 +198,18 @@ private fun ProfileTwoColumnLayout(
                     .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                PreferencesSection(state = state, onEvent = onEvent)
-                AboutSection(appVersion = appVersion, onEvent = onEvent)
-                SignOutButton(state = state, onEvent = onEvent)
+                PreferencesSection(
+                    state = state,
+                    onEvent = onEvent,
+                )
+                AboutSection(
+                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
+                SignOutButton(
+                    state = state,
+                    onEvent = onEvent,
+                )
             }
         }
     }
@@ -191,7 +228,10 @@ private fun ProfileHeader(
                 isCompact = true,
             )
         }
-        IdentityCard(state = state, onEvent = onEvent)
+        IdentityCard(
+            state = state,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -217,7 +257,10 @@ private fun IdentityCard(
                 size = 72.dp,
                 photoUrl = state.photoUrl,
             )
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 Text(
                     text = state.displayName,
                     style = MaterialTheme.typography.headlineSmall,
@@ -235,13 +278,16 @@ private fun IdentityCard(
                     },
                 )
             }
-            Icon(imageVector = Icons.Outlined.Edit, contentDescription = stringResource(R.string.profile_edit))
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = stringResource(R.string.profile_edit),
+            )
         }
     }
 }
 
 @Composable
-private fun Section(
+internal fun Section(
     @StringRes title: Int,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -263,7 +309,7 @@ private fun Section(
 }
 
 @Composable
-private fun SectionRow(
+internal fun SectionRow(
     icon: ImageVector,
     headline: String,
     modifier: Modifier = Modifier,
@@ -274,159 +320,14 @@ private fun SectionRow(
         headlineContent = { Text(headline) },
         modifier = modifier,
         supportingContent = supporting?.let { { Text(it) } },
-        leadingContent = { Icon(imageVector = icon, contentDescription = null) },
+        leadingContent = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+            )
+        },
         trailingContent = trailing,
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-    )
-}
-
-@Composable
-private fun AccountSection(
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    Section(title = R.string.profile_section_account) {
-        AccountRow(state = state, onEvent = onEvent)
-        if (state.showsConnectButtons) {
-            ConnectButtonsColumn(state = state, onEvent = onEvent)
-        }
-        if (state.showsRecoveryCodeRow) {
-            HorizontalDivider()
-            SectionRow(
-                icon = Icons.Outlined.Key,
-                headline = stringResource(R.string.profile_recovery_code),
-                supporting = stringResource(R.string.profile_recovery_code_detail),
-                modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnRecoveryCodeClicked) },
-            )
-        }
-        state.syncStatus?.let { syncStatus ->
-            HorizontalDivider()
-            SyncRow(syncStatus = syncStatus, state = state, onEvent = onEvent)
-        }
-        if (state.isSignOutScheduled) {
-            HorizontalDivider()
-            SectionRow(
-                icon = Icons.Outlined.Schedule,
-                headline = stringResource(R.string.profile_sign_out_scheduled),
-                supporting = stringResource(R.string.profile_sign_out_scheduled_detail),
-                trailing = {
-                    TextButton(onClick = { onEvent(ProfileUiEvent.OnCancelScheduledSignOutClicked) }) {
-                        Text(stringResource(R.string.profile_cancel))
-                    }
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun AccountRow(
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    val provider = state.accountProvider
-    if (provider != null) {
-        SectionRow(
-            icon = Icons.Outlined.Badge,
-            headline = stringResource(provider.labelRes),
-            supporting = state.maskedEmail?.let { stringResource(R.string.profile_account_connected_detail, it) },
-            trailing = {
-                Text(
-                    text = stringResource(R.string.profile_account_connected),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            },
-        )
-    } else {
-        SectionRow(
-            icon = Icons.Outlined.Badge,
-            headline = stringResource(R.string.profile_account_none),
-            supporting = if (state.hasAnonymousId) {
-                stringResource(R.string.profile_account_none_detail)
-            } else {
-                stringResource(R.string.profile_account_local_detail)
-            },
-            trailing = if (state.isConnectExpanded) {
-                null
-            } else {
-                {
-                    FilledTonalButton(
-                        onClick = { onEvent(ProfileUiEvent.OnConnectClicked) },
-                        enabled = state.canConnect,
-                    ) { Text(stringResource(R.string.profile_connect)) }
-                }
-            },
-        )
-    }
-}
-
-// Why: Google comes first on Android, natively; Apple signs in through the browser.
-@Composable
-private fun ConnectButtonsColumn(
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    Column(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        GoogleSignInButton(
-            onClick = { onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE)) },
-            isEnabled = state.areAccountButtonsEnabled,
-            isLoading = state.connectingProvider == AccountProvider.GOOGLE,
-        )
-        AppleSignInButton(
-            onClick = { onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE)) },
-            isEnabled = state.areAccountButtonsEnabled,
-            isLoading = state.connectingProvider == AccountProvider.APPLE,
-        )
-        if (state.hasSignInFailed) {
-            Text(
-                text = stringResource(R.string.profile_connect_failed),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SyncRow(
-    syncStatus: ProfileSyncStatus,
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    val supporting = when (syncStatus) {
-        ProfileSyncStatus.WAITING -> if (state.hasPendingChanges) {
-            pluralStringResource(R.plurals.profile_sync_waiting, state.pendingChangeCount, state.pendingChangeCount)
-        } else {
-            stringResource(R.string.profile_sync_waiting_empty)
-        }
-
-        ProfileSyncStatus.SYNCING -> stringResource(R.string.profile_sync_syncing)
-
-        ProfileSyncStatus.FAILED -> stringResource(R.string.profile_sync_failed)
-    }
-    SectionRow(
-        icon = Icons.Outlined.CloudSync,
-        headline = stringResource(R.string.profile_sync),
-        supporting = supporting,
-        trailing = when {
-            syncStatus == ProfileSyncStatus.SYNCING -> {
-                { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) }
-            }
-
-            state.canRetrySync -> {
-                {
-                    TextButton(onClick = { onEvent(ProfileUiEvent.OnRetrySyncClicked) }) {
-                        Text(stringResource(R.string.profile_sync_retry))
-                    }
-                }
-            }
-
-            else -> null
-        },
     )
 }
 
@@ -436,17 +337,27 @@ private fun PreferencesSection(
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     Section(title = R.string.profile_section_preferences) {
-        SectionRow(icon = Icons.Outlined.Palette, headline = stringResource(R.string.profile_appearance))
+        SectionRow(
+            icon = Icons.Outlined.Palette,
+            headline = stringResource(R.string.profile_appearance),
+        )
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                ),
         ) {
             ThemePreference.entries.forEachIndexed { index, theme ->
                 SegmentedButton(
                     selected = state.theme == theme,
                     onClick = { onEvent(ProfileUiEvent.OnThemeSelected(theme)) },
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemePreference.entries.size),
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = ThemePreference.entries.size,
+                    ),
                 ) { Text(stringResource(theme.labelRes)) }
             }
         }
@@ -480,7 +391,12 @@ private fun AboutSection(
         SectionRow(
             icon = Icons.Outlined.Info,
             headline = stringResource(R.string.profile_version),
-            trailing = { Text(text = appVersion, style = MaterialTheme.typography.bodyMedium) },
+            trailing = {
+                Text(
+                    text = appVersion,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
         )
     }
 }
@@ -498,8 +414,14 @@ private fun SignOutButton(
             .padding(bottom = 16.dp),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(imageVector = Icons.AutoMirrored.Outlined.Logout, contentDescription = null)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.Logout,
+                contentDescription = null,
+            )
             Text(
                 stringResource(
                     if (state.hasAccount) R.string.profile_sign_out else R.string.profile_erase_and_sign_out,
@@ -555,7 +477,11 @@ internal fun createPreviewProfileState(
 @Composable
 private fun ProfileConnectedPreview() {
     BlitzSplitTheme {
-        ProfileContent(state = createPreviewProfileState(), appVersion = "1.0.0", onEvent = {})
+        ProfileContent(
+            state = createPreviewProfileState(),
+            appVersion = "1.0.0",
+            onEvent = {},
+        )
     }
 }
 

@@ -81,7 +81,11 @@ class RestoreViewModel(
 
     private fun updateCode(code: String) {
         uiState.update {
-            it.copy(code = code, isCodeComplete = RecoveryCodeFormat.normalize(code) != null, error = null)
+            it.copy(
+                code = code,
+                isCodeComplete = RecoveryCodeFormat.normalize(code) != null,
+                error = null,
+            )
         }
     }
 
@@ -93,7 +97,12 @@ class RestoreViewModel(
     private fun restore() {
         val state = uiState.value
         if (!state.canRestore) return
-        uiState.update { it.copy(isRestoring = true, error = null) }
+        uiState.update {
+            it.copy(
+                isRestoring = true,
+                error = null,
+            )
+        }
         viewModelScope.launch {
             providerSignIn
                 .signInDirectly { restoreWithRecoveryCode(state.code) }
@@ -105,7 +114,12 @@ class RestoreViewModel(
 
     private fun handleProviderClicked(provider: AccountProvider) {
         if (!uiState.value.areAccountButtonsEnabled) return
-        uiState.update { it.copy(connectingProvider = provider, error = null) }
+        uiState.update {
+            it.copy(
+                connectingProvider = provider,
+                error = null,
+            )
+        }
         viewModelScope.launch {
             providerSignIn
                 .signIn(provider, ::launchNativeSignIn)
@@ -132,7 +146,10 @@ class RestoreViewModel(
     private fun handleSignInStep(step: SignInStep) {
         when (step) {
             is SignInStep.Started -> uiState.update {
-                it.copy(connectingProvider = it.connectingProvider ?: step.provider, error = null)
+                it.copy(
+                    connectingProvider = it.connectingProvider ?: step.provider,
+                    error = null,
+                )
             }
 
             is SignInStep.SignedIn -> {
@@ -148,7 +165,12 @@ class RestoreViewModel(
     }
 
     private fun finishConnecting(error: RestoreError?) {
-        uiState.update { it.copy(connectingProvider = null, error = error) }
+        uiState.update {
+            it.copy(
+                connectingProvider = null,
+                error = error,
+            )
+        }
     }
 
     private fun emitAction(action: RestoreUiAction) {

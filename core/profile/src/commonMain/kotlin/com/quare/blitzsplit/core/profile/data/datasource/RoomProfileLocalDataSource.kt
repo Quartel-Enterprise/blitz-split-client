@@ -19,7 +19,10 @@ class RoomProfileLocalDataSource(
         syncedUpdatedAt: Long,
         photoUrl: String?,
     ) {
-        dao.markSynced(syncedUpdatedAt = syncedUpdatedAt, photoUrl = photoUrl)
+        dao.markSynced(
+            syncedUpdatedAt = syncedUpdatedAt,
+            photoUrl = photoUrl,
+        )
     }
 
     override suspend fun clear() {

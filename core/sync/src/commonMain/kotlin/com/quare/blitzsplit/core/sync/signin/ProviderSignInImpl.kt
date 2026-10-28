@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -62,7 +63,7 @@ class ProviderSignInImpl(
         isSigningInDirectly = true
         val step = signIn().map {
             directlyCompletedStatus = observeAccountStatus().first()
-            finishSignIn()
+            completeSignIn().toSignInStep()
         }
         isSigningInDirectly = false
         return step
@@ -95,7 +96,7 @@ class ProviderSignInImpl(
         .filter { status -> !isSigningInDirectly && status != directlyCompletedStatus && isShown() }
         .map { status ->
             onStep(SignInStep.Started(status.provider))
-            onStep(finishSignIn())
+            onStep(completeSignIn().toSignInStep())
         }
 
     /*
@@ -118,7 +119,7 @@ class ProviderSignInImpl(
             }
         }
 
-    private suspend fun finishSignIn(): SignInStep = completeSignIn().fold(
+    private fun Result<SignInOutcome>.toSignInStep(): SignInStep = fold(
         onSuccess = SignInStep::SignedIn,
         onFailure = { SignInStep.Ended(hasFailed = true) },
     )
