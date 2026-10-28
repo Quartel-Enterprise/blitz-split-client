@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.account.testing
 
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
@@ -8,6 +9,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 
 // In-memory AccountRepository: public state a test can set and read, every call recorded, and
 // public vars to make a call fail.
@@ -32,9 +34,14 @@ class FakeAccountRepository(
     var restoreError: Throwable? = null
     var createRecoveryCodeResult: Result<String> = Result.success("K7QM4XPA9TRE")
 
-    override fun observeStatus(): Flow<AccountStatus> = status
+    override fun observeAccount(): Flow<AccountSnapshot> = combine(
+        status,
+        recoveryCode,
+        recoveryCodePrompt,
+        ::AccountSnapshot,
+    )
 
-    override fun observeRecoveryCode(): Flow<String?> = recoveryCode
+    override fun observeStatus(): Flow<AccountStatus> = status
 
     override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = recoveryCodePrompt
 

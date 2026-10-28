@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.account.data.repository
 import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -23,19 +24,17 @@ class AccountRepositoryImpl(
     private val local: AccountLocalDataSource,
     private val remote: AccountRemoteDataSource,
 ) : AccountRepository {
-    override fun observeStatus(): Flow<AccountStatus> = local
+    override fun observeAccount(): Flow<AccountSnapshot> = local
         .observe()
-        .map(::toStatus)
+        .map(::toSnapshot)
         .distinctUntilChanged()
 
-    override fun observeRecoveryCode(): Flow<String?> = local
-        .observe()
-        .map { it.recoveryCode }
+    override fun observeStatus(): Flow<AccountStatus> = observeAccount()
+        .map { it.status }
         .distinctUntilChanged()
 
-    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = local
-        .observe()
-        .map { RecoveryCodePrompt.fromCodeOrNull(it.recoveryCodePrompt) ?: RecoveryCodePrompt.NOT_DUE }
+    override fun observeRecoveryCodePrompt(): Flow<RecoveryCodePrompt> = observeAccount()
+        .map { it.recoveryCodePrompt }
         .distinctUntilChanged()
 
     override suspend fun mirrorSession() {
@@ -165,6 +164,14 @@ class AccountRepositoryImpl(
         remote.signInWithIdToken(provider = provider, idToken = idToken, rawNonce = rawNonce)
         ConnectResult.SWITCHED
     }
+
+    private fun toSnapshot(account: AccountEntity): AccountSnapshot = AccountSnapshot(
+        status = toStatus(account),
+        recoveryCode = account.recoveryCode,
+        recoveryCodePrompt = RecoveryCodePrompt
+            .fromCodeOrNull(account.recoveryCodePrompt)
+            ?: RecoveryCodePrompt.NOT_DUE,
+    )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
         val userId = account.userId ?: return AccountStatus.LocalOnly

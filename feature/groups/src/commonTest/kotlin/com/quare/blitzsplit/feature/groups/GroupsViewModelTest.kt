@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.groups
 
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -502,8 +501,7 @@ class GroupsViewModelTest {
         syncRequests = 0
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(profiles),
-            observeAccountStatus = ObserveAccountStatusUseCase(account),
-            observeRecoveryCodePrompt = ObserveRecoveryCodePromptUseCase(account),
+            observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },

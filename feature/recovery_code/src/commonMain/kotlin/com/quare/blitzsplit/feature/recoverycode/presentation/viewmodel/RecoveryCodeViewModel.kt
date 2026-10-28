@@ -5,8 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCode
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveRecoveryCodePrompt
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -32,8 +31,7 @@ class RecoveryCodeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val completeSignIn: CompleteSignIn,
-    observeRecoveryCode: ObserveRecoveryCode,
-    observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
+    observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<RecoveryCodeUiState>
@@ -55,12 +53,15 @@ class RecoveryCodeViewModel(
     val actionWatcher: FlowWatcher<RecoveryCodeUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeRecoveryCode()
-            .onEach { code -> uiState.update { it.copy(formattedCode = code?.let(RecoveryCodeFormat::format)) } }
-            .launchIn(viewModelScope)
-        observeRecoveryCodePrompt()
-            .onEach { prompt -> uiState.update { it.copy(isPromptDue = prompt == RecoveryCodePrompt.DUE) } }
-            .launchIn(viewModelScope)
+        observeAccount()
+            .onEach { account ->
+                uiState.update {
+                    it.copy(
+                        formattedCode = account.recoveryCode?.let(RecoveryCodeFormat::format),
+                        isPromptDue = account.recoveryCodePrompt == RecoveryCodePrompt.DUE,
+                    )
+                }
+            }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }

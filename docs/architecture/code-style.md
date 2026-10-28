@@ -172,8 +172,7 @@ class RecoveryCodeViewModel(
     private val connectWithIdToken: ConnectWithIdToken,
     private val connectWithBrowser: ConnectWithBrowser,
     private val completeSignIn: CompleteSignIn,
-    observeRecoveryCode: ObserveRecoveryCode,
-    observeRecoveryCodePrompt: ObserveRecoveryCodePrompt,
+    observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel()
 ```

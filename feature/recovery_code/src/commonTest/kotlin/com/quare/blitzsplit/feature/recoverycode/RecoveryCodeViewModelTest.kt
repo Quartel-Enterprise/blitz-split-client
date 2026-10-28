@@ -4,8 +4,7 @@ import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodePromptUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveRecoveryCodeUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -283,8 +282,7 @@ class RecoveryCodeViewModelTest {
         }
         viewModel = RecoveryCodeViewModel(
             nativeSignIn = NativeSignIn(native),
-            observeRecoveryCode = ObserveRecoveryCodeUseCase(account),
-            observeRecoveryCodePrompt = ObserveRecoveryCodePromptUseCase(account),
+            observeAccount = ObserveAccountUseCase(account),
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),
             connectWithBrowser = ConnectWithBrowserUseCase(account),
