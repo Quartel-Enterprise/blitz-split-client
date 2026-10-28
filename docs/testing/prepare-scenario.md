@@ -47,21 +47,26 @@ class RestoreViewModelTest {
         }
         navigator = BackStackNavigator(startRoute = Route.Welcome).also { it.navigate(Route.Restore) }
         viewModel = RestoreViewModel(
-            nativeSignIn = NativeSignIn(native),
+            providerSignIn = ProviderSignInImpl(
+                nativeSignIn = NativeSignIn(native),
+                connectWithIdToken = ConnectWithIdTokenUseCase(account),
+                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                completeSignIn = { Result.success(outcome) },
+                observeAccountStatus = ObserveAccountStatusUseCase(account),
+                observeReturningBrowserSignIn = ObserveReturningBrowserSignInUseCase(account),
+                observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
+            ),
             restoreWithRecoveryCode = RestoreWithRecoveryCodeUseCase(account),
-            connectWithIdToken = ConnectWithIdTokenUseCase(account),
-            connectWithBrowser = ConnectWithBrowserUseCase(account),
-            observeAccountStatus = ObserveAccountStatusUseCase(account),
-            completeSignIn = { outcome },
-            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
             navigator = navigator,
+            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 }
 ```
 
-The navigator starts where the screen really is in the flow (`Welcome`, then `Restore`), so a test can assert that
+A ViewModel that drives `ProviderSignIn` or `ProviderConnector` gets the real implementation over the fakes, so its
+tests walk the whole sign in. The navigator starts where the screen really is in the flow (`Welcome`, then `Restore`), so a test can assert that
 back returns to `listOf(Route.Welcome)` and that a restore leaves only `listOf(Route.Groups)`.
 
 ## A repository and its data sources
