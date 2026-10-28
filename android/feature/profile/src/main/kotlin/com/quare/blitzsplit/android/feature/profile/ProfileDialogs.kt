@@ -53,7 +53,10 @@ internal fun ProfileDialogsOverlay(
             title = { Text(stringResource(R.string.profile_sign_out_title)) },
             text = {
                 val provider = state.accountProvider?.let { stringResource(it.labelRes) }.orEmpty()
-                DialogBodyColumn(text = stringResource(R.string.profile_sign_out_body, provider), state = state)
+                DialogBodyColumn(
+                    text = stringResource(R.string.profile_sign_out_body, provider),
+                    state = state,
+                )
             },
             confirmButton = {
                 TextButton(
@@ -84,7 +87,10 @@ internal fun ProfileDialogsOverlay(
                 } else {
                     R.string.profile_sign_out_pending_body_offline
                 }
-                DialogBodyColumn(text = stringResource(bodyRes), state = state)
+                DialogBodyColumn(
+                    text = stringResource(bodyRes),
+                    state = state,
+                )
             },
             confirmButton = {
                 // Why: a sync that never succeeds (offline for good, a rejected push) can't keep the person signed in.
@@ -105,7 +111,11 @@ internal fun ProfileDialogsOverlay(
             },
         )
 
-        ProfileDialog.ERASE_PROFILE -> EraseProfileDialog(state = state, onEvent = onEvent, onDismiss = onDismiss)
+        ProfileDialog.ERASE_PROFILE -> EraseProfileDialog(
+            state = state,
+            onEvent = onEvent,
+            onDismiss = onDismiss,
+        )
 
         null -> Unit
     }
@@ -142,7 +152,12 @@ private fun EraseProfileDialog(
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
-                if (code != null) RecoveryCodeBox(code = code, onEvent = onEvent)
+                if (code != null) {
+                    RecoveryCodeBox(
+                        code = code,
+                        onEvent = onEvent,
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -153,7 +168,10 @@ private fun EraseProfileDialog(
                         ),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Checkbox(checked = state.hasConfirmedCodeSaved, onCheckedChange = null)
+                    Checkbox(
+                        checked = state.hasConfirmedCodeSaved,
+                        onCheckedChange = null,
+                    )
                     Text(
                         text = stringResource(
                             if (state.hasRecoveryCode) {
@@ -217,7 +235,12 @@ private fun RecoveryCodeBox(
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
     ) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 8.dp,
+                top = 8.dp,
+                bottom = 8.dp,
+            ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(

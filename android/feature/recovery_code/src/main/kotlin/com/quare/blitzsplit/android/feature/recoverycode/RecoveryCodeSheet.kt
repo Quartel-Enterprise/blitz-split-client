@@ -86,7 +86,11 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
-                    .padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 16.dp,
+                    ),
             )
         }
     }

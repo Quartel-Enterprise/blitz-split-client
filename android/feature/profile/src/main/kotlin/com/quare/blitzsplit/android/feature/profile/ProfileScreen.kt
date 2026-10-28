@@ -58,8 +58,15 @@ fun ProfileScreen(
         }
     }
     BackHandler { viewModel.onEvent(ProfileUiEvent.OnBackClicked) }
-    ProfileContent(state = state, appVersion = appVersion, onEvent = viewModel::onEvent)
-    ProfileDialogsOverlay(state = state, onEvent = viewModel::onEvent)
+    ProfileContent(
+        state = state,
+        appVersion = appVersion,
+        onEvent = viewModel::onEvent,
+    )
+    ProfileDialogsOverlay(
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
     if (state.showsRecoveryCodePrompt) recoveryCodeSheet()
 }
 

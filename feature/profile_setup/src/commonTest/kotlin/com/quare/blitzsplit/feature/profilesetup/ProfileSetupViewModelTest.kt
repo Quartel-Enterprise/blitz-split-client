@@ -212,7 +212,10 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             val stored = UserProfile("Pierre", AvatarColor.SAND, ProfilePhoto.Pending(jpegOf(photoSource)))
-            prepareScenario(sessionUser = googleUser, storedProfile = stored)
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = stored,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -228,7 +231,10 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             val stored = UserProfile("Pierre", AvatarColor.SAND, ProfilePhoto.Remote(UPLOADED_PHOTO_URL))
-            prepareScenario(sessionUser = googleUser, storedProfile = stored)
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = stored,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -242,7 +248,10 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             val stored = UserProfile("Pierre", AvatarColor.SAND, photo = null)
-            prepareScenario(sessionUser = googleUser, storedProfile = stored)
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = stored,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -291,7 +300,10 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             val sessionArrival = CompletableDeferred<Unit>()
-            prepareScenario(sessionUser = googleUser, sessionArrival = sessionArrival)
+            prepareScenario(
+                sessionUser = googleUser,
+                sessionArrival = sessionArrival,
+            )
             viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
 
             // When
@@ -323,7 +335,10 @@ class ProfileSetupViewModelTest {
     fun `GIVEN a Google photo WHEN a pick is still being prepared THEN shows it preparing over the Google photo`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(sessionUser = googleUser, holdsPhotos = true)
+            prepareScenario(
+                sessionUser = googleUser,
+                holdsPhotos = true,
+            )
 
             // When
             viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
@@ -460,7 +475,10 @@ class ProfileSetupViewModelTest {
     fun `GIVEN continue tapped during a pick WHEN the pick fails THEN stays on the screen with the error`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(sessionUser = googleUser, holdsPhotos = true)
+            prepareScenario(
+                sessionUser = googleUser,
+                holdsPhotos = true,
+            )
             viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(notAnImage))
             viewModel.onEvent(ProfileSetupUiEvent.OnContinueClicked)
 

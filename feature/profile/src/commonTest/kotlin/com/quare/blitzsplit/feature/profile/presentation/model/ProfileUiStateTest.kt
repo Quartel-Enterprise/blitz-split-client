@@ -96,7 +96,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN the code kept ticked and the erase under way WHEN drawing the erase button THEN disables it`() {
         // Given
-        val profile = state(hasConfirmedCodeSaved = true, isSigningOut = true)
+        val profile = state(
+            hasConfirmedCodeSaved = true,
+            isSigningOut = true,
+        )
 
         // When
         val canErase = profile.canErase
@@ -120,7 +123,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN a profile change not uploaded and no sync status WHEN drawing the profile THEN shows it pending`() {
         // Given
-        val profile = state(pendingChanges = listOf(PendingChange.PROFILE), syncStatus = null)
+        val profile = state(
+            pendingChanges = listOf(PendingChange.PROFILE),
+            syncStatus = null,
+        )
 
         // When
         val showsPending = profile.showsProfilePending
@@ -168,7 +174,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN no account and connect expanded WHEN drawing the account row THEN shows the provider buttons`() {
         // Given
-        val profile = state(accountProvider = null, isConnectExpanded = true)
+        val profile = state(
+            accountProvider = null,
+            isConnectExpanded = true,
+        )
 
         // When
         val showsButtons = profile.showsConnectButtons
@@ -180,7 +189,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN no account and connect not expanded WHEN drawing the account row THEN hides the provider buttons`() {
         // Given
-        val profile = state(accountProvider = null, isConnectExpanded = false)
+        val profile = state(
+            accountProvider = null,
+            isConnectExpanded = false,
+        )
 
         // When
         val showsButtons = profile.showsConnectButtons
@@ -192,7 +204,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN Google connected and connect expanded WHEN drawing the account row THEN hides the provider buttons`() {
         // Given
-        val profile = state(accountProvider = AccountProvider.GOOGLE, isConnectExpanded = true)
+        val profile = state(
+            accountProvider = AccountProvider.GOOGLE,
+            isConnectExpanded = true,
+        )
 
         // When
         val showsButtons = profile.showsConnectButtons
@@ -312,7 +327,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN no account and a recovery code WHEN drawing the account section THEN shows the recovery code row`() {
         // Given
-        val profile = state(accountProvider = null, formattedRecoveryCode = "K7QM-4XPA-9TRE")
+        val profile = state(
+            accountProvider = null,
+            formattedRecoveryCode = "K7QM-4XPA-9TRE",
+        )
 
         // When
         val showsRow = profile.showsRecoveryCodeRow
@@ -324,7 +342,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN no account and no recovery code WHEN drawing the account section THEN hides the recovery code row`() {
         // Given
-        val profile = state(accountProvider = null, formattedRecoveryCode = null)
+        val profile = state(
+            accountProvider = null,
+            formattedRecoveryCode = null,
+        )
 
         // When
         val showsRow = profile.showsRecoveryCodeRow
@@ -336,7 +357,10 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN Apple and a recovery code WHEN drawing the account section THEN hides the recovery code row`() {
         // Given
-        val profile = state(accountProvider = AccountProvider.APPLE, formattedRecoveryCode = "K7QM-4XPA-9TRE")
+        val profile = state(
+            accountProvider = AccountProvider.APPLE,
+            formattedRecoveryCode = "K7QM-4XPA-9TRE",
+        )
 
         // When
         val showsRow = profile.showsRecoveryCodeRow

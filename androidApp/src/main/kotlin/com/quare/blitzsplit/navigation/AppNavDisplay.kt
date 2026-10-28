@@ -34,7 +34,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val backStack by appViewModel.navigator.backStack.collectAsStateWithLifecycle()
     if (uiState == AppUiState.LOADING) {
         // Why: the start route depends on whether a profile exists, read from Room in a moment.
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {}
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface,
+        ) {}
         return
     }
     NavDisplay(

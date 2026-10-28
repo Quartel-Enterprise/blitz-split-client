@@ -27,15 +27,29 @@ class ProfileRepositoryImpl(
         .distinctUntilChanged()
 
     override suspend fun saveProfile(profile: UserProfile) {
-        local.upsert(mapper.toEntity(profile = profile, updatedAt = currentTimeMillis(), pendingSync = true))
+        local.upsert(
+            mapper.toEntity(
+                profile = profile,
+                updatedAt = currentTimeMillis(),
+                pendingSync = true,
+            ),
+        )
     }
 
     override suspend fun uploadPendingProfile(userId: String): Result<Unit> = suspendRunCatching {
         val pending = local.get()?.takeIf { it.pendingSync } ?: return@suspendRunCatching
         val photoUrl = pending.pendingPhoto?.let { jpeg -> uploadPhoto(userId, jpeg, pending.updatedAt) }
             ?: pending.photoUrl
-        remote.upsert(mapper.toDto(entity = pending.copy(photoUrl = photoUrl), userId = userId))
-        local.markSynced(syncedUpdatedAt = pending.updatedAt, photoUrl = photoUrl)
+        remote.upsert(
+            mapper.toDto(
+                entity = pending.copy(photoUrl = photoUrl),
+                userId = userId,
+            ),
+        )
+        local.markSynced(
+            syncedUpdatedAt = pending.updatedAt,
+            photoUrl = photoUrl,
+        )
     }
 
     override suspend fun downloadProfile(userId: String): Result<Unit> = suspendRunCatching {
@@ -52,5 +66,8 @@ class ProfileRepositoryImpl(
         userId: String,
         jpeg: ByteArray,
         updatedAt: Long,
-    ): String = "${photoRemote.upload(userId = userId, jpeg = jpeg)}?v=$updatedAt"
+    ): String = "${photoRemote.upload(
+        userId = userId,
+        jpeg = jpeg,
+    )}?v=$updatedAt"
 }

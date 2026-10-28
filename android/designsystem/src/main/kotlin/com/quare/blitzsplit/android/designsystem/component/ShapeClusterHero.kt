@@ -85,8 +85,10 @@ private fun CompactShapeClusterHero(modifier: Modifier) {
     val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
-            .size(width = 150.dp, height = 56.dp)
-            .clearAndSetSemantics { },
+            .size(
+                width = 150.dp,
+                height = 56.dp,
+            ).clearAndSetSemantics { },
     ) {
         Box(
             Modifier

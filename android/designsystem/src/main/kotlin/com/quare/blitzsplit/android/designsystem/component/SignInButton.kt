@@ -37,7 +37,11 @@ fun GoogleSignInButton(
             .height(56.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
-        SignInButtonLabelRow(label = label, isLoading = isLoading, leading = "G")
+        SignInButtonLabelRow(
+            label = label,
+            isLoading = isLoading,
+            leading = "G",
+        )
     }
 }
 
@@ -61,7 +65,11 @@ fun AppleSignInButton(
             contentColor = if (isDark) Color.Black else Color.White,
         ),
     ) {
-        SignInButtonLabelRow(label = label, isLoading = isLoading, leading = null)
+        SignInButtonLabelRow(
+            label = label,
+            isLoading = isLoading,
+            leading = null,
+        )
     }
 }
 
@@ -71,13 +79,25 @@ private fun SignInButtonLabelRow(
     isLoading: Boolean,
     leading: String?,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+            )
         } else if (leading != null) {
-            Text(text = leading, fontWeight = FontWeight.ExtraBold)
+            Text(
+                text = leading,
+                fontWeight = FontWeight.ExtraBold,
+            )
         }
-        Text(text = label, style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
 

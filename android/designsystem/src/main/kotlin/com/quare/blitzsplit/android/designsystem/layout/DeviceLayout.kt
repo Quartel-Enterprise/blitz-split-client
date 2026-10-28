@@ -31,17 +31,32 @@ data class DeviceLayout(
         get() = isTablet || isLandscape
 
     companion object {
-        val PhonePortrait: DeviceLayout = DeviceLayout(isTablet = false, isLandscape = false)
-        val PhoneLandscape: DeviceLayout = DeviceLayout(isTablet = false, isLandscape = true)
-        val TabletPortrait: DeviceLayout = DeviceLayout(isTablet = true, isLandscape = false)
-        val TabletLandscape: DeviceLayout = DeviceLayout(isTablet = true, isLandscape = true)
+        val PhonePortrait: DeviceLayout = DeviceLayout(
+            isTablet = false,
+            isLandscape = false,
+        )
+        val PhoneLandscape: DeviceLayout = DeviceLayout(
+            isTablet = false,
+            isLandscape = true,
+        )
+        val TabletPortrait: DeviceLayout = DeviceLayout(
+            isTablet = true,
+            isLandscape = false,
+        )
+        val TabletLandscape: DeviceLayout = DeviceLayout(
+            isTablet = true,
+            isLandscape = true,
+        )
     }
 }
 
 private fun deviceLayoutOf(
     width: Dp,
     height: Dp,
-): DeviceLayout = DeviceLayout(isTablet = min(width, height) >= tabletSmallestWidth, isLandscape = width > height)
+): DeviceLayout = DeviceLayout(
+    isTablet = min(width, height) >= tabletSmallestWidth,
+    isLandscape = width > height,
+)
 
 /*
  * Why: the layout follows the window, never the space left under the keyboard. Measured after
@@ -62,6 +77,11 @@ fun rememberDeviceLayout(): DeviceLayout {
     val size = LocalWindowInfo.current.containerSize
     val density = LocalDensity.current
     return remember(size, density) {
-        with(density) { deviceLayoutOf(width = size.width.toDp(), height = size.height.toDp()) }
+        with(density) {
+            deviceLayoutOf(
+                width = size.width.toDp(),
+                height = size.height.toDp(),
+            )
+        }
     }
 }

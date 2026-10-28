@@ -274,7 +274,10 @@ class WelcomeViewModelTest {
     fun `GIVEN a browser sign in waiting on the profile pull WHEN it completes THEN opens the profile setup`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE, isProfilePullPending = true)
+            prepareScenario(
+                outcome = SignInOutcome.NEEDS_PROFILE,
+                isProfilePullPending = true,
+            )
             account.status = AccountStatus.Connected("user", AccountProvider.GOOGLE)
 
             // When

@@ -134,7 +134,10 @@ class ProfileViewModelTest {
         prepareScenario()
 
         // When
-        profiles.profile.value = pierre.copy(displayName = "Pierre Vieira", avatarColor = AvatarColor.LILAC)
+        profiles.profile.value = pierre.copy(
+            displayName = "Pierre Vieira",
+            avatarColor = AvatarColor.LILAC,
+        )
 
         // Then
         assertEquals("Pierre Vieira", viewModel.uiState.value.displayName)
@@ -160,7 +163,10 @@ class ProfileViewModelTest {
     fun `GIVEN an anonymous user with an email left WHEN the profile opens THEN shows no account and no email`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, email = "pierre@gmail.com")
+            prepareScenario(
+                status = anonymous,
+                email = "pierre@gmail.com",
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -174,7 +180,10 @@ class ProfileViewModelTest {
     fun `GIVEN an account connected with Google WHEN the profile opens THEN shows Google and the masked email`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, email = "pierre@gmail.com")
+            prepareScenario(
+                status = connectedWithGoogle,
+                email = "pierre@gmail.com",
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -189,7 +198,10 @@ class ProfileViewModelTest {
     fun `GIVEN an account connected with Apple WHEN the profile opens THEN shows Apple and the masked email`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithApple, email = "pierre@privaterelay.appleid.com")
+            prepareScenario(
+                status = connectedWithApple,
+                email = "pierre@privaterelay.appleid.com",
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -203,7 +215,10 @@ class ProfileViewModelTest {
     fun `GIVEN an account connected with Google WHEN the profile opens without an email THEN shows no email`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, email = null)
+            prepareScenario(
+                status = connectedWithGoogle,
+                email = null,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -217,7 +232,10 @@ class ProfileViewModelTest {
     fun `GIVEN the profile open anonymously WHEN Google connects THEN shows Google and hides the recovery code row`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
 
             // When
             account.snapshot.value = account.snapshot.value.copy(
@@ -234,7 +252,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a scheduled sign out WHEN the profile opens THEN shows it as scheduled`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, signOutScheduled = true)
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = true,
+        )
 
         // When
         val state = viewModel.uiState.value
@@ -246,7 +267,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN no sign out scheduled WHEN the profile opens THEN shows none scheduled`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, signOutScheduled = false)
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = false,
+        )
 
         // When
         val state = viewModel.uiState.value
@@ -259,7 +283,10 @@ class ProfileViewModelTest {
     fun `GIVEN an anonymous user with a code WHEN the profile opens THEN shows the grouped code row`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -273,7 +300,10 @@ class ProfileViewModelTest {
     fun `GIVEN a local only user before the first sync WHEN the profile opens THEN shows no recovery code row`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = AccountStatus.LocalOnly, code = null)
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                code = null,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -287,7 +317,10 @@ class ProfileViewModelTest {
     fun `GIVEN an account connected with Google and a code WHEN the profile opens THEN shows no recovery code row`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, code = recoveryCode)
+            prepareScenario(
+                status = connectedWithGoogle,
+                code = recoveryCode,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -300,7 +333,11 @@ class ProfileViewModelTest {
     fun `GIVEN a due recovery code WHEN the profile opens THEN asks for the recovery code sheet`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, prompt = RecoveryCodePrompt.DUE)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                prompt = RecoveryCodePrompt.DUE,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -313,7 +350,11 @@ class ProfileViewModelTest {
     fun `GIVEN a saved recovery code WHEN the profile opens THEN does not ask for the sheet`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, prompt = RecoveryCodePrompt.SAVED)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                prompt = RecoveryCodePrompt.SAVED,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -326,7 +367,11 @@ class ProfileViewModelTest {
     fun `GIVEN a saved recovery code WHEN tapping the recovery code row THEN shows it for review`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, prompt = RecoveryCodePrompt.SAVED)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                prompt = RecoveryCodePrompt.SAVED,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnRecoveryCodeClicked)
@@ -452,7 +497,10 @@ class ProfileViewModelTest {
     fun `GIVEN a profile change not uploaded WHEN the profile opens THEN shows it waiting to upload`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(hasPendingProfile = true, syncState = SyncState.PENDING)
+            prepareScenario(
+                hasPendingProfile = true,
+                syncState = SyncState.PENDING,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -467,7 +515,10 @@ class ProfileViewModelTest {
     fun `GIVEN a profile change not uploaded WHEN a sync runs THEN hides the waiting to upload label`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(hasPendingProfile = true, syncState = SyncState.PENDING)
+            prepareScenario(
+                hasPendingProfile = true,
+                syncState = SyncState.PENDING,
+            )
 
             // When
             syncState.value = SyncState.SYNCING
@@ -481,7 +532,10 @@ class ProfileViewModelTest {
     fun `GIVEN a profile change not uploaded WHEN the upload fails THEN shows it waiting to upload again`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(hasPendingProfile = true, syncState = SyncState.SYNCING)
+            prepareScenario(
+                hasPendingProfile = true,
+                syncState = SyncState.SYNCING,
+            )
 
             // When
             syncState.value = SyncState.FAILED
@@ -493,7 +547,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a profile change not uploaded WHEN it uploads THEN lists no pending change`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(hasPendingProfile = true, syncState = SyncState.SYNCING)
+        prepareScenario(
+            hasPendingProfile = true,
+            syncState = SyncState.SYNCING,
+        )
 
         // When
         profiles.hasPendingChanges.value = false
@@ -630,7 +687,11 @@ class ProfileViewModelTest {
     fun `GIVEN an anonymous user with changes not uploaded WHEN tapping sign out THEN asks to erase the profile`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, hasPendingProfile = true)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                hasPendingProfile = true,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
@@ -643,7 +704,10 @@ class ProfileViewModelTest {
     fun `GIVEN Google and changes not uploaded WHEN tapping sign out THEN warns about the pending changes`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
@@ -656,7 +720,10 @@ class ProfileViewModelTest {
     fun `GIVEN Apple and everything uploaded WHEN tapping sign out THEN asks to confirm the sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithApple, hasPendingProfile = false)
+            prepareScenario(
+                status = connectedWithApple,
+                hasPendingProfile = false,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
@@ -681,7 +748,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog with the code kept ticked WHEN dismissing it THEN closes it and unticks the box`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -697,7 +767,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog dismissed with the box ticked WHEN opening it again THEN shows the box unticked`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
             viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
@@ -713,7 +786,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a sign out under way WHEN dismissing the dialog THEN keeps it open`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, signOutHangs = true)
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
 
@@ -729,7 +805,10 @@ class ProfileViewModelTest {
     fun `GIVEN the sign out dialog WHEN confirming THEN signs out once and shows it under way`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutHangs = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutHangs = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -743,7 +822,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a sign out under way WHEN confirming again THEN does not sign out twice`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, signOutHangs = true)
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
 
@@ -758,7 +840,10 @@ class ProfileViewModelTest {
     fun `GIVEN the sign out dialog WHEN the server fails the sign out THEN lets the person try again`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("server error"),
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -772,7 +857,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a failed sign out WHEN confirming again THEN signs out again`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutError = IllegalStateException("server error"),
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
 
@@ -800,7 +888,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog WHEN a sign out confirmation arrives THEN does not sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -814,7 +905,10 @@ class ProfileViewModelTest {
     fun `GIVEN the pending changes dialog WHEN a sign out confirmation arrives THEN does not sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -828,7 +922,10 @@ class ProfileViewModelTest {
     fun `GIVEN the pending changes dialog WHEN choosing to sign out once synced THEN schedules it and closes`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -843,7 +940,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN no dialog open WHEN a sign out once synced arrives THEN schedules nothing`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+        prepareScenario(
+            status = connectedWithGoogle,
+            hasPendingProfile = true,
+        )
 
         // When
         viewModel.onEvent(ProfileUiEvent.OnSignOutWhenSyncedClicked)
@@ -871,7 +971,11 @@ class ProfileViewModelTest {
     fun `GIVEN a scheduled sign out WHEN cancelling it THEN cancels the scheduled sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutScheduled = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutScheduled = true,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnCancelScheduledSignOutClicked)
@@ -883,7 +987,11 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN no internet WHEN tapping connect THEN keeps the provider buttons hidden`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = anonymous, code = recoveryCode, online = false)
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            online = false,
+        )
 
         // When
         viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
@@ -896,7 +1004,11 @@ class ProfileViewModelTest {
     fun `GIVEN an erase under way WHEN choosing to connect instead THEN keeps the erase dialog`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, signOutHangs = true)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutHangs = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(isChecked = true))
             viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
@@ -911,7 +1023,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN the erase dialog without the code kept WHEN erasing THEN does not sign out`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = anonymous, code = recoveryCode)
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
         // When
@@ -925,7 +1040,11 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN the erase dialog with the code kept WHEN erasing THEN signs out`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = anonymous, code = recoveryCode, signOutHangs = true)
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            signOutHangs = true,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -941,7 +1060,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a local only user who ticked the box WHEN erasing THEN signs out`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = AccountStatus.LocalOnly, code = null)
+        prepareScenario(
+            status = AccountStatus.LocalOnly,
+            code = null,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -955,7 +1077,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN the box ticked then unticked WHEN erasing THEN does not sign out`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = anonymous, code = recoveryCode)
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
         viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(false))
@@ -971,7 +1096,10 @@ class ProfileViewModelTest {
     fun `GIVEN no dialog open and the box ticked WHEN an erase arrives THEN does not sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
             // When
@@ -1006,7 +1134,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog WHEN copying the code THEN asks the platform to copy the grouped code`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -1019,7 +1150,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a local only user without a code WHEN copying the code THEN copies nothing`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = AccountStatus.LocalOnly, code = null)
+        prepareScenario(
+            status = AccountStatus.LocalOnly,
+            code = null,
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
         // When
@@ -1033,7 +1167,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog with the box ticked WHEN choosing to connect instead THEN shows the buttons`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -1050,7 +1187,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN no account WHEN tapping connect THEN shows one button per provider`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = anonymous, code = recoveryCode)
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
 
         // When
         viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
@@ -1092,7 +1232,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN no internet WHEN choosing a provider THEN does nothing`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(online = false, native = setOf(AccountProvider.APPLE))
+        prepareScenario(
+            online = false,
+            native = setOf(AccountProvider.APPLE),
+        )
 
         // When
         viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
@@ -1315,7 +1458,10 @@ class ProfileViewModelTest {
     fun `GIVEN an anonymous user WHEN the profile opens THEN shows the anonymous ID of this device`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -1341,7 +1487,10 @@ class ProfileViewModelTest {
     fun `GIVEN an account connected with Google WHEN the profile opens THEN shows no anonymous ID`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, email = "pierre@gmail.com")
+            prepareScenario(
+                status = connectedWithGoogle,
+                email = "pierre@gmail.com",
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -1367,7 +1516,10 @@ class ProfileViewModelTest {
     fun `GIVEN the profile open anonymously WHEN Apple connects THEN shows no anonymous ID`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
 
             // When
             account.status = connectedWithApple
@@ -1380,7 +1532,10 @@ class ProfileViewModelTest {
     fun `GIVEN connect expanded anonymously WHEN Google connects THEN hides the provider buttons`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnConnectClicked)
 
             // When
@@ -1406,7 +1561,10 @@ class ProfileViewModelTest {
     fun `GIVEN no internet and a local only user WHEN tapping sign out THEN still asks to erase the profile`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = AccountStatus.LocalOnly, online = false)
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                online = false,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
@@ -1419,7 +1577,11 @@ class ProfileViewModelTest {
     fun `GIVEN a sign out scheduled once synced WHEN tapping sign out THEN opens no dialog`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutScheduled = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutScheduled = true,
+            )
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
@@ -1433,7 +1595,11 @@ class ProfileViewModelTest {
     fun `GIVEN a scheduled sign out cancelled WHEN tapping sign out THEN warns about the pending changes again`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutScheduled = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutScheduled = true,
+            )
             account.signOutWhenSynced = false
 
             // When
@@ -1447,7 +1613,11 @@ class ProfileViewModelTest {
     fun `GIVEN Apple connecting from the native sheet WHEN tapping sign out THEN opens no dialog`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, native = setOf(AccountProvider.APPLE))
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                native = setOf(AccountProvider.APPLE),
+            )
             viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
 
             // When
@@ -1462,7 +1632,10 @@ class ProfileViewModelTest {
     fun `GIVEN Google connecting in the browser WHEN tapping sign out THEN opens no dialog`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
 
             // When
@@ -1476,7 +1649,10 @@ class ProfileViewModelTest {
     fun `GIVEN the page reloaded on a Google link callback WHEN tapping sign out THEN opens no dialog`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             account.returningBrowserSignIn.value = AccountProvider.GOOGLE
 
             // When
@@ -1490,7 +1666,11 @@ class ProfileViewModelTest {
     fun `GIVEN the Apple sheet cancelled WHEN tapping sign out THEN asks to erase the profile`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, native = setOf(AccountProvider.APPLE))
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                native = setOf(AccountProvider.APPLE),
+            )
             viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
             viewModel.onEvent(ProfileUiEvent.OnNativeSignInCancelled)
 
@@ -1505,7 +1685,11 @@ class ProfileViewModelTest {
     fun `GIVEN an erase under way WHEN tapping sign out again THEN keeps the erase dialog with the box ticked`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, signOutHangs = true)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                signOutHangs = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
             viewModel.onEvent(ProfileUiEvent.OnEraseConfirmed)
@@ -1524,7 +1708,10 @@ class ProfileViewModelTest {
     fun `GIVEN a sign out under way and a change queued meanwhile WHEN tapping sign out THEN keeps the dialog`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutHangs = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutHangs = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
             profiles.hasPendingChanges.value = true
@@ -1556,7 +1743,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog WHEN the erase succeeds THEN keeps it under way until the welcome`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -1572,7 +1762,11 @@ class ProfileViewModelTest {
     fun `GIVEN the pending changes dialog WHEN signing out now THEN signs out once and shows it under way`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutHangs = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutHangs = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -1608,7 +1802,11 @@ class ProfileViewModelTest {
     fun `GIVEN a failed sync with changes not uploaded WHEN signing out now THEN signs out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, syncState = SyncState.FAILED)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                syncState = SyncState.FAILED,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -1622,7 +1820,10 @@ class ProfileViewModelTest {
     fun `GIVEN the pending changes dialog WHEN the sign out now succeeds THEN shows no sign out error`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -1638,7 +1839,11 @@ class ProfileViewModelTest {
     fun `GIVEN a sign out now under way WHEN signing out now again THEN does not sign out twice`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true, signOutHangs = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+                signOutHangs = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
 
@@ -1652,7 +1857,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN no dialog open WHEN a sign out now arrives THEN does not sign out`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+        prepareScenario(
+            status = connectedWithGoogle,
+            hasPendingProfile = true,
+        )
 
         // When
         viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
@@ -1682,7 +1890,11 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog with the code kept WHEN a sign out now arrives THEN does not sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, hasPendingProfile = true)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                hasPendingProfile = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -1699,7 +1911,10 @@ class ProfileViewModelTest {
     fun `GIVEN a local only user in the erase dialog WHEN a sign out now arrives THEN does not sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = AccountStatus.LocalOnly, code = null)
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                code = null,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -1714,7 +1929,10 @@ class ProfileViewModelTest {
     fun `GIVEN who sees your profile open WHEN a sign out now arrives THEN does not sign out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, hasPendingProfile = true)
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = true,
+            )
             viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
 
             // When
@@ -1729,7 +1947,10 @@ class ProfileViewModelTest {
     fun `GIVEN the sign out dialog WHEN the server fails the sign out THEN says so and keeps the dialog open`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("server error"),
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
 
             // When
@@ -1801,7 +2022,10 @@ class ProfileViewModelTest {
     fun `GIVEN the erase dialog of a local only user WHEN the erase succeeds THEN shows no sign out error`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = AccountStatus.LocalOnly, code = null)
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                code = null,
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnCodeSavedChanged(true))
 
@@ -1816,7 +2040,10 @@ class ProfileViewModelTest {
     fun `GIVEN a failed sign out WHEN confirming again THEN hides the error while it signs out again`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("server error"),
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
             signOutError = null
@@ -1881,7 +2108,10 @@ class ProfileViewModelTest {
     @Test
     fun `GIVEN a failed sign out WHEN trying again and failing again THEN says so again`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutError = IllegalStateException("server error"),
+        )
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
         viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
 
@@ -1898,7 +2128,10 @@ class ProfileViewModelTest {
     fun `GIVEN a failed sign out WHEN dismissing the dialog THEN closes it and clears the error`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("server error"),
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
 
@@ -1934,7 +2167,10 @@ class ProfileViewModelTest {
     fun `GIVEN a failed sign out WHEN tapping who sees your profile THEN explains it without the error`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = connectedWithGoogle, signOutError = IllegalStateException("server error"))
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutError = IllegalStateException("server error"),
+            )
             viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
             viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
 
@@ -2013,7 +2249,11 @@ class ProfileViewModelTest {
     fun `GIVEN an anonymous user with changes not uploaded WHEN the profile opens THEN warns they are pending`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(status = anonymous, code = recoveryCode, hasPendingProfile = true)
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                hasPendingProfile = true,
+            )
 
             // When
             val state = viewModel.uiState.value

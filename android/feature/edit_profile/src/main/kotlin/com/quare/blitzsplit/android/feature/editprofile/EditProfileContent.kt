@@ -115,9 +115,17 @@ fun EditProfileContent(
     ) { padding ->
         AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
             if (layout.usesTwoColumns) {
-                EditProfileTwoColumnLayout(state = state, onEvent = onEvent, onPhotoClick = { isPhotoMenuOpen = true })
+                EditProfileTwoColumnLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    onPhotoClick = { isPhotoMenuOpen = true },
+                )
             } else {
-                EditProfileSingleColumn(state = state, onEvent = onEvent, onPhotoClick = { isPhotoMenuOpen = true })
+                EditProfileSingleColumn(
+                    state = state,
+                    onEvent = onEvent,
+                    onPhotoClick = { isPhotoMenuOpen = true },
+                )
             }
         }
     }
@@ -138,18 +146,31 @@ private fun EditProfileSingleColumn(
     onEvent: (EditProfileUiEvent) -> Unit,
     onPhotoClick: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         Column(
             modifier = Modifier
                 .widthIn(max = contentMaxWidth)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .padding(
+                    horizontal = 24.dp,
+                    vertical = 16.dp,
+                ),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AvatarSection(state = state, onEvent = onEvent, onPhotoClick = onPhotoClick)
-            NameSection(state = state, onEvent = onEvent)
+            AvatarSection(
+                state = state,
+                onEvent = onEvent,
+                onPhotoClick = onPhotoClick,
+            )
+            NameSection(
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -174,7 +195,11 @@ private fun EditProfileTwoColumnLayout(
                 .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center,
         ) {
-            AvatarSection(state = state, onEvent = onEvent, onPhotoClick = onPhotoClick)
+            AvatarSection(
+                state = state,
+                onEvent = onEvent,
+                onPhotoClick = onPhotoClick,
+            )
         }
         Column(
             modifier = Modifier
@@ -182,7 +207,10 @@ private fun EditProfileTwoColumnLayout(
                 .verticalScroll(rememberScrollState())
                 .padding(vertical = 16.dp),
         ) {
-            NameSection(state = state, onEvent = onEvent)
+            NameSection(
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -193,7 +221,10 @@ private fun AvatarSection(
     onEvent: (EditProfileUiEvent) -> Unit,
     onPhotoClick: () -> Unit,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         Box(modifier = Modifier.size(avatarSize)) {
             AvatarBadge(
                 initial = state.avatarInitial,
@@ -206,8 +237,10 @@ private fun AvatarSection(
                 onClick = onPhotoClick,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = 4.dp, y = 4.dp)
-                    .size(44.dp)
+                    .offset(
+                        x = 4.dp,
+                        y = 4.dp,
+                    ).size(44.dp)
                     .border(3.dp, MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
                 colors = IconButtonDefaults.filledIconButtonColors(
@@ -230,7 +263,10 @@ private fun AvatarSection(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
                 text = stringResource(R.string.edit_profile_avatar_color),
                 style = MaterialTheme.typography.labelLarge,
@@ -241,7 +277,11 @@ private fun AvatarSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        AvatarColorRow(selected = state.avatarColor, colors = state.avatarColors, onEvent = onEvent)
+        AvatarColorRow(
+            selected = state.avatarColor,
+            colors = state.avatarColors,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -277,7 +317,10 @@ private fun NameSection(
                             state.nameMaxLength,
                         )
                     }
-                    Text(text = hint, modifier = Modifier.weight(1f))
+                    Text(
+                        text = hint,
+                        modifier = Modifier.weight(1f),
+                    )
                     Text(stringResource(R.string.edit_profile_name_count, state.nameLength, state.nameMaxLength))
                 }
             },
@@ -309,8 +352,14 @@ private fun AccountNoticeCard(provider: AccountProvider) {
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.secondaryContainer,
     ) {
-        Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(imageVector = Icons.Outlined.Info, contentDescription = null)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = null,
+            )
             Text(
                 text = stringResource(R.string.edit_profile_account_notice, providerName),
                 style = MaterialTheme.typography.bodyMedium,
@@ -392,10 +441,18 @@ private fun PhotoMenuItem(
     @StringRes label: Int,
     onClick: () -> Unit,
 ) {
-    Surface(onClick = onClick, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+    Surface(
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+    ) {
         ListItem(
             headlineContent = { Text(stringResource(label)) },
-            leadingContent = { Icon(imageVector = icon, contentDescription = null) },
+            leadingContent = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                )
+            },
             colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         )
     }
