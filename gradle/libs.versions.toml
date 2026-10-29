@@ -1,6 +1,6 @@
 [versions]
 # Build tooling (kept in step with the Bible Planner, which already builds with this set)
-agp = "9.4.1"
+agp = "9.5.0"
 kotlin = "2.4.21"
 ksp = "2.3.12"
 buildkonfig = "0.23.0"
