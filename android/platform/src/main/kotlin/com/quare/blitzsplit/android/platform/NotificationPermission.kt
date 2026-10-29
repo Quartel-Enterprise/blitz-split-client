@@ -58,10 +58,10 @@ fun rememberNotificationPermissionAccess(
     val askMemory = remember { AskMemory() }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         /*
-         * Why: a dialog dismissed by tapping outside it leaves the rationale as it was and Android may still ask, so
-         * only an answer that moved or kept the rationale on counts as asked.
+         * Why: only an answer moves the rationale (on after a first refusal, off after a refusal for good), while a
+         * dialog dismissed by tapping outside it leaves it as it was and Android may still ask.
          */
-        if (isGranted || askMemory.hadRationale || activity.shouldShowNotificationRationale()) {
+        if (isGranted || askMemory.hadRationale != activity.shouldShowNotificationRationale()) {
             activity.markNotificationPermissionAsked()
         }
         onResult(activity.readNotificationPermission())
