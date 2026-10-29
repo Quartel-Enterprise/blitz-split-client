@@ -116,20 +116,15 @@ struct GroupsView: View {
 
     var body: some View {
         let state = model.state
-        ContentUnavailableView {
-            Label("No groups yet", systemImage: "person.3")
-        } description: {
-            Text("Create a group for the trip, the house or the barbecue. You can start even without internet.")
-        } actions: {
-            VStack(spacing: 10) {
-                PrimaryButton(title: "Create group") {
-                    model.send(GroupsUiEventOnCreateGroupClicked.shared)
-                }
-                TintedButton(title: "Join with a link or QR code") {
-                    model.send(GroupsUiEventOnJoinWithLinkClicked.shared)
-                }
+        Group {
+            if !state.groups.isEmpty {
+                GroupsList(model: model)
+            } else if state.showsEmptyState {
+                emptyState
+            } else {
+                // Nothing until the groups are read, so the empty state never flashes before the list
+                Color.clear
             }
-            .frame(maxWidth: 320)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
@@ -181,6 +176,24 @@ struct GroupsView: View {
         }
     }
 
+    private var emptyState: some View {
+        ContentUnavailableView {
+            Label("No groups yet", systemImage: "person.3")
+        } description: {
+            Text("Create a group for the trip, the house or the barbecue. You can start even without internet.")
+        } actions: {
+            VStack(spacing: 10) {
+                PrimaryButton(title: "Create group") {
+                    model.send(GroupsUiEventOnCreateGroupClicked.shared)
+                }
+                TintedButton(title: "Join with a link or QR code") {
+                    model.send(GroupsUiEventOnJoinWithLinkClicked.shared)
+                }
+            }
+            .frame(maxWidth: 320)
+        }
+    }
+
     // Everything synced shows no subtitle: the state only appears when it asks for attention.
     private func syncText(_ badge: SyncBadge?) -> Text {
         switch badge {
@@ -189,5 +202,86 @@ struct GroupsView: View {
         case .failed: Text("No response from the server · try again")
         default: Text("Syncing…")
         }
+    }
+}
+
+/// The minimal list of the home until the full one (balances, the row's menu) arrives with the group's own
+/// screen. A row opens the group; no group has expenses yet.
+private struct GroupsList: View {
+    let model: GroupsModel
+
+    var body: some View {
+        List {
+            Section {
+                ForEach(model.state.groups, id: \.id) { group in
+                    Button {
+                        model.send(GroupsUiEventOnGroupClicked(groupId: group.id))
+                    } label: {
+                        GroupListRow(group: group)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } header: {
+                HStack {
+                    Text("Open")
+                    Spacer()
+                    Button("New group", systemImage: "plus") {
+                        model.send(GroupsUiEventOnCreateGroupClicked.shared)
+                    }
+                    .buttonStyle(.bordered)
+                    .textCase(nil)
+                }
+            }
+        }
+        #if os(iOS)
+        .listStyle(.insetGrouped)
+        #endif
+    }
+}
+
+private struct GroupListRow: View {
+    let group: GroupRow
+
+    private var members: Text {
+        group.memberCount == 1 ? Text("Just you") : Text("\(group.memberCount) members")
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            GroupAvatar(initials: group.initials, color: group.color, size: 44)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(verbatim: group.name)
+                    .font(.body.weight(.semibold))
+                    .lineLimit(1)
+                HStack(spacing: 6) {
+                    HStack(spacing: -6) {
+                        ForEach(Array(group.faces.enumerated()), id: \.offset) { _, face in
+                            AvatarPhoto(initial: face.initial, color: face.color, photoUrl: nil, size: 20)
+                        }
+                        if group.extraMemberCount > 0 {
+                            Text(verbatim: "+\(group.extraMemberCount)")
+                                .font(.caption2.weight(.semibold))
+                                .padding(.leading, 10)
+                        }
+                    }
+                    .accessibilityHidden(true)
+                    if group.isPending {
+                        Circle()
+                            .fill(.orange)
+                            .frame(width: 8, height: 8)
+                            .accessibilityHidden(true)
+                    }
+                    (group.isPending ? Text("\(members) · queued") : members)
+                        .lineLimit(1)
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            Text("no expenses")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .contentShape(.rect)
     }
 }

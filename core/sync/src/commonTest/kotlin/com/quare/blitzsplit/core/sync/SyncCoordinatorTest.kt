@@ -2,9 +2,15 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
@@ -39,6 +45,7 @@ class SyncCoordinatorTest {
     private lateinit var profile: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
+    private lateinit var groups: FakeGroupRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
@@ -1043,7 +1050,7 @@ class SyncCoordinatorTest {
                     "keys download $userId",
                     "keys upload $userId",
                 ),
-                callsWithoutPreferences(),
+                callsWithoutPreferencesAndGroups(),
             )
         }
 
@@ -1396,7 +1403,7 @@ class SyncCoordinatorTest {
         // Then
         assertEquals(1, paymentKeys.clearCount)
         assertTrue(paymentKeys.keys.value.isEmpty())
-        assertEquals(listOf("account sign out", "keys clear", "profile clear"), callsWithoutPreferences())
+        assertEquals(listOf("account sign out", "keys clear", "profile clear"), callsWithoutPreferencesAndGroups())
     }
 
     @Test
@@ -1507,7 +1514,7 @@ class SyncCoordinatorTest {
             val userId = FakeAccountRepository.CONNECTED_USER_ID
             assertEquals(listOf(userId, userId), paymentKeys.uploadedUserIds)
             assertEquals(1, account.signOutCount)
-            val withoutPreferences = callsWithoutPreferences()
+            val withoutPreferences = callsWithoutPreferencesAndGroups()
             assertEquals(
                 "account sign out",
                 withoutPreferences[
@@ -1623,7 +1630,7 @@ class SyncCoordinatorTest {
         // Then
         assertEquals(
             listOf("account delete", "keys clear", "profile clear", "account end session"),
-            callsWithoutPreferences(),
+            callsWithoutPreferencesAndGroups(),
         )
     }
 
@@ -1738,7 +1745,7 @@ class SyncCoordinatorTest {
 
             // Then
             val userId = FakeAccountRepository.CONNECTED_USER_ID
-            val withoutPreferences = callsWithoutPreferences()
+            val withoutPreferences = callsWithoutPreferencesAndGroups()
             assertEquals("account delete", withoutPreferences[withoutPreferences.indexOf("keys upload $userId") + 1])
             assertEquals(1, account.deleteAccountCount)
             assertEquals(AccountStatus.LocalOnly, account.status)
@@ -1863,7 +1870,7 @@ class SyncCoordinatorTest {
                     "preferences download $userId",
                     "preferences upload $userId",
                 ),
-                callsWithoutKeys(),
+                callsWithoutKeysAndGroups(),
             )
             assertFalse(notificationPreferences.hasPendingChanges.value)
         }
@@ -2573,6 +2580,709 @@ class SyncCoordinatorTest {
         assertEquals(invitesOnly, notificationPreferences.preferences.value)
     }
 
+    @Test
+    fun `GIVEN a local profile WHEN syncing THEN syncs the groups after the profile under the same user id`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingGroups = true,
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+            assertEquals(
+                listOf(
+                    "profile download $userId",
+                    "profile upload $userId",
+                    "groups download $userId",
+                    "groups upload $userId",
+                ),
+                callsWithoutKeysAndPreferences(),
+            )
+            assertFalse(groups.hasPendingChanges.value)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN syncing THEN pulls and pushes the groups under its user id`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingGroups = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), groups.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), groups.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN no profile and pending groups WHEN syncing THEN neither pulls nor pushes the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            storedGroups = listOf(trip),
+            pendingGroups = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(groups.downloadedUserIds.isEmpty())
+        assertTrue(groups.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN fails pushes none and the state is failed`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+        )
+        groups.pullError = IllegalStateException("relation groups does not exist")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(groups.uploadedUserIds.isEmpty())
+        assertTrue(groups.hasPendingChanges.value)
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN pending groups and their push fails WHEN syncing THEN fails keeps them pending and is failed`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingGroups = true,
+            )
+            groups.pushError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertTrue(groups.hasPendingChanges.value)
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN still syncs the keys and the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+            pendingPreferences = true,
+        )
+        groups.pullError = IllegalStateException("relation groups does not exist")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+        assertEquals(listOf(userId), paymentKeys.downloadedUserIds)
+        assertEquals(listOf(userId), paymentKeys.uploadedUserIds)
+        assertFalse(paymentKeys.hasPendingChanges.value)
+        assertEquals(listOf(userId), notificationPreferences.downloadedUserIds)
+        assertEquals(listOf(userId), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the groups push fails WHEN syncing THEN still pushes the keys and the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+            pendingPreferences = true,
+            pendingGroups = true,
+        )
+        groups.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), paymentKeys.uploadedUserIds)
+        assertFalse(paymentKeys.hasPendingChanges.value)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the keys fail to come down WHEN syncing THEN still pulls and pushes the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+        )
+        paymentKeys.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.uploadedUserIds)
+        assertFalse(groups.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the preferences push fails WHEN syncing THEN still pulls and pushes the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPreferences = true,
+            pendingGroups = true,
+        )
+        notificationPreferences.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.uploadedUserIds)
+        assertFalse(groups.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the profile fails to come down WHEN syncing THEN does not touch the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+        )
+        profile.pullError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(groups.downloadedUserIds.isEmpty())
+        assertTrue(groups.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the profile push fails WHEN syncing THEN does not touch the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+            pendingGroups = true,
+        )
+        profile.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(groups.downloadedUserIds.isEmpty())
+        assertTrue(groups.uploadedUserIds.isEmpty())
+        assertTrue(groups.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user whose groups fail to come down WHEN syncing THEN still issues the recovery code`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            groups.pullError = IllegalStateException("relation groups does not exist")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(1, account.recoveryCodeCreations)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN switching to another Google user THEN syncs the groups under it`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), groups.downloadedUserIds)
+        assertEquals(listOf(OTHER_USER_ID), groups.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the other user groups fail to come down WHEN switching THEN pushes no group over them`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+            pendingGroups = true,
+        )
+        coordinator.start()
+        runCurrent()
+        groups.pullError = IllegalStateException("server down")
+
+        // When
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), groups.downloadedUserIds)
+        assertTrue(groups.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a synced profile and a group created offline WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+            groups.createGroup(trip, createdAt = 1L)
+            runCurrent()
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN only pending groups online before any sync WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingGroups = true,
+            )
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN pending groups WHEN the sync pushes them THEN the sync state is synced`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a groups push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+        )
+        groups.pushError = IllegalStateException("no answer")
+        coordinator.syncNow()
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncState.PENDING, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN a group is created THEN pushes the groups`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = groups.uploadedUserIds.size
+
+        // When
+        groups.createGroup(trip, createdAt = 1L)
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, groups.uploadedUserIds.size)
+        assertFalse(groups.hasPendingChanges.value)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN only the groups become pending THEN pushes the groups`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = groups.uploadedUserIds.size
+
+        // When
+        groups.hasPendingChanges.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, groups.uploadedUserIds.size)
+        assertFalse(groups.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a groups push that failed online WHEN another group is created THEN pushes the groups again`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            groups.pushError = IllegalStateException("no answer")
+            groups.createGroup(trip, createdAt = 1L)
+            runCurrent()
+            groups.pushError = null
+            val uploadsBefore = groups.uploadedUserIds.size
+
+            // When
+            groups.createGroup(dinner, createdAt = 2L)
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, groups.uploadedUserIds.size)
+            assertFalse(groups.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a group created offline WHEN the device comes online THEN pushes the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        groups.createGroup(trip, createdAt = 1L)
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.uploadedUserIds)
+        assertFalse(groups.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a profile offline WHEN a group is created THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        groups.createGroup(trip, createdAt = 1L)
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(groups.downloadedUserIds.isEmpty())
+        assertTrue(groups.uploadedUserIds.isEmpty())
+        assertTrue(groups.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN no profile online WHEN a group is created THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(storedProfile = null)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        groups.createGroup(trip, createdAt = 1L)
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(groups.downloadedUserIds.isEmpty())
+        assertTrue(groups.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a Google account with groups WHEN signing out THEN erases the groups after ending the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedGroups = listOf(trip),
+            )
+
+            // When
+            val result = coordinator.signOut()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, groups.clearCount)
+            assertTrue(groups.groups.value.isEmpty())
+            assertEquals("account sign out", calls.first())
+            assertTrue("groups clear" in calls)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN the session fails to end WHEN signing out THEN keeps the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedGroups = listOf(trip),
+        )
+        account.signOutError = IllegalStateException("database closed")
+
+        // When
+        coordinator.signOut()
+
+        // Then
+        assertEquals(0, groups.clearCount)
+        assertEquals(listOf(trip), groups.groups.value)
+    }
+
+    @Test
+    fun `GIVEN clearing the groups fails WHEN signing out THEN fails after ending the session`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedGroups = listOf(trip),
+        )
+        groups.clearError = IllegalStateException("disk full")
+
+        // When
+        val result = coordinator.signOut()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+    }
+
+    @Test
+    fun `GIVEN only the groups queued online WHEN signing out once synced THEN pushes them and erases them`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedGroups = listOf(trip),
+                pendingGroups = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), groups.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(groups.groups.value.isEmpty())
+            assertFalse(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN the groups push fails WHEN signing out once synced THEN keeps the session and the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedGroups = listOf(trip),
+            pendingGroups = true,
+        )
+        groups.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.signOutWhenSynced()
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.signOutCount)
+        assertEquals(google, account.status)
+        assertEquals(0, groups.clearCount)
+        assertEquals(listOf(trip), groups.groups.value)
+        assertTrue(groups.hasPendingChanges.value)
+        assertEquals(pierre, profile.profile.value)
+        assertTrue(account.signOutWhenSynced)
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled and a groups push that failed WHEN a retry succeeds THEN signs out`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedGroups = listOf(trip),
+            pendingGroups = true,
+        )
+        groups.pushError = IllegalStateException("server down")
+        coordinator.signOutWhenSynced()
+        runCurrent()
+        groups.pushError = null
+
+        // When
+        coordinator.retry()
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertTrue(groups.groups.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group created while the push is in flight WHEN signing out once synced THEN pushes it before`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedGroups = listOf(trip),
+                pendingGroups = true,
+                groupQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals(listOf(userId, userId), groups.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertTrue(calls.indexOf("account sign out") > calls.lastIndexOf("groups upload $userId"))
+        }
+
+    @Test
+    fun `GIVEN a Google account with groups WHEN deleting the account THEN erases the groups after the server`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedGroups = listOf(trip),
+            )
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, groups.clearCount)
+            assertTrue(groups.groups.value.isEmpty())
+            assertEquals("account delete", calls.first())
+            assertTrue("groups clear" in calls)
+            assertEquals("account end session", calls.last())
+        }
+
+    @Test
+    fun `GIVEN clearing the groups fails WHEN deleting the account THEN still erases the rest and ends the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+                storedPreferences = invitesOnly,
+                storedGroups = listOf(trip),
+            )
+            groups.clearError = IllegalStateException("disk full")
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+            assertEquals(NotificationPreferences.DEFAULT, notificationPreferences.preferences.value)
+            assertNull(profile.profile.value)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
+    fun `GIVEN clearing the keys fails WHEN deleting the account THEN still erases the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+            storedGroups = listOf(trip),
+        )
+        paymentKeys.clearError = IllegalStateException("disk full")
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, groups.clearCount)
+        assertTrue(groups.groups.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the server fails to delete WHEN deleting the account THEN keeps the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedGroups = listOf(trip),
+        )
+        account.deleteAccountError = noConnection
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(0, groups.clearCount)
+        assertEquals(listOf(trip), groups.groups.value)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -2594,9 +3304,47 @@ class SyncCoordinatorTest {
 
     private val invitesOnly = NotificationPreferences(setOf(NotificationType.INVITES))
 
-    private fun callsWithoutPreferences(): List<String> = calls.filterNot { it.startsWith("preferences ") }
+    private val trip = group(
+        id = "trip",
+        name = "Viagem",
+    )
+    private val dinner = group(
+        id = "dinner",
+        name = "Jantar",
+    )
 
-    private fun callsWithoutKeys(): List<String> = calls.filterNot { it.startsWith("keys ") }
+    private fun group(
+        id: String,
+        name: String,
+    ): Group = Group(
+        id = id,
+        name = name,
+        type = GroupType.TRIP,
+        color = AvatarColor.BLUE,
+        currency = GroupCurrency.BRL,
+        members = listOf(
+            GroupMember(
+                id = "me",
+                name = "Pierre",
+                avatarColor = AvatarColor.BLUE,
+                isMe = true,
+                hasJoined = true,
+            ),
+        ),
+        isPending = false,
+    )
+
+    private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {
+        it.startsWith("preferences ") || it.startsWith("groups ")
+    }
+
+    private fun callsWithoutKeysAndGroups(): List<String> = calls.filterNot {
+        it.startsWith("keys ") || it.startsWith("groups ")
+    }
+
+    private fun callsWithoutKeysAndPreferences(): List<String> = calls.filterNot {
+        it.startsWith("keys ") || it.startsWith("preferences ")
+    }
 
     private fun TestScope.prepareScenario(
         storedProfile: UserProfile?,
@@ -2613,6 +3361,9 @@ class SyncCoordinatorTest {
         storedPreferences: NotificationPreferences = NotificationPreferences.DEFAULT,
         pendingPreferences: Boolean = false,
         preferenceQueuedDuringFirstPush: Boolean = false,
+        storedGroups: List<Group> = emptyList(),
+        pendingGroups: Boolean = false,
+        groupQueuedDuringFirstPush: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
@@ -2625,6 +3376,7 @@ class SyncCoordinatorTest {
         notificationPreferences = FakeNotificationPreferencesRepository(initialPreferences = storedPreferences).also {
             it.hasPendingChanges.value = pendingPreferences
         }
+        groups = FakeGroupRepository(initialGroups = storedGroups).also { it.hasPendingChanges.value = pendingGroups }
         isOnline = MutableStateFlow(online)
         pullGate = CompletableDeferred()
         coordinator = SyncCoordinator(
@@ -2653,6 +3405,10 @@ class SyncCoordinatorTest {
                 } else {
                     notificationPreferences
                 },
+                calls = calls,
+            ),
+            groupRepository = RecordingGroupRepository(
+                delegate = if (groupQueuedDuringFirstPush) GroupDuringFirstPushGroupRepository(groups) else groups,
                 calls = calls,
             ),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
@@ -2699,8 +3455,8 @@ private class KeyDuringFirstPushPaymentKeyRepository(
     }
 }
 
-// Why: one log across the account, the profile, the keys and the preferences, so a test can assert the order of
-// their calls.
+// Why: one log across the account, the profile, the keys, the preferences and the groups, so a test can assert the
+// order of their calls.
 private class RecordingAccountRepository(
     private val delegate: AccountRepository,
     private val calls: MutableList<String>,
@@ -2787,6 +3543,37 @@ private class PreferenceDuringFirstPushNotificationPreferencesRepository(
 ) : NotificationPreferencesRepository by delegate {
     override suspend fun uploadPendingPreferences(userId: String): Result<Unit> {
         val result = delegate.uploadPendingPreferences(userId)
+        if (delegate.uploadedUserIds.size == 1) delegate.hasPendingChanges.value = true
+        return result
+    }
+}
+
+private class RecordingGroupRepository(
+    private val delegate: GroupRepository,
+    private val calls: MutableList<String>,
+) : GroupRepository by delegate {
+    override suspend fun downloadGroups(userId: String): Result<Unit> {
+        calls += "groups download $userId"
+        return delegate.downloadGroups(userId)
+    }
+
+    override suspend fun uploadPendingGroups(userId: String): Result<Unit> {
+        calls += "groups upload $userId"
+        return delegate.uploadPendingGroups(userId)
+    }
+
+    override suspend fun clear() {
+        calls += "groups clear"
+        delegate.clear()
+    }
+}
+
+// Why: a group created while the first groups push is in flight, so the groups are still pending once it ends.
+private class GroupDuringFirstPushGroupRepository(
+    private val delegate: FakeGroupRepository,
+) : GroupRepository by delegate {
+    override suspend fun uploadPendingGroups(userId: String): Result<Unit> {
+        val result = delegate.uploadPendingGroups(userId)
         if (delegate.uploadedUserIds.size == 1) delegate.hasPendingChanges.value = true
         return result
     }

@@ -14,6 +14,8 @@ core/
 │   └── testing/        # FakeProfileRepository, for other modules' tests
 ├── account/            # Account domain + data: session mirror, sign in, recovery code
 │   └── testing/        # FakeAccountRepository
+├── groups/             # Groups domain + data, synced like the keys (not `group`: Gradle's getGroup() hides it)
+│   └── testing/        # FakeGroupRepository
 ├── sync/               # SyncCoordinator, ProviderConnector, ProviderSignIn, use cases across profile and account
 └── provider/
     ├── room/           # AppDatabase, DAOs, entities, the database file of each platform
@@ -24,7 +26,8 @@ feature/                # Presentation only: ViewModel, UiState, UiEvent, UiActi
 ├── profile_setup/
 ├── restore/
 ├── recovery_code/
-└── groups/
+├── groups/
+└── create_group/
 android/
 ├── designsystem/       # BlitzSplitTheme, DeviceLayout, DevicePreviews, shared composables
 ├── platform/           # Credential Manager (Google), password manager, QR scanner
@@ -33,7 +36,8 @@ android/
     ├── profile_setup/
     ├── restore/
     ├── recovery_code/
-    └── groups/
+    ├── groups/
+    └── create_group/
 androidApp/             # Application, MainActivity, AppNavDisplay
 iosApp/                 # XcodeGen project: Sources/Shared (both platforms), Sources/iOS, Sources/macOS
 webApp/                 # Vite + React app: src/app, src/bridge, src/features, src/components, src/sqlite

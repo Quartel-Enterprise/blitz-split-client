@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">New group</string>
+    <string name="create_group_close">Close</string>
+    <string name="create_group_create">Create</string>
+    <string name="create_group_change_color">Change the group\'s color</string>
+    <string name="create_group_name_label">Group name</string>
+    <string name="create_group_type_label">Group type</string>
+    <string name="create_group_type_trip">Trip</string>
+    <string name="create_group_type_home">Home</string>
+    <string name="create_group_type_event">Event</string>
+    <string name="create_group_type_other">Other</string>
+    <string name="create_group_members_title">Who\'s in</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
+    <string name="create_group_me">you</string>
+    <string name="create_group_remove_member">Remove %s</string>
+    <string name="create_group_add_placeholder">Add by name</string>
+    <string name="create_group_add">Add</string>
+    <string name="create_group_name_taken">%s is already in the group. Use a nickname to tell them apart.</string>
+    <string name="create_group_use_nickname">Use “%s”</string>
+    <string name="create_group_no_app_notice">Nobody needs the app right now. You can already add expenses for everyone and send the link later.</string>
+    <string name="create_group_currency">Currency</string>
+    <string name="create_group_currency_value">%1$s (%2$s)</string>
+</resources>

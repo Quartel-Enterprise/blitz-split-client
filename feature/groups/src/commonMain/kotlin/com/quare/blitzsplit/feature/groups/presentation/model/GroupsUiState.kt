@@ -13,7 +13,13 @@ data class GroupsUiState(
     val accountProvider: AccountProvider?,
     val syncBadge: SyncBadge?,
     val showsRecoveryCodePrompt: Boolean,
+    // Why: the most recently changed first. The empty home ("Crie seu primeiro grupo") only once they were read.
+    val groups: List<GroupRow>,
+    val hasLoadedGroups: Boolean,
 ) {
+    val showsEmptyState: Boolean
+        get() = hasLoadedGroups && groups.isEmpty()
+
     val canRetrySync: Boolean
         get() = syncBadge == SyncBadge.FAILED
 }

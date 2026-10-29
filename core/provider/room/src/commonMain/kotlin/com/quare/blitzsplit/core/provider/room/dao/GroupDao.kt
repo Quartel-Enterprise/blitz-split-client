@@ -1,0 +1,225 @@
+package com.quare.blitzsplit.core.provider.room.dao
+
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.Upsert
+import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
+import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import kotlinx.coroutines.flow.Flow
+
+// Why: below SQLite's oldest cap on bound parameters (999), which some devices still have.
+private const val MAX_IDS_PER_QUERY = 500
+
+@Dao
+interface GroupDao {
+    @Query("SELECT * FROM split_group ORDER BY updatedAt DESC, id")
+    fun observeGroups(): Flow<List<GroupEntity>>
+
+    @Query("SELECT * FROM group_member ORDER BY addedAt, id")
+    fun observeMembers(): Flow<List<GroupMemberEntity>>
+
+    @Query(
+        "SELECT EXISTS(SELECT 1 FROM split_group WHERE pendingSync = 1) " +
+            "OR EXISTS(SELECT 1 FROM group_member WHERE pendingSync = 1)",
+    )
+    fun observeHasPending(): Flow<Boolean>
+
+    @Query("SELECT * FROM split_group WHERE ownerUserId = :ownerUserId AND pendingSync = 1")
+    suspend fun getPendingGroups(ownerUserId: String): List<GroupEntity>
+
+    @Query(
+        "SELECT * FROM group_member WHERE pendingSync = 1 AND groupId IN " +
+            "(SELECT id FROM split_group WHERE ownerUserId = :ownerUserId)",
+    )
+    suspend fun getPendingMembers(ownerUserId: String): List<GroupMemberEntity>
+
+    @Query("SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND pendingSync = 0")
+    suspend fun getSyncedGroupIds(ownerUserId: String): List<String>
+
+    @Query(
+        "SELECT * FROM group_member WHERE pendingSync = 0 AND groupId IN " +
+            "(SELECT id FROM split_group WHERE ownerUserId = :ownerUserId)",
+    )
+    suspend fun getSyncedMembers(ownerUserId: String): List<GroupMemberEntity>
+
+    @Upsert
+    suspend fun upsertGroup(entity: GroupEntity)
+
+    @Upsert
+    suspend fun upsertMembers(entities: List<GroupMemberEntity>)
+
+    // Why: one write, so nobody sees the group without its members.
+    @Transaction
+    suspend fun insertGroupWithMembers(
+        group: GroupEntity,
+        members: List<GroupMemberEntity>,
+    ) {
+        upsertGroup(group)
+        upsertMembers(members)
+    }
+
+    // Why: a group only the server has comes down whole; one the device has follows Last-Write-Wins, in one write.
+    @Transaction
+    suspend fun applyRemoteGroup(entity: GroupEntity) {
+        insertGroupIfAbsent(entity)
+        updateGroupFromRemote(
+            id = entity.id,
+            name = entity.name,
+            type = entity.type,
+            color = entity.color,
+            currency = entity.currency,
+            createdBy = entity.createdBy,
+            addedAt = entity.addedAt,
+            remoteUpdatedAt = entity.updatedAt,
+            ownerUserId = requireNotNull(entity.ownerUserId),
+        )
+    }
+
+    @Transaction
+    suspend fun applyRemoteMember(entity: GroupMemberEntity) {
+        insertMemberIfAbsent(entity)
+        updateMemberFromRemote(
+            id = entity.id,
+            groupId = entity.groupId,
+            name = entity.name,
+            avatarColor = entity.avatarColor,
+            userId = entity.userId,
+            isMe = entity.isMe,
+            addedAt = entity.addedAt,
+            remoteUpdatedAt = entity.updatedAt,
+        )
+    }
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertGroupIfAbsent(entity: GroupEntity)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertMemberIfAbsent(entity: GroupMemberEntity)
+
+    // Why: a change made while the push was in flight keeps the group pending.
+    @Query("UPDATE split_group SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
+    suspend fun markGroupSynced(
+        id: String,
+        syncedUpdatedAt: Long,
+    )
+
+    @Query("UPDATE group_member SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
+    suspend fun markMemberSynced(
+        id: String,
+        syncedUpdatedAt: Long,
+    )
+
+    /*
+     * Why: Last-Write-Wins as the server keeps it. Other members edit the same group, so a newer server row wins
+     * even over a change made offline, which the server would refuse as older anyway.
+     */
+    @Query(
+        "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
+            "createdBy = :createdBy, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "WHERE id = :id AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
+    )
+    suspend fun updateGroupFromRemote(
+        id: String,
+        name: String,
+        type: String,
+        color: String,
+        currency: String,
+        createdBy: String?,
+        addedAt: Long,
+        remoteUpdatedAt: Long,
+        ownerUserId: String,
+    )
+
+    @Query(
+        "UPDATE group_member SET groupId = :groupId, name = :name, avatarColor = :avatarColor, userId = :userId, " +
+            "isMe = :isMe, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "WHERE id = :id AND updatedAt < :remoteUpdatedAt",
+    )
+    suspend fun updateMemberFromRemote(
+        id: String,
+        groupId: String,
+        name: String,
+        avatarColor: String,
+        userId: String?,
+        isMe: Boolean,
+        addedAt: Long,
+        remoteUpdatedAt: Long,
+    )
+
+    // Why: groups created before the account belong to the first user a sync runs under, and so does its member.
+    @Transaction
+    suspend fun claimUnowned(ownerUserId: String) {
+        claimUnownedGroups(ownerUserId)
+        claimOwnMembers(ownerUserId)
+    }
+
+    @Query(
+        "UPDATE split_group SET ownerUserId = :ownerUserId, createdBy = COALESCE(createdBy, :ownerUserId) " +
+            "WHERE ownerUserId IS NULL",
+    )
+    suspend fun claimUnownedGroups(ownerUserId: String)
+
+    @Query("UPDATE group_member SET userId = :userId WHERE isMe = 1 AND userId IS NULL")
+    suspend fun claimOwnMembers(userId: String)
+
+    // Why: another user's groups, after a switch, never go up as this user's, even ones not pushed yet.
+    @Transaction
+    suspend fun deleteOtherUsersGroups(ownerUserId: String) {
+        deleteMembersOfOtherUsersGroups(ownerUserId)
+        deleteOtherUsersGroupRows(ownerUserId)
+    }
+
+    @Query(
+        "DELETE FROM group_member WHERE groupId IN " +
+            "(SELECT id FROM split_group WHERE ownerUserId != :ownerUserId)",
+    )
+    suspend fun deleteMembersOfOtherUsersGroups(ownerUserId: String)
+
+    @Query("DELETE FROM split_group WHERE ownerUserId != :ownerUserId")
+    suspend fun deleteOtherUsersGroupRows(ownerUserId: String)
+
+    /*
+     * Why: the synced groups the server no longer gives this user were removed there, with all their members; so
+     * were the synced members missing from a group the server still has. A group edited here keeps its members.
+     */
+    @Transaction
+    suspend fun deleteGoneFromServer(
+        ownerUserId: String,
+        serverGroupIds: Set<String>,
+        serverMemberIds: Set<String>,
+    ) {
+        val goneGroups = getSyncedGroupIds(ownerUserId).filterNot { it in serverGroupIds }
+        val goneMembers = getSyncedMembers(ownerUserId)
+            .filter { it.groupId in serverGroupIds && it.id !in serverMemberIds }
+            .map { it.id }
+        goneGroups.chunked(MAX_IDS_PER_QUERY).forEach {
+            deleteMembersOfGroups(it)
+            deleteGroups(it)
+        }
+        goneMembers.chunked(MAX_IDS_PER_QUERY).forEach { deleteMembers(it) }
+    }
+
+    @Query("DELETE FROM group_member WHERE groupId IN (:groupIds)")
+    suspend fun deleteMembersOfGroups(groupIds: List<String>)
+
+    @Query("DELETE FROM split_group WHERE id IN (:ids)")
+    suspend fun deleteGroups(ids: List<String>)
+
+    @Query("DELETE FROM group_member WHERE id IN (:ids)")
+    suspend fun deleteMembers(ids: List<String>)
+
+    @Transaction
+    suspend fun deleteAll() {
+        deleteAllMembers()
+        deleteAllGroups()
+    }
+
+    @Query("DELETE FROM group_member")
+    suspend fun deleteAllMembers()
+
+    @Query("DELETE FROM split_group")
+    suspend fun deleteAllGroups()
+}

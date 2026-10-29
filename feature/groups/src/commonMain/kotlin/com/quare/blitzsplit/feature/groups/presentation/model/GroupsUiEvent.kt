@@ -7,6 +7,10 @@ sealed interface GroupsUiEvent : UiEvent {
 
     data object OnJoinWithLinkClicked : GroupsUiEvent
 
+    data class OnGroupClicked(
+        val groupId: String,
+    ) : GroupsUiEvent
+
     data object OnProfileClicked : GroupsUiEvent
 
     data object OnBalancesTabClicked : GroupsUiEvent

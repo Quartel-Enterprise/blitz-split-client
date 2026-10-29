@@ -26,6 +26,7 @@ xcuserdata/
 
 # Web (webApp/.gitignore covers its own build)
 node_modules/
+.vite/
 
 # Claude Code: skills and launch.json are versioned, the rest is local
 .claude/worktrees/

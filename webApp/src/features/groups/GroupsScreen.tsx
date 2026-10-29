@@ -1,10 +1,11 @@
 import { CloudOff, Plus, ReceiptText, RefreshCw, RotateCw, UserRound, Users, Wallet } from 'lucide-react'
-import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
+import { GroupsPresenter, type JsGroupRow, type JsGroupsState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
@@ -38,7 +39,7 @@ const syncLabels: Record<string, { label: MessageKey; icon: ReactNode }> = {
 }
 
 /**
- * The first home, before any group exists. Desktop (1024+) has the full sidebar, tablet (768–1023) an
+ * The home: the empty card before any group exists, a minimal list after. Desktop (1024+) has the full sidebar, tablet (768–1023) an
  * icon rail and the phone a top bar with a bottom navigation, as the canvas draws them.
  */
 export function GroupsScreen() {
@@ -103,21 +104,27 @@ export function GroupsScreen() {
               {t(sync.label)}
             </SyncBadge>
           )}
-          <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
-            <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-              <Users className="size-6" />
-            </span>
-            <h2 className="mt-1 text-lg font-semibold">{t('groups_emptyTitle')}</h2>
-            <p className="max-w-sm text-sm text-muted-foreground">{t('groups_emptyBody')}</p>
-            <div className="flex w-full flex-col gap-2 pt-2 sm:w-auto sm:flex-row">
-              <Button onClick={() => presenter.createGroup()}>
-                <Plus /> {t('groups_create')}
-              </Button>
-              <Button variant="outline" onClick={() => presenter.joinWithLink()}>
-                {t('groups_joinWithLink')}
-              </Button>
-            </div>
-          </section>
+          {state.groups.length > 0 ? (
+            <GroupsList presenter={presenter} groups={state.groups} />
+          ) : (
+            state.showsEmptyState && (
+              <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
+                <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                  <Users className="size-6" />
+                </span>
+                <h2 className="mt-1 text-lg font-semibold">{t('groups_emptyTitle')}</h2>
+                <p className="max-w-sm text-sm text-muted-foreground">{t('groups_emptyBody')}</p>
+                <div className="flex w-full flex-col gap-2 pt-2 sm:w-auto sm:flex-row">
+                  <Button onClick={() => presenter.createGroup()}>
+                    <Plus /> {t('groups_create')}
+                  </Button>
+                  <Button variant="outline" onClick={() => presenter.joinWithLink()}>
+                    {t('groups_joinWithLink')}
+                  </Button>
+                </div>
+              </section>
+            )
+          )}
         </main>
 
         <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-4 border-t bg-card md:hidden">
@@ -151,5 +158,58 @@ function SyncBadge({ canRetry, onRetry, children }: { canRetry: boolean; onRetry
     >
       {children}
     </button>
+  )
+}
+
+/**
+ * The minimal list of the home until the full one (balances, the row's menu) arrives with the group's own
+ * page. A row opens the group; no group has expenses yet.
+ */
+function GroupsList({ presenter, groups }: { presenter: GroupsPresenter; groups: JsGroupRow[] }) {
+  return (
+    <section aria-labelledby="groups-open" className="flex w-full max-w-3xl flex-col gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <h2 id="groups-open" className="text-base font-semibold text-muted-foreground">
+          {t('groups_openTitle')}
+        </h2>
+        <Button variant="secondary" onClick={() => presenter.createGroup()}>
+          <Plus /> {t('groups_newGroup')}
+        </Button>
+      </div>
+      <ul className="flex flex-col divide-y rounded-xl border bg-card">
+        {groups.map((group) => (
+          <li key={group.id}>
+            <button
+              onClick={() => presenter.openGroup(group.id)}
+              className="flex w-full items-center gap-4 px-4 py-3 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              <GroupAvatar initials={group.initials} color={group.color} className="size-11 text-sm" />
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="truncate font-semibold">{group.name}</span>
+                <GroupMeta group={group} />
+              </span>
+              <span className="shrink-0 text-xs text-muted-foreground">{t('groups_noExpenses')}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+function GroupMeta({ group }: { group: JsGroupRow }) {
+  // Why: a group of one is "Just you", so the count is always plural.
+  const members = group.memberCount === 1 ? t('groups_onlyYou') : t('groups_memberCount', { count: group.memberCount })
+  return (
+    <span className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+      <span aria-hidden className="flex shrink-0 items-center -space-x-1.5">
+        {group.faces.map((face, index) => (
+          <Avatar key={index} initial={face.initial} color={face.color} className="size-5 text-[10px] ring-2 ring-card" />
+        ))}
+        {group.extraMemberCount > 0 && <span className="pl-2.5 text-xs font-medium">+{group.extraMemberCount}</span>}
+      </span>
+      {group.isPending && <span aria-hidden className="size-2 shrink-0 rounded-full bg-orange-500" />}
+      <span className="truncate">{group.isPending ? t('groups_metaPending', { members }) : members}</span>
+    </span>
   )
 }

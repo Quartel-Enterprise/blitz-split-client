@@ -18,6 +18,9 @@ sealed interface Route {
 
     data object Profile : Route
 
+    // Why: "Novo grupo", a sheet over the groups on iOS, macOS and the web, a screen of its own on Android phones.
+    data object CreateGroup : Route
+
     data object EditProfile : Route
 
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.

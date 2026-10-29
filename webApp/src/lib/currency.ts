@@ -1,3 +1,4 @@
+import { locale } from '@/i18n'
 import { browserLanguages } from '@/lib/platform'
 
 const defaultSymbol = '$'
@@ -42,3 +43,24 @@ export function currencySymbolFor(tag: string | undefined): string {
 
 /** The brand badge's symbol: the currency of the browser's preferred language's region. */
 export const regionCurrencySymbol = currencySymbolFor(browserLanguages()[0])
+
+/**
+ * The tag currencies are named in: the app's language, with the region of the first browser language in it
+ * ("pt-PT" for a Portuguese browser in Portugal), so the picker never speaks another language than the UI.
+ */
+const uiTag = browserLanguages().find((tag) => tag.toLowerCase().split('-')[0] === locale) ?? locale
+
+/**
+ * A group's currency as the picker names it, in the app's language: "Brazilian Real (R$)". Falls back to the
+ * ISO code where the browser can't name it.
+ */
+export function currencyLabel(code: string, tag: string = uiTag): string {
+  try {
+    const name = new Intl.DisplayNames(tag, { type: 'currency' }).of(code) ?? code
+    const parts = new Intl.NumberFormat(tag, { style: 'currency', currency: code }).formatToParts(0)
+    const symbol = parts.find((part) => part.type === 'currency')?.value.trim() || code
+    return `${name.charAt(0).toLocaleUpperCase(tag)}${name.slice(1)} (${symbol})`
+  } catch {
+    return code
+  }
+}

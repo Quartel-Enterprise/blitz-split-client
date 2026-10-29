@@ -4,10 +4,28 @@ package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
+
+class JsMemberFace(
+    val initial: String,
+    val color: String,
+)
+
+class JsGroupRow(
+    val id: String,
+    val name: String,
+    val initials: String,
+    val color: String,
+    // Why: up to three faces; the rest is "+N".
+    val faces: Array<JsMemberFace>,
+    val extraMemberCount: Int,
+    val memberCount: Int,
+    val isPending: Boolean,
+)
 
 class JsGroupsState(
     val displayName: String,
@@ -20,6 +38,10 @@ class JsGroupsState(
     val syncBadge: String?,
     val canRetrySync: Boolean,
     val showsRecoveryCodePrompt: Boolean,
+    // Why: the most recently changed first; nothing draws until they were read.
+    val groups: Array<JsGroupRow>,
+    val hasLoadedGroups: Boolean,
+    val showsEmptyState: Boolean,
 )
 
 class GroupsPresenter {
@@ -37,6 +59,9 @@ class GroupsPresenter {
                 syncBadge = state.syncBadge?.name,
                 canRetrySync = state.canRetrySync,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
+                groups = state.groups.map(::toJsGroupRow).toTypedArray(),
+                hasLoadedGroups = state.hasLoadedGroups,
+                showsEmptyState = state.showsEmptyState,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -50,6 +75,10 @@ class GroupsPresenter {
 
     fun createGroup() {
         viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
+    }
+
+    fun openGroup(groupId: String) {
+        viewModel.onEvent(GroupsUiEvent.OnGroupClicked(groupId))
     }
 
     fun joinWithLink() {
@@ -80,3 +109,14 @@ class GroupsPresenter {
         holder.clear()
     }
 }
+
+private fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
+    id = row.id,
+    name = row.name,
+    initials = row.initials,
+    color = row.color.code,
+    faces = row.faces.map { JsMemberFace(it.initial, it.color.code) }.toTypedArray(),
+    extraMemberCount = row.extraMemberCount,
+    memberCount = row.memberCount,
+    isPending = row.isPending,
+)

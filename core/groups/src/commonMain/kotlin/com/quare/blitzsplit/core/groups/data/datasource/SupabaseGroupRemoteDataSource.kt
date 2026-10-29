@@ -1,0 +1,55 @@
+package com.quare.blitzsplit.core.groups.data.datasource
+
+import com.quare.blitzsplit.core.groups.data.dto.GroupDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.query.Order
+
+class SupabaseGroupRemoteDataSource(
+    private val postgrest: Postgrest,
+) : GroupRemoteDataSource {
+    override suspend fun upsertGroups(groups: List<GroupDto>) {
+        postgrest.from(GROUPS).upsert(groups)
+    }
+
+    override suspend fun upsertMembers(members: List<GroupMemberDto>) {
+        postgrest.from(MEMBERS).upsert(members)
+    }
+
+    override suspend fun fetchGroups(): List<GroupDto> = fetchAll(GROUPS)
+
+    override suspend fun fetchMembers(): List<GroupMemberDto> = fetchAll(MEMBERS)
+
+    /*
+     * Why: page by page, since the server answers at most a page per request. A row missing from the answer would
+     * read as removed on the server and leave the device.
+     */
+    private suspend inline fun <reified T : Any> fetchAll(table: String): List<T> {
+        val rows = mutableListOf<T>()
+        do {
+            val from = rows.size.toLong()
+            val page = postgrest
+                .from(table)
+                .select {
+                    order(
+                        column = "id",
+                        order = Order.ASCENDING,
+                    )
+                    range(
+                        from = from,
+                        to = from + PAGE_SIZE - 1,
+                    )
+                }.decodeList<T>()
+            rows += page
+        } while (page.size.toLong() == PAGE_SIZE)
+        return rows
+    }
+
+    private companion object {
+        const val GROUPS = "groups"
+        const val MEMBERS = "group_members"
+
+        // Why: the API's max_rows, Supabase's default; a larger page would come back short and end the loop early.
+        const val PAGE_SIZE = 1_000L
+    }
+}
