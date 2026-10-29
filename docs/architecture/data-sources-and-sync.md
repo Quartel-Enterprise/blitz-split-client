@@ -99,9 +99,9 @@ suspend fun syncNow(): Result<Unit> {
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet
-(`ProfileRepository.observeHasPendingChanges()` or `PaymentKeyRepository.observeHasPendingChanges()`), and `SYNCED` otherwise. The home draws a badge only for the
-states that ask for attention, and its "try again" goes through `RetrySync`, which runs in the coordinator's scope
-so it outlives the screen.
+(`ProfileRepository`, `PaymentKeyRepository` or `NotificationPreferencesRepository.observeHasPendingChanges()`),
+and `SYNCED` otherwise. The home draws a badge only for the states that ask for attention, and its "try again" goes
+through `RetrySync`, which runs in the coordinator's scope so it outlives the screen.
 
 - **Register**: `ensureRegistered()` reuses the current session or signs in anonymously. The sync never registers
   an install that has no profile yet.

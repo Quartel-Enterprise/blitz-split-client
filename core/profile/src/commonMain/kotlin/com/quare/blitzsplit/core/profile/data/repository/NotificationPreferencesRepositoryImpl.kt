@@ -57,7 +57,11 @@ class NotificationPreferencesRepositoryImpl(
         local.upsert(
             mapper.toEntity(
                 preferences = NotificationPreferences(enabledTypes),
-                updatedAt = currentTimeMillis(),
+                /*
+                 * Why: newer than the row it changes, even when this device's clock is behind the one that wrote
+                 * it or two taps land in the same millisecond; otherwise the next pull or markSynced would undo it.
+                 */
+                updatedAt = maxOf(currentTimeMillis(), (stored?.updatedAt ?: 0L) + 1),
                 ownerUserId = stored?.ownerUserId ?: profileLocal.get()?.ownerUserId,
             ),
         )
