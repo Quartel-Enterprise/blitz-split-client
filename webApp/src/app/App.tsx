@@ -1,8 +1,9 @@
-import { AppPresenter } from 'blitzsplit-shared'
+import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
+import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
@@ -16,7 +17,7 @@ import { applyTheme } from '@/lib/theme'
 export function App() {
   const app = usePresenter(() => new AppPresenter())
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
-  const backStack = useWatch(app, (presenter, onChange: (routes: string[]) => void) => presenter.observeBackStack(onChange))
+  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
   // The theme is the database's once the app is ready; until then the last visit's stays painted.
   useEffect(() => {
@@ -25,9 +26,14 @@ export function App() {
   useBrowserHistory(app, backStack)
 
   if (!isReady || !backStack) return null
+  const top = backStack[backStack.length - 1]
+  // Why: a payment key opens as a dialog over the profile, which stays mounted under it.
+  const isPaymentKey = top.name === 'payment-key'
+  const page = isPaymentKey ? (backStack.at(-2)?.name ?? 'profile') : top.name
   return (
     <>
-      <Screen route={backStack[backStack.length - 1]} />
+      <Screen route={page} />
+      {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
@@ -51,7 +57,7 @@ function Screen({ route }: { route: string }) {
 }
 
 // Each push of the shared back stack becomes a browser history entry; the back button pops it.
-function useBrowserHistory(app: AppPresenter | null, backStack: string[] | null) {
+function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null) {
   const size = useRef(0)
   useEffect(() => {
     if (!app || !backStack) return

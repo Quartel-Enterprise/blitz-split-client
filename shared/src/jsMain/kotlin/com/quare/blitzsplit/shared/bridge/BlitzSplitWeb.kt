@@ -46,8 +46,8 @@ class AppPresenter {
         return JsWatch(watch::cancel)
     }
 
-    fun observeBackStack(onChange: (Array<String>) -> Unit): JsWatch {
-        val routes = navigator.backStack.map { stack -> stack.map(::toRouteName).toTypedArray() }
+    fun observeBackStack(onChange: (Array<JsRoute>) -> Unit): JsWatch {
+        val routes = navigator.backStack.map { stack -> stack.map(::JsRoute).toTypedArray() }
         val watch = FlowWatcher(routes).observe(onChange)
         return JsWatch(watch::cancel)
     }
