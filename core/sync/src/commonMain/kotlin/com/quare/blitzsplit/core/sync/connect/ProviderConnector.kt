@@ -25,6 +25,7 @@ interface ProviderConnector {
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     )
 
     fun finishConnecting(hasFailed: Boolean)

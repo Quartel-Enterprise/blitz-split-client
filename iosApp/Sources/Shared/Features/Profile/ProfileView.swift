@@ -6,6 +6,8 @@ import SwiftUI
 final class ProfileModel {
     private(set) var state: ProfileUiState
     private(set) var didCopy = false
+    /// The JSON of "Export my data", until the save sheet closes.
+    var exportJson: String?
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createProfileViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -38,11 +40,19 @@ final class ProfileModel {
             #else
             NSWorkspace.shared.open(url)
             #endif
+        case let export as ProfileUiActionSaveExport:
+            exportJson = export.json
         case is ProfileUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
-                case let .success(idToken, rawNonce, fullName):
-                    send(ProfileUiEventOnIdTokenReceived(provider: .apple, idToken: idToken, rawNonce: rawNonce, fullName: fullName))
+                case let .success(idToken, rawNonce, fullName, authorizationCode):
+                    send(ProfileUiEventOnIdTokenReceived(
+                        provider: .apple,
+                        idToken: idToken,
+                        rawNonce: rawNonce,
+                        fullName: fullName,
+                        authorizationCode: authorizationCode,
+                    ))
                 case .cancelled:
                     send(ProfileUiEventOnNativeSignInCancelled.shared)
                 case .failed:
@@ -109,6 +119,9 @@ struct ProfileView: View {
                 }
                 .disabled(!state.canSignOut)
             }
+            if state.showsDeleteAccount {
+                DeleteAccountSection(model: model)
+            }
         }
         .formStyle(.grouped)
         .navigationTitle("Profile")
@@ -120,6 +133,10 @@ struct ProfileView: View {
             }
         }
         .profileDialogs(model: model)
+        .dataExporter(json: Binding(
+            get: { model.exportJson },
+            set: { model.exportJson = $0 },
+        ))
     }
 }
 
@@ -182,14 +199,7 @@ private struct AccountSection: View {
         let state = model.state
         Section("Account and sync") {
             if let provider = state.accountProvider {
-                LabeledContent {
-                    Text("Connected").foregroundStyle(Palette.accent)
-                } label: {
-                    Text(verbatim: provider.displayName)
-                    if let email = state.maskedEmail {
-                        Text("\(email) · only you see it")
-                    }
-                }
+                ConnectedAccountRow(model: model, provider: provider)
             } else {
                 LabeledContent {
                     if !state.isConnectExpanded {
@@ -273,6 +283,62 @@ private struct AccountSection: View {
         case .syncing: Text("Syncing…")
         case .failed: Text("No response from the server")
         default: hasPendingChanges ? Text("\(count) changes in the queue") : Text("Waiting to sync")
+        }
+    }
+}
+
+/// The Google or Apple row. On iPhone and iPad the whole row opens the "Disconnect" alert; the Mac
+/// has a "Disconnect…" button, as its settings rows do.
+private struct ConnectedAccountRow: View {
+    let model: ProfileModel
+    let provider: AccountProvider
+
+    var body: some View {
+        let state = model.state
+        #if os(macOS)
+        LabeledContent {
+            HStack(spacing: 12) {
+                Text("Connected").foregroundStyle(Palette.accent)
+                if state.isUnlinking {
+                    ProgressView().controlSize(.small)
+                } else {
+                    Button("Disconnect…") { model.send(ProfileUiEventOnAccountClicked.shared) }
+                }
+            }
+        } label: {
+            label
+        }
+        #else
+        Button {
+            model.send(ProfileUiEventOnAccountClicked.shared)
+        } label: {
+            LabeledContent {
+                if state.isUnlinking {
+                    ProgressView().controlSize(.small)
+                } else {
+                    HStack(spacing: 8) {
+                        Text("Connected").foregroundStyle(Palette.accent)
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                            .accessibilityHidden(true)
+                    }
+                }
+            } label: {
+                label
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Disconnect")
+        #endif
+    }
+
+    @ViewBuilder
+    private var label: some View {
+        Text(verbatim: provider.displayName).foregroundStyle(.primary)
+        if let email = model.state.maskedEmail {
+            Text("\(email) · only you see it")
         }
     }
 }
@@ -420,6 +486,7 @@ private struct AboutSection: View {
 
     var body: some View {
         Section("Privacy and about") {
+            ExportRow(model: model)
             Button("Who sees your profile") {
                 model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
             }
@@ -435,6 +502,75 @@ private struct AboutSection: View {
             }
             LabeledContent("Version", value: Bundle.main.appVersion)
         }
+    }
+}
+
+/// "Export my data": a JSON file the save sheet writes, which works offline from the local copy.
+private struct ExportRow: View {
+    let model: ProfileModel
+
+    var body: some View {
+        #if os(macOS)
+        LabeledContent {
+            Button("Export…") { model.send(ProfileUiEventOnExportClicked.shared) }
+        } label: {
+            Text("Export my data")
+            Text("A JSON file with your profile and keys")
+        }
+        #else
+        Button {
+            model.send(ProfileUiEventOnExportClicked.shared)
+        } label: {
+            LabeledContent {
+                Image(systemName: "square.and.arrow.up")
+                    .foregroundStyle(Palette.accent)
+                    .accessibilityHidden(true)
+            } label: {
+                Text("Export my data").foregroundStyle(.primary)
+                Text("A JSON file with your profile and keys")
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        #endif
+    }
+}
+
+/// "Delete account and data", apart from Sign out at the very end, as the stores ask. The Mac shows it
+/// as a settings row with a "Delete account…" button.
+private struct DeleteAccountSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        #if os(macOS)
+        Section {
+            LabeledContent {
+                Button("Delete account…", role: .destructive) {
+                    model.send(ProfileUiEventOnDeleteAccountClicked.shared)
+                }
+            } label: {
+                Text("Delete account and data")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Palette.negative)
+                Text("Deletes your Blitz Split account. This can't be undone.")
+            }
+        }
+        #else
+        Section {
+            Button(role: .destructive) {
+                model.send(ProfileUiEventOnDeleteAccountClicked.shared)
+            } label: {
+                Text("Delete account and data")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+            }
+            .listRowBackground(Palette.negative.opacity(0.12))
+        } footer: {
+            Text("Deletes your Blitz Split account. This can't be undone.")
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+        }
+        #endif
     }
 }
 

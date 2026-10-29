@@ -13,6 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ProviderConnectorImplTest {
+    private lateinit var account: FakeAccountRepository
     private lateinit var connector: ProviderConnectorImpl
     private val nativeLaunches = mutableListOf<AccountProvider>()
     private val browserLinks = mutableListOf<AccountProvider>()
@@ -44,8 +45,49 @@ class ProviderConnectorImplTest {
         assertEquals(listOf(AccountProvider.APPLE), nativeLaunches)
     }
 
+    @Test
+    fun `GIVEN Apple native sign in WHEN its ID token arrives with an authorization code THEN links with that code`() =
+        runTest {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.APPLE))
+            connector.connect(AccountProvider.APPLE, nativeLaunches::add)
+
+            // When
+            connector.onIdTokenReceived(
+                provider = AccountProvider.APPLE,
+                idToken = "apple-id-token",
+                rawNonce = "raw-nonce",
+                fullName = "Pierre Vieira",
+                authorizationCode = "apple-authorization-code",
+            )
+
+            // Then
+            assertEquals(listOf(AccountProvider.APPLE to "apple-id-token"), account.idTokenConnections)
+            assertEquals(listOf<String?>("apple-authorization-code"), account.idTokenAuthorizationCodes)
+        }
+
+    @Test
+    fun `GIVEN Google native sign in WHEN its ID token arrives without an authorization code THEN links with none`() =
+        runTest {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            connector.connect(AccountProvider.GOOGLE, nativeLaunches::add)
+
+            // When
+            connector.onIdTokenReceived(
+                provider = AccountProvider.GOOGLE,
+                idToken = "google-id-token",
+                rawNonce = null,
+                fullName = null,
+                authorizationCode = null,
+            )
+
+            // Then
+            assertEquals(listOf<String?>(null), account.idTokenAuthorizationCodes)
+        }
+
     private fun prepareScenario(native: Set<AccountProvider> = emptySet()) {
-        val account = FakeAccountRepository()
+        account = FakeAccountRepository()
         connector = ProviderConnectorImpl(
             nativeSignIn = NativeSignIn(native),
             connectWithIdToken = ConnectWithIdTokenUseCase(account),

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
+import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -17,8 +18,10 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +30,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
@@ -36,6 +40,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 class AccountRepositoryImplTest {
     private lateinit var local: FakeAccountLocalDataSource
@@ -82,6 +87,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = "nonce",
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -104,6 +110,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = null,
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -122,6 +129,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = null,
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -609,6 +617,7 @@ class AccountRepositoryImplTest {
                 idToken = "token",
                 rawNonce = null,
                 fullName = appleName,
+                authorizationCode = null,
             )
 
             // Then
@@ -644,6 +653,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = "nonce",
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -1812,6 +1822,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = null,
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -2036,6 +2047,420 @@ class AccountRepositoryImplTest {
             assertNull(repository.observeBrowserSignInReturningToProfile().first())
         }
 
+    @Test
+    fun `GIVEN no session WHEN signing in with Apple natively THEN keeps its authorization code`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+
+        // When
+        val result = signInWithApple(authorizationCode = appleAuthorizationCode)
+
+        // Then
+        assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+        assertEquals(listOf<AppleToken>(AppleToken.AuthorizationCode(appleAuthorizationCode)), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN connecting Apple natively THEN keeps its authorization code`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+
+        // When
+        val result = signInWithApple(authorizationCode = appleAuthorizationCode)
+
+        // Then
+        assertEquals(ConnectResult.LINKED, result.getOrNull())
+        assertEquals(listOf<AppleToken>(AppleToken.AuthorizationCode(appleAuthorizationCode)), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN a Google session WHEN switching to Apple natively THEN keeps its authorization code`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUser)
+
+        // When
+        val result = signInWithApple(authorizationCode = appleAuthorizationCode)
+
+        // Then
+        assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+        assertEquals(listOf<AppleToken>(AppleToken.AuthorizationCode(appleAuthorizationCode)), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN an Apple identity of another user WHEN connecting Apple natively THEN keeps its authorization code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                linkError = IdentityAlreadyLinkedException(),
+            )
+
+            // When
+            val result = signInWithApple(authorizationCode = appleAuthorizationCode)
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertEquals(
+                listOf<AppleToken>(AppleToken.AuthorizationCode(appleAuthorizationCode)),
+                remote.keptAppleTokens,
+            )
+        }
+
+    @Test
+    fun `GIVEN a Google sign in with a code WHEN signing in with Google THEN keeps no Apple token`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+
+        // When
+        val result = repository.signInWithIdToken(
+            AccountProvider.GOOGLE,
+            idToken = "token",
+            rawNonce = null,
+            fullName = null,
+            authorizationCode = appleAuthorizationCode,
+        )
+
+        // Then
+        assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+        assertTrue(remote.keptAppleTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an Apple sign in without a code WHEN signing in with Apple THEN keeps no Apple token`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+
+        // When
+        val result = signInWithApple(authorizationCode = null)
+
+        // Then
+        assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+        assertTrue(remote.keptAppleTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the server fails to keep the Apple token WHEN signing in with Apple THEN still signs in`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            idTokenUser = appleUserWithName,
+        )
+        remote.keepAppleTokenError = IllegalStateException("server error")
+
+        // When
+        val result = signInWithApple(authorizationCode = appleAuthorizationCode)
+
+        // Then
+        assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+        assertTrue(remote.keptAppleTokens.isEmpty())
+        assertEquals(AccountStatus.Connected("apple-user", AccountProvider.APPLE), repository.observeStatus().first())
+    }
+
+    @Test
+    fun `GIVEN linking Apple fails WHEN connecting Apple natively THEN fails and keeps no Apple token`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = anonymousUser,
+            linkError = IllegalStateException("offline"),
+        )
+
+        // When
+        val result = signInWithApple(authorizationCode = appleAuthorizationCode)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(remote.keptAppleTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a failed read of the account WHEN an Apple refresh token arrives THEN keeps the next one`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.APPLE,
+        )
+        startKeepingAppleTokens()
+        local.getError = IllegalStateException("database closed")
+        remote.appleRefreshTokens.emit("refresh-lost")
+        runCurrent()
+        local.getError = null
+
+        // When
+        remote.appleRefreshTokens.emit("refresh-next")
+        runCurrent()
+
+        // Then
+        assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-next")), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN the same user is mirrored without Google THEN offers no new recovery code`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser)
+            repository.ensureRegistered()
+            startMirroring()
+
+            // When
+            sessions.emit(googleUser.copy(socialProvider = null))
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+            assertNull(account.recoveryCode)
+            assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN another anonymous user is mirrored THEN keeps its recovery code prompt`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser)
+            repository.ensureRegistered()
+            startMirroring()
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
+        }
+
+    @Test
+    fun `GIVEN an Apple browser sign in WHEN its refresh token arrives THEN keeps it`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.APPLE,
+        )
+        startKeepingAppleTokens()
+
+        // When
+        remote.appleRefreshTokens.emit("refresh-1")
+        runCurrent()
+
+        // Then
+        assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-1")), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN no browser sign in WHEN a refresh token arrives THEN keeps nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startKeepingAppleTokens()
+
+        // When
+        remote.appleRefreshTokens.emit("refresh-1")
+        runCurrent()
+
+        // Then
+        assertTrue(remote.keptAppleTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a Google browser sign in WHEN a refresh token arrives THEN keeps nothing`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.GOOGLE,
+        )
+        startKeepingAppleTokens()
+
+        // When
+        remote.appleRefreshTokens.emit("refresh-1")
+        runCurrent()
+
+        // Then
+        assertTrue(remote.keptAppleTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN keeping one refresh token failed WHEN the next one arrives THEN keeps the next one`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.APPLE,
+        )
+        startKeepingAppleTokens()
+        remote.keepAppleTokenError = IllegalStateException("server error")
+        remote.appleRefreshTokens.emit("refresh-1")
+        advanceTimeBy(10.seconds)
+        runCurrent()
+        remote.keepAppleTokenError = null
+
+        // When
+        remote.appleRefreshTokens.emit("refresh-2")
+        runCurrent()
+
+        // Then
+        assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-2")), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN a failed upload of an Apple refresh token WHEN the server is back THEN a retry keeps it`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.APPLE,
+        )
+        startKeepingAppleTokens()
+        remote.keepAppleTokenError = IllegalStateException("server error")
+        remote.appleRefreshTokens.emit("refresh-1")
+        runCurrent()
+
+        // When
+        remote.keepAppleTokenError = null
+        advanceTimeBy(10.seconds)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-1")), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN a token that came before the Apple browser sign in WHEN one comes after it THEN keeps only the later`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startKeepingAppleTokens()
+            remote.appleRefreshTokens.emit("refresh-early")
+            runCurrent()
+            repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = false)
+
+            // When
+            remote.appleRefreshTokens.emit("refresh-late")
+            runCurrent()
+
+            // Then
+            assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-late")), remote.keptAppleTokens)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN disconnecting Google THEN the same user becomes anonymous with a new code due`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUserWithEmail)
+            repository.ensureRegistered()
+
+            // When
+            val result = repository.removeSocialIdentity()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertTrue(result.isSuccess)
+            assertEquals(1, remote.unlinkCount)
+            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
+            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+            assertNull(account.email)
+        }
+
+    @Test
+    fun `GIVEN an Apple account WHEN disconnecting Apple THEN the same user becomes anonymous with a new code due`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = appleUserWithEmail)
+            repository.ensureRegistered()
+
+            // When
+            val result = repository.removeSocialIdentity()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertTrue(result.isSuccess)
+            assertEquals(AccountStatus.Anonymous("apple-user"), account.status)
+            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
+            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+            assertNull(account.email)
+        }
+
+    @Test
+    fun `GIVEN a failed user read after the unlink WHEN disconnecting THEN keeps the new code due`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+        remote.keepsStaleUserOnUnlink = true
+
+        // When
+        val result = repository.removeSocialIdentity()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertTrue(result.isSuccess)
+        assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+        assertEquals("P3XR7MQA2TKE", account.recoveryCode)
+        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+        assertNull(account.email)
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN disconnecting Google THEN fails and keeps the account as it was`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+        val before = local.get()
+        remote.unlinkError = IllegalStateException("offline")
+
+        // When
+        val result = repository.removeSocialIdentity()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(before, local.get())
+        assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN deleting the account THEN deletes it on the server only`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+        val before = local.get()
+
+        // When
+        val result = repository.deleteAccount()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, remote.deleteAccountCount)
+        assertEquals(0, remote.clearedLocalSessions)
+        assertEquals(before, local.get())
+    }
+
+    @Test
+    fun `GIVEN a deleted account WHEN ending its session THEN ends it here without a logout`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+
+        // When
+        repository.endDeletedSession()
+
+        // Then
+        assertEquals(1, remote.clearedLocalSessions)
+        assertEquals(0, remote.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
+    }
+
+    @Test
+    fun `GIVEN the server fails WHEN deleting the account THEN fails and keeps the device data`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+        val before = local.get()
+        remote.deleteAccountError = IllegalStateException("server error")
+
+        // When
+        val result = repository.deleteAccount()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(0, remote.deleteAccountCount)
+        assertEquals(before, local.get())
+    }
+
     private val anonymousUser =
         SessionUser(
             "anonymous",
@@ -2119,12 +2544,23 @@ class AccountRepositoryImplTest {
         }
     }
 
-    private suspend fun signInWithApple(fullName: String?): Result<ConnectResult> = repository.signInWithIdToken(
+    private suspend fun signInWithApple(
+        fullName: String? = null,
+        authorizationCode: String? = null,
+    ): Result<ConnectResult> = repository.signInWithIdToken(
         AccountProvider.APPLE,
         idToken = "token",
         rawNonce = "nonce",
         fullName = fullName,
+        authorizationCode = authorizationCode,
     )
+
+    private val appleAuthorizationCode = "apple-authorization-code"
+
+    private fun TestScope.startKeepingAppleTokens() {
+        backgroundScope.launch { repository.keepAppleTokens() }
+        runCurrent()
+    }
 
     private fun prepareScenario(
         currentUser: SessionUser?,
@@ -2154,6 +2590,8 @@ class AccountRepositoryImplTest {
         repository = AccountRepositoryImpl(
             local = local,
             remote = remote,
+            // Why: runs what a sign in leaves to the app's scope right away, so a test reads it on return.
+            scope = CoroutineScope(Dispatchers.Unconfined),
         )
     }
 }
@@ -2235,8 +2673,21 @@ private class FakeAccountRemoteDataSource(
     var signOutCount = 0
     var signOutError: Throwable? = null
     var sessionUpdates: Flow<SessionUser?> = emptyFlow()
+    val appleRefreshTokens = MutableSharedFlow<String>()
+    val keptAppleTokens = mutableListOf<AppleToken>()
+    var keepAppleTokenError: Throwable? = null
+    var unlinkError: Throwable? = null
+    var unlinkCount = 0
+
+    // Why: the server unlinked, but the read of the user after it failed, so the session still holds the old one.
+    var keepsStaleUserOnUnlink = false
+    var deleteAccountError: Throwable? = null
+    var deleteAccountCount = 0
+    var clearedLocalSessions = 0
 
     override fun observeSessionUser(): Flow<SessionUser?> = sessionUpdates
+
+    override fun observeAppleRefreshTokens(): Flow<String> = appleRefreshTokens
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = currentUser ?: sessionUsers.value
 
@@ -2300,6 +2751,33 @@ private class FakeAccountRemoteDataSource(
     override suspend fun createRecoveryCode(): String {
         issueError?.let { throw it }
         return "K7QM4XPA9TRE"
+    }
+
+    override suspend fun keepAppleToken(token: AppleToken) {
+        keepAppleTokenError?.let { throw it }
+        keptAppleTokens += token
+    }
+
+    override suspend fun removeSocialIdentity(): String {
+        unlinkError?.let { throw it }
+        unlinkCount++
+        if (keepsStaleUserOnUnlink) return "P3XR7MQA2TKE"
+        currentUser = currentUser?.copy(
+            socialProvider = null,
+            email = null,
+        )
+        return "P3XR7MQA2TKE"
+    }
+
+    override suspend fun deleteAccount() {
+        deleteAccountError?.let { throw it }
+        deleteAccountCount++
+    }
+
+    override suspend fun clearLocalSession() {
+        clearedLocalSessions++
+        currentUser = null
+        sessionUsers.value = null
     }
 
     override suspend fun signOut() {

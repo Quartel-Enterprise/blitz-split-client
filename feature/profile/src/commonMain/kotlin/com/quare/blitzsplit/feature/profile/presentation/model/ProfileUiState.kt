@@ -35,6 +35,9 @@ data class ProfileUiState(
     val isSigningOut: Boolean,
     // Why: each UI says it in its own words, in the dialog that stays open for another try.
     val hasSignOutFailed: Boolean,
+    val isUnlinking: Boolean,
+    // Why: like the sign out's, said in the dialog that stays open for another try.
+    val hasUnlinkFailed: Boolean,
 ) {
     val avatarInitial: String
         get() = displayName
@@ -81,7 +84,18 @@ data class ProfileUiState(
 
     // Why: a link half done would land on a device whose session and profile are already gone.
     val canSignOut: Boolean
-        get() = !isSigningOut && !isSignOutScheduled && connectingProvider == null
+        get() = !isSigningOut && !isSignOutScheduled && connectingProvider == null && !isUnlinking
+
+    // Why: the dialog opens offline too, to say why "Desconectar" waits for the internet.
+    val canUnlink: Boolean
+        get() = isOnline && !isUnlinking && !isSigningOut && !isSignOutScheduled
+
+    /*
+     * Why: the server deletes it, so only a Google or Apple account has one to delete; without one the
+     * profile only lives here and "Apagar perfil e sair" already erases it.
+     */
+    val showsDeleteAccount: Boolean
+        get() = hasAccount
 
     val canErase: Boolean
         get() = hasConfirmedCodeSaved && !isSigningOut

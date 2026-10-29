@@ -1,8 +1,10 @@
 package com.quare.blitzsplit.core.account.data.datasource
 
+import com.quare.blitzsplit.core.account.data.dto.AppleTokenRequestDto
 import com.quare.blitzsplit.core.account.data.dto.RecoverRequestDto
 import com.quare.blitzsplit.core.account.data.dto.RecoverResponseDto
 import com.quare.blitzsplit.core.account.data.dto.RecoveryCodeResponseDto
+import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
 import com.quare.blitzsplit.core.account.domain.model.RecoveryCredentials
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -51,6 +54,22 @@ class SupabaseAccountRemoteDataSource(
         auth.awaitInitialization()
         return auth.currentUserOrNull()?.let(::toSessionUser)
     }
+
+    /*
+     * Why: Supabase's browser sign in imports its session as External, the only one that carries the
+     * provider's tokens; a refresh or a restart from storage drops them.
+     */
+    override fun observeAppleRefreshTokens(): Flow<String> = auth.sessionStatus
+        .mapNotNull { status ->
+            val authenticated = status as? SessionStatus.Authenticated ?: return@mapNotNull null
+            val session = authenticated.session
+            val hasApple = session.user
+                ?.identities
+                .orEmpty()
+                .any { it.provider == AccountProvider.APPLE.code }
+            // Why: any source, not only the callback's import: an update of the user right after it keeps the token.
+            session.providerRefreshToken?.takeIf { hasApple }
+        }.distinctUntilChanged()
 
     override suspend fun signInAnonymously(): SessionUser {
         auth.signInAnonymously()
@@ -139,6 +158,32 @@ class SupabaseAccountRemoteDataSource(
         return json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
     }
 
+    override suspend fun keepAppleToken(token: AppleToken) {
+        functions.invoke(
+            function = APPLE_TOKEN_FUNCTION,
+            body = AppleTokenRequestDto(
+                authorizationCode = (token as? AppleToken.AuthorizationCode)?.code,
+                refreshToken = (token as? AppleToken.RefreshToken)?.token,
+            ),
+        )
+    }
+
+    override suspend fun removeSocialIdentity(): String {
+        val response = functions.invoke(function = UNLINK_IDENTITY_FUNCTION)
+        val code = json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
+        // Why: the identity is already gone and the code is what reaches the account now, so a failed read can't lose it.
+        suspendRunCatching { auth.retrieveUserForCurrentSession(updateSession = true) }
+        return code
+    }
+
+    override suspend fun deleteAccount() {
+        functions.invoke(function = DELETE_ACCOUNT_FUNCTION)
+    }
+
+    override suspend fun clearLocalSession() {
+        auth.clearSession()
+    }
+
     // Why: the server only revokes the session, so a slow or captive network can't hold the sign out for long.
     private val remoteSignOutTimeout = 5.seconds
 
@@ -174,6 +219,9 @@ class SupabaseAccountRemoteDataSource(
         const val FULL_NAME_KEY = "full_name"
         const val RECOVER_FUNCTION = "recover"
         const val RECOVERY_CODE_FUNCTION = "recovery-code"
+        const val APPLE_TOKEN_FUNCTION = "apple-token"
+        const val UNLINK_IDENTITY_FUNCTION = "unlink-identity"
+        const val DELETE_ACCOUNT_FUNCTION = "delete-account"
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_NOT_FOUND = 404
         const val HTTP_CONFLICT = 409

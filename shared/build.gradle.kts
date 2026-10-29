@@ -16,6 +16,7 @@ private val exportedToApple = listOf(
     projects.feature.profile,
     projects.feature.editProfile,
     projects.feature.paymentKey,
+    projects.feature.deleteAccount,
 )
 
 kotlin {

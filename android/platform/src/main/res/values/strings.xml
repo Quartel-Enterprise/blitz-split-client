@@ -2,4 +2,5 @@
 <resources>
     <string name="platform_app_name">Blitz Split</string>
     <string name="platform_recovery_code_account">Blitz Split · recovery code</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
 </resources>

@@ -34,6 +34,9 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveBrowserSignI
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -42,7 +45,13 @@ import org.koin.dsl.module
 val accountModule = module {
     singleOf(::RoomAccountLocalDataSource).bind<AccountLocalDataSource>()
     singleOf(::SupabaseAccountRemoteDataSource).bind<AccountRemoteDataSource>()
-    singleOf(::AccountRepositoryImpl).bind<AccountRepository>()
+    single<AccountRepository> {
+        AccountRepositoryImpl(
+            local = get(),
+            remote = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+        )
+    }
     factoryOf(::ObserveAccountStatusUseCase).bind<ObserveAccountStatus>()
     factoryOf(::ObserveAccountUseCase).bind<ObserveAccount>()
     factoryOf(::UpdateRecoveryCodePromptUseCase).bind<UpdateRecoveryCodePrompt>()

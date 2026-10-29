@@ -27,10 +27,12 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
@@ -63,6 +65,8 @@ class ProfileViewModel(
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
     private val validatePaymentKey: ValidatePaymentKey,
+    private val unlinkAccount: UnlinkAccount,
+    private val exportUserData: ExportUserData,
     observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
     observePendingProfileChanges: ObservePendingProfileChanges,
@@ -96,6 +100,8 @@ class ProfileViewModel(
                 hasSignInFailed = false,
                 isSigningOut = false,
                 hasSignOutFailed = false,
+                isUnlinking = false,
+                hasUnlinkFailed = false,
             ),
         )
 
@@ -173,6 +179,10 @@ class ProfileViewModel(
             is ProfileUiEvent.OnAddPaymentKeyClicked -> openPaymentKey(event.method, keyId = null)
             is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
+            ProfileUiEvent.OnAccountClicked -> openUnlink()
+            ProfileUiEvent.OnUnlinkConfirmed -> unlink()
+            ProfileUiEvent.OnExportClicked -> export()
+            ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
@@ -194,6 +204,8 @@ class ProfileViewModel(
         val connected = account.status as? AccountStatus.Connected
         uiState.update {
             it.copy(
+                // Why: the account gone closes the unlink dialog with it, so it never asks about no provider.
+                dialog = it.dialog.takeUnless { dialog -> dialog == ProfileDialog.UNLINK_ACCOUNT && connected == null },
                 accountProvider = connected?.provider,
                 hasAnonymousId = account.status is AccountStatus.Anonymous,
                 maskedEmail = account.email?.takeIf { connected != null }?.toMaskedEmail(),
@@ -302,24 +314,75 @@ class ProfileViewModel(
         showDialog(signOutDialogOf(state))
     }
 
+    // Why: a sign out or unlink under way keeps its dialog, which shows how it ends.
     private fun showDialog(dialog: ProfileDialog) {
+        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
         uiState.update {
             it.copy(
                 dialog = dialog,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
+                hasUnlinkFailed = false,
             )
         }
     }
 
     private fun closeDialog() {
-        if (uiState.value.isSigningOut) return
+        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
         uiState.update {
             it.copy(
                 dialog = null,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
+                hasUnlinkFailed = false,
             )
+        }
+    }
+
+    // Why: a sign out on its way would end the account the unlink keeps, so the row waits for it.
+    private fun openUnlink() {
+        val state = uiState.value
+        if (state.hasAccount && !state.isSignOutScheduled) showDialog(ProfileDialog.UNLINK_ACCOUNT)
+    }
+
+    // Why: an unlink or sign out under way, or one scheduled, changes the account the deletion would name.
+    private fun openDeleteAccount() {
+        val state = uiState.value
+        val isBusy = state.isUnlinking || state.isSigningOut || state.isSignOutScheduled
+        if (state.showsDeleteAccount && !isBusy) {
+            navigator.navigate(Route.DeleteAccount)
+        }
+    }
+
+    /*
+     * Why: the recovery code sheet shows once the account is gone, since its prompt comes due with the new
+     * code, so a success only closes the dialog.
+     */
+    private fun unlink() {
+        val state = uiState.value
+        if (state.dialog != ProfileDialog.UNLINK_ACCOUNT || !state.canUnlink) return
+        uiState.update {
+            it.copy(
+                isUnlinking = true,
+                hasUnlinkFailed = false,
+            )
+        }
+        viewModelScope.launch {
+            val result = unlinkAccount()
+            uiState.update {
+                it.copy(
+                    dialog = it.dialog.takeIf { result.isFailure },
+                    isUnlinking = false,
+                    hasUnlinkFailed = result.isFailure,
+                )
+            }
+        }
+    }
+
+    private fun export() {
+        // Why: the file is read from the device's copy, so a failure is one nobody can act on; the tap does nothing.
+        viewModelScope.launch {
+            exportUserData().onSuccess { json -> uiAction.emit(ProfileUiAction.SaveExport(json)) }
         }
     }
 
@@ -387,6 +450,7 @@ class ProfileViewModel(
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
+                authorizationCode = event.authorizationCode,
             )
         }
     }

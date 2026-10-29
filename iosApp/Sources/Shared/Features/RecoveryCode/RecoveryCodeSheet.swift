@@ -36,8 +36,14 @@ final class RecoveryCodeModel {
         case is RecoveryCodeUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
-                case let .success(idToken, rawNonce, fullName):
-                    send(RecoveryCodeUiEventOnIdTokenReceived(provider: .apple, idToken: idToken, rawNonce: rawNonce, fullName: fullName))
+                case let .success(idToken, rawNonce, fullName, authorizationCode):
+                    send(RecoveryCodeUiEventOnIdTokenReceived(
+                        provider: .apple,
+                        idToken: idToken,
+                        rawNonce: rawNonce,
+                        fullName: fullName,
+                        authorizationCode: authorizationCode,
+                    ))
                 case .cancelled:
                     send(RecoveryCodeUiEventOnNativeSignInCancelled.shared)
                 case .failed:

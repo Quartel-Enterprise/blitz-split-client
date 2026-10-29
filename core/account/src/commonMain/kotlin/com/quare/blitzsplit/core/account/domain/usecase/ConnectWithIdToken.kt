@@ -9,5 +9,7 @@ fun interface ConnectWithIdToken {
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        // Why: only Apple's native sheet gives it, for the server to keep Apple's token.
+        authorizationCode: String?,
     ): Result<ConnectResult>
 }

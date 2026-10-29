@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
@@ -64,6 +65,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createEditProfileViewModel(): ViewModelHolder<EditProfileViewModel> =
         ViewModelHolder(EditProfileViewModel::class) { get() }
+
+    fun createDeleteAccountViewModel(): ViewModelHolder<DeleteAccountViewModel> =
+        ViewModelHolder(DeleteAccountViewModel::class) { get() }
 
     // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
     fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =

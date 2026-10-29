@@ -12,6 +12,7 @@ enum AppRoute: Hashable, Identifiable {
     case groups
     case profile
     case editProfile
+    case deleteAccount
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
 
@@ -22,6 +23,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteGroups: self = .groups
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
+        case is RouteDeleteAccount: self = .deleteAccount
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         default: self = .welcome
         }
@@ -30,13 +32,19 @@ enum AppRoute: Hashable, Identifiable {
     var id: Self { self }
 
     /// iPad opens a key as a form sheet and the Mac as a sheet on its window, as the canvas draws
-    /// them; the iPhone pushes it.
+    /// them; the iPhone pushes it. Deleting the account is a sheet everywhere.
     var presentsAsSheet: Bool {
-        guard case .paymentKey = self else { return false }
-        #if os(macOS)
-        return true
-        #else
-        return UIDevice.current.userInterfaceIdiom == .pad
-        #endif
+        switch self {
+        case .deleteAccount:
+            return true
+        case .paymentKey:
+            #if os(macOS)
+            return true
+            #else
+            return UIDevice.current.userInterfaceIdiom == .pad
+            #endif
+        default:
+            return false
+        }
     }
 }

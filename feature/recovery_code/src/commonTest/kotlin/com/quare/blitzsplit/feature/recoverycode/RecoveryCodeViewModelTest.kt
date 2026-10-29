@@ -283,7 +283,7 @@ class RecoveryCodeViewModelTest {
 
             // When
             viewModel.onEvent(
-                RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira"),
+                RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira", null),
             )
 
             // Then
@@ -302,7 +302,9 @@ class RecoveryCodeViewModelTest {
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.APPLE))
 
             // When
-            viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null))
+            viewModel.onEvent(
+                RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null, null),
+            )
 
             // Then
             assertEquals(listOf(AccountProvider.APPLE to "token"), account.idTokenConnections)
@@ -321,7 +323,7 @@ class RecoveryCodeViewModelTest {
         )
 
         // When
-        viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null))
+        viewModel.onEvent(RecoveryCodeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
 
         // Then
         assertTrue(viewModel.uiState.value.hasSignInFailed)

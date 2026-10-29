@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
+import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -17,19 +18,25 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAtomicApi::class)
 class AccountRepositoryImpl(
     private val local: AccountLocalDataSource,
     private val remote: AccountRemoteDataSource,
+    // Why: the app's, for work a sign in starts but needn't wait for.
+    private val scope: CoroutineScope,
 ) : AccountRepository {
     // Why: in memory, since a browser trip doesn't outlive the process that opened it.
     private val browserTrip = AtomicReference(BrowserTrip.NONE)
@@ -69,6 +76,15 @@ class AccountRepositoryImpl(
         }
     }
 
+    // Why: only a trip to Apple brings Apple's token; a Google one's would be refused, or kept as Apple's.
+    override suspend fun keepAppleTokens() {
+        remote.observeAppleRefreshTokens().collect { token ->
+            // Why: the collector lives as long as the app, so one failed read can't end it.
+            val isAppleTrip = suspendRunCatching { local.get().browserSignInProvider == AccountProvider.APPLE.code }
+            if (isAppleTrip.getOrDefault(false)) keepAppleToken(AppleToken.RefreshToken(token))
+        }
+    }
+
     override suspend fun getCurrentUserOrNull(): SessionUser? = remote.getCurrentUserOrNull()
 
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
@@ -82,6 +98,7 @@ class AccountRepositoryImpl(
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): Result<ConnectResult> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         val result = when {
@@ -113,6 +130,9 @@ class AccountRepositoryImpl(
             local.update { account -> account.toMirrorOf(user) }
             val givenName = fullName?.takeIf(String::isNotBlank)
             if (user.displayName == null && givenName != null) keepNameGivenOnce(givenName)
+        }
+        if (provider == AccountProvider.APPLE && authorizationCode != null) {
+            scope.launch { keepAppleToken(AppleToken.AuthorizationCode(authorizationCode)) }
         }
         result
     }
@@ -228,6 +248,36 @@ class AccountRepositoryImpl(
     override suspend fun signOut() {
         remote.signOut()
         local.clear()
+    }
+
+    override suspend fun removeSocialIdentity(): Result<Unit> = suspendRunCatching {
+        val code = remote.removeSocialIdentity()
+        // Why: the server removes every Google and Apple identity, so the user is anonymous even if its read failed.
+        val user = remote.getCurrentUserOrNull()?.copy(socialProvider = null)
+        local.update { account ->
+            account.toMirrorOf(user).copy(
+                recoveryCode = code,
+                recoveryCodePrompt = RecoveryCodePrompt.DUE.code,
+            )
+        }
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching { remote.deleteAccount() }
+
+    override suspend fun endDeletedSession() {
+        remote.clearLocalSession()
+        local.clear()
+    }
+
+    /*
+     * Why: the account works without it, so a failure only means a deletion that can't revoke at Apple. Apple
+     * hands each token out once, so a flaky network gets a few more tries before it is given up.
+     */
+    private suspend fun keepAppleToken(token: AppleToken) {
+        repeat(APPLE_TOKEN_ATTEMPTS) { attempt ->
+            if (suspendRunCatching { remote.keepAppleToken(token) }.isSuccess) return
+            if (attempt < APPLE_TOKEN_ATTEMPTS - 1) delay(appleTokenRetryDelay * (attempt + 1))
+        }
     }
 
     /*
@@ -368,6 +418,8 @@ class AccountRepositoryImpl(
         user.socialProvider != null -> copy(
             userId = user.userId,
             provider = user.socialProvider.code,
+            // Why: a code from before Google or Apple may be replaced on another device; a new one comes if it goes.
+            recoveryCode = null,
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
             email = user.email,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
@@ -376,14 +428,29 @@ class AccountRepositoryImpl(
         else -> copy(
             userId = user.userId,
             provider = null,
+            /*
+             * Why: Google or Apple gone from the same user means another device unlinked and showed the new code;
+             * issuing one here would replace it, so this device offers none.
+             */
+            recoveryCodePrompt = if (provider != null && userId == user.userId) {
+                RecoveryCodePrompt.SAVED.code
+            } else {
+                recoveryCodePrompt
+            },
             email = null,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
         )
     }
 
+    private val appleTokenRetryDelay = 2.seconds
+
     private enum class BrowserTrip {
         NONE,
         OPEN,
         LEFT,
+    }
+
+    private companion object {
+        const val APPLE_TOKEN_ATTEMPTS = 3
     }
 }

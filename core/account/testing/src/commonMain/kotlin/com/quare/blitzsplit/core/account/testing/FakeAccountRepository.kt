@@ -71,6 +71,7 @@ class FakeAccountRepository(
     val idTokenConnections = mutableListOf<Pair<AccountProvider, String>>()
     val browserConnectionsFromProfile = mutableListOf<Boolean>()
     val idTokenFullNames = mutableListOf<String?>()
+    val idTokenAuthorizationCodes = mutableListOf<String?>()
     val browserConnections = mutableListOf<AccountProvider>()
     val browserCallbacks = mutableListOf<String>()
     val restoredCodes = mutableListOf<String>()
@@ -79,11 +80,18 @@ class FakeAccountRepository(
     var appPauseCount = 0
     var appResumeCount = 0
     var signOutCount = 0
+    var unlinkCount = 0
+    var endedDeletedSessions = 0
+    var deleteAccountCount = 0
+    var keepAppleTokensCount = 0
 
     var connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED)
     var registerError: Throwable? = null
     var restoreError: Throwable? = null
     var signOutError: Throwable? = null
+    var unlinkError: Throwable? = null
+    var deleteAccountError: Throwable? = null
+    var unlinkedRecoveryCode: String = "P3XR7MQA2TKE"
     var restoredStatus: AccountStatus = AccountStatus.Anonymous(RESTORED_USER_ID)
 
     // Why: like Room, a new query reads the status as it is, while an open one sees a write only once
@@ -111,6 +119,11 @@ class FakeAccountRepository(
         snapshot.collect { }
     }
 
+    // Why: the fake has no remote session to read Apple's tokens from, so it only counts the calls.
+    override suspend fun keepAppleTokens() {
+        keepAppleTokensCount++
+    }
+
     override suspend fun getCurrentUserOrNull(): SessionUser? = sessionUser
 
     override suspend fun ensureRegistered(): Result<String> {
@@ -134,9 +147,11 @@ class FakeAccountRepository(
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): Result<ConnectResult> {
         idTokenConnections += provider to idToken
         idTokenFullNames += fullName
+        idTokenAuthorizationCodes += authorizationCode
         connectResult.onSuccess { status = AccountStatus.Connected(CONNECTED_USER_ID, provider) }
         return connectResult
     }
@@ -201,6 +216,40 @@ class FakeAccountRepository(
     override suspend fun signOut() {
         signOutCount++
         signOutError?.let { throw it }
+        sessionUser = null
+        snapshot.value = AccountSnapshot(
+            status = AccountStatus.LocalOnly,
+            recoveryCode = null,
+            recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
+            email = null,
+            signOutWhenSynced = false,
+        )
+    }
+
+    // Why: like the real one, the same user without an account, its new code due.
+    override suspend fun removeSocialIdentity(): Result<Unit> {
+        unlinkCount++
+        unlinkError?.let { return Result.failure(it) }
+        val current = status as? AccountStatus.Connected
+        snapshot.update {
+            it.copy(
+                status = current?.let { connected -> AccountStatus.Anonymous(connected.userId) } ?: it.status,
+                recoveryCode = unlinkedRecoveryCode,
+                recoveryCodePrompt = RecoveryCodePrompt.DUE,
+                email = null,
+            )
+        }
+        return Result.success(Unit)
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        deleteAccountCount++
+        deleteAccountError?.let { return Result.failure(it) }
+        return Result.success(Unit)
+    }
+
+    override suspend fun endDeletedSession() {
+        endedDeletedSessions++
         sessionUser = null
         snapshot.value = AccountSnapshot(
             status = AccountStatus.LocalOnly,

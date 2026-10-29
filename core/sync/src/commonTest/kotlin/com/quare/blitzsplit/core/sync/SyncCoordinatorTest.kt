@@ -1506,6 +1506,325 @@ class SyncCoordinatorTest {
             assertTrue(paymentKeys.keys.value.isEmpty())
         }
 
+    @Test
+    fun `GIVEN a launch WHEN starting THEN keeps the Apple tokens of the session`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.keepAppleTokensCount)
+    }
+
+    @Test
+    fun `GIVEN the coordinator already started WHEN starting again THEN keeps the Apple tokens only once`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.keepAppleTokensCount)
+    }
+
+    @Test
+    fun `GIVEN a Google account with a profile and keys WHEN deleting the account THEN deletes it on the server`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey, lightningKey),
+            )
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, account.deleteAccountCount)
+        }
+
+    @Test
+    fun `GIVEN a Google account with a profile and keys WHEN deleting the account THEN erases the device copy`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey, lightningKey),
+            )
+            account.email = "pierre@gmail.com"
+            account.recoveryCode = "K7QM4XPA9TRE"
+
+            // When
+            coordinator.deleteAccount()
+
+            // Then
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(account.email)
+            assertNull(account.recoveryCode)
+            assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN deleting the account THEN goes back to no account and erases the profile`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                storedKeys = listOf(pixKey),
+            )
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, account.deleteAccountCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an account WHEN deleting it THEN the server goes first and then the keys and the profile`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+        )
+
+        // When
+        coordinator.deleteAccount()
+
+        // Then
+        assertEquals(listOf("account delete", "keys clear", "profile clear", "account end session"), calls)
+    }
+
+    @Test
+    fun `GIVEN clearing the keys fails WHEN deleting the account THEN still erases the profile and ends the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+            )
+            paymentKeys.clearError = IllegalStateException("disk full")
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(profile.profile.value)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
+    fun `GIVEN the server fails to delete WHEN deleting the account THEN fails and keeps every local data`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+        )
+        account.email = "pierre@gmail.com"
+        account.deleteAccountError = noConnection
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(0, account.signOutCount)
+        assertEquals(google, account.status)
+        assertEquals("pierre@gmail.com", account.email)
+        assertEquals(0, profile.clearCount)
+        assertEquals(pierre, profile.profile.value)
+        assertEquals(0, paymentKeys.clearCount)
+        assertEquals(listOf(pixKey), paymentKeys.keys.value)
+    }
+
+    @Test
+    fun `GIVEN the device is offline WHEN deleting the account THEN fails and keeps the profile and the keys`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                online = false,
+                storedKeys = listOf(pixKey),
+            )
+            account.deleteAccountError = noConnection
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(anonymous, account.status)
+            assertEquals(pierre, profile.profile.value)
+            assertEquals(listOf(pixKey), paymentKeys.keys.value)
+        }
+
+    @Test
+    fun `GIVEN a sync in flight WHEN deleting the account THEN neither deletes nor erases until it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+            pullHangs = true,
+        )
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+
+        // When
+        backgroundScope.launch { coordinator.deleteAccount() }
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.deleteAccountCount)
+        assertEquals(0, account.signOutCount)
+        assertEquals(pierre, profile.profile.value)
+        assertEquals(listOf(pixKey), paymentKeys.keys.value)
+    }
+
+    @Test
+    fun `GIVEN a deletion waiting on a sync WHEN the sync ends THEN deletes the account and erases the copy`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+                pullHangs = true,
+            )
+            backgroundScope.launch { coordinator.syncNow() }
+            runCurrent()
+            backgroundScope.launch { coordinator.deleteAccount() }
+            runCurrent()
+
+            // When
+            pullGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals("account delete", calls[calls.indexOf("keys upload $userId") + 1])
+            assertEquals(1, account.deleteAccountCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a deletion waiting on a sync WHEN the screen that asked leaves THEN still deletes and erases`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+                pullHangs = true,
+            )
+            backgroundScope.launch { coordinator.syncNow() }
+            runCurrent()
+            val caller = backgroundScope.launch { coordinator.deleteAccount() }
+            runCurrent()
+
+            // When
+            caller.cancel()
+            pullGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(1, account.deleteAccountCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a deleted account WHEN erasing the device copy THEN skips the sign out the server would refuse`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+            )
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(0, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a sync in flight WHEN unlinking THEN waits for it before removing the identity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pullHangs = true,
+        )
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        backgroundScope.launch { coordinator.removeSocialIdentity() }
+        runCurrent()
+        val unlinksDuringSync = account.unlinkCount
+
+        // When
+        pullGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(0, unlinksDuringSync)
+        assertEquals(1, account.unlinkCount)
+        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
+    }
+
+    @Test
+    fun `GIVEN an unlink waiting on a sync WHEN the screen that asked leaves THEN still unlinks`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pullHangs = true,
+        )
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        val caller = backgroundScope.launch { coordinator.removeSocialIdentity() }
+        runCurrent()
+
+        // When
+        caller.cancel()
+        pullGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.unlinkCount)
+        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -1620,6 +1939,16 @@ private class RecordingAccountRepository(
     override suspend fun signOut() {
         calls += "account sign out"
         delegate.signOut()
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        calls += "account delete"
+        return delegate.deleteAccount()
+    }
+
+    override suspend fun endDeletedSession() {
+        calls += "account end session"
+        delegate.endDeletedSession()
     }
 }
 

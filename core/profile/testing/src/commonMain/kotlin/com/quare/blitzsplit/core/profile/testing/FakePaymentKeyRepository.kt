@@ -18,6 +18,7 @@ class FakePaymentKeyRepository(
     val downloadedUserIds = mutableListOf<String>()
     var pushError: Throwable? = null
     var pullError: Throwable? = null
+    var clearError: Throwable? = null
     var clearCount = 0
 
     override fun observeKeys(): Flow<List<PaymentKey>> = keys
@@ -56,6 +57,7 @@ class FakePaymentKeyRepository(
 
     override suspend fun clear() {
         clearCount++
+        clearError?.let { throw it }
         keys.value = emptyList()
         hasPendingChanges.value = false
     }

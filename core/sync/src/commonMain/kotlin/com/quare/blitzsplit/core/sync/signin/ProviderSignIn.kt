@@ -20,6 +20,7 @@ interface ProviderSignIn {
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): SignInStep
 
     // Why: a sign in the screen completes itself (the recovery code); fails with signIn's own error.

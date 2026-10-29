@@ -58,6 +58,7 @@ class SyncCoordinator(
         if (started) return
         started = true
         scope.launch { accountRepository.mirrorSession() }
+        scope.launch { accountRepository.keepAppleTokens() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
         scope.launch { syncWhenDue() }
@@ -101,6 +102,31 @@ class SyncCoordinator(
      */
     suspend fun signOut(): Result<Unit> = scope
         .async { syncLock.withLock { suspendRunCatching { clearSession() } } }
+        .await()
+
+    /*
+     * Why: under the sync lock and in the app's scope, like the sign out. The server's copy goes first, and a
+     * failure there leaves both for another try. Once it is gone the deletion succeeded, whatever happens here:
+     * each step of erasing the device's copy runs on its own, so one that fails can't keep the others.
+     */
+    suspend fun deleteAccount(): Result<Unit> = scope
+        .async {
+            syncLock.withLock {
+                accountRepository.deleteAccount().onSuccess {
+                    // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
+                    suspendRunCatching { paymentKeyRepository.clear() }
+                    suspendRunCatching { profileRepository.clear() }
+                    suspendRunCatching { accountRepository.endDeletedSession() }
+                }
+            }
+        }.await()
+
+    /*
+     * Why: in the app's scope, so leaving the screen once the server has unlinked can't lose the new code, and
+     * under the sync lock, so a sync that read the user before can't mirror the Google or Apple account back.
+     */
+    suspend fun removeSocialIdentity(): Result<Unit> = scope
+        .async { syncLock.withLock { accountRepository.removeSocialIdentity() } }
         .await()
 
     /*

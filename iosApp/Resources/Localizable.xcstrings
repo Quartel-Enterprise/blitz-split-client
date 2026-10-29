@@ -156,6 +156,16 @@
         }
       }
     },
+    "A JSON file with your profile and keys" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo JSON com seu perfil e suas chaves"
+          }
+        }
+      }
+    },
     "Account and sync" : {
       "localizations" : {
         "pt-BR" : {
@@ -499,6 +509,26 @@
         }
       }
     },
+    "Couldn't delete your account. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para excluir a conta. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't disconnect. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para desconectar. Tente de novo."
+          }
+        }
+      }
+    },
     "Couldn't sign in right now. Try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -600,6 +630,36 @@
         }
       }
     },
+    "Delete account" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir conta"
+          }
+        }
+      }
+    },
+    "Delete account and data" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir conta e dados"
+          }
+        }
+      }
+    },
+    "Delete account…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir conta…"
+          }
+        }
+      }
+    },
     "Delete key" : {
       "localizations" : {
         "pt-BR" : {
@@ -616,6 +676,68 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Excluir esta chave?"
+          }
+        }
+      }
+    },
+    "Delete your account and your data?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir sua conta e seus dados?"
+          }
+        }
+      }
+    },
+    "Deletes your Blitz Split account. This can't be undone." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apaga sua conta do Bora Rachar. Não dá para desfazer."
+          }
+        }
+      }
+    },
+    "Deleting your account needs an internet connection. Connect and try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir a conta precisa de internet. Conecte-se e tente de novo."
+          }
+        }
+      }
+    },
+    "Disconnect" : {
+      "comment" : "The destructive button of the alert that disconnects Google or Apple; also the account row's hint",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desconectar"
+          }
+        }
+      }
+    },
+    "Disconnect your %@ account?" : {
+      "comment" : "%@ is the account: Google or Apple",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desconectar a conta %@?"
+          }
+        }
+      }
+    },
+    "Disconnect…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desconectar…"
           }
         }
       }
@@ -731,6 +853,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tudo fica no %@ e sincroniza depois."
+          }
+        }
+      }
+    },
+    "Export my data" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar meus dados"
+          }
+        }
+      }
+    },
+    "Export my data first" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar meus dados antes"
+          }
+        }
+      }
+    },
+    "Export…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar…"
           }
         }
       }
@@ -854,6 +1006,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entendo que não dá para recuperar"
+          }
+        }
+      }
+    },
+    "I understand this can't be undone" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entendo que não dá para desfazer"
           }
         }
       }
@@ -1054,6 +1216,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nome, foto e cor do avatar"
+          }
+        }
+      }
+    },
+    "Needs an internet connection." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Precisa de internet."
           }
         }
       }
@@ -1726,6 +1898,28 @@
         }
       }
     },
+    "The copy of your data on this %@" : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A cópia dos dados neste %@"
+          }
+        }
+      }
+    },
+    "The link to your %@ account" : {
+      "comment" : "%@ is the account: Google or Apple",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O vínculo com a conta %@"
+          }
+        }
+      }
+    },
     "There: Profile › Recovery › Show QR code" : {
       "localizations" : {
         "pt-BR" : {
@@ -1916,6 +2110,16 @@
         }
       }
     },
+    "What gets deleted" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que é apagado"
+          }
+        }
+      }
+    },
     "When settling up, we show the amount in sats at the current rate. It's only an estimate: the payer confirms it in their wallet." : {
       "localizations" : {
         "pt-BR" : {
@@ -1996,6 +2200,17 @@
         }
       }
     },
+    "You keep using Blitz Split on this %@, without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você continua usando o Bora Rachar neste %@, sem conta. Seus grupos ficam aqui e a sincronização passa a usar um ID anônimo. Em seguida mostramos seu código de recuperação: guarde-o para não perder o acesso."
+          }
+        }
+      }
+    },
     "You use it without an account and haven't synced yet, so there is no recovery code. When you leave, your profile is gone for good." : {
       "localizations" : {
         "pt-BR" : {
@@ -2039,6 +2254,16 @@
         }
       }
     },
+    "Your Pix and Bitcoin keys" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suas chaves Pix e Bitcoin"
+          }
+        }
+      }
+    },
     "Your data stays on this %@ until the sync finishes. Once everything is uploaded, we sign out and erase the local copy." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -2076,6 +2301,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seu nome, sua foto e suas chaves de pagamento aparecem só para quem está nos seus grupos. Quem não divide nenhum grupo com você não vê nada."
+          }
+        }
+      }
+    },
+    "Your profile (name, photo and color)" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu perfil (nome, foto e cor)"
           }
         }
       }

@@ -12,4 +12,7 @@ enum class ProfileDialog {
 
     // Why: without an account the profile only lives here, and the recovery code is the way back.
     ERASE_PROFILE,
+
+    // Why: tapping the Google or Apple row; the device goes on without an account, with a new recovery code.
+    UNLINK_ACCOUNT,
 }

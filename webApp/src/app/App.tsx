@@ -2,12 +2,14 @@ import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
+import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
+import { isBrowserBackBlocked } from '@/lib/browserBack'
 import { applyTheme } from '@/lib/theme'
 
 /**
@@ -27,13 +29,15 @@ export function App() {
 
   if (!isReady || !backStack) return null
   const top = backStack[backStack.length - 1]
-  // Why: a payment key opens as a dialog over the profile, which stays mounted under it.
+  // Why: a payment key and the account deletion open as dialogs over the profile, which stays mounted under them.
   const isPaymentKey = top.name === 'payment-key'
-  const page = isPaymentKey ? (backStack.at(-2)?.name ?? 'profile') : top.name
+  const isDeleteAccount = top.name === 'delete-account'
+  const page = isPaymentKey || isDeleteAccount ? (backStack.at(-2)?.name ?? 'profile') : top.name
   return (
     <>
       <Screen route={page} />
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
+      {isDeleteAccount && <DeleteAccountDialog />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
@@ -72,6 +76,11 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
     if (!app) return
     const onPopState = (event: PopStateEvent) => {
       const target = (event.state as { size?: number } | null)?.size ?? 1
+      // Why: a deletion under way waits for the welcome, as the screen's own Back does, so the entry comes back.
+      if (isBrowserBackBlocked()) {
+        window.history.pushState({ size: size.current }, '')
+        return
+      }
       if (target < size.current) app.popTo(target)
     }
     window.addEventListener('popstate', onPopState)

@@ -29,8 +29,14 @@ final class WelcomeModel {
         guard action is WelcomeUiActionLaunchNativeSignIn else { return }
         Task {
             switch await appleSignIn.signIn() {
-            case let .success(idToken, rawNonce, fullName):
-                send(WelcomeUiEventOnIdTokenReceived(provider: .apple, idToken: idToken, rawNonce: rawNonce, fullName: fullName))
+            case let .success(idToken, rawNonce, fullName, authorizationCode):
+                send(WelcomeUiEventOnIdTokenReceived(
+                    provider: .apple,
+                    idToken: idToken,
+                    rawNonce: rawNonce,
+                    fullName: fullName,
+                    authorizationCode: authorizationCode,
+                ))
             case .cancelled:
                 send(WelcomeUiEventOnNativeSignInCancelled.shared)
             case .failed:

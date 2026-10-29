@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     implementation(projects.core.provider.supabase)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.playServicesAuth)
