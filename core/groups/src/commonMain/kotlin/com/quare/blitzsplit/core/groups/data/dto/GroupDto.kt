@@ -13,9 +13,6 @@ data class GroupDto(
     @SerialName("currency") val currency: String,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,
-    /*
-     * Why: the server makes it and no client sends it. The default leaves it out of a push (defaults aren't encoded),
-     * so the upsert neither writes an explicit null over the column's value nor skips its default on insert.
-     */
-    @SerialName("invite_code") val inviteCode: String? = null,
+    // Why: the server makes it and keeps it whatever a push sends, which is always null.
+    @SerialName("invite_code") val inviteCode: String?,
 )
