@@ -974,6 +974,20 @@ class GroupsViewModelTest {
     }
 
     @Test
+    fun `GIVEN a group already opened WHEN tapping another row before it shows THEN keeps the first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members("floripa")), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN groups on the list WHEN the profile changes THEN keeps the groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(floripa))

@@ -107,7 +107,8 @@ struct MembersView: View {
     /// "Viagem Floripa · 2 of 4 joined".
     private var subtitle: Text {
         guard let state = model?.state, state.isLoaded else { return Text(verbatim: "") }
-        return Text(verbatim: "\(state.groupName) · ") + Text("\(state.joinedCount) of \(state.memberCount) joined")
+        let joined = Text("\(state.joinedCount) of \(state.memberCount) joined")
+        return Text("\(Text(verbatim: state.groupName)) · \(joined)")
     }
 
     /// Dismissing the sheet (a swipe down, Esc) closes the editor in the ViewModel too.

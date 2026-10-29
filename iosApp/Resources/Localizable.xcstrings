@@ -5,6 +5,10 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ · %@" : {
+      "comment" : "The group's name and how many of its members joined, in the Members subtitle",
+      "shouldTranslate" : false
+    },
     "%@ (you)" : {
       "comment" : "This device's user in the group's members",
       "localizations" : {

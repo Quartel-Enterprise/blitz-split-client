@@ -108,8 +108,13 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnCreateGroupClicked -> navigator.navigate(Route.CreateGroup)
 
-            // Why: "Membros" stands in for the group's own screen (flow 6) until it exists.
-            is GroupsUiEvent.OnGroupClicked -> navigator.navigate(Route.Members(event.groupId))
+            /*
+             * Why: "Membros" stands in for the group's own screen (flow 6) until it exists. Only from the groups on
+             * top, so a quick tap on a second row doesn't push its members over the first's.
+             */
+            is GroupsUiEvent.OnGroupClicked -> if (navigator.backStack.value.lastOrNull() == Route.Groups) {
+                navigator.navigate(Route.Members(event.groupId))
+            }
 
             GroupsUiEvent.OnJoinWithLinkClicked,
             GroupsUiEvent.OnBalancesTabClicked,
