@@ -22,8 +22,8 @@ private const val PREFERENCES_NAME = "notification_permission"
 private const val KEY_HAS_ASKED = "has_asked"
 
 /*
- * Why: the app's notification permission, read, asked and sent to the system settings. Android tells a refusal
- * for good from one it may ask again only through the rationale flag, which is also false before the first ask,
+ * Why: the app's notification permission, read, asked and sent to the system settings. Android doesn't say
+ * whether it ever asked, and its rationale flag is false both before the first ask and after a refusal for good,
  * so the app remembers that it asked.
  */
 class NotificationPermissionAccess internal constructor(
@@ -85,8 +85,10 @@ private fun Activity.readNotificationPermission(): SystemNotificationPermission 
 
     !hasAskedNotificationPermission() -> SystemNotificationPermission.ASKABLE
 
-    shouldShowNotificationRationale() -> SystemNotificationPermission.ASKABLE
-
+    /*
+     * Why: a first refusal still lets Android ask again, but the person said no, so the notice shows it like a
+     * refusal for good instead of leaving the toggles on and asking at the next one.
+     */
     else -> SystemNotificationPermission.DENIED
 }
 
