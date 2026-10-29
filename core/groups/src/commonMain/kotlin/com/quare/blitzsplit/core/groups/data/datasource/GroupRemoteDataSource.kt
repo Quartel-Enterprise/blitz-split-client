@@ -4,7 +4,8 @@ import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 
 interface GroupRemoteDataSource {
-    suspend fun upsertGroups(groups: List<GroupDto>)
+    // Why: the rows as the server kept them, with the invite code it made for a new group.
+    suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto>
 
     suspend fun upsertMembers(members: List<GroupMemberDto>)
 

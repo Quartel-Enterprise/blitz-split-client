@@ -147,6 +147,12 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   too, with the same trigger as the keys. The download reads every group and member page by page and deletes the
   synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay. When an account is
   deleted, the server unlinks it from its groups and deletes the groups nobody with an account is left in.
+  - **Invite code**: the server makes each group's code (`invite_code`, the `borarachar.com/g/<code>` of "Convidar")
+    when the group first goes up, and no client sends or changes it. The push reads it back from the upsert's answer,
+    since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both
+    the push and the download store it with `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this
+    device created comes back with the same `updatedAt`, which `updateGroupFromRemote` leaves alone. A group created
+    offline has no code until then, and `InviteUiState.isLinkPending` says so.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

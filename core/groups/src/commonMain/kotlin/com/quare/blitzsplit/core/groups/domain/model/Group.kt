@@ -14,4 +14,6 @@ data class Group(
     val members: List<GroupMember>,
     // Why: created or changed on this device and not up on the server yet.
     val isPending: Boolean,
+    // Why: the code of the invite link, null until the group's first sync brings the one the server made.
+    val inviteCode: String?,
 )

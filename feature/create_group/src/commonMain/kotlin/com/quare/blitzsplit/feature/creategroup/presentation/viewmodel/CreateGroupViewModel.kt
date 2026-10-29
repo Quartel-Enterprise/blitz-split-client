@@ -208,7 +208,7 @@ class CreateGroupViewModel(
                 color = state.color,
                 currency = state.currency,
                 members = members,
-            ).onSuccess { leave() }
+            ).onSuccess(::openInvite)
                 .onFailure {
                     uiState.update {
                         it.copy(
@@ -221,6 +221,11 @@ class CreateGroupViewModel(
     }
 
     private fun AvatarColor.toNextColor(): AvatarColor = AvatarColor.entries[(ordinal + 1) % AvatarColor.entries.size]
+
+    // Why: "Convidar" takes the form's place, so back goes to the home; only while the form is still on top, as leave.
+    private fun openInvite(groupId: String) {
+        if (navigator.backStack.value.lastOrNull() == Route.CreateGroup) navigator.replaceTop(Route.Invite(groupId))
+    }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {

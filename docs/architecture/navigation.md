@@ -30,6 +30,7 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | --- | --- | --- |
 | `navigate(route)` | Pushes `route` | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
 | `navigateBack()` | Pops the top entry, never the last one | `OnBackClicked -> navigator.navigateBack()` |
+| `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId))` once "Novo grupo" saved the group |
 | `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Groups)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
 
@@ -104,7 +105,7 @@ entries remain with `popTo`. When the root is `.groups`, `RootView` swaps the st
 `profile-setup`, `restore`, `groups`…) plus the arguments of the routes that carry them (`payment-key`'s method and
 key id), with the route itself kept inside so `PaymentKeyPresenter` opens its ViewModel with it. `App.tsx` renders
 only the last one, except `payment-key` and `delete-account`, dialogs drawn over the entry under them (the profile), and
-`useBrowserHistory` keeps the history in step: a
+`useBrowserHistory` keeps the history in step (`create-group` and `invite` are dialogs over the home the same way): a
 longer stack `pushState`s an entry holding its size, and a `popstate` (the browser's back button) calls
 `app.popTo(size)`, the same catch-up as SwiftUI's.
 

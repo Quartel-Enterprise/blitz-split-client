@@ -8,9 +8,10 @@ import io.github.jan.supabase.postgrest.query.Order
 class SupabaseGroupRemoteDataSource(
     private val postgrest: Postgrest,
 ) : GroupRemoteDataSource {
-    override suspend fun upsertGroups(groups: List<GroupDto>) {
-        postgrest.from(GROUPS).upsert(groups)
-    }
+    override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> = postgrest
+        .from(GROUPS)
+        .upsert(groups) { select() }
+        .decodeList<GroupDto>()
 
     override suspend fun upsertMembers(members: List<GroupMemberDto>) {
         postgrest.from(MEMBERS).upsert(members)

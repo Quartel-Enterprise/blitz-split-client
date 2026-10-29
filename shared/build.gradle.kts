@@ -19,6 +19,7 @@ private val exportedToApple = listOf(
     projects.feature.deleteAccount,
     projects.feature.notificationSettings,
     projects.feature.createGroup,
+    projects.feature.invite,
 )
 
 kotlin {

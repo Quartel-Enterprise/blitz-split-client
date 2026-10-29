@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Close</string>
+    <string name="invite_group_created">Group created</string>
+    <string name="invite_title">Invite everyone to %s</string>
+    <string name="invite_qr_description">QR code of the group\'s invite link</string>
+    <string name="invite_copy">Copy</string>
+    <string name="invite_copied">Copied</string>
+    <string name="invite_who_picks">Whoever opens the link picks who they are on the list: %s. No account needed.</string>
+    <string name="invite_names_or">%1$s or %2$s</string>
+    <string name="invite_anyone_joins">Whoever opens the link joins the group. No account needed.</string>
+    <string name="invite_pending_title">Link pending</string>
+    <string name="invite_pending_offline">It\'s created as soon as you\'re online.</string>
+    <string name="invite_pending_online">Creating the link…</string>
+    <string name="invite_failed_title">Couldn\'t create the link</string>
+    <string name="invite_failed_body">Something went wrong while syncing the group.</string>
+    <string name="invite_retry">Try again</string>
+    <string name="invite_share">Share link</string>
+    <string name="invite_see_who_joined">See who joined</string>
+    <string name="invite_go_to_group">Go to the group</string>
+    <string name="invite_share_message">Let\'s split the bills of %1$s on Blitz Split. Join with this link: %2$s</string>
+    <string name="invite_coming_soon">Coming soon</string>
+</resources>

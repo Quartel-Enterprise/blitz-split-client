@@ -22,4 +22,6 @@ data class GroupEntity(
     val pendingSync: Boolean,
     // Why: the user whose copy this is, as ProfileEntity.ownerUserId, so a sync under another user drops it.
     val ownerUserId: String?,
+    // Why: the code of the invite link, which the server makes; null until the group's first sync brings it.
+    val inviteCode: String?,
 )

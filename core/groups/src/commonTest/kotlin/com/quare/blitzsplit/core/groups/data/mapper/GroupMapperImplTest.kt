@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GroupMapperImplTest {
@@ -341,6 +342,7 @@ class GroupMapperImplTest {
                 updatedAt = 1_000L,
                 pendingSync = true,
                 ownerUserId = null,
+                inviteCode = null,
             ),
             entity,
         )
@@ -476,6 +478,7 @@ class GroupMapperImplTest {
                 currency = "ARS",
                 addedAt = 5L,
                 updatedAt = 9L,
+                inviteCode = null,
             ),
             dto,
         )
@@ -534,6 +537,7 @@ class GroupMapperImplTest {
                 updatedAt = 7L,
                 pendingSync = false,
                 ownerUserId = "user-1",
+                inviteCode = null,
             ),
             entity,
         )
@@ -615,6 +619,82 @@ class GroupMapperImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN a stored group with an invite code WHEN mapping to the domain THEN carries the code`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                inviteCode = "aB3dE5gH",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, emptyList()).single()
+
+        // Then
+        assertEquals("aB3dE5gH", mapped.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a stored group without an invite code WHEN mapping to the domain THEN has no code`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"))
+
+        // When
+        val mapped = mapper.toDomain(groups, emptyList()).single()
+
+        // Then
+        assertNull(mapped.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a group from the server with its invite code WHEN mapping it to an entity THEN keeps the code`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+            inviteCode = "aB3dE5gH",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertEquals("aB3dE5gH", entity.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a group that already has an invite code WHEN mapping it to an entity THEN keeps the code`() {
+        // Given
+        val group = newGroup.copy(inviteCode = "aB3dE5gH")
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertEquals("aB3dE5gH", entity.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a stored group with an invite code WHEN mapping it to a DTO THEN sends no code`() {
+        // Given
+        val entity = groupEntity(
+            id = "group-1",
+            inviteCode = "aB3dE5gH",
+        )
+
+        // When
+        val dto = mapper.toDto(entity, userId = "user-1")
+
+        // Then
+        assertNull(dto.inviteCode)
+    }
+
     private val newGroup = Group(
         id = "group-1",
         name = "Viagem Floripa",
@@ -645,6 +725,7 @@ class GroupMapperImplTest {
             ),
         ),
         isPending = true,
+        inviteCode = null,
     )
 
     private fun groupEntity(
@@ -656,6 +737,7 @@ class GroupMapperImplTest {
         addedAt: Long = 1L,
         updatedAt: Long = 1L,
         pendingSync: Boolean = false,
+        inviteCode: String? = null,
     ): GroupEntity = GroupEntity(
         id = id,
         name = "Viagem Floripa",
@@ -667,6 +749,7 @@ class GroupMapperImplTest {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         ownerUserId = "user-1",
+        inviteCode = inviteCode,
     )
 
     private fun memberEntity(
@@ -693,6 +776,7 @@ class GroupMapperImplTest {
     private fun groupDto(
         id: String,
         createdBy: String?,
+        inviteCode: String? = null,
     ): GroupDto = GroupDto(
         id = id,
         createdBy = createdBy,
@@ -702,6 +786,7 @@ class GroupMapperImplTest {
         currency = "BRL",
         addedAt = 1L,
         updatedAt = 7L,
+        inviteCode = inviteCode,
     )
 
     private fun memberDto(

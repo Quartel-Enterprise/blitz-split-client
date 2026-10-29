@@ -10,9 +10,13 @@ import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -27,4 +31,6 @@ val groupModule = module {
     factoryOf(::ObserveGroupsUseCase).bind<ObserveGroups>()
     factoryOf(::CreateGroupUseCase).bind<CreateGroup>()
     factoryOf(::CheckMemberNameUseCase).bind<CheckMemberName>()
+    factoryOf(::ObserveGroupUseCase).bind<ObserveGroup>()
+    factoryOf(::EncodeQrCodeUseCase).bind<EncodeQrCode>()
 }

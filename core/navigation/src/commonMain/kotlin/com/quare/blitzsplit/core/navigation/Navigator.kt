@@ -9,6 +9,9 @@ interface Navigator {
 
     fun navigateBack()
 
+    // Why: one screen follows another in its place, so back skips the first ("Novo grupo" becomes "Convidar").
+    fun replaceTop(route: Route)
+
     fun replaceAll(route: Route)
 
     /*

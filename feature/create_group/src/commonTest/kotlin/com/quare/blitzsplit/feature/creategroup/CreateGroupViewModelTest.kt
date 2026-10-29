@@ -728,7 +728,7 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a filled group WHEN creating THEN returns to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN a filled group WHEN creating THEN opens its invite in place of the form`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
@@ -737,7 +737,8 @@ class CreateGroupViewModelTest {
         viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        val groupId = groups.createdGroups.single().id
+        assertEquals(listOf(Route.Groups, Route.Invite(groupId)), navigator.backStack.value)
     }
 
     @Test

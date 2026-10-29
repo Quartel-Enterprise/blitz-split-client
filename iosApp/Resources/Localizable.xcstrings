@@ -598,6 +598,16 @@
         }
       }
     },
+    "Close" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fechar"
+          }
+        }
+      }
+    },
     "Code not found. Check the letters and try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -708,6 +718,16 @@
         }
       }
     },
+    "Couldn't create the link" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para criar o link"
+          }
+        }
+      }
+    },
     "Couldn't delete your account. Try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -796,6 +816,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Criar grupo"
+          }
+        }
+      }
+    },
+    "Creating the link…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerando o link…"
           }
         }
       }
@@ -1190,6 +1220,17 @@
         }
       }
     },
+    "Go to the group" : {
+      "comment" : "Offered on the invite while its link is pending",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir para o grupo"
+          }
+        }
+      }
+    },
     "Google" : {
       "shouldTranslate" : false
     },
@@ -1209,6 +1250,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verde"
+          }
+        }
+      }
+    },
+    "Group created" : {
+      "comment" : "The chip over the invite right after a group is created",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupo criado"
           }
         }
       }
@@ -1355,6 +1407,17 @@
         }
       }
     },
+    "Invite everyone to %@" : {
+      "comment" : "%@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chame a galera para o grupo %@"
+          }
+        }
+      }
+    },
     "Invite with a link or QR code" : {
       "localizations" : {
         "pt-BR" : {
@@ -1382,6 +1445,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Também fica em %@."
+          }
+        }
+      }
+    },
+    "It's created as soon as the %@ is online." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ele é gerado assim que o %@ ficar online."
           }
         }
       }
@@ -1425,6 +1499,17 @@
         }
       }
     },
+    "Let's split the bills of %@ on Blitz Split. Join with this link:" : {
+      "comment" : "The message shared with the invite link, which follows it; %@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bora rachar as contas do grupo %@ no Bora Rachar? Entra pelo link:"
+          }
+        }
+      }
+    },
     "Light" : {
       "localizations" : {
         "pt-BR" : {
@@ -1461,6 +1546,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lilás"
+          }
+        }
+      }
+    },
+    "Link pending" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link pendente"
           }
         }
       }
@@ -1913,6 +2008,16 @@
         }
       }
     },
+    "QR code of the group's invite link" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR code do link de convite do grupo"
+          }
+        }
+      }
+    },
     "Random" : {
       "comment" : "A Pix key type, in the segmented control",
       "localizations" : {
@@ -2087,6 +2192,16 @@
         }
       }
     },
+    "See who joined" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver quem já entrou"
+          }
+        }
+      }
+    },
     "SegWit (bc1q) · mainnet" : {
       "localizations" : {
         "pt-BR" : {
@@ -2103,6 +2218,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lembretes de acerto"
+          }
+        }
+      }
+    },
+    "Share invite" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar convite"
           }
         }
       }
@@ -2234,6 +2359,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alguém marcou um pagamento para mim"
+          }
+        }
+      }
+    },
+    "Something went wrong while syncing the group." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo deu errado ao sincronizar o grupo."
           }
         }
       }
@@ -2641,6 +2776,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem participa"
+          }
+        }
+      }
+    },
+    "Whoever opens the link joins the group. No account needed." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem abrir o link entra no grupo. Não precisa criar conta."
+          }
+        }
+      }
+    },
+    "Whoever opens the link picks who they are on the list: %@. No account needed." : {
+      "comment" : "%@ is the names of the members who haven't joined, in bold: \"Ana, Bruno or Carla\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem abrir o link escolhe quem é na lista: %@. Não precisa criar conta."
           }
         }
       }

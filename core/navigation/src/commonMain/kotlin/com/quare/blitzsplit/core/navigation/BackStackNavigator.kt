@@ -21,6 +21,10 @@ class BackStackNavigator(
         entries.update { stack -> if (stack.size > 1) stack.dropLast(1) else stack }
     }
 
+    override fun replaceTop(route: Route) {
+        entries.update { stack -> stack.dropLast(1) + route }
+    }
+
     override fun replaceAll(route: Route) {
         entries.value = listOf(route)
     }

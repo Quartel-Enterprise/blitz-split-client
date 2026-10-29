@@ -33,6 +33,11 @@ interface GroupLocalDataSource {
 
     suspend fun applyRemoteGroup(entity: GroupEntity)
 
+    suspend fun updateInviteCode(
+        id: String,
+        inviteCode: String,
+    )
+
     suspend fun applyRemoteMember(entity: GroupMemberEntity)
 
     suspend fun claimUnowned(ownerUserId: String)

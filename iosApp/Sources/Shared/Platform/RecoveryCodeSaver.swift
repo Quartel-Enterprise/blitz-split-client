@@ -18,12 +18,7 @@ enum RecoveryCodeSaver {
     }
 
     static func copy(_ code: String) {
-        #if os(iOS)
-        UIPasteboard.general.string = code
-        #else
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(code, forType: .string)
-        #endif
+        Pasteboard.copy(code)
     }
 
     /*
