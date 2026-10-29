@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
+import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent

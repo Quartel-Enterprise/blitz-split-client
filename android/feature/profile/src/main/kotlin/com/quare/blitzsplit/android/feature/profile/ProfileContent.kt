@@ -333,13 +333,6 @@ internal fun SectionRow(
     )
 }
 
-@get:StringRes
-internal val AccountProvider.labelRes: Int
-    get() = when (this) {
-        AccountProvider.GOOGLE -> DesignR.string.designsystem_google_short
-        AccountProvider.APPLE -> DesignR.string.designsystem_apple_short
-    }
-
 internal fun createPreviewProfileState(
     accountProvider: AccountProvider? = AccountProvider.GOOGLE,
     isOnline: Boolean = true,

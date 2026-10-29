@@ -3,13 +3,11 @@ package com.quare.blitzsplit.feature.profile
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
-import com.quare.blitzsplit.core.account.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.UnlinkAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -43,6 +41,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
@@ -3014,21 +3013,50 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN a sign out scheduled and the unlink dialog WHEN confirming THEN does not unlink`() =
+    fun `GIVEN a sign out scheduled WHEN tapping the account row THEN opens no dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled WHEN confirming an unlink THEN does not unlink`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutScheduled = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(0, unlinkCalls)
+        assertFalse(viewModel.uiState.value.isUnlinking)
+    }
+
+    @Test
+    fun `GIVEN the unlink dialog WHEN the account goes anonymous THEN the dialog closes with it`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(
-                status = connectedWithGoogle,
-                signOutScheduled = true,
-            )
+            prepareScenario(status = connectedWithGoogle)
             viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
 
             // When
-            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+            account.status = AccountStatus.Anonymous("user-1")
 
             // Then
-            assertEquals(0, unlinkCalls)
-            assertFalse(viewModel.uiState.value.isUnlinking)
+            assertNull(viewModel.uiState.value.dialog)
+            assertNull(viewModel.uiState.value.accountProvider)
         }
 
     @Test
@@ -3114,6 +3142,23 @@ class ProfileViewModelTest {
 
         // Then
         assertEquals(listOf<ProfileUiAction>(ProfileUiAction.SaveExport(json)), actions)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping delete account THEN stays on the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
     }
 
     @Test
@@ -3355,7 +3400,7 @@ class ProfileViewModelTest {
             unlinkAccount = UnlinkAccount {
                 unlinkCalls++
                 if (this@ProfileViewModelTest.unlinkHangs) awaitCancellation()
-                UnlinkAccountUseCase(account)()
+                account.removeSocialIdentity()
             },
             exportUserData = ExportUserData { exportError?.let { Result.failure(it) } ?: Result.success(exportJson) },
             validatePaymentKey = ValidatePaymentKeyUseCase(),

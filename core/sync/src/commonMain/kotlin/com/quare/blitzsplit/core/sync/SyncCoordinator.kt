@@ -105,18 +105,25 @@ class SyncCoordinator(
         .await()
 
     /*
-     * Why: under the sync lock and in the app's scope, like the sign out. The server's copy goes first: once
-     * it is gone the device's is cleared the same way, and a failure leaves both, for another try.
+     * Why: under the sync lock and in the app's scope, like the sign out. The server's copy goes first, and a
+     * failure there leaves both for another try. Once it is gone there is nothing left to retry, so the device's
+     * copy is erased step by step: a step that fails doesn't keep the next from running.
      */
     suspend fun deleteAccount(): Result<Unit> = scope
         .async {
             syncLock.withLock {
-                suspendRunCatching {
-                    accountRepository.deleteAccount().getOrThrow()
-                    clearSession()
-                }
+                suspendRunCatching { accountRepository.deleteAccount().getOrThrow() }
+                    .onSuccess { eraseDeletedAccount() }
             }
         }.await()
+
+    /*
+     * Why: in the app's scope, so leaving the screen once the server has unlinked can't lose the new code, and
+     * under the sync lock, so a sync that read the user before can't mirror the Google or Apple account back.
+     */
+    suspend fun removeSocialIdentity(): Result<Unit> = scope
+        .async { syncLock.withLock { accountRepository.removeSocialIdentity() } }
+        .await()
 
     /*
      * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the
@@ -182,6 +189,13 @@ class SyncCoordinator(
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()
         profileRepository.clear()
+    }
+
+    // Why: the keys first, as in clearSession, so a failure can't leave someone's CPF or wallet behind a profile.
+    private suspend fun eraseDeletedAccount() {
+        suspendRunCatching { accountRepository.signOut() }
+        suspendRunCatching { paymentKeyRepository.clear() }
+        suspendRunCatching { profileRepository.clear() }
     }
 
     private fun observeHasPendingChanges(): Flow<Boolean> = combine(

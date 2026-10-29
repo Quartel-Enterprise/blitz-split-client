@@ -21,7 +21,6 @@ import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.IDTokenProvider
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.builtin.IDToken
-import io.github.jan.supabase.auth.status.SessionSource
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.exceptions.RestException
@@ -68,7 +67,8 @@ class SupabaseAccountRemoteDataSource(
                 ?.identities
                 .orEmpty()
                 .any { it.provider == AccountProvider.APPLE.code }
-            session.providerRefreshToken?.takeIf { authenticated.source == SessionSource.External && hasApple }
+            // Why: any source, not only the callback's import: an update of the user right after it keeps the token.
+            session.providerRefreshToken?.takeIf { hasApple }
         }.distinctUntilChanged()
 
     override suspend fun signInAnonymously(): SessionUser {

@@ -18,8 +18,10 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -2169,6 +2171,61 @@ class AccountRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a failed read of the account WHEN an Apple refresh token arrives THEN keeps the next one`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.APPLE,
+        )
+        startKeepingAppleTokens()
+        local.getError = IllegalStateException("database closed")
+        remote.appleRefreshTokens.emit("refresh-lost")
+        runCurrent()
+        local.getError = null
+
+        // When
+        remote.appleRefreshTokens.emit("refresh-next")
+        runCurrent()
+
+        // Then
+        assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-next")), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN the same user is mirrored without Google THEN its recovery code comes due`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser)
+            repository.ensureRegistered()
+            startMirroring()
+
+            // When
+            sessions.emit(googleUser.copy(socialProvider = null))
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN another anonymous user is mirrored THEN keeps its recovery code prompt`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser)
+            repository.ensureRegistered()
+            startMirroring()
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
+        }
+
+    @Test
     fun `GIVEN an Apple browser sign in WHEN its refresh token arrives THEN keeps it`() = runTest {
         // Given
         prepareScenario(
@@ -2493,6 +2550,8 @@ class AccountRepositoryImplTest {
         repository = AccountRepositoryImpl(
             local = local,
             remote = remote,
+            // Why: runs what a sign in leaves to the app's scope right away, so a test reads it on return.
+            scope = CoroutineScope(Dispatchers.Unconfined),
         )
     }
 }

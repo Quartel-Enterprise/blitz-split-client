@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.account.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -33,6 +32,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
@@ -168,63 +168,33 @@ class ProfileViewModel(
     fun onEvent(event: ProfileUiEvent) {
         when (event) {
             ProfileUiEvent.OnBackClicked -> navigator.navigateBack()
-
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
-
             ProfileUiEvent.OnVisibilityInfoClicked -> showDialog(ProfileDialog.VISIBILITY_INFO)
-
             ProfileUiEvent.OnDialogDismissed -> closeDialog()
-
             ProfileUiEvent.OnConnectClicked -> expandConnect()
-
             is ProfileUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
-
             is ProfileUiEvent.OnIdTokenReceived -> handleIdToken(event)
-
             ProfileUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
-
             ProfileUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
-
             is ProfileUiEvent.OnAddPaymentKeyClicked -> openPaymentKey(event.method, keyId = null)
-
             is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
-
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
-
-            ProfileUiEvent.OnAccountClicked -> if (uiState.value.hasAccount) showDialog(ProfileDialog.UNLINK_ACCOUNT)
-
+            ProfileUiEvent.OnAccountClicked -> openUnlink()
             ProfileUiEvent.OnUnlinkConfirmed -> unlink()
-
             ProfileUiEvent.OnExportClicked -> export()
-
-            ProfileUiEvent.OnDeleteAccountClicked -> if (uiState.value.showsDeleteAccount) {
-                navigator.navigate(Route.DeleteAccount)
-            }
-
+            ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
-
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
-
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
-
             ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
-
             ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()
-
             ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT) clearSession()
-
             ProfileUiEvent.OnSignOutWhenSyncedClicked -> scheduleSignOut()
-
             ProfileUiEvent.OnSignOutNowClicked -> signOutNow()
-
             ProfileUiEvent.OnCancelScheduledSignOutClicked -> cancelScheduledSignOut()
-
             is ProfileUiEvent.OnCodeSavedChanged -> confirmCodeSaved(event.isChecked)
-
             ProfileUiEvent.OnCopyCodeClicked -> copyCode()
-
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
-
             ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE) eraseProfile()
         }
     }
@@ -234,6 +204,8 @@ class ProfileViewModel(
         val connected = account.status as? AccountStatus.Connected
         uiState.update {
             it.copy(
+                // Why: the account gone closes the unlink dialog with it, so it never asks about no provider.
+                dialog = it.dialog.takeUnless { dialog -> dialog == ProfileDialog.UNLINK_ACCOUNT && connected == null },
                 accountProvider = connected?.provider,
                 hasAnonymousId = account.status is AccountStatus.Anonymous,
                 maskedEmail = account.email?.takeIf { connected != null }?.toMaskedEmail(),
@@ -364,6 +336,22 @@ class ProfileViewModel(
                 hasSignOutFailed = false,
                 hasUnlinkFailed = false,
             )
+        }
+    }
+
+    // Why: a sign out on its way would end the account the unlink keeps, so the row waits for it.
+    private fun openUnlink() {
+        val state = uiState.value
+        if (state.hasAccount && !state.isSignOutScheduled) showDialog(ProfileDialog.UNLINK_ACCOUNT)
+    }
+
+    // Why: an unlink or sign out under way changes the account the deletion would name.
+    private fun openDeleteAccount() {
+        val state = uiState.value
+        if (state.showsDeleteAccount && !state.isUnlinking &&
+            !state.isSigningOut
+        ) {
+            navigator.navigate(Route.DeleteAccount)
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,6 +28,7 @@ private const val EXPORT_MIME_TYPE = "application/json"
 @Composable
 fun rememberExportFileSaver(): (json: String) -> Unit {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     // Why: the save sheet may outlive the activity (a rotation, the process reclaimed), so the JSON waits saved.
     var pendingJson by rememberSaveable { mutableStateOf<String?>(null) }
@@ -37,10 +39,10 @@ fun rememberExportFileSaver(): (json: String) -> Unit {
             scope.launch { context.writeText(uri, json) }
         }
     }
-    return remember(context, launcher) {
+    return remember(resources, launcher) {
         { json ->
             pendingJson = json
-            launcher.launch(context.getString(R.string.platform_export_file_name, LocalDate.now().toString()))
+            launcher.launch(resources.getString(R.string.platform_export_file_name, LocalDate.now().toString()))
         }
     }
 }

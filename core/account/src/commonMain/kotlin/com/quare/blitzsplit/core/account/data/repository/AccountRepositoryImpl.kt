@@ -18,12 +18,14 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
@@ -31,6 +33,8 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 class AccountRepositoryImpl(
     private val local: AccountLocalDataSource,
     private val remote: AccountRemoteDataSource,
+    // Why: the app's, for work a sign in starts but needn't wait for.
+    private val scope: CoroutineScope,
 ) : AccountRepository {
     // Why: in memory, since a browser trip doesn't outlive the process that opened it.
     private val browserTrip = AtomicReference(BrowserTrip.NONE)
@@ -73,8 +77,11 @@ class AccountRepositoryImpl(
     // Why: only a trip to Apple brings Apple's token; a Google one's would be refused, or kept as Apple's.
     override suspend fun keepAppleTokens() {
         remote.observeAppleRefreshTokens().collect { token ->
-            if (local.get().browserSignInProvider == AccountProvider.APPLE.code) {
-                keepAppleToken(AppleToken.RefreshToken(token))
+            // Why: the collector lives as long as the app, so one failed read can't end it.
+            suspendRunCatching {
+                if (local.get().browserSignInProvider == AccountProvider.APPLE.code) {
+                    remote.keepAppleToken(AppleToken.RefreshToken(token))
+                }
             }
         }
     }
@@ -126,7 +133,7 @@ class AccountRepositoryImpl(
             if (user.displayName == null && givenName != null) keepNameGivenOnce(givenName)
         }
         if (provider == AccountProvider.APPLE && authorizationCode != null) {
-            keepAppleToken(AppleToken.AuthorizationCode(authorizationCode))
+            scope.launch { keepAppleToken(AppleToken.AuthorizationCode(authorizationCode)) }
         }
         result
     }
@@ -412,6 +419,12 @@ class AccountRepositoryImpl(
         else -> copy(
             userId = user.userId,
             provider = null,
+            // Why: Google or Apple gone from the same user leaves the code as the only way back, so it is offered.
+            recoveryCodePrompt = if (provider != null && userId == user.userId) {
+                RecoveryCodePrompt.DUE.code
+            } else {
+                recoveryCodePrompt
+            },
             email = null,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
         )

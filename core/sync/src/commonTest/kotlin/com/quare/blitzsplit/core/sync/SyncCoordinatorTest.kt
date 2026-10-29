@@ -1739,7 +1739,7 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN the session fails to end after the server deletion WHEN deleting THEN fails and keeps the copy`() =
+    fun `GIVEN a failed sign out after the server deletion WHEN deleting THEN succeeds and erases the copy`() =
         runTest {
             // Given
             prepareScenario(
@@ -1753,11 +1753,58 @@ class SyncCoordinatorTest {
             val result = coordinator.deleteAccount()
 
             // Then
-            assertTrue(result.isFailure)
+            assertTrue(result.isSuccess)
             assertEquals(1, account.deleteAccountCount)
-            assertEquals(pierre, profile.profile.value)
-            assertEquals(listOf(pixKey), paymentKeys.keys.value)
+            assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
         }
+
+    @Test
+    fun `GIVEN a sync in flight WHEN unlinking THEN waits for it before removing the identity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pullHangs = true,
+        )
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        backgroundScope.launch { coordinator.removeSocialIdentity() }
+        runCurrent()
+        val unlinksDuringSync = account.unlinkCount
+
+        // When
+        pullGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(0, unlinksDuringSync)
+        assertEquals(1, account.unlinkCount)
+        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
+    }
+
+    @Test
+    fun `GIVEN an unlink waiting on a sync WHEN the screen that asked leaves THEN still unlinks`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pullHangs = true,
+        )
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        val caller = backgroundScope.launch { coordinator.removeSocialIdentity() }
+        runCurrent()
+
+        // When
+        caller.cancel()
+        pullGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(1, account.unlinkCount)
+        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
+    }
 
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)

@@ -1,14 +1,12 @@
 import { t } from '@/i18n'
+import { downloadFile } from '@/lib/download'
 
 /**
  * Downloads the shared code's export as a JSON file, named with the browser's local date:
  * "bora-rachar-dados-2026-10-29.json" in Portuguese, "blitz-split-data-2026-10-29.json" otherwise.
  */
 export function downloadExport(json: string, now: Date = new Date()) {
-  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }))
-  const link = Object.assign(document.createElement('a'), { href: url, download: t('profile_exportFileName', { date: localDate(now) }) })
-  link.click()
-  URL.revokeObjectURL(url)
+  downloadFile(json, t('profile_exportFileName', { date: localDate(now) }), 'application/json')
 }
 
 // Why: toISOString() is UTC, which names the file a day off late in the evening west of Greenwich.

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
+import { downloadFile } from '@/lib/download'
 import { accountProviders } from '@/lib/platform'
 
 /**
@@ -125,8 +126,5 @@ function Option({ icon, title, subtitle, disabled, onClick }: { icon: ReactNode;
 
 function downloadCode(formattedCode: string) {
   const text = t('recoveryCode_fileText', { code: formattedCode })
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }))
-  const link = Object.assign(document.createElement('a'), { href: url, download: t('recoveryCode_fileName') })
-  link.click()
-  URL.revokeObjectURL(url)
+  downloadFile(text, t('recoveryCode_fileName'), 'text/plain;charset=utf-8')
 }

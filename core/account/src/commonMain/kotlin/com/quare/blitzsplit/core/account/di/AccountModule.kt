@@ -19,7 +19,6 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveReturningBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
-import com.quare.blitzsplit.core.account.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
@@ -34,8 +33,10 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCa
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveBrowserSignInReturningToProfileUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.RestoreWithRecoveryCodeUseCase
-import com.quare.blitzsplit.core.account.domain.usecase.impl.UnlinkAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -44,7 +45,13 @@ import org.koin.dsl.module
 val accountModule = module {
     singleOf(::RoomAccountLocalDataSource).bind<AccountLocalDataSource>()
     singleOf(::SupabaseAccountRemoteDataSource).bind<AccountRemoteDataSource>()
-    singleOf(::AccountRepositoryImpl).bind<AccountRepository>()
+    single<AccountRepository> {
+        AccountRepositoryImpl(
+            local = get(),
+            remote = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+        )
+    }
     factoryOf(::ObserveAccountStatusUseCase).bind<ObserveAccountStatus>()
     factoryOf(::ObserveAccountUseCase).bind<ObserveAccount>()
     factoryOf(::UpdateRecoveryCodePromptUseCase).bind<UpdateRecoveryCodePrompt>()
@@ -59,5 +66,4 @@ val accountModule = module {
     factoryOf(::ObserveBrowserSignInReturningToProfileUseCase).bind<ObserveBrowserSignInReturningToProfile>()
     factoryOf(::RestoreWithRecoveryCodeUseCase).bind<RestoreWithRecoveryCode>()
     factoryOf(::IssueRecoveryCodeUseCase).bind<IssueRecoveryCode>()
-    factoryOf(::UnlinkAccountUseCase).bind<UnlinkAccount>()
 }
