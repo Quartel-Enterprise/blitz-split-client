@@ -4,6 +4,8 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -31,6 +33,7 @@ class ExportUserDataUseCaseTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profile: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
+    private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var useCase: ExportUserDataUseCase
 
     @Test
@@ -303,6 +306,85 @@ class ExportUserDataUseCaseTest {
     }
 
     @Test
+    fun `GIVEN preferences never changed WHEN exporting THEN every notification is on but the invites`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val notifications = parse(useCase().getOrThrow()).getValue("notifications").jsonObject
+
+        // Then
+        assertEquals(setOf("newExpense", "paymentMarked", "settleReminders", "invites"), notifications.keys)
+        assertEquals(true, notifications.getValue("newExpense").jsonPrimitive.boolean)
+        assertEquals(true, notifications.getValue("paymentMarked").jsonPrimitive.boolean)
+        assertEquals(true, notifications.getValue("settleReminders").jsonPrimitive.boolean)
+        assertEquals(false, notifications.getValue("invites").jsonPrimitive.boolean)
+    }
+
+    @Test
+    fun `GIVEN a person who changed the preferences WHEN exporting THEN exports their choices`() = runTest {
+        // Given
+        prepareScenario()
+        notificationPreferences.updatePreference(
+            type = NotificationType.NEW_EXPENSE,
+            isEnabled = false,
+        )
+        notificationPreferences.updatePreference(
+            type = NotificationType.SETTLE_REMINDERS,
+            isEnabled = false,
+        )
+        notificationPreferences.updatePreference(
+            type = NotificationType.INVITES,
+            isEnabled = true,
+        )
+
+        // When
+        val notifications = parse(useCase().getOrThrow()).getValue("notifications").jsonObject
+
+        // Then
+        assertEquals(false, notifications.getValue("newExpense").jsonPrimitive.boolean)
+        assertEquals(true, notifications.getValue("paymentMarked").jsonPrimitive.boolean)
+        assertEquals(false, notifications.getValue("settleReminders").jsonPrimitive.boolean)
+        assertEquals(true, notifications.getValue("invites").jsonPrimitive.boolean)
+    }
+
+    @Test
+    fun `GIVEN only the settle reminders on WHEN exporting THEN only the settle reminders are true`() = runTest {
+        // Given
+        prepareScenario(storedPreferences = NotificationPreferences(setOf(NotificationType.SETTLE_REMINDERS)))
+
+        // When
+        val notifications = parse(useCase().getOrThrow()).getValue("notifications").jsonObject
+
+        // Then
+        assertEquals(false, notifications.getValue("newExpense").jsonPrimitive.boolean)
+        assertEquals(false, notifications.getValue("paymentMarked").jsonPrimitive.boolean)
+        assertEquals(true, notifications.getValue("settleReminders").jsonPrimitive.boolean)
+        assertEquals(false, notifications.getValue("invites").jsonPrimitive.boolean)
+    }
+
+    @Test
+    fun `GIVEN a device with no account and changed preferences WHEN exporting THEN exports them from the device`() =
+        runTest {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                storedProfile = null,
+                storedPreferences = NotificationPreferences(setOf(NotificationType.PAYMENT_MARKED)),
+            )
+
+            // When
+            val result = useCase()
+
+            // Then
+            val notifications = parse(result.getOrThrow()).getValue("notifications").jsonObject
+            assertEquals(false, notifications.getValue("newExpense").jsonPrimitive.boolean)
+            assertEquals(true, notifications.getValue("paymentMarked").jsonPrimitive.boolean)
+            assertEquals(0, account.registrationCount)
+            assertTrue(notificationPreferences.downloadedUserIds.isEmpty())
+        }
+
+    @Test
     fun `GIVEN an anonymous user WHEN exporting THEN reads only the device copy and reaches no server`() = runTest {
         // Given
         prepareScenario(
@@ -317,6 +399,7 @@ class ExportUserDataUseCaseTest {
         assertEquals(0, account.registrationCount)
         assertTrue(profile.downloadedUserIds.isEmpty())
         assertTrue(paymentKeys.downloadedUserIds.isEmpty())
+        assertTrue(notificationPreferences.downloadedUserIds.isEmpty())
     }
 
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
@@ -357,15 +440,17 @@ class ExportUserDataUseCaseTest {
         email: String? = null,
         storedProfile: UserProfile? = pierre,
         storedKeys: List<PaymentKey> = emptyList(),
+        storedPreferences: NotificationPreferences = NotificationPreferences.DEFAULT,
     ) {
         account = FakeAccountRepository(initialStatus = status).also { it.email = email }
         profile = FakeProfileRepository(initialProfile = storedProfile)
         paymentKeys = FakePaymentKeyRepository(initialKeys = storedKeys)
+        notificationPreferences = FakeNotificationPreferencesRepository(initialPreferences = storedPreferences)
         useCase = ExportUserDataUseCase(
             accountRepository = account,
             profileRepository = profile,
             paymentKeyRepository = paymentKeys,
-            notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
+            notificationPreferencesRepository = notificationPreferences,
             mapper = UserDataExportMapperImpl(),
             currentTimeMillis = { NOW },
         )
