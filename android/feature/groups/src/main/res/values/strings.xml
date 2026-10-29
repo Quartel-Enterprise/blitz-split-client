@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="groups_title">Groups</string>
     <string name="groups_profile">Profile</string>
     <string name="groups_sync_offline">Offline · everything is saved on your device</string>
     <string name="groups_sync_syncing">Syncing…</string>

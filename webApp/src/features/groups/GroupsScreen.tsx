@@ -51,23 +51,23 @@ export function GroupsScreen() {
   const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
-      <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">
+      <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
         <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
         <BrandMark className="hidden h-10 px-1.5 lg:flex" />
         <nav aria-label={t('groups_mainNavigation')} className="mt-4 flex flex-col gap-0.5">
           {tabs.map((tab, index) => (
             <button
               key={tab.label}
-              aria-label={t(tab.label)}
               aria-current={index === 0 ? 'page' : undefined}
               onClick={() => tab.open?.(presenter)}
               className={cn(
-                'flex h-9 items-center justify-center gap-2.5 rounded-md px-2.5 text-sm font-medium outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start',
+                'flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2.5 lg:px-2.5 lg:py-0 lg:text-sm',
                 index === 0 ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground',
               )}
             >
               {tab.icon}
-              <span className="hidden lg:inline">{t(tab.label)}</span>
+              {/* Why: the page has no visible title, so the selected tab's label names it at every width. */}
+              <span>{t(tab.label)}</span>
             </button>
           ))}
         </nav>

@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -93,7 +94,9 @@ fun GroupsContent(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
+    val title = stringResource(R.string.groups_title)
+    // Why: the selected Groups tab already names the screen, so the title is only announced, never drawn.
+    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
          * the rail already takes.
