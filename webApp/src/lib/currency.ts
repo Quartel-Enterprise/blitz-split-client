@@ -50,11 +50,23 @@ export const regionCurrencySymbol = currencySymbolFor(browserLanguages()[0])
  */
 const uiTag = browserLanguages().find((tag) => tag.toLowerCase().split('-')[0] === locale) ?? locale
 
+// Why: the picker draws every currency on each render, and building the Intl formatters each time is costly.
+const currencyLabels = new Map<string, string>()
+
 /**
  * A group's currency as the picker names it, in the app's language: "Brazilian Real (R$)". Falls back to the
  * ISO code where the browser can't name it.
  */
 export function currencyLabel(code: string, tag: string = uiTag): string {
+  const key = `${tag}:${code}`
+  const cached = currencyLabels.get(key)
+  if (cached !== undefined) return cached
+  const label = buildCurrencyLabel(code, tag)
+  currencyLabels.set(key, label)
+  return label
+}
+
+function buildCurrencyLabel(code: string, tag: string): string {
   try {
     const name = new Intl.DisplayNames(tag, { type: 'currency' }).of(code) ?? code
     const parts = new Intl.NumberFormat(tag, { style: 'currency', currency: code }).formatToParts(0)

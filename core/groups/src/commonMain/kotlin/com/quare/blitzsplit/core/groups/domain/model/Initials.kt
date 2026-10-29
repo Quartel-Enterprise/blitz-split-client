@@ -7,9 +7,10 @@ package com.quare.blitzsplit.core.groups.domain.model
  */
 object Initials {
     private val joiningWords = setOf("de", "da", "do", "das", "dos", "e", "of", "the", "and")
+    private val whitespace = Regex("\\s+")
 
     fun of(name: String): String {
-        val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        val words = name.trim().split(whitespace).filter { it.isNotEmpty() }
         val significant = words.filterNot { it.lowercase() in joiningWords }.ifEmpty { words }
         val letters = when (significant.size) {
             0 -> ""

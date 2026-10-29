@@ -51,9 +51,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     symbol of the device's region, `$` when there is none.
   - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the three not built yet
     answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
-  - "Novo grupo": tapping the group's avatar cycles its color through the palette (no shapes yet), and Moeda starts
-    in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
-    the group offers two nicknames, "Ana P." (the creator's initial) and "Ana 2".
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.

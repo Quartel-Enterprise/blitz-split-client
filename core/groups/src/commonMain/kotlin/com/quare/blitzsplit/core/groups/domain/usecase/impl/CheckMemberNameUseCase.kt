@@ -45,5 +45,9 @@ class CheckMemberNameUseCase : CheckMemberName {
         return listOfNotNull(withInitial, withNumber)
     }
 
-    private fun normalize(name: String): String = name.trim().split(Regex("\\s+")).joinToString(" ")
+    private fun normalize(name: String): String = name.trim().split(WHITESPACE).joinToString(" ")
+
+    private companion object {
+        val WHITESPACE = Regex("\\s+")
+    }
 }

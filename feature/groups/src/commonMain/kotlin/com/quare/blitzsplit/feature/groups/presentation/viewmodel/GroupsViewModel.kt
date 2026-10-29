@@ -73,7 +73,7 @@ class GroupsViewModel(
             val displayName = profile?.displayName?.trim().orEmpty()
             uiState.value.copy(
                 displayName = displayName,
-                avatarInitial = displayName.firstOrNull()?.uppercase().orEmpty(),
+                avatarInitial = Initials.firstOf(displayName),
                 avatarColor = profile?.avatarColor ?: AvatarColor.default,
                 photoUrl = profile?.photo?.toImageUrl(),
                 accountProvider = (account.status as? AccountStatus.Connected)?.provider,

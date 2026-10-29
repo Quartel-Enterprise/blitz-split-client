@@ -7,6 +7,8 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.utils.suspendRunCatching
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -48,10 +50,14 @@ class GroupRepositoryImpl(
         )
     }
 
-    // Why: the groups before their members, which the server only accepts in a group it already has.
+    /*
+     * Why: the groups before their members, which the server only accepts in a group it already has. The members
+     * are read first, so a group created between the two reads goes up without them (they wait for the next round)
+     * instead of its members going up without it.
+     */
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> = suspendRunCatching {
-        val pendingGroups = local.getPendingGroups(userId)
         val pendingMembers = local.getPendingMembers(userId)
+        val pendingGroups = local.getPendingGroups(userId)
         if (pendingGroups.isNotEmpty()) {
             remote.upsertGroups(pendingGroups.map { mapper.toDto(it, userId) })
         }
@@ -77,8 +83,11 @@ class GroupRepositoryImpl(
      * the account they belong to has them on the server. Groups made before any account are this user's.
      */
     override suspend fun downloadGroups(userId: String): Result<Unit> = suspendRunCatching {
-        val remoteGroups = remote.fetchGroups()
-        val remoteMembers = remote.fetchMembers()
+        val (remoteGroups, remoteMembers) = coroutineScope {
+            val groups = async { remote.fetchGroups() }
+            val members = async { remote.fetchMembers() }
+            groups.await() to members.await()
+        }
         local.deleteOtherUsersGroups(userId)
         local.claimUnowned(userId)
         remoteGroups.forEach { dto -> local.applyRemoteGroup(mapper.toEntity(dto, ownerUserId = userId)) }
