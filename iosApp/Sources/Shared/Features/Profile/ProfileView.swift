@@ -78,7 +78,14 @@ struct ProfileView: View {
                 .listRowBackground(Color.clear)
             }
             IdentitySection(model: model)
+            #if os(macOS)
+            // The Mac's settings list the keys right under the profile, as the canvas draws them
+            PaymentKeysSection(model: model)
             AccountSection(model: model)
+            #else
+            AccountSection(model: model)
+            PaymentKeysSection(model: model)
+            #endif
             Section("Preferences") {
                 Picker(
                     "Appearance",
@@ -266,6 +273,144 @@ private struct AccountSection: View {
         case .syncing: Text("Syncing…")
         case .failed: Text("No response from the server")
         default: hasPendingChanges ? Text("\(count) changes in the queue") : Text("Waiting to sync")
+        }
+    }
+}
+
+/// "Keys to receive payments": each key masked, its default marked, and a menu that asks Pix or Bitcoin
+/// first. The Mac adds a key with the + under the list, as its settings lists do.
+private struct PaymentKeysSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Section {
+            ForEach(model.state.paymentKeys, id: \.id) { key in
+                Button {
+                    model.send(ProfileUiEventOnPaymentKeyClicked(keyId: key.id))
+                } label: {
+                    PaymentKeyRow(key: key)
+                }
+                .buttonStyle(.plain)
+            }
+            #if os(macOS)
+            HStack {
+                AddPaymentKeyMenu(model: model) {
+                    Image(systemName: "plus")
+                        .frame(width: 20, height: 20)
+                        .contentShape(.rect)
+                }
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .fixedSize()
+                .accessibilityLabel("Add a Pix or Bitcoin key")
+                Spacer()
+            }
+            #else
+            AddPaymentKeyMenu(model: model) {
+                Label("Add a Pix or Bitcoin key", systemImage: "plus.circle.fill")
+            }
+            #endif
+        } header: {
+            Text("Keys to receive payments")
+        } footer: {
+            Text("Whoever owes you sees your default key when settling up.")
+        }
+    }
+}
+
+private struct AddPaymentKeyMenu<MenuLabel: View>: View {
+    let model: ProfileModel
+    @ViewBuilder let label: MenuLabel
+
+    var body: some View {
+        Menu {
+            Button("Pix key") {
+                model.send(ProfileUiEventOnAddPaymentKeyClicked(method: .pix))
+            }
+            Button("Bitcoin key") {
+                model.send(ProfileUiEventOnAddPaymentKeyClicked(method: .bitcoin))
+            }
+        } label: {
+            label
+        }
+    }
+}
+
+/// A key as the profile lists it: its method and type, the masked value in a monospaced font, "Default".
+private struct PaymentKeyRow: View {
+    let key: PaymentKeyItem
+
+    var body: some View {
+        let isPix = key.type.method == .pix
+        HStack(spacing: 12) {
+            Image(systemName: key.type.symbol)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isPix ? Palette.onPixTile : Palette.onBitcoinTile)
+                .frame(width: 30, height: 30)
+                .background(isPix ? Palette.pixTile : Palette.bitcoinTile, in: .rect(cornerRadius: 8))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                key.type.rowTitle
+                    .foregroundStyle(.primary)
+                // Why: on a narrow row only the masked value gives way, so the format suffix stays readable.
+                HStack(spacing: 0) {
+                    Text(verbatim: key.maskedValue)
+                        .truncationMode(.middle)
+                    Text(verbatim: key.format.suffix)
+                        .fixedSize()
+                }
+                .font(.footnote.monospaced())
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
+            Spacer(minLength: 8)
+            if key.isDefault {
+                Text("Default")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Palette.accent)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Palette.accent.opacity(0.14), in: .rect(cornerRadius: 8))
+            }
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
+        }
+        .contentShape(.rect)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private extension PaymentKeyType {
+    var rowTitle: Text {
+        switch self {
+        case .cpf: Text(verbatim: "Pix · CPF")
+        case .phone: Text("Pix · Phone")
+        case .email: Text("Pix · Email")
+        case .random: Text("Pix · Random key")
+        case .lightning: Text(verbatim: "Bitcoin · Lightning")
+        default: Text(verbatim: "Bitcoin · On-chain")
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .lightning: "bolt.fill"
+        case .onchain: "link"
+        default: "rhombus"
+        }
+    }
+}
+
+private extension PaymentKeyFormat {
+    /// "bc1p5d7r…sxg3297 · Taproot": the formats a type alone doesn't tell, the same words in every language.
+    var suffix: String {
+        switch self {
+        case .segwit: " · SegWit"
+        case .taproot: " · Taproot"
+        case .lnurl: " · LNURL"
+        default: ""
         }
     }
 }

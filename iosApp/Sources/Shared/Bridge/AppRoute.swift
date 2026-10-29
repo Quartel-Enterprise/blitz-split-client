@@ -1,13 +1,19 @@
 import Shared
 
+#if os(iOS)
+import UIKit
+#endif
+
 /// Swift's view of the shared back stack entries: Hashable, so a NavigationStack path can hold it.
-enum AppRoute: Hashable {
+enum AppRoute: Hashable, Identifiable {
     case welcome
     case profileSetup
     case restore
     case groups
     case profile
     case editProfile
+    /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
+    case paymentKey(RoutePaymentKey)
 
     init(_ route: any Route) {
         switch route {
@@ -16,7 +22,21 @@ enum AppRoute: Hashable {
         case is RouteGroups: self = .groups
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
+        case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         default: self = .welcome
         }
+    }
+
+    var id: Self { self }
+
+    /// iPad opens a key as a form sheet and the Mac as a sheet on its window, as the canvas draws
+    /// them; the iPhone pushes it.
+    var presentsAsSheet: Bool {
+        guard case .paymentKey = self else { return false }
+        #if os(macOS)
+        return true
+        #else
+        return UIDevice.current.userInterfaceIdiom == .pad
+        #endif
     }
 }

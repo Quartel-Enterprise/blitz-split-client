@@ -146,6 +146,16 @@
         }
       }
     },
+    "32 letters and numbers, as your bank shows it" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "32 letras e números, como o banco mostra"
+          }
+        }
+      }
+    },
     "Account and sync" : {
       "localizations" : {
         "pt-BR" : {
@@ -162,6 +172,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Atividade"
+          }
+        }
+      }
+    },
+    "Add a Pix or Bitcoin key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar chave Pix ou Bitcoin"
           }
         }
       }
@@ -257,6 +277,26 @@
         }
       }
     },
+    "Bitcoin address" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endereço Bitcoin"
+          }
+        }
+      }
+    },
+    "Bitcoin key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave Bitcoin"
+          }
+        }
+      }
+    },
     "Blitz Split" : {
       "comment" : "The app name: Bora Rachar only in Portuguese, Blitz Split in every other language",
       "localizations" : {
@@ -264,6 +304,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bora Rachar"
+          }
+        }
+      }
+    },
+    "Blitz Split doesn't move money: the payer pays in their bank app. Check that the key is in your name." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Bora Rachar não movimenta dinheiro: o pagamento é feito no app do banco de quem paga. Confira se a chave está no seu nome."
           }
         }
       }
@@ -509,6 +559,87 @@
         }
       }
     },
+    "Default" : {
+      "comment" : "The badge of a method's default payment key",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padrão"
+          }
+        }
+      }
+    },
+    "Default Bitcoin key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave Bitcoin padrão"
+          }
+        }
+      }
+    },
+    "Default Pix key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave Pix padrão"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir"
+          }
+        }
+      }
+    },
+    "Delete key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir chave"
+          }
+        }
+      }
+    },
+    "Delete this key?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir esta chave?"
+          }
+        }
+      }
+    },
+    "Edit Bitcoin key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar chave Bitcoin"
+          }
+        }
+      }
+    },
+    "Edit Pix key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar chave Pix"
+          }
+        }
+      }
+    },
     "Edit freely: it stays saved on this %@ and goes up when the connection is back." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -536,6 +667,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editar perfil"
+          }
+        }
+      }
+    },
+    "Email" : {
+      "comment" : "A Pix key type, in the segmented control and as the field label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-mail"
           }
         }
       }
@@ -593,6 +735,46 @@
         }
       }
     },
+    "Format +55 (00) 90000-0000" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato +55 (00) 90000-0000"
+          }
+        }
+      }
+    },
+    "Format 000.000.000-00" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato 000.000.000-00"
+          }
+        }
+      }
+    },
+    "Format 000.000.000-00 · check digits match" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato 000.000.000-00 · dígitos conferem"
+          }
+        }
+      }
+    },
+    "Format name@domain.com" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato nome@dominio.com"
+          }
+        }
+      }
+    },
     "Friends join the group without creating an account." : {
       "localizations" : {
         "pt-BR" : {
@@ -646,6 +828,16 @@
         }
       }
     },
+    "How do you want to receive?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por onde você quer receber?"
+          }
+        }
+      }
+    },
     "I kept the code somewhere safe" : {
       "localizations" : {
         "pt-BR" : {
@@ -682,6 +874,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Já usei em outro aparelho"
+          }
+        }
+      }
+    },
+    "Incomplete email: the domain is missing, like .com or .com.br." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E-mail incompleto: falta o domínio, como .com ou .com.br."
+          }
+        }
+      }
+    },
+    "Incomplete mobile number: use the area code and 9 digits, starting with 9." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celular incompleto: use DDD e 9 dígitos, começando com 9."
+          }
+        }
+      }
+    },
+    "Incomplete random key: it has 32 letters and numbers." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave aleatória incompleta: são 32 letras e números."
+          }
+        }
+      }
+    },
+    "Invalid CPF: the check digits don't match." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CPF inválido: os dígitos verificadores não batem."
+          }
+        }
+      }
+    },
+    "Invalid address. Use a mainnet bc1q or bc1p address." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endereço inválido. Use um endereço bc1q ou bc1p da rede principal."
           }
         }
       }
@@ -725,6 +967,16 @@
       "comment" : "An example recovery code, the placeholder of its field",
       "shouldTranslate" : false
     },
+    "Keys to receive payments" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves para receber"
+          }
+        }
+      }
+    },
     "Light" : {
       "localizations" : {
         "pt-BR" : {
@@ -735,12 +987,52 @@
         }
       }
     },
+    "Lightning Address or LNURL" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lightning Address ou LNURL"
+          }
+        }
+      }
+    },
+    "Like name@wallet.com or LNURL1…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como nome@carteira.com ou LNURL1…"
+          }
+        }
+      }
+    },
     "Lilac" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lilás"
+          }
+        }
+      }
+    },
+    "Mainnet address starting with bc1q or bc1p" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endereço da rede principal começando com bc1q ou bc1p"
+          }
+        }
+      }
+    },
+    "Mobile number with area code" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celular com DDD"
           }
         }
       }
@@ -762,6 +1054,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nome, foto e cor do avatar"
+          }
+        }
+      }
+    },
+    "New Bitcoin key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova chave Bitcoin"
+          }
+        }
+      }
+    },
+    "New Pix key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova chave Pix"
           }
         }
       }
@@ -846,6 +1158,17 @@
         }
       }
     },
+    "Now: %@." : {
+      "comment" : "%@ is the type of the method's default key today, lowercase (phone, email, CPF, Lightning…)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoje: %@."
+          }
+        }
+      }
+    },
     "Offline · everything is saved on your %@" : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -907,6 +1230,67 @@
         }
       }
     },
+    "People who owe you won't see it when settling up anymore." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem te deve deixa de ver esta chave no acerto."
+          }
+        }
+      }
+    },
+    "Phone" : {
+      "comment" : "A Pix key type, in the segmented control",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Celular"
+          }
+        }
+      }
+    },
+    "Pix key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave Pix"
+          }
+        }
+      }
+    },
+    "Pix · Email" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pix · E-mail"
+          }
+        }
+      }
+    },
+    "Pix · Phone" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pix · Celular"
+          }
+        }
+      }
+    },
+    "Pix · Random key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pix · Aleatória"
+          }
+        }
+      }
+    },
     "Preferences" : {
       "localizations" : {
         "pt-BR" : {
@@ -953,6 +1337,37 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil › Recuperação"
+          }
+        }
+      }
+    },
+    "Random" : {
+      "comment" : "A Pix key type, in the segmented control",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aleatória"
+          }
+        }
+      }
+    },
+    "Random key" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave aleatória"
+          }
+        }
+      }
+    },
+    "Random key recognized (32 characters)" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave aleatória reconhecida (32 caracteres)"
           }
         }
       }
@@ -1085,6 +1500,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escanear QR com a câmera"
+          }
+        }
+      }
+    },
+    "SegWit (bc1q) · mainnet" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SegWit (bc1q) · rede principal"
+          }
+        }
+      }
+    },
+    "Shown first when settling up." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aparece primeiro no acerto."
+          }
+        }
+      }
+    },
+    "Shown first when someone pays in BTC." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aparece primeiro quando alguém pagar em BTC."
           }
         }
       }
@@ -1261,6 +1706,16 @@
         }
       }
     },
+    "Taproot (bc1p) · mainnet" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taproot (bc1p) · rede principal"
+          }
+        }
+      }
+    },
     "Terms of use" : {
       "localizations" : {
         "pt-BR" : {
@@ -1277,6 +1732,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lá: Perfil › Recuperação › Mostrar QR"
+          }
+        }
+      }
+    },
+    "This is a Lightning Address, so we switched to Lightning." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isto é um Lightning Address, então mudamos para Lightning."
+          }
+        }
+      }
+    },
+    "This is a Lightning invoice (lnbc…): it pays once and expires. Paste a Lightning Address or an LNURL." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isto é uma fatura Lightning (lnbc…): vale para um pagamento só e expira. Cole um Lightning Address ou um LNURL."
+          }
+        }
+      }
+    },
+    "This is a testnet address (tb1…). Only Bitcoin mainnet works here, with bc1… addresses." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este endereço é da testnet (tb1…). Aqui só vale a rede principal do Bitcoin, com endereços bc1…"
+          }
+        }
+      }
+    },
+    "This is an on-chain address, so we switched to On-chain." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isto é um endereço on-chain, então mudamos para On-chain."
+          }
+        }
+      }
+    },
+    "This isn't a Lightning Address (name@wallet) or an LNURL." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isto não é um Lightning Address (nome@carteira) nem um LNURL."
+          }
+        }
+      }
+    },
+    "To change it, make another key the default." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para trocar, marque outra chave como padrão."
           }
         }
       }
@@ -1331,6 +1846,26 @@
         }
       }
     },
+    "Valid LNURL" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LNURL válido"
+          }
+        }
+      }
+    },
+    "Valid Lightning Address" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lightning Address válido"
+          }
+        }
+      }
+    },
     "Version" : {
       "localizations" : {
         "pt-BR" : {
@@ -1361,12 +1896,32 @@
         }
       }
     },
+    "We accept" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceitamos"
+          }
+        }
+      }
+    },
     "What do your friends call you?" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Como seus amigos te chamam?"
+          }
+        }
+      }
+    },
+    "When settling up, we show the amount in sats at the current rate. It's only an estimate: the payer confirms it in their wallet." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No acerto, mostramos o valor em sats pela cotação do momento. É só uma estimativa: quem paga confirma o valor na carteira."
           }
         }
       }
@@ -1381,12 +1936,52 @@
         }
       }
     },
+    "Whoever owes you sees your default key when settling up." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem te deve vê a chave padrão na hora do acerto."
+          }
+        }
+      }
+    },
+    "Whoever pays you sees this key when settling up. Which type of key?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem for te pagar vê esta chave no acerto. Qual tipo de chave?"
+          }
+        }
+      }
+    },
+    "Whoever pays you sees your full CPF. If you'd rather not share it, use a phone, email or random key." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem for te pagar vê o CPF completo. Se preferir não expor, use celular, e-mail ou chave aleatória."
+          }
+        }
+      }
+    },
     "Works offline" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Funciona sem internet"
+          }
+        }
+      }
+    },
+    "You already have this key." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já tem esta chave."
           }
         }
       }
@@ -1455,6 +2050,16 @@
         }
       }
     },
+    "Your first key of this kind is the default." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua primeira chave deste tipo é a padrão."
+          }
+        }
+      }
+    },
     "Your name" : {
       "localizations" : {
         "pt-BR" : {
@@ -1475,12 +2080,76 @@
         }
       }
     },
+    "email" : {
+      "comment" : "A Pix key type mid-sentence, in \"Now: email.\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e-mail"
+          }
+        }
+      }
+    },
+    "fast, low fee" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rápido, taxa baixa"
+          }
+        }
+      }
+    },
+    "name@wallet.app" : {
+      "comment" : "A sample Lightning Address under \"We accept\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nome@carteira.app"
+          }
+        }
+      }
+    },
+    "on the blockchain" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "na blockchain"
+          }
+        }
+      }
+    },
     "or" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ou"
+          }
+        }
+      }
+    },
+    "phone" : {
+      "comment" : "A Pix key type mid-sentence, in \"Now: phone.\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "celular"
+          }
+        }
+      }
+    },
+    "random key" : {
+      "comment" : "A Pix key type mid-sentence, in \"Now: random key.\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "chave aleatória"
           }
         }
       }
