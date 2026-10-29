@@ -17,7 +17,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -33,7 +33,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -49,7 +49,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Bruno"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -65,7 +65,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -81,7 +81,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = emptyList(),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -97,7 +97,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -119,7 +119,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -141,7 +141,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -163,7 +163,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana Paula"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -185,7 +185,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana", "Ana 2"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -207,7 +207,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana", "Ana 3", "Ana 2"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -229,7 +229,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana", "ana  2"),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -251,7 +251,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana", "Ana P."),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -273,7 +273,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Pierre", "Ana", "ana p."),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -287,7 +287,7 @@ class CheckMemberNameUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a creator in lower case WHEN checking a taken name THEN the initial is upper case`() {
+    fun `GIVEN an adder in lower case WHEN checking a taken name THEN the initial is upper case`() {
         // Given
         val name = "Ana"
 
@@ -295,7 +295,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("pierre", "Ana"),
-            creatorName = "  pierre",
+            adderName = "  pierre",
         )
 
         // Then
@@ -309,7 +309,7 @@ class CheckMemberNameUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a creator without a name WHEN checking a taken name THEN suggests only the number nickname`() {
+    fun `GIVEN an adder without a name WHEN checking a taken name THEN suggests only the number nickname`() {
         // Given
         val name = "Ana"
 
@@ -317,7 +317,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Ana"),
-            creatorName = " ",
+            adderName = " ",
         )
 
         // Then
@@ -339,7 +339,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             existing,
             takenNames = listOf(existing),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -361,7 +361,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             existing,
             takenNames = listOf(existing),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -383,7 +383,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             existing,
             takenNames = listOf(existing),
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -406,7 +406,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             existing,
             takenNames = taken,
-            creatorName = "Pierre",
+            adderName = "Pierre",
         )
 
         // Then
@@ -420,7 +420,7 @@ class CheckMemberNameUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a creator name starting with an emoji WHEN checking a taken name THEN the initial is that emoji`() {
+    fun `GIVEN an adder name starting with an emoji WHEN checking a taken name THEN the initial is that emoji`() {
         // Given
         val name = "Ana"
 
@@ -428,7 +428,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("\uD83D\uDE00 Pierre", "Ana"),
-            creatorName = "\uD83D\uDE00 Pierre",
+            adderName = "\uD83D\uDE00 Pierre",
         )
 
         // Then
@@ -442,7 +442,7 @@ class CheckMemberNameUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a creator with an empty name WHEN checking a taken name THEN suggests only the number nickname`() {
+    fun `GIVEN an adder with an empty name WHEN checking a taken name THEN suggests only the number nickname`() {
         // Given
         val name = "Ana"
 
@@ -450,7 +450,7 @@ class CheckMemberNameUseCaseTest {
         val check = useCase(
             name,
             takenNames = listOf("Ana"),
-            creatorName = "",
+            adderName = "",
         )
 
         // Then

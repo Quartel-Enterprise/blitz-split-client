@@ -1618,6 +1618,602 @@ class GroupRepositoryImplTest {
         assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
     }
 
+    @Test
+    fun `GIVEN a group on the device WHEN adding a member THEN stores them pending with no account at that time`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+            // When
+            val result = repository.addMember(
+                groupId = "group-1",
+                member = bruno,
+                addedAt = 5_000L,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                GroupMemberEntity(
+                    id = "m-new",
+                    groupId = "group-1",
+                    name = "Bruno",
+                    avatarColor = "sand",
+                    userId = null,
+                    isMe = false,
+                    addedAt = 5_000L,
+                    updatedAt = 5_000L,
+                    pendingSync = true,
+                    isRemoved = false,
+                ),
+                local.member("m-new"),
+            )
+        }
+
+    @Test
+    fun `GIVEN a member just added WHEN observing the groups THEN the group shows them pending and not joined`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Pierre",
+                        isMe = true,
+                        userId = "user-1",
+                    ),
+                ),
+            )
+            repository.addMember(
+                groupId = "group-1",
+                member = bruno,
+                addedAt = 5_000L,
+            )
+
+            // When
+            val group = repository.observeGroups().first().single()
+
+            // Then
+            assertEquals(listOf("Pierre", "Bruno"), group.members.map { it.name })
+            assertFalse(group.members[1].hasJoined)
+            assertTrue(group.isPending)
+        }
+
+    @Test
+    fun `GIVEN the device fails to write WHEN adding a member THEN returns the error instead of throwing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            memberWriteError = IllegalStateException("disk full"),
+        )
+
+        // When
+        val result = repository.addMember(
+            groupId = "group-1",
+            member = bruno,
+            addedAt = 5_000L,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertNull(local.member("m-new"))
+    }
+
+    @Test
+    fun `GIVEN a stored member WHEN renaming them THEN stores the new name pending at that time`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    name = "Ana",
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.updateMemberName(
+            memberId = "m-1",
+            name = "Ana Paula",
+            updatedAt = 6_000L,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals("Ana Paula", local.member("m-1")?.name)
+        assertEquals(6_000L, local.member("m-1")?.updatedAt)
+        assertEquals(true, local.member("m-1")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the device fails to write WHEN renaming a member THEN returns the error instead of throwing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana",
+                    ),
+                ),
+                memberWriteError = IllegalStateException("disk full"),
+            )
+
+            // When
+            val result = repository.updateMemberName(
+                memberId = "m-1",
+                name = "Ana Paula",
+                updatedAt = 6_000L,
+            )
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals("Ana", local.member("m-1")?.name)
+        }
+
+    @Test
+    fun `GIVEN a member who has not joined WHEN removing them THEN keeps the removal pending at that time`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.removeMember(
+            memberId = "m-1",
+            removedAt = 7_000L,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(true, local.member("m-1")?.isRemoved)
+        assertEquals(true, local.member("m-1")?.pendingSync)
+        assertEquals(7_000L, local.member("m-1")?.updatedAt)
+    }
+
+    @Test
+    fun `GIVEN a member just removed WHEN observing the groups THEN the group hides them and is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    name = "Pierre",
+                    isMe = true,
+                    userId = "user-1",
+                ),
+                member(
+                    id = "m-2",
+                    groupId = "group-1",
+                    name = "Ana",
+                ),
+            ),
+        )
+        repository.removeMember(
+            memberId = "m-2",
+            removedAt = 7_000L,
+        )
+
+        // When
+        val group = repository.observeGroups().first().single()
+
+        // Then
+        assertEquals(listOf("Pierre"), group.members.map { it.name })
+        assertTrue(group.isPending)
+    }
+
+    @Test
+    fun `GIVEN the device fails to write WHEN removing a member THEN returns the error instead of throwing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                    ),
+                ),
+                memberWriteError = IllegalStateException("disk full"),
+            )
+
+            // When
+            val result = repository.removeMember(
+                memberId = "m-1",
+                removedAt = 7_000L,
+            )
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(false, local.member("m-1")?.isRemoved)
+        }
+
+    @Test
+    fun `GIVEN a removal and pending changes WHEN uploading THEN deletes after the group and member pushes`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                    ),
+                ),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        pendingSync = true,
+                    ),
+                    removedMember(id = "m-2"),
+                ),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("groups", "members", "delete members"), remote.calls)
+            assertEquals(listOf(listOf("m-2")), remote.deletedMemberIds)
+        }
+
+    @Test
+    fun `GIVEN a member removed here WHEN uploading THEN the member push does not carry them`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+                removedMember(id = "m-2"),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(listOf("m-1"), remote.upsertedMembers.flatten().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a member removed here WHEN the server deletes them THEN they leave the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+                removedMember(id = "m-2"),
+            ),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("m-1"), local.members.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN only a removal WHEN uploading THEN deletes it without pushing groups or members`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(removedMember(id = "m-2")),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(listOf("delete members"), remote.calls)
+    }
+
+    @Test
+    fun `GIVEN nothing removed WHEN uploading THEN deletes nothing on the server`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertFalse("delete members" in remote.calls)
+        assertTrue(remote.deletedMemberIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the server fails the delete WHEN uploading THEN returns the error and keeps the removal`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(removedMember(id = "m-2")),
+            deleteMembersError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(true, local.member("m-2")?.isRemoved)
+        assertEquals(true, local.member("m-2")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the server fails the delete once WHEN uploading again THEN deletes the member then`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(removedMember(id = "m-2")),
+            deleteMembersError = IllegalStateException("server down"),
+        )
+        repository.uploadPendingGroups("user-1")
+        remote.deleteMembersError = null
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(listOf("m-2")), remote.deletedMemberIds)
+        assertNull(local.member("m-2"))
+    }
+
+    @Test
+    fun `GIVEN the server fails the members WHEN uploading THEN deletes nothing and keeps the removal`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+                removedMember(id = "m-2"),
+            ),
+            upsertMembersError = IllegalStateException("server down"),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(remote.deletedMemberIds.isEmpty())
+        assertEquals(true, local.member("m-2")?.isRemoved)
+    }
+
+    @Test
+    fun `GIVEN a removal already deleted on the server WHEN uploading again THEN deletes nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(removedMember(id = "m-2")),
+        )
+        repository.uploadPendingGroups("user-1")
+        remote.calls.clear()
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.calls.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a member removed in another user group WHEN uploading THEN does not delete them`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    ownerUserId = "user-2",
+                ),
+            ),
+            storedMembers = listOf(removedMember(id = "m-2")),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(remote.deletedMemberIds.isEmpty())
+        assertEquals(true, local.member("m-2")?.isRemoved)
+    }
+
+    @Test
+    fun `GIVEN a member removed in a group nobody owns yet WHEN uploading THEN does not delete them`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    ownerUserId = null,
+                ),
+            ),
+            storedMembers = listOf(removedMember(id = "m-2")),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(remote.deletedMemberIds.isEmpty())
+        assertEquals(true, local.member("m-2")?.isRemoved)
+    }
+
+    @Test
+    fun `GIVEN a member removed here and edited newer on the server WHEN downloading THEN they come back synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    removedMember(
+                        id = "m-2",
+                        updatedAt = 5L,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            assertEquals(false, local.member("m-2")?.isRemoved)
+            assertEquals(false, local.member("m-2")?.pendingSync)
+            assertEquals(
+                listOf("Ana Paula"),
+                repository
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .members
+                    .map { it.name },
+            )
+        }
+
+    @Test
+    fun `GIVEN a member removed here after the server copy WHEN downloading THEN the removal stays pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    removedMember(
+                        id = "m-2",
+                        updatedAt = 9L,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            assertEquals(true, local.member("m-2")?.isRemoved)
+            assertEquals(true, local.member("m-2")?.pendingSync)
+            assertTrue(
+                repository
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .members
+                    .isEmpty(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a removed member who joined before the delete WHEN downloading next THEN they come back joined`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    removedMember(
+                        id = "m-2",
+                        updatedAt = 9L,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+            repository.uploadPendingGroups("user-1")
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            val members = repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+            assertEquals(listOf("m-2"), members.map { it.id })
+            assertTrue(members.single().hasJoined)
+        }
+
+    private val bruno = GroupMember(
+        id = "m-new",
+        name = "Bruno",
+        avatarColor = AvatarColor.SAND,
+        isMe = false,
+        hasJoined = false,
+    )
+
+    private fun removedMember(
+        id: String,
+        updatedAt: Long = 5L,
+    ): GroupMemberEntity = member(
+        id = id,
+        groupId = "group-1",
+        updatedAt = updatedAt,
+        pendingSync = true,
+        isRemoved = true,
+    )
+
     private val newGroup = Group(
         id = "group-new",
         name = "Viagem Floripa",
@@ -1674,6 +2270,7 @@ class GroupRepositoryImplTest {
         isMe: Boolean = false,
         updatedAt: Long = 1L,
         pendingSync: Boolean = false,
+        isRemoved: Boolean = false,
     ): GroupMemberEntity = GroupMemberEntity(
         id = id,
         groupId = groupId,
@@ -1684,6 +2281,7 @@ class GroupRepositoryImplTest {
         addedAt = 1L,
         updatedAt = updatedAt,
         pendingSync = pendingSync,
+        isRemoved = isRemoved,
     )
 
     private fun groupDto(
@@ -1731,15 +2329,23 @@ class GroupRepositoryImplTest {
         profileOwnerUserId: String? = null,
         insertError: Throwable? = null,
         serverInviteCodes: Map<String, String> = emptyMap(),
+        memberWriteError: Throwable? = null,
+        deleteMembersError: Throwable? = null,
     ) {
-        local = FakeGroupLocalDataSource(storedGroups, storedMembers).also { it.insertError = insertError }
+        local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
+            it.insertError = insertError
+            it.memberWriteError = memberWriteError
+        }
         remote = FakeGroupRemoteDataSource(
             groups = remoteGroups,
             members = remoteMembers,
             upsertGroupsError = upsertGroupsError,
             upsertMembersError = upsertMembersError,
             fetchError = fetchError,
-        ).also { it.inviteCodes = serverInviteCodes }
+        ).also {
+            it.inviteCodes = serverInviteCodes
+            it.deleteMembersError = deleteMembersError
+        }
         repository = GroupRepositoryImpl(
             local = local,
             remote = remote,
@@ -1758,6 +2364,9 @@ private class FakeGroupLocalDataSource(
     val members = MutableStateFlow(storedMembers)
     val groupWrites = mutableListOf<Pair<GroupEntity, List<GroupMemberEntity>>>()
     var insertError: Throwable? = null
+
+    // Why: the add, rename and remove of one member, which fail alike when the device can't write.
+    var memberWriteError: Throwable? = null
 
     fun group(id: String): GroupEntity? = groups.value.find { it.id == id }
 
@@ -1791,7 +2400,61 @@ private class FakeGroupLocalDataSource(
             .filter { it.ownerUserId == ownerUserId }
             .map { it.id }
             .toSet()
-        return members.value.filter { it.pendingSync && it.groupId in owned }
+        return members.value.filter { it.pendingSync && !it.isRemoved && it.groupId in owned }
+    }
+
+    override suspend fun getRemovedMemberIds(ownerUserId: String): List<String> {
+        val owned = groups.value
+            .filter { it.ownerUserId == ownerUserId }
+            .map { it.id }
+            .toSet()
+        return members.value.filter { it.isRemoved && it.groupId in owned }.map { it.id }
+    }
+
+    override suspend fun insertMember(entity: GroupMemberEntity) {
+        memberWriteError?.let { throw it }
+        put(entity)
+    }
+
+    override suspend fun renameMember(
+        id: String,
+        name: String,
+        updatedAt: Long,
+    ) {
+        memberWriteError?.let { throw it }
+        members.value = members.value.map {
+            if (it.id == id && !it.isRemoved) {
+                it.copy(
+                    name = name,
+                    updatedAt = updatedAt,
+                    pendingSync = true,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun removeMember(
+        id: String,
+        removedAt: Long,
+    ) {
+        memberWriteError?.let { throw it }
+        members.value = members.value.map {
+            if (it.id == id && !it.isMe && it.userId == null) {
+                it.copy(
+                    isRemoved = true,
+                    updatedAt = removedAt,
+                    pendingSync = true,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun deleteRemovedMembers(ids: List<String>) {
+        members.value = members.value.filterNot { it.id in ids && it.isRemoved }
     }
 
     override suspend fun insertGroupWithMembers(
@@ -1849,7 +2512,13 @@ private class FakeGroupLocalDataSource(
         val current = member(entity.id)
         when {
             current == null -> put(entity)
-            current.updatedAt < entity.updatedAt -> put(entity.copy(pendingSync = false))
+
+            current.updatedAt < entity.updatedAt -> put(
+                entity.copy(
+                    pendingSync = false,
+                    isRemoved = false,
+                ),
+            )
         }
     }
 
@@ -1949,6 +2618,8 @@ private class FakeGroupRemoteDataSource(
     val calls = mutableListOf<String>()
     val upsertedGroups = mutableListOf<List<GroupDto>>()
     val upsertedMembers = mutableListOf<List<GroupMemberDto>>()
+    val deletedMemberIds = mutableListOf<List<String>>()
+    var deleteMembersError: Throwable? = null
     var onUpsertGroups: () -> Unit = {}
 
     // Why: the code the server makes for each group id, which the upsert answers with.
@@ -1966,6 +2637,12 @@ private class FakeGroupRemoteDataSource(
         calls += "members"
         upsertMembersError?.let { throw it }
         upsertedMembers += members
+    }
+
+    override suspend fun deleteMembers(ids: List<String>) {
+        calls += "delete members"
+        deleteMembersError?.let { throw it }
+        deletedMemberIds += ids
     }
 
     override suspend fun fetchGroups(): List<GroupDto> {

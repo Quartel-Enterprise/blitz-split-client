@@ -5,19 +5,15 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiAction
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiEvent
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -30,8 +26,6 @@ fun InviteScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
-    val comingSoon = stringResource(R.string.invite_coming_soon)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
@@ -41,12 +35,6 @@ fun InviteScreen(
                     link = action.link,
                     groupName = action.groupName,
                 )
-
-                InviteUiAction.ShowComingSoon -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    // Why: on its own, so a copy or a share right after isn't held until the snackbar hides.
-                    launch { snackbarHostState.showSnackbar(comingSoon) }
-                }
             }
         }
     }
@@ -54,7 +42,6 @@ fun InviteScreen(
     InviteContent(
         state = state,
         isDialog = isDialog,
-        snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
 }

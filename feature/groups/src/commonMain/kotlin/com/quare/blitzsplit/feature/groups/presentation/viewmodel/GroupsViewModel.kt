@@ -108,7 +108,9 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnCreateGroupClicked -> navigator.navigate(Route.CreateGroup)
 
-            is GroupsUiEvent.OnGroupClicked,
+            // Why: "Membros" stands in for the group's own screen (flow 6) until it exists.
+            is GroupsUiEvent.OnGroupClicked -> navigator.navigate(Route.Members(event.groupId))
+
             GroupsUiEvent.OnJoinWithLinkClicked,
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,

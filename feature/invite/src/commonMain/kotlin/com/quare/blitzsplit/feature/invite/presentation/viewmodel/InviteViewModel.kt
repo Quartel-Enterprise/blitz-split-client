@@ -91,7 +91,7 @@ class InviteViewModel(
             InviteUiEvent.OnCopyClicked -> copy()
             InviteUiEvent.OnShareClicked -> share()
             InviteUiEvent.OnRetryClicked -> if (uiState.value.isLinkFailed) retrySync()
-            InviteUiEvent.OnSeeWhoJoinedClicked, InviteUiEvent.OnGoToGroupClicked -> send(InviteUiAction.ShowComingSoon)
+            InviteUiEvent.OnSeeWhoJoinedClicked, InviteUiEvent.OnGoToGroupClicked -> openMembers()
         }
     }
 
@@ -149,6 +149,22 @@ class InviteViewModel(
 
     private fun send(action: InviteUiAction) {
         viewModelScope.launch { uiAction.emit(action) }
+    }
+
+    /*
+     * Why: "Membros" stands in for the group's own screen (flow 6). When it opened "Convidar", going back to it keeps
+     * the two from stacking; right after "Novo grupo", it takes this screen's place, so back goes to the home.
+     */
+    private fun openMembers() {
+        val backStack = navigator.backStack.value
+        if (backStack.lastOrNull() != route) return
+        val members = Route.Members(route.groupId)
+        val below = backStack.getOrNull(backStack.lastIndex - 1)
+        if (below == members) {
+            navigator.navigateBack()
+        } else {
+            navigator.replaceTop(members)
+        }
     }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.

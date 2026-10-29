@@ -34,8 +34,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -83,7 +81,6 @@ fun InviteContent(
     state: InviteUiState,
     // Why: a tablet draws the invite as a 560dp dialog over the home.
     isDialog: Boolean,
-    snackbarHostState: SnackbarHostState,
     onEvent: (InviteUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -96,33 +93,27 @@ fun InviteContent(
             shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
         ) {
-            Box {
-                Column {
-                    InviteTopBar(
-                        onEvent = onEvent,
-                        isDialog = true,
-                    )
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                            .padding(
-                                start = 24.dp,
-                                end = 24.dp,
-                                bottom = 24.dp,
-                            ),
-                    ) {
-                        if (state.isLoaded) {
-                            InviteColumn(
-                                state = state,
-                                onEvent = onEvent,
-                            )
-                        }
+            Column {
+                InviteTopBar(
+                    onEvent = onEvent,
+                    isDialog = true,
+                )
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            start = 24.dp,
+                            end = 24.dp,
+                            bottom = 24.dp,
+                        ),
+                ) {
+                    if (state.isLoaded) {
+                        InviteColumn(
+                            state = state,
+                            onEvent = onEvent,
+                        )
                     }
                 }
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
             }
         }
     } else {
@@ -135,7 +126,6 @@ fun InviteContent(
                     isDialog = false,
                 )
             },
-            snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
             Box(
                 modifier = Modifier
@@ -572,7 +562,6 @@ private fun InviteContentPreview() {
         InviteContent(
             state = createPreviewState(),
             isDialog = false,
-            snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
     }
@@ -589,7 +578,6 @@ private fun InviteContentPendingPreview() {
                 isOnline = false,
             ),
             isDialog = false,
-            snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
     }

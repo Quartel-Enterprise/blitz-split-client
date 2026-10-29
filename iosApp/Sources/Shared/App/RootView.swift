@@ -46,6 +46,7 @@ struct RootView: View {
         case .groups: MainTabView(path: $app.path)
         case .createGroup: CreateGroupView()
         case let .invite(route): InviteView(route: route)
+        case let .members(route): MembersView(route: route)
         case .profile: ProfileView()
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()

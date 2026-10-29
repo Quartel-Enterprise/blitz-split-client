@@ -9,6 +9,9 @@ interface GroupRemoteDataSource {
 
     suspend fun upsertMembers(members: List<GroupMemberDto>)
 
+    // Why: the server only deletes members nobody joined as; it leaves the others where they are.
+    suspend fun deleteMembers(ids: List<String>)
+
     // Why: every group the user may see, which the server's row level security decides.
     suspend fun fetchGroups(): List<GroupDto>
 

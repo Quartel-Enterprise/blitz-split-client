@@ -28,7 +28,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         GroupEntity::class,
         GroupMemberEntity::class,
     ],
-    version = 10,
+    version = 11,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -66,6 +66,10 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         AutoMigration(
             from = 9,
             to = 10,
+        ),
+        AutoMigration(
+            from = 10,
+            to = 11,
         ),
     ],
 )

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_back">Voltar</string>
+    <plurals name="members_count">
+        <item quantity="one">%d membro</item>
+        <item quantity="other">%d membros</item>
+    </plurals>
+    <plurals name="members_joined_count">
+        <item quantity="one">%d já entrou</item>
+        <item quantity="other">%d já entraram</item>
+    </plurals>
+    <string name="members_summary">%1$s · %2$s</string>
+    <string name="members_tabs">Seções do grupo</string>
+    <string name="members_tab_expenses">Despesas</string>
+    <string name="members_tab_balances">Saldos</string>
+    <string name="members_tab_members">Membros</string>
+    <string name="members_link_title">Link de convite</string>
+    <string name="members_link_pending">Ainda não foi criado</string>
+    <string name="members_share">Compartilhar</string>
+    <string name="members_me">%s (você)</string>
+    <string name="members_status_this_device">Este aparelho</string>
+    <string name="members_status_joined">Entrou</string>
+    <string name="members_status_not_joined">Ainda não entrou</string>
+    <string name="members_options">Opções de %s</string>
+    <string name="members_rename">Renomear</string>
+    <string name="members_personal_invite">Convite pessoal para %s</string>
+    <string name="members_remove">Remover do grupo</string>
+    <string name="members_remove_joined">%s já entrou no grupo</string>
+    <string name="members_remove_title">Remover %s do grupo?</string>
+    <string name="members_remove_message">%s ainda não entrou. Dá para adicionar de novo depois.</string>
+    <string name="members_remove_confirm">Remover</string>
+    <string name="members_add">Adicionar pessoa</string>
+    <string name="members_name_label">Nome</string>
+    <string name="members_name_taken">%s já está no grupo. Use um apelido para diferenciar.</string>
+    <string name="members_use_nickname">Usar “%s”</string>
+    <string name="members_save">Salvar</string>
+    <string name="members_cancel">Cancelar</string>
+    <string name="members_coming_soon">Em breve</string>
+    <string name="members_change_error">Não deu para salvar a mudança. Tente de novo.</string>
+</resources>

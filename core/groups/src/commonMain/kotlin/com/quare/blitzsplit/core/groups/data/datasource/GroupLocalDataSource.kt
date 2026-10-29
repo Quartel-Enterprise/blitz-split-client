@@ -16,6 +16,26 @@ interface GroupLocalDataSource {
     // Why: the pending members of the user's groups.
     suspend fun getPendingMembers(ownerUserId: String): List<GroupMemberEntity>
 
+    // Why: the ids of the members removed here, still to delete on the server.
+    suspend fun getRemovedMemberIds(ownerUserId: String): List<String>
+
+    suspend fun insertMember(entity: GroupMemberEntity)
+
+    suspend fun renameMember(
+        id: String,
+        name: String,
+        updatedAt: Long,
+    )
+
+    // Why: a member who joined, or this device's user, is left as it is.
+    suspend fun removeMember(
+        id: String,
+        removedAt: Long,
+    )
+
+    // Why: once the server deleted them; one a newer server row brought back stays.
+    suspend fun deleteRemovedMembers(ids: List<String>)
+
     suspend fun insertGroupWithMembers(
         group: GroupEntity,
         members: List<GroupMemberEntity>,

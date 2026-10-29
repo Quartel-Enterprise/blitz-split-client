@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.utils.suspendRunCatching
@@ -50,15 +51,53 @@ class GroupRepositoryImpl(
         )
     }
 
+    override suspend fun addMember(
+        groupId: String,
+        member: GroupMember,
+        addedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.insertMember(
+            mapper.toMemberEntity(
+                groupId = groupId,
+                member = member,
+                addedAt = addedAt,
+            ),
+        )
+    }
+
+    override suspend fun updateMemberName(
+        memberId: String,
+        name: String,
+        updatedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.renameMember(
+            id = memberId,
+            name = name,
+            updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun removeMember(
+        memberId: String,
+        removedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.removeMember(
+            id = memberId,
+            removedAt = removedAt,
+        )
+    }
+
     /*
      * Why: the groups before their members, which the server only accepts in a group it already has. The members
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)
      * instead of its members going up without it. A new group's invite code comes back with it: the sync downloads
-     * before it uploads, so waiting for the next download would keep "Convidar" without a link until then.
+     * before it uploads, so waiting for the next download would keep "Convidar" without a link until then. The
+     * members removed here go last, and leave the device once the server deleted them.
      */
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> = suspendRunCatching {
         val pendingMembers = local.getPendingMembers(userId)
         val pendingGroups = local.getPendingGroups(userId)
+        val removedMemberIds = local.getRemovedMemberIds(userId)
         if (pendingGroups.isNotEmpty()) {
             remote
                 .upsertGroups(pendingGroups.map { mapper.toDto(it, userId) })
@@ -73,6 +112,10 @@ class GroupRepositoryImpl(
         }
         if (pendingMembers.isNotEmpty()) {
             remote.upsertMembers(pendingMembers.map(mapper::toDto))
+        }
+        if (removedMemberIds.isNotEmpty()) {
+            remote.deleteMembers(removedMemberIds)
+            local.deleteRemovedMembers(removedMemberIds)
         }
         pendingGroups.forEach {
             local.markGroupSynced(

@@ -9,6 +9,7 @@ internal fun toRouteName(route: Route): String = when (route) {
     Route.Groups -> "groups"
     Route.CreateGroup -> "create-group"
     is Route.Invite -> "invite"
+    is Route.Members -> "members"
     Route.Profile -> "profile"
     Route.EditProfile -> "edit-profile"
     Route.DeleteAccount -> "delete-account"

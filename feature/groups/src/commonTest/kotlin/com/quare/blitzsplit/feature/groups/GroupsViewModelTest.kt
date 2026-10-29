@@ -959,20 +959,19 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group on the list WHEN tapping its row THEN says it is coming soon and stays on the groups`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroups = listOf(floripa))
-            val actions = mutableListOf<GroupsUiAction>()
-            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+    fun `GIVEN a group on the list WHEN tapping its row THEN opens its members`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+        val actions = mutableListOf<GroupsUiAction>()
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
 
-            // When
-            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
 
-            // Then
-            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
-        }
+        // Then
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Groups, Route.Members("floripa")), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN groups on the list WHEN the profile changes THEN keeps the groups`() = runTest(testDispatcher) {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_back">Back</string>
+    <plurals name="members_count">
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
+    <plurals name="members_joined_count">
+        <item quantity="one">%d joined</item>
+        <item quantity="other">%d joined</item>
+    </plurals>
+    <string name="members_summary">%1$s · %2$s</string>
+    <string name="members_tabs">Group sections</string>
+    <string name="members_tab_expenses">Expenses</string>
+    <string name="members_tab_balances">Balances</string>
+    <string name="members_tab_members">Members</string>
+    <string name="members_link_title">Invite link</string>
+    <string name="members_link_pending">Not created yet</string>
+    <string name="members_share">Share</string>
+    <string name="members_me">%s (you)</string>
+    <string name="members_status_this_device">This device</string>
+    <string name="members_status_joined">Joined</string>
+    <string name="members_status_not_joined">Hasn\'t joined yet</string>
+    <string name="members_options">Options for %s</string>
+    <string name="members_rename">Rename</string>
+    <string name="members_personal_invite">Personal invite for %s</string>
+    <string name="members_remove">Remove from group</string>
+    <string name="members_remove_joined">%s already joined the group</string>
+    <string name="members_remove_title">Remove %s from the group?</string>
+    <string name="members_remove_message">%s hasn\'t joined yet. You can add them again later.</string>
+    <string name="members_remove_confirm">Remove</string>
+    <string name="members_add">Add person</string>
+    <string name="members_name_label">Name</string>
+    <string name="members_name_taken">%s is already in the group. Use a nickname to tell them apart.</string>
+    <string name="members_use_nickname">Use “%s”</string>
+    <string name="members_save">Save</string>
+    <string name="members_cancel">Cancel</string>
+    <string name="members_coming_soon">Coming soon</string>
+    <string name="members_change_error">Couldn\'t save the change. Try again.</string>
+</resources>

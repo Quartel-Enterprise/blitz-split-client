@@ -75,6 +75,7 @@ dependencies {
     implementation(projects.android.feature.groups)
     implementation(projects.android.feature.createGroup)
     implementation(projects.android.feature.invite)
+    implementation(projects.android.feature.members)
     implementation(projects.android.feature.profile)
     implementation(projects.android.feature.editProfile)
     implementation(projects.android.feature.paymentKey)

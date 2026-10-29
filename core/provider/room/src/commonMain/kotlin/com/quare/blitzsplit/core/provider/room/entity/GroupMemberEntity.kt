@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
@@ -25,4 +26,10 @@ data class GroupMemberEntity(
     val addedAt: Long,
     val updatedAt: Long,
     val pendingSync: Boolean,
+    /*
+     * Why: removed here and not deleted on the server yet. The row stays, hidden, until the sync deletes it there, so
+     * the next download doesn't bring it back.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val isRemoved: Boolean,
 )

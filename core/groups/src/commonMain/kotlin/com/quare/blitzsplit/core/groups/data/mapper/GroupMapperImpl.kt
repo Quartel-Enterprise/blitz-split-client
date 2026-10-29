@@ -22,13 +22,14 @@ class GroupMapperImpl : GroupMapper {
         val membersByGroup = members.groupBy { it.groupId }
         return groups.map { group ->
             val ofGroup = membersByGroup[group.id].orEmpty()
+            // Why: a removal not up yet still leaves the group pending.
             Group(
                 id = group.id,
                 name = group.name,
                 type = GroupType.fromCodeOrNull(group.type) ?: GroupType.OTHER,
                 color = AvatarColor.fromCodeOrNull(group.color) ?: AvatarColor.default,
                 currency = GroupCurrency.fromCodeOrNull(group.currency) ?: GroupCurrency.fallback,
-                members = ofGroup.map(::toDomain),
+                members = ofGroup.filterNot { it.isRemoved }.map(::toDomain),
                 isPending = group.pendingSync || ofGroup.any { it.pendingSync },
                 inviteCode = group.inviteCode,
             )
@@ -69,8 +70,26 @@ class GroupMapperImpl : GroupMapper {
             addedAt = createdAt + index,
             updatedAt = createdAt,
             pendingSync = true,
+            isRemoved = false,
         )
     }
+
+    override fun toMemberEntity(
+        groupId: String,
+        member: GroupMember,
+        addedAt: Long,
+    ): GroupMemberEntity = GroupMemberEntity(
+        id = member.id,
+        groupId = groupId,
+        name = member.name,
+        avatarColor = member.avatarColor.code,
+        userId = null,
+        isMe = false,
+        addedAt = addedAt,
+        updatedAt = addedAt,
+        pendingSync = true,
+        isRemoved = false,
+    )
 
     override fun toDto(
         entity: GroupEntity,
@@ -127,6 +146,7 @@ class GroupMapperImpl : GroupMapper {
         addedAt = dto.addedAt,
         updatedAt = dto.updatedAt,
         pendingSync = false,
+        isRemoved = false,
     )
 
     private fun toDomain(entity: GroupMemberEntity): GroupMember = GroupMember(

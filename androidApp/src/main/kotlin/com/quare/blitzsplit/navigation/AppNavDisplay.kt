@@ -20,6 +20,7 @@ import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
+import com.quare.blitzsplit.android.feature.members.MembersScreen
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
@@ -97,6 +98,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesFormDialog,
                 )
             }
+            entry<Route.Members> { route -> MembersScreen(route) }
         },
     )
 }
