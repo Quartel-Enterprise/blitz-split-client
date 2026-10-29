@@ -1,0 +1,247 @@
+name: merge-when-green
+
+# Squash merges a pull request labeled merge-when-green once every check on its head commit has
+# passed, then removes the label. No check is required by the ruleset (every check workflow is path
+# filtered, see docs/ci.md), so GitHub's own auto-merge would merge right away.
+#
+# It runs when the label is added (the checks may already be green) and whenever one of the pull
+# request workflows completes (the last one to finish is the one that finds everything green). A
+# failed check leaves the pull request open with the label on.
+#
+# A green pull request with an unresolved review conversation is not merged: the ruleset refuses it,
+# so the label goes and a comment says why. Resolving a conversation starts no workflow, so adding
+# the label again is what merges it then. The checks review-gate held for claude-review's threads
+# (see review-gate.yml) don't count as failed: once every conversation is resolved, this workflow
+# re-runs them and merges when they pass.
+on:
+  pull_request:
+    types:
+      - labeled
+  workflow_run:
+    workflows:
+      - build-and-test
+      - static-analysis
+      - module-graph
+      - claude-review
+      - claude-review-on-request
+      - claude-review-refs
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  merge:
+    # Pull requests from forks are left out: their author could push a commit after a maintainer
+    # added the label, and this would merge it with the maintainer's token.
+    if: >-
+      (github.event_name == 'pull_request' && github.event.label.name == 'merge-when-green' &&
+      github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      checks: read
+      contents: read
+      pull-requests: write
+      statuses: read
+    concurrency:
+      group: merge-when-green-${{ github.event.pull_request.head.ref || github.event.workflow_run.head_branch }}
+    steps:
+      # Reads the pull request with MERGE_WHEN_GREEN_TOKEN too, so a missing or expired token fails
+      # here, before anything else runs.
+      - name: Check whether every check passed
+        id: green
+        env:
+          GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || github.event.workflow_run.head_branch }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id || 0 }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::The MERGE_WHEN_GREEN_TOKEN secret is not set."
+            exit 1
+          fi
+
+          # No workflow runs on every push here, so none can tell that the push's workflows have
+          # registered their runs. A label added right after a push gives them time to; a completed
+          # run of the head commit means they already have.
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            sleep 30
+          fi
+
+          # The label is filtered here rather than with --label, which goes through the search index:
+          # it lags behind a label just added or removed, and behind a merge.
+          if ! prs=$(gh pr list --state open --head "$HEAD_BRANCH" \
+            --json number,headRefOid,isDraft,isCrossRepository,labels); then
+            echo "::error::Reading the pull requests with the MERGE_WHEN_GREEN_TOKEN secret failed. If the token expired, create a new one and update the secret."
+            exit 1
+          fi
+
+          # The pull request's current head is what gets judged, not the commit of the run that
+          # started this one: claude-review's run ends on the opening commit after it pushed its fix
+          # commit, and on a pull request whose changes run no check workflow (docs only) nothing
+          # else completes on the fix commit. A draft can't be merged; marking it ready runs its
+          # checks again. Two labeled pull requests can share a branch (one into two bases): one is
+          # handled per run, and its merge or label change starts this workflow again for the other.
+          match=$(jq -c '[.[] | select((.isCrossRepository | not) and (.isDraft | not)
+            and any(.labels[]; .name == "merge-when-green"))] | first // empty' <<< "$prs")
+          if [ -z "$match" ]; then
+            echo "No open pull request of $HEAD_BRANCH is labeled merge-when-green and ready for review."
+            exit 0
+          fi
+          pr=$(jq -r .number <<< "$match")
+          head=$(jq -r .headRefOid <<< "$match")
+
+          # gh exits with 8 while checks are pending and with 1 when one failed or none exists. Those
+          # are answers here, not errors, so the JSON it prints is what gets inspected. A pull request
+          # whose changes run no check workflow (docs only) has nothing to wait for. GITHUB_TOKEN reads
+          # them, since it is granted checks: read and the personal token isn't.
+          checks=$(GH_TOKEN="$GITHUB_TOKEN" gh pr checks "$pr" --json name,workflow,bucket 2> "$RUNNER_TEMP/checks.err") || true
+          if ! jq -e 'type == "array"' <<< "$checks" > /dev/null 2>&1; then
+            if ! grep -q 'no checks reported' "$RUNNER_TEMP/checks.err"; then
+              cat "$RUNNER_TEMP/checks.err"
+              exit 1
+            fi
+            checks='[]'
+          fi
+          others=$(jq '[.[] | select(.workflow != "merge-when-green")]' <<< "$checks")
+
+          # A gate that held its workflow's checks for claude-review's open threads is the only
+          # review-gate check that fails. Its run completes failed, which starts this workflow too.
+          held=$(jq '[.[] | select((.name | startswith("review-gate")) and .bucket == "fail")] | length' <<< "$others")
+          unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
+            | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
+            | "\(.name): \(.bucket)"' <<< "$others")
+          if [ -n "$unfinished" ]; then
+            echo "#$pr is not green yet:"
+            echo "$unfinished"
+            exit 0
+          fi
+
+          # A job waiting on another (the checks behind review-gate) has no check until it starts, so
+          # while review-gate waits for the review, or right after it passes, every check can be green
+          # while its workflow still has jobs to run. A run of the head commit counts as unfinished
+          # until it completes; its completion starts this workflow again. So does a claude-review run
+          # of an earlier commit: it ends on the opening commit after pushing its fix commit, and its
+          # threads come last. Runs started by a label (claude-review-on-request, run-checks, this
+          # one) don't count: their job is skipped for any other label, and a skipped run starts
+          # nothing; a review on request shows as a pending check instead. The run that started this
+          # one counts as complete whatever the listing says, which can lag behind the event.
+          running=$(GH_TOKEN="$GITHUB_TOKEN" HEAD="$head" gh api --method GET "repos/$GH_REPO/actions/runs" \
+            -f branch="$HEAD_BRANCH" -f event=pull_request -f per_page=100 \
+            --jq '.workflow_runs[] | select(.status != "completed" and .id != (env.TRIGGER_RUN_ID | tonumber))
+              | select(.path | test("^\\.github/workflows/(claude-review-on-request|run-checks|merge-when-green)\\.yml$") | not)
+              | select(.head_sha == env.HEAD or .path == ".github/workflows/claude-review.yml")
+              | "\(.name) (\(.head_sha[:7]))"')
+          if [ -n "$running" ]; then
+            echo "#$pr still has workflows running:"
+            echo "$running"
+            exit 0
+          fi
+
+          {
+            echo "pr=$pr"
+            echo "head=$head"
+            echo "held=$held"
+          } >> "$GITHUB_OUTPUT"
+
+      # The ruleset requires every review conversation to be resolved, and has no bypass. Checking
+      # first leaves a comment on the pull request instead of a failed merge nobody looks at.
+      - id: threads
+        if: steps.green.outputs.pr != ''
+        uses: Quartel-Enterprise/claude-review/threads@1.1.0
+        with:
+          command: open-threads
+          pull-request: ${{ steps.green.outputs.pr }}
+
+      # Every step after the threads lookup checks that it ran: a skipped step's output is null, which
+      # an expression takes for 0, so a bare count == '0' would hold on a pull request still running.
+      - name: Remove the label for the unresolved conversations
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.green.outputs.pr }}
+          HELD: ${{ steps.green.outputs.held }}
+          UNRESOLVED: ${{ steps.threads.outputs.count }}
+        run: |
+          echo "#$PR_NUMBER is green but has $UNRESOLVED unresolved review conversation(s)."
+          if [ "$HELD" -gt 0 ]; then
+            body="The checks are held for the Claude review's threads, and $UNRESOLVED review"
+            body+=" conversation(s) are still unresolved, so this was not merged. Fix each one, or reply"
+            body+=" with why it stays as it is, resolve them, then add the \`merge-when-green\` label"
+            body+=" again: the held checks run then, and this merges once they pass."
+          else
+            body="Every check passed, but $UNRESOLVED review conversation(s) are still unresolved, so this"
+            body+=" was not merged. Fix each one, or reply with why it stays as it is, resolve them, then"
+            body+=" add the \`merge-when-green\` label again."
+          fi
+          gh pr comment "$PR_NUMBER" --body "$body"
+          gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
+
+      # Every conversation is resolved now, so the gate lets the held checks through; their
+      # completion starts this workflow again. They are re-run with MERGE_WHEN_GREEN_TOKEN: what
+      # GITHUB_TOKEN does starts no other workflow, so its re-runs might never start this one.
+      - id: rerun
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
+        uses: Quartel-Enterprise/claude-review/threads@1.1.0
+        with:
+          command: rerun-held
+          sha: ${{ steps.green.outputs.head }}
+          token: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+
+      # A review-gate check failed without a failed hold step to re-run (the gate itself broke), so
+      # nothing would ever merge the pull request: the label goes, with a comment saying why.
+      - name: Report what was re-run
+        if: steps.rerun.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.green.outputs.pr }}
+          RERUN: ${{ steps.rerun.outputs.count }}
+        run: |
+          if [ "$RERUN" -gt 0 ]; then
+            echo "Re-ran $RERUN run(s) of #$PR_NUMBER held for review conversations that are resolved now."
+            exit 0
+          fi
+          echo "::warning::A review-gate check of #$PR_NUMBER failed, but no run was held for review threads."
+          body="A \`review-gate\` check failed without holding the checks for review threads, so this"
+          body+=" was not merged. Re-run the failed \`review-gate\` job, then add the"
+          body+=" \`merge-when-green\` label again."
+          gh pr comment "$PR_NUMBER" --body "$body"
+          gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
+
+      # A merge made with GITHUB_TOKEN triggers no other workflow, so the push to main would run none
+      # of the checks of main. The merge is made with a token of its own instead: a fine-grained
+      # personal access token restricted to this repository, with Actions, Contents and Pull requests
+      # set to Read and write. It merges as its owner, under the ruleset like any merge: never with
+      # --admin. A refused merge (a conflict with main) would fail the same way on every later run,
+      # so the label goes, with a comment saying why. A push meanwhile is not a refusal: its checks
+      # decide.
+      - name: Merge the pull request
+        if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held == '0'
+        env:
+          GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.green.outputs.pr }}
+          HEAD_SHA: ${{ steps.green.outputs.head }}
+        run: |
+          if ! gh pr merge "$PR_NUMBER" --squash --match-head-commit "$HEAD_SHA"; then
+            if [ "$(gh pr view "$PR_NUMBER" --json headRefOid --jq .headRefOid)" = "$HEAD_SHA" ]; then
+              body="Every check passed and every conversation is resolved, but GitHub refused the merge"
+              body+=" (see the \`merge-when-green\` run). Fix what it reports, then add the"
+              body+=" \`merge-when-green\` label again."
+              gh pr comment "$PR_NUMBER" --body "$body"
+              gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
+            fi
+            exit 1
+          fi
+
+          # The label only means "merge this once it is green", so it goes once that is done.
+          gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
