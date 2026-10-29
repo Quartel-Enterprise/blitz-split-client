@@ -3,10 +3,8 @@ package com.quare.blitzsplit.android.designsystem.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +21,6 @@ import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
 
 // Why: the initial stays under the photo, so it shows while the photo loads or when it fails to.
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AvatarBadge(
     initial: String,
@@ -33,11 +30,10 @@ fun AvatarBadge(
     photoUrl: String? = null,
 ) {
     val isDark = LocalIsDarkTheme.current
-    val shape = MaterialShapes.Cookie9Sided.toShape()
     Box(
         modifier = modifier
             .size(size)
-            .background(color.toContainerColor(isDark), shape),
+            .background(color.toContainerColor(isDark), CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -51,7 +47,7 @@ fun AvatarBadge(
                 model = photoUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize().clip(shape),
+                modifier = Modifier.matchParentSize().clip(CircleShape),
             )
         }
     }

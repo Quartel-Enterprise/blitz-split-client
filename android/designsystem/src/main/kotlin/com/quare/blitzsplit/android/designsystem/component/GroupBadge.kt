@@ -21,7 +21,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 
 /*
  * Why: a group's avatar, its initials ("VF") on one of the palette's colors. One shape for every group for now,
- * unlike a person's cookie, so a group never reads as someone.
+ * unlike a person's circle, so a group never reads as someone.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
