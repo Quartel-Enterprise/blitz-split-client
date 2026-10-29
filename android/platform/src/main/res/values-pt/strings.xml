@@ -2,4 +2,5 @@
 <resources>
     <string name="platform_app_name">Bora Rachar</string>
     <string name="platform_recovery_code_account">Bora Rachar · código de recuperação</string>
+    <string name="platform_export_file_name">bora-rachar-dados-%1$s.json</string>
 </resources>

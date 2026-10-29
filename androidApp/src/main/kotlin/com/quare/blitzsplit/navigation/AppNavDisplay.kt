@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
+import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
@@ -45,6 +46,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         return
     }
     val usesFormDialog = rememberUsesFormDialog()
+    val formDialogMetadata = if (usesFormDialog) {
+        DialogSceneStrategy.dialog(
+            DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        )
+    } else {
+        emptyMap()
+    }
     NavDisplay(
         backStack = backStack,
         onBack = { appViewModel.navigator.navigateBack() },
@@ -61,22 +72,15 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
-            entry<Route.PaymentKey>(
-                metadata = if (usesFormDialog) {
-                    DialogSceneStrategy.dialog(
-                        DialogProperties(
-                            dismissOnClickOutside = false,
-                            usePlatformDefaultWidth = false,
-                        ),
-                    )
-                } else {
-                    emptyMap()
-                },
-            ) { route ->
+            entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(
                     route = route,
                     isDialog = usesFormDialog,
                 )
+            }
+            // Why: like a payment key, a tablet keeps the profile behind it; elsewhere it opens full screen.
+            entry<Route.DeleteAccount>(metadata = formDialogMetadata) {
+                DeleteAccountScreen(isDialog = usesFormDialog)
             }
         },
     )
