@@ -314,7 +314,8 @@ private struct KeySections: View {
 }
 
 /// The key as typed, masked by the ViewModel, with "Paste": a Pix key on one line, a Bitcoin key in a
-/// monospaced field that wraps.
+/// monospaced field that wraps. That one is `UnhyphenatedTextField`: SwiftUI's own hyphenates an address
+/// where it wraps, and the hyphen looks like part of it.
 ///
 /// The field keeps its own draft, as the web's `useDraft` does: the state reaches Swift a moment after
 /// each keystroke, and a field bound straight to it would show the stale input meanwhile and lose what
@@ -340,49 +341,80 @@ private struct KeyField: View {
         let state = model.state
         if state.method == .pix {
             HStack(spacing: 8) {
-                textField(axis: .horizontal)
+                textField
                     .font(state.type == .random ? .subheadline : .body)
                 paste
             }
         } else {
             VStack(alignment: .leading, spacing: 10) {
-                textField(axis: .vertical)
-                    .font(.body.monospaced())
-                    .lineLimit(2...4)
+                addressField
                 paste
             }
             .padding(.vertical, 4)
         }
     }
 
-    private func textField(axis: Axis) -> some View {
+    private var addressField: some View {
         let type = model.state.type
-        return TextField(text: $draft, selection: $selection, prompt: type.fieldLabel, axis: axis) {
-            type.fieldLabel
-        }
-        #if os(iOS)
-        .keyboardType(type.keyboard)
-        .textContentType(type.contentType)
-        .textInputAutocapitalization(.never)
-        #else
-        .labelsHidden()
-        #endif
-        .autocorrectionDisabled()
-        .focused(isFocused)
-        .submitLabel(.done)
-        .onSubmit { model.send(PaymentKeyUiEventOnSaveClicked.shared) }
-        .onChange(of: draft) { _, text in
-            guard text != model.currentInput else { return }
-            if text != sentText {
-                sentText = text
-                model.send(PaymentKeyUiEventOnInputChanged(input: text))
+        return syncingDraft(
+            UnhyphenatedTextField(
+                text: $draft,
+                isFocused: isFocused,
+                accessibilityLabel: type.addressFieldLabel,
+                lines: 2...4,
+                onSubmit: { model.send(PaymentKeyUiEventOnSaveClicked.shared) },
+            )
+            #if os(iOS)
+            .keyboard(type.keyboard, contentType: type.contentType)
+            #endif
+            .focused(isFocused)
+            .overlay(alignment: .topLeading) {
+                if draft.isEmpty {
+                    type.fieldLabel
+                        .font(.body.monospaced())
+                        .foregroundStyle(UnhyphenatedTextField.placeholderColor)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+            },
+        )
+    }
+
+    private var textField: some View {
+        let type = model.state.type
+        return syncingDraft(
+            TextField(text: $draft, selection: $selection, prompt: type.fieldLabel) {
+                type.fieldLabel
             }
-            showCurrentInput()
-        }
-        // The live input, not the delivered one: a state a few keystrokes old must not undo them
-        .onChange(of: model.state.input) {
-            showCurrentInput()
-        }
+            #if os(iOS)
+            .keyboardType(type.keyboard)
+            .textContentType(type.contentType)
+            .textInputAutocapitalization(.never)
+            #else
+            .labelsHidden()
+            #endif
+            .autocorrectionDisabled()
+            .focused(isFocused)
+            .submitLabel(.done)
+            .onSubmit { model.send(PaymentKeyUiEventOnSaveClicked.shared) },
+        )
+    }
+
+    /// Sends each edit of the draft once and shows the masked input back, from the field or the state.
+    private func syncingDraft(_ field: some View) -> some View {
+        field
+            .onChange(of: draft) { _, text in
+                guard text != model.currentInput else { return }
+                if text != sentText {
+                    sentText = text
+                    model.send(PaymentKeyUiEventOnInputChanged(input: text))
+                }
+                showCurrentInput()
+            }
+            // The live input, not the delivered one: a state a few keystrokes old must not undo them
+            .onChange(of: model.state.input) {
+                showCurrentInput()
+            }
     }
 
     private func showCurrentInput() {
@@ -558,6 +590,14 @@ private extension PaymentKeyType {
         case .random: Text("random key")
         case .lightning: Text(verbatim: "Lightning")
         default: Text(verbatim: "on-chain")
+        }
+    }
+
+    /// The Bitcoin field's label as VoiceOver reads it, for `UnhyphenatedTextField`.
+    var addressFieldLabel: String {
+        switch self {
+        case .lightning: String(localized: "Lightning Address or LNURL")
+        default: String(localized: "Bitcoin address")
         }
     }
 
