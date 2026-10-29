@@ -14,7 +14,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -148,6 +150,40 @@ class NotificationPreferencesRepositoryImplTest {
             repository.observePreferences().first().enabledTypes,
         )
         assertEquals(true, local.row.value?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the defaults WHEN two toggles change at the same time THEN stores both changes`() = runTest {
+        // Given
+        prepareScenario(
+            now = 1_000L,
+            stored = null,
+        )
+
+        // When
+        launch {
+            repository.updatePreference(
+                type = NotificationType.NEW_EXPENSE,
+                isEnabled = false,
+            )
+        }
+        launch {
+            repository.updatePreference(
+                type = NotificationType.INVITES,
+                isEnabled = true,
+            )
+        }
+        testScheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(
+            setOf(
+                NotificationType.PAYMENT_MARKED,
+                NotificationType.SETTLE_REMINDERS,
+                NotificationType.INVITES,
+            ),
+            repository.observePreferences().first().enabledTypes,
+        )
     }
 
     @Test
@@ -861,7 +897,12 @@ private class FakeNotificationPreferencesLocalDataSource(
 
     override fun observe(): Flow<NotificationPreferencesEntity?> = row
 
-    override suspend fun get(): NotificationPreferencesEntity? = row.value
+    override suspend fun get(): NotificationPreferencesEntity? {
+        val stored = row.value
+        // Why: a real database read suspends, which lets a second toggle read the same row before the first writes.
+        yield()
+        return stored
+    }
 
     override suspend fun upsert(entity: NotificationPreferencesEntity) {
         upserts += entity

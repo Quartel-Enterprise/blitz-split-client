@@ -12,6 +12,8 @@ import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class NotificationPreferencesRepositoryImpl(
     private val local: NotificationPreferencesLocalDataSource,
@@ -20,6 +22,9 @@ class NotificationPreferencesRepositoryImpl(
     private val mapper: NotificationPreferencesMapper,
     private val currentTimeMillis: CurrentTimeMillis,
 ) : NotificationPreferencesRepository {
+    // Why: each toggle reads the row and writes it back whole, so two quick taps in a row would lose the first.
+    private val writeLock = Mutex()
+
     override fun observePreferences(): Flow<NotificationPreferences> = local
         .observe()
         .map(mapper::toDomain)
@@ -35,6 +40,13 @@ class NotificationPreferencesRepositoryImpl(
      * copy; changed ones keep their owner, so a change to another user's still gives way.
      */
     override suspend fun updatePreference(
+        type: NotificationType,
+        isEnabled: Boolean,
+    ) {
+        writeLock.withLock { updateLocked(type, isEnabled) }
+    }
+
+    private suspend fun updateLocked(
         type: NotificationType,
         isEnabled: Boolean,
     ) {

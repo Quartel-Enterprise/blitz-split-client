@@ -2,7 +2,6 @@ package com.quare.blitzsplit.android.feature.notificationsettings
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,8 +41,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
+import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
@@ -77,14 +78,12 @@ fun NotificationSettingsContent(
             )
         },
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.TopCenter,
-        ) {
+        // Why: one short column at every size, so lying down and on a tablet it only centers, as 4.8 draws it.
+        AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding)) {
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
                     .widthIn(max = singleColumnMaxWidth)
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
@@ -143,7 +142,7 @@ private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Uni
             .fillMaxWidth()
             .padding(top = 8.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
-        shape = RoundedCornerShape(20.dp),
+        shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {
@@ -265,7 +264,7 @@ private val NotificationType.detailRes: Int
         NotificationType.INVITES -> R.string.notification_settings_invites_detail
     }
 
-@Preview
+@DevicePreviews
 @Composable
 private fun NotificationSettingsPreview() {
     BlitzSplitTheme {
@@ -279,7 +278,7 @@ private fun NotificationSettingsPreview() {
     }
 }
 
-@Preview(name = "Denied in the system")
+@DevicePreviews
 @Composable
 private fun NotificationSettingsDeniedPreview() {
     BlitzSplitTheme {

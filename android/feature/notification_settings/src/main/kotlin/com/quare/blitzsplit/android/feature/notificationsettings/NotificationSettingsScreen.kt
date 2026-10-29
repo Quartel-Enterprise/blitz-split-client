@@ -1,16 +1,14 @@
 package com.quare.blitzsplit.android.feature.notificationsettings
 
-import android.Manifest
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.platform.SystemNotificationPermission
+import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
+import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
@@ -19,26 +17,21 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val requestPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        context.markNotificationPermissionAsked()
-        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(context.readNotificationPermission()))
+    val permissionAccess = rememberNotificationPermissionAccess { permission ->
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(permission.toNotificationPermission()))
     }
     // Why: on every return too, since the person may have changed it in the system settings.
-    LifecycleResumeEffect(viewModel) {
-        viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(context.readNotificationPermission()))
+    LifecycleResumeEffect(viewModel, permissionAccess) {
+        viewModel.onEvent(
+            NotificationSettingsUiEvent.OnPermissionChecked(permissionAccess.read().toNotificationPermission()),
+        )
         onPauseOrDispose {}
     }
-    LaunchedEffect(viewModel) {
+    LaunchedEffect(viewModel, permissionAccess) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                NotificationSettingsUiAction.RequestPermission -> if (
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                ) {
-                    requestPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-
-                NotificationSettingsUiAction.OpenSystemSettings -> context.openNotificationSettings()
+                NotificationSettingsUiAction.RequestPermission -> permissionAccess.request()
+                NotificationSettingsUiAction.OpenSystemSettings -> permissionAccess.openSettings()
             }
         }
     }
@@ -47,4 +40,10 @@ fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel = koinVi
         state = state,
         onEvent = viewModel::onEvent,
     )
+}
+
+private fun SystemNotificationPermission.toNotificationPermission(): NotificationPermission = when (this) {
+    SystemNotificationPermission.GRANTED -> NotificationPermission.GRANTED
+    SystemNotificationPermission.DENIED -> NotificationPermission.DENIED
+    SystemNotificationPermission.ASKABLE -> NotificationPermission.NOT_DETERMINED
 }

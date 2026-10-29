@@ -58,11 +58,7 @@ export function NotificationSettingsCard({ className }: { className?: string }) 
     }
     check()
     window.addEventListener('focus', check)
-    document.addEventListener('visibilitychange', check)
-    return () => {
-      window.removeEventListener('focus', check)
-      document.removeEventListener('visibilitychange', check)
-    }
+    return () => window.removeEventListener('focus', check)
   }, [presenter])
   if (!presenter || !state) return null
 

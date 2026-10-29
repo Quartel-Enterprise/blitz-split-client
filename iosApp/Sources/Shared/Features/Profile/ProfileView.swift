@@ -74,7 +74,9 @@ final class ProfileModel {
 struct ProfileView: View {
     @State private var model = ProfileModel()
     #if os(macOS)
-    @State private var notificationModel = NotificationSettingsModel()
+    /// Made once the settings appear, as the other screens make theirs: SwiftUI rebuilds this view's value
+    /// whenever its parent redraws.
+    @State private var notificationModel: NotificationSettingsModel?
     #endif
 
     var body: some View {
@@ -129,7 +131,9 @@ struct ProfileView: View {
             }
             #if os(macOS)
             // The Mac's settings show the toggles right here, as the canvas draws them
-            NotificationSettingsSections(model: notificationModel)
+            if let notificationModel {
+                NotificationSettingsSections(model: notificationModel)
+            }
             #endif
             AboutSection(model: model)
             Section {
@@ -155,6 +159,11 @@ struct ProfileView: View {
             }
         }
         .profileDialogs(model: model)
+        #if os(macOS)
+        .onAppear {
+            if notificationModel == nil { notificationModel = NotificationSettingsModel() }
+        }
+        #endif
         .dataExporter(json: Binding(
             get: { model.exportJson },
             set: { model.exportJson = $0 },

@@ -106,8 +106,6 @@ struct NotificationSettingsView: View {
 struct NotificationSettingsSections: View {
     let model: NotificationSettingsModel
 
-    @Environment(\.scenePhase) private var scenePhase
-
     var body: some View {
         let state = model.state
         Group {
@@ -134,20 +132,40 @@ struct NotificationSettingsSections: View {
                 }
                 .disabled(!state.areTogglesEnabled)
             } header: {
-                #if os(macOS)
-                Text("Notifications")
-                #else
-                Text("Notify me when")
-                #endif
+                Group {
+                    #if os(macOS)
+                    Text("Notifications")
+                    #else
+                    Text("Notify me when")
+                    #endif
+                }
+                // On the one header always there: a Form hands a section's modifiers to each of its rows
+                .modifier(PermissionChecks(model: model))
             } footer: {
                 Text("Notices arrive when there's internet. To mute a group, use the menu inside it.")
             }
         }
-        .onAppear { model.checkPermission() }
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active { model.checkPermission() }
-        }
     }
+}
+
+/// Reads the permission when the screen or section appears and on every return to the app: the Mac's
+/// scene stays active while the person is in System Settings, so it listens to the app becoming active.
+private struct PermissionChecks: ViewModifier {
+    let model: NotificationSettingsModel
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear { model.checkPermission() }
+            .onReceive(NotificationCenter.default.publisher(for: Self.didBecomeActive)) { _ in
+                model.checkPermission()
+            }
+    }
+
+    #if os(macOS)
+    private static let didBecomeActive = NSApplication.didBecomeActiveNotification
+    #else
+    private static let didBecomeActive = UIApplication.didBecomeActiveNotification
+    #endif
 }
 
 private struct PermissionDeniedNotice: View {
