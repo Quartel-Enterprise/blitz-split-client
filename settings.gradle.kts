@@ -59,6 +59,7 @@ include(":feature:recovery_code")
 include(":feature:groups")
 include(":feature:profile")
 include(":feature:edit_profile")
+include(":feature:payment_key")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")
@@ -71,3 +72,4 @@ include(":android:feature:recovery_code")
 include(":android:feature:groups")
 include(":android:feature:profile")
 include(":android:feature:edit_profile")
+include(":android:feature:payment_key")

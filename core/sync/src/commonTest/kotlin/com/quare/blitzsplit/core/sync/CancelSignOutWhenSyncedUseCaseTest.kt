@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CancelSignOutWhenSyncedUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,8 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 class CancelSignOutWhenSyncedUseCaseTest {
+    private val paymentKeys = FakePaymentKeyRepository()
+
     private lateinit var account: FakeAccountRepository
     private lateinit var useCase: CancelSignOutWhenSyncedUseCase
 
@@ -40,6 +43,7 @@ class CancelSignOutWhenSyncedUseCaseTest {
                 profileRepository = FakeProfileRepository(
                     initialProfile = UserProfile("Pierre", AvatarColor.BLUE, photo = null),
                 ),
+                paymentKeyRepository = paymentKeys,
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),

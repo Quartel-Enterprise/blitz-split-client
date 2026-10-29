@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +28,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class SyncCoordinator(
     private val accountRepository: AccountRepository,
     private val profileRepository: ProfileRepository,
+    private val paymentKeyRepository: PaymentKeyRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -41,7 +43,7 @@ class SyncCoordinator(
     fun observeState(): Flow<SyncState> = combine(
         requestedSyncs,
         lastSyncFailed,
-        profileRepository.observeHasPendingChanges(),
+        observeHasPendingChanges(),
         connectivityObserver.observe(),
     ) { requested, failed, hasPendingChanges, isOnline ->
         when {
@@ -75,8 +77,17 @@ class SyncCoordinator(
                     val userId = accountRepository.ensureRegistered().getOrThrow()
                     profileRepository.downloadProfile(userId).getOrThrow()
                     profileRepository.uploadPendingProfile(userId).getOrThrow()
+                    /*
+                     * Why: after the profile, whose download decides whose copy this device holds. A key that
+                     * fails still fails the sync, but not before the steps that only need the profile.
+                     */
+                    val keysSynced = suspendRunCatching {
+                        paymentKeyRepository.downloadKeys(userId).getOrThrow()
+                        paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
+                    }
                     offerRecoveryCodeIfDue()
                     signOutIfScheduledAndSynced()
+                    keysSynced.getOrThrow()
                 }.also { result -> lastSyncFailed.value = result.isFailure }
             }
         } finally {
@@ -110,16 +121,18 @@ class SyncCoordinator(
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
-     * on the profile itself makes each new change count, while one going out triggers nothing.
+     * on the profile and the keys themselves makes each new change count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
-            profileRepository.observeHasPendingChanges(),
-        ) { isOnline, profile, hasPendingChanges -> Triple(isOnline && profile != null, profile, hasPendingChanges) }
-            .distinctUntilChanged()
+            paymentKeyRepository.observeKeys(),
+            observeHasPendingChanges(),
+        ) { isOnline, profile, keys, hasPendingChanges ->
+            Triple(isOnline && profile != null, profile to keys, hasPendingChanges)
+        }.distinctUntilChanged()
             .collect { (canSync, _, hasPendingChanges) ->
                 val isDue = canSync && (!couldSync || hasPendingChanges)
                 couldSync = canSync
@@ -131,7 +144,7 @@ class SyncCoordinator(
     private suspend fun syncUntilSettled() {
         do {
             val result = syncNow()
-        } while (result.isSuccess && profileRepository.observeHasPendingChanges().first())
+        } while (result.isSuccess && observeHasPendingChanges().first())
     }
 
     /*
@@ -139,7 +152,7 @@ class SyncCoordinator(
      * The schedule is read last, right before the session ends, so a cancel up to then still keeps it.
      */
     private suspend fun signOutIfScheduledAndSynced() {
-        if (profileRepository.observeHasPendingChanges().first()) return
+        if (observeHasPendingChanges().first()) return
         val account = accountRepository.observeAccount().first()
         if (account.signOutWhenSynced && account.status is AccountStatus.Connected) clearSession()
     }
@@ -151,8 +164,15 @@ class SyncCoordinator(
      */
     private suspend fun clearSession() {
         accountRepository.signOut()
+        // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
+        paymentKeyRepository.clear()
         profileRepository.clear()
     }
+
+    private fun observeHasPendingChanges(): Flow<Boolean> = combine(
+        profileRepository.observeHasPendingChanges(),
+        paymentKeyRepository.observeHasPendingChanges(),
+    ) { hasPendingProfile, hasPendingKeys -> hasPendingProfile || hasPendingKeys }.distinctUntilChanged()
 
     private suspend fun offerRecoveryCodeIfDue() {
         val account = accountRepository.observeAccount().first()

@@ -13,6 +13,10 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PaymentKey
+import com.quare.blitzsplit.core.model.PaymentKeyFormat
+import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
@@ -20,8 +24,12 @@ import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPaymentKeyChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
@@ -33,6 +41,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
+import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
@@ -62,6 +71,7 @@ class ProfileViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
+    private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
@@ -2262,7 +2272,404 @@ class ProfileViewModelTest {
             assertTrue(state.hasPendingChanges)
         }
 
+    @Test
+    fun `GIVEN Pix and Bitcoin keys WHEN the profile opens THEN lists each one masked in the stored order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(keys = listOf(cpfKey, emailKey, segwitKey, lightningAddressKey))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(
+                    PaymentKeyItem("cpf", PaymentKeyType.CPF, PaymentKeyFormat.CPF, "•••.456.789-••", true),
+                    PaymentKeyItem("email", PaymentKeyType.EMAIL, PaymentKeyFormat.EMAIL, "pie•••@email.com", false),
+                    PaymentKeyItem("segwit", PaymentKeyType.ONCHAIN, PaymentKeyFormat.SEGWIT, "bc1qw508…kv8f3t4", true),
+                    PaymentKeyItem(
+                        "lightning",
+                        PaymentKeyType.LIGHTNING,
+                        PaymentKeyFormat.LIGHTNING_ADDRESS,
+                        "pierre@getalby.com",
+                        false,
+                    ),
+                ),
+                state.paymentKeys,
+            )
+        }
+
+    @Test
+    fun `GIVEN a phone and a random key WHEN the profile opens THEN lists both masked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(phoneKey, randomKey))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(
+            listOf(
+                PaymentKeyItem("phone", PaymentKeyType.PHONE, PaymentKeyFormat.PHONE, "+55 (11) 9••••-5678", false),
+                PaymentKeyItem("random", PaymentKeyType.RANDOM, PaymentKeyFormat.RANDOM, "7d9f3c2a…4d1a37", false),
+            ),
+            state.paymentKeys,
+        )
+    }
+
+    @Test
+    fun `GIVEN a Taproot address WHEN the profile opens THEN lists it as Taproot`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(taprootKey))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(
+            listOf(
+                PaymentKeyItem("taproot", PaymentKeyType.ONCHAIN, PaymentKeyFormat.TAPROOT, "bc1p5d7r…sxg3297", false),
+            ),
+            state.paymentKeys,
+        )
+    }
+
+    @Test
+    fun `GIVEN an LNURL WHEN the profile opens THEN lists it as LNURL`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(lnurlKey))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(
+            listOf(
+                PaymentKeyItem("lnurl", PaymentKeyType.LIGHTNING, PaymentKeyFormat.LNURL, "lnurl1dp68…fq5fns", false),
+            ),
+            state.paymentKeys,
+        )
+    }
+
+    @Test
+    fun `GIVEN no keys WHEN the profile opens THEN lists no key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = emptyList())
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(emptyList(), state.paymentKeys)
+    }
+
+    @Test
+    fun `GIVEN a stored key that no longer passes the rules WHEN the profile opens THEN leaves only it out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(keys = listOf(paymentKey("broken", PaymentKeyType.CPF, "12345678900"), emailKey))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf("email"), state.paymentKeys.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the profile open WHEN a key is saved THEN lists it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(cpfKey))
+
+        // When
+        paymentKeys.keys.value = listOf(cpfKey, emailKey)
+
+        // Then
+        assertEquals(
+            listOf("cpf", "email"),
+            viewModel.uiState.value.paymentKeys
+                .map { it.id },
+        )
+    }
+
+    @Test
+    fun `GIVEN the profile WHEN adding a Pix key THEN opens a new Pix key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.PIX))
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Profile, Route.PaymentKey(PaymentMethod.PIX, keyId = null)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN the profile WHEN adding a Bitcoin key THEN opens a new Bitcoin key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.BITCOIN))
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Profile, Route.PaymentKey(PaymentMethod.BITCOIN, keyId = null)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a Pix key WHEN tapping it THEN opens that Pix key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(cpfKey, segwitKey))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("cpf"))
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Profile, Route.PaymentKey(PaymentMethod.PIX, keyId = "cpf")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a Lightning key WHEN tapping it THEN opens that Bitcoin key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(cpfKey, lightningAddressKey))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("lightning"))
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Profile, Route.PaymentKey(PaymentMethod.BITCOIN, keyId = "lightning")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN an on-chain key WHEN tapping it THEN opens that Bitcoin key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(segwitKey))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("segwit"))
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Profile, Route.PaymentKey(PaymentMethod.BITCOIN, keyId = "segwit")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN the keys WHEN tapping a key that does not exist THEN stays on the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(keys = listOf(cpfKey))
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("unknown"))
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a stored key left out of the list WHEN a tap on it arrives THEN stays on the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(keys = listOf(paymentKey("broken", PaymentKeyType.CPF, "12345678900")))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked("broken"))
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN only keys not uploaded WHEN the profile opens THEN lists the keys as pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingProfile = false,
+                hasPendingKeys = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(PendingChange.PAYMENT_KEYS), state.pendingChanges)
+            assertEquals(1, state.pendingChangeCount)
+            assertFalse(state.showsProfilePending)
+        }
+
+    @Test
+    fun `GIVEN the profile and the keys not uploaded WHEN the profile opens THEN lists the profile then the keys`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingProfile = true,
+                hasPendingKeys = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(PendingChange.PROFILE, PendingChange.PAYMENT_KEYS), state.pendingChanges)
+            assertEquals(2, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN everything uploaded WHEN a key is saved THEN lists the keys as pending`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(hasPendingKeys = false)
+
+        // When
+        paymentKeys.hasPendingChanges.value = true
+
+        // Then
+        assertEquals(listOf(PendingChange.PAYMENT_KEYS), viewModel.uiState.value.pendingChanges)
+    }
+
+    @Test
+    fun `GIVEN the profile and the keys not uploaded WHEN the keys upload THEN lists only the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingProfile = true,
+                hasPendingKeys = true,
+            )
+
+            // When
+            paymentKeys.hasPendingChanges.value = false
+
+            // Then
+            assertEquals(listOf(PendingChange.PROFILE), viewModel.uiState.value.pendingChanges)
+        }
+
+    @Test
+    fun `GIVEN Google and only keys not uploaded WHEN tapping sign out THEN warns about the pending changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingProfile = false,
+                hasPendingKeys = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT_PENDING, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Apple and only keys not uploaded WHEN tapping sign out THEN warns about the pending changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithApple,
+                hasPendingProfile = false,
+                hasPendingKeys = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT_PENDING, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user with only keys not uploaded WHEN tapping sign out THEN warns they are pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                hasPendingProfile = false,
+                hasPendingKeys = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.ERASE_PROFILE, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.hasPendingChanges)
+        }
+
+    @Test
+    fun `GIVEN a local only user with only keys not uploaded WHEN tapping sign out THEN warns they are pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                hasPendingProfile = false,
+                hasPendingKeys = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.ERASE_PROFILE, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.hasPendingChanges)
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
+
+    private val cpfKey = paymentKey("cpf", PaymentKeyType.CPF, "12345678909", isDefault = true)
+
+    private val emailKey = paymentKey("email", PaymentKeyType.EMAIL, "pierre@email.com")
+
+    private val phoneKey = paymentKey("phone", PaymentKeyType.PHONE, "+5511912345678")
+
+    private val randomKey = paymentKey("random", PaymentKeyType.RANDOM, "7d9f3c2a-1b4e-4c8d-9a6f-2e5b7c4d1a37")
+
+    private val segwitKey = paymentKey(
+        "segwit",
+        PaymentKeyType.ONCHAIN,
+        "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+        isDefault = true,
+    )
+
+    private val taprootKey = paymentKey(
+        "taproot",
+        PaymentKeyType.ONCHAIN,
+        "bc1p5d7rjq7g6rdk2yhzks9smlaqtedr4dekq08ge8ztwac72sfr9rusxg3297",
+    )
+
+    private val lightningAddressKey = paymentKey("lightning", PaymentKeyType.LIGHTNING, "pierre@getalby.com")
+
+    private val lnurlKey = paymentKey(
+        "lnurl",
+        PaymentKeyType.LIGHTNING,
+        "lnurl1dp68gurn8ghj7um9wfmxjcm99e3k7mf0v9cxj0m385ekvcenxc6r2c35xvukxefcv5mkvv34x5ekzd3ev56nyd3hxqu" +
+            "rzepexejxxepnxscrvwfnv9nxzcn9xq6xyefhvgcxxcmyxymnserxfq5fns",
+    )
+
+    private fun paymentKey(
+        id: String,
+        type: PaymentKeyType,
+        value: String,
+        isDefault: Boolean = false,
+    ): PaymentKey = PaymentKey(
+        id = id,
+        type = type,
+        value = value,
+        isDefault = isDefault,
+        addedAt = 0L,
+    )
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
 
@@ -2291,6 +2698,8 @@ class ProfileViewModelTest {
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
         signOutError: Throwable? = null,
         signOutHangs: Boolean = false,
+        keys: List<PaymentKey> = emptyList(),
+        hasPendingKeys: Boolean = false,
     ) {
         syncRetries = 0
         signOutCalls = 0
@@ -2307,6 +2716,7 @@ class ProfileViewModelTest {
             it.connectResult = connectResult
         }
         profiles = FakeProfileRepository(profile).also { it.hasPendingChanges.value = hasPendingProfile }
+        paymentKeys = FakePaymentKeyRepository(keys).also { it.hasPendingChanges.value = hasPendingKeys }
         isOnline = MutableStateFlow(online)
         this@ProfileViewModelTest.syncState = MutableStateFlow(syncState)
         storedTheme = MutableStateFlow(theme)
@@ -2335,9 +2745,12 @@ class ProfileViewModelTest {
             },
             signOutWhenSynced = SignOutWhenSynced { signOutWhenSyncedCalls++ },
             cancelSignOutWhenSynced = CancelSignOutWhenSynced { cancelSignOutWhenSyncedCalls++ },
+            validatePaymentKey = ValidatePaymentKeyUseCase(),
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),
+            observePaymentKeys = ObservePaymentKeysUseCase(paymentKeys),
+            observePendingPaymentKeyChanges = ObservePendingPaymentKeyChangesUseCase(paymentKeys),
             observeSyncState = ObserveSyncState { this@ProfileViewModelTest.syncState },
             observeThemePreference = ObserveThemePreference { storedTheme.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },

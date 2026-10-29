@@ -1,14 +1,16 @@
-import { ArrowLeft, ArrowUpRight, CloudOff, Info, KeyRound, Loader2, LogOut, RotateCw } from 'lucide-react'
-import { ProfilePresenter, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
+import { ArrowLeft, ArrowUpRight, ChevronRight, CloudOff, Info, KeyRound, Loader2, LogOut, Plus, RotateCw } from 'lucide-react'
+import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, providerLabel } from '@/components/common'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
+import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { EditProfileCard } from './EditProfileCard'
@@ -56,17 +58,21 @@ export function ProfileScreen() {
             </p>
           </div>
         )}
-        <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
-          <div className="flex flex-col gap-4">
-            <EditProfileCard isPending={state.showsProfilePending} />
-            <AccountCard presenter={presenter} state={state} />
+        {/* One column below 1024 (profile, keys, account…); the columns only group the cards from there up */}
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start">
+          <div className="contents lg:flex lg:flex-col lg:gap-4">
+            <div className="order-1">
+              <EditProfileCard isPending={state.showsProfilePending} />
+            </div>
+            <AccountCard presenter={presenter} state={state} className="order-3" />
           </div>
-          <div className="flex flex-col gap-4">
-            <AppearanceCard presenter={presenter} state={state} />
-            <AboutCard presenter={presenter} />
+          <div className="contents lg:flex lg:flex-col lg:gap-4">
+            <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
+            <AppearanceCard presenter={presenter} state={state} className="order-4" />
+            <AboutCard presenter={presenter} className="order-5" />
             <Button
               variant="outline"
-              className="text-destructive hover:text-destructive"
+              className="order-6 text-destructive hover:text-destructive"
               disabled={!state.canSignOut}
               onClick={() => presenter.signOut()}
             >
@@ -93,10 +99,68 @@ function Row({ title, detail, children }: { title: string; detail?: string | nul
   )
 }
 
-function AccountCard({ presenter, state }: { presenter: ProfilePresenter; state: JsProfileState }) {
+interface CardProps {
+  presenter: ProfilePresenter
+  state: JsProfileState
+  className?: string
+}
+
+const keyFormatSuffixes: Partial<Record<PaymentKeyFormat, MessageKey>> = {
+  SEGWIT: 'profile_keyRowFormatSEGWIT',
+  TAPROOT: 'profile_keyRowFormatTAPROOT',
+  LNURL: 'profile_keyRowFormatLNURL',
+}
+
+/** "Keys to receive payments": each key masked, its default marked, and "Add" asking Pix or Bitcoin first. */
+function PaymentKeysCard({ presenter, state, className }: CardProps) {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>{t('profile_keysTitle')}</CardTitle>
+        <CardDescription>{t('profile_keysSubtitle')}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col divide-y">
+        {state.paymentKeys.map((key) => (
+          <button
+            key={key.id}
+            onClick={() => presenter.clickPaymentKey(key.id)}
+            className="flex min-h-14 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          >
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="text-sm font-medium">{t(`profile_keyRow${key.type as PaymentKeyType}`)}</span>
+              <span className="truncate font-mono text-[13px] text-muted-foreground">{keyRowValue(key)}</span>
+            </span>
+            {key.isDefault && <Badge variant="secondary">{t('profile_keysDefault')}</Badge>}
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+          </button>
+        ))}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
+              <Plus className="size-4 shrink-0" />
+              {t('profile_keysAdd')}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onSelect={() => presenter.addPaymentKey('PIX')}>{t('profile_keysAddPix')}</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => presenter.addPaymentKey('BITCOIN')}>{t('profile_keysAddBitcoin')}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Why: "bc1p5d7r…sxg3297 · Taproot", since on-chain and Lightning keys come in two formats each.
+function keyRowValue(key: JsPaymentKeyItem): string {
+  const suffix = keyFormatSuffixes[key.format as PaymentKeyFormat]
+  return suffix ? t(suffix, { value: key.maskedValue }) : key.maskedValue
+}
+
+function AccountCard({ presenter, state, className }: CardProps) {
   const provider = state.accountProvider as AccountProvider | null
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>{t('profile_account')}</CardTitle>
       </CardHeader>
@@ -165,9 +229,9 @@ function syncDetail(state: JsProfileState): string {
   }
 }
 
-function AppearanceCard({ presenter, state }: { presenter: ProfilePresenter; state: JsProfileState }) {
+function AppearanceCard({ presenter, state, className }: CardProps) {
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle id="appearance">{t('profile_appearance')}</CardTitle>
       </CardHeader>
@@ -196,14 +260,14 @@ function AppearanceCard({ presenter, state }: { presenter: ProfilePresenter; sta
   )
 }
 
-function AboutCard({ presenter }: { presenter: ProfilePresenter }) {
+function AboutCard({ presenter, className }: { presenter: ProfilePresenter; className?: string }) {
   const links: { label: MessageKey; open: () => void }[] = [
     { label: 'profile_visibility', open: () => presenter.visibilityInfo() },
     { label: 'profile_privacyPolicy', open: () => presenter.privacyPolicy() },
     { label: 'profile_terms', open: () => presenter.terms() },
   ]
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>{t('profile_about')}</CardTitle>
       </CardHeader>

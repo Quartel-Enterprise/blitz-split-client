@@ -393,6 +393,7 @@ class ProfileUiStateTest {
         isOnline = isOnline,
         syncStatus = syncStatus,
         pendingChanges = pendingChanges,
+        paymentKeys = emptyList(),
         isSignOutScheduled = isSignOutScheduled,
         theme = ThemePreference.SYSTEM,
         dialog = null,

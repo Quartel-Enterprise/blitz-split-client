@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -47,6 +48,17 @@ class JsProfileState(
     val hasSignInFailed: Boolean,
     val isSigningOut: Boolean,
     val hasSignOutFailed: Boolean,
+    // Why: Pix first, each method's default first.
+    val paymentKeys: Array<JsPaymentKeyItem>,
+)
+
+class JsPaymentKeyItem(
+    val id: String,
+    // Why: the PaymentKeyType's and the PaymentKeyFormat's names.
+    val type: String,
+    val format: String,
+    val maskedValue: String,
+    val isDefault: Boolean,
 )
 
 class JsProfileAction(
@@ -93,6 +105,16 @@ class ProfilePresenter {
                 hasSignInFailed = state.hasSignInFailed,
                 isSigningOut = state.isSigningOut,
                 hasSignOutFailed = state.hasSignOutFailed,
+                paymentKeys = state.paymentKeys
+                    .map { key ->
+                        JsPaymentKeyItem(
+                            id = key.id,
+                            type = key.type.name,
+                            format = key.format.name,
+                            maskedValue = key.maskedValue,
+                            isDefault = key.isDefault,
+                        )
+                    }.toTypedArray(),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -129,6 +151,15 @@ class ProfilePresenter {
 
     fun clickProvider(providerCode: String) {
         viewModel.onEvent(ProfileUiEvent.OnProviderClicked(providerCode.toAccountProvider()))
+    }
+
+    fun addPaymentKey(methodCode: String) {
+        val method = PaymentMethod.entries.find { it.name == methodCode } ?: return
+        viewModel.onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(method))
+    }
+
+    fun clickPaymentKey(keyId: String) {
+        viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked(keyId))
     }
 
     fun recoveryCode() {

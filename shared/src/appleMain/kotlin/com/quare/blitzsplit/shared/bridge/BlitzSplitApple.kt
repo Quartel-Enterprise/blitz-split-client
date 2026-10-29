@@ -3,9 +3,11 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
@@ -24,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.posix.memcpy
@@ -61,6 +64,10 @@ object BlitzSplitApple : KoinComponent {
 
     fun createEditProfileViewModel(): ViewModelHolder<EditProfileViewModel> =
         ViewModelHolder(EditProfileViewModel::class) { get() }
+
+    // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
+    fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =
+        ViewModelHolder(PaymentKeyViewModel::class) { get { parametersOf(route) } }
 
     /*
      * Why: Google signs in through the browser on Apple platforms, and its OAuth callback comes back
