@@ -7,13 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
@@ -40,6 +44,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         ) {}
         return
     }
+    val usesFormDialog = rememberUsesFormDialog()
     NavDisplay(
         backStack = backStack,
         onBack = { appViewModel.navigator.navigateBack() },
@@ -47,6 +52,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
             rememberViewModelStoreNavEntryDecorator(),
         ),
+        sceneStrategies = listOf(DialogSceneStrategy()),
         entryProvider = entryProvider {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
@@ -54,6 +60,24 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
+            // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
+            entry<Route.PaymentKey>(
+                metadata = if (usesFormDialog) {
+                    DialogSceneStrategy.dialog(
+                        DialogProperties(
+                            dismissOnClickOutside = false,
+                            usePlatformDefaultWidth = false,
+                        ),
+                    )
+                } else {
+                    emptyMap()
+                },
+            ) { route ->
+                PaymentKeyScreen(
+                    route = route,
+                    isDialog = usesFormDialog,
+                )
+            }
         },
     )
 }
