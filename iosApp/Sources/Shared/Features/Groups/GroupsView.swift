@@ -40,7 +40,7 @@ enum MainTab: Hashable {
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable).
 struct MainTabView: View {
-    /// The shared back stack above the groups: the profile and its editor.
+    /// The shared back stack above the groups: the profile, its editor and, on iPhone, a key.
     @Binding var path: [AppRoute]
 
     @State private var model = GroupsModel()
@@ -55,6 +55,7 @@ struct MainTabView: View {
                         .navigationDestination(for: AppRoute.self) { route in
                             switch route {
                             case .editProfile: EditProfileView()
+                            case let .paymentKey(route): PaymentKeyView(route: route)
                             default: ProfileView()
                             }
                         }

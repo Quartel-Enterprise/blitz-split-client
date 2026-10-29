@@ -12,6 +12,16 @@ enum Palette {
     static let accent = Color("AccentColor")
     static let onAccent = Color(light: 0xFFFFFF, dark: 0x00344E)
     static let negative = Color(light: 0x8E4D31, dark: 0xFFB599)
+    /// The tile of a Pix key, and of a Bitcoin key, in the profile's list.
+    static let pixTile = Color(light: 0xC9E6FF, dark: 0x004B6F)
+    static let onPixTile = Color(light: 0x001E2F, dark: 0xC9E6FF)
+    static let bitcoinTile = Color(light: 0xFFDBCE, dark: 0x71361C)
+    static let onBitcoinTile = Color(light: 0x370E00, dark: 0xFFDBCE)
+    /// The tertiary container of a notice that informs rather than warns (the CPF a payer sees).
+    static let infoContainer = Color(light: 0xC3E7FF, dark: 0x004C69)
+    static let onInfoContainer = Color(light: 0x001E2C, dark: 0xC3E7FF)
+    /// The selected segment of a custom segmented control, as the system draws its thumb.
+    static let segmentThumb = Color(light: 0xFFFFFF, dark: 0x636366)
 
     #if os(iOS)
     static let groupedBackground = Color(uiColor: .systemGroupedBackground)
