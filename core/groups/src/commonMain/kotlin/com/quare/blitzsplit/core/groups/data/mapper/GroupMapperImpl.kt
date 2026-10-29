@@ -30,6 +30,7 @@ class GroupMapperImpl : GroupMapper {
                 currency = GroupCurrency.fromCodeOrNull(group.currency) ?: GroupCurrency.fallback,
                 members = ofGroup.map(::toDomain),
                 isPending = group.pendingSync || ofGroup.any { it.pendingSync },
+                inviteCode = group.inviteCode,
             )
         }
     }
@@ -49,6 +50,7 @@ class GroupMapperImpl : GroupMapper {
         updatedAt = createdAt,
         pendingSync = true,
         ownerUserId = ownerUserId,
+        inviteCode = group.inviteCode,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -82,6 +84,7 @@ class GroupMapperImpl : GroupMapper {
         currency = entity.currency,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
+        inviteCode = null,
     )
 
     override fun toDto(entity: GroupMemberEntity): GroupMemberDto = GroupMemberDto(
@@ -108,6 +111,7 @@ class GroupMapperImpl : GroupMapper {
         updatedAt = dto.updatedAt,
         pendingSync = false,
         ownerUserId = ownerUserId,
+        inviteCode = dto.inviteCode,
     )
 
     override fun toEntity(

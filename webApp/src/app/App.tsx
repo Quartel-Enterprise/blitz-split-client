@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
+import { InviteDialog } from '@/features/invite/InviteDialog'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
@@ -30,12 +31,13 @@ export function App() {
 
   if (!isReady || !backStack) return null
   const top = backStack[backStack.length - 1]
-  // Why: a payment key and the account deletion open as dialogs over the profile, and a new group over the home,
-  // which stay mounted under them.
+  // Why: a payment key and the account deletion open as dialogs over the profile, and a new group and its invite
+  // over the home, which stay mounted under them.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
-  const page = isCreateGroup
+  const isInvite = top.name === 'invite'
+  const page = isCreateGroup || isInvite
     ? (backStack.at(-2)?.name ?? 'groups')
     : isPaymentKey || isDeleteAccount
       ? (backStack.at(-2)?.name ?? 'profile')
@@ -46,6 +48,7 @@ export function App() {
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
+      {isInvite && <InviteDialog key={top.groupId} route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )

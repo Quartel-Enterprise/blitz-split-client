@@ -35,5 +35,6 @@ class ObserveGroupsUseCaseTest {
         currency = GroupCurrency.BRL,
         members = emptyList(),
         isPending = false,
+        inviteCode = null,
     )
 }

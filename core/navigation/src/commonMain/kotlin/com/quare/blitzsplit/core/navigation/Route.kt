@@ -29,6 +29,11 @@ sealed interface Route {
     // Why: "Notificações", a screen of its own on Android and iOS; the web and macOS keep it in the profile.
     data object NotificationSettings : Route
 
+    // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
+    data class Invite(
+        val groupId: String,
+    ) : Route
+
     // Why: a new key of that method when keyId is null, otherwise that key, to edit or delete.
     data class PaymentKey(
         val method: PaymentMethod,

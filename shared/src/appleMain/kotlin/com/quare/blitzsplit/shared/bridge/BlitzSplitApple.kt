@@ -9,6 +9,7 @@ import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGro
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
@@ -76,6 +77,10 @@ object BlitzSplitApple : KoinComponent {
 
     fun createNotificationSettingsViewModel(): ViewModelHolder<NotificationSettingsViewModel> =
         ViewModelHolder(NotificationSettingsViewModel::class) { get() }
+
+    // Why: each group opens its own ViewModel, which reads the group from its route.
+    fun createInviteViewModel(route: Route.Invite): ViewModelHolder<InviteViewModel> =
+        ViewModelHolder(InviteViewModel::class) { get { parametersOf(route) } }
 
     // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
     fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =

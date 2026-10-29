@@ -57,6 +57,19 @@ class BackStackNavigatorTest {
     }
 
     @Test
+    fun `GIVEN two routes WHEN replacing the top THEN puts the new route in its place`() {
+        // Given
+        prepareScenario(startRoute = Route.Groups)
+        navigator.navigate(Route.CreateGroup)
+
+        // When
+        navigator.replaceTop(Route.Invite(groupId = "group-1"))
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Invite(groupId = "group-1")), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN a deep stack WHEN replacing all THEN leaves only the new route`() {
         // Given
         prepareScenario(startRoute = Route.Welcome)

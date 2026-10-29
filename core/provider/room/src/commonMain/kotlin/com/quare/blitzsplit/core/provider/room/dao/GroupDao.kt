@@ -76,6 +76,12 @@ interface GroupDao {
             remoteUpdatedAt = entity.updatedAt,
             ownerUserId = requireNotNull(entity.ownerUserId),
         )
+        entity.inviteCode?.let {
+            updateInviteCode(
+                id = entity.id,
+                inviteCode = it,
+            )
+        }
     }
 
     @Transaction
@@ -104,6 +110,17 @@ interface GroupDao {
     suspend fun markGroupSynced(
         id: String,
         syncedUpdatedAt: Long,
+    )
+
+    /*
+     * Why: the server makes the code and no client changes it, so it is taken whatever Last-Write-Wins says: a group
+     * this device created comes back with the same updatedAt, which updateGroupFromRemote leaves alone. A code already
+     * stored is not written again, so a sync doesn't wake every observer of the groups once per group.
+     */
+    @Query("UPDATE split_group SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
+    suspend fun updateInviteCode(
+        id: String,
+        inviteCode: String,
     )
 
     @Query("UPDATE group_member SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")

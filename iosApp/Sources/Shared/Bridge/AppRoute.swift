@@ -11,6 +11,8 @@ enum AppRoute: Hashable, Identifiable {
     case restore
     case groups
     case createGroup
+    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
+    case invite(RouteInvite)
     case profile
     case editProfile
     case deleteAccount
@@ -24,6 +26,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteRestore: self = .restore
         case is RouteGroups: self = .groups
         case is RouteCreateGroup: self = .createGroup
+        case let invite as RouteInvite: self = .invite(invite)
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
@@ -36,10 +39,10 @@ enum AppRoute: Hashable, Identifiable {
     var id: Self { self }
 
     /// iPad opens a key as a form sheet and the Mac as a sheet on its window, as the canvas draws
-    /// them; the iPhone pushes it. Deleting the account and a new group are sheets everywhere.
+    /// them; the iPhone pushes it. Deleting the account, a new group and its invite are sheets everywhere.
     var presentsAsSheet: Bool {
         switch self {
-        case .deleteAccount, .createGroup:
+        case .deleteAccount, .createGroup, .invite:
             return true
         case .paymentKey:
             #if os(macOS)

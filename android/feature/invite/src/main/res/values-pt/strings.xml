@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Fechar</string>
+    <string name="invite_group_created">Grupo criado</string>
+    <string name="invite_title">Chame a galera para o grupo %s</string>
+    <string name="invite_qr_description">QR code do link de convite do grupo</string>
+    <string name="invite_copy">Copiar</string>
+    <string name="invite_copied">Copiado</string>
+    <string name="invite_who_picks">Quem abrir o link escolhe quem é na lista: %s. Não precisa criar conta.</string>
+    <string name="invite_names_or">%1$s ou %2$s</string>
+    <string name="invite_anyone_joins">Quem abrir o link entra no grupo. Não precisa criar conta.</string>
+    <string name="invite_pending_title">Link pendente</string>
+    <string name="invite_pending_offline">Ele é gerado assim que você ficar online.</string>
+    <string name="invite_pending_online">Gerando o link…</string>
+    <string name="invite_failed_title">Não deu para criar o link</string>
+    <string name="invite_failed_body">Algo deu errado ao sincronizar o grupo.</string>
+    <string name="invite_retry">Tentar de novo</string>
+    <string name="invite_share">Compartilhar link</string>
+    <string name="invite_see_who_joined">Ver quem já entrou</string>
+    <string name="invite_go_to_group">Ir para o grupo</string>
+    <string name="invite_share_message">Bora rachar as contas do grupo %1$s no Bora Rachar? Entra pelo link: %2$s</string>
+    <string name="invite_coming_soon">Em breve</string>
+</resources>

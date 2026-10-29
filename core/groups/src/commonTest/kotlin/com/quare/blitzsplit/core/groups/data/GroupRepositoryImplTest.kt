@@ -1322,6 +1322,302 @@ class GroupRepositoryImplTest {
         assertEquals(listOf("new-1", "new-2"), local.members.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN a group just created WHEN observing THEN it has no invite code yet`() = runTest {
+        // Given
+        prepareScenario(profileOwnerUserId = "user-1")
+        repository.createGroup(newGroup, createdAt = 1_000L)
+
+        // When
+        val groups = repository.observeGroups().first()
+
+        // Then
+        assertNull(groups.single().inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a group going up for the first time WHEN uploading THEN stores the invite code the server made`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                    ),
+                ),
+                serverInviteCodes = mapOf("group-1" to "aB3dE5gH"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+            assertEquals(false, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group created on the device WHEN its first upload succeeds THEN the group shows the invite code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                profileOwnerUserId = "user-1",
+                serverInviteCodes = mapOf("group-new" to "aB3dE5gH"),
+            )
+            repository.createGroup(newGroup, createdAt = 1_000L)
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val group = repository.observeGroups().first().single()
+            assertEquals("aB3dE5gH", group.inviteCode)
+            assertFalse(group.isPending)
+        }
+
+    @Test
+    fun `GIVEN two groups going up WHEN uploading THEN each stores its own invite code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+                group(
+                    id = "group-2",
+                    pendingSync = true,
+                ),
+            ),
+            serverInviteCodes = mapOf(
+                "group-1" to "aB3dE5gH",
+                "group-2" to "Zx9Yw8Vu",
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+        assertEquals("Zx9Yw8Vu", local.group("group-2")?.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a group with an invite code edited here WHEN uploading THEN pushes it without the code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    inviteCode = "aB3dE5gH",
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertNull(
+            remote.upsertedGroups
+                .single()
+                .single()
+                .inviteCode,
+        )
+    }
+
+    @Test
+    fun `GIVEN the server answers a group without a code WHEN uploading THEN keeps the code the device had`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "aB3dE5gH",
+                    ),
+                ),
+                serverInviteCodes = emptyMap(),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN the server answers a new group without a code WHEN uploading THEN the group still has none`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            serverInviteCodes = emptyMap(),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(local.group("group-1")?.inviteCode)
+        assertEquals(false, local.group("group-1")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the server fails the groups WHEN uploading THEN stores no invite code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            upsertGroupsError = IllegalStateException("server down"),
+            serverInviteCodes = mapOf("group-1" to "aB3dE5gH"),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertNull(local.group("group-1")?.inviteCode)
+        assertEquals(true, local.group("group-1")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a group only the server has WHEN downloading THEN the group shows its invite code`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    inviteCode = "aB3dE5gH",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+        assertEquals(
+            "aB3dE5gH",
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .inviteCode,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group pushed from here with the same server updatedAt WHEN downloading THEN takes its invite code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 5L,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 5L,
+                        inviteCode = "aB3dE5gH",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+            assertEquals(false, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group edited here after its push WHEN downloading THEN keeps the edit and takes the invite code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        name = "Viagem Floripa 2026",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 5L,
+                        inviteCode = "aB3dE5gH",
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("Viagem Floripa 2026", stored?.name)
+            assertEquals(9L, stored?.updatedAt)
+            assertEquals(true, stored?.pendingSync)
+            assertEquals("aB3dE5gH", stored?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN a newer server copy of a group WHEN downloading THEN takes its invite code with it`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 5L,
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    name = "Viagem Floripa 2026",
+                    updatedAt = 9L,
+                    inviteCode = "aB3dE5gH",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertEquals("Viagem Floripa 2026", local.group("group-1")?.name)
+        assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+    }
+
     private val newGroup = Group(
         id = "group-new",
         name = "Viagem Floripa",
@@ -1345,6 +1641,7 @@ class GroupRepositoryImplTest {
             ),
         ),
         isPending = true,
+        inviteCode = null,
     )
 
     private fun group(
@@ -1354,6 +1651,7 @@ class GroupRepositoryImplTest {
         updatedAt: Long = 1L,
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
+        inviteCode: String? = null,
     ): GroupEntity = GroupEntity(
         id = id,
         name = name,
@@ -1365,6 +1663,7 @@ class GroupRepositoryImplTest {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         ownerUserId = ownerUserId,
+        inviteCode = inviteCode,
     )
 
     private fun member(
@@ -1392,6 +1691,7 @@ class GroupRepositoryImplTest {
         name: String = "Viagem Floripa",
         createdBy: String? = "user-1",
         updatedAt: Long = 1L,
+        inviteCode: String? = null,
     ): GroupDto = GroupDto(
         id = id,
         createdBy = createdBy,
@@ -1401,6 +1701,7 @@ class GroupRepositoryImplTest {
         currency = "BRL",
         addedAt = 1L,
         updatedAt = updatedAt,
+        inviteCode = inviteCode,
     )
 
     private fun memberDto(
@@ -1429,6 +1730,7 @@ class GroupRepositoryImplTest {
         fetchError: Throwable? = null,
         profileOwnerUserId: String? = null,
         insertError: Throwable? = null,
+        serverInviteCodes: Map<String, String> = emptyMap(),
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also { it.insertError = insertError }
         remote = FakeGroupRemoteDataSource(
@@ -1437,7 +1739,7 @@ class GroupRepositoryImplTest {
             upsertGroupsError = upsertGroupsError,
             upsertMembersError = upsertMembersError,
             fetchError = fetchError,
-        )
+        ).also { it.inviteCodes = serverInviteCodes }
         repository = GroupRepositoryImpl(
             local = local,
             remote = remote,
@@ -1528,6 +1830,19 @@ private class FakeGroupLocalDataSource(
             current.ownerUserId == entity.ownerUserId && current.updatedAt < entity.updatedAt ->
                 put(entity.copy(pendingSync = false))
         }
+        entity.inviteCode?.let {
+            updateInviteCode(
+                id = entity.id,
+                inviteCode = it,
+            )
+        }
+    }
+
+    override suspend fun updateInviteCode(
+        id: String,
+        inviteCode: String,
+    ) {
+        groups.value = groups.value.map { if (it.id == id) it.copy(inviteCode = inviteCode) else it }
     }
 
     override suspend fun applyRemoteMember(entity: GroupMemberEntity) {
@@ -1636,11 +1951,15 @@ private class FakeGroupRemoteDataSource(
     val upsertedMembers = mutableListOf<List<GroupMemberDto>>()
     var onUpsertGroups: () -> Unit = {}
 
-    override suspend fun upsertGroups(groups: List<GroupDto>) {
+    // Why: the code the server makes for each group id, which the upsert answers with.
+    var inviteCodes: Map<String, String> = emptyMap()
+
+    override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> {
         calls += "groups"
         onUpsertGroups()
         upsertGroupsError?.let { throw it }
         upsertedGroups += groups
+        return groups.map { it.copy(inviteCode = inviteCodes[it.id]) }
     }
 
     override suspend fun upsertMembers(members: List<GroupMemberDto>) {

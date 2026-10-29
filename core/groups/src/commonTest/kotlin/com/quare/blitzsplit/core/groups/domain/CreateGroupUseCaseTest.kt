@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class CreateGroupUseCaseTest {
@@ -252,6 +253,19 @@ class CreateGroupUseCaseTest {
             assertIs<IllegalStateException>(result.exceptionOrNull())
             assertTrue(repository.createdGroups.isEmpty())
             assertTrue(repository.groups.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a new group WHEN creating it on the device THEN it has no invite code until the server makes one`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            createGroup()
+
+            // Then
+            assertNull(repository.createdGroups.single().inviteCode)
         }
 
     private suspend fun createGroup(

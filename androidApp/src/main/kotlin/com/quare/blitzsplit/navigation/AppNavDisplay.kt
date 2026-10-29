@@ -19,6 +19,7 @@ import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
@@ -88,6 +89,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: a tablet keeps the home behind the new group; elsewhere it opens full screen.
             entry<Route.CreateGroup>(metadata = formDialogMetadata) {
                 CreateGroupScreen(isDialog = usesFormDialog)
+            }
+            // Why: it takes the new group's place, so it opens the same way.
+            entry<Route.Invite>(metadata = formDialogMetadata) { route ->
+                InviteScreen(
+                    route = route,
+                    isDialog = usesFormDialog,
+                )
             }
         },
     )

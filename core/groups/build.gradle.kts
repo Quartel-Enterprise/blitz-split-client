@@ -12,6 +12,7 @@ kotlin {
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.qrose.encoder.matrix)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }

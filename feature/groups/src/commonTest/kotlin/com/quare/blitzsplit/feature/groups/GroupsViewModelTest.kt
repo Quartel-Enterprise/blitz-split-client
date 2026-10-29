@@ -1073,6 +1073,7 @@ class GroupsViewModelTest {
             ),
         ),
         isPending = false,
+        inviteCode = null,
     )
 
     private fun group(
@@ -1088,6 +1089,7 @@ class GroupsViewModelTest {
         currency = GroupCurrency.BRL,
         members = members,
         isPending = isPending,
+        inviteCode = null,
     )
 
     private fun member(
