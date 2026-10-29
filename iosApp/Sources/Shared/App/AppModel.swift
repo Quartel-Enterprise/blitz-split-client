@@ -43,7 +43,8 @@ final class AppModel {
         }
     }
 
-    /// The top entry when it opens as a sheet instead of a pushed screen (a key on iPad and Mac).
+    /// The top entry when it opens as a sheet instead of a pushed screen (a key on iPad and Mac,
+    /// deleting the account).
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {

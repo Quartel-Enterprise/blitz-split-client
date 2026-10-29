@@ -5,7 +5,9 @@ import Foundation
 /// The result of the native Sign in with Apple sheet, mapped to the shared ViewModels' events.
 enum AppleSignInResult {
     /// `fullName` comes only on the first sign in of this Apple ID in the app, never in the token.
-    case success(idToken: String, rawNonce: String, fullName: String?)
+    /// `authorizationCode` is what the server trades for the refresh token it revokes when the account
+    /// is deleted.
+    case success(idToken: String, rawNonce: String, fullName: String?, authorizationCode: String?)
     case cancelled
     case failed
 }
@@ -55,12 +57,18 @@ extension AppleSignIn: ASAuthorizationControllerDelegate {
         let fullName = credential?.fullName
             .map { PersonNameComponentsFormatter.localizedString(from: $0, style: .default) }
             .flatMap { $0.isEmpty ? nil : $0 }
+        let authorizationCode = credential?.authorizationCode.flatMap { String(data: $0, encoding: .utf8) }
         MainActor.assumeIsolated {
             guard let idToken else {
                 finish(with: .failed)
                 return
             }
-            finish(with: .success(idToken: idToken, rawNonce: rawNonce, fullName: fullName))
+            finish(with: .success(
+                idToken: idToken,
+                rawNonce: rawNonce,
+                fullName: fullName,
+                authorizationCode: authorizationCode,
+            ))
         }
     }
 
