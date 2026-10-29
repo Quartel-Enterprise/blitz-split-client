@@ -5,6 +5,17 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ is already in the group. Use a nickname to tell them apart." : {
+      "comment" : "%@ is the member's name the typed one repeats",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ já está no grupo. Use um apelido para diferenciar."
+          }
+        }
+      }
+    },
     "%@ · only you see it" : {
       "comment" : "%@ is the masked email of the Google or Apple account",
       "localizations" : {
@@ -12,6 +23,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · só você vê"
+          }
+        }
+      }
+    },
+    "%@ · queued" : {
+      "comment" : "A group of the home not on the server yet; %@ is its member count",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · na fila"
           }
         }
       }
@@ -177,6 +199,88 @@
         }
       }
     },
+    "%lld members" : {
+      "comment" : "How many members a group of the home has",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld member"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld members"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld membro"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld membros"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld people" : {
+      "comment" : "How many members the new group has",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld person"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld people"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pessoa"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pessoas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "12 letters and numbers. Dashes are optional." : {
       "localizations" : {
         "pt-BR" : {
@@ -227,12 +331,34 @@
         }
       }
     },
+    "Add" : {
+      "comment" : "Adds the typed name as a member of the new group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar"
+          }
+        }
+      }
+    },
     "Add a Pix or Bitcoin key" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adicionar chave Pix ou Bitcoin"
+          }
+        }
+      }
+    },
+    "Add by name" : {
+      "comment" : "Placeholder of the field that adds a member to the new group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar pelo nome"
           }
         }
       }
@@ -441,6 +567,17 @@
         }
       }
     },
+    "Change the group's color" : {
+      "comment" : "VoiceOver label of the new group's avatar, which changes its color on a tap",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar a cor do grupo"
+          }
+        }
+      }
+    },
     "Changed · waiting to upload" : {
       "localizations" : {
         "pt-BR" : {
@@ -621,6 +758,28 @@
         }
       }
     },
+    "Couldn’t save the group. Try again." : {
+      "comment" : "Shown in New group when the device couldn't save the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar o grupo. Tente de novo."
+          }
+        }
+      }
+    },
+    "Create" : {
+      "comment" : "The button that creates the new group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar"
+          }
+        }
+      }
+    },
     "Create a group for the trip, the house or the barbecue. You can start even without internet." : {
       "localizations" : {
         "pt-BR" : {
@@ -637,6 +796,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Criar grupo"
+          }
+        }
+      }
+    },
+    "Currency" : {
+      "comment" : "The new group's currency picker",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moeda"
           }
         }
       }
@@ -897,6 +1067,17 @@
         }
       }
     },
+    "Event" : {
+      "comment" : "A group type",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evento"
+          }
+        }
+      }
+    },
     "Everything is synced with your %@ account. When you sign out, we erase the copy on this %@. Your groups come back when you sign in again." : {
       "comment" : "The first %@ is Google or Apple, the second the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -1032,12 +1213,34 @@
         }
       }
     },
+    "Group name" : {
+      "comment" : "Placeholder of the new group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome do grupo"
+          }
+        }
+      }
+    },
     "Groups" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grupos"
+          }
+        }
+      }
+    },
+    "Home" : {
+      "comment" : "A group type: people who live together",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casa"
           }
         }
       }
@@ -1197,6 +1400,17 @@
         }
       }
     },
+    "Just you" : {
+      "comment" : "A group whose only member is the person using the app",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só você"
+          }
+        }
+      }
+    },
     "K7QM-4XPA-9TRE" : {
       "comment" : "An example recovery code, the placeholder of its field",
       "shouldTranslate" : false
@@ -1332,6 +1546,17 @@
         }
       }
     },
+    "New group" : {
+      "comment" : "The title of the new group sheet, and the home's button that opens it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novo grupo"
+          }
+        }
+      }
+    },
     "No account" : {
       "localizations" : {
         "pt-BR" : {
@@ -1408,6 +1633,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sem resposta do servidor · tentar de novo"
+          }
+        }
+      }
+    },
+    "Nobody needs the app right now. You can already add expenses for everyone and send the link later." : {
+      "comment" : "Under the new group's members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois."
           }
         }
       }
@@ -1504,6 +1740,17 @@
         }
       }
     },
+    "Open" : {
+      "comment" : "Header of the home's group list: the groups not settled yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em aberto"
+          }
+        }
+      }
+    },
     "Open Settings" : {
       "localizations" : {
         "pt-BR" : {
@@ -1530,6 +1777,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ou use o código de recuperação"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "comment" : "A group type",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outro"
           }
         }
       }
@@ -1712,6 +1970,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lembrar depois"
+          }
+        }
+      }
+    },
+    "Remove %@" : {
+      "comment" : "VoiceOver label of the button that removes a member from the new group; %@ is the member's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover %@"
           }
         }
       }
@@ -2162,12 +2431,34 @@
         }
       }
     },
+    "Trip" : {
+      "comment" : "A group type",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viagem"
+          }
+        }
+      }
+    },
     "Try again" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tentar de novo"
+          }
+        }
+      }
+    },
+    "Type" : {
+      "comment" : "The new group's type picker: trip, home, event or other",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo"
           }
         }
       }
@@ -2198,6 +2489,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usar sem conta"
+          }
+        }
+      }
+    },
+    "Use “%@”" : {
+      "comment" : "A nickname suggested for a repeated member name, like “Ana P.”",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar “%@”"
           }
         }
       }
@@ -2328,6 +2630,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem vê seu perfil"
+          }
+        }
+      }
+    },
+    "Who's in" : {
+      "comment" : "Header of the new group's members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem participa"
           }
         }
       }
@@ -2539,6 +2852,17 @@
         }
       }
     },
+    "no expenses" : {
+      "comment" : "Right of a home group that has no expenses yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sem despesas"
+          }
+        }
+      }
+    },
     "on the blockchain" : {
       "localizations" : {
         "pt-BR" : {
@@ -2577,6 +2901,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "chave aleatória"
+          }
+        }
+      }
+    },
+    "you" : {
+      "comment" : "Under the creator's name in the new group's members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você"
           }
         }
       }

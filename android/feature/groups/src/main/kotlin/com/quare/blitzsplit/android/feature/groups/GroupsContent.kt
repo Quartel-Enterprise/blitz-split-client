@@ -68,8 +68,10 @@ import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
+import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 
 private enum class GroupsTab(
@@ -84,8 +86,8 @@ private enum class GroupsTab(
 }
 
 /*
- * Why: the first home, before any group exists. Its only actions are the two of the card (no
- * search here); the other tabs exist in the design but are not built yet.
+ * Why: the home, with the empty card before any group exists and a minimal list after (no search
+ * here); the other tabs exist in the design but are not built yet.
  */
 @Composable
 fun GroupsContent(
@@ -159,6 +161,19 @@ private fun GroupsPane(
             onEvent = onEvent,
         )
         when {
+            // Why: nothing until the groups are read, so the empty card never flashes before the list.
+            !state.hasLoadedGroups -> Unit
+
+            state.groups.isNotEmpty() -> GroupsList(
+                groups = state.groups,
+                onEvent = onEvent,
+                modifier = if (layout.isTablet) {
+                    Modifier.weight(1f).verticalScroll(rememberScrollState())
+                } else {
+                    Modifier
+                },
+            )
+
             layout.isTablet -> Box(
                 modifier = Modifier
                     .weight(1f)
@@ -473,6 +488,54 @@ private fun GroupsOfflinePreview() {
                 accountProvider = null,
                 syncBadge = SyncBadge.OFFLINE,
                 showsRecoveryCodePrompt = false,
+                groups = emptyList(),
+                hasLoadedGroups = true,
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupsListPreview() {
+    BlitzSplitTheme {
+        GroupsContent(
+            state = GroupsUiState(
+                displayName = "Pierre",
+                avatarInitial = "P",
+                avatarColor = AvatarColor.BLUE,
+                photoUrl = null,
+                accountProvider = null,
+                syncBadge = null,
+                showsRecoveryCodePrompt = false,
+                groups = listOf(
+                    GroupRow(
+                        id = "1",
+                        name = "Viagem Floripa",
+                        initials = "VF",
+                        color = AvatarColor.PEACH,
+                        faces = listOf(
+                            MemberFace("P", AvatarColor.BLUE),
+                            MemberFace("A", AvatarColor.GREEN),
+                            MemberFace("B", AvatarColor.PEACH),
+                        ),
+                        extraMemberCount = 3,
+                        memberCount = 6,
+                        isPending = true,
+                    ),
+                    GroupRow(
+                        id = "2",
+                        name = "Presente da Elisa",
+                        initials = "PE",
+                        color = AvatarColor.LILAC,
+                        faces = listOf(MemberFace("P", AvatarColor.BLUE)),
+                        extraMemberCount = 0,
+                        memberCount = 1,
+                        isPending = false,
+                    ),
+                ),
+                hasLoadedGroups = true,
             ),
             onEvent = {},
         )

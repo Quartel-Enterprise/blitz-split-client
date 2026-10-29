@@ -18,6 +18,7 @@ private val exportedToApple = listOf(
     projects.feature.paymentKey,
     projects.feature.deleteAccount,
     projects.feature.notificationSettings,
+    projects.feature.createGroup,
 )
 
 kotlin {
@@ -41,6 +42,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.account)
             implementation(projects.core.profile)
+            implementation(projects.core.groups)
             implementation(projects.core.sync)
             implementation(projects.core.settings)
             implementation(projects.core.provider.room)

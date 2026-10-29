@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -61,6 +62,9 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(RecoveryCodeViewModel::class) { get() }
 
     fun createGroupsViewModel(): ViewModelHolder<GroupsViewModel> = ViewModelHolder(GroupsViewModel::class) { get() }
+
+    fun createCreateGroupViewModel(): ViewModelHolder<CreateGroupViewModel> =
+        ViewModelHolder(CreateGroupViewModel::class) { get() }
 
     fun createProfileViewModel(): ViewModelHolder<ProfileViewModel> = ViewModelHolder(ProfileViewModel::class) { get() }
 

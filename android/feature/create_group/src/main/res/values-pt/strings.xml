@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Novo grupo</string>
+    <string name="create_group_close">Fechar</string>
+    <string name="create_group_create">Criar</string>
+    <string name="create_group_change_color">Trocar a cor do grupo</string>
+    <string name="create_group_name_label">Nome do grupo</string>
+    <string name="create_group_type_label">Tipo de grupo</string>
+    <string name="create_group_type_trip">Viagem</string>
+    <string name="create_group_type_home">Casa</string>
+    <string name="create_group_type_event">Evento</string>
+    <string name="create_group_type_other">Outro</string>
+    <string name="create_group_members_title">Quem participa</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d pessoa</item>
+        <item quantity="other">%d pessoas</item>
+    </plurals>
+    <string name="create_group_me">você</string>
+    <string name="create_group_remove_member">Remover %s</string>
+    <string name="create_group_add_placeholder">Adicionar pelo nome</string>
+    <string name="create_group_add">Adicionar</string>
+    <string name="create_group_name_taken">%s já está no grupo. Use um apelido para diferenciar.</string>
+    <string name="create_group_use_nickname">Usar “%s”</string>
+    <string name="create_group_no_app_notice">Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois.</string>
+    <string name="create_group_currency">Moeda</string>
+    <string name="create_group_currency_value">%1$s (%2$s)</string>
+    <string name="create_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
+</resources>

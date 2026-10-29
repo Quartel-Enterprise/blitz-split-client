@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
+import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
@@ -83,6 +84,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: like a payment key, a tablet keeps the profile behind it; elsewhere it opens full screen.
             entry<Route.DeleteAccount>(metadata = formDialogMetadata) {
                 DeleteAccountScreen(isDialog = usesFormDialog)
+            }
+            // Why: a tablet keeps the home behind the new group; elsewhere it opens full screen.
+            entry<Route.CreateGroup>(metadata = formDialogMetadata) {
+                CreateGroupScreen(isDialog = usesFormDialog)
             }
         },
     )

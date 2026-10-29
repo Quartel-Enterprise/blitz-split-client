@@ -25,10 +25,10 @@ changes included. Once a schema has shipped, change it with a migration instead.
 - DAOs expose `Flow<T>` for what the UI observes and `suspend` functions for one-shot reads and writes.
 - The single-row tables (`profile`, `account`) are keyed by `SINGLE_ROW_ID` (`"me"`): the row exists before the
   server knows the user, so it can't be keyed by the user id.
-- The list tables (`payment_key`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
+- The list tables (`payment_key`, `split_group`, `group_member`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
   keeps its id on the server.
 - A local data source wraps each DAO (`RoomProfileLocalDataSource`, `RoomAccountLocalDataSource`,
-  `RoomPaymentKeyLocalDataSource`); the repository maps entities to domain models.
+  `RoomPaymentKeyLocalDataSource`, `RoomGroupLocalDataSource`); the repository maps entities to domain models.
 
 ### Supabase: the remote
 
@@ -41,6 +41,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
+| `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
@@ -67,7 +68,8 @@ so nothing above it sees an HTTP status:
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
 3. `syncOnUserSwitch()`: when the session moves to another user, it syncs right away under the new one, whose
    profile replaces this device's copy (see below).
-4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys and their pending changes. It syncs when the
+4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences and groups, and
+   their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
 5. `accountRepository.keepAppleTokens()`: hands the server Apple's refresh token after each browser sign in with
@@ -86,9 +88,21 @@ suspend fun syncNow(): Result<Unit> {
                 val userId = accountRepository.ensureRegistered().getOrThrow()
                 profileRepository.downloadProfile(userId).getOrThrow()
                 profileRepository.uploadPendingProfile(userId).getOrThrow()
-                paymentKeyRepository.downloadKeys(userId).getOrThrow()
-                paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
+                // Each list syncs on its own, so one failing doesn't stop the others; any failure fails the sync
+                val keysSynced = suspendRunCatching {
+                    paymentKeyRepository.downloadKeys(userId).getOrThrow()
+                    paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
+                }
+                val preferencesSynced = suspendRunCatching { /* download, then upload */ }
+                val groupsSynced = suspendRunCatching {
+                    groupRepository.downloadGroups(userId).getOrThrow()
+                    groupRepository.uploadPendingGroups(userId).getOrThrow()
+                }
                 offerRecoveryCodeIfDue()
+                signOutIfScheduledAndSynced()
+                keysSynced.getOrThrow()
+                preferencesSynced.getOrThrow()
+                groupsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
         }
     } finally {
@@ -99,7 +113,8 @@ suspend fun syncNow(): Result<Unit> {
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet
-(`ProfileRepository`, `PaymentKeyRepository` or `NotificationPreferencesRepository.observeHasPendingChanges()`),
+(`ProfileRepository`, `PaymentKeyRepository`, `NotificationPreferencesRepository` or
+`GroupRepository.observeHasPendingChanges()`),
 and `SYNCED` otherwise. The home draws a badge only for the states that ask for attention, and its "try again" goes
 through `RetrySync`, which runs in the coordinator's scope so it outlives the screen.
 
@@ -123,6 +138,15 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   deleted on the server. Deleting the default writes the key that takes over in the same upsert. Two devices may each mark a default offline, so readers
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
+- **Groups**: a group (`split_group`) and its members (`group_member`) sync by `updatedAt` like the keys: a newer
+  server row wins (`GroupDao.applyRemote*`), and the push sends the groups before their members, since the server
+  only lets the creator or a member write a group's members. A new group belongs to the profile's account, like a
+  key; one created before any account has no owner until the next sync claims it, with its creator's member row
+  (`claimUnowned`). A member is just a name: `userId` stays null until someone picks that member from the invite
+  link, and the server never lets a client take over a member that has an account. The server keeps the newer row
+  too, with the same trigger as the keys. The download reads every group and member page by page and deletes the
+  synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay. When an account is
+  deleted, the server unlinks it from its groups and deletes the groups nobody with an account is left in.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 
@@ -201,7 +225,9 @@ or a pull that failed can't push another user's copy:
 - `uploadPendingProfile` pushes only a copy of the user it pushes for.
 - Payment keys never move to another account: a key holds a CPF or a wallet, so another user's keys are deleted
   whatever their state (`PaymentKeyDao.deleteOtherUsersKeys`), keys made before the account are claimed
-  (`claimUnowned`), and `uploadPendingKeys` pushes only this user's.
+  (`claimUnowned`), and `uploadPendingKeys` pushes only this user's. Groups follow the same rule on this device:
+  another user's local groups are deleted (`GroupDao.deleteOtherUsersGroups`); they stay on the server for their
+  members.
 
 A switch also drops a sign out scheduled with "Sair ao sincronizar", in the same write as the session's new user
 (`AccountRepositoryImpl.toMirrorOf`): it was for the previous account. A link keeps the id and doesn't trigger any

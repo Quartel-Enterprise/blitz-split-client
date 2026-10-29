@@ -11,6 +11,7 @@ kotlin {
             implementation(projects.core.profile)
             implementation(projects.core.account)
             implementation(projects.core.sync)
+            implementation(projects.core.groups)
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -20,6 +21,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.account.testing)
             implementation(projects.core.profile.testing)
+            implementation(projects.core.groups.testing)
         }
     }
 }

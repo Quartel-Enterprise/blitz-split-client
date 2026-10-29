@@ -10,6 +10,7 @@ enum AppRoute: Hashable, Identifiable {
     case profileSetup
     case restore
     case groups
+    case createGroup
     case profile
     case editProfile
     case deleteAccount
@@ -22,6 +23,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteProfileSetup: self = .profileSetup
         case is RouteRestore: self = .restore
         case is RouteGroups: self = .groups
+        case is RouteCreateGroup: self = .createGroup
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
@@ -34,10 +36,10 @@ enum AppRoute: Hashable, Identifiable {
     var id: Self { self }
 
     /// iPad opens a key as a form sheet and the Mac as a sheet on its window, as the canvas draws
-    /// them; the iPhone pushes it. Deleting the account is a sheet everywhere.
+    /// them; the iPhone pushes it. Deleting the account and a new group are sheets everywhere.
     var presentsAsSheet: Bool {
         switch self {
-        case .deleteAccount:
+        case .deleteAccount, .createGroup:
             return true
         case .paymentKey:
             #if os(macOS)

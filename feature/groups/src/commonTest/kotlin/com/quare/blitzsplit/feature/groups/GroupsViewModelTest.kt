@@ -2,9 +2,16 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
@@ -15,11 +22,14 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -32,6 +42,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -39,6 +50,8 @@ class GroupsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
+    private lateinit var groups: FakeGroupRepository
+    private lateinit var roomRead: MutableSharedFlow<List<Group>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState?>
     private var syncRequests = 0
@@ -130,14 +143,13 @@ class GroupsViewModelTest {
             backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
             viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<GroupsUiAction>(5) { GroupsUiAction.ShowComingSoon }, actions)
+            assertEquals(List<GroupsUiAction>(4) { GroupsUiAction.ShowComingSoon }, actions)
         }
 
     @Test
@@ -531,9 +543,563 @@ class GroupsViewModelTest {
             assertEquals(googlePhotoUrl, viewModel.uiState.value.photoUrl)
         }
 
+    @Test
+    fun `GIVEN the groups not read yet WHEN the groups open THEN shows neither the list nor the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.hasLoadedGroups)
+            assertFalse(state.showsEmptyState)
+            assertTrue(state.groups.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the groups not read from the device yet WHEN the read finds no group THEN shows the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            roomRead.emit(emptyList())
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasLoadedGroups)
+            assertTrue(viewModel.uiState.value.showsEmptyState)
+        }
+
+    @Test
+    fun `GIVEN the groups not read from the device yet WHEN the read finds a group THEN shows its row`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            roomRead.emit(listOf(floripa))
+
+            // Then
+            assertEquals(
+                listOf("floripa"),
+                viewModel.uiState.value.groups
+                    .map(GroupRow::id),
+            )
+            assertFalse(viewModel.uiState.value.showsEmptyState)
+        }
+
+    @Test
+    fun `GIVEN no group on the device WHEN the groups open THEN shows the empty state`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.hasLoadedGroups)
+        assertTrue(state.showsEmptyState)
+        assertTrue(state.groups.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN groups on the device WHEN the groups open THEN shows their rows without the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    floripa,
+                    group(
+                        id = "casa",
+                        name = "Casa",
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.hasLoadedGroups)
+            assertFalse(state.showsEmptyState)
+            assertEquals(2, state.groups.size)
+        }
+
+    @Test
+    fun `GIVEN groups the most recently changed first WHEN the groups open THEN keeps that order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "newest",
+                        name = "Churrasco",
+                    ),
+                    group(
+                        id = "middle",
+                        name = "Casa",
+                    ),
+                    group(
+                        id = "oldest",
+                        name = "Aniversario",
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf("newest", "middle", "oldest"), state.groups.map(GroupRow::id))
+        }
+
+    @Test
+    fun `GIVEN a synced trip with three members WHEN the groups open THEN draws its row`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+
+        // When
+        val row = viewModel.uiState.value.groups
+            .single()
+
+        // Then
+        assertEquals(
+            GroupRow(
+                id = "floripa",
+                name = "Viagem Floripa",
+                initials = "VF",
+                color = AvatarColor.LILAC,
+                faces = listOf(
+                    MemberFace(
+                        initial = "P",
+                        color = AvatarColor.GREEN,
+                    ),
+                    MemberFace(
+                        initial = "A",
+                        color = AvatarColor.PEACH,
+                    ),
+                    MemberFace(
+                        initial = "B",
+                        color = AvatarColor.SAND,
+                    ),
+                ),
+                extraMemberCount = 0,
+                memberCount = 3,
+                isPending = false,
+            ),
+            row,
+        )
+    }
+
+    @Test
+    fun `GIVEN members named in lower case WHEN the groups open THEN their faces show an upper case letter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(members = listOf(member(name = "ana"), member(name = "édson"))),
+                ),
+            )
+
+            // When
+            val faces = viewModel.uiState.value.groups
+                .single()
+                .faces
+
+            // Then
+            assertEquals(listOf("A", "É"), faces.map(MemberFace::initial))
+        }
+
+    @Test
+    fun `GIVEN a group of five members WHEN the groups open THEN shows the first three faces and two more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        members = listOf(
+                            member(
+                                name = "Pierre",
+                                color = AvatarColor.GREEN,
+                            ),
+                            member(
+                                name = "Ana",
+                                color = AvatarColor.PEACH,
+                            ),
+                            member(
+                                name = "Bia",
+                                color = AvatarColor.SAND,
+                            ),
+                            member(
+                                name = "Caio",
+                                color = AvatarColor.BLUE,
+                            ),
+                            member(
+                                name = "Duda",
+                                color = AvatarColor.LILAC,
+                            ),
+                        ),
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(
+                listOf(
+                    MemberFace(
+                        initial = "P",
+                        color = AvatarColor.GREEN,
+                    ),
+                    MemberFace(
+                        initial = "A",
+                        color = AvatarColor.PEACH,
+                    ),
+                    MemberFace(
+                        initial = "B",
+                        color = AvatarColor.SAND,
+                    ),
+                ),
+                row.faces,
+            )
+            assertEquals(2, row.extraMemberCount)
+            assertEquals(5, row.memberCount)
+        }
+
+    @Test
+    fun `GIVEN a group of four members WHEN the groups open THEN shows three faces and one more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(members = listOf("Pierre", "Ana", "Bia", "Caio").map { member(name = it) }),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(listOf("P", "A", "B"), row.faces.map(MemberFace::initial))
+            assertEquals(1, row.extraMemberCount)
+            assertEquals(4, row.memberCount)
+        }
+
+    @Test
+    fun `GIVEN a group with only its creator WHEN the groups open THEN shows one face and no more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        members = listOf(
+                            member(
+                                name = "Pierre",
+                                color = AvatarColor.GREEN,
+                            ),
+                        ),
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(
+                listOf(
+                    MemberFace(
+                        initial = "P",
+                        color = AvatarColor.GREEN,
+                    ),
+                ),
+                row.faces,
+            )
+            assertEquals(0, row.extraMemberCount)
+            assertEquals(1, row.memberCount)
+        }
+
+    @Test
+    fun `GIVEN a group created here and not on the server yet WHEN the groups open THEN marks its row as pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "queued",
+                        isPending = true,
+                    ),
+                    group(
+                        id = "synced",
+                        isPending = false,
+                    ),
+                ),
+            )
+
+            // When
+            val rows = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(listOf(true, false), rows.map(GroupRow::isPending))
+        }
+
+    @Test
+    fun `GIVEN the empty state WHEN a group gets created THEN shows its row first without the empty state`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = emptyList())
+
+            // When
+            groups.createGroup(floripa.copy(isPending = true), createdAt = 1L)
+
+            // Then
+            assertEquals(
+                listOf("floripa"),
+                viewModel.uiState.value.groups
+                    .map(GroupRow::id),
+            )
+            assertTrue(
+                viewModel.uiState.value.groups
+                    .single()
+                    .isPending,
+            )
+            assertFalse(viewModel.uiState.value.showsEmptyState)
+        }
+
+    @Test
+    fun `GIVEN a group on the list WHEN another gets created THEN shows the new one on top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "casa",
+                        name = "Casa",
+                    ),
+                ),
+            )
+
+            // When
+            groups.createGroup(floripa, createdAt = 1L)
+
+            // Then
+            assertEquals(
+                listOf("floripa", "casa"),
+                viewModel.uiState.value.groups
+                    .map(GroupRow::id),
+            )
+        }
+
+    @Test
+    fun `GIVEN two groups WHEN one is removed from the device THEN shows only the other`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                floripa,
+                group(
+                    id = "casa",
+                    name = "Casa",
+                ),
+            ),
+        )
+
+        // When
+        groups.groups.value = listOf(
+            group(
+                id = "casa",
+                name = "Casa",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            listOf("casa"),
+            viewModel.uiState.value.groups
+                .map(GroupRow::id),
+        )
+    }
+
+    @Test
+    fun `GIVEN one group WHEN the device is cleared THEN shows the empty state`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+
+        // When
+        groups.clear()
+
+        // Then
+        assertTrue(
+            viewModel.uiState.value.groups
+                .isEmpty(),
+        )
+        assertTrue(viewModel.uiState.value.showsEmptyState)
+    }
+
+    @Test
+    fun `GIVEN the empty groups WHEN tapping create group THEN opens its screen without saying coming soon`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val actions = mutableListOf<GroupsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a group on the list WHEN tapping its row THEN says it is coming soon and stays on the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(floripa))
+            val actions = mutableListOf<GroupsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
+
+            // Then
+            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN groups on the list WHEN the profile changes THEN keeps the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+
+        // When
+        profiles.profile.value = pierre.copy(displayName = "Pierre Vieira")
+
+        // Then
+        assertEquals("Pierre Vieira", viewModel.uiState.value.displayName)
+        assertEquals(
+            listOf("floripa"),
+            viewModel.uiState.value.groups
+                .map(GroupRow::id),
+        )
+        assertTrue(viewModel.uiState.value.hasLoadedGroups)
+    }
+
+    @Test
+    fun `GIVEN the empty state WHEN the sync state changes THEN keeps the empty state`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            syncState = SyncState.SYNCED,
+        )
+
+        // When
+        syncState.value = SyncState.FAILED
+
+        // Then
+        assertEquals(SyncBadge.FAILED, viewModel.uiState.value.syncBadge)
+        assertTrue(viewModel.uiState.value.showsEmptyState)
+    }
+
+    @Test
+    fun `GIVEN a Google account and a sync running WHEN a group gets created THEN keeps the profile and the badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
+                profile = pierre.copy(photo = ProfilePhoto.Remote(googlePhotoUrl)),
+                syncState = SyncState.SYNCING,
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            groups.createGroup(floripa, createdAt = 1L)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("Pierre", state.displayName)
+            assertEquals("P", state.avatarInitial)
+            assertEquals(AvatarColor.GREEN, state.avatarColor)
+            assertEquals(googlePhotoUrl, state.photoUrl)
+            assertEquals(AccountProvider.GOOGLE, state.accountProvider)
+            assertEquals(SyncBadge.SYNCING, state.syncBadge)
+            assertTrue(state.showsRecoveryCodePrompt)
+            assertEquals(listOf("floripa"), state.groups.map(GroupRow::id))
+        }
+
+    @Test
+    fun `GIVEN the groups not read yet and a profile WHEN the read finds a group THEN keeps the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(groupsRead = false)
+
+            // When
+            roomRead.emit(listOf(floripa))
+
+            // Then
+            assertEquals("Pierre", viewModel.uiState.value.displayName)
+            assertEquals(1, viewModel.uiState.value.groups.size)
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
+
+    private val floripa = Group(
+        id = "floripa",
+        name = "Viagem Floripa",
+        type = GroupType.TRIP,
+        color = AvatarColor.LILAC,
+        currency = GroupCurrency.BRL,
+        members = listOf(
+            member(
+                name = "Pierre",
+                color = AvatarColor.GREEN,
+            ),
+            member(
+                name = "Ana",
+                color = AvatarColor.PEACH,
+            ),
+            member(
+                name = "Bia",
+                color = AvatarColor.SAND,
+            ),
+        ),
+        isPending = false,
+    )
+
+    private fun group(
+        id: String = "group",
+        name: String = "Grupo",
+        members: List<GroupMember> = listOf(member(name = "Pierre")),
+        isPending: Boolean = false,
+    ): Group = Group(
+        id = id,
+        name = name,
+        type = GroupType.OTHER,
+        color = AvatarColor.BLUE,
+        currency = GroupCurrency.BRL,
+        members = members,
+        isPending = isPending,
+    )
+
+    private fun member(
+        name: String,
+        color: AvatarColor = AvatarColor.BLUE,
+    ): GroupMember = GroupMember(
+        id = "member-$name",
+        name = name,
+        avatarColor = color,
+        isMe = false,
+        hasJoined = false,
+    )
 
     private fun prepareScenario(
         online: Boolean = true,
@@ -541,9 +1107,13 @@ class GroupsViewModelTest {
         syncState: SyncState? = SyncState.SYNCED,
         status: AccountStatus = AccountStatus.LocalOnly,
         profile: UserProfile? = pierre,
+        storedGroups: List<Group> = emptyList(),
+        groupsRead: Boolean = true,
     ) {
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
+        groups = FakeGroupRepository(initialGroups = storedGroups)
+        roomRead = MutableSharedFlow()
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
         syncRequests = 0
@@ -552,6 +1122,8 @@ class GroupsViewModelTest {
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this.syncState.filterNotNull() },
+            // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
+            observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { roomRead },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },
             navigator = navigator,

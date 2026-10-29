@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -66,6 +67,7 @@ class DeleteAccountUseCaseTest {
                 profileRepository = profile,
                 paymentKeyRepository = paymentKeys,
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
+                groupRepository = FakeGroupRepository(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),
