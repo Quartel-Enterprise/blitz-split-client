@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { NotificationSettingsCard } from '@/features/notification-settings/NotificationSettingsCard'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { downloadExport } from '@/lib/export'
@@ -72,16 +73,17 @@ export function ProfileScreen() {
           <div className="contents lg:flex lg:flex-col lg:gap-4">
             <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
             <AppearanceCard presenter={presenter} state={state} className="order-4" />
-            <AboutCard presenter={presenter} className="order-5" />
+            <NotificationSettingsCard className="order-5" />
+            <AboutCard presenter={presenter} className="order-6" />
             <Button
               variant="outline"
-              className="order-6 text-destructive hover:text-destructive"
+              className="order-7 text-destructive hover:text-destructive"
               disabled={!state.canSignOut}
               onClick={() => presenter.signOut()}
             >
               <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
             </Button>
-            {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-7" />}
+            {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
           </div>
         </div>
       </main>

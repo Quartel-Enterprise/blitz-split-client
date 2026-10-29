@@ -55,6 +55,7 @@ struct MainTabView: View {
                         .navigationDestination(for: AppRoute.self) { route in
                             switch route {
                             case .editProfile: EditProfileView()
+                            case .notificationSettings: NotificationSettingsView()
                             case let .paymentKey(route): PaymentKeyView(route: route)
                             default: ProfileView()
                             }

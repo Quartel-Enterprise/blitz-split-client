@@ -47,6 +47,7 @@ struct RootView: View {
         case .profile: ProfileView()
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()
+        case .notificationSettings: NotificationSettingsView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         }
     }
