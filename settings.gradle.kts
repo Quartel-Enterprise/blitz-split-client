@@ -61,6 +61,7 @@ include(":feature:profile")
 include(":feature:edit_profile")
 include(":feature:payment_key")
 include(":feature:delete_account")
+include(":feature:notification_settings")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")
@@ -75,3 +76,4 @@ include(":android:feature:profile")
 include(":android:feature:edit_profile")
 include(":android:feature:payment_key")
 include(":android:feature:delete_account")
+include(":android:feature:notification_settings")

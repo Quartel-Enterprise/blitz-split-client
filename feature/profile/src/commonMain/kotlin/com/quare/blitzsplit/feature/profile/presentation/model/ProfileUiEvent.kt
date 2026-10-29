@@ -60,6 +60,9 @@ sealed interface ProfileUiEvent : UiEvent {
         val theme: ThemePreference,
     ) : ProfileUiEvent
 
+    // Why: the "Notificações" row of Android and iOS; the web and macOS show the toggles in the profile itself.
+    data object OnNotificationsClicked : ProfileUiEvent
+
     data object OnPrivacyPolicyClicked : ProfileUiEvent
 
     data object OnTermsClicked : ProfileUiEvent

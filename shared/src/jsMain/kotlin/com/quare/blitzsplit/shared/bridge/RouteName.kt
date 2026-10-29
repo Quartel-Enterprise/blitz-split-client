@@ -10,5 +10,6 @@ internal fun toRouteName(route: Route): String = when (route) {
     Route.Profile -> "profile"
     Route.EditProfile -> "edit-profile"
     Route.DeleteAccount -> "delete-account"
+    Route.NotificationSettings -> "notification-settings"
     is Route.PaymentKey -> "payment-key"
 }

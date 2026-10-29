@@ -381,6 +381,7 @@ internal fun createPreviewProfileState(
     ),
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
+    activeNotificationCount = 3,
     dialog = null,
     hasConfirmedCodeSaved = false,
     isConnectExpanded = false,

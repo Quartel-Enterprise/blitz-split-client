@@ -24,11 +24,14 @@ import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificationPreferenceChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPaymentKeyChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
@@ -74,6 +77,7 @@ class ProfileViewModelTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
+    private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
@@ -3385,6 +3389,7 @@ class ProfileViewModelTest {
         }
         profiles = FakeProfileRepository(profile).also { it.hasPendingChanges.value = hasPendingProfile }
         paymentKeys = FakePaymentKeyRepository(keys).also { it.hasPendingChanges.value = hasPendingKeys }
+        notificationPreferences = FakeNotificationPreferencesRepository()
         isOnline = MutableStateFlow(online)
         this@ProfileViewModelTest.syncState = MutableStateFlow(syncState)
         storedTheme = MutableStateFlow(theme)
@@ -3427,6 +3432,10 @@ class ProfileViewModelTest {
             observePendingPaymentKeyChanges = ObservePendingPaymentKeyChangesUseCase(paymentKeys),
             observeSyncState = ObserveSyncState { this@ProfileViewModelTest.syncState },
             observeThemePreference = ObserveThemePreference { storedTheme.filterNotNull() },
+            observeNotificationPreferences = ObserveNotificationPreferences { notificationPreferences.preferences },
+            observePendingNotificationPreferenceChanges = ObservePendingNotificationPreferenceChanges {
+                notificationPreferences.hasPendingChanges
+            },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

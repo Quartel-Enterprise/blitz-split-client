@@ -4,4 +4,5 @@ package com.quare.blitzsplit.feature.profile.presentation.model
 enum class PendingChange {
     PROFILE,
     PAYMENT_KEYS,
+    NOTIFICATION_PREFERENCES,
 }

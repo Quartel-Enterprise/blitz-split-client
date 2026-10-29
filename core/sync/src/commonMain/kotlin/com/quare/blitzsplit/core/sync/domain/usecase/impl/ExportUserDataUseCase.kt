@@ -38,6 +38,7 @@ class ExportUserDataUseCase(
 
     private companion object {
         const val FORMAT = "blitz-split-user-data"
+
         // Why: 2 added the notification preferences.
         const val VERSION = 2
     }

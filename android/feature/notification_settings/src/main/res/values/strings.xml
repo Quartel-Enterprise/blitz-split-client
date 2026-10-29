@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_denied_title">Blitz Split notifications are turned off on Android.</string>
+    <string name="notification_settings_denied_body">Turn them on in the system settings to get the notices below.</string>
+    <string name="notification_settings_open_settings">Open settings</string>
+    <string name="notification_settings_section">Notify me when</string>
+    <string name="notification_settings_new_expense">New expense in my groups</string>
+    <string name="notification_settings_new_expense_detail">When someone adds an expense with you</string>
+    <string name="notification_settings_payment_marked">Someone marked a payment to me</string>
+    <string name="notification_settings_payment_marked_detail">When someone says they\'ve paid you</string>
+    <string name="notification_settings_settle_reminders">Settle-up reminders</string>
+    <string name="notification_settings_settle_reminders_detail">Once a week, if there\'s an open balance</string>
+    <string name="notification_settings_invites">Invites and new members</string>
+    <string name="notification_settings_invites_detail">When someone joins one of your groups</string>
+    <string name="notification_settings_footer">Notices arrive when there\'s internet. To mute a group, use the menu inside it.</string>
+</resources>
