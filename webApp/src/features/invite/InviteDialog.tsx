@@ -33,8 +33,6 @@ export function InviteDialog({ route }: { route: JsRoute }) {
       navigator.clipboard.writeText(action.link).catch(() => toast(t('invite_copyFailed')))
     } else if (action.type === 'share' && action.link) {
       shareLink(action.link, action.groupName ?? '')
-    } else if (action.type === 'coming-soon') {
-      toast(t('invite_comingSoon'))
     }
   })
   if (!presenter || !state?.isLoaded) return null
@@ -50,7 +48,7 @@ export function InviteDialog({ route }: { route: JsRoute }) {
       {t('invite_close')}
     </Button>
   )
-  // Why: "Ir para o grupo" while the link is pending, "Ver quem já entrou" once it exists; both answer "Em breve".
+  // Why: "Ir para o grupo" while the link is pending, "Ver quem já entrou" once it exists; both open "Membros".
   const next = (
     <Button
       variant="outline"

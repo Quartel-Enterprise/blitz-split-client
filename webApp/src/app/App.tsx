@@ -6,6 +6,7 @@ import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
+import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
@@ -32,19 +33,17 @@ export function App() {
   if (!isReady || !backStack) return null
   const top = backStack[backStack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group and its invite
-  // over the home, which stay mounted under them.
+  // over the home or the group's members, which stay mounted under them.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
-  const page = isCreateGroup || isInvite
-    ? (backStack.at(-2)?.name ?? 'groups')
-    : isPaymentKey || isDeleteAccount
-      ? (backStack.at(-2)?.name ?? 'profile')
-      : top.name
+  const isDialog = isCreateGroup || isInvite || isPaymentKey || isDeleteAccount
+  const page = isDialog ? backStack.at(-2) : top
+  const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'groups')
   return (
     <>
-      <Screen route={page} />
+      <Screen name={pageName} route={page} />
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
@@ -54,14 +53,16 @@ export function App() {
   )
 }
 
-function Screen({ route }: { route: string }) {
-  switch (route) {
+function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
+  switch (name) {
     case 'profile-setup':
       return <ProfileSetupScreen />
     case 'restore':
       return <RestoreScreen />
     case 'groups':
       return <GroupsScreen />
+    case 'members':
+      return route ? <MembersScreen key={route.groupId} route={route} /> : null
     // Why: the web edits name, photo and color inside the profile, so it never pushes the editor.
     case 'profile':
     case 'edit-profile':

@@ -38,7 +38,7 @@ class JsInviteState(
     val isLinkFailed: Boolean,
 )
 
-// Why: "copy" and "share" carry the link (and the group's name for the message), "coming-soon" nothing.
+// Why: "copy" and "share" carry the link, and "share" the group's name for the message.
 class JsInviteAction(
     val type: String,
     val link: String?,
@@ -83,7 +83,6 @@ class InvitePresenter(
             when (action) {
                 is InviteUiAction.CopyLink -> JsInviteAction("copy", action.link, null)
                 is InviteUiAction.ShareLink -> JsInviteAction("share", action.link, action.groupName)
-                InviteUiAction.ShowComingSoon -> JsInviteAction("coming-soon", null, null)
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)

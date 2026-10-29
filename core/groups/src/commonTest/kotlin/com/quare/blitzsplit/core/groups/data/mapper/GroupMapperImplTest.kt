@@ -614,6 +614,7 @@ class GroupMapperImplTest {
                 addedAt = 2L,
                 updatedAt = 8L,
                 pendingSync = false,
+                isRemoved = false,
             ),
             entity,
         )
@@ -695,6 +696,108 @@ class GroupMapperImplTest {
         assertNull(dto.inviteCode)
     }
 
+    @Test
+    fun `GIVEN a member removed here WHEN mapping to the domain THEN the group no longer shows them`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"))
+        val members = listOf(
+            memberEntity(id = "m-1"),
+            memberEntity(
+                id = "m-2",
+                pendingSync = true,
+                isRemoved = true,
+            ),
+            memberEntity(id = "m-3"),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, members).single()
+
+        // Then
+        assertEquals(listOf("m-1", "m-3"), mapped.members.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a synced group with only a removal not up yet WHEN mapping to the domain THEN is pending`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                pendingSync = false,
+            ),
+        )
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                pendingSync = false,
+            ),
+            memberEntity(
+                id = "m-2",
+                pendingSync = true,
+                isRemoved = true,
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, members).single()
+
+        // Then
+        assertTrue(mapped.isPending)
+        assertEquals(listOf("m-1"), mapped.members.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a person added to a group WHEN mapping them THEN pending with no account and not removed`() {
+        // Given
+        val member = GroupMember(
+            id = "m-4",
+            name = "Carla",
+            avatarColor = AvatarColor.SAND,
+            isMe = false,
+            hasJoined = false,
+        )
+
+        // When
+        val entity = mapper.toMemberEntity(
+            groupId = "group-1",
+            member = member,
+            addedAt = 5_000L,
+        )
+
+        // Then
+        assertEquals(
+            GroupMemberEntity(
+                id = "m-4",
+                groupId = "group-1",
+                name = "Carla",
+                avatarColor = "sand",
+                userId = null,
+                isMe = false,
+                addedAt = 5_000L,
+                updatedAt = 5_000L,
+                pendingSync = true,
+                isRemoved = false,
+            ),
+            entity,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new group WHEN mapping its members THEN none of them is removed`() {
+        // Given
+        val createdAt = 1_000L
+
+        // When
+        val entities = mapper.toMemberEntities(
+            group = newGroup,
+            createdAt = createdAt,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertTrue(entities.none { it.isRemoved })
+    }
+
     private val newGroup = Group(
         id = "group-1",
         name = "Viagem Floripa",
@@ -761,6 +864,7 @@ class GroupMapperImplTest {
         isMe: Boolean = false,
         addedAt: Long = 1L,
         pendingSync: Boolean = false,
+        isRemoved: Boolean = false,
     ): GroupMemberEntity = GroupMemberEntity(
         id = id,
         groupId = groupId,
@@ -771,6 +875,7 @@ class GroupMapperImplTest {
         addedAt = addedAt,
         updatedAt = 1L,
         pendingSync = pendingSync,
+        isRemoved = isRemoved,
     )
 
     private fun groupDto(

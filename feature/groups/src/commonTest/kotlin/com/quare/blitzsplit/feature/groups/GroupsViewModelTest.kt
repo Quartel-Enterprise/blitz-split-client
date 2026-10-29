@@ -959,19 +959,32 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group on the list WHEN tapping its row THEN says it is coming soon and stays on the groups`() =
+    fun `GIVEN a group on the list WHEN tapping its row THEN opens its members`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(floripa))
+        val actions = mutableListOf<GroupsUiAction>()
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
+
+        // Then
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Groups, Route.Members("floripa")), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group already opened WHEN tapping another row before it shows THEN keeps the first`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(floripa))
-            val actions = mutableListOf<GroupsUiAction>()
-            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
-
-            // When
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("floripa"))
 
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
+
             // Then
-            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("floripa")), navigator.backStack.value)
         }
 
     @Test

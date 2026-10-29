@@ -31,10 +31,16 @@ interface GroupDao {
     suspend fun getPendingGroups(ownerUserId: String): List<GroupEntity>
 
     @Query(
-        "SELECT * FROM group_member WHERE pendingSync = 1 AND groupId IN " +
+        "SELECT * FROM group_member WHERE pendingSync = 1 AND isRemoved = 0 AND groupId IN " +
             "(SELECT id FROM split_group WHERE ownerUserId = :ownerUserId)",
     )
     suspend fun getPendingMembers(ownerUserId: String): List<GroupMemberEntity>
+
+    @Query(
+        "SELECT id FROM group_member WHERE isRemoved = 1 AND groupId IN " +
+            "(SELECT id FROM split_group WHERE ownerUserId = :ownerUserId)",
+    )
+    suspend fun getRemovedMemberIds(ownerUserId: String): List<String>
 
     @Query("SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND pendingSync = 0")
     suspend fun getSyncedGroupIds(ownerUserId: String): List<String>
@@ -102,6 +108,42 @@ interface GroupDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroupIfAbsent(entity: GroupEntity)
 
+    /*
+     * Why: a group a sync deleted in the meantime takes nobody. Its member would stay pending with no group to go up
+     * with, and keep the sync running round after round.
+     */
+    @Transaction
+    suspend fun insertMemberIntoGroup(entity: GroupMemberEntity) {
+        check(hasGroup(entity.groupId)) { "No group ${entity.groupId}" }
+        insertMember(entity)
+    }
+
+    @Query("SELECT EXISTS(SELECT 1 FROM split_group WHERE id = :id)")
+    suspend fun hasGroup(id: String): Boolean
+
+    @Insert
+    suspend fun insertMember(entity: GroupMemberEntity)
+
+    @Query(
+        "UPDATE group_member SET name = :name, updatedAt = :updatedAt, pendingSync = 1 " +
+            "WHERE id = :id AND isRemoved = 0",
+    )
+    suspend fun renameMember(
+        id: String,
+        name: String,
+        updatedAt: Long,
+    )
+
+    // Why: someone who joined sees the group too, so only a member nobody is yet can be removed.
+    @Query(
+        "UPDATE group_member SET isRemoved = 1, updatedAt = :removedAt, pendingSync = 1 " +
+            "WHERE id = :id AND isMe = 0 AND userId IS NULL",
+    )
+    suspend fun removeMember(
+        id: String,
+        removedAt: Long,
+    )
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMemberIfAbsent(entity: GroupMemberEntity)
 
@@ -131,7 +173,8 @@ interface GroupDao {
 
     /*
      * Why: Last-Write-Wins as the server keeps it. Other members edit the same group, so a newer server row wins
-     * even over a change made offline, which the server would refuse as older anyway.
+     * even over a change made offline, which the server would refuse as older anyway; for a member, that includes a
+     * removal made here, which then comes back.
      */
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
@@ -152,7 +195,7 @@ interface GroupDao {
 
     @Query(
         "UPDATE group_member SET groupId = :groupId, name = :name, avatarColor = :avatarColor, userId = :userId, " +
-            "isMe = :isMe, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "isMe = :isMe, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0, isRemoved = 0 " +
             "WHERE id = :id AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun updateMemberFromRemote(
@@ -227,6 +270,15 @@ interface GroupDao {
 
     @Query("DELETE FROM group_member WHERE id IN (:ids)")
     suspend fun deleteMembers(ids: List<String>)
+
+    // Why: a member a newer server row brought back in the meantime is no longer removed, and stays.
+    @Transaction
+    suspend fun deleteRemovedMembers(ids: List<String>) {
+        ids.chunked(MAX_IDS_PER_QUERY).forEach { deleteRemovedMemberRows(it) }
+    }
+
+    @Query("DELETE FROM group_member WHERE id IN (:ids) AND isRemoved = 1")
+    suspend fun deleteRemovedMemberRows(ids: List<String>)
 
     @Transaction
     suspend fun deleteAll() {

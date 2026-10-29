@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain.repository
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {
@@ -13,6 +14,24 @@ interface GroupRepository {
     suspend fun createGroup(
         group: Group,
         createdAt: Long,
+    ): Result<Unit>
+
+    suspend fun addMember(
+        groupId: String,
+        member: GroupMember,
+        addedAt: Long,
+    ): Result<Unit>
+
+    suspend fun updateMemberName(
+        memberId: String,
+        name: String,
+        updatedAt: Long,
+    ): Result<Unit>
+
+    // Why: hidden right away, and deleted on the server by the next sync.
+    suspend fun removeMember(
+        memberId: String,
+        removedAt: Long,
     ): Result<Unit>
 
     suspend fun uploadPendingGroups(userId: String): Result<Unit>

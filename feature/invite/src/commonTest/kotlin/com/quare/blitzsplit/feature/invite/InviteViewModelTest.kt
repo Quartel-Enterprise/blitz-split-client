@@ -468,19 +468,20 @@ class InviteViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN see who joined is tapped THEN says it is coming soon`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN the screen open after creating the group WHEN see who joined is tapped THEN members take its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+            // When
+            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
 
-        // Then
-        assertEquals(listOf<InviteUiAction>(InviteUiAction.ShowComingSoon), actions)
-    }
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+        }
 
     @Test
-    fun `GIVEN a pending link WHEN go to the group is tapped THEN says it is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN a pending link WHEN go to the group is tapped THEN members take its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroup = trip.copy(inviteCode = null))
 
@@ -488,8 +489,35 @@ class InviteViewModelTest {
         viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
 
         // Then
-        assertEquals(listOf<InviteUiAction>(InviteUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, Route.Invite("group-1")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the screen opened from the members WHEN see who joined is tapped THEN goes back to them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.replaceTop(Route.Members("group-1"))
+            navigator.navigate(Route.Invite("group-1"))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN see who joined is tapped THEN stays where it is`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.Profile)
+
+        // When
+        viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Invite("group-1"), Route.Profile), navigator.backStack.value)
     }
 
     @Test

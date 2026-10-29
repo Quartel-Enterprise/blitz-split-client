@@ -19,6 +19,38 @@ class RoomGroupLocalDataSource(
     override suspend fun getPendingMembers(ownerUserId: String): List<GroupMemberEntity> =
         dao.getPendingMembers(ownerUserId)
 
+    override suspend fun getRemovedMemberIds(ownerUserId: String): List<String> = dao.getRemovedMemberIds(ownerUserId)
+
+    override suspend fun insertMember(entity: GroupMemberEntity) {
+        dao.insertMemberIntoGroup(entity)
+    }
+
+    override suspend fun renameMember(
+        id: String,
+        name: String,
+        updatedAt: Long,
+    ) {
+        dao.renameMember(
+            id = id,
+            name = name,
+            updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun removeMember(
+        id: String,
+        removedAt: Long,
+    ) {
+        dao.removeMember(
+            id = id,
+            removedAt = removedAt,
+        )
+    }
+
+    override suspend fun deleteRemovedMembers(ids: List<String>) {
+        dao.deleteRemovedMembers(ids)
+    }
+
     override suspend fun insertGroupWithMembers(
         group: GroupEntity,
         members: List<GroupMemberEntity>,

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.MemberColors
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
@@ -134,7 +135,7 @@ class CreateGroupViewModel(
     private fun checkOf(name: String): MemberNameCheck = checkMemberName(
         name = name,
         takenNames = uiState.value.members.map(CreateGroupMember::name),
-        creatorName = creatorName,
+        adderName = creatorName,
     )
 
     private fun addDraft() {
@@ -165,11 +166,8 @@ class CreateGroupViewModel(
         checkDraft()
     }
 
-    // Why: someone who hasn't joined gets a color of the palette, the one fewest members have, so faces differ.
-    private fun findLeastUsedColor(members: List<CreateGroupMember>): AvatarColor {
-        val counts = members.groupingBy { it.avatarColor }.eachCount()
-        return AvatarColor.entries.minBy { counts[it] ?: 0 }
-    }
+    private fun findLeastUsedColor(members: List<CreateGroupMember>): AvatarColor =
+        MemberColors.findLeastUsed(members.map(CreateGroupMember::avatarColor))
 
     private fun removeMember(memberId: String) {
         uiState.update { state -> state.copy(members = state.members.filterNot { it.id == memberId && !it.isMe }) }

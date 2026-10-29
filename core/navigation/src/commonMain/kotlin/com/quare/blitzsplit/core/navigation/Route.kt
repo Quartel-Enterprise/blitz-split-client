@@ -34,6 +34,14 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    /*
+     * Why: "Membros", who is in the group and who joined. The group's own screen (flow 6) will hold it as a tab; until
+     * then a group opens here.
+     */
+    data class Members(
+        val groupId: String,
+    ) : Route
+
     // Why: a new key of that method when keyId is null, otherwise that key, to edit or delete.
     data class PaymentKey(
         val method: PaymentMethod,

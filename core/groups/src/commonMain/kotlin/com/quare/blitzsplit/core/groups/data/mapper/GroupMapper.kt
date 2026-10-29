@@ -3,11 +3,12 @@ package com.quare.blitzsplit.core.groups.data.mapper
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 
 interface GroupMapper {
-    // Why: each group with its own members, in the order the tables keep them.
+    // Why: each group with its own members, in the order the tables keep them, without the ones removed here.
     fun toDomain(
         groups: List<GroupEntity>,
         members: List<GroupMemberEntity>,
@@ -26,6 +27,13 @@ interface GroupMapper {
         createdAt: Long,
         ownerUserId: String?,
     ): List<GroupMemberEntity>
+
+    // Why: a member added to a group the device has, pending until the sync.
+    fun toMemberEntity(
+        groupId: String,
+        member: GroupMember,
+        addedAt: Long,
+    ): GroupMemberEntity
 
     fun toDto(
         entity: GroupEntity,

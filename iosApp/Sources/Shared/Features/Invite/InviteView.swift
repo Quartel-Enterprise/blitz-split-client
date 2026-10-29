@@ -5,7 +5,6 @@ import SwiftUI
 @Observable
 final class InviteModel {
     private(set) var state: InviteUiState
-    private(set) var comingSoonCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<InviteViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -17,12 +16,8 @@ final class InviteModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
-        watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            switch action {
-            case let copy as InviteUiActionCopyLink: Pasteboard.copy(copy.link)
-            case is InviteUiActionShowComingSoon: self?.comingSoonCount += 1
-            default: break
-            }
+        watches.add(viewModel.actionWatcher.observe { action in
+            if let copy = action as? InviteUiActionCopyLink { Pasteboard.copy(copy.link) }
         })
     }
 
@@ -42,8 +37,6 @@ struct InviteView: View {
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: InviteModel?
-    @State private var showsComingSoon = false
-    @State private var hidesComingSoon: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -61,28 +54,6 @@ struct InviteView: View {
                 Button("Close", systemImage: "xmark", role: .cancel) {
                     model?.send(InviteUiEventOnCloseClicked.shared)
                 }
-            }
-        }
-        .overlay(alignment: .top) {
-            if showsComingSoon {
-                Text("Coming soon")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .glassEffect(.regular, in: .capsule)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        // The count only grows on a tap: `?? 0` keeps the model's arrival (nil to 0) from showing it.
-        .onChange(of: model?.comingSoonCount ?? 0) {
-            withAnimation { showsComingSoon = true }
-            // A second tap keeps it for two seconds from that tap.
-            hidesComingSoon?.cancel()
-            hidesComingSoon = Task {
-                try? await Task.sleep(for: .seconds(2))
-                guard !Task.isCancelled else { return }
-                withAnimation { showsComingSoon = false }
             }
         }
         #if os(macOS)

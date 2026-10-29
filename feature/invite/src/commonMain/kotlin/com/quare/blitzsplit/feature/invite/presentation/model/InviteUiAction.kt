@@ -10,7 +10,4 @@ sealed interface InviteUiAction {
         val link: String,
         val groupName: String,
     ) : InviteUiAction
-
-    // Why: who joined (flow 2.3) and a group's own screen (flow 6) are not built yet.
-    data object ShowComingSoon : InviteUiAction
 }

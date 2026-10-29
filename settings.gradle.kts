@@ -66,6 +66,7 @@ include(":feature:delete_account")
 include(":feature:notification_settings")
 include(":feature:create_group")
 include(":feature:invite")
+include(":feature:members")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")
@@ -83,3 +84,4 @@ include(":android:feature:delete_account")
 include(":android:feature:notification_settings")
 include(":android:feature:create_group")
 include(":android:feature:invite")
+include(":android:feature:members")

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.testing
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,13 @@ class FakeGroupRepository(
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var createError: Throwable? = null
+    val addedMembers = mutableListOf<Pair<String, GroupMember>>()
+    val memberChangeTimes = mutableListOf<Long>()
+    val renamedMembers = mutableListOf<Pair<String, String>>()
+    val removedMemberIds = mutableListOf<String>()
+
+    // Why: one knob for the three member edits, which fail alike.
+    var memberChangeError: Throwable? = null
 
     // Why: while set, a create waits for it, so a test can act while the save is in flight.
     var createGate: CompletableDeferred<Unit>? = null
@@ -39,6 +47,56 @@ class FakeGroupRepository(
         createdGroups += group
         createdAts += createdAt
         groups.value = listOf(group) + groups.value
+        hasPendingChanges.value = true
+        return Result.success(Unit)
+    }
+
+    override suspend fun addMember(
+        groupId: String,
+        member: GroupMember,
+        addedAt: Long,
+    ): Result<Unit> = updateMembers(groupId, addedAt) { members ->
+        addedMembers += groupId to member
+        members + member
+    }
+
+    override suspend fun updateMemberName(
+        memberId: String,
+        name: String,
+        updatedAt: Long,
+    ): Result<Unit> = updateMembers(groupIdOf(memberId), updatedAt) { members ->
+        renamedMembers += memberId to name
+        members.map { if (it.id == memberId) it.copy(name = name) else it }
+    }
+
+    override suspend fun removeMember(
+        memberId: String,
+        removedAt: Long,
+    ): Result<Unit> = updateMembers(groupIdOf(memberId), removedAt) { members ->
+        removedMemberIds += memberId
+        members.filterNot { it.id == memberId && !it.isMe && !it.hasJoined }
+    }
+
+    private fun groupIdOf(memberId: String): String? =
+        groups.value.firstOrNull { group -> group.members.any { it.id == memberId } }?.id
+
+    private fun updateMembers(
+        groupId: String?,
+        at: Long,
+        change: (List<GroupMember>) -> List<GroupMember>,
+    ): Result<Unit> {
+        memberChangeError?.let { return Result.failure(it) }
+        memberChangeTimes += at
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) {
+                group.copy(
+                    members = change(group.members),
+                    isPending = true,
+                )
+            } else {
+                group
+            }
+        }
         hasPendingChanges.value = true
         return Result.success(Unit)
     }

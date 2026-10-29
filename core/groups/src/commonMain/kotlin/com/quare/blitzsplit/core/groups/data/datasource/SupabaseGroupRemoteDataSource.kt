@@ -17,6 +17,15 @@ class SupabaseGroupRemoteDataSource(
         postgrest.from(MEMBERS).upsert(members)
     }
 
+    // Why: a few ids per request, so the filter in the URL stays short.
+    override suspend fun deleteMembers(ids: List<String>) {
+        ids.chunked(IDS_PER_DELETE).forEach { chunk ->
+            postgrest.from(MEMBERS).delete {
+                filter { isIn("id", chunk) }
+            }
+        }
+    }
+
     override suspend fun fetchGroups(): List<GroupDto> = fetchAll(GROUPS)
 
     override suspend fun fetchMembers(): List<GroupMemberDto> = fetchAll(MEMBERS)
@@ -53,5 +62,7 @@ class SupabaseGroupRemoteDataSource(
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L
+
+        const val IDS_PER_DELETE = 100
     }
 }
