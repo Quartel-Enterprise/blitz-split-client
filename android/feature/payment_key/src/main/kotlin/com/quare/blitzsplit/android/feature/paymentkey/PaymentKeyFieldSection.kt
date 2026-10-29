@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ContentPaste
@@ -33,7 +34,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,7 +59,7 @@ internal fun PaymentKeyFieldSection(
     Column(modifier = modifier) {
         OutlinedTextField(
             value = field,
-            onValueChange = onFieldChange,
+            onValueChange = { value -> onFieldChange(if (isBitcoin) value.toSingleLine() else value) },
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged { focus ->
@@ -88,7 +91,9 @@ internal fun PaymentKeyFieldSection(
                     }
                 }
             },
-            keyboardOptions = state.type.keyboardOptions,
+            // Why: the Bitcoin field wraps over several lines, but a key has no line break: Done saves, as on iOS.
+            keyboardOptions = state.type.keyboardOptions.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { onEvent(PaymentKeyUiEvent.OnSaveClicked) }),
         )
         FieldHelperMessage(state = state)
         if (state.hasSwitchedNetwork) {
@@ -190,4 +195,14 @@ private fun HelperLine(
             color = color,
         )
     }
+}
+
+// Why: a hardware Enter or a pasted line break would otherwise land inside the key.
+private fun TextFieldValue.toSingleLine(): TextFieldValue {
+    if ('\n' !in text) return this
+    val cursor = selection.end - text.take(selection.end).count { it == '\n' }
+    return TextFieldValue(
+        text = text.replace("\n", ""),
+        selection = TextRange(cursor),
+    )
 }

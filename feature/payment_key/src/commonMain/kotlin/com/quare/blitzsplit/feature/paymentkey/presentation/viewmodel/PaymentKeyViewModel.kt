@@ -79,16 +79,25 @@ class PaymentKeyViewModel(
     fun onEvent(event: PaymentKeyUiEvent) {
         when (event) {
             PaymentKeyUiEvent.OnBackClicked -> leave()
+
             is PaymentKeyUiEvent.OnTypeSelected -> selectType(event.type)
+
             is PaymentKeyUiEvent.OnInputChanged -> changeInput(event.input, isPaste = false)
+
             is PaymentKeyUiEvent.OnPasted -> changeInput(event.text, isPaste = true)
+
             PaymentKeyUiEvent.OnInputFocusLost -> revealError()
+
             is PaymentKeyUiEvent.OnDefaultChanged -> changeDefault(event.isDefault)
+
             PaymentKeyUiEvent.OnSaveClicked -> save()
+
             PaymentKeyUiEvent.OnDeleteClicked -> if (route.keyId != null && !uiState.value.isSaving) {
                 showDeleteConfirmation(true)
             }
+
             PaymentKeyUiEvent.OnDeleteDismissed -> showDeleteConfirmation(false)
+
             PaymentKeyUiEvent.OnDeleteConfirmed -> delete()
         }
     }
@@ -150,7 +159,8 @@ class PaymentKeyViewModel(
 
     /*
      * Why: a paste of another type's key switches to that type ("Ao colar, o tipo é detectado sozinho"), but a
-     * key valid for the type picked stays there: 11 digits can be a CPF or a phone.
+     * key valid for the type picked stays there: 11 digits can be a CPF or a phone. A random key typed by hand
+     * stays random, since its first digits can pass for a CPF or a phone and the mask would cut the rest.
      */
     private fun changeInput(
         raw: String,
@@ -159,7 +169,7 @@ class PaymentKeyViewModel(
         val state = uiState.value
         val detected = detectPaymentKeyType(route.method, raw)
             ?.takeIf {
-                it != state.type && validatePaymentKey(
+                (isPaste || state.type != PaymentKeyType.RANDOM) && it != state.type && validatePaymentKey(
                     state.type,
                     raw,
                     otherKeys,

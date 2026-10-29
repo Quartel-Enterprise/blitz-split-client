@@ -415,6 +415,10 @@ private struct KeyField: View {
             .onChange(of: model.state.input) {
                 showCurrentInput()
             }
+            // A new type replaces the input, so the next edit is new even if it repeats the last one sent
+            .onChange(of: model.state.type) {
+                sentText = nil
+            }
     }
 
     private func showCurrentInput() {
@@ -429,7 +433,11 @@ private struct KeyField: View {
     private var paste: some View {
         PasteButton(payloadType: String.self) { texts in
             guard let text = texts.first else { return }
-            Task { @MainActor in model.send(PaymentKeyUiEventOnPasted(text: text)) }
+            Task { @MainActor in
+                // A paste replaces the input, so the next edit is new even if it repeats the last one sent
+                sentText = nil
+                model.send(PaymentKeyUiEventOnPasted(text: text))
+            }
         }
         .labelStyle(.titleOnly)
         .buttonBorderShape(.capsule)

@@ -1208,6 +1208,34 @@ class PaymentKeyViewModelTest {
         }
 
     @Test
+    fun `GIVEN Random picked WHEN typing digits that make a valid CPF THEN stays on Random`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+
+            // Then
+            assertEquals(PaymentKeyType.RANDOM, viewModel.uiState.value.type)
+            assertEquals(VALID_CPF, viewModel.uiState.value.input)
+        }
+
+    @Test
+    fun `GIVEN Random picked WHEN pasting a CPF THEN switches to CPF`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+
+        // When
+        viewModel.onEvent(PaymentKeyUiEvent.OnPasted(VALID_CPF))
+
+        // Then
+        assertEquals(PaymentKeyType.CPF, viewModel.uiState.value.type)
+    }
+
+    @Test
     fun `GIVEN a save under way WHEN a native back closes the screen before it ends THEN keeps the profile open`() =
         runTest(testDispatcher) {
             // Given
