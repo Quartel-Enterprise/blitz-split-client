@@ -85,7 +85,9 @@ class PaymentKeyViewModel(
             PaymentKeyUiEvent.OnInputFocusLost -> revealError()
             is PaymentKeyUiEvent.OnDefaultChanged -> changeDefault(event.isDefault)
             PaymentKeyUiEvent.OnSaveClicked -> save()
-            PaymentKeyUiEvent.OnDeleteClicked -> if (route.keyId != null) showDeleteConfirmation(true)
+            PaymentKeyUiEvent.OnDeleteClicked -> if (route.keyId != null && !uiState.value.isSaving) {
+                showDeleteConfirmation(true)
+            }
             PaymentKeyUiEvent.OnDeleteDismissed -> showDeleteConfirmation(false)
             PaymentKeyUiEvent.OnDeleteConfirmed -> delete()
         }
@@ -96,6 +98,8 @@ class PaymentKeyViewModel(
      * so a sync landing while someone types never overwrites what they typed.
      */
     private fun updateKeys(keys: List<PaymentKey>) {
+        // Why: once saving or deleting, the screen is on its way out, and the key it just wrote would read as saved.
+        if (uiState.value.isSaving) return
         val edited = route.keyId?.let { id -> keys.find { it.id == id } }
         if (route.keyId != null && edited == null) {
             leave()

@@ -28,14 +28,18 @@ internal object BitcoinKeyRules {
         validateLightning(input)
     }
 
-    // Why: "Colar um bc1… no campo Lightning, ou um Lightning Address no on-chain, troca a rede sozinho".
+    /*
+     * Why: "Colar um bc1… no campo Lightning, ou um Lightning Address no on-chain, troca a rede sozinho". The "@"
+     * goes before the on-chain prefixes, which no address has, so "bc1fan@wallet.com" is still a Lightning Address.
+     */
     fun detect(input: String): PaymentKeyType? {
         val text = toBareKey(input).lowercase()
         return when {
             input.trim().startsWith("bitcoin:", ignoreCase = true) -> PaymentKeyType.ONCHAIN
-            ONCHAIN_PREFIXES.any(text::startsWith) -> PaymentKeyType.ONCHAIN
             input.trim().startsWith("lightning:", ignoreCase = true) -> PaymentKeyType.LIGHTNING
-            '@' in text || text.startsWith("ln") -> PaymentKeyType.LIGHTNING
+            '@' in text -> PaymentKeyType.LIGHTNING
+            ONCHAIN_PREFIXES.any(text::startsWith) -> PaymentKeyType.ONCHAIN
+            text.startsWith("ln") -> PaymentKeyType.LIGHTNING
             else -> null
         }
     }

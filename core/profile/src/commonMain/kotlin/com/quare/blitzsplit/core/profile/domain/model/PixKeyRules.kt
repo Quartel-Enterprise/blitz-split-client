@@ -35,7 +35,7 @@ internal object PixKeyRules {
     // Why: on a paste or a typed key, only a shape that belongs to one type switches to it.
     fun detect(input: String): PaymentKeyType? {
         val text = input.trim()
-        val digits = text.filter(Char::isDigit)
+        val digits = text.filter(Char::isAsciiDigit)
         return when {
             '@' in text -> PaymentKeyType.EMAIL
             UUID.matches(text.lowercase()) && digits.length < RANDOM_LENGTH -> PaymentKeyType.RANDOM
@@ -52,7 +52,7 @@ internal object PixKeyRules {
         input: String,
     ): PaymentKeyInput = when (type) {
         PaymentKeyType.CPF -> {
-            val digits = input.filter(Char::isDigit).take(CPF_LENGTH)
+            val digits = input.filter(Char::isAsciiDigit).take(CPF_LENGTH)
             PaymentKeyInput(
                 text = formatCpf(digits),
                 isComplete = digits.length == CPF_LENGTH,
@@ -94,8 +94,8 @@ internal object PixKeyRules {
     }
 
     private fun validateCpf(input: String): PaymentKeyValidation {
-        val digits = input.filter(Char::isDigit)
-        val isCpf = input.all { it.isDigit() || it in ".- " } && isValidCpf(digits)
+        val digits = input.filter(Char::isAsciiDigit)
+        val isCpf = input.all { it.isAsciiDigit() || it in ".- " } && isValidCpf(digits)
         return if (isCpf) {
             PaymentKeyValidation.Valid(digits, PaymentKeyFormat.CPF)
         } else {
@@ -131,7 +131,7 @@ internal object PixKeyRules {
      */
     private fun extractPhoneDigits(input: String): String? {
         val text = input.trim()
-        val digits = text.filter(Char::isDigit)
+        val digits = text.filter(Char::isAsciiDigit)
         return when {
             !text.startsWith("+") && digits.length > PHONE_LENGTH && digits.startsWith(COUNTRY_CODE) ->
                 digits.removePrefix(COUNTRY_CODE)
@@ -199,3 +199,6 @@ internal object PixKeyRules {
         else -> value
     }
 }
+
+// Why: Char.isDigit takes any script's digits ("١", "１"), which no CPF or phone key is stored with.
+private fun Char.isAsciiDigit(): Boolean = this in '0'..'9'

@@ -31,9 +31,12 @@ class RoomPaymentKeyLocalDataSource(
         dao.deleteSyncedTombstones()
     }
 
-    // Why: a key only the server has comes down whole; one the device has follows Last-Write-Wins.
+    /*
+     * Why: a key only the server has comes down whole; one the device has follows Last-Write-Wins. A deletion of a
+     * key the device never had has nothing to delete, so it isn't written only to be dropped again.
+     */
     override suspend fun applyRemote(entity: PaymentKeyEntity) {
-        dao.insertIfAbsent(entity)
+        if (!entity.isDeleted) dao.insertIfAbsent(entity)
         dao.applyRemote(
             id = entity.id,
             type = entity.type,
