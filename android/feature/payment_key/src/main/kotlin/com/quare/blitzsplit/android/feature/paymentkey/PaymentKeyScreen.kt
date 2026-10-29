@@ -11,20 +11,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.platform.ClipboardReader
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiEvent
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -37,8 +35,7 @@ fun PaymentKeyScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
+    val clipboard = remember(context) { ClipboardReader(context) }
     var field by remember {
         mutableStateOf(
             viewModel.uiState.value.input
@@ -68,18 +65,7 @@ fun PaymentKeyScreen(
         field = field,
         isDialog = isDialog,
         onFieldChange = onFieldChange,
-        onPasteClick = {
-            scope.launch {
-                val text = clipboard
-                    .getClipEntry()
-                    ?.clipData
-                    ?.takeIf { it.itemCount > 0 }
-                    ?.getItemAt(0)
-                    ?.coerceToText(context)
-                    ?.toString()
-                if (!text.isNullOrBlank()) viewModel.onEvent(PaymentKeyUiEvent.OnPasted(text))
-            }
-        },
+        onPasteClick = { clipboard.readText()?.let { viewModel.onEvent(PaymentKeyUiEvent.OnPasted(it)) } },
         onEvent = viewModel::onEvent,
     )
     if (state.isDeleteConfirmationShown) {

@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+    implementation(projects.android.platform)
     implementation(projects.feature.paymentKey)
 }
