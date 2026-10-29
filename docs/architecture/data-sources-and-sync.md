@@ -113,8 +113,9 @@ so it outlives the screen.
   and `markSynced` swaps the bytes for that URL in the same guarded update. Until then the UIs draw the bytes as a
   data URI (`ProfileSetupUiState.photoUrl`).
 - **Payment keys**: each Pix or Bitcoin key is a row of `payment_key`, synced with the same guard
-  (`PaymentKeyDao.applyRemote`). A delete is a tombstone (`isDeleted`), pushed like any change and removed once
-  synced, since nothing is ever deleted on the server. Two devices may each mark a default offline, so readers
+  (`PaymentKeyDao.applyRemote`). A delete is a tombstone (`isDeleted`) with an empty value, so a deleted CPF or
+  wallet doesn't stay on the server; it is pushed like any change and removed once synced, since nothing is ever
+  deleted on the server. Deleting the default writes the key that takes over in the same upsert. Two devices may each mark a default offline, so readers
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the

@@ -9,6 +9,9 @@ internal object BitcoinKeyRules {
     private const val MAINNET = "bc"
     private const val LNURL = "lnurl"
     private const val SEGWIT_MAX_LENGTH = 90
+
+    // Why: the server's limit on a Lightning key; a longer one would be refused at every push.
+    private const val LIGHTNING_MAX_LENGTH = 2048
     private const val TAPROOT_SIZE = 32
     private val SEGWIT_SIZES = setOf(20, 32)
     private val TESTNET_PREFIXES = listOf("tb1", "bcrt1")
@@ -58,6 +61,8 @@ internal object BitcoinKeyRules {
     private fun validateLightning(input: String): PaymentKeyValidation {
         val text = toBareKey(input).lowercase()
         return when {
+            text.length > LIGHTNING_MAX_LENGTH -> toInvalid(PaymentKeyError.INVALID_LIGHTNING)
+
             // Why: before the invoice check, so a Lightning Address like "lnbcfan@wallet.com" stays valid.
             ADDRESS.matches(text) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LIGHTNING_ADDRESS)
 

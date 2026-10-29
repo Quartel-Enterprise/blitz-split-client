@@ -1272,7 +1272,10 @@ class SyncCoordinatorTest {
         val uploadsBefore = paymentKeys.uploadedUserIds.size
 
         // When
-        paymentKeys.deleteKey(pixKey.id)
+        paymentKeys.deleteKey(
+            id = pixKey.id,
+            nextDefault = null,
+        )
         runCurrent()
 
         // Then

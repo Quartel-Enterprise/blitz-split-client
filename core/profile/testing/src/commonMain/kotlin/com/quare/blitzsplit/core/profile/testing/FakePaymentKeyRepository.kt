@@ -31,9 +31,14 @@ class FakePaymentKeyRepository(
         hasPendingChanges.value = true
     }
 
-    override suspend fun deleteKey(id: String) {
+    override suspend fun deleteKey(
+        id: String,
+        nextDefault: PaymentKey?,
+    ) {
         deletedIds += id
-        keys.value = keys.value.filterNot { it.id == id }
+        val promoted = nextDefault?.copy(isDefault = true)
+        promoted?.let { savedKeys.add(listOf(it)) }
+        keys.value = keys.value.filterNot { it.id == id || it.id == promoted?.id } + listOfNotNull(promoted)
         hasPendingChanges.value = true
     }
 

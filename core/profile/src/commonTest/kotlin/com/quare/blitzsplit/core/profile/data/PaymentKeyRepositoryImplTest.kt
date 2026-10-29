@@ -192,10 +192,14 @@ class PaymentKeyRepositoryImplTest {
         )
 
         // When
-        repository.deleteKey("pix-1")
+        repository.deleteKey(
+            id = "pix-1",
+            nextDefault = null,
+        )
 
         // Then
         val stored = local.row("pix-1")
+        assertEquals("", stored?.value)
         assertEquals(true, stored?.isDeleted)
         assertEquals(false, stored?.isDefault)
         assertEquals(true, stored?.pendingSync)
@@ -204,12 +208,55 @@ class PaymentKeyRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN the default and another key WHEN deleting the default THEN writes both in one upsert`() = runTest {
+        // Given
+        prepareScenario(
+            now = 3_000L,
+            stored = listOf(
+                entity(
+                    id = "pix-1",
+                    isDefault = true,
+                ),
+                entity(
+                    id = "pix-2",
+                    value = "52998224725",
+                    ownerUserId = "user-2",
+                ),
+            ),
+        )
+        val next = PaymentKey(
+            id = "pix-2",
+            type = PaymentKeyType.CPF,
+            value = "52998224725",
+            isDefault = false,
+            addedAt = 1L,
+        )
+
+        // When
+        repository.deleteKey(
+            id = "pix-1",
+            nextDefault = next,
+        )
+
+        // Then
+        assertEquals(listOf(listOf("pix-1", "pix-2")), local.upserts.map { rows -> rows.map { it.id } })
+        assertEquals(true, local.row("pix-1")?.isDeleted)
+        assertEquals(true, local.row("pix-2")?.isDefault)
+        assertEquals(3_000L, local.row("pix-2")?.updatedAt)
+        assertEquals(true, local.row("pix-2")?.pendingSync)
+        assertEquals("user-2", local.row("pix-2")?.ownerUserId)
+    }
+
+    @Test
     fun `GIVEN an id no key has WHEN deleting THEN writes nothing`() = runTest {
         // Given
         prepareScenario(stored = listOf(entity(id = "pix-1")))
 
         // When
-        repository.deleteKey("gone")
+        repository.deleteKey(
+            id = "gone",
+            nextDefault = null,
+        )
 
         // Then
         assertEquals(listOf(entity(id = "pix-1")), local.rows.value)
@@ -762,6 +809,7 @@ private class FakePaymentKeyLocalDataSource(
     stored: List<PaymentKeyEntity>,
 ) : PaymentKeyLocalDataSource {
     val rows = MutableStateFlow(stored)
+    val upserts = mutableListOf<List<PaymentKeyEntity>>()
 
     fun row(id: String): PaymentKeyEntity? = rows.value.find { it.id == id }
 
@@ -776,6 +824,7 @@ private class FakePaymentKeyLocalDataSource(
     override suspend fun getAll(): List<PaymentKeyEntity> = rows.value
 
     override suspend fun upsert(entities: List<PaymentKeyEntity>) {
+        upserts += entities
         entities.forEach(::put)
     }
 

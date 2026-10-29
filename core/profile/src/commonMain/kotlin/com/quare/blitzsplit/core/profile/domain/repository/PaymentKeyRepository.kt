@@ -12,7 +12,11 @@ interface PaymentKeyRepository {
     // Why: one write for a key and the default it takes over from, so no one sees two defaults or none.
     suspend fun saveKeys(keys: List<PaymentKey>)
 
-    suspend fun deleteKey(id: String)
+    // Why: in the same write as the tombstone, the key that takes over as default, if the deleted one was it.
+    suspend fun deleteKey(
+        id: String,
+        nextDefault: PaymentKey?,
+    )
 
     suspend fun uploadPendingKeys(userId: String): Result<Unit>
 

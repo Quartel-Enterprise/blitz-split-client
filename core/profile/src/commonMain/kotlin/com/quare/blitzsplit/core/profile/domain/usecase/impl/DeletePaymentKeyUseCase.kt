@@ -11,11 +11,13 @@ class DeletePaymentKeyUseCase(
     override suspend fun invoke(keyId: String) {
         val keys = repository.observeKeys().first()
         val key = keys.find { it.id == keyId } ?: return
-        repository.deleteKey(keyId)
-        if (!key.isDefault) return
-        keys
+        val nextDefault = keys
             .filter { it.type.method == key.type.method && it.id != keyId }
             .minByOrNull { it.addedAt }
-            ?.let { next -> repository.saveKeys(listOf(next.copy(isDefault = true))) }
+            ?.takeIf { key.isDefault }
+        repository.deleteKey(
+            id = keyId,
+            nextDefault = nextDefault,
+        )
     }
 }

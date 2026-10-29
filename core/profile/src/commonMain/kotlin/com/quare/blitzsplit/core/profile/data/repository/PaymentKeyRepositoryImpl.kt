@@ -45,19 +45,32 @@ class PaymentKeyRepositoryImpl(
         )
     }
 
-    // Why: a tombstone, so the deletion reaches the server and from there the user's other devices.
-    override suspend fun deleteKey(id: String) {
-        val stored = local.getAll().find { it.id == id } ?: return
-        local.upsert(
-            listOf(
-                stored.copy(
-                    isDefault = false,
-                    isDeleted = true,
-                    updatedAt = currentTimeMillis(),
-                    pendingSync = true,
-                ),
-            ),
+    /*
+     * Why: a tombstone, so the deletion reaches the server and from there the user's other devices. It goes up
+     * without its value: a deleted CPF or wallet never stays on the server.
+     */
+    override suspend fun deleteKey(
+        id: String,
+        nextDefault: PaymentKey?,
+    ) {
+        val stored = local.getAll().associateBy { it.id }
+        val deleted = stored[id] ?: return
+        val updatedAt = currentTimeMillis()
+        val tombstone = deleted.copy(
+            value = "",
+            isDefault = false,
+            isDeleted = true,
+            updatedAt = updatedAt,
+            pendingSync = true,
         )
+        val promoted = nextDefault?.let { key ->
+            mapper.toEntity(
+                key = key.copy(isDefault = true),
+                updatedAt = updatedAt,
+                ownerUserId = stored[key.id]?.ownerUserId,
+            )
+        }
+        local.upsert(listOfNotNull(tombstone, promoted))
     }
 
     override suspend fun uploadPendingKeys(userId: String): Result<Unit> = suspendRunCatching {

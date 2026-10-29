@@ -34,6 +34,28 @@ class PaymentKeyMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a default the rules reject WHEN mapping to the domain THEN the next key is the default`() {
+        // Given
+        val stored = listOf(
+            entity(
+                id = "pix-1",
+                value = "12345678900",
+                isDefault = true,
+            ),
+            entity(
+                id = "pix-2",
+                addedAt = 2L,
+            ),
+        )
+
+        // When
+        val keys = mapper.toDomain(stored)
+
+        // Then
+        assertEquals(listOf("pix-2" to true), keys.map { it.id to it.isDefault })
+    }
+
+    @Test
     fun `GIVEN a type this version does not know WHEN mapping to the domain THEN leaves it out`() {
         // Given
         val stored = listOf(
@@ -411,7 +433,7 @@ class PaymentKeyMapperImplTest {
     private fun entity(
         id: String,
         type: String = "cpf",
-        value: String = "12345678909",
+        value: String = validValues[type] ?: "12345678909",
         isDefault: Boolean = false,
         isDeleted: Boolean = false,
         addedAt: Long = 1L,
@@ -427,5 +449,15 @@ class PaymentKeyMapperImplTest {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         ownerUserId = "user-1",
+    )
+
+    // Why: a value each type's rules accept, since the mapper leaves out the keys they reject.
+    private val validValues = mapOf(
+        "cpf" to "12345678909",
+        "phone" to "+5511912345678",
+        "email" to "pierre@email.com",
+        "random" to "7d9f3c2a-1b4e-4c8a-9f2d-3e5a6b4d1a37",
+        "lightning" to "pierre@getalby.com",
+        "onchain" to "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
     )
 }

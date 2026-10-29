@@ -239,7 +239,7 @@ class ProfileViewModel(
         )
     }
 
-    // Why: a stored key that no longer passes the rules (from a newer app, say) isn't shown rather than crash.
+    // Why: the rules tell the format the row names ("· Taproot"); a key they reject never reaches here.
     private fun toItem(key: PaymentKey): PaymentKeyItem? {
         val validation = validatePaymentKey(key.type, key.value, otherKeys = emptyList())
         val format = (validation as? PaymentKeyValidation.Valid)?.format ?: return null

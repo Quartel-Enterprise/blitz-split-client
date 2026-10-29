@@ -353,6 +353,18 @@ class ValidateBitcoinKeyUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a Lightning Address longer than the server takes WHEN validating Lightning THEN is invalid`() {
+        // Given
+        val input = "a".repeat(2_040) + "@wallet.com"
+
+        // When
+        val result = useCase(PaymentKeyType.LIGHTNING, input, otherKeys = emptyList())
+
+        // Then
+        assertEquals(PaymentKeyValidation.Invalid(PaymentKeyError.INVALID_LIGHTNING), result)
+    }
+
+    @Test
     fun `GIVEN an on-chain address WHEN validating Lightning THEN is an invalid Lightning key`() {
         // Given
         val input = SEGWIT_P2WPKH

@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -1201,6 +1202,24 @@ class PaymentKeyViewModelTest {
 
             // When
             repository.keys.value = emptyList()
+
+            // Then
+            assertEquals(profileStack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a save under way WHEN a native back closes the screen before it ends THEN keeps the profile open`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(saveGate = gate)
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(VALID_CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+            navigator.navigateBack()
+
+            // When
+            gate.complete(Unit)
+            runCurrent()
 
             // Then
             assertEquals(profileStack, navigator.backStack.value)

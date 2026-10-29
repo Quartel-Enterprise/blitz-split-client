@@ -62,7 +62,6 @@ class PaymentKeyViewModel(
     private var otherKeys: List<PaymentKey> = emptyList()
     private var validValue: String? = null
     private var isErrorRevealed = false
-    private var hasLeft = false
 
     // Why: these aren't a key half typed but the wrong thing altogether, so they show right away.
     private val alwaysShownErrors = setOf(
@@ -269,10 +268,11 @@ class PaymentKeyViewModel(
         }
     }
 
-    // Why: the save and the deletion both close the screen, and so does the key vanishing, once at most.
+    /*
+     * Why: the save and the deletion both close the screen, and so does the key vanishing, but only while it is
+     * still on top: a native back (a swipe, the browser's, a dialog dismissed) may have closed it already.
+     */
     private fun leave() {
-        if (hasLeft) return
-        hasLeft = true
-        navigator.navigateBack()
+        if (navigator.backStack.value.lastOrNull() == route) navigator.navigateBack()
     }
 }
