@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.profile
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
+import com.quare.blitzsplit.core.account.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
@@ -87,6 +88,8 @@ class ProfileViewModelTest {
     private var completedSignIns = 0
     private var signOutError: Throwable? = null
     private var signOutHangs = false
+    private var unlinkCalls = 0
+    private var unlinkHangs = false
 
     @BeforeTest
     fun setUp() {
@@ -2628,6 +2631,588 @@ class ProfileViewModelTest {
             assertTrue(viewModel.uiState.value.hasPendingChanges)
         }
 
+    @Test
+    fun `GIVEN an account connected with Google WHEN tapping the account row THEN asks to confirm the unlink`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN an account connected with Apple WHEN tapping the account row THEN asks to confirm the unlink`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithApple)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN a local only user WHEN tapping the account row THEN opens no dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = AccountStatus.LocalOnly)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN tapping the account row THEN opens no dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN no internet and Google WHEN tapping the account row THEN opens the unlink dialog unable to unlink`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.canUnlink)
+        }
+
+    @Test
+    fun `GIVEN the unlink dialog WHEN confirming THEN unlinks once and shows it under way`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(1, unlinkCalls)
+        assertTrue(viewModel.uiState.value.isUnlinking)
+        assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN dismissing the dialog THEN keeps it open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        assertTrue(viewModel.uiState.value.isUnlinking)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN opening another dialog THEN keeps the unlink dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.isUnlinking)
+        }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN confirming again THEN does not unlink twice`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(1, unlinkCalls)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN drawing the sign out button THEN disables it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        val canSignOut = viewModel.uiState.value.canSignOut
+
+        // Then
+        assertFalse(canSignOut)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping sign out THEN keeps the unlink dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+        // Then
+        assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        assertEquals(0, signOutCalls)
+    }
+
+    @Test
+    fun `GIVEN the unlink dialog WHEN the unlink succeeds THEN closes the dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(1, unlinkCalls)
+        assertNull(viewModel.uiState.value.dialog)
+        assertFalse(viewModel.uiState.value.isUnlinking)
+        assertFalse(viewModel.uiState.value.hasUnlinkFailed)
+    }
+
+    @Test
+    fun `GIVEN Google with an email WHEN the unlink succeeds THEN shows an anonymous account with its new code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                email = "pierre@gmail.com",
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertNull(viewModel.uiState.value.accountProvider)
+            assertTrue(viewModel.uiState.value.hasAnonymousId)
+            assertNull(viewModel.uiState.value.maskedEmail)
+            assertEquals("P3XR-7MQA-2TKE", viewModel.uiState.value.formattedRecoveryCode)
+            assertTrue(viewModel.uiState.value.showsRecoveryCodeRow)
+        }
+
+    @Test
+    fun `GIVEN Apple and no code due WHEN the unlink succeeds THEN asks for the recovery code sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithApple,
+                prompt = RecoveryCodePrompt.NOT_DUE,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsRecoveryCodePrompt)
+        }
+
+    @Test
+    fun `GIVEN the unlink dialog WHEN the server fails the unlink THEN keeps the dialog and says it failed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.hasUnlinkFailed)
+            assertFalse(viewModel.uiState.value.isUnlinking)
+            assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN a failed unlink WHEN confirming again THEN hides the error while it unlinks again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+            account.unlinkError = null
+            unlinkHangs = true
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertEquals(2, unlinkCalls)
+            assertFalse(viewModel.uiState.value.hasUnlinkFailed)
+            assertTrue(viewModel.uiState.value.isUnlinking)
+        }
+
+    @Test
+    fun `GIVEN a failed unlink WHEN confirming again and it succeeds THEN closes the dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+            account.unlinkError = null
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertEquals(2, unlinkCalls)
+            assertNull(viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasUnlinkFailed)
+            assertNull(viewModel.uiState.value.accountProvider)
+        }
+
+    @Test
+    fun `GIVEN a failed unlink WHEN dismissing the dialog THEN closes it and clears the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasUnlinkFailed)
+        }
+
+    @Test
+    fun `GIVEN a failed unlink dismissed WHEN opening the unlink dialog again THEN shows it without the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                unlinkError = IllegalStateException("server error"),
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // Then
+            assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+            assertFalse(viewModel.uiState.value.hasUnlinkFailed)
+        }
+
+    @Test
+    fun `GIVEN no internet and the unlink dialog WHEN confirming THEN does not unlink`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            online = false,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(0, unlinkCalls)
+        assertFalse(viewModel.uiState.value.isUnlinking)
+        assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.accountProvider)
+    }
+
+    @Test
+    fun `GIVEN no dialog open WHEN an unlink confirmation arrives THEN does not unlink`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // Then
+        assertEquals(0, unlinkCalls)
+        assertFalse(viewModel.uiState.value.isUnlinking)
+    }
+
+    @Test
+    fun `GIVEN the sign out dialog WHEN an unlink confirmation arrives THEN does not unlink`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertEquals(0, unlinkCalls)
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN a sign out scheduled and the unlink dialog WHEN confirming THEN does not unlink`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutScheduled = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertEquals(0, unlinkCalls)
+            assertFalse(viewModel.uiState.value.isUnlinking)
+        }
+
+    @Test
+    fun `GIVEN a sign out under way and the unlink dialog WHEN confirming THEN does not unlink`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+            viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+            // Then
+            assertEquals(0, unlinkCalls)
+            assertFalse(viewModel.uiState.value.isUnlinking)
+        }
+
+    @Test
+    fun `GIVEN Google WHEN exporting THEN asks the platform to save exactly the exported data`() =
+        runTest(testDispatcher) {
+            // Given
+            val json = """{"account":{"type":"google"}}"""
+            prepareScenario(
+                status = connectedWithGoogle,
+                exportJson = json,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.SaveExport(json)), actions)
+        }
+
+    @Test
+    fun `GIVEN no internet and a local only user WHEN exporting THEN still asks the platform to save the data`() =
+        runTest(testDispatcher) {
+            // Given
+            val json = """{"account":{"type":"none"}}"""
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                online = false,
+                exportJson = json,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.SaveExport(json)), actions)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN exporting THEN asks the platform to save the data`() = runTest(testDispatcher) {
+        // Given
+        val json = """{"account":{"type":"anonymous"}}"""
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+            exportJson = json,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+
+        // Then
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.SaveExport(json)), actions)
+    }
+
+    @Test
+    fun `GIVEN Google WHEN tapping delete account THEN opens the delete account screen over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.DeleteAccount), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Apple WHEN tapping delete account THEN opens the delete account screen over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithApple)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.DeleteAccount), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a local only user WHEN a delete account tap arrives THEN stays on the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN an account connected with Google WHEN the profile opens THEN shows delete account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsDeleteAccount)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN the profile opens THEN hides delete account`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsDeleteAccount)
+    }
+
+    @Test
+    fun `GIVEN a local only user WHEN the profile opens THEN hides delete account`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = AccountStatus.LocalOnly)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsDeleteAccount)
+    }
+
+    @Test
+    fun `GIVEN Apple connecting WHEN its ID token arrives with an authorization code THEN passes it on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.APPLE))
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.APPLE))
+
+            // When
+            viewModel.onEvent(
+                ProfileUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null, "auth-code"),
+            )
+
+            // Then
+            assertEquals(listOf<String?>("auth-code"), account.idTokenAuthorizationCodes)
+        }
+
+    @Test
+    fun `GIVEN Google connecting natively WHEN its ID token arrives without an authorization code THEN passes none`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(
+                ProfileUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null),
+            )
+
+            // Then
+            assertEquals(listOf<String?>(null), account.idTokenAuthorizationCodes)
+        }
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
 
     private val cpfKey = paymentKey("cpf", PaymentKeyType.CPF, "12345678909", isDefault = true)
@@ -2702,6 +3287,9 @@ class ProfileViewModelTest {
         signOutHangs: Boolean = false,
         keys: List<PaymentKey> = emptyList(),
         hasPendingKeys: Boolean = false,
+        unlinkError: Throwable? = null,
+        unlinkHangs: Boolean = false,
+        exportJson: String = "{}",
     ) {
         syncRetries = 0
         signOutCalls = 0
@@ -2710,12 +3298,15 @@ class ProfileViewModelTest {
         completedSignIns = 0
         this@ProfileViewModelTest.signOutError = signOutError
         this@ProfileViewModelTest.signOutHangs = signOutHangs
+        unlinkCalls = 0
+        this@ProfileViewModelTest.unlinkHangs = unlinkHangs
         account = FakeAccountRepository(initialStatus = status).also {
             it.email = email
             it.recoveryCode = code
             it.recoveryCodePrompt = prompt
             it.signOutWhenSynced = signOutScheduled
             it.connectResult = connectResult
+            it.unlinkError = unlinkError
         }
         profiles = FakeProfileRepository(profile).also { it.hasPendingChanges.value = hasPendingProfile }
         paymentKeys = FakePaymentKeyRepository(keys).also { it.hasPendingChanges.value = hasPendingKeys }
@@ -2747,8 +3338,12 @@ class ProfileViewModelTest {
             },
             signOutWhenSynced = SignOutWhenSynced { signOutWhenSyncedCalls++ },
             cancelSignOutWhenSynced = CancelSignOutWhenSynced { cancelSignOutWhenSyncedCalls++ },
-            unlinkAccount = UnlinkAccountUseCase(account),
-            exportUserData = ExportUserData { "{}" },
+            unlinkAccount = UnlinkAccount {
+                unlinkCalls++
+                if (this@ProfileViewModelTest.unlinkHangs) awaitCancellation()
+                UnlinkAccountUseCase(account)()
+            },
+            exportUserData = ExportUserData { exportJson },
             validatePaymentKey = ValidatePaymentKeyUseCase(),
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),

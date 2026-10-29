@@ -82,6 +82,7 @@ class FakeAccountRepository(
     var signOutCount = 0
     var unlinkCount = 0
     var deleteAccountCount = 0
+    var keepAppleTokensCount = 0
 
     var connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED)
     var registerError: Throwable? = null
@@ -117,8 +118,9 @@ class FakeAccountRepository(
         snapshot.collect { }
     }
 
+    // Why: the fake has no remote session to read Apple's tokens from, so it only counts the calls.
     override suspend fun keepAppleTokens() {
-        // Why: the fake has no remote session to read Apple's tokens from.
+        keepAppleTokensCount++
     }
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = sessionUser

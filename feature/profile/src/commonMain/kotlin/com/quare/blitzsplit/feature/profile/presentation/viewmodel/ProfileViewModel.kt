@@ -342,7 +342,9 @@ class ProfileViewModel(
         showDialog(signOutDialogOf(state))
     }
 
+    // Why: a sign out or unlink under way keeps its dialog, which shows how it ends.
     private fun showDialog(dialog: ProfileDialog) {
+        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
         uiState.update {
             it.copy(
                 dialog = dialog,
