@@ -1597,21 +1597,20 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN an account WHEN deleting it THEN the server goes first and then the device copy like a sign out`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedProfile = pierre,
-                status = google,
-                storedKeys = listOf(pixKey),
-            )
+    fun `GIVEN an account WHEN deleting it THEN the server goes first and then the keys and the profile`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+        )
 
-            // When
-            coordinator.deleteAccount()
+        // When
+        coordinator.deleteAccount()
 
-            // Then
-            assertEquals(listOf("account delete", "account sign out", "keys clear", "profile clear"), calls)
-        }
+        // Then
+        assertEquals(listOf("account delete", "keys clear", "profile clear"), calls)
+    }
 
     @Test
     fun `GIVEN the server fails to delete WHEN deleting the account THEN fails and keeps every local data`() = runTest {
@@ -1739,7 +1738,7 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN a failed sign out after the server deletion WHEN deleting THEN succeeds and erases the copy`() =
+    fun `GIVEN a deleted account WHEN erasing the device copy THEN skips the sign out the server would refuse`() =
         runTest {
             // Given
             prepareScenario(
@@ -1747,14 +1746,14 @@ class SyncCoordinatorTest {
                 status = google,
                 storedKeys = listOf(pixKey),
             )
-            account.signOutError = IllegalStateException("database closed")
 
             // When
             val result = coordinator.deleteAccount()
 
             // Then
             assertTrue(result.isSuccess)
-            assertEquals(1, account.deleteAccountCount)
+            assertEquals(0, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
             assertNull(profile.profile.value)
             assertTrue(paymentKeys.keys.value.isEmpty())
         }

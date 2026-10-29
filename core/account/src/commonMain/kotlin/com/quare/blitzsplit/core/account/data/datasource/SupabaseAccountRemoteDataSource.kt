@@ -180,6 +180,10 @@ class SupabaseAccountRemoteDataSource(
         functions.invoke(function = DELETE_ACCOUNT_FUNCTION)
     }
 
+    override suspend fun clearLocalSession() {
+        auth.clearSession()
+    }
+
     // Why: the server only revokes the session, so a slow or captive network can't hold the sign out for long.
     private val remoteSignOutTimeout = 5.seconds
 

@@ -51,6 +51,9 @@ interface AccountRemoteDataSource {
 
     suspend fun deleteAccount()
 
+    // Why: ends the session here only, for a user the server no longer has, whose logout could only fail.
+    suspend fun clearLocalSession()
+
     // Why: ends the session on this device even offline, when the server can't be told.
     suspend fun signOut()
 }

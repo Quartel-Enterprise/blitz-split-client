@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -30,8 +29,8 @@ fun rememberExportFileSaver(): (json: String) -> Unit {
     val context = LocalContext.current
     val resources = LocalResources.current
     val scope = rememberCoroutineScope()
-    // Why: the save sheet may outlive the activity (a rotation, the process reclaimed), so the JSON waits saved.
-    var pendingJson by rememberSaveable { mutableStateOf<String?>(null) }
+    // Why: in memory, not the saved state, which the system may write to disk with the keys and email in it.
+    var pendingJson by remember { mutableStateOf<String?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(EXPORT_MIME_TYPE)) { uri ->
         val json = pendingJson
         pendingJson = null

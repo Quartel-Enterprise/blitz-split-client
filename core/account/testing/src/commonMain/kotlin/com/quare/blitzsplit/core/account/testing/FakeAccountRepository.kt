@@ -244,6 +244,14 @@ class FakeAccountRepository(
     override suspend fun deleteAccount(): Result<Unit> {
         deleteAccountCount++
         deleteAccountError?.let { return Result.failure(it) }
+        sessionUser = null
+        snapshot.value = AccountSnapshot(
+            status = AccountStatus.LocalOnly,
+            recoveryCode = null,
+            recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE,
+            email = null,
+            signOutWhenSynced = false,
+        )
         return Result.success(Unit)
     }
 

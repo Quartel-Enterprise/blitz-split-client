@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
@@ -39,6 +40,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 class AccountRepositoryImplTest {
     private lateinit var local: FakeAccountLocalDataSource
@@ -2192,7 +2194,7 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a Google account WHEN the same user is mirrored without Google THEN its recovery code comes due`() =
+    fun `GIVEN a Google account WHEN the same user is mirrored without Google THEN waits for a new recovery code`() =
         runTest {
             // Given
             prepareScenario(currentUser = googleUser)
@@ -2206,7 +2208,8 @@ class AccountRepositoryImplTest {
             // Then
             val account = repository.observeAccount().first()
             assertEquals(AccountStatus.Anonymous("user-1"), account.status)
-            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+            assertNull(account.recoveryCode)
+            assertEquals(RecoveryCodePrompt.NOT_DUE, account.recoveryCodePrompt)
         }
 
     @Test
@@ -2283,6 +2286,7 @@ class AccountRepositoryImplTest {
         startKeepingAppleTokens()
         remote.keepAppleTokenError = IllegalStateException("server error")
         remote.appleRefreshTokens.emit("refresh-1")
+        advanceTimeBy(10.seconds)
         runCurrent()
         remote.keepAppleTokenError = null
 
@@ -2292,6 +2296,27 @@ class AccountRepositoryImplTest {
 
         // Then
         assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-2")), remote.keptAppleTokens)
+    }
+
+    @Test
+    fun `GIVEN a failed upload of an Apple refresh token WHEN the server is back THEN a retry keeps it`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            browserSignInProvider = AccountProvider.APPLE,
+        )
+        startKeepingAppleTokens()
+        remote.keepAppleTokenError = IllegalStateException("server error")
+        remote.appleRefreshTokens.emit("refresh-1")
+        runCurrent()
+
+        // When
+        remote.keepAppleTokenError = null
+        advanceTimeBy(10.seconds)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf<AppleToken>(AppleToken.RefreshToken("refresh-1")), remote.keptAppleTokens)
     }
 
     @Test
@@ -2388,12 +2413,11 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a Google account WHEN deleting the account THEN deletes it on the server and keeps the device data`() =
+    fun `GIVEN a Google account WHEN deleting the account THEN deletes it on the server and ends the session here`() =
         runTest {
             // Given
             prepareScenario(currentUser = googleUserWithEmail)
             repository.ensureRegistered()
-            val before = local.get()
 
             // When
             val result = repository.deleteAccount()
@@ -2401,7 +2425,9 @@ class AccountRepositoryImplTest {
             // Then
             assertTrue(result.isSuccess)
             assertEquals(1, remote.deleteAccountCount)
-            assertEquals(before, local.get())
+            assertEquals(1, remote.clearedLocalSessions)
+            assertEquals(0, remote.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
         }
 
     @Test
@@ -2643,6 +2669,7 @@ private class FakeAccountRemoteDataSource(
     var keepsStaleUserOnUnlink = false
     var deleteAccountError: Throwable? = null
     var deleteAccountCount = 0
+    var clearedLocalSessions = 0
 
     override fun observeSessionUser(): Flow<SessionUser?> = sessionUpdates
 
@@ -2731,6 +2758,12 @@ private class FakeAccountRemoteDataSource(
     override suspend fun deleteAccount() {
         deleteAccountError?.let { throw it }
         deleteAccountCount++
+    }
+
+    override suspend fun clearLocalSession() {
+        clearedLocalSessions++
+        currentUser = null
+        sessionUsers.value = null
     }
 
     override suspend fun signOut() {

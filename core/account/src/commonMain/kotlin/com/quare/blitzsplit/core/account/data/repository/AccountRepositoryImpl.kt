@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAtomicApi::class)
 class AccountRepositoryImpl(
@@ -78,11 +80,8 @@ class AccountRepositoryImpl(
     override suspend fun keepAppleTokens() {
         remote.observeAppleRefreshTokens().collect { token ->
             // Why: the collector lives as long as the app, so one failed read can't end it.
-            suspendRunCatching {
-                if (local.get().browserSignInProvider == AccountProvider.APPLE.code) {
-                    remote.keepAppleToken(AppleToken.RefreshToken(token))
-                }
-            }
+            val isAppleTrip = suspendRunCatching { local.get().browserSignInProvider == AccountProvider.APPLE.code }
+            if (isAppleTrip.getOrDefault(false)) keepAppleToken(AppleToken.RefreshToken(token))
         }
     }
 
@@ -263,11 +262,21 @@ class AccountRepositoryImpl(
         }
     }
 
-    override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching { remote.deleteAccount() }
+    override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching {
+        remote.deleteAccount()
+        remote.clearLocalSession()
+        local.clear()
+    }
 
-    // Why: the account works without it, so a failure only means a deletion that can't revoke at Apple.
+    /*
+     * Why: the account works without it, so a failure only means a deletion that can't revoke at Apple. Apple
+     * hands each token out once, so a flaky network gets a few more tries before it is given up.
+     */
     private suspend fun keepAppleToken(token: AppleToken) {
-        suspendRunCatching { remote.keepAppleToken(token) }
+        repeat(APPLE_TOKEN_ATTEMPTS) { attempt ->
+            if (suspendRunCatching { remote.keepAppleToken(token) }.isSuccess) return
+            if (attempt < APPLE_TOKEN_ATTEMPTS - 1) delay(appleTokenRetryDelay * (attempt + 1))
+        }
     }
 
     /*
@@ -408,6 +417,8 @@ class AccountRepositoryImpl(
         user.socialProvider != null -> copy(
             userId = user.userId,
             provider = user.socialProvider.code,
+            // Why: a code from before Google or Apple may be replaced on another device; a new one comes if it goes.
+            recoveryCode = null,
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
             email = user.email,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
@@ -416,9 +427,9 @@ class AccountRepositoryImpl(
         else -> copy(
             userId = user.userId,
             provider = null,
-            // Why: Google or Apple gone from the same user leaves the code as the only way back, so it is offered.
+            // Why: Google or Apple gone from the same user on another device: the sync then issues a code to show.
             recoveryCodePrompt = if (provider != null && userId == user.userId) {
-                RecoveryCodePrompt.DUE.code
+                RecoveryCodePrompt.NOT_DUE.code
             } else {
                 recoveryCodePrompt
             },
@@ -427,9 +438,15 @@ class AccountRepositoryImpl(
         )
     }
 
+    private val appleTokenRetryDelay = 2.seconds
+
     private enum class BrowserTrip {
         NONE,
         OPEN,
         LEFT,
+    }
+
+    private companion object {
+        const val APPLE_TOKEN_ATTEMPTS = 3
     }
 }
