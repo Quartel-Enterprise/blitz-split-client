@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -242,10 +243,13 @@ private fun SyncBadgeChip(
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
+        // Why: the chip shares the header row with the profile button, so a long label may wrap to two lines.
         Row(
-            modifier = Modifier.height(32.dp).padding(
+            modifier = Modifier.heightIn(min = 32.dp).padding(
                 start = 8.dp,
                 end = 12.dp,
+                top = 6.dp,
+                bottom = 6.dp,
             ),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,

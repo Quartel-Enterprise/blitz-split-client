@@ -98,12 +98,10 @@ export function GroupsScreen() {
           {/* Why: the selected Groups tab already names the page; the heading stays for screen readers. */}
           <h1 className="sr-only">{t('groups_title')}</h1>
           {sync && (
-            <div className="flex">
-              <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
-                {sync.icon}
-                {t(sync.label)}
-              </SyncBadge>
-            </div>
+            <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
+              {sync.icon}
+              {t(sync.label)}
+            </SyncBadge>
           )}
           <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
             <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
@@ -142,7 +140,7 @@ export function GroupsScreen() {
   )
 }
 
-const syncBadgeClass = 'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground'
+const syncBadgeClass = 'inline-flex h-6 self-start items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground'
 
 function SyncBadge({ canRetry, onRetry, children }: { canRetry: boolean; onRetry: () => void; children: ReactNode }) {
   if (!canRetry) return <span className={syncBadgeClass}>{children}</span>
