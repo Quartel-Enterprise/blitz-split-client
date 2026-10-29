@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, ChevronRight, CloudOff, Info, KeyRound, Loader2, LogOut, Plus, RotateCw } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, ChevronRight, CloudOff, Download, Info, KeyRound, Loader2, LogOut, Plus, RotateCw } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
+import { downloadExport } from '@/lib/export'
 import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -34,6 +35,8 @@ export function ProfileScreen() {
       void navigator.clipboard.writeText(action.value).then(() => toast(t('recoveryCode_copied')))
     } else if (action.type === 'open') {
       window.open(action.value, '_blank', 'noopener,noreferrer')
+    } else if (action.type === 'export') {
+      downloadExport(action.value)
     }
   })
   if (!presenter || !state) return null
@@ -78,6 +81,7 @@ export function ProfileScreen() {
             >
               <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
             </Button>
+            {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-7" />}
           </div>
         </div>
       </main>
@@ -168,6 +172,9 @@ function AccountCard({ presenter, state, className }: CardProps) {
         {provider ? (
           <Row title={providerLabel(provider, true)} detail={state.maskedEmail && t('profile_accountConnectedDetail', { email: state.maskedEmail })}>
             <Badge variant="secondary">{t('profile_accountConnected')}</Badge>
+            <Button size="sm" variant="outline" onClick={() => presenter.account()}>
+              {t('profile_accountDisconnect')}
+            </Button>
           </Row>
         ) : (
           <div className="flex flex-col gap-3 pb-3">
@@ -272,6 +279,12 @@ function AboutCard({ presenter, className }: { presenter: ProfilePresenter; clas
         <CardTitle>{t('profile_about')}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col divide-y">
+        {/* Built from this browser's copy, so it works offline too */}
+        <Row title={t('profile_export')} detail={t('profile_exportDetail')}>
+          <Button size="sm" variant="outline" onClick={() => presenter.export()}>
+            <Download /> {t('profile_exportButton')}
+          </Button>
+        </Row>
         {links.map((link, index) => (
           <button
             key={link.label}
@@ -285,6 +298,27 @@ function AboutCard({ presenter, className }: { presenter: ProfilePresenter; clas
         <Row title={t('profile_version')}>
           <span className="text-sm text-muted-foreground">{__APP_VERSION__}</span>
         </Row>
+      </CardContent>
+    </Card>
+  )
+}
+
+/** "Delete account and data", at the very end and apart from "Sign out": only an account has one to delete. */
+function DeleteAccountCard({ presenter, className }: { presenter: ProfilePresenter; className?: string }) {
+  return (
+    <Card className={cn('border-destructive', className)}>
+      <CardContent className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <div className="flex min-w-0 flex-[1_1_240px] flex-col gap-1">
+          <h2 className="text-base font-semibold text-destructive">{t('profile_deleteAccount')}</h2>
+          <p className="text-[13px] text-muted-foreground">{t('profile_deleteAccountDetail')}</p>
+        </div>
+        <Button
+          variant="outline"
+          className="w-full border-destructive text-destructive hover:text-destructive sm:w-auto"
+          onClick={() => presenter.deleteAccount()}
+        >
+          {t('profile_deleteAccountButton')}
+        </Button>
       </CardContent>
     </Card>
   )

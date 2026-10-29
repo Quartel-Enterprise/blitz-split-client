@@ -48,6 +48,10 @@ class JsProfileState(
     val hasSignInFailed: Boolean,
     val isSigningOut: Boolean,
     val hasSignOutFailed: Boolean,
+    val isUnlinking: Boolean,
+    val hasUnlinkFailed: Boolean,
+    val canUnlink: Boolean,
+    val showsDeleteAccount: Boolean,
     // Why: Pix first, each method's default first.
     val paymentKeys: Array<JsPaymentKeyItem>,
 )
@@ -62,7 +66,7 @@ class JsPaymentKeyItem(
 )
 
 class JsProfileAction(
-    // Why: "copy" with the code, or "open" with a URL.
+    // Why: "copy" with the code, "open" with a URL, or "export" with the JSON to save.
     val type: String,
     val value: String,
 )
@@ -105,6 +109,10 @@ class ProfilePresenter {
                 hasSignInFailed = state.hasSignInFailed,
                 isSigningOut = state.isSigningOut,
                 hasSignOutFailed = state.hasSignOutFailed,
+                isUnlinking = state.isUnlinking,
+                hasUnlinkFailed = state.hasUnlinkFailed,
+                canUnlink = state.canUnlink,
+                showsDeleteAccount = state.showsDeleteAccount,
                 paymentKeys = state.paymentKeys
                     .map { key ->
                         JsPaymentKeyItem(
@@ -126,6 +134,7 @@ class ProfilePresenter {
             when (action) {
                 is ProfileUiAction.CopyToClipboard -> JsProfileAction("copy", action.formattedCode)
                 is ProfileUiAction.OpenUrl -> JsProfileAction("open", action.url)
+                is ProfileUiAction.SaveExport -> JsProfileAction("export", action.json)
                 is ProfileUiAction.LaunchNativeSignIn -> null
             }
         }
@@ -164,6 +173,22 @@ class ProfilePresenter {
 
     fun recoveryCode() {
         viewModel.onEvent(ProfileUiEvent.OnRecoveryCodeClicked)
+    }
+
+    fun account() {
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+    }
+
+    fun confirmUnlink() {
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+    }
+
+    fun export() {
+        viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+    }
+
+    fun deleteAccount() {
+        viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
     }
 
     fun retrySync() {

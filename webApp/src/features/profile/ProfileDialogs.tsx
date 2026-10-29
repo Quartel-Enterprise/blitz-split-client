@@ -1,4 +1,4 @@
-import { Copy, Loader2 } from 'lucide-react'
+import { Copy, Loader2, WifiOff } from 'lucide-react'
 import type { JsProfileState, ProfilePresenter } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { providerLabel } from '@/components/common'
@@ -59,6 +59,8 @@ export function ProfileDialogs({ presenter, state }: { presenter: ProfilePresent
       )
     case 'ERASE_PROFILE':
       return <EraseProfileDialog presenter={presenter} state={state} onClose={onClose} />
+    case 'UNLINK_ACCOUNT':
+      return <UnlinkAccountDialog presenter={presenter} state={state} onClose={onClose} />
     default:
       return null
   }
@@ -112,6 +114,48 @@ function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfileP
       <Button variant="destructive" disabled={!state.canErase} onClick={() => presenter.confirmErase()}>
         {state.isSigningOut && <Loader2 className="animate-spin" />}
         {t('profile_eraseConfirm')}
+      </Button>
+    </ResponsiveDialog>
+  )
+}
+
+/**
+ * "Disconnect your Google account?": the browser goes on without an account, and the recovery code
+ * shows by itself once it's done. It opens offline too, to say why "Disconnect" waits.
+ */
+function UnlinkAccountDialog({ presenter, state, onClose }: { presenter: ProfilePresenter; state: JsProfileState; onClose: () => void }) {
+  const provider = providerLabel(state.accountProvider as AccountProvider, true)
+  const notice = state.showsOfflineNotice || state.hasUnlinkFailed
+  return (
+    <ResponsiveDialog
+      title={t('profile_unlinkTitle', { provider })}
+      description={t('profile_unlinkBody')}
+      onClose={onClose}
+      body={
+        notice && (
+          <div className="flex flex-col gap-2">
+            {state.showsOfflineNotice && (
+              <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
+                <WifiOff className="size-4 shrink-0" />
+                {t('profile_unlinkOffline')}
+              </p>
+            )}
+            {state.hasUnlinkFailed && (
+              <p role="alert" className="text-sm text-destructive">
+                {t('profile_unlinkFailed')}
+              </p>
+            )}
+          </div>
+        )
+      }
+    >
+      {/* The ViewModel ignores closing while it unlinks, so Cancel waits too */}
+      <Button variant="outline" disabled={state.isUnlinking} onClick={onClose}>
+        {t('common_cancel')}
+      </Button>
+      <Button variant="destructive" disabled={!state.canUnlink} onClick={() => presenter.confirmUnlink()}>
+        {state.isUnlinking && <Loader2 className="animate-spin" />}
+        {t('profile_unlinkConfirm')}
       </Button>
     </ResponsiveDialog>
   )
