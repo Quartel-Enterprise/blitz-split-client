@@ -29,11 +29,13 @@ private const val KEY_HAS_ASKED = "has_asked"
 class NotificationPermissionAccess internal constructor(
     private val activity: Activity,
     private val launcher: ManagedActivityResultLauncher<String, Boolean>,
+    private val askMemory: AskMemory,
 ) {
     fun read(): SystemNotificationPermission = activity.readNotificationPermission()
 
     fun request() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            askMemory.hadRationale = activity.shouldShowNotificationRationale()
             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
@@ -53,11 +55,23 @@ fun rememberNotificationPermissionAccess(
     onResult: (SystemNotificationPermission) -> Unit,
 ): NotificationPermissionAccess {
     val activity = requireNotNull(LocalActivity.current)
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        activity.markNotificationPermissionAsked()
+    val askMemory = remember { AskMemory() }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        /*
+         * Why: a dialog dismissed by tapping outside it leaves the rationale as it was and Android may still ask, so
+         * only an answer that moved or kept the rationale on counts as asked.
+         */
+        if (isGranted || askMemory.hadRationale || activity.shouldShowNotificationRationale()) {
+            activity.markNotificationPermissionAsked()
+        }
         onResult(activity.readNotificationPermission())
     }
-    return remember(activity, launcher) { NotificationPermissionAccess(activity, launcher) }
+    return remember(activity, launcher) { NotificationPermissionAccess(activity, launcher, askMemory) }
+}
+
+// Why: the rationale flag right before the system dialog, to tell a dismissed dialog from a refusal.
+internal class AskMemory {
+    var hadRationale: Boolean = false
 }
 
 private fun Activity.readNotificationPermission(): SystemNotificationPermission = when {
@@ -71,13 +85,14 @@ private fun Activity.readNotificationPermission(): SystemNotificationPermission 
 
     !hasAskedNotificationPermission() -> SystemNotificationPermission.ASKABLE
 
-    ActivityCompat.shouldShowRequestPermissionRationale(
-        this,
-        Manifest.permission.POST_NOTIFICATIONS,
-    ) -> SystemNotificationPermission.ASKABLE
+    shouldShowNotificationRationale() -> SystemNotificationPermission.ASKABLE
 
     else -> SystemNotificationPermission.DENIED
 }
+
+private fun Activity.shouldShowNotificationRationale(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)
 
 private fun Context.hasAskedNotificationPermission(): Boolean =
     getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE).getBoolean(KEY_HAS_ASKED, false)

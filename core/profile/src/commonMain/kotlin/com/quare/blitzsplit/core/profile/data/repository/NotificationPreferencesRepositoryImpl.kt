@@ -81,15 +81,18 @@ class NotificationPreferencesRepositoryImpl(
     // Why: like the keys, another user's preferences never go up as this account's, which keeps its own or the defaults.
     override suspend fun downloadPreferences(userId: String): Result<Unit> = suspendRunCatching {
         val remotePreferences = remote.fetch(userId)
-        local.deleteOtherUsers(userId)
-        local.claimUnowned(userId)
-        remotePreferences?.let {
-            local.applyRemote(
-                mapper.toEntity(
-                    dto = it,
-                    ownerUserId = userId,
-                ),
-            )
+        // Why: under the toggles' lock, so a toggle never reads or writes the row between these steps.
+        writeLock.withLock {
+            local.deleteOtherUsers(userId)
+            local.claimUnowned(userId)
+            remotePreferences?.let {
+                local.applyRemote(
+                    mapper.toEntity(
+                        dto = it,
+                        ownerUserId = userId,
+                    ),
+                )
+            }
         }
     }
 

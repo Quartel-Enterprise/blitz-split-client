@@ -317,26 +317,25 @@ class NotificationPreferencesRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN preferences stamped ahead of the clock WHEN changing a toggle THEN stores it newer`() =
-        runTest {
-            // Given
-            prepareScenario(
-                now = 1_000L,
-                stored = entity(
-                    updatedAt = 5_000L,
-                    pendingSync = false,
-                ),
-            )
+    fun `GIVEN preferences stamped ahead of the clock WHEN changing a toggle THEN stores it newer`() = runTest {
+        // Given
+        prepareScenario(
+            now = 1_000L,
+            stored = entity(
+                updatedAt = 5_000L,
+                pendingSync = false,
+            ),
+        )
 
-            // When
-            repository.updatePreference(
-                type = NotificationType.INVITES,
-                isEnabled = true,
-            )
+        // When
+        repository.updatePreference(
+            type = NotificationType.INVITES,
+            isEnabled = true,
+        )
 
-            // Then
-            assertEquals(5_001L, local.row.value?.updatedAt)
-        }
+        // Then
+        assertEquals(5_001L, local.row.value?.updatedAt)
+    }
 
     @Test
     fun `GIVEN preferences of user 2 on a profile of user 1 WHEN changing a toggle THEN they stay user 2`() = runTest {
