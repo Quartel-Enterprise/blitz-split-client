@@ -1682,6 +1682,24 @@ class GroupRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a group no longer on the device WHEN adding a member THEN returns the error and stores nothing`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+            // When
+            val result = repository.addMember(
+                groupId = "group-gone",
+                member = bruno,
+                addedAt = 5_000L,
+            )
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertTrue(local.members.value.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the device fails to write WHEN adding a member THEN returns the error instead of throwing`() = runTest {
         // Given
         prepareScenario(
@@ -1974,6 +1992,35 @@ class GroupRepositoryImplTest {
         assertIs<IllegalStateException>(result.exceptionOrNull())
         assertEquals(true, local.member("m-2")?.isRemoved)
         assertEquals(true, local.member("m-2")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the server fails the delete WHEN uploading THEN what went up before it is synced`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+                removedMember(id = "m-2"),
+            ),
+            deleteMembersError = IllegalStateException("server down"),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(false, local.group("group-1")?.pendingSync)
+        assertEquals(false, local.member("m-1")?.pendingSync)
     }
 
     @Test
@@ -2413,6 +2460,7 @@ private class FakeGroupLocalDataSource(
 
     override suspend fun insertMember(entity: GroupMemberEntity) {
         memberWriteError?.let { throw it }
+        check(group(entity.groupId) != null) { "No group ${entity.groupId}" }
         put(entity)
     }
 

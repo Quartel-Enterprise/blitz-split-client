@@ -108,6 +108,19 @@ interface GroupDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroupIfAbsent(entity: GroupEntity)
 
+    /*
+     * Why: a group a sync deleted in the meantime takes nobody. Its member would stay pending with no group to go up
+     * with, and keep the sync running round after round.
+     */
+    @Transaction
+    suspend fun insertMemberIntoGroup(entity: GroupMemberEntity) {
+        check(hasGroup(entity.groupId)) { "No group ${entity.groupId}" }
+        insertMember(entity)
+    }
+
+    @Query("SELECT EXISTS(SELECT 1 FROM split_group WHERE id = :id)")
+    suspend fun hasGroup(id: String): Boolean
+
     @Insert
     suspend fun insertMember(entity: GroupMemberEntity)
 

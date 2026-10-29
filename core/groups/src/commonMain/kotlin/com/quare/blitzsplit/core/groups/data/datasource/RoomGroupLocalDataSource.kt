@@ -22,7 +22,7 @@ class RoomGroupLocalDataSource(
     override suspend fun getRemovedMemberIds(ownerUserId: String): List<String> = dao.getRemovedMemberIds(ownerUserId)
 
     override suspend fun insertMember(entity: GroupMemberEntity) {
-        dao.insertMember(entity)
+        dao.insertMemberIntoGroup(entity)
     }
 
     override suspend fun renameMember(

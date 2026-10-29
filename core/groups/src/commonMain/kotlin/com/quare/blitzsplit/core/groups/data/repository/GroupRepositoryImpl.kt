@@ -113,10 +113,7 @@ class GroupRepositoryImpl(
         if (pendingMembers.isNotEmpty()) {
             remote.upsertMembers(pendingMembers.map(mapper::toDto))
         }
-        if (removedMemberIds.isNotEmpty()) {
-            remote.deleteMembers(removedMemberIds)
-            local.deleteRemovedMembers(removedMemberIds)
-        }
+        // Why: before the deletes, so one that fails doesn't push again what the server already took.
         pendingGroups.forEach {
             local.markGroupSynced(
                 id = it.id,
@@ -128,6 +125,10 @@ class GroupRepositoryImpl(
                 id = it.id,
                 syncedUpdatedAt = it.updatedAt,
             )
+        }
+        if (removedMemberIds.isNotEmpty()) {
+            remote.deleteMembers(removedMemberIds)
+            local.deleteRemovedMembers(removedMemberIds)
         }
     }
 

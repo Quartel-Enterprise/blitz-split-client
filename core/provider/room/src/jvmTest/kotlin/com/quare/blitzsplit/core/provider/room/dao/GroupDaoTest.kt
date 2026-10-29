@@ -10,6 +10,9 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 // Why: the invite code and the member removal follow rules in the SQL itself, so it runs against SQLite rather than a fake.
 class GroupDaoTest {
@@ -217,6 +220,28 @@ class GroupDaoTest {
                 .name,
         )
     }
+
+    @Test
+    fun `GIVEN a group no longer on the device WHEN adding a member to it THEN fails and leaves nothing pending`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 1L))
+
+            // When
+            val result = runCatching {
+                dao.insertMemberIntoGroup(
+                    member(id = "ana").copy(
+                        groupId = "group-gone",
+                        pendingSync = true,
+                    ),
+                )
+            }
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertTrue(dao.observeMembers().first().isEmpty())
+            assertFalse(dao.observeHasPending().first())
+        }
 
     private fun entity(
         name: String = "Viagem Floripa",

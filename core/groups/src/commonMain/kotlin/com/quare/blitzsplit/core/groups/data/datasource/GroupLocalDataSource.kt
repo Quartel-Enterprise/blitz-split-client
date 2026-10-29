@@ -19,6 +19,7 @@ interface GroupLocalDataSource {
     // Why: the ids of the members removed here, still to delete on the server.
     suspend fun getRemovedMemberIds(ownerUserId: String): List<String>
 
+    // Why: fails when the group is no longer on the device.
     suspend fun insertMember(entity: GroupMemberEntity)
 
     suspend fun renameMember(

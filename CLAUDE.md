@@ -53,16 +53,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
   - "Novo grupo": tapping the group's avatar cycles its color through the palette (no shapes yet), and Moeda starts
     in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
-    the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
-    grupo") and "Ana 2".
-  - "Convidar" opens in the new group's place right after it is created (`Route.Invite`). The server makes each
-    group's invite code, and only the group's creator may change it ("Trocar link", not built yet), which
-    invalidates the old link.
-  - "Membros" (`Route.Members`) opens from Convidar's "Ver quem já entrou" and "Ir para o grupo", and from a group
-    tapped on the home until the group's screen exists. Any member may rename and add members, but only a member
-    who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined), after confirming
-    "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" and Android's Despesas and
-    Saldos tabs answer "Em breve".
+    the group offers two nicknames, "Ana P." (the creator's initial) and "Ana 2".
+  - "Convidar" opens in the new group's place right after it is created (`Route.Invite`); tapping a group on the
+    home still answers "Em breve" until the group's screen exists, and "Ver quem já entrou" and "Ir para o grupo"
+    do too. The server makes each group's invite code, and only the group's creator may change it ("Trocar link",
+    not built yet), which invalidates the old link.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.

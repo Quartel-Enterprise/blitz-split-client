@@ -106,20 +106,17 @@ class MembersViewModel(
     }
 
     private fun show(group: Group) {
+        val members = group.members.map(::toMembersMember)
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
                 displayLink = group.inviteCode?.let(InviteLink::of)?.substringAfter("://"),
-                members = group.members.map(::toMembersMember),
-                isLoaded = true,
-            )
-        }
-        // Why: the member about to be removed may be gone, or have joined, by now.
-        uiState.update { state ->
-            state.copy(
+                members = members,
+                // Why: the member about to be removed may be gone, or have joined, by now.
                 memberToRemove = state.memberToRemove?.let { asked ->
-                    state.members.firstOrNull { it.id == asked.id && it.canBeRemoved }
+                    members.firstOrNull { it.id == asked.id && it.canBeRemoved }
                 },
+                isLoaded = true,
             )
         }
         // Why: the member being renamed may be gone, and a name the draft took may be free or taken by now.

@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,12 +28,15 @@ fun MembersScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             snackbarHostState.currentSnackbarData?.dismiss()
-            snackbarHostState.showSnackbar(
-                when (action) {
-                    MembersUiAction.ShowComingSoon -> comingSoon
-                    MembersUiAction.ShowChangeError -> changeError
-                },
-            )
+            // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
+            launch {
+                snackbarHostState.showSnackbar(
+                    when (action) {
+                        MembersUiAction.ShowComingSoon -> comingSoon
+                        MembersUiAction.ShowChangeError -> changeError
+                    },
+                )
+            }
         }
     }
     BackHandler { viewModel.onEvent(MembersUiEvent.OnBackClicked) }
