@@ -113,9 +113,10 @@ seconds first, for the push's workflows to register their runs. Drafts wait unti
 requests from forks are never merged: their author could push after a maintainer added the label.
 
 A job waiting on another has no check until it starts, so while `review-gate` waits for the review, or right after it
-passes, every check of a pull request can be green while its workflows still have jobs to start. A run of a workflow
-that runs on pushes therefore counts as unfinished until it completes, and its completion starts `merge-when-green`
-again; the list of those workflows is in its `Check whether every check passed` step.
+passes, every check of a pull request can be green while its workflows still have jobs to start. Every run of the
+head commit therefore counts as unfinished until it completes, and its completion starts `merge-when-green` again. So
+does a `claude-review` run of an earlier commit, which ends on the opening commit after pushing its fix commit. Only the
+runs a label starts (`claude-review-on-request`, `run-checks`, `merge-when-green`) don't count.
 
 The `Main rules` ruleset requires every review conversation to be resolved before a pull request merges into `main`,
 with no bypass, admins included, and `merge-when-green` never merges with `--admin`. When everything else is green
@@ -123,21 +124,24 @@ and a conversation is still open, it removes its label and comments on the pull 
 or reply with why the code stays as it is, resolve the conversation, then add the label again: resolving one starts
 no workflow. When the opening review's threads held the checks (see [The review gate](#the-review-gate)), the failed
 gates don't count as failed checks: once every conversation is resolved, `merge-when-green` re-runs the held runs,
-keeps its label and merges when they pass.
+keeps its label and merges when they pass. A merge GitHub refuses with everything green (a conflict with `main`) also
+removes the label, with a comment saying why.
 
 The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge made with `GITHUB_TOKEN` triggers no
 other workflow, so the push to `main` would run none of its checks. The merge shows up as made by the token's owner.
-Before the secret is set, or once the token expires, the workflow fails with an error that names the secret. The
-checks are read with `GITHUB_TOKEN`, which the job grants `checks: read`.
+The held runs are re-run with it too, since a re-run made with `GITHUB_TOKEN` may not start `merge-when-green` when it
+completes. Before the secret is set, or once the token expires, the workflow fails with an error that names the
+secret. The checks are read with `GITHUB_TOKEN`, which the job grants `checks: read` and `statuses: read`.
 
-**Manual setup** (Pierre): create a fine-grained personal access token restricted to this repository, with Contents
-and Pull requests set to Read and write, and save it as the `MERGE_WHEN_GREEN_TOKEN` repository secret. Until then,
+**Manual setup** (Pierre): create a fine-grained personal access token restricted to this repository, with Actions,
+Contents and Pull requests set to Read and write, and save it as the `MERGE_WHEN_GREEN_TOKEN` repository secret. Until then,
 the label does nothing but fail the workflow.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
-`merge-when-green.yml` too, and, when it runs on pushes, the list of workflows in its `Check whether every check
-passed` step. A workflow missing from them still blocks the merge while its checks run, but its completion does not
-trigger one.
+`merge-when-green.yml` too. A workflow missing from it still blocks the merge while it runs, but its completion does
+not trigger one. A new workflow started by a label goes in the list of label workflows of its `Check whether every
+check passed` step instead: a run of it still queued would hold the merge, and its skipped completion would start
+nothing.
 
 ## Adding a workflow
 
@@ -147,4 +151,4 @@ trigger one.
 - If it checks the app on pull requests, start it with the `review-gate` job, with the same `pull_request` types
   and `if` as the other callers, and make its other jobs need it.
 - Set up Gradle through `./.github/actions/gradle` and pass `secrets.GRADLE_ENCRYPTION_KEY`.
-- If it runs on pull requests, add it to the lists of `merge-when-green.yml` (see [Merge when green](#merge-when-green)).
+- If it runs on pull requests, add it to the `workflow_run` list of `merge-when-green.yml` (see [Merge when green](#merge-when-green)).
