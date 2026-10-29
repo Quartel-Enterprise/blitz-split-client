@@ -6,10 +6,12 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
+import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
+import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 
@@ -19,8 +21,9 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         AccountEntity::class,
         DeviceSettingsEntity::class,
         PaymentKeyEntity::class,
+        NotificationPreferencesEntity::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -47,6 +50,10 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
             from = 6,
             to = 7,
         ),
+        AutoMigration(
+            from = 7,
+            to = 8,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -58,4 +65,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceSettingsDao(): DeviceSettingsDao
 
     abstract fun paymentKeyDao(): PaymentKeyDao
+
+    abstract fun notificationPreferencesDao(): NotificationPreferencesDao
 }

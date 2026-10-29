@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
@@ -42,7 +43,7 @@ class ExportUserDataUseCaseTest {
 
         // Then
         assertEquals("blitz-split-user-data", export.getValue("format").jsonPrimitive.content)
-        assertEquals(1, export.getValue("version").jsonPrimitive.int)
+        assertEquals(2, export.getValue("version").jsonPrimitive.int)
     }
 
     @Test
@@ -364,6 +365,7 @@ class ExportUserDataUseCaseTest {
             accountRepository = account,
             profileRepository = profile,
             paymentKeyRepository = paymentKeys,
+            notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             mapper = UserDataExportMapperImpl(),
             currentTimeMillis = { NOW },
         )

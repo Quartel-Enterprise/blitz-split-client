@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import kotlinx.coroutines.CompletableDeferred
@@ -1887,6 +1888,7 @@ class SyncCoordinatorTest {
                 },
                 calls = calls,
             ),
+            notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
