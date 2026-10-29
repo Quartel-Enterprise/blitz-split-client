@@ -1079,6 +1079,21 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN an anonymous user whose keys fail to come down WHEN syncing THEN still issues the recovery code`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            paymentKeys.pullError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(1, account.recoveryCodeCreations)
+        }
+
+    @Test
     fun `GIVEN a pending key and its push fails WHEN syncing THEN fails and the sync state is failed`() = runTest {
         // Given
         prepareScenario(
@@ -1362,7 +1377,7 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a Google account with keys WHEN signing out THEN erases the keys after ending the session`() = runTest {
+    fun `GIVEN a Google account with keys WHEN signing out THEN erases the keys before the profile`() = runTest {
         // Given
         prepareScenario(
             storedProfile = pierre,
@@ -1376,7 +1391,7 @@ class SyncCoordinatorTest {
         // Then
         assertEquals(1, paymentKeys.clearCount)
         assertTrue(paymentKeys.keys.value.isEmpty())
-        assertEquals(listOf("account sign out", "profile clear", "keys clear"), calls)
+        assertEquals(listOf("account sign out", "keys clear", "profile clear"), calls)
     }
 
     @Test

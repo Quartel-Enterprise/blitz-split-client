@@ -561,7 +561,7 @@ class PaymentKeyRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN an edit made offline WHEN pulling a newer server value THEN the edit is kept`() = runTest {
+    fun `GIVEN an edit made offline WHEN pulling a newer server value THEN the server value wins`() = runTest {
         // Given
         prepareScenario(
             stored = listOf(
@@ -586,8 +586,94 @@ class PaymentKeyRepositoryImplTest {
 
         // Then
         val stored = local.row("pix-1")
+        assertEquals("52998224725", stored?.value)
+        assertEquals(false, stored?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN an edit made offline WHEN pulling an older server value THEN the edit is kept`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "pix-1",
+                    pendingSync = true,
+                    updatedAt = 99L,
+                ),
+            ),
+            remoteKeys = listOf(
+                dto(
+                    id = "pix-1",
+                    value = "52998224725",
+                    updatedAt = 10L,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadKeys(userId = "user-1")
+
+        // Then
+        val stored = local.row("pix-1")
         assertEquals("12345678909", stored?.value)
         assertEquals(true, stored?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a newer edit made offline WHEN pulling an older deletion THEN the key goes away`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "pix-1",
+                    pendingSync = true,
+                    updatedAt = 99L,
+                ),
+            ),
+            remoteKeys = listOf(
+                dto(
+                    id = "pix-1",
+                    value = "",
+                    isDeleted = true,
+                    updatedAt = 10L,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadKeys(userId = "user-1")
+
+        // Then
+        assertNull(local.row("pix-1"))
+    }
+
+    @Test
+    fun `GIVEN a deletion made offline WHEN pulling a newer server edit THEN the key stays deleted`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "pix-1",
+                    value = "",
+                    isDeleted = true,
+                    pendingSync = true,
+                    updatedAt = 10L,
+                ),
+            ),
+            remoteKeys = listOf(
+                dto(
+                    id = "pix-1",
+                    updatedAt = 99L,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadKeys(userId = "user-1")
+
+        // Then
+        assertEquals(true, local.row("pix-1")?.isDeleted)
+        assertEquals(true, local.row("pix-1")?.pendingSync)
     }
 
     @Test
@@ -846,8 +932,8 @@ private class FakePaymentKeyLocalDataSource(
         when {
             current == null -> put(entity)
 
-            current.ownerUserId == entity.ownerUserId && !current.pendingSync &&
-                current.updatedAt < entity.updatedAt -> put(entity.copy(pendingSync = false))
+            current.ownerUserId == entity.ownerUserId && !current.isDeleted &&
+                (entity.isDeleted || current.updatedAt < entity.updatedAt) -> put(entity.copy(pendingSync = false))
         }
     }
 

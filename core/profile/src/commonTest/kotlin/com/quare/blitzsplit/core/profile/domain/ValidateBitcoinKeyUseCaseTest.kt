@@ -353,6 +353,18 @@ class ValidateBitcoinKeyUseCaseTest {
     }
 
     @Test
+    fun `GIVEN an LNURL in mixed case WHEN validating Lightning THEN is an invalid Lightning key`() {
+        // Given
+        val input = "LnUrL" + LNURL.drop(5)
+
+        // When
+        val result = useCase(PaymentKeyType.LIGHTNING, input, otherKeys = emptyList())
+
+        // Then
+        assertEquals(PaymentKeyValidation.Invalid(PaymentKeyError.INVALID_LIGHTNING), result)
+    }
+
+    @Test
     fun `GIVEN a Lightning Address longer than the server takes WHEN validating Lightning THEN is invalid`() {
         // Given
         val input = "a".repeat(2_040) + "@wallet.com"

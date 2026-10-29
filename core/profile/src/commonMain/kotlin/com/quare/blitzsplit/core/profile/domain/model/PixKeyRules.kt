@@ -18,7 +18,6 @@ internal object PixKeyRules {
             listOf(51, 53, 54, 55) + (61..69) + listOf(71, 73, 74, 75, 77, 79) + (81..89) + (91..99)
     ).toSet()
 
-    private val EMAIL = Regex("^[a-z0-9._%+-]+@[a-z0-9-]+(\\.[a-z0-9-]+)*\\.[a-z]{2,}$")
     private val UUID = Regex("^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$")
     private val NUMBER = Regex("^[0-9.\\-\\s()]+$")
 
@@ -52,7 +51,9 @@ internal object PixKeyRules {
         input: String,
     ): PaymentKeyInput = when (type) {
         PaymentKeyType.CPF -> {
-            val digits = input.filter(Char::isAsciiDigit).take(CPF_LENGTH)
+            // Why: a phone switched to CPF keeps its own digits, not the "55" the mask put in front.
+            val typed = if (input.trim().startsWith("+")) extractPhoneDigits(input).orEmpty() else input
+            val digits = typed.filter(Char::isAsciiDigit).take(CPF_LENGTH)
             PaymentKeyInput(
                 text = formatCpf(digits),
                 isComplete = digits.length == CPF_LENGTH,
@@ -148,7 +149,7 @@ internal object PixKeyRules {
 
     private fun validateEmail(input: String): PaymentKeyValidation {
         val email = input.trim().lowercase()
-        return if (email.length <= EMAIL_MAX_LENGTH && EMAIL.matches(email)) {
+        return if (email.length <= EMAIL_MAX_LENGTH && EMAIL_ADDRESS.matches(email)) {
             PaymentKeyValidation.Valid(email, PaymentKeyFormat.EMAIL)
         } else {
             PaymentKeyValidation.Invalid(PaymentKeyError.INVALID_EMAIL)

@@ -22,6 +22,18 @@ class FormatPaymentKeyInputUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a masked phone WHEN masking it as a CPF THEN keeps the typed digits without the country code`() {
+        // Given
+        val input = "+55 (11) 91234-5678"
+
+        // When
+        val masked = useCase(PaymentKeyType.CPF, input)
+
+        // Then
+        assertEquals(PaymentKeyInput("119.123.456-78", isComplete = true), masked)
+    }
+
+    @Test
     fun `GIVEN nine CPF digits WHEN masking a CPF THEN adds the dash only with the tenth`() {
         // Given
         val input = "123456789"

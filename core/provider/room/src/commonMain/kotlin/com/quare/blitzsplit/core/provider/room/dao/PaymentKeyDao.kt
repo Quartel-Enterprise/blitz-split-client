@@ -36,11 +36,15 @@ interface PaymentKeyDao {
     @Query("DELETE FROM payment_key WHERE isDeleted = 1 AND pendingSync = 0")
     suspend fun deleteSyncedTombstones()
 
-    // Why: Last-Write-Wins, and a local change made offline never loses to an older server value.
+    /*
+     * Why: Last-Write-Wins as the server keeps it. A newer server row wins even over a change made offline, which
+     * the server would refuse as older anyway, and a deletion is final on both sides: a tombstone wins whatever its
+     * age, and nothing brings a key deleted here back.
+     */
     @Query(
         "UPDATE payment_key SET type = :type, value = :value, isDefault = :isDefault, isDeleted = :isDeleted, " +
-            "addedAt = :addedAt, updatedAt = :remoteUpdatedAt WHERE id = :id AND ownerUserId = :ownerUserId " +
-            "AND pendingSync = 0 AND updatedAt < :remoteUpdatedAt",
+            "addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 WHERE id = :id " +
+            "AND ownerUserId = :ownerUserId AND isDeleted = 0 AND (:isDeleted = 1 OR updatedAt < :remoteUpdatedAt)",
     )
     suspend fun applyRemote(
         id: String,

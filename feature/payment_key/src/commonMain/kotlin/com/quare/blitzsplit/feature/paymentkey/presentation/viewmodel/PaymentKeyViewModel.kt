@@ -126,17 +126,23 @@ class PaymentKeyViewModel(
                 )
             }
         }
-        val wasDefault = if (state.isLoaded) state.isDefault else edited?.isDefault == true
+        val isLocked = ofMethod.isEmpty() || edited?.isDefault == true
+        // Why: a locked switch shows what saving does; an open one keeps the person's choice once they could make it.
+        val isDefault = when {
+            isLocked -> true
+            state.isLoaded && !state.isDefaultLocked -> state.isDefault
+            else -> edited?.isDefault == true
+        }
         uiState.update {
             it.copy(
                 isLoaded = true,
-                isDefault = wasDefault || ofMethod.isEmpty(),
+                isDefault = isDefault,
                 currentDefaultType = ofMethod
                     .find(
                         PaymentKey::isDefault,
                     )?.type
                     ?.takeUnless { edited?.isDefault == true },
-                isDefaultLocked = ofMethod.isEmpty() || edited?.isDefault == true,
+                isDefaultLocked = isLocked,
             )
         }
         validate()
@@ -185,10 +191,10 @@ class PaymentKeyViewModel(
             it.copy(
                 type = type,
                 input = input.text,
-                hasSwitchedNetwork = if (detected !=
-                    null
-                ) {
-                    route.method == PaymentMethod.BITCOIN
+                // Why: the note names what the key is, so only a key valid as that type earns it.
+                hasSwitchedNetwork = if (detected != null) {
+                    route.method == PaymentMethod.BITCOIN &&
+                        validatePaymentKey(type, raw, otherKeys) is PaymentKeyValidation.Valid
                 } else {
                     it.hasSwitchedNetwork
                 },
@@ -200,7 +206,8 @@ class PaymentKeyViewModel(
     /*
      * Why: backspace over a character the mask added ("123.") leaves the same digits, which the mask would put
      * right back, so it takes the digit before it instead. The phone's "+55" is the mask's too, so erasing up to
-     * it changes nothing.
+     * it changes nothing, unless no typed digit is left: then the field empties. Only ASCII digits count, as in
+     * the mask.
      */
     private fun toInputAfterErase(
         previous: String,
@@ -209,16 +216,18 @@ class PaymentKeyViewModel(
         isSwitched: Boolean,
     ): String {
         val isMasked = type == PaymentKeyType.CPF || type == PaymentKeyType.PHONE
-        val digits = previous.filter(Char::isDigit)
-        val erasedMaskOnly = raw.length < previous.length && raw.filter(Char::isDigit) == digits
+        val digits = previous.filter { it.isAsciiDigit() }
+        val erasedMaskOnly = raw.length < previous.length && raw.filter { it.isAsciiDigit() } == digits
         if (!isMasked || isSwitched || !erasedMaskOnly) return raw
         val erasedAt = previous.indices.first { it >= raw.length || previous[it] != raw[it] }
-        val digitsBefore = previous.take(erasedAt).count(Char::isDigit)
+        val digitsBefore = previous.take(erasedAt).count { it.isAsciiDigit() }
         val maskDigits = if (type == PaymentKeyType.PHONE && previous.trim().startsWith("+")) 2 else 0
-        if (digitsBefore <= maskDigits) return previous
+        if (digitsBefore <= maskDigits) return if (digits.length > maskDigits) previous else ""
         val remaining = digits.removeRange(digitsBefore - 1, digitsBefore)
         return if (maskDigits > 0) "+$remaining" else remaining
     }
+
+    private fun Char.isAsciiDigit(): Boolean = this in '0'..'9'
 
     private fun revealError() {
         if (uiState.value.input.isBlank()) return

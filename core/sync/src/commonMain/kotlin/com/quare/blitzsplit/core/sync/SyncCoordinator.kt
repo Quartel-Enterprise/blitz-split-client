@@ -77,11 +77,17 @@ class SyncCoordinator(
                     val userId = accountRepository.ensureRegistered().getOrThrow()
                     profileRepository.downloadProfile(userId).getOrThrow()
                     profileRepository.uploadPendingProfile(userId).getOrThrow()
-                    // Why: after the profile, whose download decides whose copy this device holds.
-                    paymentKeyRepository.downloadKeys(userId).getOrThrow()
-                    paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
+                    /*
+                     * Why: after the profile, whose download decides whose copy this device holds. A key that
+                     * fails still fails the sync, but not before the steps that only need the profile.
+                     */
+                    val keysSynced = suspendRunCatching {
+                        paymentKeyRepository.downloadKeys(userId).getOrThrow()
+                        paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
+                    }
                     offerRecoveryCodeIfDue()
                     signOutIfScheduledAndSynced()
+                    keysSynced.getOrThrow()
                 }.also { result -> lastSyncFailed.value = result.isFailure }
             }
         } finally {
@@ -158,8 +164,9 @@ class SyncCoordinator(
      */
     private suspend fun clearSession() {
         accountRepository.signOut()
-        profileRepository.clear()
+        // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()
+        profileRepository.clear()
     }
 
     private fun observeHasPendingChanges(): Flow<Boolean> = combine(

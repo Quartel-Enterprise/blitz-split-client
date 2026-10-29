@@ -17,7 +17,6 @@ internal object BitcoinKeyRules {
     private val TESTNET_PREFIXES = listOf("tb1", "bcrt1")
     private val ONCHAIN_PREFIXES = listOf("bc1") + TESTNET_PREFIXES
     private val INVOICE_PREFIXES = listOf("lnbc", "lntb", "lnsb")
-    private val ADDRESS = Regex("^[a-z0-9._%+-]+@[a-z0-9-]+(\\.[a-z0-9-]+)*\\.[a-z]{2,}$")
 
     fun validate(
         type: PaymentKeyType,
@@ -63,16 +62,18 @@ internal object BitcoinKeyRules {
     }
 
     private fun validateLightning(input: String): PaymentKeyValidation {
-        val text = toBareKey(input).lowercase()
+        val bare = toBareKey(input)
+        val text = bare.lowercase()
         return when {
             text.length > LIGHTNING_MAX_LENGTH -> toInvalid(PaymentKeyError.INVALID_LIGHTNING)
 
             // Why: before the invoice check, so a Lightning Address like "lnbcfan@wallet.com" stays valid.
-            ADDRESS.matches(text) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LIGHTNING_ADDRESS)
+            EMAIL_ADDRESS.matches(text) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LIGHTNING_ADDRESS)
 
             INVOICE_PREFIXES.any(text::startsWith) -> toInvalid(PaymentKeyError.LIGHTNING_INVOICE)
 
-            isLnurl(text) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LNURL)
+            // Why: the case as pasted, since bech32 refuses mixed case; the stored value is lowercase.
+            isLnurl(bare) -> PaymentKeyValidation.Valid(text, PaymentKeyFormat.LNURL)
 
             else -> toInvalid(PaymentKeyError.INVALID_LIGHTNING)
         }

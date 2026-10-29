@@ -1208,6 +1208,79 @@ class PaymentKeyViewModelTest {
         }
 
     @Test
+    fun `GIVEN a phone with one typed digit WHEN erasing it and then the mask THEN empties the field`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("1"))
+            val typed = viewModel.uiState.value.input
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(typed.dropLast(1)))
+
+            // When
+            viewModel.onEvent(
+                PaymentKeyUiEvent.OnInputChanged(
+                    viewModel.uiState.value.input
+                        .dropLast(1),
+                ),
+            )
+
+            // Then
+            assertEquals("", viewModel.uiState.value.input)
+        }
+
+    @Test
+    fun `GIVEN On-chain WHEN pasting a Lightning invoice THEN switches without the switched note`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(method = PaymentMethod.BITCOIN)
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.ONCHAIN))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(INVOICE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PaymentKeyType.LIGHTNING, state.type)
+            assertFalse(state.hasSwitchedNetwork)
+            assertEquals(PaymentKeyError.LIGHTNING_INVOICE, state.error)
+        }
+
+    @Test
+    fun `GIVEN a key being edited WHEN another device makes it the default THEN the switch is on and locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(
+                    key(
+                        id = "key-1",
+                        isDefault = false,
+                    ),
+                    key(
+                        id = "key-2",
+                        value = OTHER_VALID_CPF,
+                    ),
+                ),
+            )
+
+            // When
+            repository.keys.value = listOf(
+                key(id = "key-1"),
+                key(
+                    id = "key-2",
+                    value = OTHER_VALID_CPF,
+                    isDefault = false,
+                ),
+            )
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isDefault)
+            assertTrue(state.isDefaultLocked)
+        }
+
+    @Test
     fun `GIVEN Random picked WHEN typing digits that make a valid CPF THEN stays on Random`() =
         runTest(testDispatcher) {
             // Given

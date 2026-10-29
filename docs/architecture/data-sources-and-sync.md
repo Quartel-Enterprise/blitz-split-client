@@ -112,8 +112,10 @@ so it outlives the screen.
   uploads it first, sends its public URL (with `?v=<updatedAt>`, so caches fetch the new photo) as `avatar_url`,
   and `markSynced` swaps the bytes for that URL in the same guarded update. Until then the UIs draw the bytes as a
   data URI (`ProfileSetupUiState.photoUrl`).
-- **Payment keys**: each Pix or Bitcoin key is a row of `payment_key`, synced with the same guard
-  (`PaymentKeyDao.applyRemote`). A delete is a tombstone (`isDeleted`) with an empty value, so a deleted CPF or
+- **Payment keys**: each Pix or Bitcoin key is a row of `payment_key`, synced by `updatedAt` like the profile,
+  with two differences in `PaymentKeyDao.applyRemote`: a newer server row wins even over a change not pushed
+  yet, since the server would refuse that older push anyway, and a deletion is final on both sides (a tombstone
+  wins whatever its age, and the server's trigger never lets a write bring a deleted key back). A delete is a tombstone (`isDeleted`) with an empty value, so a deleted CPF or
   wallet doesn't stay on the server; it is pushed like any change and removed once synced, since nothing is ever
   deleted on the server. Deleting the default writes the key that takes over in the same upsert. Two devices may each mark a default offline, so readers
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
