@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiAction
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiEvent
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -43,7 +44,8 @@ fun InviteScreen(
 
                 InviteUiAction.ShowComingSoon -> {
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(comingSoon)
+                    // Why: on its own, so a copy or a share right after isn't held until the snackbar hides.
+                    launch { snackbarHostState.showSnackbar(comingSoon) }
                 }
             }
         }

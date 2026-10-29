@@ -225,5 +225,8 @@ function shareLink(link: string, groupName: string) {
     navigator.share({ text }).catch(() => {})
     return
   }
-  void navigator.clipboard.writeText(link).then(() => toast(t('invite_linkCopied')))
+  navigator.clipboard
+    .writeText(link)
+    .then(() => toast(t('invite_linkCopied')))
+    .catch(() => toast(t('invite_copyFailed')))
 }
