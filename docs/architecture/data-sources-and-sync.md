@@ -25,8 +25,10 @@ changes included. Once a schema has shipped, change it with a migration instead.
 - DAOs expose `Flow<T>` for what the UI observes and `suspend` functions for one-shot reads and writes.
 - The single-row tables (`profile`, `account`) are keyed by `SINGLE_ROW_ID` (`"me"`): the row exists before the
   server knows the user, so it can't be keyed by the user id.
-- A local data source wraps each DAO (`RoomProfileLocalDataSource`, `RoomAccountLocalDataSource`); the repository
-  maps entities to domain models.
+- The list tables (`payment_key`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
+  keeps its id on the server.
+- A local data source wraps each DAO (`RoomProfileLocalDataSource`, `RoomAccountLocalDataSource`,
+  `RoomPaymentKeyLocalDataSource`); the repository maps entities to domain models.
 
 ### Supabase: the remote
 
@@ -38,6 +40,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | Remote data source | Talks to |
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
+| `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover` and `recovery-code` edge functions |
 
@@ -64,7 +67,7 @@ so nothing above it sees an HTTP status:
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
 3. `syncOnUserSwitch()`: when the session moves to another user, it syncs right away under the new one, whose
    profile replaces this device's copy (see below).
-4. `syncWhenDue()`: a collector of connectivity, the local profile and its pending changes. It syncs when the
+4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys and their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
 
@@ -80,6 +83,8 @@ suspend fun syncNow(): Result<Unit> {
                 val userId = accountRepository.ensureRegistered().getOrThrow()
                 profileRepository.downloadProfile(userId).getOrThrow()
                 profileRepository.uploadPendingProfile(userId).getOrThrow()
+                paymentKeyRepository.downloadKeys(userId).getOrThrow()
+                paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
                 offerRecoveryCodeIfDue()
             }.also { result -> lastSyncFailed.value = result.isFailure }
         }
@@ -91,7 +96,7 @@ suspend fun syncNow(): Result<Unit> {
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet
-(`ProfileRepository.observeHasPendingChanges()`), and `SYNCED` otherwise. The home draws a badge only for the
+(`ProfileRepository.observeHasPendingChanges()` or `PaymentKeyRepository.observeHasPendingChanges()`), and `SYNCED` otherwise. The home draws a badge only for the
 states that ask for attention, and its "try again" goes through `RetrySync`, which runs in the coordinator's scope
 so it outlives the screen.
 
@@ -107,6 +112,11 @@ so it outlives the screen.
   uploads it first, sends its public URL (with `?v=<updatedAt>`, so caches fetch the new photo) as `avatar_url`,
   and `markSynced` swaps the bytes for that URL in the same guarded update. Until then the UIs draw the bytes as a
   data URI (`ProfileSetupUiState.photoUrl`).
+- **Payment keys**: each Pix or Bitcoin key is a row of `payment_key`, synced with the same guard
+  (`PaymentKeyDao.applyRemote`). A delete is a tombstone (`isDeleted`), pushed like any change and removed once
+  synced, since nothing is ever deleted on the server. Two devices may each mark a default offline, so readers
+  take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
+  trigger ignores an upsert older than the stored one.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 
@@ -183,6 +193,9 @@ or a pull that failed can't push another user's copy:
   dropped (`ProfilePhotoRemoteDataSource.isUploaded`); a Google or Apple picture, or a photo not uploaded yet,
   goes with it.
 - `uploadPendingProfile` pushes only a copy of the user it pushes for.
+- Payment keys never move to another account: a key holds a CPF or a wallet, so another user's keys are deleted
+  whatever their state (`PaymentKeyDao.deleteOtherUsersKeys`), keys made before the account are claimed
+  (`claimUnowned`), and `uploadPendingKeys` pushes only this user's.
 
 A switch also drops a sign out scheduled with "Sair ao sincronizar", in the same write as the session's new user
 (`AccountRepositoryImpl.toMirrorOf`): it was for the previous account. A link keeps the id and doesn't trigger any
