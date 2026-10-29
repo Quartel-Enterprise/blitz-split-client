@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ExportUserDataUseCase
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -37,7 +38,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario()
 
         // When
-        val export = parse(useCase())
+        val export = parse(useCase().getOrThrow())
 
         // Then
         assertEquals("blitz-split-user-data", export.getValue("format").jsonPrimitive.content)
@@ -50,7 +51,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario()
 
         // When
-        val export = parse(useCase())
+        val export = parse(useCase().getOrThrow())
 
         // Then
         val exportedAt = export.getValue("exportedAt").jsonPrimitive.content
@@ -64,7 +65,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario()
 
         // When
-        val json = useCase()
+        val json = useCase().getOrThrow()
 
         // Then
         assertTrue(json.lines().size > 1)
@@ -77,7 +78,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario(status = AccountStatus.LocalOnly)
 
         // When
-        val exported = parse(useCase()).getValue("account").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("account").jsonObject
 
         // Then
         assertEquals("none", exported.getValue("type").jsonPrimitive.content)
@@ -91,7 +92,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario(status = anonymous)
 
         // When
-        val exported = parse(useCase()).getValue("account").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("account").jsonObject
 
         // Then
         assertEquals("anonymous", exported.getValue("type").jsonPrimitive.content)
@@ -108,7 +109,7 @@ class ExportUserDataUseCaseTest {
         )
 
         // When
-        val exported = parse(useCase()).getValue("account").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("account").jsonObject
 
         // Then
         assertEquals("google", exported.getValue("type").jsonPrimitive.content)
@@ -125,7 +126,7 @@ class ExportUserDataUseCaseTest {
         )
 
         // When
-        val exported = parse(useCase()).getValue("account").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("account").jsonObject
 
         // Then
         assertEquals("apple", exported.getValue("type").jsonPrimitive.content)
@@ -145,7 +146,7 @@ class ExportUserDataUseCaseTest {
         )
 
         // When
-        val exported = parse(useCase()).getValue("profile").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("profile").jsonObject
 
         // Then
         assertEquals("Pierre", exported.getValue("displayName").jsonPrimitive.content)
@@ -165,7 +166,7 @@ class ExportUserDataUseCaseTest {
         )
 
         // When
-        val exported = parse(useCase()).getValue("profile").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("profile").jsonObject
 
         // Then
         assertEquals(JsonNull, exported.getValue("photoUrl"))
@@ -178,7 +179,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario(storedProfile = pierre)
 
         // When
-        val exported = parse(useCase()).getValue("profile").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("profile").jsonObject
 
         // Then
         assertEquals(JsonNull, exported.getValue("photoUrl"))
@@ -190,7 +191,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario(storedProfile = null)
 
         // When
-        val export = parse(useCase())
+        val export = parse(useCase().getOrThrow())
 
         // Then
         assertEquals(JsonNull, export.getValue("profile"))
@@ -202,7 +203,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario(storedProfile = pierre.copy(displayName = "  Pierre  "))
 
         // When
-        val exported = parse(useCase()).getValue("profile").jsonObject
+        val exported = parse(useCase().getOrThrow()).getValue("profile").jsonObject
 
         // Then
         assertEquals("Pierre", exported.getValue("displayName").jsonPrimitive.content)
@@ -215,7 +216,7 @@ class ExportUserDataUseCaseTest {
             prepareScenario(storedKeys = listOf(pixKey, lightningKey))
 
             // When
-            val keys = parse(useCase()).getValue("paymentKeys").jsonArray.map { it.jsonObject }
+            val keys = parse(useCase().getOrThrow()).getValue("paymentKeys").jsonArray.map { it.jsonObject }
 
             // Then
             assertEquals(2, keys.size)
@@ -263,7 +264,7 @@ class ExportUserDataUseCaseTest {
             )
 
             // When
-            val keys = parse(useCase()).getValue("paymentKeys").jsonArray.map { it.jsonObject }
+            val keys = parse(useCase().getOrThrow()).getValue("paymentKeys").jsonArray.map { it.jsonObject }
 
             // Then
             assertEquals(
@@ -282,7 +283,7 @@ class ExportUserDataUseCaseTest {
         )
 
         // When
-        val keys = parse(useCase()).getValue("paymentKeys").jsonArray.map { it.jsonObject }
+        val keys = parse(useCase().getOrThrow()).getValue("paymentKeys").jsonArray.map { it.jsonObject }
 
         // Then
         assertEquals(listOf(lightningKey.value), keys.map { it.getValue("value").jsonPrimitive.content })
@@ -294,7 +295,7 @@ class ExportUserDataUseCaseTest {
         prepareScenario(storedKeys = emptyList())
 
         // When
-        val export = parse(useCase())
+        val export = parse(useCase().getOrThrow())
 
         // Then
         assertTrue(export.getValue("paymentKeys").jsonArray.isEmpty())
@@ -363,6 +364,7 @@ class ExportUserDataUseCaseTest {
             accountRepository = account,
             profileRepository = profile,
             paymentKeyRepository = paymentKeys,
+            mapper = UserDataExportMapperImpl(),
             currentTimeMillis = { NOW },
         )
     }

@@ -246,7 +246,11 @@ class AccountRepositoryImpl(
 
     override suspend fun removeSocialIdentity(): Result<Unit> = suspendRunCatching {
         val code = remote.removeSocialIdentity()
-        val user = remote.getCurrentUserOrNull()
+        // Why: the server removes every Google and Apple identity, so the user is anonymous even if its read failed.
+        val user = remote.getCurrentUserOrNull()?.copy(
+            socialProvider = null,
+            email = null,
+        )
         local.update { account ->
             account.toMirrorOf(user).copy(
                 recoveryCode = code,

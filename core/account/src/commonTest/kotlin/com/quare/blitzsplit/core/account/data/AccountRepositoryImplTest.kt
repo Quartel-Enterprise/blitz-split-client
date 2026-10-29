@@ -2295,6 +2295,25 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a failed user read after the unlink WHEN disconnecting THEN keeps the new code due`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+        remote.keepsStaleUserOnUnlink = true
+
+        // When
+        val result = repository.removeSocialIdentity()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertTrue(result.isSuccess)
+        assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+        assertEquals("P3XR7MQA2TKE", account.recoveryCode)
+        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+        assertNull(account.email)
+    }
+
+    @Test
     fun `GIVEN no internet WHEN disconnecting Google THEN fails and keeps the account as it was`() = runTest {
         // Given
         prepareScenario(currentUser = googleUserWithEmail)
@@ -2560,6 +2579,9 @@ private class FakeAccountRemoteDataSource(
     var keepAppleTokenError: Throwable? = null
     var unlinkError: Throwable? = null
     var unlinkCount = 0
+
+    // Why: the server unlinked, but the read of the user after it failed, so the session still holds the old one.
+    var keepsStaleUserOnUnlink = false
     var deleteAccountError: Throwable? = null
     var deleteAccountCount = 0
 
@@ -2639,6 +2661,7 @@ private class FakeAccountRemoteDataSource(
     override suspend fun removeSocialIdentity(): String {
         unlinkError?.let { throw it }
         unlinkCount++
+        if (keepsStaleUserOnUnlink) return "P3XR7MQA2TKE"
         currentUser = currentUser?.copy(
             socialProvider = null,
             email = null,

@@ -393,7 +393,10 @@ class ProfileViewModel(
     }
 
     private fun export() {
-        viewModelScope.launch { uiAction.emit(ProfileUiAction.SaveExport(exportUserData())) }
+        // Why: the file is read from the device's copy, so a failure is one nobody can act on; the tap does nothing.
+        viewModelScope.launch {
+            exportUserData().onSuccess { json -> uiAction.emit(ProfileUiAction.SaveExport(json)) }
+        }
     }
 
     private fun scheduleSignOut() {

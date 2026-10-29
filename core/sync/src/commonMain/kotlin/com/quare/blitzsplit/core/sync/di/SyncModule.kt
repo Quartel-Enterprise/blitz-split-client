@@ -3,6 +3,8 @@ package com.quare.blitzsplit.core.sync.di
 import com.quare.blitzsplit.core.sync.SyncCoordinator
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
+import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapper
+import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteAccount
@@ -54,5 +56,6 @@ val syncModule = module {
     factoryOf(::SignOutWhenSyncedUseCase).bind<SignOutWhenSynced>()
     factoryOf(::CancelSignOutWhenSyncedUseCase).bind<CancelSignOutWhenSynced>()
     factoryOf(::DeleteAccountUseCase).bind<DeleteAccount>()
+    factoryOf(::UserDataExportMapperImpl).bind<UserDataExportMapper>()
     factoryOf(::ExportUserDataUseCase).bind<ExportUserData>()
 }

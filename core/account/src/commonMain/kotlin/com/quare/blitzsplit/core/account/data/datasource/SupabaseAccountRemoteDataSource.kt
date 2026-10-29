@@ -171,7 +171,8 @@ class SupabaseAccountRemoteDataSource(
     override suspend fun removeSocialIdentity(): String {
         val response = functions.invoke(function = UNLINK_IDENTITY_FUNCTION)
         val code = json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
-        auth.retrieveUserForCurrentSession(updateSession = true)
+        // Why: the identity is already gone and the code is what reaches the account now, so a failed read can't lose it.
+        suspendRunCatching { auth.retrieveUserForCurrentSession(updateSession = true) }
         return code
     }
 

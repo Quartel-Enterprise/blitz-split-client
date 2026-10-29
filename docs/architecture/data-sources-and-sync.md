@@ -42,7 +42,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
-| `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover` and `recovery-code` edge functions |
+| `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
 The tables, functions and dashboard settings are documented in the `blitz-split-api` repository (`docs/auth.md`,
 `docs/database.md`).
@@ -60,7 +60,7 @@ so nothing above it sees an HTTP status:
 ### The sync: `SyncCoordinator`
 
 `SyncCoordinator` (`:core:sync`) is a Koin singleton with its own `SupervisorJob` scope. `AppViewModel` calls
-`StartSync` on launch, and `start()` (idempotent) launches four things:
+`StartSync` on launch, and `start()` (idempotent) launches five things:
 
 1. `accountRepository.mirrorSession()`: copies every settled Supabase session (a user, or none after a sign out)
    into the `account` row, so the UI knows the account state offline.
@@ -70,6 +70,9 @@ so nothing above it sees an HTTP status:
 4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys and their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
+5. `accountRepository.keepAppleTokens()`: hands the server Apple's refresh token after each browser sign in with
+   Apple, so deleting the account can revoke it, as the App Store asks. The native sheet sends its authorization
+   code at sign in instead.
 
 `syncNow()` runs under a `Mutex`, inside `suspendRunCatching`, and records what the sync state needs:
 

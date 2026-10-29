@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.core.sync.export
+package com.quare.blitzsplit.core.sync.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

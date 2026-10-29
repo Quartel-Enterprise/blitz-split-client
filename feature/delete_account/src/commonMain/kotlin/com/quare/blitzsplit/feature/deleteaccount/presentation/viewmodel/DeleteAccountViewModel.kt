@@ -99,6 +99,9 @@ class DeleteAccountViewModel(
     }
 
     private fun export() {
-        viewModelScope.launch { uiAction.emit(DeleteAccountUiAction.SaveExport(exportUserData())) }
+        // Why: like the profile's export, a failed read of the device's copy leaves the tap without a file.
+        viewModelScope.launch {
+            exportUserData().onSuccess { json -> uiAction.emit(DeleteAccountUiAction.SaveExport(json)) }
+        }
     }
 }

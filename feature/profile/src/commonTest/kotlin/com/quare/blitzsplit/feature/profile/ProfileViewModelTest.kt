@@ -90,6 +90,7 @@ class ProfileViewModelTest {
     private var signOutHangs = false
     private var unlinkCalls = 0
     private var unlinkHangs = false
+    private var exportError: Throwable? = null
 
     @BeforeTest
     fun setUp() {
@@ -3051,6 +3052,19 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN an unreadable device copy WHEN exporting THEN saves nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+        exportError = IllegalStateException("database closed")
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnExportClicked)
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
     fun `GIVEN Google WHEN exporting THEN asks the platform to save exactly the exported data`() =
         runTest(testDispatcher) {
             // Given
@@ -3343,7 +3357,7 @@ class ProfileViewModelTest {
                 if (this@ProfileViewModelTest.unlinkHangs) awaitCancellation()
                 UnlinkAccountUseCase(account)()
             },
-            exportUserData = ExportUserData { exportJson },
+            exportUserData = ExportUserData { exportError?.let { Result.failure(it) } ?: Result.success(exportJson) },
             validatePaymentKey = ValidatePaymentKeyUseCase(),
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),

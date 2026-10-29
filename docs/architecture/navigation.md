@@ -103,7 +103,7 @@ entries remain with `popTo`. When the root is `.groups`, `RootView` swaps the st
 `AppPresenter.observeBackStack` sends the stack as `JsRoute`s: a route name (`RouteName.kt`: `welcome`,
 `profile-setup`, `restore`, `groups`…) plus the arguments of the routes that carry them (`payment-key`'s method and
 key id), with the route itself kept inside so `PaymentKeyPresenter` opens its ViewModel with it. `App.tsx` renders
-only the last one, except `payment-key`, a dialog drawn over the entry under it (the profile), and
+only the last one, except `payment-key` and `delete-account`, dialogs drawn over the entry under them (the profile), and
 `useBrowserHistory` keeps the history in step: a
 longer stack `pushState`s an entry holding its size, and a `popstate` (the browser's back button) calls
 `app.popTo(size)`, the same catch-up as SwiftUI's.

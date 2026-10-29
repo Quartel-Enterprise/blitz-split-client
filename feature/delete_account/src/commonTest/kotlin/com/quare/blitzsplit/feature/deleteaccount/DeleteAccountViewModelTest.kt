@@ -37,6 +37,7 @@ class DeleteAccountViewModelTest {
     private lateinit var viewModel: DeleteAccountViewModel
     private val actions = mutableListOf<DeleteAccountUiAction>()
     private var deletions = 0
+    private var exportError: Throwable? = null
     private var deleteResult: Result<Unit> = Result.success(Unit)
     private var deleteGate: CompletableDeferred<Result<Unit>>? = null
 
@@ -397,6 +398,19 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
+    fun `GIVEN an unreadable device copy WHEN export is tapped THEN saves nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        exportError = IllegalStateException("database closed")
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnExportClicked)
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
     fun `GIVEN no internet WHEN export is tapped THEN still saves the exported data`() = runTest(testDispatcher) {
         // Given
         prepareScenario(online = false)
@@ -466,7 +480,7 @@ class DeleteAccountViewModelTest {
                 deletions++
                 deleteGate?.await() ?: this@DeleteAccountViewModelTest.deleteResult
             },
-            exportUserData = ExportUserData { exportedJson },
+            exportUserData = ExportUserData { exportError?.let { Result.failure(it) } ?: Result.success(exportedJson) },
             observeAccountStatus = ObserveAccountStatusUseCase(account),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
