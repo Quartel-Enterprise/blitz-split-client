@@ -153,7 +153,6 @@ private fun GroupsPane(
         GroupsHeader(
             state = state,
             onEvent = onEvent,
-            layout = layout,
         )
         when {
             layout.isTablet -> Box(
@@ -190,9 +189,15 @@ private fun GroupsPane(
 private fun GroupsHeader(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
-    layout: DeviceLayout,
 ) {
-    val profileButton: @Composable () -> Unit = {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(modifier = Modifier.weight(1f)) {
+            SyncBadgeChip(
+                badge = state.syncBadge,
+                canRetry = state.canRetrySync,
+                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+            )
+        }
         IconButton(
             onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
             modifier = Modifier.size(48.dp),
@@ -203,46 +208,6 @@ private fun GroupsHeader(
                 color = state.avatarColor,
                 modifier = Modifier.semantics { contentDescription = profileLabel },
                 photoUrl = state.photoUrl,
-            )
-        }
-    }
-    val title: @Composable () -> Unit = {
-        Text(
-            text = stringResource(R.string.groups_title),
-            style = if (layout.isLandscape && !layout.isTablet) {
-                MaterialTheme.typography.displaySmall
-            } else {
-                MaterialTheme.typography.displayMedium
-            },
-            fontWeight = FontWeight.Bold,
-        )
-    }
-    if (layout.usesNavigationRail) {
-        Row(verticalAlignment = Alignment.Top) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                title()
-                SyncBadgeChip(
-                    badge = state.syncBadge,
-                    canRetry = state.canRetrySync,
-                    onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
-                )
-            }
-            profileButton()
-        }
-    } else {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd,
-            ) { profileButton() }
-            title()
-            SyncBadgeChip(
-                badge = state.syncBadge,
-                canRetry = state.canRetrySync,
-                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
             )
         }
     }

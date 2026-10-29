@@ -95,15 +95,16 @@ export function GroupsScreen() {
         </header>
 
         <main className="flex flex-1 flex-col gap-6 p-4 sm:p-8">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">{t('groups_title')}</h1>
-            {sync && (
+          {/* Why: the selected Groups tab already names the page; the heading stays for screen readers. */}
+          <h1 className="sr-only">{t('groups_title')}</h1>
+          {sync && (
+            <div className="flex">
               <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
                 {sync.icon}
                 {t(sync.label)}
               </SyncBadge>
-            )}
-          </div>
+            </div>
+          )}
           <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
             <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
               <Users className="size-6" />

@@ -134,7 +134,21 @@ struct GroupsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .navigationTitle("Groups")
+        // Why: on iPhone and iPad the selected Groups tab already names the screen, so the bar shows only the sync
+        // status in the title's place; the title still names the screen in the back stack and for VoiceOver.
+        #if os(iOS)
+        .toolbarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                syncText(state.syncBadge)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .sharedBackgroundVisibility(.hidden)
+        }
+        #else
         .navigationSubtitle(syncText(state.syncBadge))
+        #endif
         .toolbar {
             if state.canRetrySync {
                 ToolbarItem(placement: .primaryAction) {
