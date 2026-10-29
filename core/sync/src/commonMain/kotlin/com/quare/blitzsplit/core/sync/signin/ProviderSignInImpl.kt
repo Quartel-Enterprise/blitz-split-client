@@ -50,12 +50,14 @@ class ProviderSignInImpl(
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): SignInStep = signInDirectly {
         connectWithIdToken(
             provider = provider,
             idToken = idToken,
             rawNonce = rawNonce,
             fullName = fullName,
+            authorizationCode = authorizationCode,
         )
     }.getOrElse { SignInStep.Ended(hasFailed = true) }
 

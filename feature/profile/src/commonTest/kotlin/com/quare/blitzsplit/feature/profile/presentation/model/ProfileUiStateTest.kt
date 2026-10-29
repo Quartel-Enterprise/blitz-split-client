@@ -403,5 +403,7 @@ class ProfileUiStateTest {
         hasSignInFailed = false,
         isSigningOut = isSigningOut,
         hasSignOutFailed = false,
+        isUnlinking = false,
+        hasUnlinkFailed = false,
     )
 }

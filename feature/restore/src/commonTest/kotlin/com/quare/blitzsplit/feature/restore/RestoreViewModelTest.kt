@@ -245,7 +245,7 @@ class RestoreViewModelTest {
 
             // When
             viewModel.onEvent(
-                RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira"),
+                RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira", null),
             )
 
             // Then
@@ -258,7 +258,7 @@ class RestoreViewModelTest {
         prepareScenario(outcome = SignInOutcome.PROFILE_RESTORED)
 
         // When
-        viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null))
+        viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null, null))
 
         // Then
         assertEquals(listOf(AccountProvider.GOOGLE to "token"), account.idTokenConnections)
@@ -272,7 +272,7 @@ class RestoreViewModelTest {
             prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE)
 
             // When
-            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null, null))
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null, null, null))
 
             // Then
             assertEquals(Route.ProfileSetup, navigator.backStack.value.last())
@@ -299,7 +299,7 @@ class RestoreViewModelTest {
             prepareScenario(connectResult = Result.failure(IllegalStateException("rejected")))
 
             // When
-            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null))
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
 
             // Then
             assertEquals(RestoreError.SIGN_IN_FAILED, viewModel.uiState.value.error)
@@ -453,7 +453,7 @@ class RestoreViewModelTest {
             // Given
             prepareScenario(profilePullError = IllegalStateException("offline"))
             account.defersStatusUpdates = true
-            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null))
+            viewModel.onEvent(RestoreUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", null, null))
 
             // When
             account.requeryStatus()

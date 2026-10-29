@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
+import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -69,6 +70,15 @@ class AccountRepositoryImpl(
         }
     }
 
+    // Why: only a trip to Apple brings Apple's token; a Google one's would be refused, or kept as Apple's.
+    override suspend fun keepAppleTokens() {
+        remote.observeAppleRefreshTokens().collect { token ->
+            if (local.get().browserSignInProvider == AccountProvider.APPLE.code) {
+                keepAppleToken(AppleToken.RefreshToken(token))
+            }
+        }
+    }
+
     override suspend fun getCurrentUserOrNull(): SessionUser? = remote.getCurrentUserOrNull()
 
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
@@ -82,6 +92,7 @@ class AccountRepositoryImpl(
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): Result<ConnectResult> = suspendRunCatching {
         val current = remote.getCurrentUserOrNull()
         val result = when {
@@ -113,6 +124,9 @@ class AccountRepositoryImpl(
             local.update { account -> account.toMirrorOf(user) }
             val givenName = fullName?.takeIf(String::isNotBlank)
             if (user.displayName == null && givenName != null) keepNameGivenOnce(givenName)
+        }
+        if (provider == AccountProvider.APPLE && authorizationCode != null) {
+            keepAppleToken(AppleToken.AuthorizationCode(authorizationCode))
         }
         result
     }
@@ -228,6 +242,24 @@ class AccountRepositoryImpl(
     override suspend fun signOut() {
         remote.signOut()
         local.clear()
+    }
+
+    override suspend fun removeSocialIdentity(): Result<Unit> = suspendRunCatching {
+        val code = remote.removeSocialIdentity()
+        val user = remote.getCurrentUserOrNull()
+        local.update { account ->
+            account.toMirrorOf(user).copy(
+                recoveryCode = code,
+                recoveryCodePrompt = RecoveryCodePrompt.DUE.code,
+            )
+        }
+    }
+
+    override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching { remote.deleteAccount() }
+
+    // Why: the account works without it, so a failure only means a deletion that can't revoke at Apple.
+    private suspend fun keepAppleToken(token: AppleToken) {
+        suspendRunCatching { remote.keepAppleToken(token) }
     }
 
     /*

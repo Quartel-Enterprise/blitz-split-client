@@ -60,6 +60,7 @@ include(":feature:groups")
 include(":feature:profile")
 include(":feature:edit_profile")
 include(":feature:payment_key")
+include(":feature:delete_account")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")

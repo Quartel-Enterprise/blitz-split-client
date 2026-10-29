@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
+import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -82,6 +83,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = "nonce",
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -104,6 +106,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = null,
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -122,6 +125,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = null,
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -609,6 +613,7 @@ class AccountRepositoryImplTest {
                 idToken = "token",
                 rawNonce = null,
                 fullName = appleName,
+                authorizationCode = null,
             )
 
             // Then
@@ -644,6 +649,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = "nonce",
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -1812,6 +1818,7 @@ class AccountRepositoryImplTest {
             idToken = "token",
             rawNonce = null,
             fullName = null,
+            authorizationCode = null,
         )
 
         // Then
@@ -2124,6 +2131,7 @@ class AccountRepositoryImplTest {
         idToken = "token",
         rawNonce = "nonce",
         fullName = fullName,
+        authorizationCode = null,
     )
 
     private fun prepareScenario(
@@ -2235,8 +2243,17 @@ private class FakeAccountRemoteDataSource(
     var signOutCount = 0
     var signOutError: Throwable? = null
     var sessionUpdates: Flow<SessionUser?> = emptyFlow()
+    val appleRefreshTokens = MutableSharedFlow<String>()
+    val keptAppleTokens = mutableListOf<AppleToken>()
+    var keepAppleTokenError: Throwable? = null
+    var unlinkError: Throwable? = null
+    var unlinkCount = 0
+    var deleteAccountError: Throwable? = null
+    var deleteAccountCount = 0
 
     override fun observeSessionUser(): Flow<SessionUser?> = sessionUpdates
+
+    override fun observeAppleRefreshTokens(): Flow<String> = appleRefreshTokens
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = currentUser ?: sessionUsers.value
 
@@ -2300,6 +2317,26 @@ private class FakeAccountRemoteDataSource(
     override suspend fun createRecoveryCode(): String {
         issueError?.let { throw it }
         return "K7QM4XPA9TRE"
+    }
+
+    override suspend fun keepAppleToken(token: AppleToken) {
+        keepAppleTokenError?.let { throw it }
+        keptAppleTokens += token
+    }
+
+    override suspend fun removeSocialIdentity(): String {
+        unlinkError?.let { throw it }
+        unlinkCount++
+        currentUser = currentUser?.copy(
+            socialProvider = null,
+            email = null,
+        )
+        return "P3XR7MQA2TKE"
+    }
+
+    override suspend fun deleteAccount() {
+        deleteAccountError?.let { throw it }
+        deleteAccountCount++
     }
 
     override suspend fun signOut() {

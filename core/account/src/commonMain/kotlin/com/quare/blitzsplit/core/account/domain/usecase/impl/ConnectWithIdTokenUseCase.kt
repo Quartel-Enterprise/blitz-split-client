@@ -13,10 +13,12 @@ class ConnectWithIdTokenUseCase(
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): Result<ConnectResult> = repository.signInWithIdToken(
         provider = provider,
         idToken = idToken,
         rawNonce = rawNonce,
         fullName = fullName,
+        authorizationCode = authorizationCode,
     )
 }

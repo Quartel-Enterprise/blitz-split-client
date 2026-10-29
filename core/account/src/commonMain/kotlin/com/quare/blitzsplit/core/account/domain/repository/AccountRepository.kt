@@ -16,6 +16,9 @@ interface AccountRepository {
 
     suspend fun mirrorSession()
 
+    // Why: never returns, like mirrorSession: sends the server each Apple token a browser sign in brings.
+    suspend fun keepAppleTokens()
+
     suspend fun getCurrentUserOrNull(): SessionUser?
 
     suspend fun ensureRegistered(): Result<String>
@@ -25,6 +28,7 @@ interface AccountRepository {
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ): Result<ConnectResult>
 
     suspend fun signInWithBrowser(
@@ -54,4 +58,10 @@ interface AccountRepository {
     suspend fun updateSignOutWhenSynced(isScheduled: Boolean)
 
     suspend fun signOut()
+
+    // Why: the Google or Apple account goes and a new recovery code comes, which the prompt then shows.
+    suspend fun removeSocialIdentity(): Result<Unit>
+
+    // Why: only the server's copy; the device's goes with the sign out that follows.
+    suspend fun deleteAccount(): Result<Unit>
 }

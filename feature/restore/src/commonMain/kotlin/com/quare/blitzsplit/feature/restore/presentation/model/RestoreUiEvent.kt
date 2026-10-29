@@ -26,6 +26,8 @@ sealed interface RestoreUiEvent : UiEvent {
         val rawNonce: String?,
         // Why: only Apple's native sheet gives it, and only on the first sign in.
         val fullName: String?,
+        // Why: Apple's native sheet only; the server trades it for the token it revokes when the account goes.
+        val authorizationCode: String?,
     ) : RestoreUiEvent
 
     data object OnNativeSignInFailed : RestoreUiEvent

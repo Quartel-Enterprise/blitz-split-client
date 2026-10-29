@@ -138,6 +138,7 @@ class RestoreViewModel(
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
+                authorizationCode = event.authorizationCode,
             )
             handleSignInStep(step)
         }

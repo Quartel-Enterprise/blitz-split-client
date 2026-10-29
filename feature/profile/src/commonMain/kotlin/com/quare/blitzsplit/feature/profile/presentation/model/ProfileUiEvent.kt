@@ -26,6 +26,8 @@ sealed interface ProfileUiEvent : UiEvent {
         val rawNonce: String?,
         // Why: only Apple's native sheet gives it, and only on the first sign in.
         val fullName: String?,
+        // Why: Apple's native sheet only; the server trades it for the token it revokes when the account goes.
+        val authorizationCode: String?,
     ) : ProfileUiEvent
 
     data object OnNativeSignInFailed : ProfileUiEvent
@@ -42,6 +44,15 @@ sealed interface ProfileUiEvent : UiEvent {
     ) : ProfileUiEvent
 
     data object OnRecoveryCodeClicked : ProfileUiEvent
+
+    // Why: the Google or Apple row, which opens the "Desconectar" confirmation.
+    data object OnAccountClicked : ProfileUiEvent
+
+    data object OnUnlinkConfirmed : ProfileUiEvent
+
+    data object OnExportClicked : ProfileUiEvent
+
+    data object OnDeleteAccountClicked : ProfileUiEvent
 
     data object OnRetrySyncClicked : ProfileUiEvent
 

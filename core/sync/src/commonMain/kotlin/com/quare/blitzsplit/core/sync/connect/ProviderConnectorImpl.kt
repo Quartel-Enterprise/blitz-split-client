@@ -71,12 +71,14 @@ class ProviderConnectorImpl(
         idToken: String,
         rawNonce: String?,
         fullName: String?,
+        authorizationCode: String?,
     ) {
         connectWithIdToken(
             provider = provider,
             idToken = idToken,
             rawNonce = rawNonce,
             fullName = fullName,
+            authorizationCode = authorizationCode,
         ).onSuccess {
             completeSignIn()
             finishConnecting(hasFailed = false)

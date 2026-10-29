@@ -20,6 +20,9 @@ sealed interface Route {
 
     data object EditProfile : Route
 
+    // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.
+    data object DeleteAccount : Route
+
     // Why: a new key of that method when keyId is null, otherwise that key, to edit or delete.
     data class PaymentKey(
         val method: PaymentMethod,

@@ -167,7 +167,7 @@ class WelcomeViewModelTest {
 
             // When
             viewModel.onEvent(
-                WelcomeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira"),
+                WelcomeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira", null),
             )
 
             // Then
@@ -181,7 +181,7 @@ class WelcomeViewModelTest {
             prepareScenario(outcome = SignInOutcome.NEEDS_PROFILE)
 
             // When
-            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null))
+            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null, null))
 
             // Then
             assertEquals(listOf(AccountProvider.GOOGLE to "token"), account.idTokenConnections)
@@ -196,7 +196,7 @@ class WelcomeViewModelTest {
             prepareScenario(outcome = SignInOutcome.PROFILE_RESTORED)
 
             // When
-            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null, null))
+            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null, null, null))
 
             // Then
             assertEquals(listOf(Route.Groups), navigator.backStack.value)
@@ -209,7 +209,7 @@ class WelcomeViewModelTest {
             prepareScenario(profilePullError = IllegalStateException("offline"))
 
             // When
-            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null))
+            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null, null))
 
             // Then
             assertEquals(WelcomeError.SIGN_IN_FAILED, viewModel.uiState.value.error)
@@ -223,7 +223,7 @@ class WelcomeViewModelTest {
             prepareScenario(connectResult = Result.failure(IllegalStateException("rejected")))
 
             // When
-            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null))
+            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
 
             // Then
             assertEquals(WelcomeError.SIGN_IN_FAILED, viewModel.uiState.value.error)
@@ -323,7 +323,7 @@ class WelcomeViewModelTest {
             // Given
             prepareScenario(profilePullError = IllegalStateException("offline"))
             account.defersStatusUpdates = true
-            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null))
+            viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", "nonce", null, null))
 
             // When
             account.requeryStatus()

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.account.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -27,6 +28,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -63,6 +65,8 @@ class ProfileViewModel(
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
     private val validatePaymentKey: ValidatePaymentKey,
+    private val unlinkAccount: UnlinkAccount,
+    private val exportUserData: ExportUserData,
     observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
     observePendingProfileChanges: ObservePendingProfileChanges,
@@ -96,6 +100,8 @@ class ProfileViewModel(
                 hasSignInFailed = false,
                 isSigningOut = false,
                 hasSignOutFailed = false,
+                isUnlinking = false,
+                hasUnlinkFailed = false,
             ),
         )
 
@@ -162,29 +168,63 @@ class ProfileViewModel(
     fun onEvent(event: ProfileUiEvent) {
         when (event) {
             ProfileUiEvent.OnBackClicked -> navigator.navigateBack()
+
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
+
             ProfileUiEvent.OnVisibilityInfoClicked -> showDialog(ProfileDialog.VISIBILITY_INFO)
+
             ProfileUiEvent.OnDialogDismissed -> closeDialog()
+
             ProfileUiEvent.OnConnectClicked -> expandConnect()
+
             is ProfileUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
+
             is ProfileUiEvent.OnIdTokenReceived -> handleIdToken(event)
+
             ProfileUiEvent.OnNativeSignInFailed -> providerConnector.finishConnecting(hasFailed = true)
+
             ProfileUiEvent.OnNativeSignInCancelled -> providerConnector.finishConnecting(hasFailed = false)
+
             is ProfileUiEvent.OnAddPaymentKeyClicked -> openPaymentKey(event.method, keyId = null)
+
             is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
+
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
+
+            ProfileUiEvent.OnAccountClicked -> if (uiState.value.hasAccount) showDialog(ProfileDialog.UNLINK_ACCOUNT)
+
+            ProfileUiEvent.OnUnlinkConfirmed -> unlink()
+
+            ProfileUiEvent.OnExportClicked -> export()
+
+            ProfileUiEvent.OnDeleteAccountClicked -> if (uiState.value.showsDeleteAccount) {
+                navigator.navigate(Route.DeleteAccount)
+            }
+
             ProfileUiEvent.OnRetrySyncClicked -> retry()
+
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
+
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
+
             ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
+
             ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()
+
             ProfileUiEvent.OnSignOutConfirmed -> if (uiState.value.dialog == ProfileDialog.SIGN_OUT) clearSession()
+
             ProfileUiEvent.OnSignOutWhenSyncedClicked -> scheduleSignOut()
+
             ProfileUiEvent.OnSignOutNowClicked -> signOutNow()
+
             ProfileUiEvent.OnCancelScheduledSignOutClicked -> cancelScheduledSignOut()
+
             is ProfileUiEvent.OnCodeSavedChanged -> confirmCodeSaved(event.isChecked)
+
             ProfileUiEvent.OnCopyCodeClicked -> copyCode()
+
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
+
             ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE) eraseProfile()
         }
     }
@@ -308,19 +348,50 @@ class ProfileViewModel(
                 dialog = dialog,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
+                hasUnlinkFailed = false,
             )
         }
     }
 
     private fun closeDialog() {
-        if (uiState.value.isSigningOut) return
+        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
         uiState.update {
             it.copy(
                 dialog = null,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
+                hasUnlinkFailed = false,
             )
         }
+    }
+
+    /*
+     * Why: the recovery code sheet shows once the account is gone, since its prompt comes due with the new
+     * code, so a success only closes the dialog.
+     */
+    private fun unlink() {
+        val state = uiState.value
+        if (state.dialog != ProfileDialog.UNLINK_ACCOUNT || !state.canUnlink) return
+        uiState.update {
+            it.copy(
+                isUnlinking = true,
+                hasUnlinkFailed = false,
+            )
+        }
+        viewModelScope.launch {
+            val result = unlinkAccount()
+            uiState.update {
+                it.copy(
+                    dialog = it.dialog.takeIf { result.isFailure },
+                    isUnlinking = false,
+                    hasUnlinkFailed = result.isFailure,
+                )
+            }
+        }
+    }
+
+    private fun export() {
+        viewModelScope.launch { uiAction.emit(ProfileUiAction.SaveExport(exportUserData())) }
     }
 
     private fun scheduleSignOut() {
@@ -387,6 +458,7 @@ class ProfileViewModel(
                 idToken = event.idToken,
                 rawNonce = event.rawNonce,
                 fullName = event.fullName,
+                authorizationCode = event.authorizationCode,
             )
         }
     }

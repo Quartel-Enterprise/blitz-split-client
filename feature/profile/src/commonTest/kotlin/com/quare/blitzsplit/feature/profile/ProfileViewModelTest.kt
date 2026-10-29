@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenU
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.UnlinkAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -36,6 +37,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -1310,7 +1312,7 @@ class ProfileViewModelTest {
 
             // When
             viewModel.onEvent(
-                ProfileUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira"),
+                ProfileUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", "nonce", "Pierre Vieira", null),
             )
 
             // Then
@@ -1333,7 +1335,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
 
             // When
-            viewModel.onEvent(ProfileUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null))
+            viewModel.onEvent(ProfileUiEvent.OnIdTokenReceived(AccountProvider.GOOGLE, "token", null, null, null))
 
             // Then
             assertTrue(viewModel.uiState.value.hasSignInFailed)
@@ -2745,6 +2747,8 @@ class ProfileViewModelTest {
             },
             signOutWhenSynced = SignOutWhenSynced { signOutWhenSyncedCalls++ },
             cancelSignOutWhenSynced = CancelSignOutWhenSynced { cancelSignOutWhenSyncedCalls++ },
+            unlinkAccount = UnlinkAccountUseCase(account),
+            exportUserData = ExportUserData { "{}" },
             validatePaymentKey = ValidatePaymentKeyUseCase(),
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),

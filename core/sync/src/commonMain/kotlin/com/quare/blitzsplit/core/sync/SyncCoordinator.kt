@@ -58,6 +58,7 @@ class SyncCoordinator(
         if (started) return
         started = true
         scope.launch { accountRepository.mirrorSession() }
+        scope.launch { accountRepository.keepAppleTokens() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
         scope.launch { syncWhenDue() }
@@ -102,6 +103,20 @@ class SyncCoordinator(
     suspend fun signOut(): Result<Unit> = scope
         .async { syncLock.withLock { suspendRunCatching { clearSession() } } }
         .await()
+
+    /*
+     * Why: under the sync lock and in the app's scope, like the sign out. The server's copy goes first: once
+     * it is gone the device's is cleared the same way, and a failure leaves both, for another try.
+     */
+    suspend fun deleteAccount(): Result<Unit> = scope
+        .async {
+            syncLock.withLock {
+                suspendRunCatching {
+                    accountRepository.deleteAccount().getOrThrow()
+                    clearSession()
+                }
+            }
+        }.await()
 
     /*
      * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the
