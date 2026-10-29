@@ -127,6 +127,7 @@ export const pt: Record<MessageKey, string> = {
   createGroup_nameTaken: '{name} já está no grupo. Use um apelido para diferenciar.',
   createGroup_useNickname: 'Usar “{name}”',
   createGroup_noAppNotice: 'Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois.',
+  createGroup_saveError: 'Não deu para salvar o grupo. Tente de novo.',
 
   notifications_title: 'Notificações',
   notifications_footer: 'Os avisos chegam quando há internet. Para silenciar um grupo, use o menu dentro dele.',

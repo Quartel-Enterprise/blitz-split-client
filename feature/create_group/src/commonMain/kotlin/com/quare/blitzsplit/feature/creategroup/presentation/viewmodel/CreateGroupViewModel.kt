@@ -47,6 +47,7 @@ class CreateGroupViewModel(
                 takenName = null,
                 nicknameSuggestions = emptyList(),
                 isCreating = false,
+                showsCreateError = false,
             ),
         )
 
@@ -82,15 +83,25 @@ class CreateGroupViewModel(
 
     fun onEvent(event: CreateGroupUiEvent) {
         when (event) {
-            CreateGroupUiEvent.OnCloseClicked -> leave()
+            // Why: leaving clears the ViewModel, which would cancel a save in flight.
+            CreateGroupUiEvent.OnCloseClicked -> if (!uiState.value.isCreating) leave()
+
             is CreateGroupUiEvent.OnNameChanged -> changeName(event.name)
+
             CreateGroupUiEvent.OnColorClicked -> uiState.update { it.copy(color = it.color.toNextColor()) }
+
             is CreateGroupUiEvent.OnTypeSelected -> uiState.update { it.copy(type = event.type) }
+
             is CreateGroupUiEvent.OnCurrencySelected -> uiState.update { it.copy(currency = event.currency) }
+
             is CreateGroupUiEvent.OnDraftChanged -> changeDraft(event.draft)
+
             CreateGroupUiEvent.OnAddMemberClicked -> addDraft()
+
             is CreateGroupUiEvent.OnSuggestionClicked -> addSuggestion(event.name)
+
             is CreateGroupUiEvent.OnRemoveMemberClicked -> removeMember(event.memberId)
+
             CreateGroupUiEvent.OnCreateClicked -> create()
         }
     }
@@ -169,7 +180,12 @@ class CreateGroupViewModel(
         val state = uiState.value
         if (!state.canCreate) return
         val draft = checkOf(state.draft) as? MemberNameCheck.Available
-        uiState.update { it.copy(isCreating = true) }
+        uiState.update {
+            it.copy(
+                isCreating = true,
+                showsCreateError = false,
+            )
+        }
         val members = state.members.map {
             NewGroupMember(
                 name = it.name,
@@ -193,7 +209,14 @@ class CreateGroupViewModel(
                 currency = state.currency,
                 members = members,
             ).onSuccess { leave() }
-                .onFailure { uiState.update { it.copy(isCreating = false) } }
+                .onFailure {
+                    uiState.update {
+                        it.copy(
+                            isCreating = false,
+                            showsCreateError = true,
+                        )
+                    }
+                }
         }
     }
 

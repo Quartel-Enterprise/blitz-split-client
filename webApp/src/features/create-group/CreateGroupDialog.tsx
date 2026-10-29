@@ -47,7 +47,13 @@ export function CreateGroupDialog() {
     </Button>
   )
   const cancel = (
-    <Button type="button" variant="outline" onClick={() => presenter.close()} className={cn(!isDesktop && 'h-11')}>
+    <Button
+      type="button"
+      variant="outline"
+      disabled={state.isCreating}
+      onClick={() => presenter.close()}
+      className={cn(!isDesktop && 'h-11')}
+    >
       {t('common_cancel')}
     </Button>
   )
@@ -102,6 +108,12 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
       }}
       className="flex flex-col gap-5"
     >
+      {state.showsCreateError && (
+        <p role="alert" className="flex items-center gap-1.5 text-sm text-destructive">
+          <CircleAlert className="size-4 shrink-0" />
+          {t('createGroup_saveError')}
+        </p>
+      )}
       <div className="flex items-end gap-4">
         <button
           type="button"

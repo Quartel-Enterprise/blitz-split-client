@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.groups.testing
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -17,6 +18,9 @@ class FakeGroupRepository(
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var createError: Throwable? = null
+
+    // Why: while set, a create waits for it, so a test can act while the save is in flight.
+    var createGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
     var clearError: Throwable? = null
@@ -30,6 +34,7 @@ class FakeGroupRepository(
         group: Group,
         createdAt: Long,
     ): Result<Unit> {
+        createGate?.await()
         createError?.let { return Result.failure(it) }
         createdGroups += group
         createdAts += createdAt

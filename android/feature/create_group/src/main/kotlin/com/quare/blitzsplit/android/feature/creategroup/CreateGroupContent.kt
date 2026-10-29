@@ -50,8 +50,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -154,7 +156,10 @@ private fun CreateGroupTopBar(
     TopAppBar(
         title = { Text(stringResource(R.string.create_group_title)) },
         navigationIcon = {
-            IconButton(onClick = { onEvent(CreateGroupUiEvent.OnCloseClicked) }) {
+            IconButton(
+                onClick = { onEvent(CreateGroupUiEvent.OnCloseClicked) },
+                enabled = !state.isCreating,
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
                     contentDescription = stringResource(R.string.create_group_close),
@@ -182,6 +187,19 @@ private fun ColumnScope.CreateGroupFormColumn(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
 ) {
+    if (state.showsCreateError) {
+        Text(
+            text = stringResource(R.string.create_group_save_error),
+            modifier = Modifier
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    top = 8.dp,
+                ).semantics { liveRegion = LiveRegionMode.Polite },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
     IdentitySection(
         state = state,
         onEvent = onEvent,
@@ -435,4 +453,5 @@ private fun buildPreviewState(
     takenName = takenName,
     nicknameSuggestions = if (takenName == null) emptyList() else listOf("Ana P.", "Ana 2"),
     isCreating = false,
+    showsCreateError = false,
 )

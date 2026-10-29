@@ -21,8 +21,9 @@ class SupabaseGroupRemoteDataSource(
     override suspend fun fetchMembers(): List<GroupMemberDto> = fetchAll(MEMBERS)
 
     /*
-     * Why: page by page, since the server answers at most a page per request. A row missing from the answer would
-     * read as removed on the server and leave the device.
+     * Why: page by page, since the server answers at most max_rows per request, until a page comes back empty: a
+     * short page proves nothing if max_rows is below the page asked for. A row missing from the answer would read as
+     * removed on the server and leave the device.
      */
     private suspend inline fun <reified T : Any> fetchAll(table: String): List<T> {
         val rows = mutableListOf<T>()
@@ -41,7 +42,7 @@ class SupabaseGroupRemoteDataSource(
                     )
                 }.decodeList<T>()
             rows += page
-        } while (page.size.toLong() == PAGE_SIZE)
+        } while (page.isNotEmpty())
         return rows
     }
 
@@ -49,7 +50,7 @@ class SupabaseGroupRemoteDataSource(
         const val GROUPS = "groups"
         const val MEMBERS = "group_members"
 
-        // Why: the API's max_rows, Supabase's default; a larger page would come back short and end the loop early.
+        // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L
     }
 }

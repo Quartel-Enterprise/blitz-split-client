@@ -91,10 +91,14 @@ class GroupRepositoryImpl(
         local.deleteOtherUsersGroups(userId)
         local.claimUnowned(userId)
         remoteGroups.forEach { dto -> local.applyRemoteGroup(mapper.toEntity(dto, ownerUserId = userId)) }
-        remoteMembers.forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
+        // Why: the two reads are separate, so a member whose group the first one didn't see waits for the next sync.
+        val remoteGroupIds = remoteGroups.map { it.id }.toSet()
+        remoteMembers
+            .filter { it.groupId in remoteGroupIds }
+            .forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
         local.deleteGoneFromServer(
             ownerUserId = userId,
-            serverGroupIds = remoteGroups.map { it.id }.toSet(),
+            serverGroupIds = remoteGroupIds,
             serverMemberIds = remoteMembers.map { it.id }.toSet(),
         )
     }

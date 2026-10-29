@@ -758,6 +758,17 @@
         }
       }
     },
+    "Couldn’t save the group. Try again." : {
+      "comment" : "Shown in New group when the device couldn't save the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar o grupo. Tente de novo."
+          }
+        }
+      }
+    },
     "Create" : {
       "comment" : "The button that creates the new group",
       "localizations" : {

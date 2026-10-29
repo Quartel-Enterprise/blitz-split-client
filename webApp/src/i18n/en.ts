@@ -126,6 +126,7 @@ export const en = {
   createGroup_nameTaken: '{name} is already in the group. Use a nickname to tell them apart.',
   createGroup_useNickname: 'Use “{name}”',
   createGroup_noAppNotice: 'Nobody needs the app right now. You can already add expenses for everyone and send the link later.',
+  createGroup_saveError: 'Couldn’t save the group. Try again.',
 
   notifications_title: 'Notifications',
   notifications_footer: "Notices arrive when there's internet. To mute a group, use the menu inside it.",

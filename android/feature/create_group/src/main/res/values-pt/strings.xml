@@ -24,4 +24,5 @@
     <string name="create_group_no_app_notice">Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois.</string>
     <string name="create_group_currency">Moeda</string>
     <string name="create_group_currency_value">%1$s (%2$s)</string>
+    <string name="create_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
 </resources>

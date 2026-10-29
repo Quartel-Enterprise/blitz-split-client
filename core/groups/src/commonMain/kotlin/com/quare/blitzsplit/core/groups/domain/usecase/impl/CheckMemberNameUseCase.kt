@@ -11,6 +11,8 @@ import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
  * creator's initial ("Ana P.") and with the first free number ("Ana 2").
  */
 class CheckMemberNameUseCase : CheckMemberName {
+    private val whitespace = Regex("\\s+")
+
     override fun invoke(
         name: String,
         takenNames: List<String>,
@@ -45,9 +47,5 @@ class CheckMemberNameUseCase : CheckMemberName {
         return listOfNotNull(withInitial, withNumber)
     }
 
-    private fun normalize(name: String): String = name.trim().split(WHITESPACE).joinToString(" ")
-
-    private companion object {
-        val WHITESPACE = Regex("\\s+")
-    }
+    private fun normalize(name: String): String = name.trim().split(whitespace).joinToString(" ")
 }

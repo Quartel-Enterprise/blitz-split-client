@@ -56,6 +56,7 @@ struct CreateGroupView: View {
                 Button("Cancel", systemImage: "xmark", role: .cancel) {
                     model?.send(CreateGroupUiEventOnCloseClicked.shared)
                 }
+                .disabled(model?.state.isCreating == true)
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Create", systemImage: "checkmark") {
@@ -91,6 +92,12 @@ private struct CreateGroupForm: View {
             }
             .listRowBackground(Color.clear)
             #endif
+            if state.showsCreateError {
+                Section {
+                    Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")
+                        .foregroundStyle(Palette.negative)
+                }
+            }
             Section {
                 Button {
                     model.send(CreateGroupUiEventOnColorClicked.shared)
@@ -267,8 +274,10 @@ extension GroupType {
 }
 
 extension GroupCurrency {
-    /// "Brazilian Real (R$)", named by the system in the device's language.
-    var label: String {
+    /// "Brazilian Real (R$)", named by the system in the device's language. Made once per currency: the picker
+    /// reads every label each time the form redraws.
+    @MainActor var label: String {
+        if let label = Self.labels[code] { return label }
         let locale = Locale.current
         let name = locale.localizedString(forCurrencyCode: code) ?? code
         let formatter = NumberFormatter()
@@ -276,6 +285,10 @@ extension GroupCurrency {
         formatter.numberStyle = .currency
         formatter.currencyCode = code
         let symbol = formatter.currencySymbol ?? code
-        return "\(name.prefix(1).uppercased())\(name.dropFirst()) (\(symbol))"
+        let label = "\(name.prefix(1).uppercased())\(name.dropFirst()) (\(symbol))"
+        Self.labels[code] = label
+        return label
     }
+
+    @MainActor private static var labels: [String: String] = [:]
 }

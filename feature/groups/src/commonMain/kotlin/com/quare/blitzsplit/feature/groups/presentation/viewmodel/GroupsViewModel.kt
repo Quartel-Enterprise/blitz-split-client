@@ -71,27 +71,24 @@ class GroupsViewModel(
             connectivityObserver.observe(),
         ) { profile, account, syncState, isOnline ->
             val displayName = profile?.displayName?.trim().orEmpty()
-            uiState.value.copy(
-                displayName = displayName,
-                avatarInitial = Initials.firstOf(displayName),
-                avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                photoUrl = profile?.photo?.toImageUrl(),
-                accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                syncBadge = syncBadgeOf(
-                    syncState = syncState,
-                    isOnline = isOnline,
-                ),
-                showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
-            )
-        }.onEach { state ->
-            // Why: the groups come from their own flow below, so this keeps whatever it last set.
-            uiState.update {
+            // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
+            val update: (GroupsUiState) -> GroupsUiState = { state ->
                 state.copy(
-                    groups = it.groups,
-                    hasLoadedGroups = it.hasLoadedGroups,
+                    displayName = displayName,
+                    avatarInitial = Initials.firstOf(displayName),
+                    avatarColor = profile?.avatarColor ?: AvatarColor.default,
+                    photoUrl = profile?.photo?.toImageUrl(),
+                    accountProvider = (account.status as? AccountStatus.Connected)?.provider,
+                    syncBadge = syncBadgeOf(
+                        syncState = syncState,
+                        isOnline = isOnline,
+                    ),
+                    showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 )
             }
-        }.launchIn(viewModelScope)
+            update
+        }.onEach(uiState::update)
+            .launchIn(viewModelScope)
         observeGroups()
             .onEach { groups ->
                 uiState.update {

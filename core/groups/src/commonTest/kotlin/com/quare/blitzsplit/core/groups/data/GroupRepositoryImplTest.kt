@@ -1239,6 +1239,30 @@ class GroupRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a member whose group the server did not return WHEN downloading THEN does not store it`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+                memberDto(
+                    id = "m-2",
+                    groupId = "group-2",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertEquals(listOf("m-1"), local.members.value.map { it.id })
+    }
+
+    @Test
     fun `GIVEN the server fails WHEN downloading THEN deletes none of the synced groups and members`() = runTest {
         // Given
         prepareScenario(

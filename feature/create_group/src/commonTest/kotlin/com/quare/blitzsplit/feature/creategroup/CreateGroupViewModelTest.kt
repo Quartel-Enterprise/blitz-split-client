@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -753,8 +754,42 @@ class CreateGroupViewModelTest {
             // Then
             assertFalse(viewModel.uiState.value.isCreating)
             assertTrue(viewModel.uiState.value.canCreate)
+            assertTrue(viewModel.uiState.value.showsCreateError)
             assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
         }
+
+    @Test
+    fun `GIVEN a failed save WHEN creating again THEN hides the error while it saves`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        groups.createError = IllegalStateException("disk full")
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+        groups.createError = null
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsCreateError)
+        assertEquals(1, groups.createdGroups.size)
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN closing THEN stays on the screen`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        groups.createGate = CompletableDeferred()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isCreating)
+        assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN the screen closed by a native back WHEN creating THEN creates the group and keeps the back stack`() =

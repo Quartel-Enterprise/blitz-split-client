@@ -20,6 +20,8 @@ data class CreateGroupUiState(
     // Why: "Usar “Ana P.”" and "Usar “Ana 2”", the free nicknames while the draft repeats a name.
     val nicknameSuggestions: List<String>,
     val isCreating: Boolean,
+    // Why: the device couldn't save the group; cleared by the next try.
+    val showsCreateError: Boolean,
 ) {
     val types: List<GroupType>
         get() = GroupType.entries
