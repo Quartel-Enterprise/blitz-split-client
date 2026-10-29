@@ -73,7 +73,9 @@ fun rememberNotificationPermissionAccess(
 }
 
 // Why: the rationale flag right before the system dialog, to tell a dismissed dialog from a refusal.
-internal class AskMemory(var hadRationale: Boolean = false) {
+internal class AskMemory(
+    var hadRationale: Boolean = false,
+) {
     companion object {
         val Saver: Saver<AskMemory, Boolean> = Saver(
             save = { it.hadRationale },
