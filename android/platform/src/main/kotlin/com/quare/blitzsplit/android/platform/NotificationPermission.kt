@@ -13,6 +13,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -55,11 +57,12 @@ fun rememberNotificationPermissionAccess(
     onResult: (SystemNotificationPermission) -> Unit,
 ): NotificationPermissionAccess {
     val activity = requireNotNull(LocalActivity.current)
-    val askMemory = remember { AskMemory() }
+    // Why: saved, since the activity may be recreated (a rotation) while the system dialog is on top of it.
+    val askMemory = rememberSaveable(saver = AskMemory.Saver) { AskMemory() }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         /*
          * Why: only an answer moves the rationale (on after a first refusal, off after a refusal for good), while a
-         * dialog dismissed by tapping outside it leaves it as it was and Android may still ask.
+         * dialog dismissed by tapping outside it or by Back leaves it as it was and Android may still ask.
          */
         if (isGranted || askMemory.hadRationale != activity.shouldShowNotificationRationale()) {
             activity.markNotificationPermissionAsked()
@@ -70,8 +73,13 @@ fun rememberNotificationPermissionAccess(
 }
 
 // Why: the rationale flag right before the system dialog, to tell a dismissed dialog from a refusal.
-internal class AskMemory {
-    var hadRationale: Boolean = false
+internal class AskMemory(var hadRationale: Boolean = false) {
+    companion object {
+        val Saver: Saver<AskMemory, Boolean> = Saver(
+            save = { it.hadRationale },
+            restore = { AskMemory(hadRationale = it) },
+        )
+    }
 }
 
 private fun Activity.readNotificationPermission(): SystemNotificationPermission = when {
