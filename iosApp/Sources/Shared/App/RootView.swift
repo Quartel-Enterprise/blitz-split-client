@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack
 /// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac) and push the
-/// profile inside the Groups tab. A route that opens as a sheet (a key on iPad and Mac) shows over
+/// profile inside the Groups tab. A route that opens as a sheet (a key on iPad and Mac, deleting the account) shows over
 /// the whole window.
 struct RootView: View {
     @State private var app = AppModel()
@@ -46,6 +46,7 @@ struct RootView: View {
         case .groups: MainTabView(path: $app.path)
         case .profile: ProfileView()
         case .editProfile: EditProfileView()
+        case .deleteAccount: DeleteAccountView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         }
     }
