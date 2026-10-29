@@ -517,6 +517,7 @@ class ProfileUiStateTest {
         paymentKeys = emptyList(),
         isSignOutScheduled = isSignOutScheduled,
         theme = ThemePreference.SYSTEM,
+        activeNotificationCount = 3,
         dialog = null,
         hasConfirmedCodeSaved = hasConfirmedCodeSaved,
         isConnectExpanded = isConnectExpanded,

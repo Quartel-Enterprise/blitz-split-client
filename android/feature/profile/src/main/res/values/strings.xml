@@ -48,6 +48,11 @@
     <string name="profile_payment_keys_add_bitcoin">Bitcoin key</string>
     <string name="profile_section_preferences">Preferences</string>
     <string name="profile_appearance">Appearance</string>
+    <string name="profile_notifications">Notifications</string>
+    <plurals name="profile_notifications_active">
+        <item quantity="one">%d active</item>
+        <item quantity="other">%d active</item>
+    </plurals>
     <string name="profile_theme_system">System</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>

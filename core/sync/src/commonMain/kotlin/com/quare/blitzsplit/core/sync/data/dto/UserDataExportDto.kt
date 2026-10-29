@@ -15,4 +15,5 @@ data class UserDataExportDto(
     @SerialName("account") val account: AccountExportDto,
     @SerialName("profile") val profile: ProfileExportDto?,
     @SerialName("paymentKeys") val paymentKeys: List<PaymentKeyExportDto>,
+    @SerialName("notifications") val notifications: NotificationPreferencesExportDto,
 )

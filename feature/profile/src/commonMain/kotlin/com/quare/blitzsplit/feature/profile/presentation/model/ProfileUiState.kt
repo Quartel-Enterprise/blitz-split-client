@@ -25,6 +25,8 @@ data class ProfileUiState(
     val paymentKeys: List<PaymentKeyItem>,
     val isSignOutScheduled: Boolean,
     val theme: ThemePreference,
+    // Why: "3 ativas" under "Notificações"; the toggles themselves live on their own screen or section.
+    val activeNotificationCount: Int,
     val dialog: ProfileDialog?,
     // Why: "Apagar e sair" only unlocks once the person says the recovery code is kept.
     val hasConfirmedCodeSaved: Boolean,

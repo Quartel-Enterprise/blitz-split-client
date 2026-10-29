@@ -18,6 +18,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
@@ -71,6 +72,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
+            entry<Route.NotificationSettings> { NotificationSettingsScreen() }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
             entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(

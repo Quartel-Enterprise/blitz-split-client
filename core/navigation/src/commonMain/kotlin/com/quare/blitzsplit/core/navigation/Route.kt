@@ -23,6 +23,9 @@ sealed interface Route {
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.
     data object DeleteAccount : Route
 
+    // Why: "Notificações", a screen of its own on Android and iOS; the web and macOS keep it in the profile.
+    data object NotificationSettings : Route
+
     // Why: a new key of that method when keyId is null, otherwise that key, to edit or delete.
     data class PaymentKey(
         val method: PaymentMethod,

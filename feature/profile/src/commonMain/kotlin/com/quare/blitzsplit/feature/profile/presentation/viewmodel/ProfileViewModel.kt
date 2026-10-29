@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -18,7 +19,9 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificationPreferenceChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKeyChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -74,6 +77,8 @@ class ProfileViewModel(
     observePendingPaymentKeyChanges: ObservePendingPaymentKeyChanges,
     observeSyncState: ObserveSyncState,
     observeThemePreference: ObserveThemePreference,
+    observeNotificationPreferences: ObserveNotificationPreferences,
+    observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<ProfileUiState>
@@ -93,6 +98,7 @@ class ProfileViewModel(
                 paymentKeys = emptyList(),
                 isSignOutScheduled = false,
                 theme = ThemePreference.SYSTEM,
+                activeNotificationCount = NotificationPreferences.DEFAULT.enabledTypes.size,
                 dialog = null,
                 hasConfirmedCodeSaved = false,
                 isConnectExpanded = false,
@@ -131,8 +137,9 @@ class ProfileViewModel(
             observeSyncState(),
             observePendingProfileChanges(),
             observePendingPaymentKeyChanges(),
+            observePendingNotificationPreferenceChanges(),
             connectivityObserver.observe(),
-        ) { syncState, hasPendingProfile, hasPendingKeys, isOnline ->
+        ) { syncState, hasPendingProfile, hasPendingKeys, hasPendingPreferences, isOnline ->
             uiState.update {
                 it.copy(
                     isOnline = isOnline,
@@ -140,6 +147,7 @@ class ProfileViewModel(
                     pendingChanges = listOfNotNull(
                         PendingChange.PROFILE.takeIf { hasPendingProfile },
                         PendingChange.PAYMENT_KEYS.takeIf { hasPendingKeys },
+                        PendingChange.NOTIFICATION_PREFERENCES.takeIf { hasPendingPreferences },
                     ),
                 )
             }
@@ -150,6 +158,10 @@ class ProfileViewModel(
         observeThemePreference()
             .onEach { theme -> uiState.update { it.copy(theme = theme) } }
             .launchIn(viewModelScope)
+        observeNotificationPreferences()
+            .onEach { preferences ->
+                uiState.update { it.copy(activeNotificationCount = preferences.enabledTypes.size) }
+            }.launchIn(viewModelScope)
         providerConnector.connection
             .onEach { connection ->
                 uiState.update {
@@ -185,6 +197,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
+            ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
             ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
             ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()

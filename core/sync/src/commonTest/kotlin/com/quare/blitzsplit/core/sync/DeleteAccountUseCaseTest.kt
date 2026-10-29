@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteAccountUseCase
@@ -64,6 +65,7 @@ class DeleteAccountUseCaseTest {
                 accountRepository = account,
                 profileRepository = profile,
                 paymentKeyRepository = paymentKeys,
+                notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),

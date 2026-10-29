@@ -16,6 +16,47 @@
         }
       }
     },
+    "%lld active" : {
+      "comment" : "Under \"Notifications\" in the profile: how many notices are on",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld active"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld active"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ativa"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ativas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld changes haven't uploaded yet" : {
       "localizations" : {
         "en" : {
@@ -324,6 +365,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O Bora Rachar não movimenta dinheiro: o pagamento é feito no app do banco de quem paga. Confira se a chave está no seu nome."
+          }
+        }
+      }
+    },
+    "Blitz Split notifications are turned off in System Settings." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações do Bora Rachar estão desativadas nos Ajustes do Sistema."
+          }
+        }
+      }
+    },
+    "Blitz Split notifications are turned off in the %@ Settings." : {
+      "comment" : "%@ is the device: iPhone or iPad",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações do Bora Rachar estão desativadas nos Ajustes do %@."
           }
         }
       }
@@ -1100,6 +1162,16 @@
         }
       }
     },
+    "Invites and new members" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convites e novos membros"
+          }
+        }
+      }
+    },
     "It's also in %@." : {
       "comment" : "%@ is where the recovery code lives: Profile › Recovery on iOS, Settings › Recovery on the Mac",
       "localizations" : {
@@ -1250,6 +1322,16 @@
         }
       }
     },
+    "New expense in my groups" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova despesa nos meus grupos"
+          }
+        }
+      }
+    },
     "No account" : {
       "localizations" : {
         "pt-BR" : {
@@ -1330,6 +1412,36 @@
         }
       }
     },
+    "Notices arrive when there's internet. To mute a group, use the menu inside it." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os avisos chegam quando há internet. Para silenciar um grupo, use o menu dentro dele."
+          }
+        }
+      }
+    },
+    "Notifications" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificações"
+          }
+        }
+      }
+    },
+    "Notify me when" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avisar quando"
+          }
+        }
+      }
+    },
     "Now: %@." : {
       "comment" : "%@ is the type of the method's default key today, lowercase (phone, email, CPF, Lightning…)",
       "localizations" : {
@@ -1362,6 +1474,16 @@
         }
       }
     },
+    "Once a week, if there's an open balance" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma vez por semana, se houver saldo em aberto"
+          }
+        }
+      }
+    },
     "Only people in your groups see your name and photo." : {
       "localizations" : {
         "pt-BR" : {
@@ -1378,6 +1500,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seu nome aparece só para quem estiver nos seus grupos."
+          }
+        }
+      }
+    },
+    "Open Settings" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        }
+      }
+    },
+    "Open System Settings" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes do Sistema"
           }
         }
       }
@@ -1686,6 +1828,16 @@
         }
       }
     },
+    "Settle-up reminders" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembretes de acerto"
+          }
+        }
+      }
+    },
     "Shown first when settling up." : {
       "localizations" : {
         "pt-BR" : {
@@ -1803,6 +1955,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sai assim que tudo subir"
+          }
+        }
+      }
+    },
+    "Someone marked a payment to me" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguém marcou um pagamento para mim"
           }
         }
       }
@@ -2126,6 +2288,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No acerto, mostramos o valor em sats pela cotação do momento. É só uma estimativa: quem paga confirma o valor na carteira."
+          }
+        }
+      }
+    },
+    "When someone adds an expense with you" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando alguém lança uma despesa com você"
+          }
+        }
+      }
+    },
+    "When someone joins one of your groups" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando alguém entra num grupo seu"
+          }
+        }
+      }
+    },
+    "When someone says they've paid you" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando alguém diz que já te pagou"
           }
         }
       }

@@ -35,6 +35,7 @@ class JsProfileState(
     val canRetrySync: Boolean,
     val isSignOutScheduled: Boolean,
     val theme: String,
+    val activeNotificationCount: Int,
     // Why: the ProfileDialog's name, null while none is open.
     val dialog: String?,
     val hasConfirmedCodeSaved: Boolean,
@@ -97,6 +98,7 @@ class ProfilePresenter {
                 canRetrySync = state.canRetrySync,
                 isSignOutScheduled = state.isSignOutScheduled,
                 theme = state.theme.code,
+                activeNotificationCount = state.activeNotificationCount,
                 dialog = state.dialog?.name,
                 hasConfirmedCodeSaved = state.hasConfirmedCodeSaved,
                 canErase = state.canErase,

@@ -45,6 +45,12 @@
     <string name="profile_payment_keys_add_bitcoin">Chave Bitcoin</string>
     <string name="profile_section_preferences">Preferências</string>
     <string name="profile_appearance">Aparência</string>
+    <string name="profile_notifications">Notificações</string>
+    <plurals name="profile_notifications_active">
+        <item quantity="one">%d ativa</item>
+        <item quantity="many">%d ativas</item>
+        <item quantity="other">%d ativas</item>
+    </plurals>
     <string name="profile_theme_system">Sistema</string>
     <string name="profile_theme_light">Claro</string>
     <string name="profile_theme_dark">Escuro</string>

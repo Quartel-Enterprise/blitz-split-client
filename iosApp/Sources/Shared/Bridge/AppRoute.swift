@@ -13,6 +13,7 @@ enum AppRoute: Hashable, Identifiable {
     case profile
     case editProfile
     case deleteAccount
+    case notificationSettings
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
 
@@ -24,6 +25,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
+        case is RouteNotificationSettings: self = .notificationSettings
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         default: self = .welcome
         }

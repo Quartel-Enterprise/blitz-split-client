@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,6 +70,24 @@ internal fun PreferencesSection(
                 ) { Text(stringResource(theme.labelRes)) }
             }
         }
+        HorizontalDivider()
+        SectionRow(
+            icon = Icons.Outlined.Notifications,
+            headline = stringResource(R.string.profile_notifications),
+            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnNotificationsClicked) },
+            supporting = pluralStringResource(
+                R.plurals.profile_notifications_active,
+                state.activeNotificationCount,
+                state.activeNotificationCount,
+            ),
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
     }
 }
 

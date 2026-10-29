@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.core.sync.data.mapper
 
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.sync.data.dto.AccountExportDto
+import com.quare.blitzsplit.core.sync.data.dto.NotificationPreferencesExportDto
 import com.quare.blitzsplit.core.sync.data.dto.PaymentKeyExportDto
 import com.quare.blitzsplit.core.sync.data.dto.ProfileExportDto
 import kotlin.time.Instant
@@ -47,6 +50,14 @@ class UserDataExportMapperImpl : UserDataExportMapper {
         isDefault = key.isDefault,
         addedAt = toIsoInstant(key.addedAt),
     )
+
+    override fun toDto(preferences: NotificationPreferences): NotificationPreferencesExportDto =
+        NotificationPreferencesExportDto(
+            newExpense = NotificationType.NEW_EXPENSE in preferences.enabledTypes,
+            paymentMarked = NotificationType.PAYMENT_MARKED in preferences.enabledTypes,
+            settleReminders = NotificationType.SETTLE_REMINDERS in preferences.enabledTypes,
+            invites = NotificationType.INVITES in preferences.enabledTypes,
+        )
 
     override fun toIsoInstant(epochMillis: Long): String = Instant.fromEpochMilliseconds(epochMillis).toString()
 }

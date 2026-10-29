@@ -73,6 +73,11 @@ final class ProfileModel {
 /// editor; the Mac edits name, photo and color right here, as the canvas draws it.
 struct ProfileView: View {
     @State private var model = ProfileModel()
+    #if os(macOS)
+    /// Made once the settings appear, as the other screens make theirs: SwiftUI rebuilds this view's value
+    /// whenever its parent redraws.
+    @State private var notificationModel: NotificationSettingsModel?
+    #endif
 
     var body: some View {
         let state = model.state
@@ -108,7 +113,28 @@ struct ProfileView: View {
                     Text("Light").tag(ThemePreference.light)
                     Text("Dark").tag(ThemePreference.dark)
                 }
+                #if os(iOS)
+                Button {
+                    model.send(ProfileUiEventOnNotificationsClicked.shared)
+                } label: {
+                    LabeledContent("Notifications") {
+                        HStack(spacing: 6) {
+                            Text("\(Int(state.activeNotificationCount)) active")
+                            Image(systemName: "chevron.forward")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                }
+                .foregroundStyle(.primary)
+                #endif
             }
+            #if os(macOS)
+            // The Mac's settings show the toggles right here, as the canvas draws them
+            if let notificationModel {
+                NotificationSettingsSections(model: notificationModel)
+            }
+            #endif
             AboutSection(model: model)
             Section {
                 Button(role: .destructive) {
@@ -133,6 +159,11 @@ struct ProfileView: View {
             }
         }
         .profileDialogs(model: model)
+        #if os(macOS)
+        .onAppear {
+            if notificationModel == nil { notificationModel = NotificationSettingsModel() }
+        }
+        #endif
         .dataExporter(json: Binding(
             get: { model.exportJson },
             set: { model.exportJson = $0 },

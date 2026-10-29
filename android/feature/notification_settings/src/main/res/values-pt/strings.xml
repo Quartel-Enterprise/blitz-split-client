@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notificações</string>
+    <string name="notification_settings_denied_title">As notificações do Bora Rachar estão desativadas no Android.</string>
+    <string name="notification_settings_denied_body">Ative nas configurações do sistema para receber os avisos abaixo.</string>
+    <string name="notification_settings_open_settings">Abrir configurações</string>
+    <string name="notification_settings_section">Avisar quando</string>
+    <string name="notification_settings_new_expense">Nova despesa nos meus grupos</string>
+    <string name="notification_settings_new_expense_detail">Quando alguém lança uma despesa com você</string>
+    <string name="notification_settings_payment_marked">Alguém marcou um pagamento para mim</string>
+    <string name="notification_settings_payment_marked_detail">Quando alguém diz que já te pagou</string>
+    <string name="notification_settings_settle_reminders">Lembretes de acerto</string>
+    <string name="notification_settings_settle_reminders_detail">Uma vez por semana, se houver saldo em aberto</string>
+    <string name="notification_settings_invites">Convites e novos membros</string>
+    <string name="notification_settings_invites_detail">Quando alguém entra num grupo seu</string>
+    <string name="notification_settings_footer">Os avisos chegam quando há internet. Para silenciar um grupo, use o menu dentro dele.</string>
+</resources>

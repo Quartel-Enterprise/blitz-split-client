@@ -5,13 +5,17 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
+import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import kotlinx.coroutines.CompletableDeferred
@@ -34,6 +38,7 @@ class SyncCoordinatorTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profile: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
+    private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
@@ -1038,7 +1043,7 @@ class SyncCoordinatorTest {
                     "keys download $userId",
                     "keys upload $userId",
                 ),
-                calls,
+                callsWithoutPreferences(),
             )
         }
 
@@ -1391,7 +1396,7 @@ class SyncCoordinatorTest {
         // Then
         assertEquals(1, paymentKeys.clearCount)
         assertTrue(paymentKeys.keys.value.isEmpty())
-        assertEquals(listOf("account sign out", "keys clear", "profile clear"), calls)
+        assertEquals(listOf("account sign out", "keys clear", "profile clear"), callsWithoutPreferences())
     }
 
     @Test
@@ -1502,7 +1507,14 @@ class SyncCoordinatorTest {
             val userId = FakeAccountRepository.CONNECTED_USER_ID
             assertEquals(listOf(userId, userId), paymentKeys.uploadedUserIds)
             assertEquals(1, account.signOutCount)
-            assertEquals("account sign out", calls[calls.lastIndexOf("keys upload $userId") + 1])
+            val withoutPreferences = callsWithoutPreferences()
+            assertEquals(
+                "account sign out",
+                withoutPreferences[
+                    withoutPreferences.lastIndexOf("keys upload $userId") +
+                        1,
+                ],
+            )
             assertTrue(paymentKeys.keys.value.isEmpty())
         }
 
@@ -1609,7 +1621,10 @@ class SyncCoordinatorTest {
         coordinator.deleteAccount()
 
         // Then
-        assertEquals(listOf("account delete", "keys clear", "profile clear", "account end session"), calls)
+        assertEquals(
+            listOf("account delete", "keys clear", "profile clear", "account end session"),
+            callsWithoutPreferences(),
+        )
     }
 
     @Test
@@ -1723,7 +1738,8 @@ class SyncCoordinatorTest {
 
             // Then
             val userId = FakeAccountRepository.CONNECTED_USER_ID
-            assertEquals("account delete", calls[calls.indexOf("keys upload $userId") + 1])
+            val withoutPreferences = callsWithoutPreferences()
+            assertEquals("account delete", withoutPreferences[withoutPreferences.indexOf("keys upload $userId") + 1])
             assertEquals(1, account.deleteAccountCount)
             assertEquals(AccountStatus.LocalOnly, account.status)
             assertNull(profile.profile.value)
@@ -1825,6 +1841,738 @@ class SyncCoordinatorTest {
         assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
     }
 
+    @Test
+    fun `GIVEN a local profile WHEN syncing THEN syncs the preferences after the profile under the same user id`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+            assertEquals(
+                listOf(
+                    "profile download $userId",
+                    "profile upload $userId",
+                    "preferences download $userId",
+                    "preferences upload $userId",
+                ),
+                callsWithoutKeys(),
+            )
+            assertFalse(notificationPreferences.hasPendingChanges.value)
+        }
+
+    @Test
+    fun `GIVEN no profile and pending preferences WHEN syncing THEN neither pulls nor pushes the preferences`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                pendingPreferences = true,
+            )
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertTrue(notificationPreferences.downloadedUserIds.isEmpty())
+            assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the preferences fail to come down WHEN syncing THEN fails pushes none and the state is failed`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+            notificationPreferences.pullError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+            assertTrue(notificationPreferences.hasPendingChanges.value)
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN the preferences fail to come down WHEN syncing THEN still pulls and pushes the keys`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+        )
+        notificationPreferences.pullError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), paymentKeys.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), paymentKeys.uploadedUserIds)
+        assertFalse(paymentKeys.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user whose preferences fail to come down WHEN syncing THEN issues the code`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        notificationPreferences.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(1, account.recoveryCodeCreations)
+        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+    }
+
+    @Test
+    fun `GIVEN pending preferences and their push fails WHEN syncing THEN fails and the sync state is failed`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+            notificationPreferences.pushError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN the preferences push fails WHEN syncing THEN still pushes the keys`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+            pendingPreferences = true,
+        )
+        notificationPreferences.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), paymentKeys.uploadedUserIds)
+        assertFalse(paymentKeys.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user whose preferences push fails WHEN syncing THEN still issues the recovery code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+            notificationPreferences.pushError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(1, account.recoveryCodeCreations)
+        }
+
+    @Test
+    fun `GIVEN the keys fail to come down WHEN syncing THEN still pulls and pushes the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPreferences = true,
+        )
+        paymentKeys.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the key push fails WHEN syncing THEN still pushes the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+            pendingPreferences = true,
+        )
+        paymentKeys.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the profile fails to come down WHEN syncing THEN does not touch the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPreferences = true,
+        )
+        profile.pullError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(notificationPreferences.downloadedUserIds.isEmpty())
+        assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the profile push fails WHEN syncing THEN does not touch the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingChanges = true,
+            pendingPreferences = true,
+        )
+        profile.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(notificationPreferences.downloadedUserIds.isEmpty())
+        assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+        assertTrue(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled and the preferences fail to come down WHEN syncing THEN still signs out`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                signOutScheduled = true,
+            )
+            notificationPreferences.pullError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN switching to another Google user THEN syncs the preferences under it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+
+            // When
+            account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(OTHER_USER_ID), notificationPreferences.downloadedUserIds)
+            assertEquals(listOf(OTHER_USER_ID), notificationPreferences.uploadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN the other user preferences fail to come down WHEN switching THEN pushes no preference over them`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                online = false,
+                pendingPreferences = true,
+            )
+            coordinator.start()
+            runCurrent()
+            notificationPreferences.pullError = IllegalStateException("server down")
+
+            // When
+            account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(OTHER_USER_ID), notificationPreferences.downloadedUserIds)
+            assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a synced profile and a preference changed offline WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+            notificationPreferences.updatePreference(
+                type = NotificationType.INVITES,
+                isEnabled = true,
+            )
+            runCurrent()
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN only the preferences pending online before any sync WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+            )
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN pending preferences WHEN the sync pushes them THEN the sync state is synced`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPreferences = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a preferences push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPreferences = true,
+        )
+        notificationPreferences.pushError = IllegalStateException("no answer")
+        coordinator.syncNow()
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncState.PENDING, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN a preference is changed THEN pushes the preferences`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = notificationPreferences.uploadedUserIds.size
+        val profileUploadsBefore = profile.uploadedUserIds.size
+
+        // When
+        notificationPreferences.updatePreference(
+            type = NotificationType.NEW_EXPENSE,
+            isEnabled = false,
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, notificationPreferences.uploadedUserIds.size)
+        assertEquals(profileUploadsBefore + 1, profile.uploadedUserIds.size)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a preferences push that failed online WHEN another preference is changed THEN pushes them again`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            notificationPreferences.pushError = IllegalStateException("no answer")
+            notificationPreferences.updatePreference(
+                type = NotificationType.INVITES,
+                isEnabled = true,
+            )
+            runCurrent()
+            notificationPreferences.pushError = null
+            val uploadsBefore = notificationPreferences.uploadedUserIds.size
+
+            // When
+            notificationPreferences.updatePreference(
+                type = NotificationType.SETTLE_REMINDERS,
+                isEnabled = false,
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, notificationPreferences.uploadedUserIds.size)
+            assertFalse(notificationPreferences.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a preference changed offline WHEN the device comes online THEN pushes the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        notificationPreferences.updatePreference(
+            type = NotificationType.INVITES,
+            isEnabled = true,
+        )
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a profile offline WHEN a preference is changed THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        notificationPreferences.updatePreference(
+            type = NotificationType.INVITES,
+            isEnabled = true,
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+        assertTrue(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN no profile online WHEN a preference is changed THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(storedProfile = null)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        notificationPreferences.updatePreference(
+            type = NotificationType.INVITES,
+            isEnabled = true,
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(notificationPreferences.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a preference changed while the preferences push is in flight WHEN retrying THEN pushes them again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPreferences = true,
+                preferenceQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.retry()
+            runCurrent()
+
+            // Then
+            assertEquals(2, notificationPreferences.uploadedUserIds.size)
+            assertFalse(notificationPreferences.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a Google account with changed preferences WHEN signing out THEN erases the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPreferences = invitesOnly,
+        )
+
+        // When
+        val result = coordinator.signOut()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, notificationPreferences.clearCount)
+        assertEquals(NotificationPreferences.DEFAULT, notificationPreferences.preferences.value)
+        assertEquals("account sign out", calls.first())
+        assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN the session fails to end WHEN signing out THEN keeps the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPreferences = invitesOnly,
+        )
+        account.signOutError = IllegalStateException("database closed")
+
+        // When
+        coordinator.signOut()
+
+        // Then
+        assertEquals(0, notificationPreferences.clearCount)
+        assertEquals(invitesOnly, notificationPreferences.preferences.value)
+    }
+
+    @Test
+    fun `GIVEN only the preferences queued online WHEN signing out once synced THEN pushes them and erases them`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPreferences = invitesOnly,
+                pendingPreferences = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), notificationPreferences.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(NotificationPreferences.DEFAULT, notificationPreferences.preferences.value)
+            assertFalse(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN the preferences push fails WHEN signing out once synced THEN keeps the session and the preferences`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPreferences = invitesOnly,
+                pendingPreferences = true,
+            )
+            notificationPreferences.pushError = IllegalStateException("server down")
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(0, account.signOutCount)
+            assertEquals(google, account.status)
+            assertEquals(0, notificationPreferences.clearCount)
+            assertEquals(invitesOnly, notificationPreferences.preferences.value)
+            assertEquals(pierre, profile.profile.value)
+            assertTrue(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN a sign out scheduled and a preferences push that failed WHEN a retry succeeds THEN signs out`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPreferences = invitesOnly,
+                pendingPreferences = true,
+            )
+            notificationPreferences.pushError = IllegalStateException("server down")
+            coordinator.signOutWhenSynced()
+            runCurrent()
+            notificationPreferences.pushError = null
+
+            // When
+            coordinator.retry()
+            runCurrent()
+
+            // Then
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(NotificationPreferences.DEFAULT, notificationPreferences.preferences.value)
+        }
+
+    @Test
+    fun `GIVEN a preference changed while the push is in flight WHEN signing out once synced THEN pushes it before`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingPreferences = true,
+                preferenceQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals(listOf(userId, userId), notificationPreferences.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertTrue(calls.indexOf("account sign out") > calls.lastIndexOf("preferences upload $userId"))
+        }
+
+    @Test
+    fun `GIVEN a Google account with changed preferences WHEN deleting the account THEN erases the preferences`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPreferences = invitesOnly,
+            )
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(1, notificationPreferences.clearCount)
+            assertEquals(NotificationPreferences.DEFAULT, notificationPreferences.preferences.value)
+        }
+
+    @Test
+    fun `GIVEN an account WHEN deleting it THEN the keys are erased before the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+            storedPreferences = invitesOnly,
+        )
+
+        // When
+        coordinator.deleteAccount()
+
+        // Then
+        assertEquals(listOf("account delete", "keys clear"), calls.take(2))
+        assertTrue("preferences clear" in calls)
+        assertEquals("account end session", calls.last())
+    }
+
+    @Test
+    fun `GIVEN clearing the preferences fails WHEN deleting the account THEN still erases the keys and the profile`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+                storedPreferences = invitesOnly,
+            )
+            notificationPreferences.clearError = IllegalStateException("disk full")
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+            assertNull(profile.profile.value)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
+
+    @Test
+    fun `GIVEN clearing the keys fails WHEN deleting the account THEN still erases the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedKeys = listOf(pixKey),
+            storedPreferences = invitesOnly,
+        )
+        paymentKeys.clearError = IllegalStateException("disk full")
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(NotificationPreferences.DEFAULT, notificationPreferences.preferences.value)
+    }
+
+    @Test
+    fun `GIVEN the server fails to delete WHEN deleting the account THEN keeps the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPreferences = invitesOnly,
+        )
+        account.deleteAccountError = noConnection
+
+        // When
+        val result = coordinator.deleteAccount()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(0, notificationPreferences.clearCount)
+        assertEquals(invitesOnly, notificationPreferences.preferences.value)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -1844,6 +2592,12 @@ class SyncCoordinatorTest {
         addedAt = 2L,
     )
 
+    private val invitesOnly = NotificationPreferences(setOf(NotificationType.INVITES))
+
+    private fun callsWithoutPreferences(): List<String> = calls.filterNot { it.startsWith("preferences ") }
+
+    private fun callsWithoutKeys(): List<String> = calls.filterNot { it.startsWith("keys ") }
+
     private fun TestScope.prepareScenario(
         storedProfile: UserProfile?,
         status: AccountStatus = AccountStatus.LocalOnly,
@@ -1856,6 +2610,9 @@ class SyncCoordinatorTest {
         storedKeys: List<PaymentKey> = emptyList(),
         pendingKeys: Boolean = false,
         keyQueuedDuringFirstPush: Boolean = false,
+        storedPreferences: NotificationPreferences = NotificationPreferences.DEFAULT,
+        pendingPreferences: Boolean = false,
+        preferenceQueuedDuringFirstPush: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
@@ -1865,6 +2622,9 @@ class SyncCoordinatorTest {
             FakeProfileRepository(initialProfile = storedProfile).also { it.hasPendingChanges.value = pendingChanges }
         paymentKeys =
             FakePaymentKeyRepository(initialKeys = storedKeys).also { it.hasPendingChanges.value = pendingKeys }
+        notificationPreferences = FakeNotificationPreferencesRepository(initialPreferences = storedPreferences).also {
+            it.hasPendingChanges.value = pendingPreferences
+        }
         isOnline = MutableStateFlow(online)
         pullGate = CompletableDeferred()
         coordinator = SyncCoordinator(
@@ -1884,6 +2644,14 @@ class SyncCoordinatorTest {
                     )
                 } else {
                     paymentKeys
+                },
+                calls = calls,
+            ),
+            notificationPreferencesRepository = RecordingNotificationPreferencesRepository(
+                delegate = if (preferenceQueuedDuringFirstPush) {
+                    PreferenceDuringFirstPushNotificationPreferencesRepository(notificationPreferences)
+                } else {
+                    notificationPreferences
                 },
                 calls = calls,
             ),
@@ -1931,7 +2699,8 @@ private class KeyDuringFirstPushPaymentKeyRepository(
     }
 }
 
-// Why: one log across the account, the profile and the keys, so a test can assert the order of their calls.
+// Why: one log across the account, the profile, the keys and the preferences, so a test can assert the order of
+// their calls.
 private class RecordingAccountRepository(
     private val delegate: AccountRepository,
     private val calls: MutableList<String>,
@@ -1989,5 +2758,36 @@ private class RecordingPaymentKeyRepository(
     override suspend fun clear() {
         calls += "keys clear"
         delegate.clear()
+    }
+}
+
+private class RecordingNotificationPreferencesRepository(
+    private val delegate: NotificationPreferencesRepository,
+    private val calls: MutableList<String>,
+) : NotificationPreferencesRepository by delegate {
+    override suspend fun downloadPreferences(userId: String): Result<Unit> {
+        calls += "preferences download $userId"
+        return delegate.downloadPreferences(userId)
+    }
+
+    override suspend fun uploadPendingPreferences(userId: String): Result<Unit> {
+        calls += "preferences upload $userId"
+        return delegate.uploadPendingPreferences(userId)
+    }
+
+    override suspend fun clear() {
+        calls += "preferences clear"
+        delegate.clear()
+    }
+}
+
+// Why: a preference changed while the first preferences push is in flight, so they are still pending once it ends.
+private class PreferenceDuringFirstPushNotificationPreferencesRepository(
+    private val delegate: FakeNotificationPreferencesRepository,
+) : NotificationPreferencesRepository by delegate {
+    override suspend fun uploadPendingPreferences(userId: String): Result<Unit> {
+        val result = delegate.uploadPendingPreferences(userId)
+        if (delegate.uploadedUserIds.size == 1) delegate.hasPendingChanges.value = true
+        return result
     }
 }
