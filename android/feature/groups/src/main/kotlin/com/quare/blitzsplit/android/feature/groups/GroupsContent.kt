@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -55,6 +56,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -92,7 +94,9 @@ fun GroupsContent(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
+    val title = stringResource(R.string.groups_title)
+    // Why: the selected Groups tab already names the screen, so the title is only announced, never drawn.
+    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
          * the rail already takes.
@@ -153,7 +157,6 @@ private fun GroupsPane(
         GroupsHeader(
             state = state,
             onEvent = onEvent,
-            layout = layout,
         )
         when {
             layout.isTablet -> Box(
@@ -190,9 +193,15 @@ private fun GroupsPane(
 private fun GroupsHeader(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
-    layout: DeviceLayout,
 ) {
-    val profileButton: @Composable () -> Unit = {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(modifier = Modifier.weight(1f)) {
+            SyncBadgeChip(
+                badge = state.syncBadge,
+                canRetry = state.canRetrySync,
+                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+            )
+        }
         IconButton(
             onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
             modifier = Modifier.size(48.dp),
@@ -203,46 +212,6 @@ private fun GroupsHeader(
                 color = state.avatarColor,
                 modifier = Modifier.semantics { contentDescription = profileLabel },
                 photoUrl = state.photoUrl,
-            )
-        }
-    }
-    val title: @Composable () -> Unit = {
-        Text(
-            text = stringResource(R.string.groups_title),
-            style = if (layout.isLandscape && !layout.isTablet) {
-                MaterialTheme.typography.displaySmall
-            } else {
-                MaterialTheme.typography.displayMedium
-            },
-            fontWeight = FontWeight.Bold,
-        )
-    }
-    if (layout.usesNavigationRail) {
-        Row(verticalAlignment = Alignment.Top) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                title()
-                SyncBadgeChip(
-                    badge = state.syncBadge,
-                    canRetry = state.canRetrySync,
-                    onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
-                )
-            }
-            profileButton()
-        }
-    } else {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd,
-            ) { profileButton() }
-            title()
-            SyncBadgeChip(
-                badge = state.syncBadge,
-                canRetry = state.canRetrySync,
-                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
             )
         }
     }
@@ -277,10 +246,13 @@ private fun SyncBadgeChip(
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
+        // Why: the chip shares the header row with the profile button, so a long label may wrap to two lines.
         Row(
-            modifier = Modifier.height(32.dp).padding(
+            modifier = Modifier.heightIn(min = 32.dp).padding(
                 start = 8.dp,
                 end = 12.dp,
+                top = 6.dp,
+                bottom = 6.dp,
             ),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,

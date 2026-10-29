@@ -51,23 +51,23 @@ export function GroupsScreen() {
   const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
-      <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r bg-sidebar p-3 md:flex lg:w-60">
+      <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
         <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
         <BrandMark className="hidden h-10 px-1.5 lg:flex" />
         <nav aria-label={t('groups_mainNavigation')} className="mt-4 flex flex-col gap-0.5">
           {tabs.map((tab, index) => (
             <button
               key={tab.label}
-              aria-label={t(tab.label)}
               aria-current={index === 0 ? 'page' : undefined}
               onClick={() => tab.open?.(presenter)}
               className={cn(
-                'flex h-9 items-center justify-center gap-2.5 rounded-md px-2.5 text-sm font-medium outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start',
+                'flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2.5 lg:px-2.5 lg:py-0 lg:text-sm',
                 index === 0 ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground',
               )}
             >
               {tab.icon}
-              <span className="hidden lg:inline">{t(tab.label)}</span>
+              {/* Why: the page has no visible title, so the selected tab's label names it at every width. */}
+              <span>{t(tab.label)}</span>
             </button>
           ))}
         </nav>
@@ -95,15 +95,14 @@ export function GroupsScreen() {
         </header>
 
         <main className="flex flex-1 flex-col gap-6 p-4 sm:p-8">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">{t('groups_title')}</h1>
-            {sync && (
-              <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
-                {sync.icon}
-                {t(sync.label)}
-              </SyncBadge>
-            )}
-          </div>
+          {/* Why: the selected Groups tab already names the page; the heading stays for screen readers. */}
+          <h1 className="sr-only">{t('groups_title')}</h1>
+          {sync && (
+            <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
+              {sync.icon}
+              {t(sync.label)}
+            </SyncBadge>
+          )}
           <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
             <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
               <Users className="size-6" />
@@ -141,7 +140,7 @@ export function GroupsScreen() {
   )
 }
 
-const syncBadgeClass = 'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground'
+const syncBadgeClass = 'inline-flex h-6 self-start items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground'
 
 function SyncBadge({ canRetry, onRetry, children }: { canRetry: boolean; onRetry: () => void; children: ReactNode }) {
   if (!canRetry) return <span className={syncBadgeClass}>{children}</span>
