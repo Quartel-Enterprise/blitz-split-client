@@ -9,6 +9,7 @@ import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
+import { isBrowserBackBlocked } from '@/lib/browserBack'
 import { applyTheme } from '@/lib/theme'
 
 /**
@@ -75,6 +76,11 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
     if (!app) return
     const onPopState = (event: PopStateEvent) => {
       const target = (event.state as { size?: number } | null)?.size ?? 1
+      // Why: a deletion under way waits for the welcome, as the screen's own Back does, so the entry comes back.
+      if (isBrowserBackBlocked()) {
+        window.history.pushState({ size: size.current }, '')
+        return
+      }
       if (target < size.current) app.popTo(target)
     }
     window.addEventListener('popstate', onPopState)

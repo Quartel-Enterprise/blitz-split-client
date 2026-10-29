@@ -262,8 +262,9 @@ class AccountRepositoryImpl(
         }
     }
 
-    override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching {
-        remote.deleteAccount()
+    override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching { remote.deleteAccount() }
+
+    override suspend fun endDeletedSession() {
         remote.clearLocalSession()
         local.clear()
     }
@@ -427,9 +428,12 @@ class AccountRepositoryImpl(
         else -> copy(
             userId = user.userId,
             provider = null,
-            // Why: Google or Apple gone from the same user on another device: the sync then issues a code to show.
+            /*
+             * Why: Google or Apple gone from the same user means another device unlinked and showed the new code;
+             * issuing one here would replace it, so this device offers none.
+             */
             recoveryCodePrompt = if (provider != null && userId == user.userId) {
-                RecoveryCodePrompt.NOT_DUE.code
+                RecoveryCodePrompt.SAVED.code
             } else {
                 recoveryCodePrompt
             },

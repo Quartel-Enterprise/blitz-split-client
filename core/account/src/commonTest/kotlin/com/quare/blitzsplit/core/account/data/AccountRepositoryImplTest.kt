@@ -2194,7 +2194,7 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a Google account WHEN the same user is mirrored without Google THEN waits for a new recovery code`() =
+    fun `GIVEN a Google account WHEN the same user is mirrored without Google THEN offers no new recovery code`() =
         runTest {
             // Given
             prepareScenario(currentUser = googleUser)
@@ -2209,7 +2209,7 @@ class AccountRepositoryImplTest {
             val account = repository.observeAccount().first()
             assertEquals(AccountStatus.Anonymous("user-1"), account.status)
             assertNull(account.recoveryCode)
-            assertEquals(RecoveryCodePrompt.NOT_DUE, account.recoveryCodePrompt)
+            assertEquals(RecoveryCodePrompt.SAVED, account.recoveryCodePrompt)
         }
 
     @Test
@@ -2413,22 +2413,36 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a Google account WHEN deleting the account THEN deletes it on the server and ends the session here`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = googleUserWithEmail)
-            repository.ensureRegistered()
+    fun `GIVEN a Google account WHEN deleting the account THEN deletes it on the server only`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+        val before = local.get()
 
-            // When
-            val result = repository.deleteAccount()
+        // When
+        val result = repository.deleteAccount()
 
-            // Then
-            assertTrue(result.isSuccess)
-            assertEquals(1, remote.deleteAccountCount)
-            assertEquals(1, remote.clearedLocalSessions)
-            assertEquals(0, remote.signOutCount)
-            assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(1, remote.deleteAccountCount)
+        assertEquals(0, remote.clearedLocalSessions)
+        assertEquals(before, local.get())
+    }
+
+    @Test
+    fun `GIVEN a deleted account WHEN ending its session THEN ends it here without a logout`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUserWithEmail)
+        repository.ensureRegistered()
+
+        // When
+        repository.endDeletedSession()
+
+        // Then
+        assertEquals(1, remote.clearedLocalSessions)
+        assertEquals(0, remote.signOutCount)
+        assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
+    }
 
     @Test
     fun `GIVEN the server fails WHEN deleting the account THEN fails and keeps the device data`() = runTest {

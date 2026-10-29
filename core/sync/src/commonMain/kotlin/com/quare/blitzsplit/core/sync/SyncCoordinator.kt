@@ -106,17 +106,17 @@ class SyncCoordinator(
 
     /*
      * Why: under the sync lock and in the app's scope, like the sign out. The server's copy goes first, and a
-     * failure there leaves both for another try. A failure erasing the device's copy after it is reported, so the
-     * screen can be left: the profile, now without an account, still offers "Apagar perfil e sair".
+     * failure there leaves both for another try. Once it is gone the deletion succeeded, whatever happens here:
+     * each step of erasing the device's copy runs on its own, so one that fails can't keep the others.
      */
     suspend fun deleteAccount(): Result<Unit> = scope
         .async {
             syncLock.withLock {
-                suspendRunCatching {
-                    accountRepository.deleteAccount().getOrThrow()
+                accountRepository.deleteAccount().onSuccess {
                     // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
-                    paymentKeyRepository.clear()
-                    profileRepository.clear()
+                    suspendRunCatching { paymentKeyRepository.clear() }
+                    suspendRunCatching { profileRepository.clear() }
+                    suspendRunCatching { accountRepository.endDeletedSession() }
                 }
             }
         }.await()

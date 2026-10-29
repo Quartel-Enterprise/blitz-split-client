@@ -1609,8 +1609,28 @@ class SyncCoordinatorTest {
         coordinator.deleteAccount()
 
         // Then
-        assertEquals(listOf("account delete", "keys clear", "profile clear"), calls)
+        assertEquals(listOf("account delete", "keys clear", "profile clear", "account end session"), calls)
     }
+
+    @Test
+    fun `GIVEN clearing the keys fails WHEN deleting the account THEN still erases the profile and ends the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedKeys = listOf(pixKey),
+            )
+            paymentKeys.clearError = IllegalStateException("disk full")
+
+            // When
+            val result = coordinator.deleteAccount()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(profile.profile.value)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+        }
 
     @Test
     fun `GIVEN the server fails to delete WHEN deleting the account THEN fails and keeps every local data`() = runTest {
@@ -1924,6 +1944,11 @@ private class RecordingAccountRepository(
     override suspend fun deleteAccount(): Result<Unit> {
         calls += "account delete"
         return delegate.deleteAccount()
+    }
+
+    override suspend fun endDeletedSession() {
+        calls += "account end session"
+        delegate.endDeletedSession()
     }
 }
 

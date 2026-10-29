@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.platform
 
 import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -34,14 +35,33 @@ fun rememberExportFileSaver(): (json: String) -> Unit {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(EXPORT_MIME_TYPE)) { uri ->
         val json = pendingJson
         pendingJson = null
-        if (uri != null && json != null) {
-            scope.launch { context.writeText(uri, json) }
+        when {
+            uri == null -> Unit
+
+            json != null -> scope.launch { context.writeText(uri, json) }
+
+            // Why: the activity was recreated while the sheet was open, so the JSON is gone; no empty file stays.
+            else -> scope.launch { context.deleteDocument(uri) }
         }
     }
     return remember(resources, launcher) {
         { json ->
             pendingJson = json
             launcher.launch(resources.getString(R.string.platform_export_file_name, LocalDate.now().toString()))
+        }
+    }
+}
+
+private suspend fun Context.deleteDocument(uri: Uri) {
+    withContext(Dispatchers.IO) {
+        try {
+            DocumentsContract.deleteDocument(contentResolver, uri)
+        } catch (failure: IOException) {
+            Unit
+        } catch (denied: SecurityException) {
+            Unit
+        } catch (unsupported: UnsupportedOperationException) {
+            Unit
         }
     }
 }

@@ -81,6 +81,7 @@ class FakeAccountRepository(
     var appResumeCount = 0
     var signOutCount = 0
     var unlinkCount = 0
+    var endedDeletedSessions = 0
     var deleteAccountCount = 0
     var keepAppleTokensCount = 0
 
@@ -244,6 +245,11 @@ class FakeAccountRepository(
     override suspend fun deleteAccount(): Result<Unit> {
         deleteAccountCount++
         deleteAccountError?.let { return Result.failure(it) }
+        return Result.success(Unit)
+    }
+
+    override suspend fun endDeletedSession() {
+        endedDeletedSessions++
         sessionUser = null
         snapshot.value = AccountSnapshot(
             status = AccountStatus.LocalOnly,
@@ -252,7 +258,6 @@ class FakeAccountRepository(
             email = null,
             signOutWhenSynced = false,
         )
-        return Result.success(Unit)
     }
 
     companion object {

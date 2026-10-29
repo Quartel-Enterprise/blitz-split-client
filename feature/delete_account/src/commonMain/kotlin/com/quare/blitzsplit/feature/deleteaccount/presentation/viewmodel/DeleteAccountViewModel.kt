@@ -77,7 +77,11 @@ class DeleteAccountViewModel(
         uiState.update { it.copy(hasConfirmed = isChecked) }
     }
 
-    // Why: a success clears the device and the app returns to the welcome, so only a failure needs handling.
+    /*
+     * Why: a failure only comes from the server, so the account is still there for another try. A success goes
+     * to the welcome here too, since the app's own return waits for the profile to be gone and a failed erase
+     * of it would keep the screen deleting.
+     */
     private fun delete() {
         if (!uiState.value.canDelete) return
         uiState.update {
@@ -87,14 +91,16 @@ class DeleteAccountViewModel(
             )
         }
         viewModelScope.launch {
-            deleteAccount().onFailure {
-                uiState.update {
-                    it.copy(
-                        isDeleting = false,
-                        hasFailed = true,
-                    )
+            deleteAccount()
+                .onSuccess { navigator.replaceAll(Route.Welcome) }
+                .onFailure {
+                    uiState.update {
+                        it.copy(
+                            isDeleting = false,
+                            hasFailed = true,
+                        )
+                    }
                 }
-            }
         }
     }
 

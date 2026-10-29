@@ -62,6 +62,9 @@ interface AccountRepository {
     // Why: the Google or Apple account goes and a new recovery code comes, which the prompt then shows.
     suspend fun removeSocialIdentity(): Result<Unit>
 
-    // Why: the server's copy and the session on this device; the profile and keys are the caller's to erase.
+    // Why: only the server's copy; the device's goes with endDeletedSession and the profile's and keys' clears.
     suspend fun deleteAccount(): Result<Unit>
+
+    // Why: the session of a user the server no longer has ends here, with no logout call that could only fail.
+    suspend fun endDeletedSession()
 }

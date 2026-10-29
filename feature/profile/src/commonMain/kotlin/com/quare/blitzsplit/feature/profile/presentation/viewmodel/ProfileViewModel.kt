@@ -345,12 +345,11 @@ class ProfileViewModel(
         if (state.hasAccount && !state.isSignOutScheduled) showDialog(ProfileDialog.UNLINK_ACCOUNT)
     }
 
-    // Why: an unlink or sign out under way changes the account the deletion would name.
+    // Why: an unlink or sign out under way, or one scheduled, changes the account the deletion would name.
     private fun openDeleteAccount() {
         val state = uiState.value
-        if (state.showsDeleteAccount && !state.isUnlinking &&
-            !state.isSigningOut
-        ) {
+        val isBusy = state.isUnlinking || state.isSigningOut || state.isSignOutScheduled
+        if (state.showsDeleteAccount && !isBusy) {
             navigator.navigate(Route.DeleteAccount)
         }
     }

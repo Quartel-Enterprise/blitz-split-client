@@ -3188,6 +3188,22 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN a scheduled sign out WHEN a delete account tap arrives THEN stays on the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutScheduled = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a local only user WHEN a delete account tap arrives THEN stays on the profile`() =
         runTest(testDispatcher) {
             // Given

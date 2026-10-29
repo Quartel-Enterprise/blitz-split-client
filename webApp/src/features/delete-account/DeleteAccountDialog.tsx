@@ -1,4 +1,5 @@
 import { Loader2, WifiOff } from 'lucide-react'
+import { useEffect } from 'react'
 import { DeleteAccountPresenter, type JsDeleteAccountAction, type JsDeleteAccountState } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { providerLabel } from '@/components/common'
@@ -8,6 +9,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
+import { blockBrowserBack } from '@/lib/browserBack'
 import { downloadExport } from '@/lib/export'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -15,7 +17,7 @@ import { cn } from '@/lib/utils'
 /**
  * "Delete account and data", over the profile: a dialog on desktop and tablet, a drawer with stacked
  * buttons on the phone. Closing it any way (Esc, the overlay, Cancel) is the ViewModel's back, which
- * waits while the deletion runs; once it's done the app goes back to the welcome by itself.
+ * waits while the deletion runs, and so does the browser's back button; once it's done it goes to the welcome.
  */
 export function DeleteAccountDialog() {
   const presenter = usePresenter(() => new DeleteAccountPresenter())
@@ -24,6 +26,8 @@ export function DeleteAccountDialog() {
     if (action.type === 'export') downloadExport(action.value)
   })
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  const isDeleting = state?.isDeleting ?? false
+  useEffect(() => (isDeleting ? blockBrowserBack() : undefined), [isDeleting])
   if (!presenter || !state) return null
 
   const title = t('deleteAccount_title')

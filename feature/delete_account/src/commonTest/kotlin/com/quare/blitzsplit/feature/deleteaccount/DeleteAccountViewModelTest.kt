@@ -251,20 +251,19 @@ class DeleteAccountViewModelTest {
         }
 
     @Test
-    fun `GIVEN the box checked WHEN the deletion succeeds THEN stays on the screen deleting`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(deleteResult = Result.success(Unit))
-            viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+    fun `GIVEN the box checked WHEN the deletion succeeds THEN goes to the welcome`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteResult = Result.success(Unit))
+        viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
 
-            // When
-            viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
 
-            // Then
-            assertTrue(viewModel.uiState.value.isDeleting)
-            assertFalse(viewModel.uiState.value.hasFailed)
-            assertEquals(listOf(Route.Groups, Route.Profile, Route.DeleteAccount), navigator.backStack.value)
-        }
+        // Then
+        assertTrue(viewModel.uiState.value.isDeleting)
+        assertFalse(viewModel.uiState.value.hasFailed)
+        assertEquals(listOf(Route.Welcome), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN a successful deletion WHEN the account is gone THEN names no account and keeps deleting`() =

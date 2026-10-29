@@ -74,7 +74,7 @@ private struct ProfileDialogsModifier: ViewModifier {
         var lines = [
             String(localized: "You keep using Blitz Split on this \(DeviceName.current), without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access."),
         ]
-        if !state.isOnline {
+        if state.showsOfflineNotice {
             lines.append(String(localized: "Needs an internet connection."))
         }
         if state.hasUnlinkFailed {
