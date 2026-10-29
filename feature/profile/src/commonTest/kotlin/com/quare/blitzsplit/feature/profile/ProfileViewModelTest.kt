@@ -13,6 +13,8 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyFormat
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -3261,6 +3263,259 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN notifications never changed WHEN the profile opens THEN shows 3 active notifications`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(3, state.activeNotificationCount)
+        }
+
+    @Test
+    fun `GIVEN the default notifications WHEN turning invites on THEN shows 4 active notifications`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            notificationPreferences.updatePreference(NotificationType.INVITES, isEnabled = true)
+
+            // Then
+            assertEquals(4, viewModel.uiState.value.activeNotificationCount)
+        }
+
+    @Test
+    fun `GIVEN the default notifications WHEN turning one off THEN shows 2 active notifications`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            notificationPreferences.updatePreference(NotificationType.SETTLE_REMINDERS, isEnabled = false)
+
+            // Then
+            assertEquals(2, viewModel.uiState.value.activeNotificationCount)
+        }
+
+    @Test
+    fun `GIVEN every notification turned off WHEN the profile opens THEN shows no active notification`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(preferences = NotificationPreferences(enabledTypes = emptySet()))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(0, state.activeNotificationCount)
+        }
+
+    @Test
+    fun `GIVEN every notification turned on WHEN the profile opens THEN shows 4 active notifications`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(preferences = NotificationPreferences(enabledTypes = NotificationType.entries.toSet()))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(4, state.activeNotificationCount)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping notifications THEN opens the notification settings over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnNotificationsClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.NotificationSettings),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN only notification preferences not uploaded WHEN the profile opens THEN lists them as pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(hasPendingPreferences = true)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(PendingChange.NOTIFICATION_PREFERENCES), state.pendingChanges)
+            assertEquals(1, state.pendingChangeCount)
+            assertTrue(state.hasPendingChanges)
+            assertFalse(state.showsProfilePending)
+        }
+
+    @Test
+    fun `GIVEN profile keys and notifications not uploaded WHEN the profile opens THEN lists the notifications last`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingProfile = true,
+                hasPendingKeys = true,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(PendingChange.PROFILE, PendingChange.PAYMENT_KEYS, PendingChange.NOTIFICATION_PREFERENCES),
+                state.pendingChanges,
+            )
+            assertEquals(3, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN the profile and the notifications not uploaded WHEN the profile opens THEN lists the profile first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingProfile = true,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(PendingChange.PROFILE, PendingChange.NOTIFICATION_PREFERENCES),
+                state.pendingChanges,
+            )
+            assertEquals(2, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN everything uploaded WHEN a notification is toggled THEN lists the notifications as pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            notificationPreferences.updatePreference(NotificationType.INVITES, isEnabled = true)
+
+            // Then
+            assertEquals(listOf(PendingChange.NOTIFICATION_PREFERENCES), viewModel.uiState.value.pendingChanges)
+            assertTrue(viewModel.uiState.value.hasPendingChanges)
+        }
+
+    @Test
+    fun `GIVEN only notification preferences not uploaded WHEN they upload THEN lists no pending change`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            notificationPreferences.uploadPendingPreferences(FakeAccountRepository.CONNECTED_USER_ID)
+
+            // Then
+            assertEquals(emptyList(), viewModel.uiState.value.pendingChanges)
+            assertEquals(0, viewModel.uiState.value.pendingChangeCount)
+            assertFalse(viewModel.uiState.value.hasPendingChanges)
+        }
+
+    @Test
+    fun `GIVEN the keys and the notifications not uploaded WHEN the notifications upload THEN lists only the keys`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingKeys = true,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            notificationPreferences.hasPendingChanges.value = false
+
+            // Then
+            assertEquals(listOf(PendingChange.PAYMENT_KEYS), viewModel.uiState.value.pendingChanges)
+        }
+
+    @Test
+    fun `GIVEN Google and only notifications not uploaded WHEN tapping sign out THEN warns about pending changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT_PENDING, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Apple and only notifications not uploaded WHEN tapping sign out THEN warns about the pending changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithApple,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT_PENDING, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Google and notification preferences uploaded WHEN tapping sign out THEN asks to confirm the sign out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                hasPendingPreferences = true,
+            )
+            notificationPreferences.hasPendingChanges.value = false
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN anonymous with notifications not uploaded WHEN tapping sign out THEN asks to erase the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+                hasPendingPreferences = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+
+            // Then
+            assertEquals(ProfileDialog.ERASE_PROFILE, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.hasPendingChanges)
+        }
+
+    @Test
     fun `GIVEN Apple connecting WHEN its ID token arrives with an authorization code THEN passes it on`() =
         runTest(testDispatcher) {
             // Given
@@ -3366,6 +3621,8 @@ class ProfileViewModelTest {
         signOutHangs: Boolean = false,
         keys: List<PaymentKey> = emptyList(),
         hasPendingKeys: Boolean = false,
+        preferences: NotificationPreferences = NotificationPreferences.DEFAULT,
+        hasPendingPreferences: Boolean = false,
         unlinkError: Throwable? = null,
         unlinkHangs: Boolean = false,
         exportJson: String = "{}",
@@ -3389,7 +3646,9 @@ class ProfileViewModelTest {
         }
         profiles = FakeProfileRepository(profile).also { it.hasPendingChanges.value = hasPendingProfile }
         paymentKeys = FakePaymentKeyRepository(keys).also { it.hasPendingChanges.value = hasPendingKeys }
-        notificationPreferences = FakeNotificationPreferencesRepository()
+        notificationPreferences = FakeNotificationPreferencesRepository(preferences).also {
+            it.hasPendingChanges.value = hasPendingPreferences
+        }
         isOnline = MutableStateFlow(online)
         this@ProfileViewModelTest.syncState = MutableStateFlow(syncState)
         storedTheme = MutableStateFlow(theme)
