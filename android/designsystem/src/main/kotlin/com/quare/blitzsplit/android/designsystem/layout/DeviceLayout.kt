@@ -9,9 +9,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 
 private val tabletSmallestWidth = 600.dp
+private val formDialogLongestSide = 960.dp
 
 /*
  * Why: the canvas draws every screen four times (phone and tablet, each upright and lying down).
@@ -70,6 +72,24 @@ fun AdaptiveScreen(
 ) {
     val layout = rememberDeviceLayout()
     Box(modifier = modifier) { content(layout) }
+}
+
+/*
+ * Why: the canvas opens a form like a new payment key as a 560dp dialog on a tablet, but full screen on an
+ * unfolded foldable, whose inner screen (under 960dp on its longest side) a centered dialog would cross at
+ * the hinge.
+ */
+@Composable
+fun rememberUsesFormDialog(): Boolean {
+    val size = LocalWindowInfo.current.containerSize
+    val density = LocalDensity.current
+    return remember(size, density) {
+        with(density) {
+            val width = size.width.toDp()
+            val height = size.height.toDp()
+            min(width, height) >= tabletSmallestWidth && max(width, height) >= formDialogLongestSide
+        }
+    }
 }
 
 @Composable

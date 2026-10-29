@@ -31,6 +31,21 @@
     <string name="profile_sign_out_scheduled">Sign out scheduled</string>
     <string name="profile_sign_out_scheduled_detail">Signs out as soon as everything is uploaded</string>
     <string name="profile_cancel">Cancel</string>
+    <string name="profile_section_payment_keys">Keys to receive payments</string>
+    <string name="profile_payment_keys_subtitle">Whoever owes you sees your default key when settling up.</string>
+    <string name="profile_payment_key_cpf">Pix · CPF</string>
+    <string name="profile_payment_key_phone">Pix · Phone</string>
+    <string name="profile_payment_key_email">Pix · Email</string>
+    <string name="profile_payment_key_random">Pix · Random key</string>
+    <string name="profile_payment_key_lightning">Bitcoin · Lightning</string>
+    <string name="profile_payment_key_onchain">Bitcoin · On-chain</string>
+    <string name="profile_payment_key_value_segwit" translatable="false">%1$s · SegWit</string>
+    <string name="profile_payment_key_value_taproot" translatable="false">%1$s · Taproot</string>
+    <string name="profile_payment_key_value_lnurl" translatable="false">%1$s · LNURL</string>
+    <string name="profile_payment_key_default">Default</string>
+    <string name="profile_payment_keys_add">Add a Pix or Bitcoin key</string>
+    <string name="profile_payment_keys_add_pix">Pix key</string>
+    <string name="profile_payment_keys_add_bitcoin">Bitcoin key</string>
     <string name="profile_section_preferences">Preferences</string>
     <string name="profile_appearance">Appearance</string>
     <string name="profile_theme_system">System</string>

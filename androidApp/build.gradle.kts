@@ -75,6 +75,7 @@ dependencies {
     implementation(projects.android.feature.groups)
     implementation(projects.android.feature.profile)
     implementation(projects.android.feature.editProfile)
+    implementation(projects.android.feature.paymentKey)
 
     // Koin
     implementation(project.dependencies.platform(libs.koin.bom))

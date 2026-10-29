@@ -52,7 +52,10 @@ import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.PaymentKeyFormat
+import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
@@ -141,6 +144,10 @@ private fun ProfileSingleColumn(
                 state = state,
                 onEvent = onEvent,
             )
+            PaymentKeysSection(
+                state = state,
+                onEvent = onEvent,
+            )
             PreferencesSection(
                 state = state,
                 onEvent = onEvent,
@@ -157,7 +164,7 @@ private fun ProfileSingleColumn(
     }
 }
 
-// Why: lying down there is little height, so who you are and your account go left and the settings right.
+// Why: lying down there is little height, so who you are and your account go left, the keys and settings right.
 @Composable
 private fun ProfileTwoColumnLayout(
     state: ProfileUiState,
@@ -198,6 +205,10 @@ private fun ProfileTwoColumnLayout(
                     .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                PaymentKeysSection(
+                    state = state,
+                    onEvent = onEvent,
+                )
                 PreferencesSection(
                     state = state,
                     onEvent = onEvent,
@@ -462,6 +473,36 @@ internal fun createPreviewProfileState(
     isOnline = isOnline,
     syncStatus = syncStatus,
     pendingChanges = if (syncStatus == null) emptyList() else listOf(PendingChange.PROFILE),
+    paymentKeys = listOf(
+        PaymentKeyItem(
+            id = "pix-phone",
+            type = PaymentKeyType.PHONE,
+            format = PaymentKeyFormat.PHONE,
+            maskedValue = "+55 (11) 9••••-4321",
+            isDefault = true,
+        ),
+        PaymentKeyItem(
+            id = "pix-email",
+            type = PaymentKeyType.EMAIL,
+            format = PaymentKeyFormat.EMAIL,
+            maskedValue = "pie•••@email.com",
+            isDefault = false,
+        ),
+        PaymentKeyItem(
+            id = "btc-lightning",
+            type = PaymentKeyType.LIGHTNING,
+            format = PaymentKeyFormat.LIGHTNING_ADDRESS,
+            maskedValue = "pierre@carteira.app",
+            isDefault = true,
+        ),
+        PaymentKeyItem(
+            id = "btc-onchain",
+            type = PaymentKeyType.ONCHAIN,
+            format = PaymentKeyFormat.TAPROOT,
+            maskedValue = "bc1p5d7r…sxg3297",
+            isDefault = false,
+        ),
+    ),
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
     dialog = null,
