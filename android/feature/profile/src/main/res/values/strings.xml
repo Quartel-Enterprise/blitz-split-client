@@ -80,4 +80,13 @@
         <item quantity="other">%d changes haven\'t uploaded yet and will be lost.</item>
     </plurals>
     <string name="profile_copy_code">Copy code</string>
+    <string name="profile_export">Export my data</string>
+    <string name="profile_export_detail">A JSON file with your profile and keys</string>
+    <string name="profile_delete_account">Delete account and data</string>
+    <string name="profile_delete_account_detail">Deletes your Blitz Split account. This can\'t be undone.</string>
+    <string name="profile_unlink_title">Disconnect your %1$s account?</string>
+    <string name="profile_unlink_body">You keep using Blitz Split on this device, without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don\'t lose access.</string>
+    <string name="profile_unlink_offline">Needs an internet connection.</string>
+    <string name="profile_unlink_failed">Couldn\'t disconnect. Try again.</string>
+    <string name="profile_unlink_confirm">Disconnect</string>
 </resources>

@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
+import com.quare.blitzsplit.android.platform.rememberExportFileSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
@@ -32,6 +33,7 @@ fun ProfileScreen(
     val uriHandler = LocalUriHandler.current
     val saver = remember(context) { RecoveryCodeSaver(context) }
     val appVersion = remember(context) { context.getAppVersion() }
+    val saveExport = rememberExportFileSaver()
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -40,6 +42,7 @@ fun ProfileScreen(
                     idToken = result.idToken,
                     rawNonce = result.rawNonce,
                     fullName = null,
+                    authorizationCode = null,
                 )
 
                 GoogleSignInResult.Cancelled -> ProfileUiEvent.OnNativeSignInCancelled
@@ -54,6 +57,7 @@ fun ProfileScreen(
                 is ProfileUiAction.CopyToClipboard -> saver.copyToClipboard(action.formattedCode)
                 is ProfileUiAction.LaunchNativeSignIn -> launchGoogleSignIn()
                 is ProfileUiAction.OpenUrl -> uriHandler.openUri(action.url)
+                is ProfileUiAction.SaveExport -> saveExport(action.json)
             }
         }
     }

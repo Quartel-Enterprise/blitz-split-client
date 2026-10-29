@@ -76,6 +76,7 @@ dependencies {
     implementation(projects.android.feature.profile)
     implementation(projects.android.feature.editProfile)
     implementation(projects.android.feature.paymentKey)
+    implementation(projects.android.feature.deleteAccount)
 
     // Koin
     implementation(project.dependencies.platform(libs.koin.bom))

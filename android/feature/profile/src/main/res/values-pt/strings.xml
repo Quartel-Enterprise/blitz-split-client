@@ -77,4 +77,13 @@
         <item quantity="other">%d alterações ainda não subiram e serão perdidas.</item>
     </plurals>
     <string name="profile_copy_code">Copiar código</string>
+    <string name="profile_export">Exportar meus dados</string>
+    <string name="profile_export_detail">Arquivo JSON com seu perfil e suas chaves</string>
+    <string name="profile_delete_account">Excluir conta e dados</string>
+    <string name="profile_delete_account_detail">Apaga sua conta do Bora Rachar. Não dá para desfazer.</string>
+    <string name="profile_unlink_title">Desconectar a conta %1$s?</string>
+    <string name="profile_unlink_body">Você continua usando o Bora Rachar neste aparelho, sem conta. Seus grupos ficam aqui e a sincronização passa a usar um ID anônimo. Em seguida mostramos seu código de recuperação: guarde-o para não perder o acesso.</string>
+    <string name="profile_unlink_offline">Precisa de internet.</string>
+    <string name="profile_unlink_failed">Não deu para desconectar. Tente de novo.</string>
+    <string name="profile_unlink_confirm">Desconectar</string>
 </resources>

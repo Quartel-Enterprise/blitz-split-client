@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.android.feature.profile
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,25 +15,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -160,6 +149,7 @@ private fun ProfileSingleColumn(
                 state = state,
                 onEvent = onEvent,
             )
+            if (state.showsDeleteAccount) DeleteAccountButton(onEvent = onEvent)
         }
     }
 }
@@ -221,6 +211,7 @@ private fun ProfileTwoColumnLayout(
                     state = state,
                     onEvent = onEvent,
                 )
+                if (state.showsDeleteAccount) DeleteAccountButton(onEvent = onEvent)
             }
         }
     }
@@ -342,119 +333,11 @@ internal fun SectionRow(
     )
 }
 
-@Composable
-private fun PreferencesSection(
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    Section(title = R.string.profile_section_preferences) {
-        SectionRow(
-            icon = Icons.Outlined.Palette,
-            headline = stringResource(R.string.profile_appearance),
-        )
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp,
-                ),
-        ) {
-            ThemePreference.entries.forEachIndexed { index, theme ->
-                SegmentedButton(
-                    selected = state.theme == theme,
-                    onClick = { onEvent(ProfileUiEvent.OnThemeSelected(theme)) },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = ThemePreference.entries.size,
-                    ),
-                ) { Text(stringResource(theme.labelRes)) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AboutSection(
-    appVersion: String,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    Section(title = R.string.profile_section_about) {
-        SectionRow(
-            icon = Icons.Outlined.Visibility,
-            headline = stringResource(R.string.profile_visibility),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnVisibilityInfoClicked) },
-        )
-        HorizontalDivider()
-        SectionRow(
-            icon = Icons.AutoMirrored.Outlined.OpenInNew,
-            headline = stringResource(R.string.profile_privacy_policy),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnPrivacyPolicyClicked) },
-        )
-        HorizontalDivider()
-        SectionRow(
-            icon = Icons.AutoMirrored.Outlined.OpenInNew,
-            headline = stringResource(R.string.profile_terms),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnTermsClicked) },
-        )
-        HorizontalDivider()
-        SectionRow(
-            icon = Icons.Outlined.Info,
-            headline = stringResource(R.string.profile_version),
-            trailing = {
-                Text(
-                    text = appVersion,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            },
-        )
-    }
-}
-
-@Composable
-private fun SignOutButton(
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-) {
-    OutlinedButton(
-        onClick = { onEvent(ProfileUiEvent.OnSignOutClicked) },
-        enabled = state.canSignOut,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.Logout,
-                contentDescription = null,
-            )
-            Text(
-                stringResource(
-                    if (state.hasAccount) R.string.profile_sign_out else R.string.profile_erase_and_sign_out,
-                ),
-            )
-        }
-    }
-}
-
 @get:StringRes
 internal val AccountProvider.labelRes: Int
     get() = when (this) {
         AccountProvider.GOOGLE -> DesignR.string.designsystem_google_short
         AccountProvider.APPLE -> DesignR.string.designsystem_apple_short
-    }
-
-@get:StringRes
-private val ThemePreference.labelRes: Int
-    get() = when (this) {
-        ThemePreference.SYSTEM -> R.string.profile_theme_system
-        ThemePreference.LIGHT -> R.string.profile_theme_light
-        ThemePreference.DARK -> R.string.profile_theme_dark
     }
 
 internal fun createPreviewProfileState(
@@ -512,6 +395,8 @@ internal fun createPreviewProfileState(
     hasSignInFailed = false,
     isSigningOut = false,
     hasSignOutFailed = false,
+    isUnlinking = false,
+    hasUnlinkFailed = false,
 )
 
 @DevicePreviews

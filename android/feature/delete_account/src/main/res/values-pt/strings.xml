@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Excluir conta</string>
+    <string name="delete_account_offline_title">Sem internet.</string>
+    <string name="delete_account_offline_body">Excluir a conta precisa de internet. Conecte-se e tente de novo.</string>
+    <string name="delete_account_heading">Excluir sua conta e seus dados?</string>
+    <string name="delete_account_deleted_title">O que é apagado</string>
+    <string name="delete_account_deleted_profile">Seu perfil (nome, foto e cor)</string>
+    <string name="delete_account_deleted_keys">Suas chaves Pix e Bitcoin</string>
+    <string name="delete_account_deleted_provider">O vínculo com a conta %1$s</string>
+    <string name="delete_account_deleted_device">A cópia dos dados neste aparelho</string>
+    <string name="delete_account_export">Exportar meus dados antes</string>
+    <string name="delete_account_confirm">Entendo que não dá para desfazer</string>
+    <string name="delete_account_delete">Excluir conta</string>
+    <string name="delete_account_cancel">Cancelar</string>
+    <string name="delete_account_failed">Não deu para excluir a conta. Tente de novo.</string>
+</resources>

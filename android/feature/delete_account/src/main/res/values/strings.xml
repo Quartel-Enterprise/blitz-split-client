@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Delete account</string>
+    <string name="delete_account_offline_title">No internet.</string>
+    <string name="delete_account_offline_body">Deleting your account needs an internet connection. Connect and try again.</string>
+    <string name="delete_account_heading">Delete your account and your data?</string>
+    <string name="delete_account_deleted_title">What gets deleted</string>
+    <string name="delete_account_deleted_profile">Your profile (name, photo and color)</string>
+    <string name="delete_account_deleted_keys">Your Pix and Bitcoin keys</string>
+    <string name="delete_account_deleted_provider">The link to your %1$s account</string>
+    <string name="delete_account_deleted_device">The copy of your data on this device</string>
+    <string name="delete_account_export">Export my data first</string>
+    <string name="delete_account_confirm">I understand this can\'t be undone</string>
+    <string name="delete_account_delete">Delete account</string>
+    <string name="delete_account_cancel">Cancel</string>
+    <string name="delete_account_failed">Couldn\'t delete your account. Try again.</string>
+</resources>

@@ -23,6 +23,7 @@ fun WelcomeScreen(viewModel: WelcomeViewModel = koinViewModel()) {
                     idToken = result.idToken,
                     rawNonce = result.rawNonce,
                     fullName = null,
+                    authorizationCode = null,
                 )
 
                 GoogleSignInResult.Cancelled -> WelcomeUiEvent.OnNativeSignInCancelled
