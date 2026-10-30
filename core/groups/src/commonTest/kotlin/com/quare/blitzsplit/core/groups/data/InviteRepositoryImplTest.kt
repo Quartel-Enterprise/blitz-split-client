@@ -37,6 +37,12 @@ class InviteRepositoryImplTest {
         inviterCode = null,
     )
 
+    private val personalLink = InviteTarget(
+        code = "aB3dE5gH",
+        memberCode = "Xy7kQ2",
+        inviterCode = "Pq9Rs4",
+    )
+
     @Test
     fun `GIVEN a code of a group WHEN fetching its invite THEN returns the group as the invite shows it`() = runTest {
         // Given
@@ -104,6 +110,122 @@ class InviteRepositoryImplTest {
 
         // When
         val error = assertFailsWith<CancellationException> { repository.fetchInvite(groupLink) }
+
+        // Then
+        assertEquals("left the screen", error.message)
+    }
+
+    @Test
+    fun `GIVEN the link of a group WHEN fetching its invite THEN asks the server with the code alone`() = runTest {
+        // Given
+        prepareScenario(invite = inviteDto)
+
+        // When
+        repository.fetchInvite(groupLink)
+
+        // Then
+        assertEquals(listOf("aB3dE5gH"), remote.fetchedCodes)
+        assertTrue(remote.fetchedPersonal.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a personal link with who shares it WHEN fetching its invite THEN asks for both`() = runTest {
+        // Given
+        prepareScenario(invite = inviteDto)
+
+        // When
+        repository.fetchInvite(personalLink)
+
+        // Then
+        assertEquals(
+            listOf(
+                PersonalInviteParamsDto(
+                    code = "aB3dE5gH",
+                    memberCode = "Xy7kQ2",
+                    inviterCode = "Pq9Rs4",
+                ),
+            ),
+            remote.fetchedPersonal,
+        )
+        assertTrue(remote.fetchedCodes.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a personal link nobody known shares WHEN fetching its invite THEN asks for that member alone`() =
+        runTest {
+            // Given
+            prepareScenario(invite = inviteDto)
+            val target = personalLink.copy(inviterCode = null)
+
+            // When
+            repository.fetchInvite(target)
+
+            // Then
+            assertEquals(
+                listOf(
+                    PersonalInviteParamsDto(
+                        code = "aB3dE5gH",
+                        memberCode = "Xy7kQ2",
+                        inviterCode = null,
+                    ),
+                ),
+                remote.fetchedPersonal,
+            )
+        }
+
+    @Test
+    fun `GIVEN a personal link WHEN fetching its invite THEN returns the member it joins as and who shared it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                invite = inviteDto.copy(
+                    personalMemberId = "m-2",
+                    inviterName = "Ana",
+                ),
+            )
+
+            // When
+            val result = repository.fetchInvite(personalLink)
+
+            // Then
+            val invite = result.getOrThrow()
+            assertEquals("aB3dE5gH", invite?.code)
+            assertEquals("m-2", invite?.personalMemberId)
+            assertEquals("Ana", invite?.inviterName)
+        }
+
+    @Test
+    fun `GIVEN a personal link no group has WHEN fetching its invite THEN succeeds with no invite`() = runTest {
+        // Given
+        prepareScenario(invite = null)
+
+        // When
+        val result = repository.fetchInvite(personalLink)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(result.getOrThrow())
+    }
+
+    @Test
+    fun `GIVEN the server can not be reached WHEN fetching a personal invite THEN returns the error`() = runTest {
+        // Given
+        prepareScenario(fetchError = IllegalStateException("offline"))
+
+        // When
+        val result = repository.fetchInvite(personalLink)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN the fetch is cancelled WHEN fetching a personal invite THEN the cancellation goes through`() = runTest {
+        // Given
+        prepareScenario(fetchError = CancellationException("left the screen"))
+
+        // When
+        val error = assertFailsWith<CancellationException> { repository.fetchInvite(personalLink) }
 
         // Then
         assertEquals("left the screen", error.message)

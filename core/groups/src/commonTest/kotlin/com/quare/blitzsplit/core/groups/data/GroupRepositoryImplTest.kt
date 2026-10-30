@@ -2247,6 +2247,401 @@ class GroupRepositoryImplTest {
             assertTrue(members.single().hasJoined)
         }
 
+    @Test
+    fun `GIVEN a member going up for the first time WHEN uploading THEN stores the invite code the server made`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        pendingSync = true,
+                    ),
+                ),
+                serverMemberInviteCodes = mapOf("m-1" to "Xy7kQ2"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
+            assertEquals(false, local.member("m-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN two members going up WHEN uploading THEN each stores its own invite code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+                member(
+                    id = "m-2",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            serverMemberInviteCodes = mapOf(
+                "m-1" to "Xy7kQ2",
+                "m-2" to "Pq9Rs4",
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
+        assertEquals("Pq9Rs4", local.member("m-2")?.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a renamed member with an invite code WHEN uploading THEN pushes it without the code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                    inviteCode = "Xy7kQ2",
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertNull(
+            remote.upsertedMembers
+                .single()
+                .single()
+                .inviteCode,
+        )
+    }
+
+    @Test
+    fun `GIVEN the server answers a member without a code WHEN uploading THEN keeps the code the device had`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        pendingSync = true,
+                        inviteCode = "Xy7kQ2",
+                    ),
+                ),
+                serverMemberInviteCodes = emptyMap(),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN the server answers a new member without a code WHEN uploading THEN the member still has none`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        pendingSync = true,
+                    ),
+                    member(
+                        id = "m-2",
+                        groupId = "group-1",
+                        pendingSync = true,
+                    ),
+                ),
+                serverMemberInviteCodes = mapOf("m-2" to "Pq9Rs4"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertNull(local.member("m-1")?.inviteCode)
+            assertEquals(false, local.member("m-1")?.pendingSync)
+            assertEquals("Pq9Rs4", local.member("m-2")?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN the server fails the members WHEN uploading THEN stores no member invite code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            upsertMembersError = IllegalStateException("server down"),
+            serverMemberInviteCodes = mapOf("m-1" to "Xy7kQ2"),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertNull(local.member("m-1")?.inviteCode)
+        assertEquals(true, local.member("m-1")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a group created offline WHEN observing THEN none of its members has an invite code yet`() = runTest {
+        // Given
+        prepareScenario(profileOwnerUserId = "user-1")
+        repository.createGroup(newGroup, createdAt = 1_000L)
+
+        // When
+        val members = repository
+            .observeGroups()
+            .first()
+            .single()
+            .members
+
+        // Then
+        assertEquals(listOf(null, null), members.map { it.inviteCode })
+    }
+
+    @Test
+    fun `GIVEN a member just added offline WHEN observing the groups THEN the member has no invite code yet`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+            repository.addMember(
+                groupId = "group-1",
+                member = bruno,
+                addedAt = 5_000L,
+            )
+
+            // When
+            val member = repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+                .single()
+
+            // Then
+            assertNull(member.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN a group created on the device WHEN its first upload succeeds THEN each member shows its invite code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                profileOwnerUserId = "user-1",
+                serverInviteCodes = mapOf("group-new" to "aB3dE5gH"),
+                serverMemberInviteCodes = mapOf(
+                    "new-1" to "Xy7kQ2",
+                    "new-2" to "Pq9Rs4",
+                ),
+            )
+            repository.createGroup(newGroup, createdAt = 1_000L)
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            val members = repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+            assertEquals(listOf("Xy7kQ2", "Pq9Rs4"), members.map { it.inviteCode })
+        }
+
+    @Test
+    fun `GIVEN a member only the server has WHEN downloading THEN the member shows its invite code`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                    inviteCode = "Xy7kQ2",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertEquals(
+            "Xy7kQ2",
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+                .single()
+                .inviteCode,
+        )
+    }
+
+    @Test
+    fun `GIVEN a member pushed from here with the same server updatedAt WHEN downloading THEN takes its invite code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        updatedAt = 5L,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        updatedAt = 5L,
+                        inviteCode = "Xy7kQ2",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN a member renamed here after its push WHEN downloading THEN keeps the new name and takes the code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana",
+                        updatedAt = 5L,
+                        inviteCode = "Xy7kQ2",
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            val stored = local.member("m-1")
+            assertEquals("Ana Paula", stored?.name)
+            assertEquals(9L, stored?.updatedAt)
+            assertEquals(true, stored?.pendingSync)
+            assertEquals("Xy7kQ2", stored?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN a newer server copy of a member WHEN downloading THEN takes its invite code with it`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    name = "Ana",
+                    updatedAt = 5L,
+                ),
+            ),
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                    name = "Ana Paula",
+                    updatedAt = 9L,
+                    inviteCode = "Xy7kQ2",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertEquals("Ana Paula", local.member("m-1")?.name)
+        assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN the server answers a stored member without a code WHEN downloading THEN keeps the code it had`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        updatedAt = 5L,
+                        inviteCode = "Xy7kQ2",
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        updatedAt = 9L,
+                        inviteCode = null,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
+        }
+
     private val bruno = GroupMember(
         id = "m-new",
         name = "Bruno",
@@ -2326,6 +2721,7 @@ class GroupRepositoryImplTest {
         updatedAt: Long = 1L,
         pendingSync: Boolean = false,
         isRemoved: Boolean = false,
+        inviteCode: String? = null,
     ): GroupMemberEntity = GroupMemberEntity(
         id = id,
         groupId = groupId,
@@ -2337,7 +2733,7 @@ class GroupRepositoryImplTest {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         isRemoved = isRemoved,
-        inviteCode = null,
+        inviteCode = inviteCode,
     )
 
     private fun groupDto(
@@ -2389,6 +2785,7 @@ class GroupRepositoryImplTest {
         serverInviteCodes: Map<String, String> = emptyMap(),
         memberWriteError: Throwable? = null,
         deleteMembersError: Throwable? = null,
+        serverMemberInviteCodes: Map<String, String> = emptyMap(),
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
@@ -2402,6 +2799,7 @@ class GroupRepositoryImplTest {
             fetchError = fetchError,
         ).also {
             it.inviteCodes = serverInviteCodes
+            it.memberInviteCodes = serverMemberInviteCodes
             it.deleteMembersError = deleteMembersError
         }
         repository = GroupRepositoryImpl(
@@ -2572,10 +2970,12 @@ private class FakeGroupLocalDataSource(
         when {
             current == null -> put(entity)
 
+            // Why: like updateMemberFromRemote, a newer row leaves the code alone; only a code the server sends replaces it.
             current.updatedAt < entity.updatedAt -> put(
                 entity.copy(
                     pendingSync = false,
                     isRemoved = false,
+                    inviteCode = current.inviteCode,
                 ),
             )
         }
