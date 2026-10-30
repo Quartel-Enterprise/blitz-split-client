@@ -3,22 +3,16 @@ package com.quare.blitzsplit.android.feature.creategroup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
@@ -33,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -60,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -68,8 +62,6 @@ import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMe
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
 
-private val singleColumnMaxWidth = 592.dp
-private val dialogWidth = 560.dp
 internal val listEndRadius = 20.dp
 internal val listInnerRadius = 6.dp
 
@@ -81,66 +73,21 @@ fun CreateGroupContent(
     onEvent: (CreateGroupUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (isDialog) {
-        Surface(
-            modifier = modifier
-                .widthIn(max = dialogWidth)
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ) {
-            Column {
-                CreateGroupTopBar(
-                    state = state,
-                    onEvent = onEvent,
-                    isDialog = true,
-                )
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .imePadding()
-                        .padding(bottom = 24.dp),
-                ) {
-                    CreateGroupFormColumn(
-                        state = state,
-                        onEvent = onEvent,
-                    )
-                }
-            }
-        }
-    } else {
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                CreateGroupTopBar(
-                    state = state,
-                    onEvent = onEvent,
-                    isDialog = false,
-                )
-            },
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .imePadding(),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .widthIn(max = singleColumnMaxWidth)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(bottom = 32.dp),
-                ) {
-                    CreateGroupFormColumn(
-                        state = state,
-                        onEvent = onEvent,
-                    )
-                }
-            }
-        }
+    FormLayout(
+        isDialog = isDialog,
+        topBar = { isInDialog ->
+            CreateGroupTopBar(
+                state = state,
+                onEvent = onEvent,
+                isDialog = isInDialog,
+            )
+        },
+        modifier = modifier,
+    ) {
+        CreateGroupFormColumn(
+            state = state,
+            onEvent = onEvent,
+        )
     }
 }
 

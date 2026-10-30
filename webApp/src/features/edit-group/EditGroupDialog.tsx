@@ -8,9 +8,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t, type MessageKey } from '@/i18n'
+import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 
@@ -19,14 +20,6 @@ const nameId = 'edit-group-name'
 const nameHelpId = 'edit-group-name-help'
 const currencyId = 'edit-group-currency'
 const currencyNoteId = 'edit-group-currency-note'
-const typeLabelId = 'edit-group-type'
-
-const typeLabels: Record<string, MessageKey> = {
-  trip: 'createGroup_typeTrip',
-  home: 'createGroup_typeHome',
-  event: 'createGroup_typeEvent',
-  other: 'createGroup_typeOther',
-}
 
 /**
  * "Edit group", over the group: a dialog on desktop and tablet, a drawer with stacked buttons on the phone.
@@ -143,27 +136,7 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="flex flex-1 flex-col gap-2">
-          <span id={typeLabelId} className="text-sm font-medium">
-            {t('editGroup_typeLabel')}
-          </span>
-          <div role="radiogroup" aria-labelledby={typeLabelId} className="flex flex-wrap gap-1.5">
-            {state.types.map((type) => (
-              <Button
-                key={type}
-                type="button"
-                role="radio"
-                aria-checked={type === state.type}
-                size="sm"
-                variant={type === state.type ? 'secondary' : 'outline'}
-                onClick={() => presenter.selectType(type)}
-              >
-                {type === state.type && <Check />}
-                {t(typeLabels[type] ?? 'createGroup_typeOther')}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <GroupTypePicker label={t('editGroup_typeLabel')} types={state.types} selected={state.type} onSelect={(type) => presenter.selectType(type)} />
         <div className="flex flex-col gap-2">
           <Label htmlFor={currencyId}>{t('editGroup_currency')}</Label>
           {state.isCurrencyLocked ? (
