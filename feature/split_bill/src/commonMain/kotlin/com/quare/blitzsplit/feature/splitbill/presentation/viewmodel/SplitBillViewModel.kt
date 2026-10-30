@@ -76,6 +76,9 @@ class SplitBillViewModel(
     private var isGroupGone = false
     private var isBillGone = false
 
+    // Why: Room no longer has the bill; if a delete in flight here then fails, someone else's delete won.
+    private var isBillMissing = false
+
     /*
      * Why: the parts of "Valores" as last set in "Dividir", with the total they were set for. A new total rescales
      * from them rather than from the last rescale, so typing "312" through "3" and "31" loses nothing.
@@ -212,20 +215,23 @@ class SplitBillViewModel(
         group: Group?,
         expense: Expense?,
     ) {
+        // Why: a group that comes back before this screen is on top again keeps it open.
+        isGroupGone = group == null
         when {
-            group == null -> {
-                isGroupGone = true
-                leave()
-            }
+            group == null -> leave()
 
             route.expenseId == null -> show(group)
 
             expense == null -> handleBillGone()
 
             else -> {
+                isBillMissing = false
                 val previous = editedExpense
                 if (previous == null) fill(group, expense) else noticeChange(group, previous, expense)
                 editedExpense = expense
+                // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
+                val meId = group.members.firstOrNull { it.isMe }?.id
+                uiState.update { state -> state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId) }) }
                 show(group)
             }
         }
@@ -236,6 +242,7 @@ class SplitBillViewModel(
      * screen too and says so on Despesas do grupo; one that never showed leaves without a word.
      */
     private fun handleBillGone() {
+        isBillMissing = true
         if (uiState.value.isDeleting || isBillGone) return
         isBillGone = true
         val expenseId = route.expenseId
@@ -535,7 +542,8 @@ class SplitBillViewModel(
                             isDeleting = false,
                         )
                     }
-                    uiAction.emit(SplitBillUiAction.ShowDeleteError)
+                    // Why: a sync deleted it meanwhile, so the form would edit a bill that is gone.
+                    if (isBillMissing) handleBillGone() else uiAction.emit(SplitBillUiAction.ShowDeleteError)
                 }
         }
     }
