@@ -1,12 +1,13 @@
 // Compares the clones of a jscpd JSON report with the baseline. Run by scripts/cpd.sh:
 //   node scripts/cpd-check.mjs <report> <baseline> [--update-baseline [--allow-new]] [--base <baseline of main>]
 //
-// The baseline holds, per pair of files, the lines of code their clones share. Lines, not clones: an edit inside a
-// long clone can split it into two shorter ones, which is less copied code, not more. A pair over its lines fails,
-// and so does one under them, until --update-baseline lowers them, so a removed clone can't come back unnoticed.
+// The baseline holds, per file, how many of its lines of code are copied. Lines of a file, not clones nor pairs of
+// files: with the same code in three files, which pairs jscpd reports depends on the order it reads them, and an
+// edit inside a long clone can split it into two shorter ones. A file over its lines fails, and so does one under
+// them, until --update-baseline lowers them, so copied code removed can't come back unnoticed.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { relative } from "node:path";
+import { extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Why: shorter than this once imports and comments are gone, a clone is a shared header, not copied code.
@@ -20,69 +21,97 @@ const [reportPath, baselinePath, ...flags] = process.argv.slice(2);
 const options = { update: false, allowNew: false, base: null };
 for (let index = 0; index < flags.length; index++) {
     const flag = flags[index];
-    if (flag === "--update-baseline") options.update = true;
-    else if (flag === "--allow-new") options.allowNew = true;
-    else if (flag === "--base" && index + 1 < flags.length) options.base = flags[++index];
-    else fail(`Unknown argument: ${flag}\n${USAGE}`);
+    if (flag === "--update-baseline") {
+        options.update = true;
+    } else if (flag === "--allow-new") {
+        options.allowNew = true;
+    } else if (flag === "--base") {
+        options.base = flags[++index] ?? fail("--base needs the path of a baseline");
+    } else {
+        fail(`Unknown argument: ${flag}\n${USAGE}`);
+    }
 }
 if (options.allowNew && !options.update) fail(`--allow-new only goes with --update-baseline\n${USAGE}`);
-if (!existsSync(reportPath)) fail(`jscpd wrote no report at ${reportPath}: see its output above`);
+if (!existsSync(reportPath)) fail(`jscpd wrote no report at ${reportPath}: set "silent" to false in .jscpd.json to see why`);
 
 const report = JSON.parse(readFileSync(reportPath, "utf8"));
 const baseline = readBaseline(baselinePath);
 
-const TS_IMPORT = /^[ \t]*(import|export)[ \t]+(type[ \t]+)?(\*([ \t]+as[ \t]+\w+)?|\{[^}]*\}|\w+([ \t]*,[ \t]*\{[^}]*\})?)[ \t]+from[ \t]+["'][^"'\n]+["'];?/gm;
-const TS_SIDE_EFFECT_IMPORT = /^[ \t]*import[ \t]+["'][^"'\n]+["'];?/gm;
-// Why: jscpd cuts fragments at any token, so one may start inside the braces of a multi-line import.
-const TS_IMPORT_TAIL = /^([ \t]*(type[ \t]+)?\w+([ \t]+as[ \t]+\w+)?,?[ \t]*\n)*[ \t]*\}[ \t]*from[ \t]+["'][^"'\n]+["'];?/;
-const KOTLIN_HEADER = /^\s*((package|import)\s|@file:)/;
-const SWIFT_IMPORT = /^\s*(@\w+\s+)*import\s/;
-const COMMENT = /^\s*(\/\/|\/\*|\*)/;
+const KOTLIN_HEADER = /^((package|import)\s|@file:)/;
+const SWIFT_IMPORT = /^(@\w+\s+)*import\s/;
+const TS_IMPORT = /^(import\s|export\s+(type\s+)?[*{])/;
+const TS_IMPORT_END = /\bfrom\s+["']|^import\s+["']|}/;
 
-function codeLines(clone) {
-    let fragment = clone.fragment;
-    if (clone.format === "typescript" || clone.format === "tsx") {
-        fragment = fragment.replace(TS_IMPORT_TAIL, "").replace(TS_IMPORT, "").replace(TS_SIDE_EFFECT_IMPORT, "");
-    }
-    const header = clone.format === "swift" ? SWIFT_IMPORT : KOTLIN_HEADER;
-    return fragment
-        .split("\n")
-        .filter((line) => line.trim() !== "" && !COMMENT.test(line) && !header.test(line)).length;
+// The numbers of the lines of a file that are code: no blank lines, comments, package, imports or re-exports.
+const codeLinesCache = new Map();
+function codeLinesOf(path) {
+    if (codeLinesCache.has(path)) return codeLinesCache.get(path);
+    const isTypeScript = [".ts", ".tsx"].includes(extname(path));
+    const header = extname(path) === ".swift" ? SWIFT_IMPORT : KOTLIN_HEADER;
+    const code = new Set();
+    let inComment = false;
+    let inImport = false;
+    readFileSync(path, "utf8").split("\n").forEach((raw, index) => {
+        const line = raw.trim();
+        if (inComment) {
+            inComment = !line.includes("*/");
+        } else if (line.startsWith("/*")) {
+            inComment = !line.includes("*/", 2);
+        } else if (inImport) {
+            inImport = !TS_IMPORT_END.test(line);
+        } else if (isTypeScript && TS_IMPORT.test(line)) {
+            inImport = !TS_IMPORT_END.test(line);
+        } else if (line !== "" && !line.startsWith("//") && (isTypeScript || !header.test(line))) {
+            code.add(index + 1);
+        }
+    });
+    codeLinesCache.set(path, code);
+    return code;
+}
+
+function codeLinesIn(file) {
+    const code = codeLinesOf(file.name);
+    const lines = [];
+    for (let line = file.start; line <= file.end; line++) if (code.has(line)) lines.push(line);
+    return lines;
 }
 
 const byCodePoint = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
-const side = (file) => ({ path: relative(ROOT, file.name), start: file.start, end: file.end });
+const pathOf = (file) => relative(ROOT, file.name);
 
-const clones = report.duplicates
-    .map((clone) => ({ clone, lines: codeLines(clone) }))
-    .filter(({ lines }) => lines >= MIN_LINES)
-    .map(({ clone, lines }) => {
-        const [first, second] = [side(clone.firstFile), side(clone.secondFile)].sort((a, b) => byCodePoint(a.path, b.path));
-        return { key: `${first.path} <-> ${second.path}`, first, second, lines };
-    });
+const clones = report.duplicates.filter((clone) => codeLinesIn(clone.firstFile).length >= MIN_LINES);
 
-const current = {};
-for (const clone of clones) current[clone.key] = (current[clone.key] ?? 0) + clone.lines;
+const copiedLines = new Map();
+for (const clone of clones) {
+    for (const file of [clone.firstFile, clone.secondFile]) {
+        const lines = copiedLines.get(pathOf(file)) ?? new Set();
+        codeLinesIn(file).forEach((line) => lines.add(line));
+        copiedLines.set(pathOf(file), lines);
+    }
+}
+const current = Object.fromEntries([...copiedLines].map(([path, lines]) => [path, lines.size]));
 
-const grown = Object.keys(current).filter((key) => current[key] > (baseline[key] ?? 0));
-const shrunk = Object.keys(baseline).filter((key) => (current[key] ?? 0) < baseline[key]);
+const grown = Object.keys(current).filter((path) => current[path] > (baseline[path] ?? 0));
+const shrunk = Object.keys(baseline).filter((path) => (current[path] ?? 0) < baseline[path]);
+
+const total = (pairs) => Object.values(pairs).reduce((sum, lines) => sum + lines, 0);
 
 if (options.update) {
-    if (grown.length > 0 && !options.allowNew) {
+    // Why: a renamed or moved file takes its copied lines along, which is no new copied code.
+    if (total(current) > total(baseline) && !options.allowNew) {
         reportGrown();
-        fail("The baseline only takes copied code in with --allow-new, when the copy is on purpose.");
+        fail(`The baseline only takes more copied code in (${total(baseline)} → ${total(current)} lines) with --allow-new, when the copy is on purpose.`);
     }
-    const next = options.allowNew ? current : Object.fromEntries(Object.keys(current).map((key) => [key, Math.min(current[key], baseline[key] ?? 0)]).filter(([, lines]) => lines > 0));
-    writeBaseline(next);
-    console.log(`✅ ${relative(ROOT, baselinePath)}: ${Object.keys(next).length} pairs of files with copied code`);
+    writeBaseline(current);
+    console.log(`✅ ${relative(ROOT, baselinePath)}: ${total(current)} copied lines in ${Object.keys(current).length} files`);
     process.exit(0);
 }
 
 if (options.base) warnAboutGrowth(readBaseline(options.base));
 
 reportGrown();
-for (const key of shrunk) {
-    console.log(`❌ Less copied code than the baseline lists (${current[key] ?? 0} of ${baseline[key]} lines): ${key}`);
+for (const path of shrunk) {
+    console.log(`❌ Less copied code than the baseline lists (${current[path] ?? 0} of ${baseline[path]} lines): ${path}`);
 }
 if (grown.length > 0) {
     console.log("Extract the copied code into one place the callers share. Only when the copy is on purpose,");
@@ -93,22 +122,22 @@ if (shrunk.length > 0) {
 }
 if (grown.length > 0 || shrunk.length > 0) process.exit(1);
 
-console.log(`✅ No new copied code (${Object.keys(current).length} pairs of files in the baseline)`);
+console.log(`✅ No new copied code (${total(current)} copied lines in ${Object.keys(current).length} files, as the baseline lists)`);
 
 function reportGrown() {
-    for (const key of grown) {
-        console.log(`❌ New copied code: ${current[key]} lines where the baseline lists ${baseline[key] ?? 0}`);
-        for (const { first, second } of clones.filter((clone) => clone.key === key)) {
-            console.log(`   ${first.path}:${first.start}-${first.end}`);
-            console.log(`   ${second.path}:${second.start}-${second.end}\n`);
+    for (const path of grown) {
+        console.log(`❌ New copied code in ${path}: ${current[path]} lines where the baseline lists ${baseline[path] ?? 0}`);
+        for (const clone of clones.filter((clone) => [clone.firstFile, clone.secondFile].some((file) => pathOf(file) === path))) {
+            console.log(`   ${pathOf(clone.firstFile)}:${clone.firstFile.start}-${clone.firstFile.end}`);
+            console.log(`   ${pathOf(clone.secondFile)}:${clone.secondFile.start}-${clone.secondFile.end}\n`);
         }
     }
 }
 
-// Why: --allow-new is the author's call, so CI doesn't fail on it, but a reviewer must see each pair it took in.
+// Why: --allow-new and a renamed file are the author's call, so CI doesn't fail on them, but a reviewer must see them.
 function warnAboutGrowth(base) {
-    for (const key of Object.keys(baseline).filter((key) => baseline[key] > (base[key] ?? 0))) {
-        console.log(`::warning file=.jscpd-baseline.json::The baseline takes in copied code (${base[key] ?? 0} → ${baseline[key]} lines): ${key}`);
+    for (const path of Object.keys(baseline).filter((path) => baseline[path] > (base[path] ?? 0))) {
+        console.log(`::warning file=.jscpd-baseline.json::The baseline takes in copied code (${base[path] ?? 0} → ${baseline[path]} lines): ${path}`);
     }
 }
 
@@ -116,8 +145,8 @@ function readBaseline(path) {
     return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
 }
 
-function writeBaseline(pairs) {
-    const sorted = Object.fromEntries(Object.keys(pairs).sort(byCodePoint).map((key) => [key, pairs[key]]));
+function writeBaseline(files) {
+    const sorted = Object.fromEntries(Object.keys(files).sort(byCodePoint).map((path) => [path, files[path]]));
     writeFileSync(baselinePath, `${JSON.stringify(sorted, null, 2)}\n`);
 }
 

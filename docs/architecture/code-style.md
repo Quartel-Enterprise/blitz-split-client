@@ -312,17 +312,19 @@ the apps: clones of 70 tokens or more with at least 5 lines of code once imports
 
 ```bash
 ./scripts/cpd.sh                                # check
-./scripts/cpd.sh --update-baseline              # take the removed copied code out of .jscpd-baseline.json
-./scripts/cpd.sh --update-baseline --allow-new  # also take new copied code in, only when the copy is on purpose
+./scripts/cpd.sh --update-baseline              # write the copied code found now to .jscpd-baseline.json
+./scripts/cpd.sh --update-baseline --allow-new  # also take more copied code in, only when the copy is on purpose
 ```
 
 `.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code. jscpd only compares files of
-the same language, so a screen drawn by Compose, SwiftUI and React is never a clone. The script runs the jscpd release
-it pins through `npx`, so it needs Node.js and nothing else.
+the same language (`.ts` and `.tsx` count as one), so a screen drawn by Compose, SwiftUI and React is never a clone.
+The script runs the jscpd release `scripts/jscpd/package.json` pins, with every dependency its lockfile locks, so it
+needs Node.js and nothing else.
 
-`.jscpd-baseline.json` holds, per pair of files, the lines of code their clones share today. A pair with more lines
-fails the check: extract the copied code into one place both callers use (a use case or coordinator under the
-ViewModels, a component of `:android:designsystem`, `iosApp/Sources/Shared/DesignSystem` or
-`webApp/src/components`). A pair with fewer fails too, until `--update-baseline` lowers it, so the baseline only
-shrinks. `--allow-new` is for a copy on purpose (an `actual` per platform that happens to match): say why in the pull
-request, where CI shows each pair it took in as a warning.
+`.jscpd-baseline.json` holds how many lines of code of each file are copied today. A file with more fails the check:
+extract the copied code into one place the callers use (a use case or coordinator under the ViewModels, a component
+of `:android:designsystem`, `iosApp/Sources/Shared/DesignSystem` or `webApp/src/components`). A file with fewer fails
+too, until `--update-baseline` writes the new numbers, so the baseline only shrinks. It refuses to grow the total
+without `--allow-new`, but takes a renamed or moved file, which brings its copied lines along. `--allow-new` is for a
+copy on purpose (an `actual` per platform that happens to match): say why in the pull request, where CI shows each
+file whose copied lines grew against main as a warning.

@@ -1,6 +1,7 @@
 {
   "path": ["core", "feature", "shared", "android", "androidApp", "iosApp/Sources", "webApp/src"],
-  "format": ["kotlin", "swift", "typescript", "tsx"],
+  "format": ["kotlin", "swift", "tsx"],
+  "formatsExts": { "tsx": ["ts", "tsx"] },
   "minTokens": 70,
   "ignore": [
     "**/build/**",

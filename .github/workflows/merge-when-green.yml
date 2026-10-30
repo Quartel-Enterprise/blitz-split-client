@@ -21,6 +21,7 @@ on:
     workflows:
       - build-and-test
       - static-analysis
+      - duplication
       - module-graph
       - claude-review
       - claude-review-on-request

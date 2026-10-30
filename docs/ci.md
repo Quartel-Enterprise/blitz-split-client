@@ -6,7 +6,8 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `:androidApp:assembleRelease`, `npm --prefix webApp run build` |
-| `static-analysis` | Kotlin, Swift, `webApp/src`, Gradle scripts, `.editorconfig`, the version catalog, the jscpd config and baseline | `./scripts/ktlint.sh` and `./scripts/cpd.sh`, as two jobs |
+| `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
+| `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config, baseline and scripts | `./scripts/cpd.sh`, warning about each file whose copied code the baseline takes in against main |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
 | `claude-review` | A pull request opened, or a draft marked ready | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
@@ -76,7 +77,7 @@ away.
 The checks wait for the opening review instead of running next to it, so they don't run twice (once on the opening
 commit, again on the fix commit):
 
-- `build-and-test`, `static-analysis` and `module-graph` start with a `review-gate` job, the reusable
+- `build-and-test`, `static-analysis`, `duplication` and `module-graph` start with a `review-gate` job, the reusable
   `review-gate.yml`. On the commit a pull request opened with or a draft was marked ready on, and on the review's
   fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end (on a draft
   marked ready, only a run that event created, never the one skipped while it was a draft). When the

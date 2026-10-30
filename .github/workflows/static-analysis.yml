@@ -11,14 +11,8 @@ on:
     paths:
       - '.github/workflows/static-analysis.yml'
       - 'scripts/ktlint.sh'
-      - 'scripts/cpd.sh'
-      - 'scripts/cpd-check.mjs'
-      - '.jscpd.json'
-      - '.jscpd-baseline.json'
       - '**/*.kt'
       - '**/*.kts'
-      - '**/*.swift'
-      - 'webApp/src/**'
       - '.editorconfig'
       - 'gradle/libs.versions.toml'
   push:
@@ -27,14 +21,8 @@ on:
     paths:
       - '.github/workflows/static-analysis.yml'
       - 'scripts/ktlint.sh'
-      - 'scripts/cpd.sh'
-      - 'scripts/cpd-check.mjs'
-      - '.jscpd.json'
-      - '.jscpd-baseline.json'
       - '**/*.kt'
       - '**/*.kts'
-      - '**/*.swift'
-      - 'webApp/src/**'
       - '.editorconfig'
       - 'gradle/libs.versions.toml'
 
@@ -76,36 +64,3 @@ jobs:
         env:
           KTLINT_REQUIRE_SIGNATURE: 'true'
         run: ./scripts/ktlint.sh
-
-  duplication:
-    needs: review-gate
-    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-
-      # npx keeps the jscpd it installs in the npm cache, so a run only downloads it again for another release.
-      - name: Cache jscpd
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: jscpd-${{ hashFiles('scripts/cpd.sh') }}
-
-      # The baseline of main, so a pull request that takes copied code in shows it as a warning.
-      - name: Fetch the baseline of main
-        run: |
-          git fetch --depth=1 origin main
-          git show FETCH_HEAD:.jscpd-baseline.json > "$RUNNER_TEMP/jscpd-baseline-main.json" 2> /dev/null \
-            || echo '{}' > "$RUNNER_TEMP/jscpd-baseline-main.json"
-
-      # The same script as locally, with the jscpd release it pins.
-      - name: Look for copied code
-        run: ./scripts/cpd.sh --base "$RUNNER_TEMP/jscpd-baseline-main.json"
