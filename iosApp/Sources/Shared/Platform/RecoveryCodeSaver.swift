@@ -59,12 +59,13 @@ enum RecoveryCodeSaver {
     #if os(iOS)
     @available(iOS 26.2, *)
     private static func saveWithCredentialDataManager(_ code: String) async -> Bool {
+        guard let anchor = PresentationAnchor.current else { return false }
         do {
             try await ASCredentialDataManager().save(
                 password: ASPasswordCredential(user: account, password: code),
                 for: ASAutoFillURLScope(host: domain),
                 title: title,
-                anchor: PresentationAnchor.current
+                anchor: anchor
             )
             return true
         } catch {
