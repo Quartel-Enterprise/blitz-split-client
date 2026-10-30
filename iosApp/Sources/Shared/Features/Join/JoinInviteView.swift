@@ -295,6 +295,13 @@ private struct JoinInviteContent: View {
                 TintedButton(title: "Go to home") {
                     model.send(JoinInviteUiEventOnGoHomeClicked.shared)
                 }
+                if displayLink == nil {
+                    Button("Scan another QR code", systemImage: "qrcode.viewfinder") {
+                        model.send(JoinInviteUiEventOnScanAnotherClicked.shared)
+                    }
+                    .font(.headline)
+                    .frame(minHeight: 44)
+                }
             }
             .padding(.top, 8)
         }

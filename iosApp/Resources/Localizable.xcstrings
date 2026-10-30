@@ -751,6 +751,17 @@
         }
       }
     },
+    "Camera viewfinder" : {
+      "comment" : "Accessibility label of the invite reader's viewfinder",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visor da câmera"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "pt-BR" : {
@@ -799,6 +810,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escolher foto"
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "comment" : "Empties the invite reader's link field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar"
           }
         }
       }
@@ -970,6 +992,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para entrar. Confira a internet e tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't open the camera. Paste the link below." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para abrir a câmera. Cole o link aqui embaixo."
           }
         }
       }
@@ -1554,6 +1586,17 @@
         }
       }
     },
+    "Have the link?" : {
+      "comment" : "Title of the invite reader's paste panel",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tem o link?"
+          }
+        }
+      }
+    },
     "Haven't joined yet" : {
       "comment" : "The members of an invite link's group nobody joined as yet",
       "localizations" : {
@@ -1859,6 +1902,17 @@
         }
       }
     },
+    "Join with an invite" : {
+      "comment" : "Title of the invite reader: a QR read by the camera or a link pasted",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar com convite"
+          }
+        }
+      }
+    },
     "Join with another name" : {
       "localizations" : {
         "pt-BR" : {
@@ -2076,6 +2130,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Novo grupo"
+          }
+        }
+      }
+    },
+    "No access to the camera" : {
+      "comment" : "The camera permission was denied",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem acesso à câmera"
           }
         }
       }
@@ -2335,6 +2400,17 @@
         }
       }
     },
+    "Open invite" : {
+      "comment" : "Opens the invite of the typed link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir convite"
+          }
+        }
+      }
+    },
     "Options for %@" : {
       "comment" : "Accessibility label of a member's row",
       "localizations" : {
@@ -2363,6 +2439,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Outro"
+          }
+        }
+      }
+    },
+    "Paste the link someone sent you in a message." : {
+      "comment" : "Subtitle of the invite reader's paste panel",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cole o link que te mandaram por mensagem."
           }
         }
       }
@@ -2488,6 +2575,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pix · Aleatória"
+          }
+        }
+      }
+    },
+    "Point the camera at the invite's QR code" : {
+      "comment" : "Hint under the invite reader's viewfinder",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aponte a câmera para o QR do convite"
           }
         }
       }
@@ -2756,6 +2854,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escanear QR"
+          }
+        }
+      }
+    },
+    "Scan another QR code" : {
+      "comment" : "Opens the invite reader from an invite that is no longer valid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escanear outro QR"
           }
         }
       }
@@ -3149,6 +3258,17 @@
         }
       }
     },
+    "This QR code isn't a Blitz Split invite" : {
+      "comment" : "The camera read a QR that isn't an invite link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esse QR não é um convite do Bora Rachar"
+          }
+        }
+      }
+    },
     "This invite is no longer valid" : {
       "localizations" : {
         "pt-BR" : {
@@ -3220,12 +3340,45 @@
         }
       }
     },
+    "This link isn't a Blitz Split invite" : {
+      "comment" : "The typed or pasted link isn't an invite link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esse link não é um convite do Bora Rachar"
+          }
+        }
+      }
+    },
     "To change it, make another key the default." : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para trocar, marque outra chave como padrão."
+          }
+        }
+      }
+    },
+    "To read the QR code, allow Blitz Split to use the camera in Settings. Or paste the link below." : {
+      "comment" : "The camera permission was denied, on iPhone and iPad",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para ler o QR, permita a câmera do Bora Rachar nos Ajustes. Ou cole o link aqui embaixo."
+          }
+        }
+      }
+    },
+    "To read the QR code, allow Blitz Split to use the camera in System Settings. Or paste the link below." : {
+      "comment" : "The camera permission was denied, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para ler o QR, permita a câmera do Bora Rachar nos Ajustes do Sistema. Ou cole o link aqui embaixo."
           }
         }
       }
@@ -3257,6 +3410,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tentar de novo"
+          }
+        }
+      }
+    },
+    "Try another QR code or paste the link below." : {
+      "comment" : "Under the wrong QR warning",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente outro QR ou cole o link aqui embaixo."
+          }
+        }
+      }
+    },
+    "Turn off the flashlight" : {
+      "comment" : "The invite reader's flashlight button, on",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desligar a lanterna"
+          }
+        }
+      }
+    },
+    "Turn on the flashlight" : {
+      "comment" : "The invite reader's flashlight button, off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligar a lanterna"
           }
         }
       }

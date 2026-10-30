@@ -36,7 +36,7 @@ final class AppModel {
     /// The entries above the root, but the one a sheet shows. A native back gesture shortens it, and
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
-        get { Array(backStack.dropFirst().dropLast(sheet == nil ? 0 : 1)) }
+        get { Array(backStack.dropFirst().dropLast(sheet == nil && cover == nil ? 0 : 1)) }
         set {
             guard newValue.count < path.count else { return }
             holder.viewModel.navigator.popTo(size: Int32(newValue.count + 1))
@@ -53,6 +53,18 @@ final class AppModel {
         }
         set {
             guard newValue == nil, sheet != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
+        }
+    }
+
+    /// The top entry when it covers the whole screen (the invite reader on iPhone and iPad). Closing it pops it.
+    var cover: AppRoute? {
+        get {
+            guard backStack.count > 1, let top = backStack.last, top.presentsFullScreen else { return nil }
+            return top
+        }
+        set {
+            guard newValue == nil, cover != nil else { return }
             holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
         }
     }

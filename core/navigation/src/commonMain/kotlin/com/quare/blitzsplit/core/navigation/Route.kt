@@ -54,6 +54,16 @@ sealed interface Route {
         val inviterCode: String?,
     ) : Route
 
+    /*
+     * Why: "Entrar com convite", a QR read by the camera or a link pasted, from the home or an invite no longer valid.
+     * From "Escanear outro QR", the camera skips the QR of the invite that just failed, which may still be in front of
+     * it, so only another QR or a pasted link opens.
+     */
+    data class JoinWithLink(
+        val skippedCode: String?,
+        val skippedMemberCode: String?,
+    ) : Route
+
     // Why: "Quem é você no grupo?", after "Entrar no grupo" on the invite.
     data class JoinPick(
         val code: String,

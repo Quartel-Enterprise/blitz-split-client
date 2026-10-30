@@ -72,6 +72,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
     color joined as. A member someone else already joined as says "Se era você, fale com <criador>": "Liberar nome"
     isn't built yet.
+  - The home's "Entrar com link ou QR" opens the reader (`Route.JoinWithLink`) on every platform: the camera reads
+    an invite's QR and keeps reading after a wrong one ("Esse QR não é um convite do Bora Rachar" for a few
+    seconds), and "Tem o link?" under it takes a pasted or typed link. Only links on blitzsplit.com and
+    borarachar.com count as invites there, since a QR can hold any site's address. Android and iOS open it full
+    screen, macOS as a sheet and the web as a dialog (a drawer on a phone), whose camera reads through the browser's
+    BarcodeDetector. An invite no longer valid offers "Escanear outro QR", which goes back to the reader; that reader
+    ignores the QR of the invite that just failed, which may still be in front of the camera, so only another QR or
+    a pasted link opens.
+  - Android's "Tirar foto" asks for the camera first. Once it is refused for good, a snackbar "Permita a câmera nas
+    configurações" offers "Configurações", which opens the app's settings page.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.

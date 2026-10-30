@@ -107,6 +107,11 @@ class JoinInvitePresenter(
         viewModel.onEvent(JoinInviteUiEvent.OnGoHomeClicked)
     }
 
+    // Why: "Escanear outro QR", with the invite no longer valid.
+    fun scanAnother() {
+        viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+    }
+
     fun dispose() {
         holder.clear()
     }

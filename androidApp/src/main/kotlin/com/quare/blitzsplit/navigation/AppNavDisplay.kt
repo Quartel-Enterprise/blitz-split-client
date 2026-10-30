@@ -22,6 +22,7 @@ import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinPickScreen
+import com.quare.blitzsplit.android.feature.join.JoinWithLinkScreen
 import com.quare.blitzsplit.android.feature.members.MembersScreen
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
@@ -103,6 +104,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Members> { route -> MembersScreen(route) }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }
             entry<Route.JoinPick> { route -> JoinPickScreen(route) }
+            entry<Route.JoinWithLink> { route -> JoinWithLinkScreen(route) }
         },
     )
 }

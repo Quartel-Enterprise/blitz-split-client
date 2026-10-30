@@ -112,17 +112,27 @@ class GroupsViewModel(
              * Why: "Membros" stands in for the group's own screen (flow 6) until it exists. Only from the groups on
              * top, so a quick tap on a second row doesn't push its members over the first's.
              */
-            is GroupsUiEvent.OnGroupClicked -> if (navigator.backStack.value.lastOrNull() == Route.Groups) {
+            is GroupsUiEvent.OnGroupClicked -> if (isOnTop()) {
                 navigator.navigate(Route.Members(event.groupId, joinedAs = null))
             }
 
-            GroupsUiEvent.OnJoinWithLinkClicked,
+            GroupsUiEvent.OnJoinWithLinkClicked -> if (isOnTop()) {
+                navigator.navigate(
+                    Route.JoinWithLink(
+                        skippedCode = null,
+                        skippedMemberCode = null,
+                    ),
+                )
+            }
+
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
             -> viewModelScope.launch { uiAction.emit(GroupsUiAction.ShowComingSoon) }
         }
     }
+
+    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Groups
 
     private fun toRow(group: Group): GroupRow = GroupRow(
         id = group.id,

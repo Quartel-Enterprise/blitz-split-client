@@ -38,19 +38,19 @@
       }
     },
     "NSCameraUsageDescription" : {
-      "comment" : "Why the app asks for the camera: scanning the recovery QR code and taking the profile photo",
+      "comment" : "Why the app asks for the camera: scanning an invite's or the recovery QR code, and taking the profile photo",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "To scan the QR code from your old device and to take your profile photo."
+            "value" : "To scan the QR code of an invite or from your old device, and to take your profile photo."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para ler o QR code do seu aparelho antigo e tirar a foto do seu perfil."
+            "value" : "Para ler o QR code de um convite ou do seu aparelho antigo, e tirar a foto do seu perfil."
           }
         }
       }

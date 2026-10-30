@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.join.di
 
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
+import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -9,4 +10,5 @@ import org.koin.dsl.module
 val joinModule = module {
     viewModelOf(::JoinInviteViewModel)
     viewModelOf(::JoinPickViewModel)
+    viewModelOf(::JoinWithLinkViewModel)
 }

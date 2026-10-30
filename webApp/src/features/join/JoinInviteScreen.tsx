@@ -1,4 +1,4 @@
-import { Link2, Link2Off, Loader2, WifiOff, X } from 'lucide-react'
+import { Link2, Link2Off, Loader2, ScanQrCode, WifiOff, X } from 'lucide-react'
 import { JoinInvitePresenter, type JsJoinInviteState, type JsJoinMember, type JsRoute } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -36,6 +36,9 @@ export function JoinInviteScreen({ route }: { route: JsRoute }) {
           <Problem icon={<Link2Off className="size-10" />} title={t('join_invalidTitle')} message={t(state.isPersonal ? 'join_invalidPersonalMessage' : 'join_invalidMessage')}>
             <Button variant="outline" size="lg" onClick={() => presenter.goHome()}>
               {t('join_goHome')}
+            </Button>
+            <Button variant="ghost" size="lg" onClick={() => presenter.scanAnother()}>
+              <ScanQrCode /> {t('join_scanAnother')}
             </Button>
           </Problem>
         )}

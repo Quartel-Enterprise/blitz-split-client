@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.LinkOff
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -106,6 +107,7 @@ fun JoinInviteContent(
                         ),
                         displayLink = null,
                         onRetry = null,
+                        onScanAnother = { onEvent(JoinInviteUiEvent.OnScanAnotherClicked) },
                         onEvent = onEvent,
                     )
 
@@ -115,6 +117,7 @@ fun JoinInviteContent(
                         message = stringResource(R.string.join_offline_message),
                         displayLink = state.displayLink,
                         onRetry = { onEvent(JoinInviteUiEvent.OnRetryClicked) },
+                        onScanAnother = null,
                         onEvent = onEvent,
                     )
                 }
@@ -336,6 +339,7 @@ private fun ProblemContent(
     message: String,
     displayLink: String?,
     onRetry: (() -> Unit)?,
+    onScanAnother: (() -> Unit)?,
     onEvent: (JoinInviteUiEvent) -> Unit,
 ) {
     Column(
@@ -403,6 +407,24 @@ private fun ProblemContent(
                     .heightIn(min = 56.dp),
             ) {
                 Text(stringResource(R.string.join_go_home))
+            }
+            if (onScanAnother != null) {
+                TextButton(
+                    onClick = onScanAnother,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 56.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.QrCodeScanner,
+                        contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                    )
+                    Text(
+                        text = stringResource(R.string.join_scan_another),
+                        modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
+                    )
+                }
             }
         }
     }

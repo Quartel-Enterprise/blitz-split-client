@@ -22,6 +22,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import type { BitcoinKeyType, PaymentKeyError, PaymentKeyFormat, PaymentKeyType, PaymentMethod } from '@/lib/paymentKey'
+import { canReadClipboard } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
 const formId = 'payment-key-form'
@@ -47,9 +48,6 @@ const acceptedFormats: Record<BitcoinKeyType, { sample: MessageKey; name: Messag
     { sample: 'paymentKey_acceptedTaprootSample', name: 'paymentKey_acceptedTaproot' },
   ],
 }
-
-// Why: Firefox only reads the clipboard from an extension, so "Paste" shows where the browser lets the page read it.
-const canReadClipboard = typeof navigator !== 'undefined' && typeof navigator.clipboard?.readText === 'function'
 
 /**
  * A new or saved Pix or Bitcoin key, over the profile: a dialog on desktop and tablet, a drawer with

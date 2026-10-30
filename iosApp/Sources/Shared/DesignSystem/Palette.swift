@@ -12,6 +12,8 @@ enum Palette {
     static let accent = Color("AccentColor")
     static let onAccent = Color(light: 0xFFFFFF, dark: 0x00344E)
     static let negative = Color(light: 0x8E4D31, dark: 0xFFB599)
+    /// The viewfinder's corners on a QR that isn't an invite: the camera stays dark, so it is the dark error in both.
+    static let cameraError = Color(light: 0xFFB599, dark: 0xFFB599)
     /// The tile of a Pix key, and of a Bitcoin key, in the profile's list.
     static let pixTile = Color(light: 0xC9E6FF, dark: 0x004B6F)
     static let onPixTile = Color(light: 0x001E2F, dark: 0xC9E6FF)
