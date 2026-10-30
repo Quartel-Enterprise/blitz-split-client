@@ -31,6 +31,7 @@ The backend (Supabase: migrations, edge functions, auth settings) lives in the `
 ./gradlew :koverVerifyCi              # 80% line coverage of core and feature
 ./gradlew assertModuleGraph           # the module dependency rules
 ./scripts/ktlint.sh [--format]        # Kotlin style, Quare ruleset
+./scripts/cpd.sh                      # no new copied code in Kotlin, Swift and TypeScript (jscpd)
 ./gradlew :androidApp:assembleDebug   # Android
 ./iosApp/generate-project.sh          # then build the BoraRachar-iOS or BoraRachar-macOS scheme in Xcode
 npm --prefix webApp run dev           # web dev server (builds the shared JS library first); `build` for dist/
