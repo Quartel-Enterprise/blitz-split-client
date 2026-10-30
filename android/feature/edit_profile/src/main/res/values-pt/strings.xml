@@ -5,6 +5,7 @@
     <string name="edit_profile_change_photo">Trocar foto</string>
     <string name="edit_profile_take_photo">Tirar foto</string>
     <string name="edit_profile_choose_photo">Escolher da galeria</string>
+    <string name="edit_profile_use_account_photo">Usar foto da conta %1$s</string>
     <string name="edit_profile_remove_photo">Remover foto</string>
     <string name="edit_profile_photo_error">Não deu para usar essa foto. Tente outra.</string>
     <string name="edit_profile_avatar_color">Cor do avatar</string>

@@ -20,6 +20,9 @@ sealed interface EditProfileUiEvent : UiEvent {
     // Why: the picker returned an item the UI couldn't read, such as a cloud-only photo while offline.
     data object OnPhotoUnreadable : EditProfileUiEvent
 
+    // Why: the Google or Apple account's own picture, kept as the photo without being uploaded.
+    data object OnAccountPhotoSelected : EditProfileUiEvent
+
     // Why: without a photo the avatar shows the initial on its color.
     data object OnPhotoRemoved : EditProfileUiEvent
 

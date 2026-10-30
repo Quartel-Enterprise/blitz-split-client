@@ -20,6 +20,8 @@ data class EditProfileUiState(
     val isSaving: Boolean,
     // Why: names whose account gave the name and photo, since editing here doesn't change that account.
     val accountProvider: AccountProvider?,
+    // Why: the picture of that account, which the editor offers as a photo.
+    val accountPhotoUrl: String?,
 ) {
     val avatarInitial: String
         get() = name.trim().firstOrNull()?.uppercase() ?: "?"
@@ -43,6 +45,17 @@ data class EditProfileUiState(
 
     val hasPhoto: Boolean
         get() = photo != null
+
+    /*
+     * Why: the color only shows behind the initial, so it is offered while there is no photo (or once removed),
+     * and not while a pick is prepared, which would show the colors for a moment before they vanish.
+     */
+    val showsAvatarColors: Boolean
+        get() = !hasPhoto && !isPreparingPhoto
+
+    // Why: offered while the account has a picture that isn't the photo shown already.
+    val showsUseAccountPhoto: Boolean
+        get() = accountPhotoUrl != null && photo != ProfilePhoto.Remote(accountPhotoUrl)
 
     val canSave: Boolean
         get() = isNameValid && hasChanges && !isSaving && !isPreparingPhoto

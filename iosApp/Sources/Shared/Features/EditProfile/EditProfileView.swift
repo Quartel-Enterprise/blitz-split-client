@@ -1,7 +1,11 @@
+import AVFoundation
 import Observation
 import PhotosUI
 import Shared
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 @Observable
 final class EditProfileModel {
@@ -67,21 +71,24 @@ struct EditProfileSections: View {
         Section {
             PhotoEditor(model: model)
         }
-        Section {
-            HStack {
-                ForEach(state.avatarColors, id: \.self) { color in
-                    ColorSwatch(color: color, isSelected: color == state.avatarColor) {
-                        model.send(EditProfileUiEventOnAvatarColorSelected(color: color))
+        // Why: the color only shows behind the initial, so it is offered while there is no photo.
+        if state.showsAvatarColors {
+            Section {
+                HStack {
+                    ForEach(state.avatarColors, id: \.self) { color in
+                        ColorSwatch(color: color, isSelected: color == state.avatarColor) {
+                            model.send(EditProfileUiEventOnAvatarColorSelected(color: color))
+                        }
+                        if color != state.avatarColors.last { Spacer(minLength: 8) }
                     }
-                    if color != state.avatarColors.last { Spacer(minLength: 8) }
                 }
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel("Avatar color")
+            } header: {
+                Text("Avatar color")
+            } footer: {
+                Text("Shows when you have no photo.")
             }
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("Avatar color")
-        } header: {
-            Text("Avatar color")
-        } footer: {
-            Text("Shows when you have no photo.")
         }
         Section {
             TextField(
@@ -147,6 +154,19 @@ private struct PhotoEditor: View {
     @State private var pickedPhoto: PhotosPickerItem?
     @State private var showsPhotoPicker = false
     @State private var showsCamera = false
+    @State private var showsCameraDenied = false
+
+    #if os(iOS)
+    /// Why: the system camera shows a black screen when access was refused, so ask first and explain a "no".
+    private func takePhoto() async {
+        let isAllowed = switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: true
+        case .notDetermined: await AVCaptureDevice.requestAccess(for: .video)
+        default: false
+        }
+        if isAllowed { showsCamera = true } else { showsCameraDenied = true }
+    }
+    #endif
 
     var body: some View {
         let state = model.state
@@ -161,24 +181,37 @@ private struct PhotoEditor: View {
                 if state.isPreparingPhoto { ProgressView() }
             }
             .accessibilityHidden(true)
-            Menu {
-                #if os(iOS)
-                if CameraPicker.isAvailable {
-                    Button("Take photo", systemImage: "camera") { showsCamera = true }
-                }
-                #endif
-                // Why: the system picker needs no photo library permission and returns one image, or nothing.
-                Button("Choose photo", systemImage: "photo.on.rectangle") { showsPhotoPicker = true }
-                if state.hasPhoto {
-                    Button("Remove photo", systemImage: "trash", role: .destructive) {
-                        model.send(EditProfileUiEventOnPhotoRemoved.shared)
+            .overlay(alignment: .bottomTrailing) {
+                Menu {
+                    #if os(iOS)
+                    if CameraPicker.isAvailable {
+                        Button("Take photo", systemImage: "camera") { Task { await takePhoto() } }
                     }
+                    #endif
+                    // Why: the system picker needs no photo library permission and returns one image, or nothing.
+                    Button("Choose photo", systemImage: "photo.on.rectangle") { showsPhotoPicker = true }
+                    if state.showsUseAccountPhoto, let provider = state.accountProvider {
+                        Button("Use \(provider.displayName) account photo", systemImage: "person.crop.circle") {
+                            model.send(EditProfileUiEventOnAccountPhotoSelected.shared)
+                        }
+                    }
+                    if state.hasPhoto {
+                        Button("Remove photo", systemImage: "trash", role: .destructive) {
+                            model.send(EditProfileUiEventOnPhotoRemoved.shared)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 14, weight: .semibold))
+                        .frame(width: 32, height: 32)
+                        .glassEffect(.regular.interactive(), in: .circle)
                 }
-            } label: {
-                Text("Edit photo")
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .fixedSize()
+                .offset(x: 4, y: 4)
+                .accessibilityLabel("Edit photo")
             }
-            .menuStyle(.borderlessButton)
-            .fixedSize()
             if state.showsPhotoError {
                 Text("Couldn't use this photo. Try another one.")
                     .font(.footnote)
@@ -198,6 +231,14 @@ private struct PhotoEditor: View {
         .fullScreenCover(isPresented: $showsCamera) {
             CameraPicker { data in model.photoPicked(data) }
                 .ignoresSafeArea()
+        }
+        .alert("Camera access is off", isPresented: $showsCameraDenied) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Allow camera access in Settings to take a photo.")
         }
         #endif
     }
