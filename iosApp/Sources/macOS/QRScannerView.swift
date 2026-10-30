@@ -55,6 +55,8 @@ final class CameraQRScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
     @ObservationIgnored private let queue = DispatchQueue(label: "com.quare.blitzsplit.qr")
     @ObservationIgnored private var onScanned: ((String) -> Void)?
     @ObservationIgnored nonisolated(unsafe) private var didScan = false
+    /// The camera sees the same QR on every frame, so reading continuously reports it a few times a second, not 30.
+    @ObservationIgnored nonisolated(unsafe) private var lastRead: (content: String, at: ContinuousClock.Instant)?
 
     init(readsContinuously: Bool = false) {
         self.readsContinuously = readsContinuously
@@ -91,6 +93,9 @@ final class CameraQRScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
         request.symbologies = [.qr]
         try? VNImageRequestHandler(cvPixelBuffer: pixels).perform([request])
         guard let content = request.results?.first?.payloadStringValue else { return }
+        let now = ContinuousClock.now
+        if let lastRead, lastRead.content == content, now - lastRead.at < .milliseconds(250) { return }
+        lastRead = (content, now)
         didScan = !readsContinuously
         Task { @MainActor in
             self.onScanned?(content)

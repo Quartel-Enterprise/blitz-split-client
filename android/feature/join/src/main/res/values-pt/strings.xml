@@ -60,6 +60,7 @@
     <string name="join_scan_denied_title">Sem acesso à câmera</string>
     <string name="join_scan_denied_message">Para ler o QR, permita a câmera do Bora Rachar nas configurações do aparelho. Ou cole o link aqui embaixo.</string>
     <string name="join_scan_open_settings">Abrir configurações</string>
+    <string name="join_scan_camera_failed">Não deu para abrir a câmera. Cole o link aqui embaixo.</string>
     <string name="join_scan_paste_title">Tem o link?</string>
     <string name="join_scan_paste_subtitle">Cole o link que te mandaram por mensagem.</string>
     <string name="join_scan_link_label">Link do convite</string>

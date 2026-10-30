@@ -8,6 +8,7 @@ struct InviteScannerView: View {
     let isTorchOn: Bool
     let onScanned: (String) -> Void
     let onTorchAvailabilityChanged: (Bool) -> Void
+    let onUnavailable: () -> Void
 
     var body: some View {
         Group {
@@ -18,7 +19,11 @@ struct InviteScannerView: View {
             }
         }
         .ignoresSafeArea()
-        .onAppear { onTorchAvailabilityChanged(Torch.device?.hasTorch ?? false) }
+        .onAppear {
+            // Why: the scanner needs a recent enough camera; without one, only the paste is left.
+            if !DataScannerViewController.isSupported { onUnavailable() }
+            onTorchAvailabilityChanged(Torch.device?.hasTorch ?? false)
+        }
         .onChange(of: isTorchOn, initial: true) { _, isOn in Torch.set(isOn) }
         .onDisappear { Torch.set(false) }
     }
@@ -67,6 +72,8 @@ private struct ScannerRepresentable: UIViewControllerRepresentable {
 
     final class Coordinator: NSObject, DataScannerViewControllerDelegate {
         var onScanned: (String) -> Void
+        /// The scanner updates a QR in view on every frame, so it is reported a few times a second, not 30.
+        private var lastRead: (content: String, at: ContinuousClock.Instant)?
 
         init(onScanned: @escaping (String) -> Void) {
             self.onScanned = onScanned
@@ -91,6 +98,9 @@ private struct ScannerRepresentable: UIViewControllerRepresentable {
         private func report(_ items: [RecognizedItem]) {
             for case let .barcode(barcode) in items {
                 if let content = barcode.payloadStringValue {
+                    let now = ContinuousClock.now
+                    if let lastRead, lastRead.content == content, now - lastRead.at < .milliseconds(250) { return }
+                    lastRead = (content, now)
                     onScanned(content)
                     return
                 }

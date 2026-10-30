@@ -31,6 +31,7 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
     val context = LocalContext.current
     val clipboard = remember(context) { ClipboardReader(context) }
     var hasTorch by remember { mutableStateOf(false) }
+    var isCameraUnavailable by remember { mutableStateOf(false) }
     // Why: saved, since the activity may be recreated (a rotation) while the system dialog is on top of it.
     var hasAsked by rememberSaveable { mutableStateOf(false) }
     val cameraPermission = rememberCameraPermissionAccess { isGranted ->
@@ -78,6 +79,7 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
             viewModel.onEvent(JoinWithLinkUiEvent.OnLinkChanged(it))
         },
         hasTorch = hasTorch,
+        isCameraUnavailable = isCameraUnavailable,
         onPasteClicked = { viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(clipboard.readText().orEmpty())) },
         onEvent = viewModel::onEvent,
         camera = { modifier ->
@@ -85,6 +87,7 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
                 isTorchOn = state.isTorchOn,
                 onScanned = { viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(it)) },
                 onTorchAvailabilityChanged = { hasTorch = it },
+                onUnavailable = { isCameraUnavailable = true },
                 modifier = modifier,
             )
         },

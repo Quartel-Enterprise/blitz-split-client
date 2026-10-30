@@ -18,6 +18,7 @@ class JsJoinWithLinkState(
     val cameraAccess: String,
     val isTorchOn: Boolean,
     val canOpen: Boolean,
+    val showsPaste: Boolean,
 )
 
 class JoinWithLinkPresenter {
@@ -33,6 +34,7 @@ class JoinWithLinkPresenter {
                 cameraAccess = state.cameraAccess.name.lowercase(),
                 isTorchOn = state.isTorchOn,
                 canOpen = state.canOpen,
+                showsPaste = state.showsPaste,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

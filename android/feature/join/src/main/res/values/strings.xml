@@ -60,6 +60,7 @@
     <string name="join_scan_denied_title">No access to the camera</string>
     <string name="join_scan_denied_message">To read the QR code, allow Blitz Split to use the camera in the device\'s settings. Or paste the link below.</string>
     <string name="join_scan_open_settings">Open settings</string>
+    <string name="join_scan_camera_failed">Couldn\'t open the camera. Paste the link below.</string>
     <string name="join_scan_paste_title">Have the link?</string>
     <string name="join_scan_paste_subtitle">Paste the link someone sent you in a message.</string>
     <string name="join_scan_link_label">Invite link</string>

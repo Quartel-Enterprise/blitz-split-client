@@ -5,6 +5,9 @@ export function browserLanguages(): readonly string[] {
   return navigator.language ? [navigator.language] : []
 }
 
+// Why: Firefox only reads the clipboard from an extension, so "Paste" shows where the browser lets the page read it.
+export const canReadClipboard = typeof navigator !== 'undefined' && typeof navigator.clipboard?.readText === 'function'
+
 const applePattern = /Mac|iPhone|iPad|iPod/
 
 /**

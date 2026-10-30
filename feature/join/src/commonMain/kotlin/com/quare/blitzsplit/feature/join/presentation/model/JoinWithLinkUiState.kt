@@ -13,4 +13,8 @@ data class JoinWithLinkUiState(
     // Why: "Abrir convite" shows once there is something in the field.
     val canOpen: Boolean
         get() = link.isNotBlank()
+
+    // Why: "Colar" while the field is empty, "Limpar" once it has something.
+    val showsPaste: Boolean
+        get() = link.isEmpty()
 }

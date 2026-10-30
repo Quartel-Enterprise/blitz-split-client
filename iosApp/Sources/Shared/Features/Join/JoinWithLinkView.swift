@@ -80,6 +80,7 @@ private struct JoinWithLinkContent: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var hasTorch = false
+    @State private var isCameraUnavailable = false
 
     #if os(iOS)
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -136,24 +137,36 @@ private struct JoinWithLinkContent: View {
     }
 
     private var cameraArea: some View {
-        let state = model.state
-        return ZStack {
+        // Why: the camera reaches under the status bar, and its inset puts the close and flashlight buttons below it.
+        GeometryReader { proxy in
+            cameraLayers(model.state, topInset: proxy.safeAreaInsets.top)
+        }
+        .environment(\.colorScheme, .dark)
+        .clipped()
+        .ignoresSafeArea(edges: .top)
+    }
+
+    private func cameraLayers(_ state: JoinWithLinkUiState, topInset: CGFloat) -> some View {
+        ZStack {
             Color.black
             if state.cameraAccess == .granted {
                 InviteScannerView(
                     isTorchOn: state.isTorchOn,
                     onScanned: { model.send(JoinWithLinkUiEventOnQrScanned(content: $0)) },
                     onTorchAvailabilityChanged: { hasTorch = $0 },
+                    onUnavailable: { isCameraUnavailable = true },
                 )
             }
             // The design's scrim, dark toward the edges, so the white marks and text read over a bright room.
             RadialGradient(colors: [.clear, .black.opacity(0.7)], center: .center, startRadius: 0, endRadius: 360)
                 .allowsHitTesting(false)
             VStack(spacing: 0) {
-                topBar(state)
+                topBar(state, topInset: topInset)
                 Spacer(minLength: 8)
                 if state.cameraAccess == .denied {
                     cameraDenied
+                } else if isCameraUnavailable {
+                    cameraUnavailable
                 } else {
                     viewfinder(state)
                 }
@@ -161,12 +174,9 @@ private struct JoinWithLinkContent: View {
             }
             .padding(.horizontal, 16)
         }
-        .environment(\.colorScheme, .dark)
-        .clipped()
-        .ignoresSafeArea(edges: .top)
     }
 
-    private func topBar(_ state: JoinWithLinkUiState) -> some View {
+    private func topBar(_ state: JoinWithLinkUiState, topInset: CGFloat) -> some View {
         HStack {
             Button("Close", systemImage: "xmark") {
                 model.send(JoinWithLinkUiEventOnCloseClicked.shared)
@@ -200,18 +210,11 @@ private struct JoinWithLinkContent: View {
             }
         }
         #if os(iOS)
-        .padding(.top, safeAreaTop + 8)
+        .padding(.top, topInset + 8)
         #else
-        .padding(.top, 16)
+        .padding(.top, topInset + 16)
         #endif
     }
-
-    #if os(iOS)
-    private var safeAreaTop: CGFloat {
-        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        return scene?.windows.first?.safeAreaInsets.top ?? 0
-    }
-    #endif
 
     private func viewfinder(_ state: JoinWithLinkUiState) -> some View {
         VStack(spacing: 24) {
@@ -276,6 +279,19 @@ private struct JoinWithLinkContent: View {
         .padding(.horizontal, 20)
     }
 
+    private var cameraUnavailable: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "video.slash")
+                .font(.system(size: 52))
+            Text("Couldn't open the camera. Paste the link below.")
+                .padding(.top, 8)
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: 420)
+        .padding(.horizontal, 20)
+    }
+
     private var pastePanel: some View {
         let state = model.state
         return ScrollView {
@@ -327,7 +343,7 @@ private struct JoinWithLinkContent: View {
                 #endif
                 .submitLabel(.go)
                 .onSubmit { model.send(JoinWithLinkUiEventOnOpenClicked.shared) }
-            if state.link.isEmpty {
+            if state.showsPaste {
                 // The system's paste control, which reads the clipboard without asking.
                 PasteButton(payloadType: String.self) { strings in
                     model.send(JoinWithLinkUiEventOnPasted(text: strings.first ?? ""))

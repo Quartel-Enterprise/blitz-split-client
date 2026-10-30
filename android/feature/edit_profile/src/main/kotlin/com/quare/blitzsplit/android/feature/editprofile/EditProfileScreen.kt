@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.createCameraPhotoUri
 import com.quare.blitzsplit.android.platform.readPhotoBytes
+import com.quare.blitzsplit.android.platform.rememberCameraPermissionAccess
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import kotlinx.coroutines.launch
@@ -42,11 +43,25 @@ fun EditProfileScreen(viewModel: EditProfileViewModel = koinViewModel()) {
     }
     // Why: kept across the camera app, which can outlive this activity, so its photo is still found on return.
     var cameraPhoto by rememberSaveable { mutableStateOf<Uri?>(null) }
-    // Why: the camera app takes the full size picture into the app's file, so the app asks for no camera permission.
+    // Why: the camera app takes the full size picture into the app's file.
     val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isSaved ->
         val uri = cameraPhoto
         if (isSaved && uri != null) onPicked(uri)
     }
+    val launchCamera = {
+        try {
+            val uri = context.createCameraPhotoUri()
+            cameraPhoto = uri
+            camera.launch(uri)
+        } catch (_: ActivityNotFoundException) {
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoUnreadable)
+        }
+    }
+    /*
+     * Why: the app declares the camera permission for the invite reader, and Android then refuses the camera app's
+     * intent until it is granted. Refusing it here is like closing the camera app: the photo stays as it was.
+     */
+    val cameraPermission = rememberCameraPermissionAccess { isGranted -> if (isGranted) launchCamera() }
     // Why: a device without a camera, or without a camera app, can't take one, as iOS hides it too.
     val hasCamera = remember(context) { context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) }
     BackHandler { viewModel.onEvent(EditProfileUiEvent.OnBackClicked) }
@@ -54,15 +69,7 @@ fun EditProfileScreen(viewModel: EditProfileViewModel = koinViewModel()) {
         state = state,
         onEvent = viewModel::onEvent,
         onTakePhotoClick = if (hasCamera) {
-            {
-                try {
-                    val uri = context.createCameraPhotoUri()
-                    cameraPhoto = uri
-                    camera.launch(uri)
-                } catch (_: ActivityNotFoundException) {
-                    viewModel.onEvent(EditProfileUiEvent.OnPhotoUnreadable)
-                }
-            }
+            { if (cameraPermission.isGranted()) launchCamera() else cameraPermission.request() }
         } else {
             null
         },

@@ -32,6 +32,11 @@
   --brand-panel: #266489;
   --brand-panel-foreground: #ffffff;
   --brand-shape: #ffdbce;
+  /* The QR reader's camera stays dark in both themes, with the dark theme's error for a wrong QR. */
+  --camera: #000000;
+  --camera-error: #ffb599;
+  --camera-error-container: #71361c;
+  --camera-error-container-foreground: #ffdbce;
 }
 
 /* The .dark class comes from src/lib/theme.ts: the profile's theme, or the system's while it says System. */
@@ -97,6 +102,10 @@
   --color-brand-panel: var(--brand-panel);
   --color-brand-panel-foreground: var(--brand-panel-foreground);
   --color-brand-shape: var(--brand-shape);
+  --color-camera: var(--camera);
+  --color-camera-error: var(--camera-error);
+  --color-camera-error-container: var(--camera-error-container);
+  --color-camera-error-container-foreground: var(--camera-error-container-foreground);
 }
 
 @layer base {

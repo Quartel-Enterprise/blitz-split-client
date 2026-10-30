@@ -9,25 +9,19 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useQrCamera } from '@/hooks/useQrCamera'
 import { t } from '@/i18n'
+import { canReadClipboard } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
 const formId = 'join-with-link-form'
 const inputId = 'join-with-link-input'
 const errorId = 'join-with-link-error'
 const linkPlaceholder = 'blitzsplit.com/g/…'
-// Why: the reader keeps reading after a wrong QR, a few times a second rather than on every frame.
-const scanInterval = 250
-
-// Why: Firefox only reads the clipboard from an extension, so "Paste" shows where the browser lets the page read it.
-const canReadClipboard = typeof navigator !== 'undefined' && typeof navigator.clipboard?.readText === 'function'
-
 // Why: Chrome on Android exposes the flashlight as a constraint of the camera's track; TypeScript doesn't know it yet.
 interface TorchCapabilities extends MediaTrackCapabilities {
   torch?: boolean
 }
-
-type CameraProblem = 'unsupported' | 'failed'
 
 /**
  * "Entrar com link ou QR": the camera reads an invite's QR through the browser's BarcodeDetector, and the
@@ -82,11 +76,11 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
   const isDenied = state.cameraAccess === 'denied'
 
   return (
-    <div className={cn('relative w-full overflow-hidden rounded-xl bg-neutral-950 text-white', isDesktop ? 'aspect-square' : 'aspect-[4/3]')}>
+    <div className={cn('relative w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-square' : 'aspect-[4/3]')}>
       {/* Always mounted, so a second try after a refusal has the video to show the camera in */}
       <video ref={video} muted playsInline className="absolute inset-0 size-full object-cover" />
       {problem || isDenied ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-neutral-950 px-6 text-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-camera px-6 text-center">
           <CameraOff aria-hidden className="size-8 text-white/70" />
           {isDenied && !problem && <p className="font-semibold">{t('join_linkDeniedTitle')}</p>}
           <p className="text-sm text-white/80">
@@ -104,11 +98,11 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle,transparent_35%,rgb(0_0_0/0.55)_100%)]" />
           <ViewfinderCorners isInvalid={state.isQrInvalid} />
           {state.isQrInvalid ? (
-            <div role="alert" className="absolute inset-x-3 bottom-3 flex gap-2 rounded-lg bg-destructive px-3 py-2 text-sm text-white">
+            <div role="alert" className="absolute inset-x-3 bottom-3 flex gap-2 rounded-lg bg-camera-error-container px-3 py-2 text-sm text-camera-error-container-foreground">
               <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
               <div>
                 <p className="font-semibold">{t('join_linkInvalidQr')}</p>
-                <p className="text-white/90">{t('join_linkInvalidQrHint')}</p>
+                <p>{t('join_linkInvalidQrHint')}</p>
               </div>
             </div>
           ) : (
@@ -140,7 +134,7 @@ function ViewfinderCorners({ isInvalid }: { isInvalid: boolean }) {
     <svg
       aria-hidden
       viewBox="0 0 100 100"
-      className={cn('absolute top-1/2 left-1/2 size-3/5 -translate-x-1/2 -translate-y-[55%] transition-colors', isInvalid ? 'text-red-300' : 'text-white')}
+      className={cn('absolute top-1/2 left-1/2 size-3/5 -translate-x-1/2 -translate-y-[55%] transition-colors', isInvalid ? 'text-camera-error' : 'text-white')}
       fill="none"
       stroke="currentColor"
       strokeWidth={3}
@@ -154,72 +148,28 @@ function ViewfinderCorners({ isInvalid }: { isInvalid: boolean }) {
 }
 
 /**
- * Opens the back camera and hands each QR it reads to the ViewModel, which tells an invite from anything
- * else and keeps reading after a wrong one. The browser's own prompt is the permission: its answer goes to
- * the ViewModel, while a browser without BarcodeDetector (Safari, Firefox) or without a camera stays here.
+ * The camera's answer goes to the ViewModel, which shows the refusal, while a browser without BarcodeDetector
+ * (Safari, Firefox) or without a camera stays here. The flashlight is a constraint of the camera's track in Chrome
+ * on Android.
  */
 function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: JoinWithLinkPresenter, isTorchOn: boolean) {
-  const [problem, setProblem] = useState<CameraProblem | null>(null)
-  const [track, setTrack] = useState<MediaStreamTrack | null>(null)
-  const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
-
+  const { problem, track } = useQrCamera(video, {
+    isEnabled: true,
+    readsContinuously: true,
+    onScanned: (content) => presenter.scan(content),
+    onStarted: () => presenter.changeCameraAccess(true),
+  })
   useEffect(() => {
-    const Detector = window.BarcodeDetector
-    if (!Detector || !navigator.mediaDevices?.getUserMedia) {
-      setProblem('unsupported')
-      return
-    }
-    const detector = new Detector({ formats: ['qr_code'] })
-    let stream: MediaStream | null = null
-    let timer = 0
-    let isActive = true
-
-    const scan = async () => {
-      if (!isActive || !video.current) return
-      try {
-        const [code] = await detector.detect(video.current)
-        if (isActive && code?.rawValue) presenter.scan(code.rawValue)
-      } catch {
-        // The first frames can arrive before the video has any pixels; keep trying
-      }
-      if (isActive) timer = window.setTimeout(scan, scanInterval)
-    }
-
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: 'environment' } })
-      .then(async (media) => {
-        stream = media
-        if (!isActive) return
-        presenter.changeCameraAccess(true)
-        if (!video.current) return
-        video.current.srcObject = media
-        setTrack(media.getVideoTracks()[0] ?? null)
-        await video.current.play()
-        timer = window.setTimeout(scan, scanInterval)
-      })
-      .catch((error: unknown) => {
-        if (!isActive) return
-        // Why: only a refusal is the camera being denied; no camera at all leaves the paste under it.
-        if (error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'SecurityError')) {
-          presenter.changeCameraAccess(false)
-        } else {
-          setProblem('failed')
-        }
-      })
-
-    return () => {
-      isActive = false
-      window.clearTimeout(timer)
-      stream?.getTracks().forEach((each) => each.stop())
-    }
-  }, [presenter, video])
-
+    if (problem === 'denied') presenter.changeCameraAccess(false)
+  }, [problem, presenter])
+  const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
   useEffect(() => {
     if (!track || !hasTorch) return
     track.applyConstraints({ advanced: [{ torch: isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
   }, [track, hasTorch, isTorchOn])
 
-  return { problem, hasTorch }
+  // Why: a refusal shows as the ViewModel's denied state, with its "Try again".
+  return { problem: problem === 'denied' ? null : problem, hasTorch }
 }
 
 function PastePanel({ presenter, state }: { presenter: JoinWithLinkPresenter; state: JsJoinWithLinkState }) {
@@ -262,7 +212,7 @@ function PastePanel({ presenter, state }: { presenter: JoinWithLinkPresenter; st
             aria-describedby={state.isLinkInvalid ? errorId : undefined}
             onChange={(event) => setLink(event.target.value)}
           />
-          {link !== '' ? (
+          {!state.showsPaste ? (
             <Button type="button" variant="outline" size="icon" aria-label={t('join_linkClear')} onClick={() => presenter.clear()}>
               <X />
             </Button>

@@ -1212,6 +1212,68 @@ class InviteLinkTest {
     }
 
     @Test
+    fun `GIVEN another site with the path of an invite WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "https://example.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN another site with the path of an invite without https WHEN finding the invite THEN finds nothing`() {
+        // Given
+        val text = "Menu: example.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a link of the borarachar domain WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "https://borarachar.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link of www in capitals WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "WWW.BlitzSplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
     fun `GIVEN the app scheme with a group path WHEN finding the invite in it THEN finds nothing`() {
         // Given
         val text = "borarachar://blitzsplit.com/g/AB12cd34"

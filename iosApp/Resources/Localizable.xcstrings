@@ -996,6 +996,16 @@
         }
       }
     },
+    "Couldn't open the camera. Paste the link below." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para abrir a câmera. Cole o link aqui embaixo."
+          }
+        }
+      }
+    },
     "Couldn't save the change. Try again." : {
       "comment" : "A member change the device couldn't save",
       "localizations" : {

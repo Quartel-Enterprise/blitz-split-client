@@ -74,7 +74,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     isn't built yet.
   - The home's "Entrar com link ou QR" opens the reader (`Route.JoinWithLink`) on every platform: the camera reads
     an invite's QR and keeps reading after a wrong one ("Esse QR não é um convite do Bora Rachar" for a few
-    seconds), and "Tem o link?" under it takes a pasted or typed link. Android and iOS open it full screen, macOS as
+    seconds), and "Tem o link?" under it takes a pasted or typed link. Only links on blitzsplit.com and
+    borarachar.com count as invites there, since a QR can hold any site's address. Android and iOS open it full screen, macOS as
     a sheet and the web as a dialog (a drawer on a phone), whose camera reads through the browser's BarcodeDetector.
     An invite no longer valid offers "Escanear outro QR", which goes back to the reader.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.

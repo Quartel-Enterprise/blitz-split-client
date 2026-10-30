@@ -494,6 +494,22 @@ class JoinInviteViewModelTest {
         }
 
     @Test
+    fun `GIVEN an invalid link opened over the reader WHEN scanning another QR THEN goes back to that reader`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                invite = null,
+                under = listOf(Route.Groups, Route.JoinWithLink),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a valid invite WHEN scanning another QR THEN stays on the invite`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
