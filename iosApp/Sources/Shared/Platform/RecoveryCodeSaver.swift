@@ -44,10 +44,14 @@ enum RecoveryCodeSaver {
             kSecAttrAccount as String: account,
             kSecAttrSynchronizable as String: true,
         ]
-        SecItemDelete(query as CFDictionary)
-        var item = query
-        item[kSecValueData as String] = Data(code.utf8)
-        item[kSecAttrLabel as String] = title
+        let attributes: [String: Any] = [
+            kSecValueData as String: Data(code.utf8),
+            kSecAttrLabel as String: title,
+        ]
+        // Updates the saved code in place, so a failed save never loses the one already there
+        let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+        guard status == errSecItemNotFound else { return status == errSecSuccess }
+        let item = query.merging(attributes) { _, new in new }
         return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
         #endif
     }

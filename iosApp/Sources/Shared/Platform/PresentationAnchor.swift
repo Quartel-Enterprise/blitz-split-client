@@ -1,12 +1,17 @@
 import AuthenticationServices
 
 /// The window the system sheets of AuthenticationServices (Sign in with Apple, saving a password)
-/// present from: the key window, or a new window of the first scene while none is key.
+/// present from: the key window of the scene in the foreground (an iPad may have several), or a new
+/// window of a scene while none is key.
 enum PresentationAnchor {
     static var current: ASPresentationAnchor {
         #if os(iOS)
-        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-        return scenes.compactMap(\.keyWindow).first ?? UIWindow(windowScene: scenes[0])
+        let scenes = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .sorted { $0.activationState == .foregroundActive && $1.activationState != .foregroundActive }
+        return scenes.lazy.compactMap(\.keyWindow).first
+            ?? scenes.first.map { UIWindow(windowScene: $0) }
+            ?? UIWindow()
         #else
         NSApplication.shared.keyWindow ?? ASPresentationAnchor()
         #endif
