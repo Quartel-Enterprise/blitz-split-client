@@ -112,4 +112,14 @@
     <string name="split_bill_person_parts">Partes de %s</string>
     <string name="split_bill_parts_decrease">Menos uma parte</string>
     <string name="split_bill_parts_increase">Mais uma parte</string>
+    <string name="split_bill_edit_title">Editar conta</string>
+    <string name="split_bill_amount_proportional">Mudar o total refaz a divisão por valor proporcionalmente.</string>
+    <string name="split_bill_anyone_can_edit">Qualquer pessoa do grupo pode editar ou apagar.</string>
+    <string name="split_bill_conflict_named">%1$s mudou esta conta %2$s.</string>
+    <string name="split_bill_conflict_me">Você mudou esta conta em outro aparelho %s.</string>
+    <string name="split_bill_conflict_someone">Alguém mudou esta conta %s.</string>
+    <string name="split_bill_conflict_last_wins">Vale a última edição salva: se você salvar agora, a sua edição substitui essa mudança.</string>
+    <string name="split_bill_conflict_just_now">agora há pouco</string>
+    <string name="split_bill_delete">Apagar conta</string>
+    <string name="split_bill_delete_error">Não deu para apagar a conta. Tente de novo.</string>
 </resources>

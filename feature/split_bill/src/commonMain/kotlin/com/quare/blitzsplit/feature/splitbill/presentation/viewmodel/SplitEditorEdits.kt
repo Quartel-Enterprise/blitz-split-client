@@ -1,0 +1,120 @@
+package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
+
+import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
+import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
+
+// Why: "Editar conta" opens the split as it was typed: who was in it, each one's value, percent or parts.
+internal fun splitEditorOf(
+    expense: Expense,
+    people: List<BillPerson>,
+    currency: GroupCurrency,
+    decimalSeparator: Char,
+): SplitEditor {
+    val weights = expense.shares.associate { it.memberId to it.weight }
+    val rows = people.map { person ->
+        val weight = weights[person.id] ?: 0L
+        SplitRow(
+            person = person,
+            isIncluded = weight > 0,
+            valueText = when {
+                weight <= 0 || expense.splitMode == SplitMode.EQUAL || expense.splitMode == SplitMode.SHARES -> ""
+
+                expense.splitMode == SplitMode.AMOUNT -> AmountInput.format(
+                    amountMinor = weight,
+                    currency = currency,
+                    decimalSeparator = decimalSeparator,
+                )
+
+                else -> weight.toString()
+            },
+            parts = if (expense.splitMode == SplitMode.SHARES) weight else 0L,
+            shareMinor = null,
+        )
+    }
+    return SplitEditor(
+        mode = expense.splitMode,
+        rows = rows,
+        totalMinor = expense.amountMinor,
+        payerId = expense.payers
+            .firstOrNull()
+            ?.memberId
+            .orEmpty(),
+        currency = currency,
+    )
+}
+
+/*
+ * Why: a new mode starts from who is in the split now, everyone when nobody is: "Valores" with the equal parts,
+ * "%" with 100 shared as evenly as whole numbers allow and "Partes" with one each.
+ */
+internal fun SplitEditor.toMode(
+    mode: SplitMode,
+    decimalSeparator: Char,
+): SplitEditor {
+    if (mode == this.mode) return this
+    val inSplit = entries
+        .filter { it.value > 0 }
+        .map { it.memberId }
+        .toSet()
+        .ifEmpty { rows.map { it.person.id }.toSet() }
+    val equalEntries = rows.map { row ->
+        val isIn = row.person.id in inSplit
+        SplitEntry(
+            memberId = row.person.id,
+            value = if (isIn) 1L else 0L,
+        )
+    }
+    val values: Map<String, Long> = when (mode) {
+        SplitMode.EQUAL, SplitMode.SHARES -> equalEntries.associate { it.memberId to it.value }
+        SplitMode.AMOUNT -> splitEvenly(totalMinor, equalEntries)
+        SplitMode.PERCENT -> splitEvenly(BillSplit.FULL_PERCENT, equalEntries)
+    }
+    return copy(mode = mode).withRows { row ->
+        val value = values[row.person.id] ?: 0L
+        row.copy(
+            isIncluded = row.person.id in inSplit,
+            valueText = when {
+                value <= 0 -> ""
+                mode == SplitMode.AMOUNT -> formatAmount(value, decimalSeparator)
+                else -> value.toString()
+            },
+            parts = if (mode == SplitMode.SHARES) value else row.parts,
+        )
+    }
+}
+
+internal fun SplitEditor.withRows(change: (SplitRow) -> SplitRow): SplitEditor = copy(rows = rows.map(change))
+
+// Why: each row's part, as "Dividir" shows it under or beside the name, while the split adds up.
+internal fun SplitEditor.withShares(): SplitEditor {
+    val byMember = shares?.associate { it.memberId to it.amountMinor }
+    return withRows { row -> row.copy(shareMinor = byMember?.get(row.person.id)) }
+}
+
+internal fun SplitEditor.formatAmount(
+    amountMinor: Long,
+    decimalSeparator: Char,
+): String = AmountInput.format(
+    amountMinor = amountMinor,
+    currency = currency,
+    decimalSeparator = decimalSeparator,
+)
+
+private fun SplitEditor.splitEvenly(
+    total: Long,
+    entries: List<SplitEntry>,
+): Map<String, Long> = BillSplit
+    .split(
+        totalMinor = total,
+        mode = SplitMode.EQUAL,
+        entries = entries,
+        payerId = payerId,
+    )?.associate { it.memberId to it.amountMinor }
+    .orEmpty()

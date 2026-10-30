@@ -8,6 +8,7 @@ final class SplitBillModel {
     /// The split being edited, kept after "Done" or "Back" so "Split" still draws while it slides away.
     private(set) var shownEditor: SplitEditor?
     private(set) var saveErrorCount = 0
+    private(set) var deleteErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<SplitBillViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -21,7 +22,11 @@ final class SplitBillModel {
             if let editor = state.splitEditor { self?.shownEditor = editor }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            if action is SplitBillUiActionShowSaveError { self?.saveErrorCount += 1 }
+            switch action {
+            case is SplitBillUiActionShowSaveError: self?.saveErrorCount += 1
+            case is SplitBillUiActionShowDeleteError: self?.deleteErrorCount += 1
+            default: break
+            }
         })
     }
 
@@ -33,6 +38,11 @@ final class SplitBillModel {
 
     func send(_ event: any SplitBillUiEvent) {
         holder.viewModel.onEvent(event: event)
+    }
+
+    /// "Delete this bill?" closed without "Delete", which has already started deleting by the time it closes.
+    func dismissDeletion() {
+        if current.deletion != nil, !current.isDeleting { send(SplitBillUiEventOnDeleteDismissed.shared) }
     }
 
     var amount: Binding<String> {
@@ -74,9 +84,10 @@ final class SplitBillModel {
     }
 }
 
-/// "Split a bill": a sheet over the group on iPhone, iPad and Mac. On iPhone and iPad "Who paid" is a sheet of its
-/// own and "Split" is pushed inside this one; on the Mac "Who paid" is a pop-up button and "Split" takes the
-/// sheet's place, as the canvas draws them.
+/// "Split a bill", or "Edit bill" for a bill that exists: a sheet over the group (over the bill on iPad and Mac) on
+/// iPhone, iPad and Mac. On iPhone and iPad "Who paid" is a sheet of its own and "Split" is pushed inside this one;
+/// on the Mac "Who paid" is a pop-up button and "Split" takes the sheet's place, as the canvas draws them. Editing
+/// adds who changed the bill meanwhile on top and "Delete bill" under the form.
 struct SplitBillView: View {
     let route: RouteSplitBill
 
@@ -98,15 +109,24 @@ struct SplitBillView: View {
                     #endif
             }
         }
-        .interactiveDismissDisabled(model?.state.isSaving == true)
+        .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isDeleting == true)
+        .billDeletionAlert(
+            model?.state.deletion,
+            currency: model?.state.currency,
+            isDeleting: model?.state.isDeleting == true,
+            onConfirm: { model?.send(SplitBillUiEventOnDeleteConfirmed.shared) },
+            onDismiss: { model?.dismissDeletion() },
+        )
         .glassToast("Couldn't save the bill. Try again.", trigger: model?.saveErrorCount ?? 0)
+        .glassToast("Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0)
         .onAppear {
             if model == nil { model = SplitBillModel(route: route) }
         }
     }
 }
 
-/// Under the amount: what's wrong with it, or what the bill means for this device's user.
+/// Under the amount: what's wrong with it, what changing it does to a split by amount being edited, or what the
+/// bill means for this device's user.
 private struct AmountHelp: View {
     let state: SplitBillUiState
 
@@ -114,6 +134,8 @@ private struct AmountHelp: View {
         if state.showsAmountError {
             Text("Enter how much the bill was.")
                 .foregroundStyle(Palette.negative)
+        } else if state.isEditing, state.split.mode == .amount {
+            Text("Changing the total redoes a by-amount split proportionally.")
         } else if let refund = state.refundMinor {
             Text("You paid and get \(state.currency.format(refund.int64Value)) back.")
         } else if let mine = state.myShareMinor {
@@ -131,6 +153,21 @@ private struct OfflineBillNote: View {
                 .frame(width: 8, height: 8)
                 .accessibilityHidden(true)
             Text("No internet: the bill is saved on this device and counts in the balances now. It syncs when you reconnect.")
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+/// "Ana changed this bill 2 minutes ago. The last saved edit wins: …", kept up to date as the minutes pass.
+private struct ConflictText: View {
+    let conflict: BillConflict
+    /// The Mac's alert sets the first sentence in bold, as the canvas draws it.
+    var boldsLead = false
+
+    var body: some View {
+        TimelineView(.everyMinute) { context in
+            let text = BillCopy.conflict(conflict, now: context.date)
+            Text("\(Text(verbatim: text.lead).fontWeight(boldsLead ? .semibold : .regular)) \(Text(verbatim: text.detail))")
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -175,18 +212,22 @@ private struct PhoneSplitBill: View {
             if layout.usesTwoColumns {
                 HStack(alignment: .top, spacing: 0) {
                     Form { whatSections }
-                    Form { detailsSection }
+                    Form {
+                        detailsSection
+                        deleteSection
+                    }
                 }
             } else {
                 Form {
                     whatSections
                     detailsSection
+                    deleteSection
                 }
             }
         }
         .scrollDismissesKeyboard(.interactively)
         .measuringScreenLayout($layout)
-        .navigationTitle("Split a bill")
+        .navigationTitle(state.isEditing ? "Edit bill" : "Split a bill")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -216,6 +257,13 @@ private struct PhoneSplitBill: View {
 
     @ViewBuilder
     private var whatSections: some View {
+        if let conflict = state.conflict {
+            Section {
+                ConflictText(conflict: conflict)
+                    .font(.subheadline)
+            }
+            .listRowBackground(Palette.accent.opacity(0.12))
+        }
         Section {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(verbatim: state.currency.symbol)
@@ -323,8 +371,28 @@ private struct PhoneSplitBill: View {
         } header: {
             Text("Details")
         } footer: {
-            if state.showsOfflineNotice {
-                OfflineBillNote()
+            VStack(alignment: .leading, spacing: 8) {
+                if state.showsOfflineNotice {
+                    OfflineBillNote()
+                }
+                if state.showsAnyoneCanEditHint {
+                    Text("Anyone in the group can edit or delete it.")
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var deleteSection: some View {
+        if state.isEditing {
+            Section {
+                Button(role: .destructive) {
+                    model.send(SplitBillUiEventOnDeleteClicked.shared)
+                } label: {
+                    Text("Delete bill")
+                        .frame(maxWidth: .infinity)
+                }
+                .disabled(!state.canDelete)
             }
         }
     }
@@ -451,10 +519,30 @@ private struct MacBillForm: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Split a Bill")
-                    .font(.title2.bold())
-                Text("A new expense in the group. Works without internet.")
-                    .foregroundStyle(.secondary)
+                Group {
+                    if state.isEditing {
+                        Text("Edit Bill")
+                    } else {
+                        Text("Split a Bill")
+                    }
+                }
+                .font(.title2.bold())
+                if state.isEditing {
+                    Text(verbatim: "\(state.description_) · \(state.groupName)")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                } else {
+                    Text("A new expense in the group. Works without internet.")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            if let conflict = state.conflict {
+                ConflictText(conflict: conflict, boldsLead: true)
+                    .font(.callout)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             }
             Form {
                 LabeledContent("Group:") {
@@ -545,7 +633,19 @@ private struct MacBillForm: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
+            if state.showsAnyoneCanEditHint {
+                Text("Anyone in the group can edit or delete it.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
             HStack(spacing: 8) {
+                if state.isEditing {
+                    Button("Delete Bill…", role: .destructive) {
+                        model.send(SplitBillUiEventOnDeleteClicked.shared)
+                    }
+                    .foregroundStyle(Palette.negative)
+                    .disabled(!state.canDelete)
+                }
                 Spacer()
                 Button("Cancel") {
                     model.send(SplitBillUiEventOnCloseClicked.shared)

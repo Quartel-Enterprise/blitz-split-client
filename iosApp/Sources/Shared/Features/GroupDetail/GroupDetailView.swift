@@ -6,6 +6,7 @@ import SwiftUI
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
     private(set) var comingSoonCount = 0
+    private(set) var billDeletedCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -18,7 +19,11 @@ final class GroupDetailModel {
             self?.state = state
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            if action is GroupDetailUiActionShowComingSoon { self?.comingSoonCount += 1 }
+            switch action {
+            case is GroupDetailUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is GroupDetailUiActionShowBillDeleted: self?.billDeletedCount += 1
+            default: break
+            }
         })
     }
 
@@ -82,6 +87,7 @@ struct GroupDetailView: View {
         #endif
         .toolbar { toolbar }
         .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
+        .glassToast("This bill was deleted", trigger: model?.billDeletedCount ?? 0)
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
         }
@@ -225,7 +231,7 @@ private func payerText(_ row: ExpenseRow) -> String {
 }
 
 /// No categories yet: every bill gets the same receipt.
-private struct ExpenseIcon: View {
+struct ExpenseIcon: View {
     var size: CGFloat = 38
 
     var body: some View {

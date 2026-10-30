@@ -116,6 +116,8 @@ class ExpenseMapperImpl : ExpenseMapper {
         isDeleted = entity.isDeleted,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
+        // Why: the server records the session's user anyway, which is the one pushing.
+        updatedBy = userId,
     )
 
     private fun <T> decodeOrNull(decode: () -> T): T? = try {

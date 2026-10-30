@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -117,6 +118,99 @@ class SplitBillUiStateTest {
         assertTrue(showsOfflineNotice)
     }
 
+    @Test
+    fun `GIVEN a saved bill being edited WHEN reading Apagar conta and the hint THEN both show`() {
+        // Given
+        val state = state(isEditing = true)
+
+        // When
+        val canDelete = state.canDelete
+
+        // Then
+        assertTrue(canDelete)
+        assertTrue(state.showsAnyoneCanEditHint)
+    }
+
+    @Test
+    fun `GIVEN a new bill WHEN reading Apagar conta and the hint THEN neither shows`() {
+        // Given
+        val state = state(isEditing = false)
+
+        // When
+        val canDelete = state.canDelete
+
+        // Then
+        assertFalse(canDelete)
+        assertFalse(state.showsAnyoneCanEditHint)
+    }
+
+    @Test
+    fun `GIVEN someone else saved the bill meanwhile WHEN reading the hint THEN the warning takes its place`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            conflict = BillConflict(
+                changerName = "Ana",
+                changerIsMe = false,
+                changedAt = 1L,
+            ),
+        )
+
+        // When
+        val showsHint = state.showsAnyoneCanEditHint
+
+        // Then
+        assertFalse(showsHint)
+        assertTrue(state.canDelete)
+        assertTrue(state.canSave)
+    }
+
+    @Test
+    fun `GIVEN the edit being saved WHEN reading Apagar conta THEN it is disabled`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            isSaving = true,
+        )
+
+        // When
+        val canDelete = state.canDelete
+
+        // Then
+        assertFalse(canDelete)
+    }
+
+    @Test
+    fun `GIVEN the bill being deleted WHEN reading Salvar and Apagar conta THEN both are disabled`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            isDeleting = true,
+        )
+
+        // When
+        val canDelete = state.canDelete
+
+        // Then
+        assertFalse(canDelete)
+        assertFalse(state.canSave)
+    }
+
+    @Test
+    fun `GIVEN Room not read while editing WHEN reading Apagar conta THEN it is disabled`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            isLoaded = false,
+        )
+
+        // When
+        val canDelete = state.canDelete
+
+        // Then
+        assertFalse(canDelete)
+    }
+
     private fun person(
         id: String,
         isMe: Boolean,
@@ -137,8 +231,11 @@ class SplitBillUiStateTest {
         isSaving: Boolean = false,
         isLoaded: Boolean = true,
         isOnline: Boolean = true,
+        isEditing: Boolean = false,
+        isDeleting: Boolean = false,
+        conflict: BillConflict? = null,
     ): SplitBillUiState = SplitBillUiState(
-        isEditing = false,
+        isEditing = isEditing,
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
@@ -169,11 +266,11 @@ class SplitBillUiStateTest {
             currency = GroupCurrency.BRL,
         ),
         splitEditor = null,
-        conflict = null,
+        conflict = conflict,
         deletion = null,
         isOnline = isOnline,
         isSaving = isSaving,
-        isDeleting = false,
+        isDeleting = isDeleting,
         isLoaded = isLoaded,
     )
 

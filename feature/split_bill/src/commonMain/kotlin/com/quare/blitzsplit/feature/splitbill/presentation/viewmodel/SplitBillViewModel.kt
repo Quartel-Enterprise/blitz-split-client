@@ -72,8 +72,9 @@ class SplitBillViewModel(
 
     private val amountSeparators = setOf(',', '.')
 
-    // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
+    // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
+    private var isBillGone = false
 
     /*
      * Why: the parts of "Valores" as last set in "Dividir", with the total they were set for. A new total rescales
@@ -94,8 +95,13 @@ class SplitBillViewModel(
             .onEach { (group, expense) -> handle(group, expense) }
             .launchIn(viewModelScope)
         navigator.backStack
-            .onEach { if (isGroupGone) leave() }
-            .launchIn(viewModelScope)
+            .onEach {
+                if (isGroupGone) {
+                    leave()
+                } else if (isBillGone) {
+                    leaveToGroup()
+                }
+            }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -127,7 +133,7 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSplitClicked -> uiState.update { it.copy(splitEditor = it.split) }
 
-            is SplitBillUiEvent.OnSplitModeClicked -> editSplit { it.toMode(event.mode) }
+            is SplitBillUiEvent.OnSplitModeClicked -> editSplit { it.toMode(event.mode, separator) }
 
             is SplitBillUiEvent.OnPersonToggled -> editSplit { editor ->
                 editor.withRows { row ->
@@ -229,7 +235,8 @@ class SplitBillViewModel(
      * screen too and says so on Despesas do grupo; one that never showed leaves without a word.
      */
     private fun handleBillGone() {
-        if (uiState.value.isDeleting) return
+        if (uiState.value.isDeleting || isBillGone) return
+        isBillGone = true
         if (editedExpense != null) deletedBillNotice.post(route.groupId)
         leaveToGroup()
     }
@@ -240,32 +247,15 @@ class SplitBillViewModel(
         expense: Expense,
     ) {
         val people = group.members.map(::toBillPerson)
-        val payerId = expense.payers.firstOrNull()?.memberId.orEmpty()
-        val weights = expense.shares.associate { it.memberId to it.weight }
-        val rows = people.map { person ->
-            val weight = weights[person.id] ?: 0L
-            SplitRow(
-                person = person,
-                isIncluded = weight > 0,
-                valueText = when {
-                    weight <= 0 || expense.splitMode == SplitMode.EQUAL || expense.splitMode == SplitMode.SHARES -> ""
-                    expense.splitMode == SplitMode.AMOUNT -> AmountInput.format(
-                        amountMinor = weight,
-                        currency = group.currency,
-                        decimalSeparator = separator(),
-                    )
-                    else -> weight.toString()
-                },
-                parts = if (expense.splitMode == SplitMode.SHARES) weight else 0L,
-                shareMinor = null,
-            )
-        }
-        val split = SplitEditor(
-            mode = expense.splitMode,
-            rows = rows,
-            totalMinor = expense.amountMinor,
-            payerId = payerId,
+        val payerId = expense.payers
+            .firstOrNull()
+            ?.memberId
+            .orEmpty()
+        val split = splitEditorOf(
+            expense = expense,
+            people = people,
             currency = group.currency,
+            decimalSeparator = separator,
         )
         amountAnchor = if (expense.splitMode == SplitMode.AMOUNT) expense.amountMinor to split.entries else null
         uiState.update {
@@ -274,7 +264,7 @@ class SplitBillViewModel(
                 amountText = AmountInput.format(
                     amountMinor = expense.amountMinor,
                     currency = group.currency,
-                    decimalSeparator = separator(),
+                    decimalSeparator = separator,
                 ),
                 description = expense.description,
                 payerId = payerId,
@@ -423,7 +413,7 @@ class SplitBillViewModel(
         return copy(totalMinor = totalMinor)
             .withRows { row ->
                 val value = scaled[row.person.id] ?: 0L
-                row.copy(valueText = if (value > 0) formatAmount(value) else "")
+                row.copy(valueText = if (value > 0) formatAmount(value, separator) else "")
             }.withShares()
     }
 
@@ -460,55 +450,6 @@ class SplitBillViewModel(
             }
         }
     }
-
-    /*
-     * Why: a new mode starts from who is in the split now, everyone when nobody is: "Valores" with the equal parts,
-     * "%" with 100 shared as evenly as whole numbers allow and "Partes" with one each.
-     */
-    private fun SplitEditor.toMode(mode: SplitMode): SplitEditor {
-        if (mode == this.mode) return this
-        val inSplit = entries
-            .filter { it.value > 0 }
-            .map { it.memberId }
-            .toSet()
-            .ifEmpty { rows.map { it.person.id }.toSet() }
-        val equalEntries = rows.map { row ->
-            val isIn = row.person.id in inSplit
-            SplitEntry(
-                memberId = row.person.id,
-                value = if (isIn) 1L else 0L,
-            )
-        }
-        val values: Map<String, Long> = when (mode) {
-            SplitMode.EQUAL, SplitMode.SHARES -> equalEntries.associate { it.memberId to it.value }
-            SplitMode.AMOUNT -> splitEvenly(totalMinor, equalEntries)
-            SplitMode.PERCENT -> splitEvenly(BillSplit.FULL_PERCENT, equalEntries)
-        }
-        return copy(mode = mode).withRows { row ->
-            val value = values[row.person.id] ?: 0L
-            row.copy(
-                isIncluded = row.person.id in inSplit,
-                valueText = when {
-                    value <= 0 -> ""
-                    mode == SplitMode.AMOUNT -> formatAmount(value)
-                    else -> value.toString()
-                },
-                parts = if (mode == SplitMode.SHARES) value else row.parts,
-            )
-        }
-    }
-
-    private fun SplitEditor.splitEvenly(
-        total: Long,
-        entries: List<SplitEntry>,
-    ): Map<String, Long> = BillSplit
-        .split(
-            totalMinor = total,
-            mode = SplitMode.EQUAL,
-            entries = entries,
-            payerId = payerId,
-        )?.associate { it.memberId to it.amountMinor }
-        .orEmpty()
 
     private fun confirmSplit() {
         val editor = uiState.value.splitEditor?.takeIf { it.addsUp } ?: return
@@ -551,19 +492,22 @@ class SplitBillViewModel(
                     spentAt = state.spentAt,
                 )
             }
-            result.onSuccess {
-                leave()
-            }.onFailure {
-                uiState.update { it.copy(isSaving = false) }
-                uiAction.emit(SplitBillUiAction.ShowSaveError)
-            }
+            result
+                .onSuccess {
+                    leave()
+                }.onFailure {
+                    uiState.update { it.copy(isSaving = false) }
+                    uiAction.emit(SplitBillUiAction.ShowSaveError)
+                }
         }
     }
 
     private fun askToDelete() {
         val expense = editedExpense ?: return
         if (!uiState.value.canDelete) return
-        val meId = uiState.value.people.firstOrNull { it.isMe }?.id
+        val meId = uiState.value.people
+            .firstOrNull { it.isMe }
+            ?.id
         uiState.update { it.copy(deletion = BillDeletion.of(expense, meId)) }
     }
 
@@ -587,22 +531,9 @@ class SplitBillViewModel(
         }
     }
 
-    private fun SplitEditor.withRows(change: (SplitRow) -> SplitRow): SplitEditor = copy(rows = rows.map(change))
-
-    // Why: each row's part, as "Dividir" shows it under or beside the name, while the split adds up.
-    private fun SplitEditor.withShares(): SplitEditor {
-        val byMember = shares?.associate { it.memberId to it.amountMinor }
-        return withRows { row -> row.copy(shareMinor = byMember?.get(row.person.id)) }
-    }
-
     // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
-    private fun SplitEditor.formatAmount(amountMinor: Long): String = AmountInput.format(
-        amountMinor = amountMinor,
-        currency = currency,
-        decimalSeparator = separator(),
-    )
-
-    private fun separator(): Char = decimalSeparator().takeIf { it in amountSeparators } ?: '.'
+    private val separator: Char
+        get() = decimalSeparator().takeIf { it in amountSeparators } ?: '.'
 
     private fun valueTextOf(
         text: String,

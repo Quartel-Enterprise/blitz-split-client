@@ -175,7 +175,7 @@ class ExpenseMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a server row WHEN stored and pushed back THEN the server gets the same row`() {
+    fun `GIVEN a server row WHEN stored and pushed back THEN the server gets the same row saved by who pushes it`() {
         // Given
         val entity = mapper.toEntity(dto(createdBy = "user-2"))
 
@@ -183,7 +183,7 @@ class ExpenseMapperImplTest {
         val pushed = mapper.toDto(entity, userId = "user-1")
 
         // Then
-        assertEquals(dto(createdBy = "user-2"), pushed)
+        assertEquals(dto(createdBy = "user-2").copy(updatedBy = "user-1"), pushed)
     }
 
     @Test
@@ -208,6 +208,72 @@ class ExpenseMapperImplTest {
 
         // Then
         assertEquals("user-2", pushed.createdBy)
+    }
+
+    @Test
+    fun `GIVEN a stored bill another member saved WHEN mapping to the domain THEN says which member saved it last`() {
+        // Given
+        val row = ExpenseWithEditor(
+            entity(updatedBy = "user-2"),
+            updatedByMemberId = "ana",
+        )
+
+        // When
+        val expense = mapper.toDomain(row)
+
+        // Then
+        assertEquals("ana", expense?.updatedByMemberId)
+    }
+
+    @Test
+    fun `GIVEN a server row a member saved WHEN mapping to Room THEN keeps the account that saved it`() {
+        // Given
+        val dto = dto(
+            createdBy = "user-1",
+            updatedBy = "user-2",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto)
+
+        // Then
+        assertEquals("user-2", entity.updatedBy)
+    }
+
+    @Test
+    fun `GIVEN a bill edited on the device WHEN mapping to Room THEN it has no editor until the server sets one`() {
+        // Given
+        val edited = newExpense.copy(updatedByMemberId = "ana")
+
+        // When
+        val entity = mapper.toEntity(edited, createdAt = 9_000L)
+
+        // Then
+        assertNull(entity.updatedBy)
+    }
+
+    @Test
+    fun `GIVEN a bill another user saved last WHEN pushing it THEN the server gets the pushing user as its editor`() {
+        // Given
+        val entity = entity(updatedBy = "user-2")
+
+        // When
+        val pushed = mapper.toDto(entity, userId = "user-1")
+
+        // Then
+        assertEquals("user-1", pushed.updatedBy)
+    }
+
+    @Test
+    fun `GIVEN a deleted bill WHEN pushing it THEN the server gets the tombstone`() {
+        // Given
+        val entity = entity(isDeleted = true)
+
+        // When
+        val pushed = mapper.toDto(entity, userId = "user-1")
+
+        // Then
+        assertTrue(pushed.isDeleted)
     }
 
     @Test
@@ -283,6 +349,8 @@ class ExpenseMapperImplTest {
         payersJson: String = "[]",
         sharesJson: String = "[]",
         pendingSync: Boolean = false,
+        isDeleted: Boolean = false,
+        updatedBy: String? = null,
     ): ExpenseEntity = ExpenseEntity(
         id = "bill-1",
         groupId = "group-1",
@@ -293,16 +361,17 @@ class ExpenseMapperImplTest {
         payersJson = payersJson,
         sharesJson = sharesJson,
         spentAt = 5_000L,
-        isDeleted = false,
+        isDeleted = isDeleted,
         addedAt = 1L,
         updatedAt = 1L,
-        updatedBy = null,
+        updatedBy = updatedBy,
         pendingSync = pendingSync,
     )
 
     private fun dto(
         createdBy: String?,
         isDeleted: Boolean = false,
+        updatedBy: String? = null,
     ): ExpenseDto = ExpenseDto(
         id = "bill-1",
         groupId = "group-1",
@@ -332,5 +401,6 @@ class ExpenseMapperImplTest {
         isDeleted = isDeleted,
         addedAt = 2L,
         updatedAt = 9L,
+        updatedBy = updatedBy,
     )
 }

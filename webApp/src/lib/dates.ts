@@ -6,6 +6,7 @@ export type RelativeDay = 'today' | 'yesterday' | 'other'
 
 const timeFormat = new Intl.DateTimeFormat(uiTag, { hour: 'numeric', minute: '2-digit' })
 const dayMonthFormat = new Intl.DateTimeFormat(uiTag, { day: 'numeric', month: 'short' })
+const dayMonthYearFormat = new Intl.DateTimeFormat(uiTag, { day: 'numeric', month: 'short', year: 'numeric' })
 const weekdayFormat = new Intl.DateTimeFormat(uiTag, { weekday: 'short', day: 'numeric', month: 'short' })
 const weekdayYearFormat = new Intl.DateTimeFormat(uiTag, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -33,6 +34,31 @@ export function formatWhen(millis: number, relativeDay: string): string {
   if (relativeDay === 'today') return `${t('date_todayOn', { date: dayMonthFormat.format(millis) })} · ${time}`
   if (relativeDay === 'yesterday') return `${t('date_yesterdayOn', { date: dayMonthFormat.format(millis) })} · ${time}`
   return `${weekdayDate(millis)} · ${time}`
+}
+
+/** A bill's day and time on its own page: "Hoje, 14:30", "Ontem, 21:10" or "27 de out., 21:10". */
+export function formatDayTime(millis: number, relativeDay: string): string {
+  const time = formatTime(millis)
+  if (relativeDay === 'today') return `${t('date_today')}, ${time}`
+  if (relativeDay === 'yesterday') return `${t('date_yesterday')}, ${time}`
+  const isThisYear = new Date(millis).getFullYear() === new Date().getFullYear()
+  return `${(isThisYear ? dayMonthFormat : dayMonthYearFormat).format(millis)}, ${time}`
+}
+
+const relativeTimeFormat = new Intl.RelativeTimeFormat(uiTag, { numeric: 'auto' })
+
+/**
+ * "há 2 minutos" / "2 minutes ago" from `millis` to `nowMillis`, or null under a minute, which each sentence says in
+ * its own words ("agora há pouco"). Why null for the future too: the instant comes from another device's clock.
+ */
+export function formatTimeAgo(millis: number, nowMillis: number): string | null {
+  const seconds = Math.floor((nowMillis - millis) / 1000)
+  if (seconds < 60) return null
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return relativeTimeFormat.format(-minutes, 'minute')
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return relativeTimeFormat.format(-hours, 'hour')
+  return relativeTimeFormat.format(-Math.floor(hours / 24), 'day')
 }
 
 function capitalize(text: string): string {

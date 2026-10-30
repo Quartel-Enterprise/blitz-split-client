@@ -5,4 +5,10 @@
     <string name="designsystem_google_short">Google</string>
     <string name="designsystem_apple_short">Apple</string>
     <string name="designsystem_back">Voltar</string>
+    <string name="designsystem_delete_bill_title">Apagar esta conta?</string>
+    <string name="designsystem_delete_bill_message">“%s” sai do grupo e a parte de cada um nesta conta deixa de contar.</string>
+    <string name="designsystem_delete_bill_no_longer_owe">Você deixa de dever %s.</string>
+    <string name="designsystem_delete_bill_no_longer_get_back">Você deixa de receber %s.</string>
+    <string name="designsystem_delete_bill_confirm">Apagar</string>
+    <string name="designsystem_delete_bill_cancel">Cancelar</string>
 </resources>

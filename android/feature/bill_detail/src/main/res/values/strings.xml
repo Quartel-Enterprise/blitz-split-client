@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bill_detail_back">Back</string>
+    <string name="bill_detail_edit">Edit</string>
+    <string name="bill_detail_delete">Delete</string>
+    <string name="bill_detail_when_today">Today, %s</string>
+    <string name="bill_detail_when_yesterday">Yesterday, %s</string>
+    <string name="bill_detail_when_other">%1$s, %2$s</string>
+    <string name="bill_detail_you_paid">You paid</string>
+    <string name="bill_detail_someone_paid">%s paid</string>
+    <string name="bill_detail_former_member_paid">A former member paid</string>
+    <string name="bill_detail_pending">Queued · syncs when you\'re back online</string>
+    <string name="bill_detail_my_part">Your share</string>
+    <string name="bill_detail_you_owe">you owe</string>
+    <string name="bill_detail_to_get_back">to get back</string>
+    <string name="bill_detail_nothing_to_settle">nothing to settle</string>
+    <string name="bill_detail_owes_payer">Counts toward what you owe %s in Balances.</string>
+    <string name="bill_detail_you">You</string>
+    <string name="bill_detail_former_member">Former member</string>
+    <string name="bill_detail_paid">Paid %s</string>
+    <string name="bill_detail_not_joined">Hasn\'t joined yet</string>
+    <string name="bill_detail_not_in">Not in this bill</string>
+    <string name="bill_detail_no_share">—</string>
+    <string name="bill_detail_delete_error">Couldn\'t delete the bill. Try again.</string>
+    <plurals name="bill_detail_owe_you_each">
+        <item quantity="one">%1$s owes you %2$s.</item>
+        <item quantity="other">%1$s owe you %2$s each.</item>
+    </plurals>
+    <plurals name="bill_detail_owe_you_total">
+        <item quantity="one">%1$s owes you %2$s.</item>
+        <item quantity="other">%1$s owe you %2$s in total.</item>
+    </plurals>
+    <plurals name="bill_detail_mode_equal">
+        <item quantity="one">Split equally among %d</item>
+        <item quantity="other">Split equally among %d</item>
+    </plurals>
+    <plurals name="bill_detail_mode_amount">
+        <item quantity="one">By amount among %d</item>
+        <item quantity="other">By amount among %d</item>
+    </plurals>
+    <plurals name="bill_detail_mode_percent">
+        <item quantity="one">By %% among %d</item>
+        <item quantity="other">By %% among %d</item>
+    </plurals>
+    <plurals name="bill_detail_mode_shares">
+        <item quantity="one">By shares among %d</item>
+        <item quantity="other">By shares among %d</item>
+    </plurals>
+</resources>

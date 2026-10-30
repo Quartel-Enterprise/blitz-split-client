@@ -65,8 +65,20 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
-    the group never stacks over itself; Saldos and a bill's own screen answer "Em breve". Convidar's "Ir para o
-    grupo" opens it too.
+    the group never stacks over itself; Saldos answers "Em breve". Convidar's "Ir para o grupo" opens it too.
+  - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
+    with Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor history yet). A phone opens it
+    full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
+    on a phone), all over the group.
+  - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
+    bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
+    conta"; saving goes back to Conta. Members who left the group are dropped from the edited split. Last-Write-Wins:
+    when someone else's save syncs while editing, a banner says who changed it and when
+    (`SplitBillUiState.conflict`, the server's `expenses.updated_by`), what was typed stays, and saving wins.
+  - Apagar asks first: "“X” sai do grupo e a parte de cada um nesta conta deixa de contar.", plus "Você deixa de
+    dever/receber R$ Y" while the bill moves the device user's balance (`BillDeletion`). It deletes offline as a
+    tombstone and goes back to the group, past Conta. A bill someone else deleted while open closes, and Despesas
+    do grupo says "Esta conta foi apagada" (`DeletedBillNotice`).
   - "Membros" (`Route.Members`) is the group's tab, and opens from Convidar's "Ver quem já entrou". Any member may
     rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
     someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite

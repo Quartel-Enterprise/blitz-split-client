@@ -5,10 +5,10 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
-import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel

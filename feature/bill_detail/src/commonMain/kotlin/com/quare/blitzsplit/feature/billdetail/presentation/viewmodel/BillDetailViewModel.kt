@@ -168,7 +168,9 @@ class BillDetailViewModel(
         group: Group,
         expense: Expense,
     ): List<BillShareRow> {
-        val paidById = expense.payers.groupBy { it.memberId }.mapValues { (_, payers) -> payers.sumOf { it.amountMinor } }
+        val paidById = expense.payers.groupBy { it.memberId }.mapValues { (_, payers) ->
+            payers.sumOf { it.amountMinor }
+        }
         val shareById = expense.shares.associate { it.memberId to it.amountMinor }
         val memberRows = group.members.map { member ->
             BillShareRow(
@@ -203,14 +205,15 @@ class BillDetailViewModel(
 
     /*
      * Why: whoever paid is owed by everyone else in the split; anyone else in it owes whoever paid. Nothing to say for
-     * someone who paid only their own part.
+     * someone whose part settles nothing: who paid only their own part, or got a zero part of a cent.
      */
     private fun myPartNoteOf(
         expense: Expense,
         me: GroupMember,
         membersById: Map<String, GroupMember>,
     ): MyPartNote? {
-        if (expense.balanceOf(me.id) == null) return null
+        val balance = expense.balanceOf(me.id)
+        if (balance == null || balance == 0L) return null
         val payerId = expense.payers.firstOrNull()?.memberId ?: return null
         if (payerId != me.id) {
             val payerName = membersById[payerId]?.name ?: return null

@@ -33,28 +33,49 @@ final class AppModel {
         backStack.first ?? .welcome
     }
 
-    /// The entries above the root, but the one a sheet shows. A native back gesture shortens it, and
+    /// The entries above the root, but the ones the sheets show. A native back gesture shortens it, and
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
-        get { Array(backStack.dropFirst().dropLast(sheet == nil && cover == nil ? 0 : 1)) }
+        get { Array(backStack.dropFirst().dropLast(modalCount)) }
         set {
             guard newValue.count < path.count else { return }
             holder.viewModel.navigator.popTo(size: Int32(newValue.count + 1))
         }
     }
 
-    /// The top entry when it opens as a sheet instead of a pushed screen (a key on iPad and Mac,
-    /// deleting the account).
+    /// The entry a sheet shows instead of a pushed screen (a key or a bill on iPad and Mac, deleting the
+    /// account): the top one, or the one under it while a second sheet stacks over it.
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {
+            if isSheetStacked { return backStack[backStack.count - 2] }
             guard backStack.count > 1, let top = backStack.last, top.presentsAsSheet else { return nil }
             return top
         }
         set {
             guard newValue == nil, sheet != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - (isSheetStacked ? 2 : 1)))
+        }
+    }
+
+    /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet on iPad and Mac.
+    var stackedSheet: AppRoute? {
+        get { isSheetStacked ? backStack.last : nil }
+        set {
+            guard newValue == nil, stackedSheet != nil else { return }
             holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
         }
+    }
+
+    /// The two top entries both open as sheets, so the second one stacks over the first instead of taking its place.
+    private var isSheetStacked: Bool {
+        backStack.count > 2 && backStack[backStack.count - 1].presentsAsSheet
+            && backStack[backStack.count - 2].presentsAsSheet
+    }
+
+    private var modalCount: Int {
+        if isSheetStacked { return 2 }
+        return sheet == nil && cover == nil ? 0 : 1
     }
 
     /// The top entry when it covers the whole screen (the invite reader on iPhone and iPad). Closing it pops it.

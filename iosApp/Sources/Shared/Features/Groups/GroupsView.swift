@@ -60,6 +60,7 @@ struct MainTabView: View {
                             case let .paymentKey(route): PaymentKeyView(route: route)
                             case let .members(route): MembersView(route: route)
                             case let .groupDetail(route): GroupDetailView(route: route)
+                            case let .billDetail(route): BillDetailView(route: route)
                             case let .joinInvite(route): JoinInviteView(route: route)
                             case let .joinPick(route): JoinPickView(route: route)
                             default: ProfileView()

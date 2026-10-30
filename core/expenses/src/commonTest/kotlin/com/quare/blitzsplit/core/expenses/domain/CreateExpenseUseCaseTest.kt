@@ -10,6 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class CreateExpenseUseCaseTest {
@@ -42,6 +43,20 @@ class CreateExpenseUseCaseTest {
         assertEquals(5_000L, created.spentAt)
         assertTrue(created.isPending)
         assertEquals(listOf(7_000L), repository.createdAts)
+    }
+
+    @Test
+    fun `GIVEN a bill WHEN creating it THEN its version is the creation time with no editor yet`() = runTest {
+        // Given
+        prepareScenario(now = 7_000L)
+
+        // When
+        createExpense()
+
+        // Then
+        val created = repository.createdExpenses.single()
+        assertEquals(7_000L, created.updatedAt)
+        assertNull(created.updatedByMemberId)
     }
 
     @Test

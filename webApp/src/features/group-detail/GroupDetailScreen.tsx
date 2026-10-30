@@ -15,13 +15,15 @@ const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1
 
 /**
  * "Despesas do grupo": the group's bills by day, newest first, with "Rachar conta" a primary button beside the
- * group's name (at the bottom on the phone), and the group's tabs, Despesas selected.
+ * group's name (at the bottom on the phone), and the group's tabs, Despesas selected. A bill opens "Conta" over it,
+ * and a bill someone else deleted while it was open says so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'coming-soon') toast(t('groups_comingSoon'))
+    else if (action === 'bill-deleted') toast(t('groupDetail_billDeleted'))
   })
   if (!presenter || !state?.isLoaded) return null
 

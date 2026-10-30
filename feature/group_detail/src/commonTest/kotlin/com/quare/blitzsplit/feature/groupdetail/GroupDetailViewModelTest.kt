@@ -52,6 +52,7 @@ class GroupDetailViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupDetailViewModel
     private val actions = mutableListOf<GroupDetailUiAction>()
+    private val notice = DeletedBillNotice()
 
     @BeforeTest
     fun setUp() {
@@ -657,7 +658,10 @@ class GroupDetailViewModelTest {
             groups.groups.value = noGroups
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -727,7 +731,10 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -768,7 +775,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -798,7 +808,10 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -828,6 +841,36 @@ class GroupDetailViewModelTest {
         assertTrue(actions.isEmpty())
         assertEquals(listOf(Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN an open bill deleted elsewhere WHEN its screen closes THEN says it was deleted once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+            notice.post(GROUP_ID)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowBillDeleted), actions)
+            assertNull(notice.groupId.value)
+        }
+
+    @Test
+    fun `GIVEN a bill of another group deleted elsewhere WHEN this group is on top THEN leaves the notice waiting`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            notice.post("group-2")
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals("group-2", notice.groupId.value)
+        }
 
     private fun ExpenseDay.ids(): List<String> = expenses.map { it.id }
 
@@ -935,7 +978,7 @@ class GroupDetailViewModelTest {
             navigator = navigator,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
-            deletedBillNotice = DeletedBillNotice(),
+            deletedBillNotice = notice,
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeExpenses = if (isRoomRead) {
                 ObserveExpensesUseCase(expenses)

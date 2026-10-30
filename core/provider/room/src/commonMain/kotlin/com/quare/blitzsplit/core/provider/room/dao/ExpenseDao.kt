@@ -9,10 +9,11 @@ import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.coroutines.flow.Flow
 
-// Why: below SQLite's oldest cap on bound parameters (999), which some devices still have.
+/*
+ * Why: MAX_IDS_PER_QUERY stays below SQLite's oldest cap on bound parameters (999), which some devices still have.
+ * EDITOR_COLUMN is the member who last saved a bill, through the account the server recorded (ExpenseWithEditor).
+ */
 private const val MAX_IDS_PER_QUERY = 500
-
-// Why: the member who last saved a bill, through the account the server recorded (ExpenseWithEditor).
 private const val EDITOR_COLUMN = "(SELECT group_member.id FROM group_member WHERE group_member.groupId = " +
     "expense.groupId AND group_member.userId = expense.updatedBy LIMIT 1) AS updatedByMemberId"
 
@@ -73,7 +74,8 @@ interface ExpenseDao {
     @Query(
         "UPDATE expense SET description = :description, amountMinor = :amountMinor, splitMode = :splitMode, " +
             "payersJson = :payersJson, sharesJson = :sharesJson, spentAt = :spentAt, " +
-            "updatedAt = MAX(:now, updatedAt + 1), pendingSync = 1 WHERE id = :id AND isDeleted = 0",
+            "updatedAt = MAX(:now, updatedAt + 1), updatedBy = NULL, pendingSync = 1 " +
+            "WHERE id = :id AND isDeleted = 0",
     )
     suspend fun updateExpense(
         id: String,
@@ -88,7 +90,7 @@ interface ExpenseDao {
 
     // Why: "Apagar conta" leaves a tombstone that the sync takes up, so every device drops the bill.
     @Query(
-        "UPDATE expense SET isDeleted = 1, updatedAt = MAX(:now, updatedAt + 1), pendingSync = 1 " +
+        "UPDATE expense SET isDeleted = 1, updatedAt = MAX(:now, updatedAt + 1), updatedBy = NULL, pendingSync = 1 " +
             "WHERE id = :id AND isDeleted = 0",
     )
     suspend fun markDeleted(

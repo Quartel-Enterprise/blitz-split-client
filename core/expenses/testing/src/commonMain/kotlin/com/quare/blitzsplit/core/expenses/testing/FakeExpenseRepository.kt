@@ -30,6 +30,9 @@ class FakeExpenseRepository(
 
     // Why: while set, a create waits for it, so a test can act while the save is in flight.
     var createGate: CompletableDeferred<Unit>? = null
+
+    // Why: while set, a delete waits for it, so a test can act while the delete is in flight.
+    var deleteGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
 
@@ -80,6 +83,7 @@ class FakeExpenseRepository(
         id: String,
         deletedAt: Long,
     ): Result<Unit> {
+        deleteGate?.await()
         deleteError?.let { return Result.failure(it) }
         if (expenses.value.none { it.id == id }) return Result.failure(IllegalStateException("No bill $id"))
         deletedIds += id

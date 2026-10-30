@@ -23,6 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ExpenseRepositoryImplTest {
@@ -134,6 +135,187 @@ class ExpenseRepositoryImplTest {
         assertIs<IllegalStateException>(result.exceptionOrNull())
         assertTrue(local.entities.value.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a bill another member saved WHEN observing it THEN shows it with that member as its editor`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(entity(id = "bill-1"), entity(id = "bill-2")),
+            editors = mapOf("bill-1" to "ana"),
+        )
+
+        // When
+        val expense = repository.observeExpense("bill-1").first()
+
+        // Then
+        assertEquals("bill-1", expense?.id)
+        assertEquals("ana", expense?.updatedByMemberId)
+        assertEquals(false, expense?.isPending)
+    }
+
+    @Test
+    fun `GIVEN a bill not up on the server yet WHEN observing it THEN shows it pending`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "bill-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        val expense = repository.observeExpense("bill-1").first()
+
+        // Then
+        assertEquals(true, expense?.isPending)
+    }
+
+    @Test
+    fun `GIVEN a deleted bill WHEN observing it THEN shows no bill`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "bill-1",
+                    isDeleted = true,
+                ),
+            ),
+        )
+
+        // When
+        val expense = repository.observeExpense("bill-1").first()
+
+        // Then
+        assertNull(expense)
+    }
+
+    @Test
+    fun `GIVEN a bill with a split mode this version does not know WHEN observing it THEN shows no bill`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "bill-1",
+                    splitMode = "itemized",
+                ),
+            ),
+        )
+
+        // When
+        val expense = repository.observeExpense("bill-1").first()
+
+        // Then
+        assertNull(expense)
+    }
+
+    @Test
+    fun `GIVEN a synced bill offline WHEN editing it THEN the bill shows the edit pending and nothing goes up`() =
+        runTest {
+            // Given
+            prepareScenario(stored = listOf(entity(id = "bill-1")))
+            val edited = newExpense.copy(
+                id = "bill-1",
+                description = "Feira",
+                amountMinor = 1_500L,
+            )
+
+            // When
+            val result = repository.updateExpense(edited, updatedAt = 9_000L)
+
+            // Then
+            assertTrue(result.isSuccess)
+            val shown = repository.observeExpense("bill-1").first()
+            assertEquals("Feira" to 1_500L, shown?.description to shown?.amountMinor)
+            assertEquals(true, shown?.isPending)
+            assertEquals(9_000L, shown?.updatedAt)
+            assertEquals(listOf(9_000L), local.updates.map { it.second })
+            assertTrue(remote.upserted.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill deleted meanwhile WHEN editing it THEN fails`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "bill-1",
+                    isDeleted = true,
+                ),
+            ),
+        )
+        val edited = newExpense.copy(id = "bill-1")
+
+        // When
+        val result = repository.updateExpense(edited, updatedAt = 9_000L)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertNull(repository.observeExpense("bill-1").first())
+    }
+
+    @Test
+    fun `GIVEN a synced bill offline WHEN deleting it THEN it leaves the group and a tombstone waits for the sync`() =
+        runTest {
+            // Given
+            prepareScenario(stored = listOf(entity(id = "bill-1")))
+
+            // When
+            val result = repository.deleteExpense("bill-1", deletedAt = 9_000L)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("bill-1" to 9_000L), local.deletions)
+            assertTrue(repository.observeExpenses(GROUP_ID).first().isEmpty())
+            assertNull(repository.observeExpense("bill-1").first())
+            assertTrue(repository.observeHasPendingChanges().first())
+            assertTrue(remote.upserted.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill already deleted WHEN deleting it THEN fails`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "bill-1",
+                    isDeleted = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.deleteExpense("bill-1", deletedAt = 9_000L)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN a bill deleted offline WHEN uploading THEN the server gets it deleted and saved by the user`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "bill-1",
+                        isDeleted = true,
+                        pendingSync = true,
+                        updatedBy = "user-2",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.uploadPendingExpenses("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            val pushed = remote.upserted.single().single()
+            assertTrue(pushed.isDeleted)
+            assertEquals("user-1", pushed.updatedBy)
+        }
 
     @Test
     fun `GIVEN nothing pending WHEN uploading THEN sends nothing to the server`() = runTest {
@@ -337,6 +519,8 @@ class ExpenseRepositoryImplTest {
         createdBy: String? = "user-1",
         pendingSync: Boolean = false,
         updatedAt: Long = 1L,
+        isDeleted: Boolean = false,
+        updatedBy: String? = null,
     ): ExpenseEntity = ExpenseEntity(
         id = id,
         groupId = GROUP_ID,
@@ -347,10 +531,10 @@ class ExpenseRepositoryImplTest {
         payersJson = "[]",
         sharesJson = "[]",
         spentAt = 5_000L,
-        isDeleted = false,
+        isDeleted = isDeleted,
         addedAt = 1L,
         updatedAt = updatedAt,
-        updatedBy = null,
+        updatedBy = updatedBy,
         pendingSync = pendingSync,
     )
 
@@ -381,6 +565,7 @@ class ExpenseRepositoryImplTest {
         isDeleted = false,
         addedAt = 2L,
         updatedAt = 9L,
+        updatedBy = null,
     )
 
     private fun prepareScenario(
@@ -389,8 +574,9 @@ class ExpenseRepositoryImplTest {
         insertError: Throwable? = null,
         upsertError: Throwable? = null,
         fetchError: Throwable? = null,
+        editors: Map<String, String> = emptyMap(),
     ) {
-        local = FakeExpenseLocalDataSource(insertError, stored)
+        local = FakeExpenseLocalDataSource(insertError, editors, stored)
         remote = FakeExpenseRemoteDataSource(serverRows, upsertError, fetchError)
         repository = ExpenseRepositoryImpl(
             local = local,
@@ -407,19 +593,23 @@ class ExpenseRepositoryImplTest {
 // Why: Last-Write-Wins and the group checks are Room's, covered in core/provider/room; this one just stores rows.
 private class FakeExpenseLocalDataSource(
     private val insertError: Throwable?,
+    // Why: the member each bill's editor is in its group, which Room finds through group_member.
+    private val editors: Map<String, String>,
     stored: List<ExpenseEntity>,
 ) : ExpenseLocalDataSource {
     val entities = MutableStateFlow(stored)
+    val updates = mutableListOf<Pair<ExpenseEntity, Long>>()
+    val deletions = mutableListOf<Pair<String, Long>>()
     val pendingOwners = mutableListOf<String>()
     val syncedVersions = mutableListOf<Pair<String, Long>>()
     val goneFromServerCalls = mutableListOf<Pair<String, Set<String>>>()
 
     override fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>> = entities.map { list ->
-        list.filter { it.groupId == groupId && !it.isDeleted }.map { ExpenseWithEditor(it, updatedByMemberId = null) }
+        list.filter { it.groupId == groupId && !it.isDeleted }.map { ExpenseWithEditor(it, editors[it.id]) }
     }
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
-        list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, updatedByMemberId = null) }
+        list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, editors[it.id]) }
     }
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }
@@ -443,6 +633,7 @@ private class FakeExpenseLocalDataSource(
         now: Long,
     ) {
         val current = checkNotNull(entities.value.firstOrNull { it.id == entity.id && !it.isDeleted })
+        updates += entity to now
         val updated = entity.copy(
             groupId = current.groupId,
             createdBy = current.createdBy,
@@ -458,6 +649,7 @@ private class FakeExpenseLocalDataSource(
         now: Long,
     ) {
         val current = checkNotNull(entities.value.firstOrNull { it.id == id && !it.isDeleted })
+        deletions += id to now
         val deleted = current.copy(
             isDeleted = true,
             updatedAt = maxOf(now, current.updatedAt + 1),

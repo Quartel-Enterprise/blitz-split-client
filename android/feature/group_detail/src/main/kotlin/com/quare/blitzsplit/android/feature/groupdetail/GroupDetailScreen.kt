@@ -24,15 +24,16 @@ fun GroupDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val comingSoon = stringResource(R.string.group_detail_coming_soon)
+    val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
-            when (action) {
-                GroupDetailUiAction.ShowComingSoon -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
-                    launch { snackbarHostState.showSnackbar(comingSoon) }
-                }
+            val message = when (action) {
+                GroupDetailUiAction.ShowComingSoon -> comingSoon
+                GroupDetailUiAction.ShowBillDeleted -> billDeleted
             }
+            snackbarHostState.currentSnackbarData?.dismiss()
+            // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
+            launch { snackbarHostState.showSnackbar(message) }
         }
     }
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
