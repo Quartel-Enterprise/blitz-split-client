@@ -178,6 +178,7 @@ least one. Pass `--continue` to Gradle so one failure doesn't hide the next.
 | Android UI | `android/`, `androidApp/` | The debug APK and Android lint, unless the full build already ran |
 | Apple UI | `iosApp/`, or the API Swift sees: `shared/`, `core/{model,presentation,navigation}`, `feature/*/src/commonMain/**/presentation`, `version.properties` | Regenerate the Xcode project, build both schemes |
 | Web UI | `webApp/`, or the API TypeScript sees: `shared/src/jsMain`, `feature/*/src/commonMain/**/presentation` | The production build of the web app |
+| Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd*` | The duplication check |
 
 **Shared Kotlin**, tests and coverage:
 
@@ -246,6 +247,18 @@ npm --prefix webApp run build
 Its `prebuild` script builds the JS library of `:shared` with Gradle first, then `tsc -b` type
 checks the app against the library's TypeScript definitions and Vite bundles it. If
 `webApp/node_modules` is missing, run `npm --prefix webApp install` first.
+
+**Copied code**:
+
+```bash
+./scripts/cpd.sh
+```
+
+It fails on copied code `.jscpd-baseline.json` doesn't list, and lists both copies with their
+lines: extract the copied code into one place both callers use (see "Copied code" in
+[code-style.md](../../../docs/architecture/code-style.md)). When it fails because the branch removed
+copied code, run `./scripts/cpd.sh --update-baseline` and commit the baseline. Never pass
+`--allow-new` to get past the check without asking the user.
 
 If any check fails, stop and report which one and why. Fix it before going on; never push a branch
 whose checks fail.

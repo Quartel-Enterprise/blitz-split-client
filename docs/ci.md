@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `:androidApp:assembleRelease`, `npm --prefix webApp run build` |
-| `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
+| `static-analysis` | Kotlin, Swift, `webApp/src`, Gradle scripts, `.editorconfig`, the version catalog, the jscpd config and baseline | `./scripts/ktlint.sh` and `./scripts/cpd.sh`, as two jobs |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
 | `claude-review` | A pull request opened, or a draft marked ready | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |

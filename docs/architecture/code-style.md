@@ -304,3 +304,25 @@ No linter runs on the web app yet; `tsc -b` (part of `npm run build`) is the che
 - User-facing text comes from `t('key')` (`src/i18n`), with the key in both the `en` and `pt` dictionaries (`tsc`
   fails when one lacks a key). Enum names the presenter sends (`state.error`, `state.syncBadge`) map to keys in a
   `Record` at the top of the file.
+
+## Copied code
+
+[jscpd](https://github.com/kucherenko/jscpd) looks for copied code in the production Kotlin, Swift and TypeScript of
+the apps: clones of 70 tokens or more with at least 5 lines of code once imports and comments are left out.
+
+```bash
+./scripts/cpd.sh                                # check
+./scripts/cpd.sh --update-baseline              # take the removed copied code out of .jscpd-baseline.json
+./scripts/cpd.sh --update-baseline --allow-new  # also take new copied code in, only when the copy is on purpose
+```
+
+`.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code. jscpd only compares files of
+the same language, so a screen drawn by Compose, SwiftUI and React is never a clone. The script runs the jscpd release
+it pins through `npx`, so it needs Node.js and nothing else.
+
+`.jscpd-baseline.json` holds, per pair of files, the lines of code their clones share today. A pair with more lines
+fails the check: extract the copied code into one place both callers use (a use case or coordinator under the
+ViewModels, a component of `:android:designsystem`, `iosApp/Sources/Shared/DesignSystem` or
+`webApp/src/components`). A pair with fewer fails too, until `--update-baseline` lowers it, so the baseline only
+shrinks. `--allow-new` is for a copy on purpose (an `actual` per platform that happens to match): say why in the pull
+request, where CI shows each pair it took in as a warning.

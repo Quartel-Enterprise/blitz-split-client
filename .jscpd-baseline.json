@@ -1,0 +1,11 @@
+{
+  "android/feature/edit_profile/src/main/kotlin/com/quare/blitzsplit/android/feature/editprofile/EditProfileContent.kt <-> android/feature/profile_setup/src/main/kotlin/com/quare/blitzsplit/android/feature/profilesetup/ProfileSetupContent.kt": 31,
+  "android/feature/join/src/main/kotlin/com/quare/blitzsplit/android/feature/join/JoinInviteContent.kt <-> android/feature/join/src/main/kotlin/com/quare/blitzsplit/android/feature/join/JoinPickContent.kt": 6,
+  "android/feature/join/src/main/kotlin/com/quare/blitzsplit/android/feature/join/JoinInviteScreen.kt <-> android/feature/join/src/main/kotlin/com/quare/blitzsplit/android/feature/join/JoinPickScreen.kt": 11,
+  "feature/edit_profile/src/commonMain/kotlin/com/quare/blitzsplit/feature/editprofile/presentation/viewmodel/EditProfileViewModel.kt <-> feature/profile_setup/src/commonMain/kotlin/com/quare/blitzsplit/feature/profilesetup/presentation/viewmodel/ProfileSetupViewModel.kt": 14,
+  "feature/restore/src/commonMain/kotlin/com/quare/blitzsplit/feature/restore/presentation/viewmodel/RestoreViewModel.kt <-> feature/welcome/src/commonMain/kotlin/com/quare/blitzsplit/feature/welcome/presentation/viewmodel/WelcomeViewModel.kt": 28,
+  "iosApp/Sources/Shared/DesignSystem/AccountButtons.swift <-> iosApp/Sources/Shared/DesignSystem/AccountButtons.swift": 17,
+  "iosApp/Sources/Shared/Features/Groups/GroupsView.swift <-> iosApp/Sources/Shared/Features/Members/MembersView.swift": 9,
+  "iosApp/Sources/Shared/Features/Join/JoinInviteView.swift <-> iosApp/Sources/Shared/Features/Join/JoinPickView.swift": 25,
+  "webApp/src/features/profile-setup/ProfileSetupScreen.tsx <-> webApp/src/features/profile/EditProfileCard.tsx": 16
+}
