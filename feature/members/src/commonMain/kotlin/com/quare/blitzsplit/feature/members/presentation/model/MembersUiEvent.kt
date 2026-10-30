@@ -27,7 +27,7 @@ sealed interface MembersUiEvent : UiEvent {
     // Why: "Copiar" on the personal invite.
     data object OnPersonalLinkCopyClicked : MembersUiEvent
 
-    // Why: "Compartilhar com a Carla", the system's share sheet.
+    // Why: "Compartilhar com Carla", the system's share sheet.
     data object OnPersonalLinkShareClicked : MembersUiEvent
 
     // Why: "Remover do grupo" in the member's menu, which asks first.

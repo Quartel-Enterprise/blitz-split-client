@@ -9,7 +9,7 @@ sealed interface JoinInviteUiEvent : UiEvent {
      */
     data object OnJoinClicked : JoinInviteUiEvent
 
-    // Why: "Não sou a Carla" on a personal invite, which goes on to the whole list and leaves the link unused.
+    // Why: "Não sou Carla" on a personal invite, which goes on to the whole list and leaves the link unused.
     data object OnNotMeClicked : JoinInviteUiEvent
 
     // Why: "Agora não" and the close button.

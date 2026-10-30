@@ -17,7 +17,7 @@
       }
     },
     "%@ invited you as %@" : {
-      "comment" : "The title of a personal invite link: who shared it (or the group's creator) and the member it joins as",
+      "comment" : "The title of a personal invite link: who shared it and the member it joins as",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {

@@ -18,7 +18,7 @@ object InviteLink {
 
     fun of(inviteCode: String): String = BASE_URL + inviteCode
 
-    // Why: without the code of whoever shares it, the invite names the group's creator instead.
+    // Why: without the code of whoever shares it, the invite names nobody: "Você entra como Carla".
     fun personalOf(
         inviteCode: String,
         memberCode: String,

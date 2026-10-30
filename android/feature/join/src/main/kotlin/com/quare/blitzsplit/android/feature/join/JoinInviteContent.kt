@@ -145,7 +145,7 @@ private fun InviteContent(
     state: JoinInviteUiState,
     onEvent: (JoinInviteUiEvent) -> Unit,
 ) {
-    val personalMember = state.personalMember?.takeIf { state.isPersonal }
+    val personalMember = state.personalMember
     Column(
         modifier = Modifier.padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -206,18 +206,13 @@ private fun InviteContent(
                         ?: stringResource(R.string.join_join),
                 )
             }
+            val secondaryEvent = if (personalMember == null) {
+                JoinInviteUiEvent.OnNotNowClicked
+            } else {
+                JoinInviteUiEvent.OnNotMeClicked
+            }
             TextButton(
-                onClick = {
-                    onEvent(
-                        if (personalMember ==
-                            null
-                        ) {
-                            JoinInviteUiEvent.OnNotNowClicked
-                        } else {
-                            JoinInviteUiEvent.OnNotMeClicked
-                        },
-                    )
-                },
+                onClick = { onEvent(secondaryEvent) },
                 enabled = !state.isJoining,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -232,7 +227,7 @@ private fun InviteContent(
     }
 }
 
-// Why: "Ana te chamou como Carla" names whoever shared a personal link, the creator when it doesn't say.
+// Why: "Ana te chamou como Carla" names whoever shared a personal link, "Você entra como Carla" when it doesn't say.
 @Composable
 private fun inviteTitleOf(
     state: JoinInviteUiState,

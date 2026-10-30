@@ -8,7 +8,7 @@ sealed interface MembersUiAction {
         val link: String,
     ) : MembersUiAction
 
-    // Why: "Compartilhar com a Carla"; each platform writes the message around the link in its own words.
+    // Why: "Compartilhar com Carla"; each platform writes the message around the link in its own words.
     data class SharePersonalLink(
         val link: String,
         val memberName: String,

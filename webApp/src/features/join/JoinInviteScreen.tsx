@@ -57,7 +57,7 @@ export function JoinInviteScreen({ route }: { route: JsRoute }) {
 
 function Invite({ presenter, state }: { presenter: JoinInvitePresenter; state: JsJoinInviteState }) {
   const count = t(state.memberCount === 1 ? 'join_countOne' : 'join_countOther', { count: state.memberCount })
-  const member = state.isPersonal ? state.personalMember : null
+  const member = state.personalMember
   return (
     <>
       <span className="flex items-center gap-1.5 self-start rounded-full bg-secondary px-3 py-1 text-sm font-medium">

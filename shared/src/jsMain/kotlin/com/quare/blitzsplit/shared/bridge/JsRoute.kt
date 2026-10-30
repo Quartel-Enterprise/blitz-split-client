@@ -32,4 +32,7 @@ class JsRoute internal constructor(
         is Route.JoinPick -> route.code
         else -> null
     }
+
+    // Why: the member a personal link of "join-invite" joins as, null for the group's link and every other route.
+    val inviteMemberCode: String? = (route as? Route.JoinInvite)?.memberCode
 }

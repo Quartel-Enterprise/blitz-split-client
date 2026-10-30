@@ -90,7 +90,7 @@ class JoinInvitePresenter(
         viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
     }
 
-    // Why: "Não sou a Carla", the whole list.
+    // Why: "Não sou Carla", the whole list.
     fun notMe() {
         viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
     }
