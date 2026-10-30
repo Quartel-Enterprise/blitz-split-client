@@ -980,7 +980,7 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group on the list WHEN tapping its row THEN opens its members`() = runTest(testDispatcher) {
+    fun `GIVEN a group on the list WHEN tapping its row THEN opens it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(floripa))
         val actions = mutableListOf<GroupsUiAction>()
@@ -991,7 +991,7 @@ class GroupsViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.Members("floripa", joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
     }
 
     @Test
@@ -1005,7 +1005,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("floripa", joinedAs = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
         }
 
     @Test

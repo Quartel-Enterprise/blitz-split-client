@@ -39,14 +39,23 @@ final class MembersModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// Members is this screen: Expenses takes its place and Balances answers "Coming soon".
+    func select(_ tab: GroupTab) {
+        switch tab {
+        case .expenses: send(MembersUiEventOnExpensesTabClicked.shared)
+        case .balances: send(MembersUiEventOnBalancesTabClicked.shared)
+        case .members: break
+        }
+    }
+
     isolated deinit {
         holder.clear()
     }
 }
 
-/// "Members": who is in the group and who joined, pushed over the groups. A tap on a person opens their options:
-/// rename, a personal invite, which joins straight in as someone nobody joined as yet, and removal, which only
-/// someone who hasn't joined allows.
+/// "Members": who is in the group and who joined, the group's tab next to Expenses, with the same tabs on top (in
+/// the toolbar on the Mac). A tap on a person opens their options: rename, a personal invite, which joins straight
+/// in as someone nobody joined as yet, and removal, which only someone who hasn't joined allows.
 struct MembersView: View {
     let route: RouteMembers
 
@@ -54,6 +63,9 @@ struct MembersView: View {
     @State private var model: MembersModel?
     @State private var toast: LocalizedStringKey?
     @State private var hidesToast: Task<Void, Never>?
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
 
     var body: some View {
         Group {
@@ -65,7 +77,17 @@ struct MembersView: View {
         }
         .navigationTitle("Members")
         .navigationSubtitle(subtitle)
+        #if os(iOS)
+        // On iPhone the group's tabs replace the app's, as on the group's expenses
+        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
+        #endif
         .toolbar {
+            #if os(macOS)
+            ToolbarItem(placement: .principal) {
+                GroupTabsPicker(selected: .members) { model?.select($0) }
+                    .disabled(model?.state.isLoaded != true)
+            }
+            #endif
             ToolbarItem(placement: .primaryAction) {
                 Button("Add person", systemImage: "person.badge.plus") {
                     model?.send(MembersUiEventOnAddClicked.shared)
@@ -175,6 +197,13 @@ private struct MembersList: View {
 
     var body: some View {
         List {
+            #if os(iOS)
+            Section {
+                GroupTabsPicker(selected: .members) { model.select($0) }
+            }
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            #endif
             if let joinedAs = state.joinedAs {
                 JoinedSection(name: joinedAs, showsProtectAccess: state.showsProtectAccess) { model.send($0) }
             }

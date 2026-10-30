@@ -5,6 +5,67 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ among %lld people." : {
+      "comment" : "The total and how many people split it",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ among %2$#@people@."
+          },
+          "substitutions" : {
+            "people" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg person"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg people"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ entre %2$#@people@."
+          },
+          "substitutions" : {
+            "people" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg pessoa"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg pessoas"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%@ are already in the group" : {
       "comment" : "The members who joined an invite link's group, as a list",
       "localizations" : {
@@ -12,6 +73,72 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ já estão no grupo"
+          }
+        }
+      }
+    },
+    "%@ are out" : {
+      "comment" : "People out of the split; %@ is their names as a list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ não participam"
+          }
+        }
+      }
+    },
+    "%@ each" : {
+      "comment" : "Equal split: each one's part",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ para cada um"
+          }
+        }
+      }
+    },
+    "%@ has %lld shares" : {
+      "comment" : "Split by shares: someone has more than one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ tem %2$lld partes"
+          }
+        }
+      }
+    },
+    "%@ has no amount" : {
+      "comment" : "Split by amount: someone left blank; %@ is the name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ está sem valor"
+          }
+        }
+      }
+    },
+    "%@ have no amount" : {
+      "comment" : "Split by amount: people left blank; %@ is their names as a list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ estão sem valor"
+          }
+        }
+      }
+    },
+    "%@ in total" : {
+      "comment" : "Under a group's name: how much its bills add up to; %@ is the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no total"
           }
         }
       }
@@ -49,6 +176,17 @@
         }
       }
     },
+    "%@ is out" : {
+      "comment" : "Someone out of the split; %@ is the name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ não participa"
+          }
+        }
+      }
+    },
     "%@ just joined from another device" : {
       "comment" : "Someone else joined as the member just picked",
       "localizations" : {
@@ -56,6 +194,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ acabou de entrar por outro aparelho"
+          }
+        }
+      }
+    },
+    "%@ left" : {
+      "comment" : "The split still misses an amount or percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faltam %@"
+          }
+        }
+      }
+    },
+    "%@ of %@ so far." : {
+      "comment" : "Split by amount: what the parts add up to, of the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já foram %1$@ de %2$@."
+          }
+        }
+      }
+    },
+    "%@ over" : {
+      "comment" : "The split goes over by an amount or percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passou %@"
+          }
+        }
+      }
+    },
+    "%@ paid" : {
+      "comment" : "Who paid a bill; %@ is the member's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pagou"
           }
         }
       }
@@ -108,6 +290,17 @@
         }
       }
     },
+    "%@ · %@ paid" : {
+      "comment" : "The bill being split and who paid it; the first %@ is its description or total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$@ pagou"
+          }
+        }
+      }
+    },
     "%@ · created by %@" : {
       "comment" : "The member count and the creator of an invite link's group",
       "localizations" : {
@@ -137,6 +330,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · na fila"
+          }
+        }
+      }
+    },
+    "%@ · you paid" : {
+      "comment" : "The bill being split and that you paid; %@ is its description or total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · você pagou"
           }
         }
       }
@@ -302,6 +506,47 @@
         }
       }
     },
+    "%lld hasn't joined yet" : {
+      "comment" : "Next to a group's faces: how many members nobody joined as yet",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld hasn't joined yet"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld haven't joined yet"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ainda não entrou"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ainda não entraram"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld members" : {
       "comment" : "How many members a group of the home has",
       "localizations" : {
@@ -423,6 +668,67 @@
         }
       }
     },
+    "%lld shares of %@" : {
+      "comment" : "Split by shares: how many and how much each is worth",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$#@shares@ of %2$@"
+          },
+          "substitutions" : {
+            "shares" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg share"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg shares"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$#@shares@ de %2$@"
+          },
+          "substitutions" : {
+            "shares" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg parte"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg partes"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "12 letters and numbers. Dashes are optional." : {
       "localizations" : {
         "pt-BR" : {
@@ -449,6 +755,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arquivo JSON com seu perfil e suas chaves"
+          }
+        }
+      }
+    },
+    "A new expense in the group. Works without internet." : {
+      "comment" : "Under the title of the new bill's sheet on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma despesa nova no grupo. Funciona sem internet."
           }
         }
       }
@@ -526,6 +843,28 @@
         }
       }
     },
+    "Add the first expense or invite who's splitting with you. People without the app count too." : {
+      "comment" : "Message of a group without bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lance a primeira despesa ou chame quem vai dividir com você. Quem ainda não tem o app também entra na conta."
+          }
+        }
+      }
+    },
+    "Adds up: %@" : {
+      "comment" : "The split adds up to the total; %@ is the total or 100%",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fechou: %@"
+          }
+        }
+      }
+    },
     "Allow camera access in Settings to take a photo." : {
       "localizations" : {
         "pt-BR" : {
@@ -577,6 +916,50 @@
         }
       }
     },
+    "Among %lld" : {
+      "comment" : "How many people the bill splits among",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre %lld"
+          }
+        }
+      }
+    },
+    "Amount" : {
+      "comment" : "The bill's amount field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor"
+          }
+        }
+      }
+    },
+    "Amount:" : {
+      "comment" : "The bill's amount field on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor:"
+          }
+        }
+      }
+    },
+    "Amounts" : {
+      "comment" : "Split mode: by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valores"
+          }
+        }
+      }
+    },
     "An account is optional" : {
       "localizations" : {
         "pt-BR" : {
@@ -624,6 +1007,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cor do avatar"
+          }
+        }
+      }
+    },
+    "Back" : {
+      "comment" : "Leaves the split as it was",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltar"
           }
         }
       }
@@ -731,6 +1125,39 @@
         }
       }
     },
+    "By amount" : {
+      "comment" : "How the bill splits: by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por valor"
+          }
+        }
+      }
+    },
+    "By percentage" : {
+      "comment" : "How the bill splits: by percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por porcentagem"
+          }
+        }
+      }
+    },
+    "By shares" : {
+      "comment" : "How the bill splits: by shares",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por partes"
+          }
+        }
+      }
+    },
     "Camera access is off" : {
       "localizations" : {
         "pt-BR" : {
@@ -789,6 +1216,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alterado · aguardando envio"
+          }
+        }
+      }
+    },
+    "Change…" : {
+      "comment" : "Opens the bill's split on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudar…"
+          }
+        }
+      }
+    },
+    "Changing the total later rescales the amounts." : {
+      "comment" : "Hint of the split by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudar o total depois refaz os valores proporcionalmente."
+          }
+        }
+      }
+    },
+    "Check all" : {
+      "comment" : "Puts everyone in the equal split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcar todos"
+          }
+        }
+      }
+    },
+    "Check at least one person to split %@." : {
+      "comment" : "The split has nobody in it; %@ is the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marque pelo menos uma pessoa para dividir %@."
           }
         }
       }
@@ -1002,6 +1473,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para abrir a câmera. Cole o link aqui embaixo."
+          }
+        }
+      }
+    },
+    "Couldn't save the bill. Try again." : {
+      "comment" : "The device couldn't save a new bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar a conta. Tente de novo."
           }
         }
       }
@@ -1241,6 +1723,39 @@
         }
       }
     },
+    "Description" : {
+      "comment" : "The bill's description field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descrição"
+          }
+        }
+      }
+    },
+    "Description:" : {
+      "comment" : "The bill's description field on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descrição:"
+          }
+        }
+      }
+    },
+    "Details" : {
+      "comment" : "Section of the bill with the group, who paid, when and the split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detalhes"
+          }
+        }
+      }
+    },
     "Disconnect" : {
       "comment" : "The destructive button of the alert that disconnects Google or Apple; also the account row's hint",
       "localizations" : {
@@ -1269,6 +1784,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desconectar…"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "comment" : "Confirms who paid or the split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pronto"
+          }
+        }
+      }
+    },
+    "Each one's part in the split row" : {
+      "comment" : "Equal split, in the bill's split row: each one's part",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ each"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ cada"
+          }
+        }
+      }
+    },
+    "Each one's percentage" : {
+      "comment" : "Above the people of the split by percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porcentagem de cada um"
+          }
+        }
+      }
+    },
+    "Each one's shares" : {
+      "comment" : "Above the people of the split by shares",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partes de cada um"
           }
         }
       }
@@ -1331,6 +1896,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "E-mail"
+          }
+        }
+      }
+    },
+    "Enter how much the bill was." : {
+      "comment" : "Error under the bill's amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informe quanto foi a conta."
+          }
+        }
+      }
+    },
+    "Equal" : {
+      "comment" : "Split mode: equally",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual"
+          }
+        }
+      }
+    },
+    "Equally" : {
+      "comment" : "How the bill splits: equally",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual"
           }
         }
       }
@@ -1405,6 +2003,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tudo fica no %@ e sincroniza depois."
+          }
+        }
+      }
+    },
+    "Expense" : {
+      "comment" : "Column of the group's bills on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despesa"
+          }
+        }
+      }
+    },
+    "Expenses" : {
+      "comment" : "The group's tab with its bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despesas"
           }
         }
       }
@@ -1499,6 +2119,17 @@
         }
       }
     },
+    "Give at least one person a share to split %@." : {
+      "comment" : "The split by shares has no share given; %@ is the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dê pelo menos uma parte a alguém para dividir %@."
+          }
+        }
+      }
+    },
     "Go to home" : {
       "localizations" : {
         "pt-BR" : {
@@ -1543,6 +2174,17 @@
         }
       }
     },
+    "Group" : {
+      "comment" : "The bill's group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupo"
+          }
+        }
+      }
+    },
     "Group created" : {
       "comment" : "The chip over the invite right after a group is created",
       "localizations" : {
@@ -1561,6 +2203,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nome do grupo"
+          }
+        }
+      }
+    },
+    "Group sections" : {
+      "comment" : "Accessibility label of the group's tabs (Expenses, Balances, Members)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seções do grupo"
+          }
+        }
+      }
+    },
+    "Group:" : {
+      "comment" : "The bill's group on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupo:"
           }
         }
       }
@@ -1625,6 +2289,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por onde você quer receber?"
+          }
+        }
+      }
+    },
+    "How much each one had" : {
+      "comment" : "Above the people of the split by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quanto cada um consumiu"
+          }
+        }
+      }
+    },
+    "How to split" : {
+      "comment" : "Accessibility label of the split's modes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como dividir"
           }
         }
       }
@@ -1721,6 +2407,17 @@
         }
       }
     },
+    "In" : {
+      "comment" : "Under someone in the equal split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Participa"
+          }
+        }
+      }
+    },
     "Incomplete email: the domain is missing, like .com or .com.br." : {
       "localizations" : {
         "pt-BR" : {
@@ -1800,6 +2497,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Link de convite"
+          }
+        }
+      }
+    },
+    "Invite people" : {
+      "comment" : "Opens the group's invite",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convidar pessoas"
           }
         }
       }
@@ -2165,6 +2873,17 @@
         }
       }
     },
+    "No amount" : {
+      "comment" : "Under someone left blank in the split by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem valor"
+          }
+        }
+      }
+    },
     "No code needed" : {
       "localizations" : {
         "pt-BR" : {
@@ -2191,6 +2910,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sem conexão."
+          }
+        }
+      }
+    },
+    "No expenses yet" : {
+      "comment" : "Title of a group without bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa ainda"
           }
         }
       }
@@ -2225,6 +2955,17 @@
         }
       }
     },
+    "No internet: the bill is saved on this device and counts in the balances now. It syncs when you reconnect." : {
+      "comment" : "Under a new bill while offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: a conta fica salva no aparelho e entra nos saldos agora. Sincroniza ao reconectar."
+          }
+        }
+      }
+    },
     "No response from the server" : {
       "localizations" : {
         "pt-BR" : {
@@ -2241,6 +2982,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sem resposta do servidor · tentar de novo"
+          }
+        }
+      }
+    },
+    "Nobody is in yet" : {
+      "comment" : "The split has nobody in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém participa ainda"
           }
         }
       }
@@ -2443,6 +3195,39 @@
         }
       }
     },
+    "Out" : {
+      "comment" : "Under someone out of the split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não participa"
+          }
+        }
+      }
+    },
+    "Paid the bill" : {
+      "comment" : "Under whoever paid, in the split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagou a conta"
+          }
+        }
+      }
+    },
+    "Part of %@" : {
+      "comment" : "Accessibility label of someone's amount in the split; %@ is the name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parte de %@"
+          }
+        }
+      }
+    },
     "Paste the link someone sent you in a message." : {
       "comment" : "Subtitle of the invite reader's paste panel",
       "localizations" : {
@@ -2481,6 +3266,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem te deve deixa de ver esta chave no acerto."
+          }
+        }
+      }
+    },
+    "Percentage of %@" : {
+      "comment" : "Accessibility label of someone's percentage in the split; %@ is the name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porcentagem de %@"
           }
         }
       }
@@ -2848,6 +3644,17 @@
         }
       }
     },
+    "Say what it was, for example Groceries." : {
+      "comment" : "Error under the bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga o que foi, por exemplo Mercado."
+          }
+        }
+      }
+    },
     "Scan QR code" : {
       "localizations" : {
         "pt-BR" : {
@@ -2885,6 +3692,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escanear QR com a câmera"
+          }
+        }
+      }
+    },
+    "See members" : {
+      "comment" : "Accessibility label of a group's faces, which open its members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver membros"
           }
         }
       }
@@ -2947,6 +3765,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compartilhar com %@"
+          }
+        }
+      }
+    },
+    "Shares" : {
+      "comment" : "Split mode: by shares",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partes"
+          }
+        }
+      }
+    },
+    "Shares of %@" : {
+      "comment" : "Accessibility label of someone's shares stepper; %@ is the name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partes de %@"
           }
         }
       }
@@ -3124,12 +3964,85 @@
         }
       }
     },
+    "Split" : {
+      "comment" : "The bill's split row, and the title of the screen that edits it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Divisão"
+          }
+        }
+      }
+    },
+    "Split %@" : {
+      "comment" : "Title of the split on the Mac; %@ is the bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir %@"
+          }
+        }
+      }
+    },
+    "Split (title of the screen that edits it)" : {
+      "comment" : "Title of the screen that edits how a bill splits",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Split"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir"
+          }
+        }
+      }
+    },
+    "Split a Bill" : {
+      "comment" : "Title of the new bill's sheet on the Mac (title case)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rachar Conta"
+          }
+        }
+      }
+    },
+    "Split a bill" : {
+      "comment" : "Opens a new bill in the group, and the title of its sheet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rachar conta"
+          }
+        }
+      }
+    },
     "Split the bill, no hassle" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rache a conta sem complicação"
+          }
+        }
+      }
+    },
+    "Split:" : {
+      "comment" : "The bill's split on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Divisão:"
           }
         }
       }
@@ -3233,6 +4146,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O link foi trocado ou o grupo foi apagado. Peça um link novo para quem te chamou."
+          }
+        }
+      }
+    },
+    "The parts add up to the total." : {
+      "comment" : "Split by amount that adds up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A soma das partes é igual ao total."
+          }
+        }
+      }
+    },
+    "Their part" : {
+      "comment" : "Under someone's field in the split by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor da parte"
           }
         }
       }
@@ -3351,6 +4286,17 @@
         }
       }
     },
+    "Time" : {
+      "comment" : "Column of the group's bills on the Mac, and the time of a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora"
+          }
+        }
+      }
+    },
     "To change it, make another key the default." : {
       "localizations" : {
         "pt-BR" : {
@@ -3383,12 +4329,45 @@
         }
       }
     },
+    "Today" : {
+      "comment" : "A day of the group's bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoje"
+          }
+        }
+      }
+    },
+    "Today, %@" : {
+      "comment" : "When a bill was, today; %@ is the short date (Oct 28)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoje, %@"
+          }
+        }
+      }
+    },
     "Too many attempts. Wait a few minutes and try again." : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muitas tentativas. Espere alguns minutos e tente de novo."
+          }
+        }
+      }
+    },
+    "Total" : {
+      "comment" : "Column of the group's bills on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
           }
         }
       }
@@ -3468,6 +4447,17 @@
         }
       }
     },
+    "Uncheck all" : {
+      "comment" : "Takes everyone out of the equal split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desmarcar todos"
+          }
+        }
+      }
+    },
     "Use %@ account photo" : {
       "comment" : "The %@ is the account: Google or Apple",
       "localizations" : {
@@ -3475,6 +4465,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usar foto da conta %@"
+          }
+        }
+      }
+    },
+    "Use shares when someone has more, like who brought a plus-one." : {
+      "comment" : "Hint of the split by shares",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use partes quando alguém consome mais, como quem levou acompanhante."
           }
         }
       }
@@ -3600,6 +4601,39 @@
         }
       }
     },
+    "What was it? E.g. Groceries" : {
+      "comment" : "Placeholder of the bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que foi? Ex.: Mercado"
+          }
+        }
+      }
+    },
+    "When" : {
+      "comment" : "When the bill was",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando"
+          }
+        }
+      }
+    },
+    "When it doesn't split evenly, the leftover cents go to whoever paid." : {
+      "comment" : "Hint of the equal split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando não dá conta exata, os centavos que sobram ficam com quem pagou."
+          }
+        }
+      }
+    },
     "When settling up, we show the amount in sats at the current rate. It's only an estimate: the payer confirms it in their wallet." : {
       "localizations" : {
         "pt-BR" : {
@@ -3640,12 +4674,45 @@
         }
       }
     },
+    "When:" : {
+      "comment" : "When the bill was, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando:"
+          }
+        }
+      }
+    },
     "Who are you in the group?" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem é você no grupo?"
+          }
+        }
+      }
+    },
+    "Who paid" : {
+      "comment" : "Who paid the bill: the row, its sheet and the Mac's column",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem pagou"
+          }
+        }
+      }
+    },
+    "Who paid:" : {
+      "comment" : "Who paid the bill on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem pagou:"
           }
         }
       }
@@ -3667,6 +4734,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem participa"
+          }
+        }
+      }
+    },
+    "Whoever is left at %@ is out of the bill." : {
+      "comment" : "Hint of the split by amount; %@ is zero in the currency",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem fica com %@ sai da conta."
           }
         }
       }
@@ -3733,12 +4811,56 @@
         }
       }
     },
+    "Whole numbers only. The leftover cents go to whoever paid." : {
+      "comment" : "Hint of the split by percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só números inteiros. Os centavos que sobram ficam com quem pagou."
+          }
+        }
+      }
+    },
     "Works offline" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Funciona sem internet"
+          }
+        }
+      }
+    },
+    "Yesterday" : {
+      "comment" : "A day of the group's bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ontem"
+          }
+        }
+      }
+    },
+    "Yesterday, %@" : {
+      "comment" : "When a bill was, yesterday; %@ is the short date (Oct 27)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ontem, %@"
+          }
+        }
+      }
+    },
+    "You" : {
+      "comment" : "This device's user in a list of people",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você"
           }
         }
       }
@@ -3759,6 +4881,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você pode mudar depois em Perfil."
+          }
+        }
+      }
+    },
+    "You have %lld shares" : {
+      "comment" : "Split by shares: this device's user has more than one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem %lld partes"
+          }
+        }
+      }
+    },
+    "You have no amount" : {
+      "comment" : "Split by amount: this device's user left blank",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você está sem valor"
           }
         }
       }
@@ -3801,6 +4945,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você continua usando o Bora Rachar neste %@, sem conta. Seus grupos ficam aqui e a sincronização passa a usar um ID anônimo. Em seguida mostramos seu código de recuperação: guarde-o para não perder o acesso."
+          }
+        }
+      }
+    },
+    "You paid" : {
+      "comment" : "Who paid a bill: this device's user",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pagou"
+          }
+        }
+      }
+    },
+    "You paid and get %@ back." : {
+      "comment" : "Under the bill's amount; %@ is what the others owe you",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pagou e recebe %@ de volta."
           }
         }
       }
@@ -3855,6 +5021,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você está sem internet. Seus dados ficam neste %@ até a sincronização terminar. Assim que tudo subir, saímos e apagamos a cópia local."
+          }
+        }
+      }
+    },
+    "You're out" : {
+      "comment" : "This device's user is out of the split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você não participa"
           }
         }
       }
@@ -3931,6 +5108,28 @@
         }
       }
     },
+    "Your share" : {
+      "comment" : "Column of the group's bills on the Mac: what each bill does to your balance",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua parte"
+          }
+        }
+      }
+    },
+    "Your share: %@" : {
+      "comment" : "Under the bill's amount; %@ is your part of the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua parte: %@"
+          }
+        }
+      }
+    },
     "email" : {
       "comment" : "A Pix key type mid-sentence, in \"Now: email.\"",
       "localizations" : {
@@ -3974,6 +5173,17 @@
         }
       }
     },
+    "no expenses yet" : {
+      "comment" : "Under a group's name, after its member count, while it has no bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nenhuma despesa ainda"
+          }
+        }
+      }
+    },
     "on the blockchain" : {
       "localizations" : {
         "pt-BR" : {
@@ -4001,6 +5211,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "celular"
+          }
+        }
+      }
+    },
+    "queued" : {
+      "comment" : "Tag of a bill saved on this device and not on the server yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "na fila"
           }
         }
       }

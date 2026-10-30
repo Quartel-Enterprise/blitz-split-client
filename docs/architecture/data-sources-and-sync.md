@@ -25,10 +25,10 @@ changes included. Once a schema has shipped, change it with a migration instead.
 - DAOs expose `Flow<T>` for what the UI observes and `suspend` functions for one-shot reads and writes.
 - The single-row tables (`profile`, `account`) are keyed by `SINGLE_ROW_ID` (`"me"`): the row exists before the
   server knows the user, so it can't be keyed by the user id.
-- The list tables (`payment_key`, `split_group`, `group_member`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
+- The list tables (`payment_key`, `split_group`, `group_member`, `expense`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
   keeps its id on the server.
 - A local data source wraps each DAO (`RoomProfileLocalDataSource`, `RoomAccountLocalDataSource`,
-  `RoomPaymentKeyLocalDataSource`, `RoomGroupLocalDataSource`); the repository maps entities to domain models.
+  `RoomPaymentKeyLocalDataSource`, `RoomGroupLocalDataSource`, `RoomExpenseLocalDataSource`); the repository maps entities to domain models.
 
 ### Supabase: the remote
 
@@ -42,6 +42,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link |
+| `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
@@ -68,7 +69,8 @@ so nothing above it sees an HTTP status:
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
 3. `syncOnUserSwitch()`: when the session moves to another user, it syncs right away under the new one, whose
    profile replaces this device's copy (see below).
-4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences and groups, and
+4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences, groups
+   and bills, and
    their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
@@ -97,6 +99,9 @@ suspend fun syncNow(): Result<Unit> {
                 val groupsSynced = suspendRunCatching {
                     groupRepository.downloadGroups(userId).getOrThrow()
                     groupRepository.uploadPendingGroups(userId).getOrThrow()
+                    // A bill needs its group and members on both sides first
+                    expenseRepository.downloadExpenses(userId).getOrThrow()
+                    expenseRepository.uploadPendingExpenses(userId).getOrThrow()
                 }
                 offerRecoveryCodeIfDue()
                 signOutIfScheduledAndSynced()
@@ -173,6 +178,17 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     outcome, not an error, and the pick screen reloads the list. A personal link asks `get_invite` with the member's
     code and the sharer's too, which answer `personal_member_id` and `inviter_name`, and joins with `join_group` as
     that member right from the invite screen.
+- **Bills** (`:core:expenses`): a bill (`expense`) is one Last-Write-Wins row, its payers and shares inside it as
+  JSON (jsonb on the server), so an edit never mixes two versions of a split. It belongs to its group through a
+  foreign key with `ON DELETE CASCADE`: whatever deletes a group on the device (a sign out, an account switch, the
+  server no longer having it) takes its bills, and upserting the group keeps them. The sync moves bills after the
+  groups and members, down then up, since the server checks the bill's group (`can_access_group`) and the device
+  needs the group to store a bill (`applyRemote` skips a bill whose group isn't there yet). The server checks that
+  the shares and payers add up to the amount (`expense_adds_up`) and keeps the newer row with the same kind of
+  trigger, the creator included. The download pages through every bill and deletes the synced ones the server no
+  longer has (`ExpenseDao.deleteGoneFromServer`); pending ones stay. A bill with a split mode this version doesn't
+  know stays in Room but out of the lists. The split math (`BillSplit`) is shared by every UI: the cents a split
+  can't share evenly go to whoever paid while they are in the split, otherwise one each to the first members.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

@@ -1,0 +1,187 @@
+package com.quare.blitzsplit.core.expenses.domain
+
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
+import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
+
+class CreateExpenseUseCaseTest {
+    private lateinit var repository: FakeExpenseRepository
+    private lateinit var useCase: CreateExpenseUseCase
+
+    @Test
+    fun `GIVEN a bill WHEN creating it THEN stores it pending in its group at the current time`() = runTest {
+        // Given
+        prepareScenario(now = 7_000L)
+
+        // When
+        useCase(
+            groupId = GROUP_ID,
+            description = "Mercado",
+            amountMinor = 1_000L,
+            payerId = PIERRE,
+            splitMode = SplitMode.PERCENT,
+            shares = shares,
+            spentAt = 5_000L,
+        )
+
+        // Then
+        val created = repository.createdExpenses.single()
+        assertEquals(GROUP_ID, created.groupId)
+        assertEquals("Mercado", created.description)
+        assertEquals(1_000L, created.amountMinor)
+        assertEquals(SplitMode.PERCENT, created.splitMode)
+        assertEquals(shares, created.shares)
+        assertEquals(5_000L, created.spentAt)
+        assertTrue(created.isPending)
+        assertEquals(listOf(7_000L), repository.createdAts)
+    }
+
+    @Test
+    fun `GIVEN a payer WHEN creating the bill THEN the payer alone paid the whole amount`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        createExpense(amountMinor = 6_240L)
+
+        // Then
+        assertEquals(
+            listOf(
+                ExpensePayer(
+                    memberId = PIERRE,
+                    amountMinor = 6_240L,
+                ),
+            ),
+            repository.createdExpenses.single().payers,
+        )
+    }
+
+    @Test
+    fun `GIVEN a description between spaces WHEN creating the bill THEN stores it trimmed`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        createExpense(description = "  Mercado  ")
+
+        // Then
+        assertEquals("Mercado", repository.createdExpenses.single().description)
+    }
+
+    @Test
+    fun `GIVEN a description of 120 characters WHEN creating the bill THEN stores the first 100`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        createExpense(description = "  " + "a".repeat(120))
+
+        // Then
+        assertEquals("a".repeat(100), repository.createdExpenses.single().description)
+    }
+
+    @Test
+    fun `GIVEN a long description with a space at the 100th character WHEN creating the bill THEN stores it trimmed`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            createExpense(description = "a".repeat(99) + " bcd")
+
+            // Then
+            assertEquals("a".repeat(99), repository.createdExpenses.single().description)
+        }
+
+    @Test
+    fun `GIVEN a new bill WHEN creating it THEN returns the id it was stored with`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = createExpense()
+
+        // Then
+        val id = result.getOrThrow()
+        assertTrue(uuid.matches(id))
+        assertEquals(id, repository.createdExpenses.single().id)
+    }
+
+    @Test
+    fun `GIVEN a bill already created WHEN creating another THEN the new one gets an id of its own`() = runTest {
+        // Given
+        prepareScenario()
+        val firstId = createExpense().getOrThrow()
+
+        // When
+        val secondId = createExpense().getOrThrow()
+
+        // Then
+        assertNotEquals(firstId, secondId)
+    }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN creating the bill THEN fails`() = runTest {
+        // Given
+        prepareScenario(createError = IllegalStateException("No group group-1"))
+
+        // When
+        val result = createExpense()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(repository.expenses.value.isEmpty())
+    }
+
+    private suspend fun createExpense(
+        description: String = "Mercado",
+        amountMinor: Long = 1_000L,
+    ): Result<String> = useCase(
+        groupId = GROUP_ID,
+        description = description,
+        amountMinor = amountMinor,
+        payerId = PIERRE,
+        splitMode = SplitMode.EQUAL,
+        shares = shares,
+        spentAt = 5_000L,
+    )
+
+    private val shares = listOf(
+        ExpenseShare(
+            memberId = PIERRE,
+            amountMinor = 500L,
+            weight = 50L,
+        ),
+        ExpenseShare(
+            memberId = "ana",
+            amountMinor = 500L,
+            weight = 50L,
+        ),
+    )
+
+    private val uuid = Regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+
+    private fun prepareScenario(
+        now: Long = 1_000L,
+        createError: Throwable? = null,
+    ) {
+        repository = FakeExpenseRepository().also { it.createError = createError }
+        useCase = CreateExpenseUseCase(
+            repository = repository,
+            currentTimeMillis = { now },
+        )
+    }
+
+    private companion object {
+        const val GROUP_ID = "group-1"
+        const val PIERRE = "pierre"
+    }
+}

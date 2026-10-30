@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -33,6 +34,7 @@ class SyncCoordinator(
     private val paymentKeyRepository: PaymentKeyRepository,
     private val notificationPreferencesRepository: NotificationPreferencesRepository,
     private val groupRepository: GroupRepository,
+    private val expenseRepository: ExpenseRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -95,9 +97,15 @@ class SyncCoordinator(
                         notificationPreferencesRepository.downloadPreferences(userId).getOrThrow()
                         notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
                     }
+                    /*
+                     * Why: the bills after their groups, which they need on the device to come down and on the
+                     * server to go up.
+                     */
                     val groupsSynced = suspendRunCatching {
                         groupRepository.downloadGroups(userId).getOrThrow()
                         groupRepository.uploadPendingGroups(userId).getOrThrow()
+                        expenseRepository.downloadExpenses(userId).getOrThrow()
+                        expenseRepository.uploadPendingExpenses(userId).getOrThrow()
                     }
                     offerRecoveryCodeIfDue()
                     signOutIfScheduledAndSynced()
@@ -164,8 +172,8 @@ class SyncCoordinator(
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
-     * on the profile, the keys, the preferences and the groups themselves makes each new change count, while one
-     * going out triggers nothing.
+     * on the profile, the keys, the preferences, the groups and the pending bills' versions makes each new change
+     * count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
@@ -173,7 +181,8 @@ class SyncCoordinator(
             paymentKeyRepository.observeKeys(),
             notificationPreferencesRepository.observePreferences(),
             groupRepository.observeGroups(),
-        ) { keys, preferences, groups -> Triple(keys, preferences, groups) }
+            expenseRepository.observePendingVersions(),
+        ) { keys, preferences, groups, pendingBills -> listOf(keys, preferences, groups, pendingBills) }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
@@ -225,8 +234,9 @@ class SyncCoordinator(
         paymentKeyRepository.observeHasPendingChanges(),
         notificationPreferencesRepository.observeHasPendingChanges(),
         groupRepository.observeHasPendingChanges(),
-    ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups ->
-        hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups
+        expenseRepository.observeHasPendingChanges(),
+    ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingExpenses ->
+        hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingExpenses
     }.distinctUntilChanged()
 
     private suspend fun offerRecoveryCodeIfDue() {

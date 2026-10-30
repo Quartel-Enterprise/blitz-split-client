@@ -10,7 +10,7 @@ import {
 } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, GroupTabs } from '@/components/common'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -35,8 +35,8 @@ const nameId = 'member-name'
 const personalLinkId = 'personal-link'
 
 /**
- * "Membros", a group's page until the group's own screen exists: who is in it and who joined, the invite link,
- * and each person's options (rename, a personal invite link, and removing someone who hasn't joined).
+ * "Membros", the group's tab beside Despesas and Saldos: who is in it and who joined, the invite link, and each
+ * person's options (rename, a personal invite link, and removing someone who hasn't joined).
  */
 export function MembersScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new MembersPresenter(route))
@@ -75,6 +75,13 @@ export function MembersScreen({ route }: { route: JsRoute }) {
             {count} · {joined}
           </p>
         </div>
+        <GroupTabs
+          selected="members"
+          onSelect={(tab) => {
+            if (tab === 'expenses') presenter.expensesTab()
+            else if (tab === 'balances') presenter.balancesTab()
+          }}
+        />
         {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} />}
         <section className="flex items-center gap-3 rounded-xl border bg-card p-3 pl-4">
           <Link2 className="size-5 shrink-0 text-muted-foreground" />

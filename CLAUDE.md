@@ -62,11 +62,22 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite`). The server makes each
     group's invite code, and only the group's creator may change it ("Trocar link", not built yet), which
     invalidates the old link.
-  - "Membros" (`Route.Members`) opens from Convidar's "Ver quem já entrou" and "Ir para o grupo", and from a group
-    tapped on the home until the group's screen exists. Any member may rename and add members, but only a member
-    who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined), after confirming
-    "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" and Android's Despesas and
-    Saldos tabs answer "Em breve".
+  - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
+    top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
+    web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
+    the group never stacks over itself; Saldos and a bill's own screen answer "Em breve". Convidar's "Ir para o
+    grupo" opens it too.
+  - "Membros" (`Route.Members`) is the group's tab, and opens from Convidar's "Ver quem já entrou". Any member may
+    rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
+    someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite
+    pessoal" answers "Em breve".
+  - "Rachar conta" (`Route.SplitBill`): one person paid the whole bill (several payers aren't built yet), "Quando"
+    picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
+    description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
+    group. "Dividir" splits by Igual, Valores, % (whole numbers adding up to 100) or Partes, and only changes the
+    bill on "Pronto". The cents a split can't share evenly go to whoever paid, while they are in the split.
+    Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
+    Last-Write-Wins row).
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and

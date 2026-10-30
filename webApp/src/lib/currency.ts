@@ -48,7 +48,7 @@ export const regionCurrencySymbol = currencySymbolFor(browserLanguages()[0])
  * The tag currencies are named in: the app's language, with the region of the first browser language in it
  * ("pt-PT" for a Portuguese browser in Portugal), so the picker never speaks another language than the UI.
  */
-const uiTag = browserLanguages().find((tag) => tag.toLowerCase().split('-')[0] === locale) ?? locale
+export const uiTag = browserLanguages().find((tag) => tag.toLowerCase().split('-')[0] === locale) ?? locale
 
 // Why: the picker draws every currency on each render, and building the Intl formatters each time is costly.
 const currencyLabels = new Map<string, string>()

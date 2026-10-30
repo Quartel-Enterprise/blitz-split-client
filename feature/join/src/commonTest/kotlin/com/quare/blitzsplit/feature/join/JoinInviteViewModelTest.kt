@@ -256,7 +256,7 @@ class JoinInviteViewModelTest {
             val backStack = navigator.backStack.value
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), backStack)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), backStack)
             assertEquals(0, syncCount)
         }
 
@@ -275,7 +275,7 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(1, syncCount)
-            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), backStack)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), backStack)
         }
 
     @Test
@@ -786,7 +786,7 @@ class JoinInviteViewModelTest {
             val backStack = navigator.backStack.value
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), backStack)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), backStack)
         }
 
     @Test
@@ -943,7 +943,7 @@ class JoinInviteViewModelTest {
             viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
         }
 
     @Test
@@ -960,7 +960,7 @@ class JoinInviteViewModelTest {
             viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
         }
 
     @Test

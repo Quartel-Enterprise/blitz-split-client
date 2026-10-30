@@ -34,9 +34,19 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    // Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens.
+    data class GroupDetail(
+        val groupId: String,
+    ) : Route
+
+    // Why: "Rachar conta", a new bill in the group, with "Dividir" drawn over it.
+    data class SplitBill(
+        val groupId: String,
+    ) : Route
+
     /*
-     * Why: "Membros", who is in the group and who joined. The group's own screen (flow 6) will hold it as a tab; until
-     * then a group opens here. joinedAs is the name someone just joined the group as, for "Você entrou como Bruno".
+     * Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
+     * joinedAs is the name someone just joined the group as, for "Você entrou como Bruno".
      */
     data class Members(
         val groupId: String,

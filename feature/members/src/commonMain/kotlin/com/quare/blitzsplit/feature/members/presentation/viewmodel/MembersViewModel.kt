@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openGroupTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -96,7 +97,12 @@ class MembersViewModel(
 
             MembersUiEvent.OnShareClicked -> if (isOnTop()) navigator.navigate(Route.Invite(route.groupId))
 
-            MembersUiEvent.OnOtherTabClicked -> send(MembersUiAction.ShowComingSoon)
+            MembersUiEvent.OnExpensesTabClicked -> navigator.openGroupTab(
+                from = route,
+                tab = Route.GroupDetail(route.groupId),
+            )
+
+            MembersUiEvent.OnBalancesTabClicked -> send(MembersUiAction.ShowComingSoon)
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,

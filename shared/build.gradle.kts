@@ -8,6 +8,7 @@ private val exportedToApple = listOf(
     projects.core.model,
     projects.core.presentation,
     projects.core.navigation,
+    projects.core.expenses,
     projects.feature.welcome,
     projects.feature.profileSetup,
     projects.feature.restore,
@@ -22,6 +23,8 @@ private val exportedToApple = listOf(
     projects.feature.invite,
     projects.feature.members,
     projects.feature.join,
+    projects.feature.groupDetail,
+    projects.feature.splitBill,
 )
 
 kotlin {

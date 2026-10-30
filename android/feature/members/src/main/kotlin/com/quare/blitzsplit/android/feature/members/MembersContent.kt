@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -19,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.PersonAdd
@@ -37,22 +33,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
@@ -62,6 +52,9 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
 
+private const val EXPENSES_TAB_INDEX = 0
+private const val BALANCES_TAB_INDEX = 1
+private const val MEMBERS_TAB_INDEX = 2
 private val singleColumnMaxWidth = 560.dp
 private val phoneSideColumnWidth = 340.dp
 private val tabletSideColumnWidth = 380.dp
@@ -326,87 +319,28 @@ private fun JoinedBanner(
     }
 }
 
-// Why: the group's three sections, of which only "Membros" is built; the others answer "Em breve".
+// Why: the group's sections, the same tabs as Despesas; "Saldos" isn't built yet and answers "Em breve".
 @Composable
 private fun GroupTabsRow(
     onEvent: (MembersUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val tabsLabel = stringResource(R.string.members_tabs)
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics { contentDescription = tabsLabel },
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        GroupTabButton(
-            text = stringResource(R.string.members_tab_expenses),
-            isSelected = false,
-            shape = RoundedCornerShape(
-                topStart = 24.dp,
-                bottomStart = 24.dp,
-                topEnd = 8.dp,
-                bottomEnd = 8.dp,
-            ),
-            onClick = { onEvent(MembersUiEvent.OnOtherTabClicked) },
-        )
-        GroupTabButton(
-            text = stringResource(R.string.members_tab_balances),
-            isSelected = false,
-            shape = RoundedCornerShape(8.dp),
-            onClick = { onEvent(MembersUiEvent.OnOtherTabClicked) },
-        )
-        GroupTabButton(
-            text = stringResource(R.string.members_tab_members),
-            isSelected = true,
-            shape = RoundedCornerShape(24.dp),
-            onClick = {},
-        )
-    }
-}
-
-@Composable
-private fun RowScope.GroupTabButton(
-    text: String,
-    isSelected: Boolean,
-    shape: Shape,
-    onClick: () -> Unit,
-) {
-    Surface(
-        onClick = onClick,
-        modifier = Modifier
-            .weight(1f)
-            .height(48.dp)
-            .semantics {
-                role = Role.Tab
-                selected = isSelected
-            },
-        shape = shape,
-        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
-        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Outlined.Check,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(end = 6.dp)
-                        .size(18.dp),
-                )
+    ConnectedButtonRow(
+        labels = listOf(
+            stringResource(R.string.members_tab_expenses),
+            stringResource(R.string.members_tab_balances),
+            stringResource(R.string.members_tab_members),
+        ),
+        selectedIndex = MEMBERS_TAB_INDEX,
+        groupLabel = stringResource(R.string.members_tabs),
+        onClick = { index ->
+            when (index) {
+                EXPENSES_TAB_INDEX -> onEvent(MembersUiEvent.OnExpensesTabClicked)
+                BALANCES_TAB_INDEX -> onEvent(MembersUiEvent.OnBalancesTabClicked)
             }
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-    }
+        },
+        modifier = modifier,
+    )
 }
 
 @Composable

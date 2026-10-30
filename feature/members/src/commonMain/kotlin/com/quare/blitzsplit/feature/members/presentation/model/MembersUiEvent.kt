@@ -8,8 +8,11 @@ sealed interface MembersUiEvent : UiEvent {
     // Why: "Compartilhar" on the link card opens "Convidar", with the QR code.
     data object OnShareClicked : MembersUiEvent
 
-    // Why: "Despesas" and "Saldos", the tabs next to "Membros" on Android.
-    data object OnOtherTabClicked : MembersUiEvent
+    // Why: the "Despesas" tab, the group's own screen.
+    data object OnExpensesTabClicked : MembersUiEvent
+
+    // Why: the "Saldos" tab.
+    data object OnBalancesTabClicked : MembersUiEvent
 
     data object OnAddClicked : MembersUiEvent
 

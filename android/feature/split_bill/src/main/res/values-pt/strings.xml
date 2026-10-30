@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="split_bill_title">Rachar conta</string>
+    <string name="split_bill_close">Fechar</string>
+    <string name="split_bill_save">Salvar</string>
+    <string name="split_bill_cancel">Cancelar</string>
+    <string name="split_bill_done">Pronto</string>
+    <string name="split_bill_next">Próximo</string>
+    <string name="split_bill_back">Voltar</string>
+    <string name="split_bill_amount">Valor</string>
+    <string name="split_bill_description">Descrição</string>
+    <string name="split_bill_description_placeholder">O que foi? Ex.: Mercado</string>
+    <string name="split_bill_amount_error">Informe quanto foi a conta.</string>
+    <string name="split_bill_description_error">Diga o que foi, por exemplo Mercado.</string>
+    <string name="split_bill_refund">Você pagou e recebe %s de volta.</string>
+    <string name="split_bill_my_share">Sua parte: %s</string>
+    <string name="split_bill_payer">Quem pagou</string>
+    <string name="split_bill_you">Você</string>
+    <string name="split_bill_when">Quando</string>
+    <string name="split_bill_when_today">Hoje, %1$s · %2$s</string>
+    <string name="split_bill_when_yesterday">Ontem, %1$s · %2$s</string>
+    <string name="split_bill_when_other">%1$s · %2$s</string>
+    <string name="split_bill_split">Divisão</string>
+    <plurals name="split_bill_mode_equal_among">
+        <item quantity="one">Igual entre %d</item>
+        <item quantity="other">Igual entre %d</item>
+    </plurals>
+    <plurals name="split_bill_mode_amount_among">
+        <item quantity="one">Por valor entre %d</item>
+        <item quantity="other">Por valor entre %d</item>
+    </plurals>
+    <plurals name="split_bill_mode_percent_among">
+        <item quantity="one">Por porcentagem entre %d</item>
+        <item quantity="other">Por porcentagem entre %d</item>
+    </plurals>
+    <plurals name="split_bill_mode_shares_among">
+        <item quantity="one">Por partes entre %d</item>
+        <item quantity="other">Por partes entre %d</item>
+    </plurals>
+    <string name="split_bill_each">%s cada</string>
+    <plurals name="split_bill_excluded">
+        <item quantity="one">%s não participa</item>
+        <item quantity="other">%s não participam</item>
+    </plurals>
+    <string name="split_bill_excluded_me">Você não participa</string>
+    <string name="split_bill_sentence">%s.</string>
+    <string name="split_bill_offline">Sem internet: a conta fica salva no aparelho e entra nos saldos agora. Sincroniza ao reconectar.</string>
+    <string name="split_bill_save_error">Não deu para salvar a conta. Tente de novo.</string>
+    <string name="split_bill_not_joined">Ainda não entrou</string>
+    <string name="split_bill_split_title">Dividir</string>
+    <string name="split_bill_summary">%1$s · %2$s</string>
+    <string name="split_bill_summary_you_paid">você pagou</string>
+    <string name="split_bill_summary_you_paid_alone">Você pagou</string>
+    <string name="split_bill_summary_paid">%s pagou</string>
+    <string name="split_bill_modes">Como dividir</string>
+    <string name="split_bill_mode_equal">Igual</string>
+    <string name="split_bill_mode_amount">Valores</string>
+    <string name="split_bill_mode_percent">%</string>
+    <string name="split_bill_mode_shares">Partes</string>
+    <string name="split_bill_status_each">%s para cada um</string>
+    <plurals name="split_bill_status_among">
+        <item quantity="one">%1$s para %2$d pessoa.</item>
+        <item quantity="other">%1$s entre %2$d pessoas.</item>
+    </plurals>
+    <string name="split_bill_status_nobody">Ninguém participa ainda</string>
+    <string name="split_bill_status_nobody_equal">Marque pelo menos uma pessoa para dividir %s.</string>
+    <string name="split_bill_status_nobody_shares">Dê pelo menos uma parte a alguém para dividir %s.</string>
+    <string name="split_bill_status_amount_left">Faltam %s</string>
+    <string name="split_bill_status_amount_over">Passou %s</string>
+    <string name="split_bill_status_amount_closed">Fechou: %s</string>
+    <string name="split_bill_status_amount_progress">Já foram %1$s de %2$s.</string>
+    <plurals name="split_bill_status_without_value">
+        <item quantity="one">%s está sem valor.</item>
+        <item quantity="other">%s estão sem valor.</item>
+    </plurals>
+    <string name="split_bill_status_without_value_me">Você está sem valor.</string>
+    <string name="split_bill_status_amount_closed_message">A soma das partes é igual ao total.</string>
+    <string name="split_bill_status_percent_closed">Fechou: %d%%</string>
+    <string name="split_bill_status_percent_left">Faltam %d%%</string>
+    <string name="split_bill_status_percent_over">Passou %d%%</string>
+    <plurals name="split_bill_status_parts">
+        <item quantity="one">%1$d parte de %2$s</item>
+        <item quantity="other">%1$d partes de %2$s</item>
+    </plurals>
+    <plurals name="split_bill_status_person_parts">
+        <item quantity="one">%1$s tem %2$d parte.</item>
+        <item quantity="other">%1$s tem %2$d partes.</item>
+    </plurals>
+    <plurals name="split_bill_status_my_parts">
+        <item quantity="one">Você tem %d parte.</item>
+        <item quantity="other">Você tem %d partes.</item>
+    </plurals>
+    <string name="split_bill_hint_equal">Quando não dá conta exata, os centavos que sobram ficam com quem pagou.</string>
+    <string name="split_bill_hint_amount">Quem fica com %s sai da conta. Mudar o total depois refaz os valores proporcionalmente.</string>
+    <string name="split_bill_hint_percent">Só números inteiros. Os centavos que sobram ficam com quem pagou.</string>
+    <string name="split_bill_hint_shares">Use partes quando alguém consome mais, como quem levou acompanhante.</string>
+    <string name="split_bill_list_equal">Quem participa</string>
+    <string name="split_bill_list_amount">Quanto cada um consumiu</string>
+    <string name="split_bill_list_percent">Porcentagem de cada um</string>
+    <string name="split_bill_list_shares">Partes de cada um</string>
+    <string name="split_bill_check_all">Marcar todos</string>
+    <string name="split_bill_uncheck_all">Desmarcar todos</string>
+    <string name="split_bill_row_paid">Pagou a conta</string>
+    <string name="split_bill_row_in">Participa</string>
+    <string name="split_bill_row_out">Não participa</string>
+    <string name="split_bill_row_no_value">Sem valor</string>
+    <string name="split_bill_row_value">Valor da parte</string>
+    <string name="split_bill_no_share">—</string>
+    <string name="split_bill_person_in">%s participa</string>
+    <string name="split_bill_person_amount">Parte de %s</string>
+    <string name="split_bill_person_percent">Porcentagem de %s</string>
+    <string name="split_bill_person_parts">Partes de %s</string>
+    <string name="split_bill_parts_decrease">Menos uma parte</string>
+    <string name="split_bill_parts_increase">Mais uma parte</string>
+</resources>

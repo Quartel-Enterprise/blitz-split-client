@@ -2,7 +2,7 @@ import { Loader2, WifiOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { t } from '@/i18n'
+import { t, type MessageKey } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
 import { regionCurrencySymbol } from '@/lib/currency'
 import { accountProviders, type AccountProvider } from '@/lib/platform'
@@ -118,5 +118,43 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
         />
       )}
     </span>
+  )
+}
+
+export type GroupTab = 'expenses' | 'balances' | 'members'
+
+const groupTabs: { tab: GroupTab; label: MessageKey }[] = [
+  { tab: 'expenses', label: 'group_tabExpenses' },
+  { tab: 'balances', label: 'group_tabBalances' },
+  { tab: 'members', label: 'group_tabMembers' },
+]
+
+/**
+ * A group's sections, Despesas, Saldos and Membros, on the group's page and on Membros. Each tab is the ViewModel's
+ * event: Membros and Despesas take each other's place, Saldos answers "Coming soon" and the selection stays.
+ */
+export function GroupTabs({ selected, onSelect, className }: { selected: GroupTab; onSelect: (tab: GroupTab) => void; className?: string }) {
+  return (
+    <nav
+      aria-label={t('group_tabsLabel')}
+      className={cn('grid h-9 grid-cols-3 rounded-lg bg-muted p-[3px] text-muted-foreground sm:inline-grid sm:self-start', className)}
+    >
+      {groupTabs.map(({ tab, label }) => (
+        <button
+          key={tab}
+          type="button"
+          aria-current={tab === selected ? 'page' : undefined}
+          onClick={() => {
+            if (tab !== selected) onSelect(tab)
+          }}
+          className={cn(
+            'flex items-center justify-center rounded-md px-3 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+            tab === selected ? 'bg-background text-foreground shadow-sm dark:bg-input/30' : 'hover:text-foreground',
+          )}
+        >
+          {t(label)}
+        </button>
+      ))}
+    </nav>
   )
 }

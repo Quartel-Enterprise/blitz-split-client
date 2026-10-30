@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_detail_back">Back</string>
+    <string name="group_detail_invite">Invite people</string>
+    <plurals name="group_detail_member_count">
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
+    <string name="group_detail_meta_total">%1$s · %2$s in total</string>
+    <string name="group_detail_meta_empty">%s · no expenses yet</string>
+    <string name="group_detail_extra_members">+%d</string>
+    <plurals name="group_detail_not_joined">
+        <item quantity="one">%d hasn\'t joined yet</item>
+        <item quantity="other">%d haven\'t joined yet</item>
+    </plurals>
+    <string name="group_detail_see_members">See members</string>
+    <string name="group_detail_tabs">Group sections</string>
+    <string name="group_detail_tab_expenses">Expenses</string>
+    <string name="group_detail_tab_balances">Balances</string>
+    <string name="group_detail_tab_members">Members</string>
+    <string name="group_detail_today">Today</string>
+    <string name="group_detail_yesterday">Yesterday</string>
+    <string name="group_detail_queued">queued</string>
+    <string name="group_detail_you_paid">You paid</string>
+    <string name="group_detail_someone_paid">%s paid</string>
+    <string name="group_detail_empty_title">No expenses yet</string>
+    <string name="group_detail_empty_message">Add the first expense or invite who\'s splitting with you. People without the app count too.</string>
+    <string name="group_detail_split_bill">Split a bill</string>
+    <string name="group_detail_coming_soon">Coming soon</string>
+</resources>

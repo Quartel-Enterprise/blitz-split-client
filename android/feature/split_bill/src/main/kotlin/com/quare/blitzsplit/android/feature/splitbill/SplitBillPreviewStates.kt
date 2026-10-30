@@ -1,0 +1,201 @@
+package com.quare.blitzsplit.android.feature.splitbill
+
+import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
+
+private const val PREVIEW_SPENT_AT = 1_761_683_400_000L
+private const val PREVIEW_TOTAL_MINOR = 31_200L
+private const val PREVIEW_DINNER_TOTAL_MINOR = 64_200L
+private const val PREVIEW_ME_ID = "pv"
+private const val PREVIEW_DIEGO_ID = "di"
+private const val PREVIEW_BRUNO_ID = "br"
+private val previewPeople: List<BillPerson> = listOf(
+    BillPerson(
+        PREVIEW_ME_ID,
+        "Pierre",
+        "PV",
+        AvatarColor.BLUE,
+        isMe = true,
+        hasJoined = true,
+    ),
+    BillPerson(
+        "an",
+        "Ana",
+        "AN",
+        AvatarColor.GREEN,
+        isMe = false,
+        hasJoined = true,
+    ),
+    BillPerson(
+        PREVIEW_BRUNO_ID,
+        "Bruno",
+        "BR",
+        AvatarColor.PEACH,
+        isMe = false,
+        hasJoined = true,
+    ),
+    BillPerson(
+        "ca",
+        "Carla",
+        "CA",
+        AvatarColor.LILAC,
+        isMe = false,
+        hasJoined = true,
+    ),
+    BillPerson(
+        "el",
+        "Elisa",
+        "EL",
+        AvatarColor.SAND,
+        isMe = false,
+        hasJoined = true,
+    ),
+    BillPerson(
+        PREVIEW_DIEGO_ID,
+        "Diego",
+        "DI",
+        AvatarColor.GREEN,
+        isMe = false,
+        hasJoined = false,
+    ),
+)
+
+internal fun createPreviewBillState(
+    amountText: String = "312,00",
+    description: String = "Mercado",
+    isOnline: Boolean = true,
+    splitEditor: SplitEditor? = null,
+): SplitBillUiState = SplitBillUiState(
+    groupName = "Viagem Floripa",
+    groupInitials = "VF",
+    groupColor = AvatarColor.PEACH,
+    currency = GroupCurrency.BRL,
+    people = previewPeople,
+    amountText = amountText,
+    description = description,
+    hasEditedAmount = true,
+    hasEditedDescription = true,
+    payerId = splitEditor?.payerId ?: PREVIEW_ME_ID,
+    payerSelection = null,
+    spentAt = PREVIEW_SPENT_AT,
+    spentDay = RelativeDay.TODAY,
+    latestSpentAt = PREVIEW_SPENT_AT,
+    split = createPreviewEqualEditor(
+        totalMinor = if (amountText.isEmpty() || amountText == "0,00") 0L else PREVIEW_TOTAL_MINOR,
+        isAnyoneIn = true,
+    ),
+    splitEditor = splitEditor,
+    isOnline = isOnline,
+    isSaving = false,
+    isLoaded = true,
+)
+
+internal fun createPreviewEqualEditor(
+    totalMinor: Long = PREVIEW_TOTAL_MINOR,
+    isAnyoneIn: Boolean,
+): SplitEditor = createPreviewEditor(
+    mode = SplitMode.EQUAL,
+    totalMinor = totalMinor,
+    payerId = PREVIEW_ME_ID,
+) { person ->
+    SplitRow(
+        person = person,
+        isIncluded = isAnyoneIn && person.id != PREVIEW_DIEGO_ID,
+        valueText = "",
+        parts = 1L,
+        shareMinor = if (isAnyoneIn && person.id != PREVIEW_DIEGO_ID) 6_240L else null,
+    )
+}
+
+internal fun createPreviewAmountEditor(): SplitEditor {
+    val values = mapOf(
+        PREVIEW_ME_ID to "118,00",
+        "an" to "132,00",
+        PREVIEW_BRUNO_ID to "146,00",
+        "ca" to "98,00",
+        "el" to "",
+        PREVIEW_DIEGO_ID to "64,00",
+    )
+    return createPreviewEditor(
+        mode = SplitMode.AMOUNT,
+        totalMinor = PREVIEW_DINNER_TOTAL_MINOR,
+        payerId = PREVIEW_BRUNO_ID,
+    ) { person ->
+        SplitRow(
+            person = person,
+            isIncluded = true,
+            valueText = values.getValue(person.id),
+            parts = 1L,
+            shareMinor = null,
+        )
+    }
+}
+
+internal fun createPreviewPercentEditor(): SplitEditor {
+    val percents = mapOf(
+        PREVIEW_ME_ID to 30L,
+        "an" to 20L,
+        PREVIEW_BRUNO_ID to 20L,
+        "ca" to 15L,
+        "el" to 15L,
+        PREVIEW_DIEGO_ID to 0L,
+    )
+    return createPreviewEditor(
+        mode = SplitMode.PERCENT,
+        totalMinor = PREVIEW_TOTAL_MINOR,
+        payerId = PREVIEW_ME_ID,
+    ) { person ->
+        val percent = percents.getValue(person.id)
+        SplitRow(
+            person = person,
+            isIncluded = true,
+            valueText = percent.toString(),
+            parts = 1L,
+            shareMinor = (PREVIEW_TOTAL_MINOR * percent / 100).takeIf { percent > 0 },
+        )
+    }
+}
+
+internal fun createPreviewSharesEditor(): SplitEditor {
+    val parts = mapOf(
+        PREVIEW_ME_ID to 1L,
+        "an" to 2L,
+        PREVIEW_BRUNO_ID to 1L,
+        "ca" to 1L,
+        "el" to 1L,
+        PREVIEW_DIEGO_ID to 0L,
+    )
+    return createPreviewEditor(
+        mode = SplitMode.SHARES,
+        totalMinor = PREVIEW_TOTAL_MINOR,
+        payerId = PREVIEW_ME_ID,
+    ) { person ->
+        val count = parts.getValue(person.id)
+        SplitRow(
+            person = person,
+            isIncluded = true,
+            valueText = "",
+            parts = count,
+            shareMinor = (5_200L * count).takeIf { count > 0 },
+        )
+    }
+}
+
+private fun createPreviewEditor(
+    mode: SplitMode,
+    totalMinor: Long,
+    payerId: String,
+    rowOf: (BillPerson) -> SplitRow,
+): SplitEditor = SplitEditor(
+    mode = mode,
+    rows = previewPeople.map(rowOf),
+    totalMinor = totalMinor,
+    payerId = payerId,
+    currency = GroupCurrency.BRL,
+)

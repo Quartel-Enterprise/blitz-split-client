@@ -46,6 +46,7 @@ val syncModule = module {
             paymentKeyRepository = get(),
             notificationPreferencesRepository = get(),
             groupRepository = get(),
+            expenseRepository = get(),
             connectivityObserver = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )

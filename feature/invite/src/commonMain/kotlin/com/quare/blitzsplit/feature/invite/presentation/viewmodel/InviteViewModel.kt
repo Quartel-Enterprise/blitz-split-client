@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openGroupTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -87,10 +88,22 @@ class InviteViewModel(
     fun onEvent(event: InviteUiEvent) {
         when (event) {
             InviteUiEvent.OnCloseClicked -> leave()
+
             InviteUiEvent.OnCopyClicked -> copy()
+
             InviteUiEvent.OnShareClicked -> share()
+
             InviteUiEvent.OnRetryClicked -> if (uiState.value.isLinkFailed) retrySync()
-            InviteUiEvent.OnSeeWhoJoinedClicked, InviteUiEvent.OnGoToGroupClicked -> openMembers()
+
+            InviteUiEvent.OnSeeWhoJoinedClicked -> navigator.openGroupTab(
+                from = route,
+                tab = Route.Members(route.groupId, joinedAs = null),
+            )
+
+            InviteUiEvent.OnGoToGroupClicked -> navigator.openGroupTab(
+                from = route,
+                tab = Route.GroupDetail(route.groupId),
+            )
         }
     }
 
@@ -148,22 +161,6 @@ class InviteViewModel(
 
     private fun send(action: InviteUiAction) {
         viewModelScope.launch { uiAction.emit(action) }
-    }
-
-    /*
-     * Why: "Membros" stands in for the group's own screen (flow 6). When it opened "Convidar", going back to it keeps
-     * the two from stacking; right after "Novo grupo", it takes this screen's place, so back goes to the home.
-     */
-    private fun openMembers() {
-        val backStack = navigator.backStack.value
-        if (backStack.lastOrNull() != route) return
-        val below = backStack.getOrNull(backStack.lastIndex - 1)
-        // Why: by the group alone, since the members just joined ("Você entrou como Bruno") are the same screen.
-        if ((below as? Route.Members)?.groupId == route.groupId) {
-            navigator.navigateBack()
-        } else {
-            navigator.replaceTop(Route.Members(route.groupId, joinedAs = null))
-        }
     }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
