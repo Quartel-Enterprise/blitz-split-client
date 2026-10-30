@@ -67,8 +67,9 @@ with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub token
 No check is required in that ruleset. Every check workflow is path filtered, so a required one would leave a pull
 request it doesn't run on (docs only, `iosApp` only) waiting forever, and the gate's own `wait for review` job is
 skipped on every push but the opening one, which also counts as passing. Without required checks, `create-pr`
-merges only after `gh pr checks` shows every check of the head commit green, and the `merge-when-green` label does
-that wait on GitHub.
+adds the `merge-when-green` label, which merges only once every check of the head commit is green, and waits with
+`gh pr checks` itself only when the label can't merge (no `MERGE_WHEN_GREEN_TOKEN`) or when asked to merge right
+away.
 
 ## The review gate
 
