@@ -25,7 +25,7 @@ data class InviteUiState(
     val isLinkFailed: Boolean
         get() = isLinkPending && isOnline && isSyncFailed
 
-    // Why: "borarachar.com/g/7Hk2pQ", the link as the card shows it; copying and sharing send the whole link.
+    // Why: "blitzsplit.com/g/7Hk2pQ", the link as the card shows it; copying and sharing send the whole link.
     val displayLink: String?
         get() = link?.substringAfter("://")
 

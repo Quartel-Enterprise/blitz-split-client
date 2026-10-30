@@ -21,6 +21,7 @@ private val exportedToApple = listOf(
     projects.feature.createGroup,
     projects.feature.invite,
     projects.feature.members,
+    projects.feature.join,
 )
 
 kotlin {

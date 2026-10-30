@@ -8,6 +8,9 @@ sealed interface MemberNameCheck {
 
     data object Blank : MemberNameCheck
 
+    // Why: a single letter, shorter than MemberNameRules allows.
+    data object TooShort : MemberNameCheck
+
     // Why: the member already called that, as the group spells it, and the nicknames that would tell them apart.
     data class Taken(
         val existingName: String,

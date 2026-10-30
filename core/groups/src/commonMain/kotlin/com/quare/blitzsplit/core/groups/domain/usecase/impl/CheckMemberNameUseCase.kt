@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.domain.usecase.impl
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
+import com.quare.blitzsplit.core.groups.domain.model.MemberNameRules
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 
 /*
@@ -20,6 +21,7 @@ class CheckMemberNameUseCase : CheckMemberName {
     ): MemberNameCheck {
         val normalized = normalize(name)
         if (normalized.isEmpty()) return MemberNameCheck.Blank
+        if (!MemberNameRules.isLongEnough(normalized)) return MemberNameCheck.TooShort
         val taken = takenNames.map(::normalize)
         val existingIndex = taken.indexOfFirst { it.equals(normalized, ignoreCase = true) }
         if (existingIndex < 0) return MemberNameCheck.Available(normalized)

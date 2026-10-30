@@ -186,11 +186,11 @@ class InviteViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals("https://borarachar.com/g/7Hk2pQ", state.link)
-            assertEquals("borarachar.com/g/7Hk2pQ", state.displayLink)
-            assertEquals(qrCodeOf("https://borarachar.com/g/7Hk2pQ"), state.qrCode)
+            assertEquals("https://blitzsplit.com/g/7Hk2pQ", state.link)
+            assertEquals("blitzsplit.com/g/7Hk2pQ", state.displayLink)
+            assertEquals(qrCodeOf("https://blitzsplit.com/g/7Hk2pQ"), state.qrCode)
             assertFalse(state.isLinkPending)
-            assertEquals(listOf("https://borarachar.com/g/7Hk2pQ"), encodedTexts)
+            assertEquals(listOf("https://blitzsplit.com/g/7Hk2pQ"), encodedTexts)
         }
 
     @Test
@@ -204,8 +204,8 @@ class InviteViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("https://borarachar.com/g/7Hk2pQ", state.link)
-            assertEquals(qrCodeOf("https://borarachar.com/g/7Hk2pQ"), state.qrCode)
+            assertEquals("https://blitzsplit.com/g/7Hk2pQ", state.link)
+            assertEquals(qrCodeOf("https://blitzsplit.com/g/7Hk2pQ"), state.qrCode)
             assertFalse(state.isLinkPending)
         }
 
@@ -223,8 +223,8 @@ class InviteViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals("Aninha", state.members[1].name)
-            assertEquals(qrCodeOf("https://borarachar.com/g/7Hk2pQ"), state.qrCode)
-            assertEquals(listOf("https://borarachar.com/g/7Hk2pQ"), encodedTexts)
+            assertEquals(qrCodeOf("https://blitzsplit.com/g/7Hk2pQ"), state.qrCode)
+            assertEquals(listOf("https://blitzsplit.com/g/7Hk2pQ"), encodedTexts)
         }
 
     @Test
@@ -238,9 +238,9 @@ class InviteViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("https://borarachar.com/g/Zx9Yw8", state.link)
-            assertEquals(qrCodeOf("https://borarachar.com/g/Zx9Yw8"), state.qrCode)
-            assertEquals(listOf("https://borarachar.com/g/7Hk2pQ", "https://borarachar.com/g/Zx9Yw8"), encodedTexts)
+            assertEquals("https://blitzsplit.com/g/Zx9Yw8", state.link)
+            assertEquals(qrCodeOf("https://blitzsplit.com/g/Zx9Yw8"), state.qrCode)
+            assertEquals(listOf("https://blitzsplit.com/g/7Hk2pQ", "https://blitzsplit.com/g/Zx9Yw8"), encodedTexts)
         }
 
     @Test
@@ -382,7 +382,7 @@ class InviteViewModelTest {
         viewModel.onEvent(InviteUiEvent.OnCopyClicked)
 
         // Then
-        assertEquals(listOf<InviteUiAction>(InviteUiAction.CopyLink("https://borarachar.com/g/7Hk2pQ")), actions)
+        assertEquals(listOf<InviteUiAction>(InviteUiAction.CopyLink("https://blitzsplit.com/g/7Hk2pQ")), actions)
         assertTrue(viewModel.uiState.value.isLinkCopied)
     }
 
@@ -450,7 +450,7 @@ class InviteViewModelTest {
 
         // Then
         assertEquals(
-            listOf<InviteUiAction>(InviteUiAction.ShareLink("https://borarachar.com/g/7Hk2pQ", "Viagem Floripa")),
+            listOf<InviteUiAction>(InviteUiAction.ShareLink("https://blitzsplit.com/g/7Hk2pQ", "Viagem Floripa")),
             actions,
         )
     }
@@ -477,7 +477,7 @@ class InviteViewModelTest {
             viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -489,7 +489,7 @@ class InviteViewModelTest {
         viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -497,14 +497,29 @@ class InviteViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.replaceTop(Route.Members("group-1"))
+            navigator.replaceTop(Route.Members("group-1", joinedAs = null))
             navigator.navigate(Route.Invite("group-1"))
 
             // When
             viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the screen opened from the members just joined WHEN see who joined is tapped THEN goes back to them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.replaceTop(Route.Members("group-1", joinedAs = "Bruno"))
+            navigator.navigate(Route.Invite("group-1"))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno")), navigator.backStack.value)
         }
 
     @Test
@@ -571,7 +586,7 @@ class InviteViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals("https://borarachar.com/g/7Hk2pQ", state.link)
+            assertEquals("https://blitzsplit.com/g/7Hk2pQ", state.link)
             assertFalse(state.isLinkFailed)
         }
 
@@ -715,7 +730,7 @@ class InviteViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("https://borarachar.com/g/7Hk2pQ", state.link)
+            assertEquals("https://blitzsplit.com/g/7Hk2pQ", state.link)
             assertFalse(state.isLinkFailed)
         }
 

@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, EllipsisVertical, Link2, Pencil, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, Check, ChevronRight, CircleCheck, EllipsisVertical, Link2, Pencil, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
 import { MembersPresenter, type JsMemberNameEditor, type JsMembersMember, type JsMembersState, type JsRoute } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -56,6 +56,7 @@ export function MembersScreen({ route }: { route: JsRoute }) {
             {count} · {joined}
           </p>
         </div>
+        {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} />}
         <section className="flex items-center gap-3 rounded-xl border bg-card p-3 pl-4">
           <Link2 className="size-5 shrink-0 text-muted-foreground" />
           <div className="min-w-0 flex-1">
@@ -75,6 +76,31 @@ export function MembersScreen({ route }: { route: JsRoute }) {
       {state.editor && <MemberNameDialog presenter={presenter} editor={state.editor} />}
       {state.memberToRemoveName != null && <RemoveMemberDialog presenter={presenter} name={state.memberToRemoveName} />}
     </div>
+  )
+}
+
+/** Right after joining through the link, and "Proteja seu acesso" while the account has no Google or Apple. */
+function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: MembersPresenter; name: string; showsProtectAccess: boolean }) {
+  return (
+    <>
+      <section className="flex gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4">
+        <CircleCheck className="mt-0.5 size-5 shrink-0 text-primary" />
+        <div>
+          <p className="font-semibold">{t('members_joinedTitle', { name })}</p>
+          <p className="text-sm text-muted-foreground">{t('members_joinedMessage')}</p>
+        </div>
+      </section>
+      {showsProtectAccess && (
+        <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left hover:bg-muted/60">
+          <ShieldCheck className="size-5 shrink-0 text-primary" />
+          <span className="flex-1">
+            <span className="block font-semibold">{t('members_protectTitle')}</span>
+            <span className="block text-sm text-muted-foreground">{t('members_protectMessage')}</span>
+          </span>
+          <ChevronRight className="size-5 text-muted-foreground" />
+        </button>
+      )}
+    </>
   )
 }
 

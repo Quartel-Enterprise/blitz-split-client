@@ -37,6 +37,18 @@
                     android:host="auth-callback"
                     android:scheme="borarachar" />
             </intent-filter>
+
+            <!-- A group's invite link, blitzsplit.com/g/<code>, verified by the site's assetlinks.json -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="blitzsplit.com" />
+                <data android:pathPrefix="/g/" />
+            </intent-filter>
         </activity>
     </application>
 </manifest>

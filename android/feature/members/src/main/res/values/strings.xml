@@ -37,4 +37,8 @@
     <string name="members_cancel">Cancel</string>
     <string name="members_coming_soon">Coming soon</string>
     <string name="members_change_error">Couldn\'t save the change. Try again.</string>
+    <string name="members_joined_title">You joined as %s</string>
+    <string name="members_joined_message">Everything added for you shows up here.</string>
+    <string name="members_protect_title">Protect your access</string>
+    <string name="members_protect_message">You joined without an account. Save the code or connect Google or Apple.</string>
 </resources>

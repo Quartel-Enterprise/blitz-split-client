@@ -15,6 +15,10 @@ enum AppRoute: Hashable, Identifiable {
     case invite(RouteInvite)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case members(RouteMembers)
+    /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
+    case joinInvite(RouteJoinInvite)
+    /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
+    case joinPick(RouteJoinPick)
     case profile
     case editProfile
     case deleteAccount
@@ -30,6 +34,8 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteCreateGroup: self = .createGroup
         case let invite as RouteInvite: self = .invite(invite)
         case let members as RouteMembers: self = .members(members)
+        case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
+        case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount

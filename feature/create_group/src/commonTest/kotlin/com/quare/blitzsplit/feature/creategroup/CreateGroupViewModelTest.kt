@@ -394,6 +394,23 @@ class CreateGroupViewModelTest {
         }
 
     @Test
+    fun `GIVEN Ana added WHEN typing a single letter THEN can neither add it nor create the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Floripa"))
+            addMember("Ana")
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("J"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.canAddMember)
+            assertFalse(state.canCreate)
+        }
+
+    @Test
     fun `GIVEN a draft repeating Ana WHEN the draft is cleared THEN clears the warning and can add nothing`() =
         runTest(testDispatcher) {
             // Given

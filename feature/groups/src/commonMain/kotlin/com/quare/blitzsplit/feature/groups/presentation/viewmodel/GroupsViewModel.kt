@@ -113,7 +113,7 @@ class GroupsViewModel(
              * top, so a quick tap on a second row doesn't push its members over the first's.
              */
             is GroupsUiEvent.OnGroupClicked -> if (navigator.backStack.value.lastOrNull() == Route.Groups) {
-                navigator.navigate(Route.Members(event.groupId))
+                navigator.navigate(Route.Members(event.groupId, joinedAs = null))
             }
 
             GroupsUiEvent.OnJoinWithLinkClicked,

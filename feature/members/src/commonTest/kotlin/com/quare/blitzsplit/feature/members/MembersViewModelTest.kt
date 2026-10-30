@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.members
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -9,6 +11,8 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
+import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -38,6 +42,7 @@ import kotlin.test.assertTrue
 class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
+    private lateinit var account: FakeAccountRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: MembersViewModel
     private val actions = mutableListOf<MembersUiAction>()
@@ -144,7 +149,7 @@ class MembersViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals("borarachar.com/g/7Hk2pQ", state.displayLink)
+            assertEquals("blitzsplit.com/g/7Hk2pQ", state.displayLink)
         }
 
     @Test
@@ -178,7 +183,7 @@ class MembersViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals("Floripa 2026", state.groupName)
-            assertEquals("borarachar.com/g/7Hk2pQ", state.displayLink)
+            assertEquals("blitzsplit.com/g/7Hk2pQ", state.displayLink)
             assertEquals(listOf("Pierre", "Ana", "Bruno", "Carla", "Diego"), state.members.map { it.name })
             assertEquals(5, state.memberCount)
         }
@@ -225,7 +230,7 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1"), Route.Invite("group-1")),
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
                 navigator.backStack.value,
             )
         }
@@ -269,7 +274,7 @@ class MembersViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members("group-1"), Route.Invite("group-1")),
+            listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
             navigator.backStack.value,
         )
     }
@@ -286,7 +291,7 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1"), Route.Invite("group-1")),
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
                 navigator.backStack.value,
             )
         }
@@ -301,7 +306,10 @@ class MembersViewModelTest {
         viewModel.onEvent(MembersUiEvent.OnShareClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members("group-1"), Route.Profile), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Profile),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -329,7 +337,7 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
-            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -1109,6 +1117,212 @@ class MembersViewModelTest {
         assertEquals(4, viewModel.uiState.value.memberCount)
     }
 
+    @Test
+    fun `GIVEN the group was just joined as Bruno WHEN the screen opens THEN says Bruno joined`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("Bruno", state.joinedAs)
+        }
+
+    @Test
+    fun `GIVEN the screen opened from the groups list WHEN it opens THEN there is no joined banner`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.joinedAs)
+        }
+
+    @Test
+    fun `GIVEN just joined with a local only account WHEN the screen opens THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.LocalOnly,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isAccountUnprotected)
+            assertTrue(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with an anonymous account WHEN the screen opens THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isAccountUnprotected)
+            assertTrue(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with Google WHEN the screen opens THEN does not ask to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Connected(
+                    FakeAccountRepository.CONNECTED_USER_ID,
+                    AccountProvider.GOOGLE,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isAccountUnprotected)
+            assertFalse(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with Apple WHEN the screen opens THEN does not ask to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = withApple,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isAccountUnprotected)
+            assertFalse(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN asked to protect the access WHEN Google gets connected THEN stops asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            joinedAs = "Bruno",
+            accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+        )
+
+        // When
+        account.status = withGoogle
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsProtectAccess)
+        assertEquals("Bruno", viewModel.uiState.value.joinedAs)
+    }
+
+    @Test
+    fun `GIVEN just joined with Google WHEN Google is removed THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Connected(
+                    FakeAccountRepository.CONNECTED_USER_ID,
+                    AccountProvider.GOOGLE,
+                ),
+            )
+
+            // When
+            account.status = AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID)
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN opened from the groups list with a local only account WHEN it opens THEN does not ask to protect`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = null,
+                accountStatus = AccountStatus.LocalOnly,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isAccountUnprotected)
+            assertFalse(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN opened from the groups list with Google WHEN Google is removed THEN does not ask to protect`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = null,
+                accountStatus = AccountStatus.Connected(
+                    FakeAccountRepository.CONNECTED_USER_ID,
+                    AccountProvider.GOOGLE,
+                ),
+            )
+
+            // When
+            account.status = AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isAccountUnprotected)
+            assertFalse(viewModel.uiState.value.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN asked to protect the access WHEN tapping it THEN opens the profile over the members`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+            val event = MembersUiEvent.OnProtectAccessClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno"), Route.Profile),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping protect the access THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+            navigator.navigate(Route.Invite("group-1"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno"), Route.Invite("group-1")),
+                navigator.backStack.value,
+            )
+        }
+
+    private val withGoogle = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
+    private val withApple = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
+
     private val pierre = GroupMember(
         "member-1",
         "Pierre",
@@ -1176,21 +1390,28 @@ class MembersViewModelTest {
         storedGroup: Group = trip,
         isRoomRead: Boolean = true,
         memberChangeError: Throwable? = null,
+        joinedAs: String? = null,
+        accountStatus: AccountStatus = AccountStatus.LocalOnly,
     ) {
+        account = FakeAccountRepository(initialStatus = accountStatus)
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.memberChangeError = memberChangeError
         }
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Members("group-1")) }
+        navigator =
+            BackStackNavigator(
+                startRoute = Route.Groups,
+            ).also { it.navigate(Route.Members("group-1", joinedAs)) }
         val observeGroup = ObserveGroupUseCase(groups)
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         viewModel = MembersViewModel(
-            route = Route.Members("group-1"),
+            route = Route.Members("group-1", joinedAs),
             navigator = navigator,
             checkMemberName = CheckMemberNameUseCase(),
             addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
             renameMember = RenameMemberUseCase(groups) { 1_000L },
             removeMember = RemoveMemberUseCase(groups) { 1_000L },
             observeGroup = if (isRoomRead) observeGroup else ObserveGroup { roomNeverAnswers },
+            observeAccount = ObserveAccountUseCase(account),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
