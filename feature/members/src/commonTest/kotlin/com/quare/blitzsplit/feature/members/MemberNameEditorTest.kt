@@ -31,6 +31,18 @@ class MemberNameEditorTest {
     }
 
     @Test
+    fun `GIVEN a single letter WHEN reading the editor THEN it cannot save`() {
+        // Given
+        val editor = editor(draft = "D")
+
+        // When
+        val canSave = editor.canSave
+
+        // Then
+        assertFalse(canSave)
+    }
+
+    @Test
     fun `GIVEN a free name WHEN reading the editor THEN it can save`() {
         // Given
         val editor = editor(draft = "Diego")

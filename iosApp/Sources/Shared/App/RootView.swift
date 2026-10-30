@@ -47,6 +47,8 @@ struct RootView: View {
         case .createGroup: CreateGroupView()
         case let .invite(route): InviteView(route: route)
         case let .members(route): MembersView(route: route)
+        case let .joinInvite(route): JoinInviteView(route: route)
+        case let .joinPick(route): JoinPickView(route: route)
         case .profile: ProfileView()
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()

@@ -546,7 +546,7 @@ private fun createPreviewQrCode(): QrCode = QrCode(
 
 private fun createPreviewState(): InviteUiState = InviteUiState(
     groupName = "Viagem Floripa",
-    link = "https://borarachar.com/g/7Hk2pQxa",
+    link = "https://blitzsplit.com/g/7Hk2pQxa",
     qrCode = createPreviewQrCode(),
     members = createPreviewMembers(),
     isOnline = true,

@@ -1,0 +1,29 @@
+package com.quare.blitzsplit.feature.join.presentation.model
+
+import com.quare.blitzsplit.core.model.AvatarColor
+
+data class JoinInviteUiState(
+    val status: JoinInviteStatus,
+    val groupName: String,
+    // Why: "VF" for Viagem Floripa.
+    val groupInitials: String,
+    val groupColor: AvatarColor,
+    // Why: "Pierre te chamou", "criado por Pierre"; null once the creator's account was deleted.
+    val creatorName: String?,
+    // Why: in the order they were added, the creator first.
+    val members: List<JoinMember>,
+    // Why: "blitzsplit.com/g/7Hk2pQ", the link as the offline state shows it.
+    val displayLink: String,
+) {
+    // Why: "4 membros".
+    val memberCount: Int
+        get() = members.size
+
+    // Why: the faces next to "Pierre e Ana já estão no grupo".
+    val joined: List<JoinMember>
+        get() = members.filter { it.hasJoined }
+
+    // Why: "Pierre e Ana já estão no grupo".
+    val joinedNames: List<String>
+        get() = joined.map { it.name }
+}

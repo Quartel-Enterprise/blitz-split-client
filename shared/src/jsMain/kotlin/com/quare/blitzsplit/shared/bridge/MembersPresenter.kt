@@ -43,6 +43,9 @@ class JsMembersState(
     // Why: the name in "Remover Carla do grupo?", null while nobody is about to be removed.
     val memberToRemoveName: String?,
     val isLoaded: Boolean,
+    // Why: "Você entrou como Bruno", null unless the group was just joined through its link.
+    val joinedAs: String?,
+    val showsProtectAccess: Boolean,
 )
 
 class MembersPresenter(
@@ -65,6 +68,8 @@ class MembersPresenter(
                 editor = state.editor?.let(::toJsMemberNameEditor),
                 memberToRemoveName = state.memberToRemove?.name,
                 isLoaded = state.isLoaded,
+                joinedAs = state.joinedAs,
+                showsProtectAccess = state.showsProtectAccess,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -134,6 +139,10 @@ class MembersPresenter(
 
     fun dismissEditor() {
         viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
+    }
+
+    fun protectAccess() {
+        viewModel.onEvent(MembersUiEvent.OnProtectAccessClicked)
     }
 
     fun dispose() {

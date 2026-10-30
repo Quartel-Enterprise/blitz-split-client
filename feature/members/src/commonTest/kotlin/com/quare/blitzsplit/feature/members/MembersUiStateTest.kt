@@ -5,6 +5,8 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class MembersUiStateTest {
     @Test
@@ -41,13 +43,79 @@ class MembersUiStateTest {
         assertEquals(0 to 0, counts)
     }
 
-    private fun state(members: List<MembersMember>): MembersUiState = MembersUiState(
+    @Test
+    fun `GIVEN just joined with an unprotected account WHEN checking the protect access invite THEN it shows`() {
+        // Given
+        val state = state(
+            joinedAs = "Bruno",
+            isAccountUnprotected = true,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertTrue(shows)
+    }
+
+    @Test
+    fun `GIVEN just joined with a protected account WHEN checking the protect access invite THEN it hides`() {
+        // Given
+        val state = state(
+            joinedAs = "Bruno",
+            isAccountUnprotected = false,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertFalse(shows)
+    }
+
+    @Test
+    fun `GIVEN not opened from a join with an unprotected account WHEN checking the invite THEN it hides`() {
+        // Given
+        val state = state(
+            joinedAs = null,
+            isAccountUnprotected = true,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertFalse(shows)
+    }
+
+    @Test
+    fun `GIVEN not opened from a join with a protected account WHEN checking the invite THEN it hides`() {
+        // Given
+        val state = state(
+            joinedAs = null,
+            isAccountUnprotected = false,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertFalse(shows)
+    }
+
+    private fun state(
+        members: List<MembersMember> = emptyList(),
+        joinedAs: String? = null,
+        isAccountUnprotected: Boolean = false,
+    ): MembersUiState = MembersUiState(
         groupName = "Viagem Floripa",
         displayLink = null,
         members = members,
         editor = null,
         memberToRemove = null,
         isLoaded = true,
+        joinedAs = joinedAs,
+        isAccountUnprotected = isAccountUnprotected,
     )
 
     private fun member(

@@ -3,6 +3,7 @@ package com.quare.blitzsplit.shared.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
+import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -28,6 +29,7 @@ class AppViewModel(
     val navigator: Navigator,
     private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
     private val observeThemePreference: ObserveThemePreference,
+    private val linkInbox: LinkInbox,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -48,6 +50,7 @@ class AppViewModel(
         resolveStartRoute()
         returnToProfileOnBrowserSignIn()
         returnToWelcomeOnceErased()
+        openInviteLinks()
     }
 
     private fun resolveStartRoute() {
@@ -78,6 +81,22 @@ class AppViewModel(
             .onEach {
                 uiState.first { it == AppUiState.READY }
                 if (navigator.backStack.value.lastOrNull() == Route.Groups) navigator.navigate(Route.Profile)
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: an invite link opens its invite over wherever the app is, once the first screen is in place, so back leaves
+     * it for the groups, or the welcome without a profile. The same invite already on top isn't opened twice.
+     */
+    private fun openInviteLinks() {
+        linkInbox
+            .observe()
+            .onEach { url ->
+                uiState.first { it == AppUiState.READY }
+                linkInbox.take(url)
+                val code = InviteLink.codeOf(url) ?: return@onEach
+                val invite = Route.JoinInvite(code)
+                if (navigator.backStack.value.lastOrNull() != invite) navigator.navigate(invite)
             }.launchIn(viewModelScope)
     }
 

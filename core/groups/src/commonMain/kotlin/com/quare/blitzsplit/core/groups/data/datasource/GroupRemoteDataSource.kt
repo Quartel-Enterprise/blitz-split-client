@@ -2,6 +2,9 @@ package com.quare.blitzsplit.core.groups.data.datasource
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.data.dto.InviteDto
+import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 
 interface GroupRemoteDataSource {
     // Why: the rows as the server kept them, with the invite code it made for a new group.
@@ -16,4 +19,9 @@ interface GroupRemoteDataSource {
     suspend fun fetchGroups(): List<GroupDto>
 
     suspend fun fetchMembers(): List<GroupMemberDto>
+
+    // Why: the group behind an invite code, which nobody outside it may read otherwise; null for a code no group has.
+    suspend fun fetchInvite(code: String): InviteDto?
+
+    suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto
 }

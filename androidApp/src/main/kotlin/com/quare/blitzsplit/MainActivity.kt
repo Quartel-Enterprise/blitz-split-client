@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.navigation.AppNavDisplay
 import com.quare.blitzsplit.shared.app.AppViewModel
+import com.quare.blitzsplit.shared.app.LinkInbox
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.coroutines.launch
@@ -30,12 +31,13 @@ class MainActivity : ComponentActivity() {
     private val handleBrowserCallback: HandleBrowserCallback by inject()
     private val handleAppPaused: HandleAppPaused by inject()
     private val handleAppResumed: HandleAppResumed by inject()
+    private val linkInbox: LinkInbox by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        // Why: a recreated activity keeps the intent that launched it, an old callback by now.
-        if (savedInstanceState == null) handleAuthCallback(intent)
+        // Why: a recreated activity keeps the intent that launched it, an old callback or link by now.
+        if (savedInstanceState == null) handleLink(intent)
         setContent {
             val appViewModel: AppViewModel = koinViewModel()
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
@@ -58,11 +60,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Why: singleTask, so the browser sign in comes back here as borarachar://auth-callback.
+    // Why: singleTask, so the browser sign in comes back here as borarachar://auth-callback, and an invite link too.
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleAuthCallback(intent)
+        handleLink(intent)
     }
 
     // Why: the browser sign in opens over this activity, which pauses it.
@@ -77,9 +79,11 @@ class MainActivity : ComponentActivity() {
         handleAppResumed()
     }
 
-    private fun handleAuthCallback(intent: Intent) {
+    // Why: each handler takes only the links it knows: the sign in's callback, or a group's invite.
+    private fun handleLink(intent: Intent) {
         supabase.handleDeeplinks(intent)
         val url = intent.dataString ?: return
         lifecycleScope.launch { handleBrowserCallback(url) }
+        linkInbox.receive(url)
     }
 }

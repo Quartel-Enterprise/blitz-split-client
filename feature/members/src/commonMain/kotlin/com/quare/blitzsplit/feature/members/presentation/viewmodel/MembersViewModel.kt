@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
@@ -13,6 +14,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -38,6 +40,7 @@ class MembersViewModel(
     private val renameMember: RenameMember,
     private val removeMember: RemoveMember,
     observeGroup: ObserveGroup,
+    observeAccount: ObserveAccount,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
@@ -48,6 +51,8 @@ class MembersViewModel(
                 editor = null,
                 memberToRemove = null,
                 isLoaded = false,
+                joinedAs = route.joinedAs,
+                isAccountUnprotected = false,
             ),
         )
 
@@ -70,6 +75,12 @@ class MembersViewModel(
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
+        if (route.joinedAs != null) {
+            observeAccount()
+                .onEach { account ->
+                    uiState.update { it.copy(isAccountUnprotected = account.status !is AccountStatus.Connected) }
+                }.launchIn(viewModelScope)
+        }
     }
 
     fun onEvent(event: MembersUiEvent) {
@@ -102,6 +113,8 @@ class MembersViewModel(
             MembersUiEvent.OnSaveClicked -> save()
 
             MembersUiEvent.OnEditorDismissed -> uiState.update { it.copy(editor = null) }
+
+            MembersUiEvent.OnProtectAccessClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
         }
     }
 

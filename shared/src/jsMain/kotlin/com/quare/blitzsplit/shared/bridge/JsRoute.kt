@@ -25,4 +25,11 @@ class JsRoute internal constructor(
         is Route.Members -> route.groupId
         else -> null
     }
+
+    // Why: the invite code of "join-invite" and "join-pick", null for every other route.
+    val inviteCode: String? = when (route) {
+        is Route.JoinInvite -> route.code
+        is Route.JoinPick -> route.code
+        else -> null
+    }
 }

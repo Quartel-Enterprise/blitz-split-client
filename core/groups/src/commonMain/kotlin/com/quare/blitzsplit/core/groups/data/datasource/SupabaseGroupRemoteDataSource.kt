@@ -2,8 +2,13 @@ package com.quare.blitzsplit.core.groups.data.datasource
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.data.dto.InviteCodeParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.InviteDto
+import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.rpc
 
 class SupabaseGroupRemoteDataSource(
     private val postgrest: Postgrest,
@@ -29,6 +34,18 @@ class SupabaseGroupRemoteDataSource(
     override suspend fun fetchGroups(): List<GroupDto> = fetchAll(GROUPS)
 
     override suspend fun fetchMembers(): List<GroupMemberDto> = fetchAll(MEMBERS)
+
+    override suspend fun fetchInvite(code: String): InviteDto? = postgrest
+        .rpc(
+            function = GET_INVITE,
+            parameters = InviteCodeParamsDto(code),
+        ).decodeAs<InviteDto?>()
+
+    override suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto = postgrest
+        .rpc(
+            function = JOIN_GROUP,
+            parameters = params,
+        ).decodeAs<JoinGroupResultDto>()
 
     /*
      * Why: page by page, since the server answers at most max_rows per request, until a page comes back empty: a
@@ -59,6 +76,8 @@ class SupabaseGroupRemoteDataSource(
     private companion object {
         const val GROUPS = "groups"
         const val MEMBERS = "group_members"
+        const val GET_INVITE = "get_invite"
+        const val JOIN_GROUP = "join_group"
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L

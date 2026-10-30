@@ -37,4 +37,8 @@
     <string name="members_cancel">Cancelar</string>
     <string name="members_coming_soon">Em breve</string>
     <string name="members_change_error">Não deu para salvar a mudança. Tente de novo.</string>
+    <string name="members_joined_title">Você entrou como %s</string>
+    <string name="members_joined_message">Tudo que for lançado para você aparece aqui.</string>
+    <string name="members_protect_title">Proteja seu acesso</string>
+    <string name="members_protect_message">Você entrou sem conta. Guarde o código ou conecte Google ou Apple.</string>
 </resources>

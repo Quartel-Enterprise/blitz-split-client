@@ -41,7 +41,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
-| `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members |
+| `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
@@ -153,12 +153,21 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     (`GroupDao.deleteRemovedMembers`). A newer server row in the meantime (someone joined as that member, or
     renamed it) brings the member back, as Last-Write-Wins says, and the other devices lose it through
     `deleteGoneFromServer`.
-  - **Invite code**: the server makes each group's code (`invite_code`, the `borarachar.com/g/<code>` of "Convidar")
+  - **Invite code**: the server makes each group's code (`invite_code`, the `blitzsplit.com/g/<code>` of "Convidar")
     when the group first goes up, and no client sends or changes it. The push reads it back from the upsert's answer,
     since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both
     the push and the download store it with `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this
     device created comes back with the same `updatedAt`, which `updateGroupFromRemote` leaves alone. A group created
     offline has no code until then, and `InviteUiState.isLinkPending` says so.
+  - **Joining through the invite link**: a group the user is not in yet can't be read through the tables, so the
+    invite screen asks `get_invite` (open to `anon` too, so only looking at an invite creates no account) and the
+    join asks `join_group`, both security definer functions on the server. `JoinGroupUseCase` (in `:core:sync`)
+    signs in anonymously first when there is no account (`ensureRegistered`), sends the profile's avatar color (the
+    member's, or the least used one, when the device has no profile yet), and on `Joined` or `AlreadyMember` saves a
+    profile from the name joined as when there is none, then runs `syncNow()` so the group is in Room before
+    Membros opens it. Joining is online only: the link waits on the invite screen until the device is online. A
+    member someone else took first (`MemberTaken`) or a name already in the group (`NameTaken`) comes back as an
+    outcome, not an error, and the pick screen reloads the list.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

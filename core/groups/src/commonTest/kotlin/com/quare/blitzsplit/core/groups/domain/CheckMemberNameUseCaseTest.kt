@@ -41,6 +41,38 @@ class CheckMemberNameUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a single letter between spaces WHEN checking the name THEN it is too short`() {
+        // Given
+        val name = " J "
+
+        // When
+        val check = useCase(
+            name,
+            takenNames = listOf("Pierre"),
+            adderName = "Pierre",
+        )
+
+        // Then
+        assertEquals(MemberNameCheck.TooShort, check)
+    }
+
+    @Test
+    fun `GIVEN two emoji WHEN checking the name THEN it is available`() {
+        // Given
+        val name = "\uD83D\uDE00\uD83D\uDE00"
+
+        // When
+        val check = useCase(
+            name,
+            takenNames = listOf("Pierre"),
+            adderName = "Pierre",
+        )
+
+        // Then
+        assertEquals(MemberNameCheck.Available(name), check)
+    }
+
+    @Test
     fun `GIVEN a name no member has WHEN checking the name THEN it is available`() {
         // Given
         val name = "Ana"

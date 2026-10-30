@@ -10,6 +10,8 @@ import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteA
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
+import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
+import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
@@ -19,6 +21,7 @@ import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.Recovery
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
 import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewModel
 import com.quare.blitzsplit.shared.app.AppViewModel
+import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
@@ -86,19 +89,28 @@ object BlitzSplitApple : KoinComponent {
     fun createMembersViewModel(route: Route.Members): ViewModelHolder<MembersViewModel> =
         ViewModelHolder(MembersViewModel::class) { get { parametersOf(route) } }
 
+    // Why: each invite link opens its own ViewModels, which read the code from their route.
+    fun createJoinInviteViewModel(route: Route.JoinInvite): ViewModelHolder<JoinInviteViewModel> =
+        ViewModelHolder(JoinInviteViewModel::class) { get { parametersOf(route) } }
+
+    fun createJoinPickViewModel(route: Route.JoinPick): ViewModelHolder<JoinPickViewModel> =
+        ViewModelHolder(JoinPickViewModel::class) { get { parametersOf(route) } }
+
     // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
     fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =
         ViewModelHolder(PaymentKeyViewModel::class) { get { parametersOf(route) } }
 
     /*
      * Why: Google signs in through the browser on Apple platforms, and its OAuth callback comes back
-     * as borarachar://auth-callback, which SwiftUI receives in onOpenURL.
+     * as borarachar://auth-callback, which SwiftUI receives in onOpenURL, like a group's invite link
+     * (blitzsplit.com/g/<code>, a universal link). Each handler takes only the links it knows.
      */
     fun handleDeepLink(url: NSURL) {
         get<SupabaseClient>().handleDeeplinks(url)
-        val callbackUrl = url.absoluteString ?: return
+        val link = url.absoluteString ?: return
         val handleBrowserCallback = get<HandleBrowserCallback>()
-        scope.launch { handleBrowserCallback(callbackUrl) }
+        scope.launch { handleBrowserCallback(link) }
+        get<LinkInbox>().receive(link)
     }
 
     // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
