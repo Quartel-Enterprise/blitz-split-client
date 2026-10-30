@@ -182,7 +182,7 @@ class SplitBillViewModel(
             val payerId = state.payerId.takeIf { id -> people.any { it.id == id } }
                 ?: people.firstOrNull { it.isMe }?.id
                 ?: people.firstOrNull()?.id.orEmpty()
-            state.copy(
+            val shown = state.copy(
                 groupName = group.name,
                 groupInitials = Initials.of(group.name),
                 groupColor = group.color,
@@ -194,6 +194,8 @@ class SplitBillViewModel(
                 splitEditor = state.splitEditor?.withPeople(people, group.currency, payerId),
                 isLoaded = true,
             )
+            // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
+            shown.withSplitTotal()
         }
     }
 
@@ -245,13 +247,18 @@ class SplitBillViewModel(
     private fun changeAmount(text: String) {
         val capped = toAmountText(text)
         uiState.update { state ->
-            val withText = state.copy(
-                amountText = capped,
-                hasEditedAmount = true,
-            )
-            val total = withText.amountMinor?.takeIf { withText.isAmountValid } ?: 0L
-            withText.copy(split = withText.split.withTotal(total))
+            state
+                .copy(
+                    amountText = capped,
+                    hasEditedAmount = true,
+                ).withSplitTotal()
         }
+    }
+
+    // Why: the split adds up to the bill's amount, 0 while the field holds no valid amount.
+    private fun SplitBillUiState.withSplitTotal(): SplitBillUiState {
+        val total = amountMinor?.takeIf { isAmountValid } ?: 0L
+        return copy(split = split.withTotal(total))
     }
 
     // Why: "Mudar o total refaz a divisão por valor proporcionalmente", from the parts last set in "Dividir".
@@ -402,10 +409,11 @@ class SplitBillViewModel(
         return withRows { row -> row.copy(shareMinor = byMember?.get(row.person.id)) }
     }
 
+    // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
     private fun SplitEditor.formatAmount(amountMinor: Long): String = AmountInput.format(
         amountMinor = amountMinor,
         currency = currency,
-        decimalSeparator = decimalSeparator(),
+        decimalSeparator = decimalSeparator().takeIf { it in amountSeparators } ?: '.',
     )
 
     private fun valueTextOf(

@@ -987,6 +987,22 @@ class SplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN a device whose decimal separator is neither WHEN switching to Valores THEN fills them with a point`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(decimalSeparator = '٫')
+            typeAmount("100")
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // When
+            switchTo(SplitMode.AMOUNT)
+
+            // Then
+            assertEquals("25.00", editor().row(ANA).valueText)
+            assertTrue(editor().addsUp)
+        }
+
+    @Test
     fun `GIVEN a group in yen WHEN switching to Valores THEN fills the amounts without decimals`() =
         runTest(testDispatcher) {
             // Given
@@ -1616,6 +1632,23 @@ class SplitBillViewModelTest {
                 viewModel.uiState.value.split
                     .shareByMember(),
             )
+        }
+
+    @Test
+    fun `GIVEN an amount typed WHEN the group changes currency THEN the split adds up to the amount in it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("12,5")
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.JPY))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(125L, state.amountMinor)
+            assertEquals(125L, state.split.totalMinor)
+            assertEquals(125L, state.split.shares?.sumOf { it.amountMinor })
         }
 
     @Test
