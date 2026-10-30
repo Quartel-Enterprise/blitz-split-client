@@ -332,8 +332,76 @@ faça o squash merge agora?", with these options:
 - "Sim, faz o squash merge e limpa a task"
 - "Não, para por aqui"
 
-If yes, check whether the pull request has any checks to wait for. Right after the push GitHub may
-not have registered them yet, so give it up to a minute:
+If yes, add the `merge-when-green` label instead of waiting on the checks yourself:
+
+```bash
+gh pr edit --add-label merge-when-green
+```
+
+The `merge-when-green` workflow squash merges the pull request once every check on its head commit
+has passed and every review conversation is resolved, including the checks of the fix commit the
+opening `claude-review` pushes (see [docs/ci.md](../../../docs/ci.md#merge-when-green)). That
+happens minutes later, so wait for it in the background: run this with the Bash tool's
+`run_in_background`, which calls you back when it exits.
+
+```bash
+pr=$(gh pr view --json number -q .number)
+while :; do
+  case $(gh pr view "$pr" --json state,labels -q '.state + " " + ([.labels[].name] | join(","))') in
+    MERGED*) exit 0 ;;
+    CLOSED*) exit 1 ;;
+    *merge-when-green*) ;;
+    *) exit 3 ;;
+  esac
+  gh pr checks "$pr" --json name,bucket \
+    -q '.[] | select(((.name | startswith("review-gate")) and .bucket == "fail") | not) | .bucket' \
+    2>/dev/null | grep -qxE 'fail|cancel' && exit 2
+  sleep 60
+done
+```
+
+A failed `review-gate` check doesn't count: it is the gate holding the checks for the review's open
+threads, which `merge-when-green` handles by removing its label (exit 3). Tell the user the label is
+on and that the task gets cleaned up once the merge happens. When the command exits:
+
+- **0, merged:** run the `finish-task` skill right away, as after a direct merge below.
+- **2, a check failed or was cancelled:** report which one (`gh pr checks <pr>`) and stop. The label
+  stays on, so re-running the check until it's green still merges the pull request; `finish-task`
+  then runs when the user asks for it.
+- **3, label removed:** the usual reason is that every check passed, or was held, but a review
+  conversation is still unresolved, often a `claude-review` finding. `merge-when-green` then removes
+  its label and comments on the pull request (see [docs/ci.md](../../../docs/ci.md#merge-when-green)).
+  List the open conversations and show them to the user:
+
+  ```bash
+  gh api graphql -F pr="$pr" -F owner='{owner}' -F repo='{repo}' -f query='
+    query($owner: String!, $repo: String!, $pr: Int!) {
+      repository(owner: $owner, name: $repo) {
+        pullRequest(number: $pr) {
+          reviewThreads(first: 100) {
+            nodes { isResolved path comments(first: 1) { nodes { body } } }
+          }
+        }
+      }
+    }' -q '.data.repository.pullRequest.reviewThreads.nodes[]
+      | select(.isResolved | not) | {path, body: .comments.nodes[0].body}'
+  ```
+
+  For each one, fix it or reply with why the code stays as it is, then resolve it on GitHub and add
+  the label again. If no conversation is open and no such comment exists, someone removed the label
+  by hand: tell the user and stop.
+- **1, closed without merging:** tell the user and stop.
+
+The `merge-when-green` check itself counts too: it fails when its token is missing or expired, or
+when the merge itself fails (e.g. a conflict with `main`), and then nothing else would merge the
+pull request.
+
+The workflow needs the `MERGE_WHEN_GREEN_TOKEN` repository secret. Until it is set
+(`gh secret list`), the label only fails the workflow, so merge directly instead, as below, and
+tell the user the secret is missing. Merge directly too when the user asks to merge right away.
+
+To merge directly, check whether the pull request has any checks to wait for. Right after the push
+GitHub may not have registered them yet, so give it up to a minute:
 
 ```bash
 for _ in $(seq 20); do gh pr checks 2>/dev/null | grep -q . && break; sleep 3; done
