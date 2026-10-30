@@ -71,6 +71,7 @@ class GroupMapperImpl : GroupMapper {
             updatedAt = createdAt,
             pendingSync = true,
             isRemoved = false,
+            inviteCode = null,
         )
     }
 
@@ -89,6 +90,7 @@ class GroupMapperImpl : GroupMapper {
         updatedAt = addedAt,
         pendingSync = true,
         isRemoved = false,
+        inviteCode = null,
     )
 
     override fun toDto(

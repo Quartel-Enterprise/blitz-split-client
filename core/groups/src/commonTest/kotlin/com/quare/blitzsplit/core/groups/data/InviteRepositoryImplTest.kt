@@ -64,6 +64,8 @@ class InviteRepositoryImplTest {
                         hasJoined = true,
                     ),
                 ),
+                personalMemberId = null,
+                inviterName = null,
             ),
             result.getOrThrow(),
         )
@@ -250,6 +252,8 @@ class InviteRepositoryImplTest {
                 hasJoined = true,
             ),
         ),
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private fun prepareScenario(

@@ -70,6 +70,8 @@ class GetInviteUseCaseTest {
         creatorName = "Pierre",
         isMember = false,
         members = emptyList(),
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private fun prepareScenario(

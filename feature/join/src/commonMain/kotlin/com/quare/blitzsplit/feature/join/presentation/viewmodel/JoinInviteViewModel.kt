@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.groups.domain.model.InviteMember
 import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
@@ -150,7 +151,8 @@ class JoinInviteViewModel(
     }
 
     // Why: a personal link names a member that may have been removed, null then.
-    private fun personalMemberOf(invite: Invite) = invite.members.firstOrNull { it.id == invite.personalMemberId }
+    private fun personalMemberOf(invite: Invite): InviteMember? =
+        invite.members.firstOrNull { it.id == invite.personalMemberId }
 
     // Why: a group joined from another device of this account may not be on this one yet, so a sync brings it first.
     private suspend fun openGroup(groupId: String) {

@@ -178,6 +178,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
             mapped.members.single(),
         )
@@ -616,6 +617,7 @@ class GroupMapperImplTest {
                 updatedAt = 8L,
                 pendingSync = false,
                 isRemoved = false,
+                inviteCode = null,
             ),
             entity,
         )
@@ -756,6 +758,7 @@ class GroupMapperImplTest {
             avatarColor = AvatarColor.SAND,
             isMe = false,
             hasJoined = false,
+            inviteCode = null,
         )
 
         // When
@@ -778,6 +781,7 @@ class GroupMapperImplTest {
                 updatedAt = 5_000L,
                 pendingSync = true,
                 isRemoved = false,
+                inviteCode = null,
             ),
             entity,
         )
@@ -812,6 +816,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                inviteCode = null,
             ),
             GroupMember(
                 id = "m-2",
@@ -819,6 +824,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
             GroupMember(
                 id = "m-3",
@@ -826,6 +832,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.SAND,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
         ),
         isPending = true,
@@ -877,6 +884,7 @@ class GroupMapperImplTest {
         updatedAt = 1L,
         pendingSync = pendingSync,
         isRemoved = isRemoved,
+        inviteCode = null,
     )
 
     private fun groupDto(

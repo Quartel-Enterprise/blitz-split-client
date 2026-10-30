@@ -699,6 +699,8 @@ class JoinPickViewModelTest {
         creatorName = "Pierre",
         isMember = false,
         members = listOf(pierre, ana, bruno, carla),
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private fun TestScope.prepareScenario(

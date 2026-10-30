@@ -279,6 +279,7 @@ class GroupDaoTest {
         updatedAt = updatedAt,
         pendingSync = false,
         isRemoved = false,
+        inviteCode = null,
     )
 
     private suspend fun prepareScenario(

@@ -14,5 +14,5 @@ data class GroupMember(
      * Why: the code of the member's personal invite link, which the server makes; null for a member made on this
      * device until its first sync brings it.
      */
-    val inviteCode: String? = null,
+    val inviteCode: String?,
 )

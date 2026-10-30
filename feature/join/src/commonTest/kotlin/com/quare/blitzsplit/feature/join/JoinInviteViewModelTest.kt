@@ -469,6 +469,8 @@ class JoinInviteViewModelTest {
         creatorName = "Pierre",
         isMember = false,
         members = listOf(pierre, ana, bruno, carla),
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private val tripGroup = Group(
@@ -484,6 +486,7 @@ class JoinInviteViewModelTest {
                 AvatarColor.BLUE,
                 isMe = true,
                 hasJoined = true,
+                inviteCode = null,
             ),
         ),
         isPending = false,

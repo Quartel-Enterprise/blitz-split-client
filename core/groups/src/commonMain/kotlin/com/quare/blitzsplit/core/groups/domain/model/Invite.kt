@@ -19,7 +19,7 @@ data class Invite(
     // Why: in the order they were added, so the creator comes first.
     val members: List<InviteMember>,
     // Why: the member a personal link joins as, null for the group's link and once that member was removed.
-    val personalMemberId: String? = null,
+    val personalMemberId: String?,
     // Why: "Ana te chamou como Carla", whoever shared a personal link, null when the link doesn't say.
-    val inviterName: String? = null,
+    val inviterName: String?,
 )

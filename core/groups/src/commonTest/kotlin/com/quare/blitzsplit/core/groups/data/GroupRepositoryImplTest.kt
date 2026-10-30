@@ -1649,6 +1649,7 @@ class GroupRepositoryImplTest {
                     updatedAt = 5_000L,
                     pendingSync = true,
                     isRemoved = false,
+                    inviteCode = null,
                 ),
                 local.member("m-new"),
             )
@@ -2252,6 +2253,7 @@ class GroupRepositoryImplTest {
         avatarColor = AvatarColor.SAND,
         isMe = false,
         hasJoined = false,
+        inviteCode = null,
     )
 
     private fun removedMember(
@@ -2278,6 +2280,7 @@ class GroupRepositoryImplTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                inviteCode = null,
             ),
             GroupMember(
                 id = "new-2",
@@ -2285,6 +2288,7 @@ class GroupRepositoryImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
         ),
         isPending = true,
@@ -2333,6 +2337,7 @@ class GroupRepositoryImplTest {
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         isRemoved = isRemoved,
+        inviteCode = null,
     )
 
     private fun groupDto(

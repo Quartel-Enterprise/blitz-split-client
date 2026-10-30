@@ -66,6 +66,8 @@ class InviteMapperImplTest {
                         hasJoined = false,
                     ),
                 ),
+                personalMemberId = null,
+                inviterName = null,
             ),
             invite,
         )
@@ -295,6 +297,8 @@ class InviteMapperImplTest {
         creatorName = creatorName,
         isMember = isMember,
         members = members,
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private fun memberDto(

@@ -1114,6 +1114,7 @@ class GroupsViewModelTest {
         avatarColor = color,
         isMe = false,
         hasJoined = false,
+        inviteCode = null,
     )
 
     private fun prepareScenario(
