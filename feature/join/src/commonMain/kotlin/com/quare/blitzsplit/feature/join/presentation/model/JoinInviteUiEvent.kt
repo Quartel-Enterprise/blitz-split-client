@@ -20,4 +20,7 @@ sealed interface JoinInviteUiEvent : UiEvent {
 
     // Why: "Ir para o início", for an invite that isn't valid or can't open.
     data object OnGoHomeClicked : JoinInviteUiEvent
+
+    // Why: "Escanear outro QR", for an invite that isn't valid: the reader takes its place.
+    data object OnScanAnotherClicked : JoinInviteUiEvent
 }

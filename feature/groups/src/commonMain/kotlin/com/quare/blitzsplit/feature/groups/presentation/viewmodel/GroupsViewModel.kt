@@ -116,7 +116,10 @@ class GroupsViewModel(
                 navigator.navigate(Route.Members(event.groupId, joinedAs = null))
             }
 
-            GroupsUiEvent.OnJoinWithLinkClicked,
+            GroupsUiEvent.OnJoinWithLinkClicked -> if (navigator.backStack.value.lastOrNull() == Route.Groups) {
+                navigator.navigate(Route.JoinWithLink)
+            }
+
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,

@@ -821,4 +821,405 @@ class InviteLinkTest {
         // Then
         assertEquals("blitzsplit.com/g/aB3dE5gH/c3Rt9z", shown)
     }
+
+    @Test
+    fun `GIVEN the message shared from Convidar WHEN finding the invite in it THEN is the member and who shares it`() {
+        // Given
+        val text = "Entra no grupo Viagem como Carla no Bora Rachar: " +
+            "https://blitzsplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN the link of a group alone WHEN finding the invite in it THEN is the group with nobody else`() {
+        // Given
+        val text = "https://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link without https WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link without https WHEN finding the invite in it THEN reads the member and who shares it`() {
+        // Given
+        val text = "blitzsplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link with nobody sharing it WHEN finding the invite in a text THEN is the member alone`() {
+        // Given
+        val text = "Entra como Carla: https://blitzsplit.com/g/AB12cd34/c3Rt9z"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link of plain http WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "http://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link on a line of its own WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra no grupo Viagem\n\nhttps://blitzsplit.com/g/AB12cd34\n"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link ending a sentence with a period WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra pelo link https://blitzsplit.com/g/AB12cd34."
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link followed by a comma WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra pelo link https://blitzsplit.com/g/AB12cd34, combinado"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link followed by a semicolon WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra pelo link https://blitzsplit.com/g/AB12cd34; valeu"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link wrapped in parentheses WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Bora rachar (https://blitzsplit.com/g/AB12cd34)"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link closing a parenthesis WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Bora rachar (entra em https://blitzsplit.com/g/AB12cd34)"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link followed by an exclamation mark WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra logo https://blitzsplit.com/g/AB12cd34!"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link ending a sentence WHEN finding the invite in it THEN reads who shares it whole`() {
+        // Given
+        val text = "Entra como Carla: https://blitzsplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3."
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN two invite links WHEN finding the invite in the text THEN the first one wins`() {
+        // Given
+        val text = "Primeiro https://blitzsplit.com/g/AB12cd34 depois https://blitzsplit.com/g/Zx9Yw8Vu/c3Rt9z"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN another URL before the invite WHEN finding the invite in the text THEN is the invite`() {
+        // Given
+        val text = "Veja https://example.com/menu e entra em https://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a text with no link WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "Bora rachar a conta do jantar"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN an empty text WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = ""
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a link with a code of 7 characters WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "Entra: https://blitzsplit.com/g/AB12cd3"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a link with a code of 9 characters WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "Entra: https://blitzsplit.com/g/AB12cd345"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a personal link with a member code of 5 characters WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "https://blitzsplit.com/g/AB12cd34/c3Rt9"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a link to another page of the site WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "https://blitzsplit.com/x/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN a link of another site WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "https://example.com/menu"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN the app scheme with a group path WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "borarachar://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
 }

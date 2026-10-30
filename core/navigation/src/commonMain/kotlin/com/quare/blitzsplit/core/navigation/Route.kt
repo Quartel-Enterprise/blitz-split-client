@@ -54,6 +54,9 @@ sealed interface Route {
         val inviterCode: String?,
     ) : Route
 
+    // Why: "Entrar com convite", a QR read by the camera or a link pasted, from the home or an invite no longer valid.
+    data object JoinWithLink : Route
+
     // Why: "Quem é você no grupo?", after "Entrar no grupo" on the invite.
     data class JoinPick(
         val code: String,

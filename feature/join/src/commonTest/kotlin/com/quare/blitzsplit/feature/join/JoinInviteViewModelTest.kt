@@ -465,6 +465,91 @@ class JoinInviteViewModelTest {
     }
 
     @Test
+    fun `GIVEN an invalid invite on top WHEN scanning another QR THEN the reader takes the place of the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = null)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN an invalid personal link on top WHEN scanning another QR THEN the reader takes its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = null,
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a valid invite WHEN scanning another QR THEN stays on the invite`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupLink), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the invite could not open offline WHEN scanning another QR THEN stays on the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                fetchError = IllegalStateException("offline"),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(JoinInviteStatus.OFFLINE, viewModel.uiState.value.status)
+            assertEquals(listOf(Route.Groups, groupLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the invite on its way WHEN scanning another QR THEN stays on the invite`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(fetchGate = CompletableDeferred())
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+        // Then
+        assertEquals(JoinInviteStatus.LOADING, viewModel.uiState.value.status)
+        assertEquals(listOf(Route.Groups, groupLink), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN another screen over an invalid invite WHEN scanning another QR THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(invite = null)
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupLink, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a group link WHEN the screen opens THEN reads the group invite and is not personal`() =
         runTest(testDispatcher) {
             // Given

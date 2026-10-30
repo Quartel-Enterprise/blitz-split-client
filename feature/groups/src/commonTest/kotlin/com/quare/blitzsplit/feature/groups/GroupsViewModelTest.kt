@@ -143,14 +143,26 @@ class GroupsViewModelTest {
             backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<GroupsUiAction>(4) { GroupsUiAction.ShowComingSoon }, actions)
+            assertEquals(List<GroupsUiAction>(3) { GroupsUiAction.ShowComingSoon }, actions)
         }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping join with a link twice THEN opens the reader once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
+        viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN the groups WHEN tapping the profile THEN opens the profile`() = runTest(testDispatcher) {

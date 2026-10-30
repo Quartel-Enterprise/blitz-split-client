@@ -108,6 +108,7 @@ class JoinInviteViewModel(
             JoinInviteUiEvent.OnNotNowClicked -> leave()
             JoinInviteUiEvent.OnRetryClicked -> retry()
             JoinInviteUiEvent.OnGoHomeClicked -> if (isOnTop()) navigator.popTo(1)
+            JoinInviteUiEvent.OnScanAnotherClicked -> scanAnother()
         }
     }
 
@@ -224,6 +225,10 @@ class JoinInviteViewModel(
         joinedAs: String?,
     ) {
         if (isOnTop()) navigator.openJoinedGroup(groupId, joinedAs)
+    }
+
+    private fun scanAnother() {
+        if (uiState.value.status == JoinInviteStatus.INVALID && isOnTop()) navigator.replaceTop(Route.JoinWithLink)
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

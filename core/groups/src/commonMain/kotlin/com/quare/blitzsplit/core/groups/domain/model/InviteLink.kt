@@ -15,6 +15,7 @@ object InviteLink {
      */
     private val linkPattern = Regex("^https?://[^/?#]+/g/([A-Za-z0-9]{8})(?:/([A-Za-z0-9]{6}))?/?(\\?[^#]*)?(#.*)?$")
     private val fromPattern = Regex("(?:^|&)$FROM=([A-Za-z0-9]{6})(?:&|$)")
+    private val whitespace = Regex("\\s+")
 
     fun of(inviteCode: String): String = BASE_URL + inviteCode
 
@@ -41,5 +42,14 @@ object InviteLink {
                 fromPattern.find(query.removePrefix("?"))?.groupValues?.get(1)
             },
         )
+    }
+
+    /*
+     * Why: what a QR or a pasted text opens. A message shared from Convidar carries more than the link ("Entra no grupo
+     * … no Bora Rachar: https://…"), and a link copied from a screen comes without https://.
+     */
+    fun findIn(text: String): InviteTarget? = text.split(whitespace).firstNotNullOfOrNull { word ->
+        val link = word.trimStart('(').trimEnd('.', ',', ';', ')', '!')
+        targetOf(if ("://" in link) link else "https://$link")
     }
 }
