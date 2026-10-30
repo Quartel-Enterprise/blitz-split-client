@@ -140,7 +140,8 @@ extension View {
         alert(
             "Delete this bill?",
             isPresented: Binding(
-                get: { deletion != nil },
+                // The ViewModel keeps `deletion` while deleting, which must not bring back the alert "Delete" closed
+                get: { deletion != nil && !isDeleting },
                 set: { shown in
                     if !shown { onDismiss() }
                 },

@@ -573,6 +573,29 @@ class EditBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Apagar esta conta open WHEN someone else saves a newer version THEN it asks about that version`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+
+            // When
+            syncChange(
+                updatedAt = LATER_VERSION,
+                by = ANA,
+            )
+
+            // Then
+            assertEquals(
+                BillDeletion(
+                    description = "Feira",
+                    myBalanceMinor = -20_000L,
+                ),
+                viewModel.uiState.value.deletion,
+            )
+        }
+
+    @Test
     fun `GIVEN Apagar esta conta open WHEN cancelling THEN closes it and deletes nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -791,6 +814,25 @@ class EditBillViewModelTest {
         assertEquals(fullStack, navigator.backStack.value)
         assertEquals(listOf(savedBill), expenses.expenses.value)
     }
+
+    @Test
+    fun `GIVEN a delete in flight WHEN a sync deletes the bill first THEN goes back to the group with a notice`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(deleteGate = gate)
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+            expenses.expenses.value = emptyList()
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
+        }
 
     @Test
     fun `GIVEN Apagar esta conta not open WHEN a confirm arrives THEN deletes nothing`() = runTest(testDispatcher) {
