@@ -90,8 +90,9 @@ class GroupRepositoryImpl(
     /*
      * Why: the groups before their members, which the server only accepts in a group it already has. The members
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)
-     * instead of its members going up without it. A new group's invite code comes back with it: the sync downloads
-     * before it uploads, so waiting for the next download would keep "Convidar" without a link until then. The
+     * instead of its members going up without it. A new group's invite code comes back with it, and a new member's
+     * with it: the sync downloads before it uploads, so waiting for the next download would keep "Convidar" and the
+     * personal invite without a link until then. The
      * members removed here go last, and leave the device once the server deleted them.
      */
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> = suspendRunCatching {
@@ -111,7 +112,16 @@ class GroupRepositoryImpl(
                 }
         }
         if (pendingMembers.isNotEmpty()) {
-            remote.upsertMembers(pendingMembers.map(mapper::toDto))
+            remote
+                .upsertMembers(pendingMembers.map(mapper::toDto))
+                .forEach { dto ->
+                    dto.inviteCode?.let {
+                        local.updateMemberInviteCode(
+                            id = dto.id,
+                            inviteCode = it,
+                        )
+                    }
+                }
         }
         // Why: before the deletes, so one that fails doesn't push again what the server already took.
         pendingGroups.forEach {

@@ -81,5 +81,6 @@ class MembersMemberTest {
         avatarColor = AvatarColor.PEACH,
         isMe = isMe,
         hasJoined = hasJoined,
+        personalLink = null,
     )
 }

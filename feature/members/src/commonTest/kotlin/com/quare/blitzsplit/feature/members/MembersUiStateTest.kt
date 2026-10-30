@@ -116,6 +116,7 @@ class MembersUiStateTest {
         isLoaded = true,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
+        personalInvite = null,
     )
 
     private fun member(
@@ -128,5 +129,6 @@ class MembersUiStateTest {
         avatarColor = AvatarColor.PEACH,
         isMe = isMe,
         hasJoined = hasJoined,
+        personalLink = null,
     )
 }

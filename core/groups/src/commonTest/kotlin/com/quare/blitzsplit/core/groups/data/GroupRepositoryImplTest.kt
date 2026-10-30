@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -2358,6 +2359,7 @@ class GroupRepositoryImplTest {
         name: String = "Ana",
         userId: String? = null,
         updatedAt: Long = 1L,
+        inviteCode: String? = null,
     ): GroupMemberDto = GroupMemberDto(
         id = id,
         groupId = groupId,
@@ -2366,6 +2368,7 @@ class GroupRepositoryImplTest {
         avatarColor = "green",
         addedAt = 1L,
         updatedAt = updatedAt,
+        inviteCode = inviteCode,
     )
 
     private fun prepareScenario(
@@ -2571,6 +2574,19 @@ private class FakeGroupLocalDataSource(
                 ),
             )
         }
+        entity.inviteCode?.let {
+            updateMemberInviteCode(
+                id = entity.id,
+                inviteCode = it,
+            )
+        }
+    }
+
+    override suspend fun updateMemberInviteCode(
+        id: String,
+        inviteCode: String,
+    ) {
+        members.value = members.value.map { if (it.id == id) it.copy(inviteCode = inviteCode) else it }
     }
 
     override suspend fun claimUnowned(ownerUserId: String) {
@@ -2675,6 +2691,7 @@ private class FakeGroupRemoteDataSource(
 
     // Why: the code the server makes for each group id, which the upsert answers with.
     var inviteCodes: Map<String, String> = emptyMap()
+    var memberInviteCodes: Map<String, String> = emptyMap()
 
     override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> {
         calls += "groups"
@@ -2684,10 +2701,11 @@ private class FakeGroupRemoteDataSource(
         return groups.map { it.copy(inviteCode = inviteCodes[it.id]) }
     }
 
-    override suspend fun upsertMembers(members: List<GroupMemberDto>) {
+    override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> {
         calls += "members"
         upsertMembersError?.let { throw it }
         upsertedMembers += members
+        return members.map { it.copy(inviteCode = memberInviteCodes[it.id]) }
     }
 
     override suspend fun deleteMembers(ids: List<String>) {
@@ -2707,6 +2725,8 @@ private class FakeGroupRemoteDataSource(
     }
 
     override suspend fun fetchInvite(code: String): InviteDto? = error("unused")
+
+    override suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto? = error("unused")
 
     override suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto = error("unused")
 }

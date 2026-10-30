@@ -14,6 +14,17 @@ data class JoinInviteUiState(
     val members: List<JoinMember>,
     // Why: "blitzsplit.com/g/7Hk2pQ", the link as the offline state shows it.
     val displayLink: String,
+    // Why: a personal link, which joins as one member ("Convite pessoal"), known before the invite comes.
+    val isPersonal: Boolean,
+    // Why: "Pierre te chamou como Carla": the member a personal invite joins as, once the invite came.
+    val personalMember: JoinMember?,
+    /*
+     * Why: "Ana te chamou como Carla", whoever shared a personal link, or the creator when the link doesn't say; null
+     * once neither has an account.
+     */
+    val inviterName: String?,
+    // Why: "Entrar como Carla" on its way, which no button can start again.
+    val isJoining: Boolean,
 ) {
     // Why: "4 membros".
     val memberCount: Int

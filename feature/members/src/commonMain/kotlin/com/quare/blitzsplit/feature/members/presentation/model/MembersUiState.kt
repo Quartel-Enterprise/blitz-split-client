@@ -9,6 +9,8 @@ data class MembersUiState(
     val editor: MemberNameEditor?,
     // Why: "Remover Carla do grupo?", asked while not null; always someone who can be removed.
     val memberToRemove: MembersMember?,
+    // Why: the "Convite pessoal" sheet, open while not null; always someone nobody joined as, with a link.
+    val personalInvite: PersonalInvite?,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
     // Why: "Você entrou como Bruno", right after joining the group through its link.

@@ -103,6 +103,12 @@ interface GroupDao {
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
         )
+        entity.inviteCode?.let {
+            updateMemberInviteCode(
+                id = entity.id,
+                inviteCode = it,
+            )
+        }
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -161,6 +167,13 @@ interface GroupDao {
      */
     @Query("UPDATE split_group SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
     suspend fun updateInviteCode(
+        id: String,
+        inviteCode: String,
+    )
+
+    // Why: like the group's, the server makes the member's code and no client changes it.
+    @Query("UPDATE group_member SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
+    suspend fun updateMemberInviteCode(
         id: String,
         inviteCode: String,
     )

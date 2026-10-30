@@ -43,9 +43,15 @@ sealed interface Route {
         val joinedAs: String?,
     ) : Route
 
-    // Why: an invite link opened, the group before joining it ("Convite"). A group already joined opens instead.
+    /*
+     * Why: an invite link opened, the group before joining it ("Convite"). A group already joined opens instead. A
+     * personal link carries the member's code, which joins straight in as that member, and the code of whoever
+     * shared it.
+     */
     data class JoinInvite(
         val code: String,
+        val memberCode: String?,
+        val inviterCode: String?,
     ) : Route
 
     // Why: "Quem é você no grupo?", after "Entrar no grupo" on the invite.

@@ -23,6 +23,9 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
+import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -31,6 +34,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class MembersViewModel(
     private val route: Route.Members,
@@ -50,6 +54,7 @@ class MembersViewModel(
                 members = emptyList(),
                 editor = null,
                 memberToRemove = null,
+                personalInvite = null,
                 isLoaded = false,
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
@@ -64,6 +69,9 @@ class MembersViewModel(
 
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
+
+    private val copiedDuration = 2.seconds
+    private var copiedReset: Job? = null
 
     // Why: a sync may bring other members' changes while the screen is open, a removal of the whole group included.
     init {
@@ -98,7 +106,13 @@ class MembersViewModel(
 
             is MembersUiEvent.OnRenameClicked -> openRename(event.memberId)
 
-            is MembersUiEvent.OnPersonalInviteClicked -> send(MembersUiAction.ShowComingSoon)
+            is MembersUiEvent.OnPersonalInviteClicked -> openPersonalInvite(event.memberId)
+
+            MembersUiEvent.OnPersonalInviteDismissed -> closePersonalInvite()
+
+            MembersUiEvent.OnPersonalLinkCopyClicked -> copyPersonalLink()
+
+            MembersUiEvent.OnPersonalLinkShareClicked -> sharePersonalLink()
 
             is MembersUiEvent.OnRemoveClicked -> askToRemove(event.memberId)
 
@@ -119,7 +133,8 @@ class MembersViewModel(
     }
 
     private fun show(group: Group) {
-        val members = group.members.map(::toMembersMember)
+        val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
+        val members = group.members.map { toMembersMember(it, group.inviteCode, inviterCode) }
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
@@ -128,6 +143,12 @@ class MembersViewModel(
                 // Why: the member about to be removed may be gone, or have joined, by now.
                 memberToRemove = state.memberToRemove?.let { asked ->
                     members.firstOrNull { it.id == asked.id && it.canBeRemoved }
+                },
+                // Why: the member invited may be gone, or have joined, by now, or have another name.
+                personalInvite = state.personalInvite?.let { open ->
+                    members
+                        .firstOrNull { it.id == open.member.id && it.isPersonalInviteReady }
+                        ?.let { member -> personalInviteOf(member, open.isLinkCopied) }
                 },
                 isLoaded = true,
             )
@@ -141,14 +162,75 @@ class MembersViewModel(
         }
     }
 
-    private fun toMembersMember(member: GroupMember): MembersMember = MembersMember(
+    private fun toMembersMember(
+        member: GroupMember,
+        groupCode: String?,
+        inviterCode: String?,
+    ): MembersMember = MembersMember(
         id = member.id,
         name = member.name,
         initials = if (member.isMe) Initials.firstOf(member.name) else Initials.of(member.name),
         avatarColor = member.avatarColor,
         isMe = member.isMe,
         hasJoined = member.hasJoined,
+        personalLink = member.inviteCode?.let { memberCode ->
+            groupCode?.let {
+                InviteLink.personalOf(
+                    inviteCode = it,
+                    memberCode = memberCode,
+                    inviterCode = inviterCode,
+                )
+            }
+        },
     )
+
+    private fun personalInviteOf(
+        member: MembersMember,
+        isLinkCopied: Boolean,
+    ): PersonalInvite? {
+        val link = member.personalLink ?: return null
+        return PersonalInvite(
+            member = member,
+            link = link,
+            // Why: without who shares it, which only the copied and shared link needs.
+            displayLink = link.substringAfter("://").substringBefore("?"),
+            isLinkCopied = isLinkCopied,
+        )
+    }
+
+    private fun openPersonalInvite(memberId: String) {
+        val member = uiState.value.members.firstOrNull { it.id == memberId && it.isPersonalInviteReady } ?: return
+        copiedReset?.cancel()
+        uiState.update { it.copy(personalInvite = personalInviteOf(member, isLinkCopied = false)) }
+    }
+
+    private fun closePersonalInvite() {
+        copiedReset?.cancel()
+        uiState.update { it.copy(personalInvite = null) }
+    }
+
+    private fun copyPersonalLink() {
+        val invite = uiState.value.personalInvite ?: return
+        send(MembersUiAction.CopyLink(invite.link))
+        uiState.update { state -> state.copy(personalInvite = state.personalInvite?.copy(isLinkCopied = true)) }
+        copiedReset?.cancel()
+        copiedReset = viewModelScope.launch {
+            delay(copiedDuration)
+            uiState.update { state -> state.copy(personalInvite = state.personalInvite?.copy(isLinkCopied = false)) }
+        }
+    }
+
+    private fun sharePersonalLink() {
+        val state = uiState.value
+        val invite = state.personalInvite ?: return
+        send(
+            MembersUiAction.SharePersonalLink(
+                link = invite.link,
+                memberName = invite.member.name,
+                groupName = state.groupName,
+            ),
+        )
+    }
 
     private fun openRename(memberId: String) {
         val member = uiState.value.members.firstOrNull { it.id == memberId } ?: return

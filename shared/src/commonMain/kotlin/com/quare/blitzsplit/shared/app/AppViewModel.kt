@@ -95,8 +95,12 @@ class AppViewModel(
             .onEach { url ->
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
-                val code = InviteLink.codeOf(url) ?: return@onEach
-                val invite = Route.JoinInvite(code)
+                val target = InviteLink.targetOf(url) ?: return@onEach
+                val invite = Route.JoinInvite(
+                    code = target.code,
+                    memberCode = target.memberCode,
+                    inviterCode = target.inviterCode,
+                )
                 val openIndex = navigator.backStack.value.indexOf(invite)
                 if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
             }.launchIn(viewModelScope)

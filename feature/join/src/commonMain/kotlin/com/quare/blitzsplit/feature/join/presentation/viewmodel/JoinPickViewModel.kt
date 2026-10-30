@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Invite
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
@@ -76,7 +77,13 @@ class JoinPickViewModel(
      * to the invite, which reads it again and says why.
      */
     private suspend fun load() {
-        val invite = getInvite(route.code).getOrNull()
+        val invite = getInvite(
+            InviteTarget(
+                code = route.code,
+                memberCode = null,
+                inviterCode = null,
+            ),
+        ).getOrNull()
         if (invite == null) {
             leave()
             return

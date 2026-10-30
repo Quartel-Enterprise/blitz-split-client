@@ -114,6 +114,7 @@ class GroupMapperImpl : GroupMapper {
         avatarColor = entity.avatarColor,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
+        inviteCode = null,
     )
 
     override fun toEntity(
@@ -147,6 +148,7 @@ class GroupMapperImpl : GroupMapper {
         updatedAt = dto.updatedAt,
         pendingSync = false,
         isRemoved = false,
+        inviteCode = dto.inviteCode,
     )
 
     private fun toDomain(entity: GroupMemberEntity): GroupMember = GroupMember(
@@ -155,5 +157,6 @@ class GroupMapperImpl : GroupMapper {
         avatarColor = AvatarColor.fromCodeOrNull(entity.avatarColor) ?: AvatarColor.default,
         isMe = entity.isMe,
         hasJoined = entity.isMe || entity.userId != null,
+        inviteCode = entity.inviteCode,
     )
 }

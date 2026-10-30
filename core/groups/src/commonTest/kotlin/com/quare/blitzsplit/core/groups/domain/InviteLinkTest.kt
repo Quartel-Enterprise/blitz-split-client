@@ -24,7 +24,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -36,7 +36,7 @@ class InviteLinkTest {
         val url = "https://borarachar.com/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -48,7 +48,7 @@ class InviteLinkTest {
         val url = "http://localhost:5173/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -60,7 +60,7 @@ class InviteLinkTest {
         val url = "http://blitzsplit.com/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -72,7 +72,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gH/"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -84,7 +84,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gH?utm_source=whatsapp"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -96,7 +96,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gH#join"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -108,7 +108,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gH/?ref=qr"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -120,7 +120,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/12345678"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("12345678", code)
@@ -132,7 +132,7 @@ class InviteLinkTest {
         val url = InviteLink.of("Zx9Yw8Vu")
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("Zx9Yw8Vu", code)
@@ -144,7 +144,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/x/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -156,7 +156,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -168,7 +168,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5g"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -180,7 +180,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gHi"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -192,7 +192,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3-E5_H"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -204,7 +204,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gÁ"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -216,7 +216,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/g/aB3dE5gH/members"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -228,7 +228,7 @@ class InviteLinkTest {
         val url = "https://blitzsplit.com/app/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -240,7 +240,7 @@ class InviteLinkTest {
         val url = "blitzsplit.com/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -252,7 +252,7 @@ class InviteLinkTest {
         val url = "ftp://blitzsplit.com/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -264,7 +264,7 @@ class InviteLinkTest {
         val url = "borarachar://auth-callback#access_token=abc"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -276,7 +276,7 @@ class InviteLinkTest {
         val url = "borarachar://blitzsplit.com/g/aB3dE5gH"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)
@@ -288,7 +288,7 @@ class InviteLinkTest {
         val url = "  https://blitzsplit.com/g/aB3dE5gH\n"
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertEquals("aB3dE5gH", code)
@@ -300,7 +300,7 @@ class InviteLinkTest {
         val url = ""
 
         // When
-        val code = InviteLink.codeOf(url)
+        val code = InviteLink.targetOf(url)?.code
 
         // Then
         assertNull(code)

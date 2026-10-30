@@ -95,6 +95,16 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun updateMemberInviteCode(
+        id: String,
+        inviteCode: String,
+    ) {
+        dao.updateMemberInviteCode(
+            id = id,
+            inviteCode = inviteCode,
+        )
+    }
+
     override suspend fun applyRemoteMember(entity: GroupMemberEntity) {
         dao.applyRemoteMember(entity)
     }

@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteStatus
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiEvent
@@ -91,7 +92,17 @@ class JoinInviteViewModelTest {
                 state.members,
             )
             assertEquals("blitzsplit.com/g/$CODE", state.displayLink)
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -274,7 +285,17 @@ class JoinInviteViewModelTest {
             // Then
             assertEquals(1, syncCount)
             assertEquals(JoinInviteStatus.OFFLINE, state.status)
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -287,7 +308,15 @@ class JoinInviteViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.JoinInvite(CODE), Route.JoinPick(CODE)),
+            listOf(
+                Route.Groups,
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+                Route.JoinPick(CODE),
+            ),
             navigator.backStack.value,
         )
     }
@@ -301,7 +330,17 @@ class JoinInviteViewModelTest {
         viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -362,7 +401,15 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.JoinInvite(CODE), Route.JoinPick(CODE)),
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                    Route.JoinPick(CODE),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -394,7 +441,15 @@ class JoinInviteViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.JoinInvite(CODE), Route.JoinPick(CODE)),
+            listOf(
+                Route.Groups,
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+                Route.JoinPick(CODE),
+            ),
             navigator.backStack.value,
         )
     }
@@ -453,12 +508,23 @@ class JoinInviteViewModelTest {
         syncCount = 0
         navigator = BackStackNavigator(startRoute = under.first()).also { navigator ->
             under.drop(1).forEach(navigator::navigate)
-            navigator.navigate(Route.JoinInvite(CODE))
+            navigator.navigate(
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+            )
         }
         viewModel = JoinInviteViewModel(
-            route = Route.JoinInvite(CODE),
+            route = Route.JoinInvite(
+                CODE,
+                memberCode = null,
+                inviterCode = null,
+            ),
             navigator = navigator,
             getInvite = GetInviteUseCase(invites),
+            joinGroup = JoinGroup { joined, choice -> invites.joinGroup(joined.code, choice, AvatarColor.default) },
             observeGroup = ObserveGroupUseCase(groups),
             syncNow = SyncNow {
                 syncCount++

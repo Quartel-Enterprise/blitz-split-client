@@ -32,9 +32,12 @@ fun startBlitzSplit(sqliteWorker: Worker) {
     openInviteLink(launchUrl)
 }
 
-// Why: the page of a group's invite, blitzsplit.com/g/<code>, opens it once; the address goes back to the app's own.
+/*
+ * Why: the page of a group's invite, blitzsplit.com/g/<code>, or of a member's, blitzsplit.com/g/<code>/<member>,
+ * opens it once; the address goes back to the app's own.
+ */
 private fun openInviteLink(launchUrl: String) {
-    if (InviteLink.codeOf(launchUrl) == null) return
+    if (InviteLink.targetOf(launchUrl) == null) return
     KoinPlatform.getKoin().get<LinkInbox>().receive(launchUrl)
     window.history.replaceState(null, "", "/")
 }

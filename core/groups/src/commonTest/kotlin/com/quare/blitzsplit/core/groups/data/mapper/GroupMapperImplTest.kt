@@ -508,6 +508,7 @@ class GroupMapperImplTest {
                 avatarColor = "green",
                 addedAt = 3L,
                 updatedAt = 1L,
+                inviteCode = null,
             ),
             dto,
         )
@@ -905,5 +906,6 @@ class GroupMapperImplTest {
         avatarColor = "green",
         addedAt = 2L,
         updatedAt = 8L,
+        inviteCode = null,
     )
 }

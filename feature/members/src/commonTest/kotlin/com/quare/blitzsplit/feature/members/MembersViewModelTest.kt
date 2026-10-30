@@ -95,6 +95,7 @@ class MembersViewModelTest {
                         AvatarColor.BLUE,
                         isMe = true,
                         hasJoined = true,
+                        personalLink = null,
                     ),
                     MembersMember(
                         "member-2",
@@ -103,6 +104,7 @@ class MembersViewModelTest {
                         AvatarColor.PEACH,
                         isMe = false,
                         hasJoined = false,
+                        personalLink = null,
                     ),
                     MembersMember(
                         "member-3",
@@ -111,6 +113,7 @@ class MembersViewModelTest {
                         AvatarColor.GREEN,
                         isMe = false,
                         hasJoined = true,
+                        personalLink = null,
                     ),
                     MembersMember(
                         "member-4",
@@ -119,6 +122,7 @@ class MembersViewModelTest {
                         AvatarColor.LILAC,
                         isMe = false,
                         hasJoined = false,
+                        personalLink = null,
                     ),
                 ),
                 state.members,
@@ -326,7 +330,7 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN someone who has not joined WHEN tapping their personal invite THEN says coming soon`() =
+    fun `GIVEN someone whose link has not come yet WHEN tapping their personal invite THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -336,7 +340,8 @@ class MembersViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
+            assertNull(viewModel.uiState.value.personalInvite)
+            assertEquals(emptyList(), actions)
             assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
         }
 
@@ -1373,6 +1378,7 @@ class MembersViewModelTest {
         AvatarColor.LILAC,
         isMe = false,
         hasJoined = false,
+        personalLink = null,
     )
 
     private val trip = Group(

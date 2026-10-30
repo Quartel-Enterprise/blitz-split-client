@@ -17,9 +17,18 @@ sealed interface MembersUiEvent : UiEvent {
         val memberId: String,
     ) : MembersUiEvent
 
+    // Why: "Convite pessoal para Carla" in the member's menu, which opens the sheet with the member's link.
     data class OnPersonalInviteClicked(
         val memberId: String,
     ) : MembersUiEvent
+
+    data object OnPersonalInviteDismissed : MembersUiEvent
+
+    // Why: "Copiar" on the personal invite.
+    data object OnPersonalLinkCopyClicked : MembersUiEvent
+
+    // Why: "Compartilhar com a Carla", the system's share sheet.
+    data object OnPersonalLinkShareClicked : MembersUiEvent
 
     // Why: "Remover do grupo" in the member's menu, which asks first.
     data class OnRemoveClicked(

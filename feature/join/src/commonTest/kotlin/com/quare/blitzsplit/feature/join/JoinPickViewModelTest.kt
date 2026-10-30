@@ -92,7 +92,17 @@ class JoinPickViewModelTest {
             val backStack = navigator.backStack.value
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), backStack)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                backStack,
+            )
         }
 
     @Test
@@ -104,7 +114,17 @@ class JoinPickViewModelTest {
         val backStack = navigator.backStack.value
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), backStack)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+            ),
+            backStack,
+        )
     }
 
     @Test
@@ -122,7 +142,17 @@ class JoinPickViewModelTest {
             gate.complete(Unit)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -244,7 +274,18 @@ class JoinPickViewModelTest {
             assertEquals(listOf("Pierre", "Ana", "Bruno"), state.joined.map { it.name })
             assertFalse(state.isJoining)
             assertEquals(2, invites.fetchedCodes.size)
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE), Route.JoinPick(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                    Route.JoinPick(CODE),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -280,7 +321,18 @@ class JoinPickViewModelTest {
             assertNull(state.selectedMemberId)
             assertFalse(state.isJoining)
             assertEquals(2, invites.fetchedCodes.size)
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE), Route.JoinPick(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                    Route.JoinPick(CODE),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -294,7 +346,17 @@ class JoinPickViewModelTest {
             viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -311,7 +373,18 @@ class JoinPickViewModelTest {
         assertFalse(viewModel.uiState.value.isJoining)
         assertEquals(BRUNO_ID, viewModel.uiState.value.selectedMemberId)
         assertTrue(viewModel.uiState.value.canJoin)
-        assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE), Route.JoinPick(CODE)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+                Route.JoinPick(CODE),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -386,7 +459,17 @@ class JoinPickViewModelTest {
             gate.complete(Unit)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -588,7 +671,17 @@ class JoinPickViewModelTest {
         viewModel.onEvent(JoinPickUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.JoinInvite(CODE)), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     private val pierre = InviteMember("member-1", "Pierre", AvatarColor.BLUE, hasJoined = true)
@@ -627,7 +720,13 @@ class JoinPickViewModelTest {
             it.joinGate = joinGate
         }
         navigator = BackStackNavigator(startRoute = root).also {
-            it.navigate(Route.JoinInvite(CODE))
+            it.navigate(
+                Route.JoinInvite(
+                    CODE,
+                    memberCode = null,
+                    inviterCode = null,
+                ),
+            )
             it.navigate(Route.JoinPick(CODE))
         }
         viewModel = JoinPickViewModel(

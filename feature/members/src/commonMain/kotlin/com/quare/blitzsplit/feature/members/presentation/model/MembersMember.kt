@@ -12,6 +12,11 @@ data class MembersMember(
     val isMe: Boolean,
     // Why: "Entrou" or "Ainda não entrou". Someone who joined can't be removed: "Ana já entrou no grupo".
     val hasJoined: Boolean,
+    /*
+     * Why: the member's personal invite link, which joins straight in as them, shared with whoever shares it. Null
+     * until the sync brings the codes the server makes for the group and the member, offline for one added here.
+     */
+    val personalLink: String?,
 ) {
     val canBeRemoved: Boolean
         get() = !isMe && !hasJoined
@@ -19,4 +24,8 @@ data class MembersMember(
     // Why: "Convite pessoal para Carla" is only for someone nobody joined as.
     val canBeInvited: Boolean
         get() = !isMe && !hasJoined
+
+    // Why: the menu's "Convite pessoal para Carla" stays disabled until the member's link exists.
+    val isPersonalInviteReady: Boolean
+        get() = canBeInvited && personalLink != null
 }

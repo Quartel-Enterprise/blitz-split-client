@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.testing
 
 import com.quare.blitzsplit.core.groups.domain.model.Invite
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.repository.InviteRepository
@@ -15,6 +16,7 @@ class FakeInviteRepository(
     var fetchError: Throwable? = null
     var joinError: Throwable? = null
     val fetchedCodes = mutableListOf<String>()
+    val fetchedTargets = mutableListOf<InviteTarget>()
     val joins = mutableListOf<Join>()
 
     // Why: while set, a fetch waits for it, so a test can look at the screen while the invite is on its way.
@@ -29,8 +31,9 @@ class FakeInviteRepository(
         val avatarColor: AvatarColor,
     )
 
-    override suspend fun fetchInvite(code: String): Result<Invite?> {
-        fetchedCodes += code
+    override suspend fun fetchInvite(target: InviteTarget): Result<Invite?> {
+        fetchedCodes += target.code
+        fetchedTargets += target
         fetchGate?.await()
         fetchError?.let { return Result.failure(it) }
         return Result.success(invite)

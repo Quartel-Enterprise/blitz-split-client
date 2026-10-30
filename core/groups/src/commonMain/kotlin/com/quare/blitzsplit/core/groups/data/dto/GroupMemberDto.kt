@@ -12,4 +12,6 @@ data class GroupMemberDto(
     @SerialName("avatar_color") val avatarColor: String,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,
+    // Why: the server makes it and keeps it whatever a push sends, which is always null.
+    @SerialName("invite_code") val inviteCode: String?,
 )

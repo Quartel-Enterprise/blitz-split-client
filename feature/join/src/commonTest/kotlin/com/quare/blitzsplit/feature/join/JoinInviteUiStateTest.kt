@@ -81,5 +81,9 @@ class JoinInviteUiStateTest {
         creatorName = "Pierre",
         members = members,
         displayLink = "blitzsplit.com/g/7Hk2pQxZ",
+        isPersonal = false,
+        personalMember = null,
+        inviterName = null,
+        isJoining = false,
     )
 }

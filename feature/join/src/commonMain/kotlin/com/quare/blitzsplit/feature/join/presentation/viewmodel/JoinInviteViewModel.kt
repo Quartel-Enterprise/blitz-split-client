@@ -5,18 +5,25 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
+import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
+import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteStatus
+import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -31,6 +38,7 @@ class JoinInviteViewModel(
     private val route: Route.JoinInvite,
     private val navigator: Navigator,
     private val getInvite: GetInvite,
+    private val joinGroup: JoinGroup,
     private val observeGroup: ObserveGroup,
     private val syncNow: SyncNow,
     connectivityObserver: NetworkConnectivityObserver,
@@ -44,11 +52,21 @@ class JoinInviteViewModel(
                 groupColor = AvatarColor.default,
                 creatorName = null,
                 members = emptyList(),
-                displayLink = InviteLink.of(route.code).substringAfter("://"),
+                displayLink = displayLinkOf(route),
+                isPersonal = route.memberCode != null,
+                personalMember = null,
+                inviterName = null,
+                isJoining = false,
             ),
         )
 
+    val uiAction: SharedFlow<JoinInviteUiAction>
+        field = MutableSharedFlow<JoinInviteUiAction>()
+
     val stateWatcher: FlowWatcher<JoinInviteUiState> = FlowWatcher(uiState)
+    val actionWatcher: FlowWatcher<JoinInviteUiAction> = FlowWatcher(uiAction)
+
+    private var invite: Invite? = null
 
     private var loading: Job? = null
     private var isCovered = false
@@ -76,7 +94,8 @@ class JoinInviteViewModel(
 
     fun onEvent(event: JoinInviteUiEvent) {
         when (event) {
-            JoinInviteUiEvent.OnJoinClicked -> pick()
+            JoinInviteUiEvent.OnJoinClicked -> if (uiState.value.isPersonal) joinAsPersonalMember() else pick()
+            JoinInviteUiEvent.OnNotMeClicked -> pick()
             JoinInviteUiEvent.OnNotNowClicked -> leave()
             JoinInviteUiEvent.OnRetryClicked -> retry()
             JoinInviteUiEvent.OnGoHomeClicked -> if (isOnTop()) navigator.popTo(1)
@@ -87,14 +106,24 @@ class JoinInviteViewModel(
     private fun load() {
         loading?.cancel()
         loading = viewModelScope.launch {
-            getInvite(route.code)
-                .onSuccess { invite ->
-                    when {
-                        invite == null -> uiState.update { it.copy(status = JoinInviteStatus.INVALID) }
-                        invite.isMember -> openGroup(invite.groupId)
-                        else -> show(invite)
-                    }
-                }.onFailure { uiState.update { it.copy(status = JoinInviteStatus.OFFLINE) } }
+            getInvite(
+                InviteTarget(
+                    code = route.code,
+                    memberCode = route.memberCode,
+                    inviterCode = route.inviterCode,
+                ),
+            ).onSuccess { invite ->
+                when {
+                    invite == null -> uiState.update { it.copy(status = JoinInviteStatus.INVALID) }
+
+                    invite.isMember -> openGroup(invite.groupId)
+
+                    route.memberCode != null && personalMemberOf(invite)?.hasJoined != false ->
+                        uiState.update { it.copy(status = JoinInviteStatus.INVALID) }
+
+                    else -> show(invite)
+                }
+            }.onFailure { uiState.update { it.copy(status = JoinInviteStatus.OFFLINE) } }
         }
     }
 
@@ -105,6 +134,7 @@ class JoinInviteViewModel(
     }
 
     private fun show(invite: Invite) {
+        this.invite = invite
         uiState.update {
             it.copy(
                 status = JoinInviteStatus.READY,
@@ -113,9 +143,14 @@ class JoinInviteViewModel(
                 groupColor = invite.groupColor,
                 creatorName = invite.creatorName,
                 members = invite.members.map { member -> member.toJoinMember() },
+                personalMember = personalMemberOf(invite)?.toJoinMember(),
+                inviterName = invite.inviterName ?: invite.creatorName,
             )
         }
     }
+
+    // Why: a personal link names a member that may have been removed, null then.
+    private fun personalMemberOf(invite: Invite) = invite.members.firstOrNull { it.id == invite.personalMemberId }
 
     // Why: a group joined from another device of this account may not be on this one yet, so a sync brings it first.
     private suspend fun openGroup(groupId: String) {
@@ -127,8 +162,69 @@ class JoinInviteViewModel(
         }
     }
 
+    // Why: a join on its way may still open the group, so the list doesn't open over it.
     private fun pick() {
-        if (uiState.value.status == JoinInviteStatus.READY && isOnTop()) navigator.navigate(Route.JoinPick(route.code))
+        val state = uiState.value
+        if (state.status == JoinInviteStatus.READY && !state.isJoining && isOnTop()) {
+            navigator.navigate(Route.JoinPick(route.code))
+        }
+    }
+
+    private fun joinAsPersonalMember() {
+        val state = uiState.value
+        val invite = invite ?: return
+        val member = state.personalMember ?: return
+        if (state.status != JoinInviteStatus.READY || state.isJoining) return
+        uiState.update { it.copy(isJoining = true) }
+        viewModelScope.launch {
+            joinGroup(invite, JoinChoice.AsMember(member.id))
+                .onSuccess { outcome -> handle(outcome, invite, member.name) }
+                .onFailure { uiAction.emit(JoinInviteUiAction.ShowJoinError) }
+            uiState.update { it.copy(isJoining = false) }
+        }
+    }
+
+    /*
+     * Why: someone else who joined as the member first, or its removal, or a changed link, all make the link no
+     * longer valid, which reading the invite again says.
+     */
+    private fun handle(
+        outcome: JoinOutcome,
+        invite: Invite,
+        memberName: String,
+    ) {
+        when (outcome) {
+            is JoinOutcome.Joined -> openJoinedGroup(outcome.groupId, joinedAs = memberName)
+
+            is JoinOutcome.AlreadyMember -> openJoinedGroup(
+                groupId = outcome.groupId,
+                joinedAs = invite.members.firstOrNull { it.id == outcome.memberId }?.name,
+            )
+
+            JoinOutcome.MemberTaken,
+            JoinOutcome.MemberGone,
+            JoinOutcome.NameTaken,
+            JoinOutcome.InvalidLink,
+            -> load()
+        }
+    }
+
+    /*
+     * Why: like after "Quem é você no grupo?", the group opens over the home, whatever was under the invite: the
+     * welcome too, since joining without a profile made one from the member.
+     */
+    private fun openJoinedGroup(
+        groupId: String,
+        joinedAs: String?,
+    ) {
+        if (!isOnTop()) return
+        navigator.replaceAll(Route.Groups)
+        navigator.navigate(
+            Route.Members(
+                groupId = groupId,
+                joinedAs = joinedAs,
+            ),
+        )
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
@@ -136,5 +232,19 @@ class JoinInviteViewModel(
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     private fun leave() {
         if (isOnTop()) navigator.navigateBack()
+    }
+
+    private companion object {
+        // Why: "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z" for a personal link, without whoever shared it.
+        fun displayLinkOf(route: Route.JoinInvite): String {
+            val link = route.memberCode?.let {
+                InviteLink.personalOf(
+                    inviteCode = route.code,
+                    memberCode = it,
+                    inviterCode = null,
+                )
+            } ?: InviteLink.of(route.code)
+            return link.substringAfter("://")
+        }
     }
 }
