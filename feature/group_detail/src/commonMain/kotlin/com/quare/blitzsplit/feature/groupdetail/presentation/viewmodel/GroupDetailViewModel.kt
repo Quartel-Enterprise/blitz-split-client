@@ -90,7 +90,11 @@ class GroupDetailViewModel(
                 tab = Route.Members(route.groupId, joinedAs = null),
             )
 
+            GroupDetailUiEvent.OnEditGroupClicked -> if (isOnTop()) navigator.navigate(Route.EditGroup(route.groupId))
+
             GroupDetailUiEvent.OnBalancesTabClicked,
+            GroupDetailUiEvent.OnLeaveGroupClicked,
+            GroupDetailUiEvent.OnDeleteGroupClicked,
             is GroupDetailUiEvent.OnExpenseClicked,
             -> viewModelScope.launch { uiAction.emit(GroupDetailUiAction.ShowComingSoon) }
         }

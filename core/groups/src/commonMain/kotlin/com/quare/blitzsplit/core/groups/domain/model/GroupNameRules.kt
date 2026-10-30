@@ -7,4 +7,7 @@ object GroupNameRules {
     fun toCapped(name: String): String = name.takeLetters(MAX_LENGTH)
 
     fun isWithinLimit(name: String): Boolean = name.letterCount <= MAX_LENGTH
+
+    // Why: the "14/40" under the name, counted as the server counts it.
+    fun lengthOf(name: String): Int = name.letterCount
 }

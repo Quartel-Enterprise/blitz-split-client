@@ -28,6 +28,15 @@ interface GroupLocalDataSource {
         updatedAt: Long,
     )
 
+    suspend fun updateGroup(
+        id: String,
+        name: String,
+        type: String,
+        color: String,
+        currency: String,
+        updatedAt: Long,
+    )
+
     // Why: a member who joined, or this device's user, is left as it is.
     suspend fun removeMember(
         id: String,

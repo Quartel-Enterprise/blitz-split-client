@@ -110,6 +110,7 @@ struct GroupDetailView: View {
             }
             .disabled(model?.state.isLoaded != true)
         }
+        ToolbarItem(placement: .primaryAction) { groupMenu }
         if model?.state.showsSplitBillButton == true {
             #if os(iOS)
             if usesBottomBar {
@@ -122,6 +123,32 @@ struct GroupDetailView: View {
             ToolbarItem(placement: .primaryAction) { splitBillButton }
             #endif
         }
+    }
+
+    /// "⋯": only what changes the group itself (6.1i); Leave and Delete wait for the balances. The Mac's items
+    /// that open a dialog end in "…".
+    private var groupMenu: some View {
+        Menu("More group options", systemImage: "ellipsis") {
+            Button(editGroupTitle, systemImage: "pencil") {
+                model?.send(GroupDetailUiEventOnEditGroupClicked.shared)
+            }
+            Divider()
+            Button("Leave group", systemImage: "rectangle.portrait.and.arrow.right") {
+                model?.send(GroupDetailUiEventOnLeaveGroupClicked.shared)
+            }
+            Button("Delete group", systemImage: "trash", role: .destructive) {
+                model?.send(GroupDetailUiEventOnDeleteGroupClicked.shared)
+            }
+        }
+        .disabled(model?.state.isLoaded != true)
+    }
+
+    private var editGroupTitle: LocalizedStringKey {
+        #if os(macOS)
+        "Edit group…"
+        #else
+        "Edit group"
+        #endif
     }
 
     private var splitBillButton: some View {

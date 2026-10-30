@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_group_title">Editar grupo</string>
+    <string name="edit_group_close">Fechar</string>
+    <string name="edit_group_save">Salvar</string>
+    <string name="edit_group_change_color">Trocar cor</string>
+    <string name="edit_group_change_color_description">Trocar a cor do grupo</string>
+    <string name="edit_group_name_label">Nome do grupo</string>
+    <string name="edit_group_name_help">Todo mundo do grupo vê o nome novo.</string>
+    <string name="edit_group_name_error">Dê um nome ao grupo, com até 40 caracteres.</string>
+    <string name="edit_group_name_count">%1$d/%2$d</string>
+    <string name="edit_group_type_label">Tipo</string>
+    <string name="edit_group_currency">Moeda</string>
+    <string name="edit_group_currency_lock">Não muda depois da primeira despesa</string>
+    <string name="edit_group_currency_locked">Travada</string>
+    <string name="edit_group_note">Qualquer pessoa do grupo pode mudar o nome, o ícone e o tipo.</string>
+    <string name="edit_group_offline_note">Sem internet: a mudança vale neste aparelho agora e chega aos outros quando ele reconectar.</string>
+    <string name="edit_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
+</resources>

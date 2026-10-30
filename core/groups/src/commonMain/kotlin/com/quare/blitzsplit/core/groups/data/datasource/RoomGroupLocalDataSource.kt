@@ -37,6 +37,24 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun updateGroup(
+        id: String,
+        name: String,
+        type: String,
+        color: String,
+        currency: String,
+        updatedAt: Long,
+    ) {
+        dao.updateGroup(
+            id = id,
+            name = name,
+            type = type,
+            color = color,
+            currency = currency,
+            updatedAt = updatedAt,
+        )
+    }
+
     override suspend fun removeMember(
         id: String,
         removedAt: Long,

@@ -6,6 +6,9 @@ import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.async
@@ -48,6 +51,24 @@ class GroupRepositoryImpl(
                 createdAt = createdAt,
                 ownerUserId = ownerUserId,
             ),
+        )
+    }
+
+    override suspend fun updateGroup(
+        groupId: String,
+        name: String,
+        type: GroupType,
+        color: AvatarColor,
+        currency: GroupCurrency,
+        updatedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.updateGroup(
+            id = groupId,
+            name = name,
+            type = type.code,
+            color = color.code,
+            currency = currency.code,
+            updatedAt = updatedAt,
         )
     }
 
