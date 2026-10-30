@@ -24,6 +24,11 @@
     <string name="members_options">Opções de %s</string>
     <string name="members_rename">Renomear</string>
     <string name="members_personal_invite">Convite pessoal para %s</string>
+    <string name="members_personal_message">Quem abrir este link entra direto como %s, sem escolher na lista. Ele vale uma vez.</string>
+    <string name="members_personal_copy">Copiar link</string>
+    <string name="members_personal_copied">Copiado</string>
+    <string name="members_personal_share">Compartilhar com %s</string>
+    <string name="members_personal_share_message">Entra no grupo %1$s como %2$s no Bora Rachar: %3$s</string>
     <string name="members_remove">Remover do grupo</string>
     <string name="members_remove_joined">%s já entrou no grupo</string>
     <string name="members_remove_title">Remover %s do grupo?</string>

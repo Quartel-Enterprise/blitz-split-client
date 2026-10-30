@@ -192,6 +192,7 @@ private fun MemberMenu(
                         onEvent(MembersUiEvent.OnPersonalInviteClicked(member.id))
                     },
                     leadingIcon = { Icon(Icons.Outlined.Link, contentDescription = null) },
+                    enabled = member.isPersonalInviteReady,
                 )
             }
             if (!member.isMe) {

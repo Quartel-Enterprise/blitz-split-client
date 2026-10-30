@@ -484,6 +484,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             avatarColor = AvatarColor.BLUE,
             isMe = true,
             hasJoined = true,
+            personalLink = null,
         ),
         MembersMember(
             id = "2",
@@ -492,6 +493,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             avatarColor = AvatarColor.GREEN,
             isMe = false,
             hasJoined = true,
+            personalLink = null,
         ),
         MembersMember(
             id = "3",
@@ -500,6 +502,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             avatarColor = AvatarColor.PEACH,
             isMe = false,
             hasJoined = false,
+            personalLink = "https://blitzsplit.com/g/7Hk2pQxa/b7Xp2q?from=p1R2s3",
         ),
         MembersMember(
             id = "4",
@@ -508,10 +511,12 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             avatarColor = AvatarColor.LILAC,
             isMe = false,
             hasJoined = false,
+            personalLink = null,
         ),
     ),
     editor = null,
     memberToRemove = null,
+    personalInvite = null,
     isLoaded = true,
     joinedAs = null,
     isAccountUnprotected = false,
