@@ -34,7 +34,7 @@ import kotlinx.coroutines.awaitCancellation
  * permission; a device without a back camera uses the front one, and one without any draws nothing.
  */
 @Composable
-fun QrCameraPreview(
+fun QrCameraDisplay(
     isTorchOn: Boolean,
     onScanned: (String) -> Unit,
     onTorchAvailabilityChanged: (Boolean) -> Unit,

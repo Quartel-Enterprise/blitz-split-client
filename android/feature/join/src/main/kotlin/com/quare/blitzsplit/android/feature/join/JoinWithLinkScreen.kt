@@ -15,7 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.ClipboardReader
-import com.quare.blitzsplit.android.platform.QrCameraPreview
+import com.quare.blitzsplit.android.platform.QrCameraDisplay
 import com.quare.blitzsplit.android.platform.rememberCameraPermissionAccess
 import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiAction
@@ -68,7 +68,7 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
             .distinctUntilChanged()
             .collect { link -> if (link != field) field = link }
     }
-    LightStatusBarIcons()
+    LightStatusBarEffect()
     BackHandler { viewModel.onEvent(JoinWithLinkUiEvent.OnCloseClicked) }
     JoinWithLinkContent(
         state = state,
@@ -81,7 +81,7 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
         onPasteClicked = { viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(clipboard.readText().orEmpty())) },
         onEvent = viewModel::onEvent,
         camera = { modifier ->
-            QrCameraPreview(
+            QrCameraDisplay(
                 isTorchOn = state.isTorchOn,
                 onScanned = { viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(it)) },
                 onTorchAvailabilityChanged = { hasTorch = it },
@@ -93,7 +93,7 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
 
 // Why: the camera stays dark in both themes, so the status bar's icons are light over it until the reader closes.
 @Composable
-private fun LightStatusBarIcons() {
+private fun LightStatusBarEffect() {
     val window = LocalActivity.current?.window ?: return
     DisposableEffect(window) {
         val controller = WindowCompat.getInsetsController(window, window.decorView)

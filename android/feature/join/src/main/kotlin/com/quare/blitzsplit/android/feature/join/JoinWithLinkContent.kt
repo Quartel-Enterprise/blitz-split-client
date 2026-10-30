@@ -76,9 +76,7 @@ private val onCamera = Color.White
 private val cameraError = Color(0xFFFFB599)
 private val maxViewfinderSize = 260.dp
 private val minViewfinderSize = 140.dp
-
-// Why: the hint or the wrong QR notice under the viewfinder, with the space around them.
-private val viewfinderTextRoom = 140.dp
+private val roomForTextUnderViewfinder = 140.dp
 private val maxPanelWidth = 560.dp
 private val sidePanelWidth = 380.dp
 
@@ -104,7 +102,7 @@ fun JoinWithLinkContent(
     ) {
         if (maxWidth > maxHeight) {
             Row(modifier = Modifier.fillMaxSize()) {
-                CameraArea(
+                CameraPane(
                     state = state,
                     hasTorch = hasTorch,
                     onEvent = onEvent,
@@ -131,7 +129,7 @@ fun JoinWithLinkContent(
             }
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
-                CameraArea(
+                CameraPane(
                     state = state,
                     hasTorch = hasTorch,
                     onEvent = onEvent,
@@ -159,7 +157,7 @@ fun JoinWithLinkContent(
 }
 
 @Composable
-private fun CameraArea(
+private fun CameraPane(
     state: JoinWithLinkUiState,
     hasTorch: Boolean,
     onEvent: (JoinWithLinkUiEvent) -> Unit,
@@ -193,15 +191,16 @@ private fun CameraArea(
                 contentAlignment = Alignment.Center,
             ) {
                 // Why: a phone lying down has little height, so the viewfinder shrinks to keep the hint under it.
-                val viewfinderSize = (maxHeight - viewfinderTextRoom).coerceIn(minViewfinderSize, maxViewfinderSize)
+                val viewfinderSize = (maxHeight - roomForTextUnderViewfinder)
+                    .coerceIn(minViewfinderSize, maxViewfinderSize)
                 Box(
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     contentAlignment = Alignment.Center,
                 ) {
                     if (state.cameraAccess == CameraAccess.DENIED) {
-                        CameraDenied(onEvent = onEvent)
+                        CameraDeniedMessage(onEvent = onEvent)
                     } else {
-                        Viewfinder(
+                        ViewfinderOverlay(
                             state = state,
                             size = viewfinderSize,
                         )
@@ -259,7 +258,7 @@ private fun CameraTopBar(
 }
 
 @Composable
-private fun Viewfinder(
+private fun ViewfinderOverlay(
     state: JoinWithLinkUiState,
     size: Dp,
 ) {
@@ -276,7 +275,7 @@ private fun Viewfinder(
                 .viewfinderCorners(color = if (state.isQrInvalid) cameraError else onCamera),
         )
         if (state.isQrInvalid) {
-            InvalidQrNotice()
+            InvalidQrBanner()
         } else {
             Text(
                 text = stringResource(R.string.join_scan_hint),
@@ -289,7 +288,7 @@ private fun Viewfinder(
 }
 
 @Composable
-private fun InvalidQrNotice() {
+private fun InvalidQrBanner() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -333,7 +332,7 @@ private fun InvalidQrNotice() {
 }
 
 @Composable
-private fun CameraDenied(onEvent: (JoinWithLinkUiEvent) -> Unit) {
+private fun CameraDeniedMessage(onEvent: (JoinWithLinkUiEvent) -> Unit) {
     Column(
         modifier = Modifier
             .widthIn(max = 420.dp)
@@ -520,7 +519,7 @@ private fun Modifier.viewfinderCorners(color: Color): Modifier = drawWithContent
     }
 }
 
-private fun previewState(
+private fun createPreviewState(
     cameraAccess: CameraAccess,
     link: String,
     isLinkInvalid: Boolean,
@@ -534,7 +533,7 @@ private fun previewState(
 )
 
 @Composable
-private fun JoinWithLinkPreview(state: JoinWithLinkUiState) {
+private fun JoinWithLinkPreviewContent(state: JoinWithLinkUiState) {
     BlitzSplitTheme {
         JoinWithLinkContent(
             state = state,
@@ -551,8 +550,8 @@ private fun JoinWithLinkPreview(state: JoinWithLinkUiState) {
 @DevicePreviews
 @Composable
 private fun JoinWithLinkContentPreview() {
-    JoinWithLinkPreview(
-        previewState(
+    JoinWithLinkPreviewContent(
+        createPreviewState(
             CameraAccess.GRANTED,
             link = "",
             isLinkInvalid = false,
@@ -564,8 +563,8 @@ private fun JoinWithLinkContentPreview() {
 @DevicePreviews
 @Composable
 private fun JoinWithLinkInvalidQrPreview() {
-    JoinWithLinkPreview(
-        previewState(
+    JoinWithLinkPreviewContent(
+        createPreviewState(
             CameraAccess.GRANTED,
             link = "",
             isLinkInvalid = false,
@@ -577,8 +576,8 @@ private fun JoinWithLinkInvalidQrPreview() {
 @DevicePreviews
 @Composable
 private fun JoinWithLinkDeniedPreview() {
-    JoinWithLinkPreview(
-        previewState(
+    JoinWithLinkPreviewContent(
+        createPreviewState(
             CameraAccess.DENIED,
             link = "blitzsplit.com/g/7Hk2",
             isLinkInvalid = true,
