@@ -12,6 +12,7 @@ import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewMode
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
+import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkViewModel
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
@@ -95,6 +96,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createJoinPickViewModel(route: Route.JoinPick): ViewModelHolder<JoinPickViewModel> =
         ViewModelHolder(JoinPickViewModel::class) { get { parametersOf(route) } }
+
+    fun createJoinWithLinkViewModel(): ViewModelHolder<JoinWithLinkViewModel> =
+        ViewModelHolder(JoinWithLinkViewModel::class) { get() }
 
     // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
     fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =

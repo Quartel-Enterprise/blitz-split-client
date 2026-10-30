@@ -45,14 +45,20 @@ struct QRScannerView: View {
     }
 }
 
-/// Feeds camera frames to Vision's barcode detector and reports the first QR it reads.
+/// Feeds camera frames to Vision's barcode detector and reports the first QR it reads, or every one it reads while it
+/// reads continuously (the invite reader, which shows a wrong QR's warning and keeps reading).
 @Observable
 final class CameraQRScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private(set) var isAuthorized = false
     @ObservationIgnored let session = AVCaptureSession()
+    @ObservationIgnored private let readsContinuously: Bool
     @ObservationIgnored private let queue = DispatchQueue(label: "com.quare.blitzsplit.qr")
     @ObservationIgnored private var onScanned: ((String) -> Void)?
     @ObservationIgnored nonisolated(unsafe) private var didScan = false
+
+    init(readsContinuously: Bool = false) {
+        self.readsContinuously = readsContinuously
+    }
 
     func start(onScanned: @escaping (String) -> Void) async {
         self.onScanned = onScanned
@@ -85,14 +91,14 @@ final class CameraQRScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDeleg
         request.symbologies = [.qr]
         try? VNImageRequestHandler(cvPixelBuffer: pixels).perform([request])
         guard let content = request.results?.first?.payloadStringValue else { return }
-        didScan = true
+        didScan = !readsContinuously
         Task { @MainActor in
             self.onScanned?(content)
         }
     }
 }
 
-private struct CameraPreview: NSViewRepresentable {
+struct CameraPreview: NSViewRepresentable {
     let session: AVCaptureSession
 
     func makeNSView(context: Context) -> NSView {

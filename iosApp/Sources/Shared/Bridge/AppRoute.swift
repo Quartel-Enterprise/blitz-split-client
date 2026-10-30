@@ -19,6 +19,7 @@ enum AppRoute: Hashable, Identifiable {
     case joinInvite(RouteJoinInvite)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
     case joinPick(RouteJoinPick)
+    case joinWithLink
     case profile
     case editProfile
     case deleteAccount
@@ -36,6 +37,7 @@ enum AppRoute: Hashable, Identifiable {
         case let members as RouteMembers: self = .members(members)
         case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
         case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
+        case is RouteJoinWithLink: self = .joinWithLink
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
@@ -49,10 +51,17 @@ enum AppRoute: Hashable, Identifiable {
 
     /// iPad opens a key as a form sheet and the Mac as a sheet on its window, as the canvas draws
     /// them; the iPhone pushes it. Deleting the account, a new group and its invite are sheets everywhere.
+    /// The invite reader is a sheet on the Mac, and covers the whole screen on iPhone and iPad.
     var presentsAsSheet: Bool {
         switch self {
         case .deleteAccount, .createGroup, .invite:
             return true
+        case .joinWithLink:
+            #if os(macOS)
+            return true
+            #else
+            return false
+            #endif
         case .paymentKey:
             #if os(macOS)
             return true
@@ -62,5 +71,14 @@ enum AppRoute: Hashable, Identifiable {
         default:
             return false
         }
+    }
+
+    /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.
+    var presentsFullScreen: Bool {
+        #if os(iOS)
+        return self == .joinWithLink
+        #else
+        return false
+        #endif
     }
 }

@@ -28,6 +28,11 @@ struct RootView: View {
                 screen(for: route)
             }
         }
+        #if os(iOS)
+        .fullScreenCover(item: $app.cover) { route in
+            screen(for: route)
+        }
+        #endif
         .tint(Palette.accent)
         .onChange(of: app.theme, initial: true) { _, theme in
             WindowAppearance.apply(theme)
@@ -49,6 +54,7 @@ struct RootView: View {
         case let .members(route): MembersView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
+        case .joinWithLink: JoinWithLinkView()
         case .profile: ProfileView()
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()
