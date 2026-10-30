@@ -27,6 +27,7 @@
     <string name="join_invalid_message">The link was changed or the group was deleted. Ask whoever invited you for a new link.</string>
     <string name="join_invalid_personal_message">Someone already joined through this link, or it was changed. Ask whoever sent it for a new one.</string>
     <string name="join_go_home">Go to home</string>
+    <string name="join_scan_another">Scan another QR code</string>
     <string name="join_offline_title">No internet to open the invite</string>
     <string name="join_offline_message">We kept the link. As soon as the device connects, the invite opens by itself.</string>
     <string name="join_retry">Try again</string>
@@ -49,4 +50,22 @@
     <string name="join_pick_cancel">Cancel</string>
     <string name="join_pick_new_join">Join group</string>
     <string name="join_pick_error">Couldn\'t join. Check your connection and try again.</string>
+    <string name="join_scan_title">Join with an invite</string>
+    <string name="join_scan_torch_on">Turn on the flashlight</string>
+    <string name="join_scan_torch_off">Turn off the flashlight</string>
+    <string name="join_scan_viewfinder">Camera viewfinder</string>
+    <string name="join_scan_hint">Point the camera at the invite\'s QR code</string>
+    <string name="join_scan_invalid_qr">This QR code isn\'t a Blitz Split invite</string>
+    <string name="join_scan_invalid_qr_hint">Try another QR code or paste the link below.</string>
+    <string name="join_scan_denied_title">No access to the camera</string>
+    <string name="join_scan_denied_message">To read the QR code, allow Blitz Split to use the camera in the device\'s settings. Or paste the link below.</string>
+    <string name="join_scan_open_settings">Open settings</string>
+    <string name="join_scan_paste_title">Have the link?</string>
+    <string name="join_scan_paste_subtitle">Paste the link someone sent you in a message.</string>
+    <string name="join_scan_link_label">Invite link</string>
+    <string name="join_scan_paste">Paste</string>
+    <string name="join_scan_clear">Clear</string>
+    <string name="join_scan_invalid_link">This link isn\'t a Blitz Split invite</string>
+    <string name="join_scan_open">Open invite</string>
+    <string name="join_scan_link_placeholder" translatable="false">blitzsplit.com/g/…</string>
 </resources>

@@ -27,6 +27,7 @@
     <string name="join_invalid_message">O link foi trocado ou o grupo foi apagado. Peça um link novo para quem te chamou.</string>
     <string name="join_invalid_personal_message">Alguém já entrou por este link, ou ele foi trocado. Peça um novo a quem te mandou.</string>
     <string name="join_go_home">Ir para o início</string>
+    <string name="join_scan_another">Escanear outro QR</string>
     <string name="join_offline_title">Sem internet para abrir o convite</string>
     <string name="join_offline_message">Guardamos o link. Assim que o aparelho conectar, o convite abre sozinho.</string>
     <string name="join_retry">Tentar de novo</string>
@@ -49,4 +50,21 @@
     <string name="join_pick_cancel">Cancelar</string>
     <string name="join_pick_new_join">Entrar no grupo</string>
     <string name="join_pick_error">Não deu para entrar. Confira a internet e tente de novo.</string>
+    <string name="join_scan_title">Entrar com convite</string>
+    <string name="join_scan_torch_on">Ligar a lanterna</string>
+    <string name="join_scan_torch_off">Desligar a lanterna</string>
+    <string name="join_scan_viewfinder">Visor da câmera</string>
+    <string name="join_scan_hint">Aponte a câmera para o QR do convite</string>
+    <string name="join_scan_invalid_qr">Esse QR não é um convite do Bora Rachar</string>
+    <string name="join_scan_invalid_qr_hint">Tente outro QR ou cole o link aqui embaixo.</string>
+    <string name="join_scan_denied_title">Sem acesso à câmera</string>
+    <string name="join_scan_denied_message">Para ler o QR, permita a câmera do Bora Rachar nas configurações do aparelho. Ou cole o link aqui embaixo.</string>
+    <string name="join_scan_open_settings">Abrir configurações</string>
+    <string name="join_scan_paste_title">Tem o link?</string>
+    <string name="join_scan_paste_subtitle">Cole o link que te mandaram por mensagem.</string>
+    <string name="join_scan_link_label">Link do convite</string>
+    <string name="join_scan_paste">Colar</string>
+    <string name="join_scan_clear">Limpar</string>
+    <string name="join_scan_invalid_link">Esse link não é um convite do Bora Rachar</string>
+    <string name="join_scan_open">Abrir convite</string>
 </resources>
