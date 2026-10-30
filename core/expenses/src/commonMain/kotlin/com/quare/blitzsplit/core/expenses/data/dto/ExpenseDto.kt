@@ -18,9 +18,6 @@ data class ExpenseDto(
     @SerialName("is_deleted") val isDeleted: Boolean,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,
-    /*
-     * Why: who last saved the bill, which the server sets from the session whatever a push sends. Null when a server
-     * without the column answers, so the download still reads every bill.
-     */
-    @SerialName("updated_by") val updatedBy: String? = null,
+    // Why: who last saved the bill, which the server sets from the session whatever a push sends.
+    @SerialName("updated_by") val updatedBy: String?,
 )

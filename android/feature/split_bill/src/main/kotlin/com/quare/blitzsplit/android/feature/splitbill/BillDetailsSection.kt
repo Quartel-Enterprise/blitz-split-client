@@ -38,8 +38,6 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEven
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 private const val SPLIT_FACE_COUNT = 3
-
-// Why: Quem pagou, Quando and Dividir, read as one card.
 private const val OPTION_ROW_COUNT = 3
 private val splitFaceSize = 26.dp
 
@@ -122,6 +120,7 @@ internal fun BillDetailsSection(
     }
 }
 
+// Why: Quem pagou, Quando and Dividir, read as one card.
 private fun rowShapeOf(index: Int): Shape = groupedRowShapeOf(
     index = index,
     count = OPTION_ROW_COUNT,

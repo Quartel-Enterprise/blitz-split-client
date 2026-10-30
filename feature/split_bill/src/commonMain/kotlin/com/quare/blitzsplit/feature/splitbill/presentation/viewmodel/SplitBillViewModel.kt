@@ -231,7 +231,9 @@ class SplitBillViewModel(
                 editedExpense = expense
                 // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
                 val meId = group.members.firstOrNull { it.isMe }?.id
-                uiState.update { state -> state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId) }) }
+                uiState.update { state ->
+                    state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId) })
+                }
                 show(group)
             }
         }
