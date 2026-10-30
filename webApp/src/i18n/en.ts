@@ -318,6 +318,9 @@ export const en = {
   deleteAccount_failed: "Couldn't delete your account. Try again.",
 
   editProfile_changePhoto: 'Change photo',
+  editProfile_takePhoto: 'Take photo',
+  editProfile_choosePhoto: 'Choose from gallery',
+  editProfile_useAccountPhoto: 'Use {provider} account photo',
   editProfile_removePhoto: 'Remove photo',
   editProfile_photoError: "Couldn't use this photo. Try another one.",
   editProfile_avatarColor: 'Avatar color',

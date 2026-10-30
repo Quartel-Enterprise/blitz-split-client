@@ -319,6 +319,9 @@ export const pt: Record<MessageKey, string> = {
   deleteAccount_failed: 'Não deu para excluir a conta. Tente de novo.',
 
   editProfile_changePhoto: 'Trocar foto',
+  editProfile_takePhoto: 'Tirar foto',
+  editProfile_choosePhoto: 'Escolher da galeria',
+  editProfile_useAccountPhoto: 'Usar foto da conta {provider}',
   editProfile_removePhoto: 'Remover foto',
   editProfile_photoError: 'Não deu para usar essa foto. Tente outra.',
   editProfile_avatarColor: 'Cor do avatar',

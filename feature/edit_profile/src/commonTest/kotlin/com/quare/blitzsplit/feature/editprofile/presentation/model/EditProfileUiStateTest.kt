@@ -125,6 +125,180 @@ class EditProfileUiStateTest {
     }
 
     @Test
+    fun `GIVEN no photo WHEN reading whether the avatar colors show THEN shows them`() {
+        // Given
+        val uiState = state(photo = null)
+
+        // When
+        val showsColors = uiState.showsAvatarColors
+
+        // Then
+        assertTrue(showsColors)
+    }
+
+    @Test
+    fun `GIVEN no photo and a pick being prepared WHEN reading whether the avatar colors show THEN hides them`() {
+        // Given
+        val uiState = state(
+            photo = null,
+            isPreparingPhoto = true,
+        )
+
+        // When
+        val showsColors = uiState.showsAvatarColors
+
+        // Then
+        assertFalse(showsColors)
+    }
+
+    @Test
+    fun `GIVEN a photo WHEN reading whether the avatar colors show THEN hides them`() {
+        // Given
+        val uiState = state(photo = ProfilePhoto.Remote("https://photo"))
+
+        // When
+        val showsColors = uiState.showsAvatarColors
+
+        // Then
+        assertFalse(showsColors)
+    }
+
+    @Test
+    fun `GIVEN an account picture and another photo WHEN reading whether to offer the account photo THEN offers it`() {
+        // Given
+        val uiState = state(
+            photo = ProfilePhoto.Pending(byteArrayOf(1)),
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val offers = uiState.showsUseAccountPhoto
+
+        // Then
+        assertTrue(offers)
+    }
+
+    @Test
+    fun `GIVEN an account picture and no photo WHEN reading whether to offer the account photo THEN offers it`() {
+        // Given
+        val uiState = state(
+            photo = null,
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val offers = uiState.showsUseAccountPhoto
+
+        // Then
+        assertTrue(offers)
+    }
+
+    @Test
+    fun `GIVEN the account picture already is the photo WHEN reading whether to offer it THEN does not`() {
+        // Given
+        val uiState =
+            state(
+                photo = ProfilePhoto.Remote("https://google/pierre"),
+                accountPhotoUrl = "https://google/pierre",
+            )
+
+        // When
+        val offers = uiState.showsUseAccountPhoto
+
+        // Then
+        assertFalse(offers)
+    }
+
+    @Test
+    fun `GIVEN no account picture WHEN reading whether to offer the account photo THEN does not`() {
+        // Given
+        val uiState = state(
+            photo = null,
+            accountPhotoUrl = null,
+        )
+
+        // When
+        val offers = uiState.showsUseAccountPhoto
+
+        // Then
+        assertFalse(offers)
+    }
+
+    @Test
+    fun `GIVEN a photo not uploaded yet WHEN reading whether the avatar colors show THEN hides them`() {
+        // Given
+        val uiState = state(photo = ProfilePhoto.Pending(byteArrayOf(1)))
+
+        // When
+        val showsColors = uiState.showsAvatarColors
+
+        // Then
+        assertFalse(showsColors)
+    }
+
+    @Test
+    fun `GIVEN a photo and a pick being prepared WHEN reading whether the avatar colors show THEN hides them`() {
+        // Given
+        val uiState = state(
+            photo = ProfilePhoto.Remote("https://photo"),
+            isPreparingPhoto = true,
+        )
+
+        // When
+        val showsColors = uiState.showsAvatarColors
+
+        // Then
+        assertFalse(showsColors)
+    }
+
+    @Test
+    fun `GIVEN an account picture and an uploaded photo WHEN reading whether to offer it THEN offers it`() {
+        // Given
+        val uiState = state(
+            photo = ProfilePhoto.Remote("https://supabase/storage/avatars/pierre.jpg"),
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val offers = uiState.showsUseAccountPhoto
+
+        // Then
+        assertTrue(offers)
+    }
+
+    @Test
+    fun `GIVEN an offered account picture WHEN reading the account photo provider THEN is the account provider`() {
+        // Given
+        val uiState = state(
+            photo = null,
+            accountProvider = AccountProvider.GOOGLE,
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val provider = uiState.accountPhotoProvider
+
+        // Then
+        assertEquals(AccountProvider.GOOGLE, provider)
+    }
+
+    @Test
+    fun `GIVEN the account picture already is the photo WHEN reading the account photo provider THEN is none`() {
+        // Given
+        val uiState = state(
+            photo = ProfilePhoto.Remote("https://google/pierre"),
+            accountProvider = AccountProvider.GOOGLE,
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val provider = uiState.accountPhotoProvider
+
+        // Then
+        assertNull(provider)
+    }
+
+    @Test
     fun `GIVEN a Google account WHEN reading the account notice THEN shows it`() {
         // Given
         val uiState = state(accountProvider = AccountProvider.GOOGLE)
@@ -216,6 +390,7 @@ class EditProfileUiStateTest {
         hasChanges: Boolean = true,
         isSaving: Boolean = false,
         accountProvider: AccountProvider? = null,
+        accountPhotoUrl: String? = null,
     ): EditProfileUiState = EditProfileUiState(
         name = name,
         avatarColor = AvatarColor.default,
@@ -227,5 +402,6 @@ class EditProfileUiStateTest {
         hasChanges = hasChanges,
         isSaving = isSaving,
         accountProvider = accountProvider,
+        accountPhotoUrl = accountPhotoUrl,
     )
 }

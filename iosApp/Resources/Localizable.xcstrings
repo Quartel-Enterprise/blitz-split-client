@@ -515,6 +515,16 @@
         }
       }
     },
+    "Allow camera access in Settings to take a photo." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à câmera nos Ajustes para tirar uma foto."
+          }
+        }
+      }
+    },
     "Allow camera access in Settings or type the code." : {
       "localizations" : {
         "pt-BR" : {
@@ -706,6 +716,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trazer seus grupos"
+          }
+        }
+      }
+    },
+    "Camera access is off" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso à câmera está desligado"
           }
         }
       }
@@ -3148,6 +3168,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Digite pelo menos %lld letras."
+          }
+        }
+      }
+    },
+    "Use %@ account photo" : {
+      "comment" : "The %@ is the account: Google or Apple",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar foto da conta %@"
           }
         }
       }

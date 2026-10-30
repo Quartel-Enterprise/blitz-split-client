@@ -1,11 +1,14 @@
+import AVFoundation
 import SwiftUI
 import UIKit
 
 /// The system camera for the profile photo. It hands back a JPEG, which the shared code shrinks to
 /// the 512px avatar like a picked photo.
 struct CameraPicker: UIViewControllerRepresentable {
+    // Why: a camera the device restricts (Screen Time, MDM) can't be allowed in Settings, so it isn't offered.
     static var isAvailable: Bool {
         UIImagePickerController.isSourceTypeAvailable(.camera)
+            && AVCaptureDevice.authorizationStatus(for: .video) != .restricted
     }
 
     let onPicked: (Data?) -> Void

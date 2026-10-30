@@ -25,8 +25,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PhotoLibrary
@@ -63,6 +65,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -132,9 +135,11 @@ fun EditProfileContent(
     if (isPhotoMenuOpen) {
         PhotoMenuSheet(
             hasPhoto = state.hasPhoto,
+            accountPhotoProvider = state.accountPhotoProvider,
             onDismiss = { isPhotoMenuOpen = false },
             onTakePhotoClick = onTakePhotoClick,
             onChoosePhotoClick = onChoosePhotoClick,
+            onUseAccountPhotoClick = { onEvent(EditProfileUiEvent.OnAccountPhotoSelected) },
             onRemoveClick = { onEvent(EditProfileUiEvent.OnPhotoRemoved) },
         )
     }
@@ -249,7 +254,7 @@ private fun AvatarSection(
                 ),
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.PhotoCamera,
+                    imageVector = Icons.Outlined.Edit,
                     contentDescription = stringResource(R.string.edit_profile_change_photo),
                     modifier = Modifier.size(20.dp),
                 )
@@ -263,25 +268,27 @@ private fun AvatarSection(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.edit_profile_avatar_color),
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                text = stringResource(R.string.edit_profile_avatar_color_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        if (state.showsAvatarColors) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.edit_profile_avatar_color),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Text(
+                    text = stringResource(R.string.edit_profile_avatar_color_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            AvatarColorRow(
+                selected = state.avatarColor,
+                colors = state.avatarColors,
+                onEvent = onEvent,
             )
         }
-        AvatarColorRow(
-            selected = state.avatarColor,
-            colors = state.avatarColors,
-            onEvent = onEvent,
-        )
     }
 }
 
@@ -341,12 +348,7 @@ private fun NameSection(
 
 @Composable
 private fun AccountNoticeCard(provider: AccountProvider) {
-    val providerName = stringResource(
-        when (provider) {
-            AccountProvider.GOOGLE -> DesignR.string.designsystem_google_short
-            AccountProvider.APPLE -> DesignR.string.designsystem_apple_short
-        },
-    )
+    val providerName = stringResource(provider.labelRes)
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -408,25 +410,40 @@ private fun AvatarColorRow(
 @Composable
 private fun PhotoMenuSheet(
     hasPhoto: Boolean,
+    // Why: names whose picture is offered, null when there is none to offer.
+    accountPhotoProvider: AccountProvider?,
     onDismiss: () -> Unit,
     onTakePhotoClick: (() -> Unit)?,
     onChoosePhotoClick: () -> Unit,
+    onUseAccountPhotoClick: () -> Unit,
     onRemoveClick: () -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.navigationBarsPadding().padding(bottom = 16.dp)) {
             if (onTakePhotoClick != null) {
-                PhotoMenuItem(Icons.Outlined.PhotoCamera, R.string.edit_profile_take_photo) {
+                PhotoMenuItem(Icons.Outlined.PhotoCamera, stringResource(R.string.edit_profile_take_photo)) {
                     onDismiss()
                     onTakePhotoClick()
                 }
             }
-            PhotoMenuItem(Icons.Outlined.PhotoLibrary, R.string.edit_profile_choose_photo) {
+            PhotoMenuItem(Icons.Outlined.PhotoLibrary, stringResource(R.string.edit_profile_choose_photo)) {
                 onDismiss()
                 onChoosePhotoClick()
             }
+            if (accountPhotoProvider != null) {
+                PhotoMenuItem(
+                    icon = Icons.Outlined.AccountCircle,
+                    label = stringResource(
+                        R.string.edit_profile_use_account_photo,
+                        stringResource(accountPhotoProvider.labelRes),
+                    ),
+                ) {
+                    onDismiss()
+                    onUseAccountPhotoClick()
+                }
+            }
             if (hasPhoto) {
-                PhotoMenuItem(Icons.Outlined.Delete, R.string.edit_profile_remove_photo) {
+                PhotoMenuItem(Icons.Outlined.Delete, stringResource(R.string.edit_profile_remove_photo)) {
                     onDismiss()
                     onRemoveClick()
                 }
@@ -438,7 +455,7 @@ private fun PhotoMenuSheet(
 @Composable
 private fun PhotoMenuItem(
     icon: ImageVector,
-    @StringRes label: Int,
+    label: String,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -446,7 +463,7 @@ private fun PhotoMenuItem(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         ListItem(
-            headlineContent = { Text(stringResource(label)) },
+            headlineContent = { Text(label) },
             leadingContent = {
                 Icon(
                     imageVector = icon,
@@ -484,6 +501,7 @@ private fun EditProfilePreview() {
                 hasChanges = true,
                 isSaving = false,
                 accountProvider = AccountProvider.GOOGLE,
+                accountPhotoUrl = null,
             ),
             onEvent = {},
             onTakePhotoClick = {},

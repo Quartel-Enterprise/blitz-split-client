@@ -2,9 +2,11 @@ package com.quare.blitzsplit.feature.editprofile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -21,8 +23,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,6 +38,7 @@ class EditProfileViewModel(
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
     observeProfile: ObserveProfile,
+    getSessionUser: GetSessionUser,
     observeAccount: ObserveAccount,
 ) : ViewModel() {
     val uiState: StateFlow<EditProfileUiState>
@@ -48,6 +54,7 @@ class EditProfileViewModel(
                 hasChanges = false,
                 isSaving = false,
                 accountProvider = null,
+                accountPhotoUrl = null,
             ),
         )
 
@@ -62,11 +69,27 @@ class EditProfileViewModel(
             .filterNotNull()
             .onEach(::onSavedProfileChanged)
             .launchIn(viewModelScope)
-        observeAccount()
-            .onEach { account ->
-                val provider = (account.status as? AccountStatus.Connected)?.provider
-                uiState.update { it.copy(accountProvider = provider) }
-            }.launchIn(viewModelScope)
+        /*
+         * Why: keyed on the user too, so another account of the same provider reads its own picture; and a newer
+         * status drops a session read still running, so the notice never waits on it.
+         */
+        viewModelScope.launch {
+            observeAccount()
+                .map { account -> account.status as? AccountStatus.Connected }
+                .distinctUntilChanged()
+                .collectLatest { connected ->
+                    // Why: the notice names the provider at once; the picture follows once the session is read.
+                    uiState.update {
+                        it.copy(
+                            accountProvider = connected?.provider,
+                            accountPhotoUrl = null,
+                        )
+                    }
+                    // Why: only a connected account has a picture of its own to offer.
+                    val accountPhotoUrl = connected?.let { getSessionUser()?.photoUrl }
+                    uiState.update { it.copy(accountPhotoUrl = accountPhotoUrl) }
+                }
+        }
     }
 
     fun onEvent(event: EditProfileUiEvent) {
@@ -75,6 +98,7 @@ class EditProfileViewModel(
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
             is EditProfileUiEvent.OnPhotoPicked -> preparePhoto(event.source)
             EditProfileUiEvent.OnPhotoUnreadable -> showPhotoUnreadable()
+            EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
             EditProfileUiEvent.OnSaveClicked -> save()
             EditProfileUiEvent.OnDiscardClicked -> discard()
@@ -117,6 +141,20 @@ class EditProfileViewModel(
         photoJob?.cancel()
         uiState.update {
             it.withProfile(profile).copy(
+                isPreparingPhoto = false,
+                showsPhotoError = false,
+            )
+        }
+    }
+
+    // Why: the account's picture is already a public URL, so nothing is prepared or uploaded, as in the profile setup.
+    private fun useAccountPhoto() {
+        val url = uiState.value.accountPhotoUrl ?: return
+        if (uiState.value.isSaving) return
+        photoJob?.cancel()
+        edit {
+            it.copy(
+                photo = ProfilePhoto.Remote(url),
                 isPreparingPhoto = false,
                 showsPhotoError = false,
             )
