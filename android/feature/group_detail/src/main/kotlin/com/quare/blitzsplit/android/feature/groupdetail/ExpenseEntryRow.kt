@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -36,8 +37,6 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 
 private const val META_SEPARATOR = " · "
-private val outerRadius = 20.dp
-private val innerRadius = 6.dp
 
 // Why: each day under "Hoje", "Ontem" or its date, its bills read as one card.
 internal fun LazyListScope.expenseDayItems(
@@ -71,7 +70,7 @@ internal fun LazyListScope.expenseDayItems(
         ) { index, expense ->
             ExpenseEntryRow(
                 expense = expense,
-                shape = rowShapeOf(
+                shape = groupedRowShapeOf(
                     index = index,
                     count = day.expenses.size,
                 ),
@@ -87,16 +86,6 @@ internal fun LazyListScope.expenseDayItems(
         }
     }
 }
-
-private fun rowShapeOf(
-    index: Int,
-    count: Int,
-): Shape = RoundedCornerShape(
-    topStart = if (index == 0) outerRadius else innerRadius,
-    topEnd = if (index == 0) outerRadius else innerRadius,
-    bottomStart = if (index == count - 1) outerRadius else innerRadius,
-    bottomEnd = if (index == count - 1) outerRadius else innerRadius,
-)
 
 @Composable
 private fun ExpenseEntryRow(

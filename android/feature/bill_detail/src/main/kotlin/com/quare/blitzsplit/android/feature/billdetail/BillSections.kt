@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
@@ -28,13 +27,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 
-private val outerRadius = 20.dp
-private val innerRadius = 6.dp
 private val payerAvatarSize = 32.dp
 private val rowAvatarSize = 40.dp
 
@@ -191,7 +189,7 @@ internal fun BillSplitSection(
         state.people.forEachIndexed { index, row ->
             ShareRow(
                 row = row,
-                shape = rowShapeOf(
+                shape = groupedRowShapeOf(
                     index = index,
                     count = state.people.size,
                 ),
@@ -281,13 +279,3 @@ private fun FormerMemberBadge(size: Dp) {
         )
     }
 }
-
-private fun rowShapeOf(
-    index: Int,
-    count: Int,
-): Shape = RoundedCornerShape(
-    topStart = if (index == 0) outerRadius else innerRadius,
-    topEnd = if (index == 0) outerRadius else innerRadius,
-    bottomStart = if (index == count - 1) outerRadius else innerRadius,
-    bottomEnd = if (index == count - 1) outerRadius else innerRadius,
-)
