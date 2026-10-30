@@ -65,8 +65,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Membros" (`Route.Members`) opens from Convidar's "Ver quem já entrou" and "Ir para o grupo", and from a group
     tapped on the home until the group's screen exists. Any member may rename and add members, but only a member
     who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined), after confirming
-    "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" and Android's Despesas and
-    Saldos tabs answer "Em breve".
+    "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). Android's Despesas and Saldos tabs answer "Em
+    breve".
+  - "Convite pessoal para Carla", in the menu of a member nobody joined as, opens a sheet with that member's personal
+    link to copy or share, and no QR (`MembersUiState.personalInvite`). The link is
+    `https://blitzsplit.com/g/<code>/<member code>?from=<sharer's member code>`: the server makes each member's
+    code, so the item stays disabled until the member and the group are synced, and works offline after that
+    (`MembersMember.isPersonalInviteReady`). Opening it says "Ana te chamou como Carla", naming whoever shared it (the
+    creator when the link doesn't say): "Entrar como Carla" joins straight in as that member, and "Não sou Carla" opens
+    the whole list without spending the link. A member removed or already joined makes the link "Este convite não
+    vale mais", and so does a changed group link. The copy puts no article before a member's name ("Não sou Carla",
+    "Compartilhar com Carla"), since the app doesn't know it.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
