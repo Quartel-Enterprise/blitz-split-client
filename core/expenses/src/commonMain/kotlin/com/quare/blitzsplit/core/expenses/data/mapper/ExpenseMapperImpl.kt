@@ -8,26 +8,30 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 class ExpenseMapperImpl : ExpenseMapper {
     private val json = Json { ignoreUnknownKeys = true }
 
+    // Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips.
     override fun toDomain(entity: ExpenseEntity): Expense? {
         val splitMode = SplitMode.fromCodeOrNull(entity.splitMode) ?: return null
+        val payers = decodeOrNull { decodePayers(entity.payersJson) } ?: return null
+        val shares = decodeOrNull { decodeShares(entity.sharesJson) } ?: return null
         return Expense(
             id = entity.id,
             groupId = entity.groupId,
             description = entity.description,
             amountMinor = entity.amountMinor,
             splitMode = splitMode,
-            payers = decodePayers(entity.payersJson).map {
+            payers = payers.map {
                 ExpensePayer(
                     memberId = it.memberId,
                     amountMinor = it.amountMinor,
                 )
             },
-            shares = decodeShares(entity.sharesJson).map {
+            shares = shares.map {
                 ExpenseShare(
                     memberId = it.memberId,
                     amountMinor = it.amountMinor,
@@ -107,6 +111,12 @@ class ExpenseMapperImpl : ExpenseMapper {
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
     )
+
+    private fun <T> decodeOrNull(decode: () -> T): T? = try {
+        decode()
+    } catch (_: SerializationException) {
+        null
+    }
 
     private fun decodePayers(text: String): List<ExpensePayerDto> = json.decodeFromString(text)
 

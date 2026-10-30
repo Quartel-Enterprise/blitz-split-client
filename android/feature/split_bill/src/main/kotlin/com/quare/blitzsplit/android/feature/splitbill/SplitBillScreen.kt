@@ -70,7 +70,10 @@ fun SplitBillScreen(
                 state = state,
                 isDialog = isDialog,
                 snackbarHostState = snackbarHostState,
-                onWhenClick = { isPickingSpentAt = true },
+                onWhenClick = {
+                    viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
+                    isPickingSpentAt = true
+                },
                 onEvent = viewModel::onEvent,
             )
         } else {

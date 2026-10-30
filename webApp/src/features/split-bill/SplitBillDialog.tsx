@@ -264,6 +264,7 @@ function WhenField({ presenter, state }: { presenter: SplitBillPresenter; state:
         onOpenChange={(open) => {
           // Why: the inputs open on what the bill says now, not on a half-typed date left from before.
           if (open) {
+            presenter.openSpentAt()
             setDate(toDateInputValue(state.spentAt))
             setTime(toTimeInputValue(state.spentAt))
           }

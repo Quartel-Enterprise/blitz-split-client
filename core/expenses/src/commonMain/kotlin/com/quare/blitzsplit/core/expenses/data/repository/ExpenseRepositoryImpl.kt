@@ -41,12 +41,7 @@ class ExpenseRepositoryImpl(
         val pending = local.getPendingExpenses(userId)
         if (pending.isEmpty()) return@suspendRunCatching
         remote.upsertExpenses(pending.map { mapper.toDto(it, userId) })
-        pending.forEach {
-            local.markSynced(
-                id = it.id,
-                syncedUpdatedAt = it.updatedAt,
-            )
-        }
+        local.markSynced(pending)
     }
 
     override suspend fun downloadExpenses(userId: String): Result<Unit> = suspendRunCatching {

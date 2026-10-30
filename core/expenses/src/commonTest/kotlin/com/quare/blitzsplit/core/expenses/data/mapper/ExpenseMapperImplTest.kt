@@ -42,6 +42,18 @@ class ExpenseMapperImplTest {
     }
 
     @Test
+    fun `GIVEN shares this version cannot read WHEN mapping to the domain THEN skips the bill`() {
+        // Given
+        val entity = entity(sharesJson = "{\"memberId\": 1}")
+
+        // When
+        val expense = mapper.toDomain(entity)
+
+        // Then
+        assertNull(expense)
+    }
+
+    @Test
     fun `GIVEN a stored bill WHEN mapping to the domain THEN reads its payers and shares`() {
         // Given
         val entity = entity(

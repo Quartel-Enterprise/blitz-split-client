@@ -136,8 +136,13 @@ class RoomExpenseLocalDataSourceTest {
 
         // When
         dataSource.markSynced(
-            id = "bill-1",
-            syncedUpdatedAt = 5L,
+            listOf(
+                expense(
+                    id = "bill-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                ),
+            ),
         )
 
         // Then
@@ -166,8 +171,13 @@ class RoomExpenseLocalDataSourceTest {
 
         // When
         dataSource.markSynced(
-            id = "bill-1",
-            syncedUpdatedAt = 5L,
+            listOf(
+                expense(
+                    id = "bill-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                ),
+            ),
         )
 
         // Then

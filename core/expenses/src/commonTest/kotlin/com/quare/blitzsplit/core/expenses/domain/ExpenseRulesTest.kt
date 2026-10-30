@@ -187,4 +187,16 @@ class ExpenseRulesTest {
         // Then
         assertEquals(description, capped)
     }
+
+    @Test
+    fun `GIVEN an emoji across the 100th character WHEN capping the description THEN drops the whole emoji`() {
+        // Given
+        val description = "a".repeat(99) + "\uD83C\uDF55"
+
+        // When
+        val capped = ExpenseRules.toCapped(description)
+
+        // Then
+        assertEquals("a".repeat(99), capped)
+    }
 }

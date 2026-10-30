@@ -92,6 +92,16 @@ object BillSplit {
             parts[payerId] = parts.getValue(payerId) + leftover
             leftover = 0
         }
+        // Why: the Double past a Long's reach may round a part up; the largest parts give that back.
+        val givers = parts.entries
+            .sortedByDescending { it.value }
+            .map { it.key }
+            .iterator()
+        while (leftover < 0 && givers.hasNext()) {
+            val memberId = givers.next()
+            parts[memberId] = parts.getValue(memberId) - 1
+            leftover++
+        }
         val receivers = entries.map { it.memberId }.iterator()
         while (leftover > 0 && receivers.hasNext()) {
             val memberId = receivers.next()
@@ -109,7 +119,8 @@ object BillSplit {
 
     /*
      * Why: total × weight ÷ of, rounded down. Exact while the product fits a Long; two parts typed in "Valores" near
-     * the 100 million limit don't, and the leftover the caller hands out keeps the sum exact anyway.
+     * the 100 million limit don't, and the leftover the caller hands out keeps the sum exact anyway. The Double may
+     * round up, which makes that leftover negative.
      */
     private fun proportionOf(
         total: Long,

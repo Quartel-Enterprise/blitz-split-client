@@ -12,24 +12,23 @@ class SupabaseExpenseRemoteDataSource(
     }
 
     /*
-     * Why: page by page, as the groups, until a page comes back empty: a bill missing from the answer would read as
-     * removed on the server and leave the device.
+     * Why: page by page until one comes back empty: a bill missing from the answer would read as removed on the server
+     * and leave the device. Each page starts after the last id of the one before, not at an offset, since other
+     * members keep adding bills meanwhile, which would shift an offset and skip a row.
      */
     override suspend fun fetchExpenses(): List<ExpenseDto> {
         val rows = mutableListOf<ExpenseDto>()
         do {
-            val from = rows.size.toLong()
+            val lastId = rows.lastOrNull()?.id
             val page = postgrest
                 .from(EXPENSES)
                 .select {
+                    if (lastId != null) filter { gt("id", lastId) }
                     order(
                         column = "id",
                         order = Order.ASCENDING,
                     )
-                    range(
-                        from = from,
-                        to = from + PAGE_SIZE - 1,
-                    )
+                    limit(PAGE_SIZE)
                 }.decodeList<ExpenseDto>()
             rows += page
         } while (page.isNotEmpty())

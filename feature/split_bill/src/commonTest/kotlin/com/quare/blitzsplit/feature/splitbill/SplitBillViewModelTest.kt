@@ -354,6 +354,24 @@ class SplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN opened before midnight WHEN opening Quando after midnight THEN it reaches today and says yesterday`() =
+        runTest(testDispatcher) {
+            // Given
+            val beforeMidnight = Instant.parse("2026-10-30T23:50:00Z").toEpochMilliseconds()
+            prepareScenario(now = beforeMidnight)
+            val afterMidnight = Instant.parse("2026-10-31T00:10:00Z").toEpochMilliseconds()
+            clockMillis = afterMidnight
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
+
+            // Then
+            assertEquals(beforeMidnight, viewModel.uiState.value.spentAt)
+            assertEquals(RelativeDay.YESTERDAY, viewModel.uiState.value.spentDay)
+            assertEquals(afterMidnight, viewModel.uiState.value.latestSpentAt)
+        }
+
+    @Test
     fun `GIVEN the bill WHEN typing an amount with a decimal comma THEN reads it in cents`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

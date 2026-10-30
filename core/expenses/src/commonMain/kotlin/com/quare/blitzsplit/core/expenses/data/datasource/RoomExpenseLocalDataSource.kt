@@ -24,14 +24,8 @@ class RoomExpenseLocalDataSource(
         dao.applyRemoteToGroups(entities)
     }
 
-    override suspend fun markSynced(
-        id: String,
-        syncedUpdatedAt: Long,
-    ) {
-        dao.markSynced(
-            id = id,
-            syncedUpdatedAt = syncedUpdatedAt,
-        )
+    override suspend fun markSynced(pushed: List<ExpenseEntity>) {
+        dao.markAllSynced(pushed)
     }
 
     override suspend fun deleteGoneFromServer(

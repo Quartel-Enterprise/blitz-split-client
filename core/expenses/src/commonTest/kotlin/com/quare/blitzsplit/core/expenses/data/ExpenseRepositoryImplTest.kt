@@ -433,13 +433,11 @@ private class FakeExpenseLocalDataSource(
         this.entities.update { list -> list.filterNot { it.id in ids } + entities }
     }
 
-    override suspend fun markSynced(
-        id: String,
-        syncedUpdatedAt: Long,
-    ) {
-        syncedVersions += id to syncedUpdatedAt
+    override suspend fun markSynced(pushed: List<ExpenseEntity>) {
+        syncedVersions += pushed.map { it.id to it.updatedAt }
+        val versions = pushed.map { it.id to it.updatedAt }.toSet()
         entities.update { list ->
-            list.map { if (it.id == id && it.updatedAt == syncedUpdatedAt) it.copy(pendingSync = false) else it }
+            list.map { if (it.id to it.updatedAt in versions) it.copy(pendingSync = false) else it }
         }
     }
 

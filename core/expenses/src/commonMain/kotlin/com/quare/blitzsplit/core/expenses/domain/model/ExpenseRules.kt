@@ -18,7 +18,11 @@ object ExpenseRules {
 
     fun isDescriptionValid(description: String): Boolean = description.isNotBlank()
 
-    fun toCapped(description: String): String = description.take(DESCRIPTION_MAX_LENGTH)
+    // Why: never ends on half of an emoji, which would leave a lone surrogate on the way to JSON and Postgres.
+    fun toCapped(description: String): String {
+        val capped = description.take(DESCRIPTION_MAX_LENGTH)
+        return if (capped.lastOrNull()?.isHighSurrogate() == true) capped.dropLast(1) else capped
+    }
 
     fun minorPerMajorFor(currency: GroupCurrency): Long {
         var factor = 1L

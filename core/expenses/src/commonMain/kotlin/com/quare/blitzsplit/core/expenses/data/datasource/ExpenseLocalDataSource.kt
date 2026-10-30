@@ -18,10 +18,8 @@ interface ExpenseLocalDataSource {
     // Why: skips a bill of a group this device doesn't have, which waits for the sync that brings the group.
     suspend fun applyRemote(entities: List<ExpenseEntity>)
 
-    suspend fun markSynced(
-        id: String,
-        syncedUpdatedAt: Long,
-    )
+    // Why: each bill at the version that went up; one changed meanwhile stays pending.
+    suspend fun markSynced(pushed: List<ExpenseEntity>)
 
     suspend fun deleteGoneFromServer(
         ownerUserId: String,

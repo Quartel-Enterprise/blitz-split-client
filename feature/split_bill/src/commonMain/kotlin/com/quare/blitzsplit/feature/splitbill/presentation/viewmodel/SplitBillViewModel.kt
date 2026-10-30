@@ -103,6 +103,8 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnPayerDismissed -> uiState.update { it.copy(payerSelection = null) }
 
+            SplitBillUiEvent.OnSpentAtOpened -> refreshSpentAtLimit()
+
             is SplitBillUiEvent.OnSpentAtChanged -> changeSpentAt(event.epochMillis)
 
             SplitBillUiEvent.OnSplitClicked -> uiState.update { it.copy(splitEditor = it.split) }
@@ -229,6 +231,17 @@ class SplitBillViewModel(
             currency = currency,
             payerId = payerId,
         ).withShares()
+    }
+
+    // Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day.
+    private fun refreshSpentAtLimit() {
+        val now = currentTimeMillis()
+        uiState.update {
+            it.copy(
+                spentDay = relativeDayOf(it.spentAt),
+                latestSpentAt = now,
+            )
+        }
     }
 
     // Why: a later time today, which the pickers can't rule out, becomes now.

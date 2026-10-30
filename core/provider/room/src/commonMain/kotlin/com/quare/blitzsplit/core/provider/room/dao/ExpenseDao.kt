@@ -106,6 +106,17 @@ interface ExpenseDao {
         remoteUpdatedAt: Long,
     )
 
+    // Why: every bill a push took up in one transaction, so the observers of the table wake once rather than per bill.
+    @Transaction
+    suspend fun markAllSynced(pushed: List<ExpenseEntity>) {
+        pushed.forEach {
+            markSynced(
+                id = it.id,
+                syncedUpdatedAt = it.updatedAt,
+            )
+        }
+    }
+
     // Why: a change made while the push was in flight keeps the bill pending.
     @Query("UPDATE expense SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
     suspend fun markSynced(

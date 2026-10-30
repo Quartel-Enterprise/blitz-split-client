@@ -24,6 +24,9 @@ sealed interface SplitBillUiEvent : UiEvent {
 
     data object OnPayerDismissed : SplitBillUiEvent
 
+    // Why: "Quando" opening its picker, which then stops at the day it is now, also once midnight passed meanwhile.
+    data object OnSpentAtOpened : SplitBillUiEvent
+
     // Why: "Quando", picked in each platform's date and time picker.
     data class OnSpentAtChanged(
         val epochMillis: Long,

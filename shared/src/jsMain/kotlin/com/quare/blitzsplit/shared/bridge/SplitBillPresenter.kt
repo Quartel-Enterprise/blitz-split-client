@@ -190,6 +190,10 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnPayerDismissed)
     }
 
+    fun openSpentAt() {
+        viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
+    }
+
     fun changeSpentAt(epochMillis: Double) {
         viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(epochMillis.toLong()))
     }

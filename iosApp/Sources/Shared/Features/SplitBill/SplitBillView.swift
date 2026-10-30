@@ -277,6 +277,7 @@ private struct PhoneSplitBill: View {
             }
             .buttonStyle(.plain)
             Button {
+                if !showsWhenPicker { model.send(SplitBillUiEventOnSpentAtOpened.shared) }
                 withAnimation { showsWhenPicker.toggle() }
             } label: {
                 HStack {
@@ -499,6 +500,7 @@ private struct MacBillForm: View {
                 .fixedSize()
                 LabeledContent("When:") {
                     Button(ExpenseFormat.when(state.spentAt, relativeDay: state.spentDay)) {
+                        model.send(SplitBillUiEventOnSpentAtOpened.shared)
                         showsWhenPicker = true
                     }
                     .popover(isPresented: $showsWhenPicker, arrowEdge: .bottom) {
