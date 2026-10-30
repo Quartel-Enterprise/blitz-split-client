@@ -45,4 +45,6 @@ Versions live in `gradle/libs.versions.toml` and `webApp/package.json`; this is 
 ### Tooling
 
 - **ktlint** with the Quare ruleset (`scripts/ktlint.sh`), see [code-style.md](code-style.md)
+- **jscpd** for copied code in Kotlin, Swift and TypeScript (`scripts/cpd.sh`), see
+  [code-style.md](code-style.md#copied-code)
 - **Kover** (80% line coverage) and **modules-graph-assert**, configured in the root `build.gradle.kts`

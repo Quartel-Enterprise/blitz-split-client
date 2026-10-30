@@ -101,6 +101,7 @@ it's visible. Clear the database from DevTools → Application → Storage → C
 ./gradlew :koverVerifyCi     # 80% line coverage of core and feature
 ./gradlew assertModuleGraph  # the module dependency rules
 ./scripts/ktlint.sh          # Kotlin style (--format to autocorrect)
+./scripts/cpd.sh             # no new copied code in Kotlin, Swift and TypeScript
 ```
 
 ## Next steps

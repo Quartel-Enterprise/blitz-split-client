@@ -59,5 +59,5 @@ each platform.
 
 ### Before the PR
 
-- [ ] `./scripts/ktlint.sh`, `./gradlew assertModuleGraph`, and a run of the flow on Android, iOS, macOS and the web
+- [ ] `./scripts/ktlint.sh`, `./scripts/cpd.sh`, `./gradlew assertModuleGraph`, and a run of the flow on Android, iOS, macOS and the web
       (see [pr-guidelines.md](pr-guidelines.md))
