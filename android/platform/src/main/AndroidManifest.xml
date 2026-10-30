@@ -4,6 +4,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- The invite reader's camera, asked for only when it opens. A device without a camera still pastes the link. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- The CAMERA permission implies a required back camera with autofocus, which Google Play would filter by. -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.any"
         android:required="false" />

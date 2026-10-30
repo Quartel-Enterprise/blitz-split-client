@@ -13,15 +13,16 @@ struct InviteScannerView: View {
     var body: some View {
         Group {
             if DataScannerViewController.isSupported, DataScannerViewController.isAvailable {
-                ScannerRepresentable(onScanned: onScanned)
+                ScannerRepresentable(onScanned: onScanned, onUnavailable: onUnavailable)
             } else {
                 Color.black
             }
         }
         .ignoresSafeArea()
         .onAppear {
-            // Why: the scanner needs a recent enough camera; without one, only the paste is left.
-            if !DataScannerViewController.isSupported { onUnavailable() }
+            // Why: the scanner needs a recent enough camera, not restricted on the device; without one, only the paste
+            // is left.
+            if !DataScannerViewController.isSupported || !DataScannerViewController.isAvailable { onUnavailable() }
             onTorchAvailabilityChanged(Torch.device?.hasTorch ?? false)
         }
         .onChange(of: isTorchOn, initial: true) { _, isOn in Torch.set(isOn) }
@@ -44,6 +45,7 @@ private enum Torch {
 
 private struct ScannerRepresentable: UIViewControllerRepresentable {
     let onScanned: (String) -> Void
+    let onUnavailable: () -> Void
 
     func makeUIViewController(context: Context) -> DataScannerViewController {
         let scanner = DataScannerViewController(
@@ -54,7 +56,13 @@ private struct ScannerRepresentable: UIViewControllerRepresentable {
             isHighlightingEnabled: false,
         )
         scanner.delegate = context.coordinator
-        try? scanner.startScanning()
+        do {
+            try scanner.startScanning()
+        } catch {
+            // Why: the camera won't start (another app holds it); only the paste is left. Not during this update.
+            let onUnavailable = onUnavailable
+            Task { @MainActor in onUnavailable() }
+        }
         return scanner
     }
 

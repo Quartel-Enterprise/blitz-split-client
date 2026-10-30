@@ -88,7 +88,13 @@ export function useQrCamera(video: RefObject<HTMLVideoElement | null>, { isEnabl
         if (!video.current) return
         video.current.srcObject = media
         setTrack(media.getVideoTracks()[0] ?? null)
-        await video.current.play()
+        try {
+          await video.current.play()
+        } catch {
+          // Why: the camera was allowed, so a video that won't play is a failure, not a refusal of the camera.
+          if (isActive) setProblem('failed')
+          return
+        }
         next()
       })
       .catch((error: unknown) => {

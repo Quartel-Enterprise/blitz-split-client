@@ -5,8 +5,11 @@ import android.os.SystemClock
 import android.view.Surface
 import androidx.camera.compose.CameraXViewfinder
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.CameraState
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.InitializationException
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -26,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -38,8 +42,8 @@ private const val REPEAT_READ_INTERVAL_MILLIS = 250L
 /*
  * Why: the invite reader draws its own camera, so a wrong QR shows its warning while the camera keeps reading, and the
  * link can be pasted under it. Every QR read is reported, the same one again a few times a second. Needs the camera
- * permission; a device without a back camera uses the front one, and one without any, or whose camera won't open
- * (another app holds it), is reported unavailable.
+ * permission; a device without a back camera uses the front one, and one without any, or whose camera CameraX can't
+ * start or bind, is reported unavailable.
  */
 @Composable
 fun QrCameraDisplay(
@@ -58,9 +62,15 @@ fun QrCameraDisplay(
     var surfaceRequest by remember { mutableStateOf<SurfaceRequest?>(null) }
     var camera by remember { mutableStateOf<Camera?>(null) }
     LaunchedEffect(context, lifecycleOwner, rotation) {
-        val provider = ProcessCameraProvider.awaitInstance(context)
+        // Why: CameraX fails to start on a device whose camera service doesn't answer; the paste remains.
+        val provider = try {
+            ProcessCameraProvider.awaitInstance(context)
+        } catch (_: InitializationException) {
+            currentOnUnavailable()
+            return@LaunchedEffect
+        }
         val selector = listOf(CameraSelector.DEFAULT_BACK_CAMERA, CameraSelector.DEFAULT_FRONT_CAMERA)
-            .firstOrNull(provider::hasCamera)
+            .firstOrNull(provider::hasCameraOrFalse)
         if (selector == null) {
             currentOnUnavailable()
             return@LaunchedEffect
@@ -98,10 +108,15 @@ fun QrCameraDisplay(
                 )
             }
         try {
-            // Why: CameraX refuses to bind when the camera is held elsewhere or can't run both uses; the paste remains.
-            val bound = runCatching { provider.bindToLifecycle(lifecycleOwner, selector, preview, analysis) }
-                .onFailure { currentOnUnavailable() }
-                .getOrNull()
+            // Why: CameraX refuses to bind a camera that can't run both uses; the paste remains.
+            val bound = try {
+                provider.bindToLifecycle(lifecycleOwner, selector, preview, analysis)
+            } catch (_: IllegalArgumentException) {
+                null
+            } catch (_: IllegalStateException) {
+                null
+            }
+            if (bound == null) currentOnUnavailable()
             camera = bound?.also { currentOnTorchAvailabilityChanged(it.cameraInfo.hasFlashUnit()) }
             awaitCancellation()
         } finally {
@@ -111,8 +126,18 @@ fun QrCameraDisplay(
             surfaceRequest = null
         }
     }
-    LaunchedEffect(camera, isTorchOn) {
-        camera?.let { if (it.cameraInfo.hasFlashUnit()) it.cameraControl.enableTorch(isTorchOn) }
+    /*
+     * Why: CameraX turns the torch off whenever the camera closes (the app in the background), so it is set again each
+     * time the camera opens.
+     */
+    DisposableEffect(camera, isTorchOn, lifecycleOwner) {
+        val bound = camera?.takeIf { it.cameraInfo.hasFlashUnit() }
+        val cameraState = bound?.cameraInfo?.cameraState
+        val observer = Observer<CameraState> { state ->
+            if (state.type == CameraState.Type.OPEN) bound?.cameraControl?.enableTorch(isTorchOn)
+        }
+        cameraState?.observe(lifecycleOwner, observer)
+        onDispose { cameraState?.removeObserver(observer) }
     }
     surfaceRequest?.let { request ->
         CameraXViewfinder(
@@ -121,6 +146,13 @@ fun QrCameraDisplay(
             modifier = modifier,
         )
     }
+}
+
+// Why: a camera whose details can't be read counts as missing, so the reader tries the next one or offers the paste.
+private fun ProcessCameraProvider.hasCameraOrFalse(selector: CameraSelector): Boolean = try {
+    hasCamera(selector)
+} catch (_: CameraInfoUnavailableException) {
+    false
 }
 
 // Why: a phone turned from one side to the other changes no configuration, so the rotation is followed from the display.

@@ -10,18 +10,30 @@ struct InviteScannerView: View {
     let onTorchAvailabilityChanged: (Bool) -> Void
     let onUnavailable: () -> Void
 
-    @State private var scanner = CameraQRScanner(readsContinuously: true)
+    /// Made once the camera starts: SwiftUI rebuilds this view's value whenever the reader redraws, and a capture
+    /// session made each time would be thrown away.
+    @State private var scanner: CameraQRScanner?
 
     var body: some View {
-        CameraPreview(session: scanner.session)
-            .task {
-                onTorchAvailabilityChanged(false)
-                guard AVCaptureDevice.default(for: .video) != nil else {
-                    onUnavailable()
-                    return
-                }
-                await scanner.start(onScanned: onScanned)
+        Group {
+            if let scanner {
+                CameraPreview(session: scanner.session)
+            } else {
+                Color.black
             }
-            .onDisappear { scanner.stop() }
+        }
+        .task {
+            onTorchAvailabilityChanged(false)
+            guard AVCaptureDevice.default(for: .video) != nil else {
+                onUnavailable()
+                return
+            }
+            let scanner = scanner ?? CameraQRScanner(readsContinuously: true)
+            self.scanner = scanner
+            await scanner.start(onScanned: onScanned)
+            // Why: the camera wouldn't open (another app holds it), so only the paste is left.
+            if scanner.session.inputs.isEmpty { onUnavailable() }
+        }
+        .onDisappear { scanner?.stop() }
     }
 }
