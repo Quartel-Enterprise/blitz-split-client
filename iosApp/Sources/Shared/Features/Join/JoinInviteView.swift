@@ -108,7 +108,9 @@ private struct JoinInviteContent: View {
                     problem(
                         systemImage: "xmark.circle",
                         title: "This invite is no longer valid",
-                        message: "The link was changed or the group was deleted. Ask whoever invited you for a new link.",
+                        message: state.isPersonal
+                            ? "Someone already joined through this link, or it was changed. Ask whoever sent it for a new one."
+                            : "The link was changed or the group was deleted. Ask whoever invited you for a new link.",
                         displayLink: nil,
                     )
                 case .offline:
@@ -166,7 +168,7 @@ private struct JoinInviteContent: View {
                 if let inviterName = state.inviterName {
                     Text("\(inviterName) invited you as \(member.name)")
                 } else {
-                    Text("You were invited as \(member.name)")
+                    Text("You're joining as \(member.name)")
                 }
             }
             .font(.largeTitle.bold())

@@ -101,7 +101,10 @@ class AppViewModel(
                     memberCode = target.memberCode,
                     inviterCode = target.inviterCode,
                 )
-                val openIndex = navigator.backStack.value.indexOf(invite)
+                // Why: the same link shared again by someone else is the same invite, whoever the sender is.
+                val openIndex = navigator.backStack.value.indexOfFirst {
+                    it is Route.JoinInvite && it.code == invite.code && it.memberCode == invite.memberCode
+                }
                 if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
             }.launchIn(viewModelScope)
     }

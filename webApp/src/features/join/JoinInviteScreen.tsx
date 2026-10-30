@@ -33,7 +33,7 @@ export function JoinInviteScreen({ route }: { route: JsRoute }) {
         {state.status === 'loading' && <Loader2 aria-hidden className="mt-40 size-8 animate-spin self-center text-muted-foreground" />}
         {state.status === 'ready' && <Invite presenter={presenter} state={state} />}
         {state.status === 'invalid' && (
-          <Problem icon={<Link2Off className="size-10" />} title={t('join_invalidTitle')} message={t('join_invalidMessage')}>
+          <Problem icon={<Link2Off className="size-10" />} title={t('join_invalidTitle')} message={t(state.isPersonal ? 'join_invalidPersonalMessage' : 'join_invalidMessage')}>
             <Button variant="outline" size="lg" onClick={() => presenter.goHome()}>
               {t('join_goHome')}
             </Button>
@@ -104,7 +104,7 @@ function LinkTitle({ creator, group }: { creator: string | null | undefined; gro
   return <>{creator != null ? t('join_title', { creator, group }) : t('join_titleNoCreator', { group })}</>
 }
 
-/** "Ana te chamou como Carla": whoever shared the link, or the creator, and without either "Você foi convidado como Carla". */
+/** "Ana te chamou como Carla": whoever shared the link, and "Você entra como Carla" when the link doesn't say. */
 function PersonalTitle({ inviter, name }: { inviter: string | null | undefined; name: string }) {
   return <>{inviter != null ? t('join_personalTitle', { inviter, name }) : t('join_personalTitleNoInviter', { name })}</>
 }

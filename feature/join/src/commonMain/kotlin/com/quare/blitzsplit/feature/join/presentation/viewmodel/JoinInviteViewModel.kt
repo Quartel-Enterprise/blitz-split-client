@@ -53,7 +53,15 @@ class JoinInviteViewModel(
                 groupColor = AvatarColor.default,
                 creatorName = null,
                 members = emptyList(),
-                displayLink = displayLinkOf(route),
+                displayLink = InviteLink.displayOf(
+                    route.memberCode?.let {
+                        InviteLink.personalOf(
+                            inviteCode = route.code,
+                            memberCode = it,
+                            inviterCode = route.inviterCode,
+                        )
+                    } ?: InviteLink.of(route.code),
+                ),
                 isPersonal = route.memberCode != null,
                 personalMember = null,
                 inviterName = null,
@@ -145,7 +153,7 @@ class JoinInviteViewModel(
                 creatorName = invite.creatorName,
                 members = invite.members.map { member -> member.toJoinMember() },
                 personalMember = personalMemberOf(invite)?.toJoinMember(),
-                inviterName = invite.inviterName ?: invite.creatorName,
+                inviterName = invite.inviterName,
             )
         }
     }
@@ -234,19 +242,5 @@ class JoinInviteViewModel(
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     private fun leave() {
         if (isOnTop()) navigator.navigateBack()
-    }
-
-    private companion object {
-        // Why: "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z" for a personal link, without whoever shared it.
-        fun displayLinkOf(route: Route.JoinInvite): String {
-            val link = route.memberCode?.let {
-                InviteLink.personalOf(
-                    inviteCode = route.code,
-                    memberCode = it,
-                    inviterCode = null,
-                )
-            } ?: InviteLink.of(route.code)
-            return link.substringAfter("://")
-        }
     }
 }

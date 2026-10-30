@@ -19,12 +19,13 @@
     <string name="join_not_now">Agora não</string>
     <string name="join_personal_chip">Convite pessoal</string>
     <string name="join_personal_title">%1$s te chamou como %2$s</string>
-    <string name="join_personal_title_no_inviter">Você foi convidado como %s</string>
+    <string name="join_personal_title_no_inviter">Você entra como %s</string>
     <string name="join_personal_hint">Este link é só seu. Você entra como %s, sem escolher na lista.</string>
     <string name="join_personal_join">Entrar como %s</string>
     <string name="join_personal_not_me">Não sou %s</string>
     <string name="join_invalid_title">Este convite não vale mais</string>
     <string name="join_invalid_message">O link foi trocado ou o grupo foi apagado. Peça um link novo para quem te chamou.</string>
+    <string name="join_invalid_personal_message">Alguém já entrou por este link, ou ele foi trocado. Peça um novo a quem te mandou.</string>
     <string name="join_go_home">Ir para o início</string>
     <string name="join_offline_title">Sem internet para abrir o convite</string>
     <string name="join_offline_message">Guardamos o link. Assim que o aparelho conectar, o convite abre sozinho.</string>

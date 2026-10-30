@@ -97,7 +97,13 @@ fun JoinInviteContent(
                     JoinInviteStatus.INVALID -> ProblemContent(
                         icon = Icons.Outlined.LinkOff,
                         title = stringResource(R.string.join_invalid_title),
-                        message = stringResource(R.string.join_invalid_message),
+                        message = stringResource(
+                            if (state.isPersonal) {
+                                R.string.join_invalid_personal_message
+                            } else {
+                                R.string.join_invalid_message
+                            },
+                        ),
                         displayLink = null,
                         onRetry = null,
                         onEvent = onEvent,

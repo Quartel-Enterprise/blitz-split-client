@@ -25,6 +25,9 @@ object InviteLink {
         inviterCode: String?,
     ): String = BASE_URL + inviteCode + "/" + memberCode + inviterCode?.let { "?$FROM=$it" }.orEmpty()
 
+    // Why: "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z", a link as the screens show it, without whoever shares it.
+    fun displayOf(link: String): String = link.substringAfter("://").substringBefore("?")
+
     // Why: what a link opens, null for any other URL, like the browser sign in's callback.
     fun targetOf(url: String): InviteTarget? {
         val match = linkPattern.matchEntire(url.trim()) ?: return null

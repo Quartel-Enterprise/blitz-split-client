@@ -793,4 +793,32 @@ class InviteLinkTest {
         // Then
         assertNull(target)
     }
+
+    @Test
+    fun `GIVEN the link of a group WHEN showing it THEN drops the scheme`() {
+        // Given
+        val link = InviteLink.of("aB3dE5gH")
+
+        // When
+        val shown = InviteLink.displayOf(link)
+
+        // Then
+        assertEquals("blitzsplit.com/g/aB3dE5gH", shown)
+    }
+
+    @Test
+    fun `GIVEN a personal link with whoever shared it WHEN showing it THEN drops the scheme and the sharer`() {
+        // Given
+        val link = InviteLink.personalOf(
+            inviteCode = "aB3dE5gH",
+            memberCode = "c3Rt9z",
+            inviterCode = "Xy7kQ2",
+        )
+
+        // When
+        val shown = InviteLink.displayOf(link)
+
+        // Then
+        assertEquals("blitzsplit.com/g/aB3dE5gH/c3Rt9z", shown)
+    }
 }

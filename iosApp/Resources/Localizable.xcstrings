@@ -2974,6 +2974,17 @@
         }
       }
     },
+    "Someone already joined through this link, or it was changed. Ask whoever sent it for a new one." : {
+      "comment" : "Why a personal invite link no longer works: its member joined or was removed, or the group's link changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguém já entrou por este link, ou ele foi trocado. Peça um novo a quem te mandou."
+          }
+        }
+      }
+    },
     "Someone marked a payment to me" : {
       "localizations" : {
         "pt-BR" : {
@@ -3629,17 +3640,6 @@
         }
       }
     },
-    "You were invited as %@" : {
-      "comment" : "The title of a personal invite link when nobody who shared it has an account",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Você foi convidado como %@"
-          }
-        }
-      }
-    },
     "You're invited to %@" : {
       "comment" : "The title of an invite link whose creator deleted their account",
       "localizations" : {
@@ -3647,6 +3647,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você foi chamado para o grupo %@"
+          }
+        }
+      }
+    },
+    "You're joining as %@" : {
+      "comment" : "The title of a personal invite link that doesn't say who shared it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você entra como %@"
           }
         }
       }

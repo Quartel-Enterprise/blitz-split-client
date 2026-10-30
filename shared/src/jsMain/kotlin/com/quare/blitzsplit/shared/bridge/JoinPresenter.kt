@@ -39,7 +39,7 @@ class JsJoinInviteState(
     // Why: a personal link ("Convite pessoal"), which joins as personalMember with "Entrar como Carla".
     val isPersonal: Boolean,
     val personalMember: JsJoinMember?,
-    // Why: "Ana te chamou como Carla": whoever shared the link, or the creator.
+    // Why: "Ana te chamou como Carla": whoever shared the link, null when the link doesn't say.
     val inviterName: String?,
     val isJoining: Boolean,
 )

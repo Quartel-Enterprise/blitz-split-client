@@ -16,7 +16,7 @@ class InviteRepositoryImpl(
     private val remote: GroupRemoteDataSource,
     private val mapper: InviteMapper,
 ) : InviteRepository {
-    // Why: the group's link asks with its code alone, which a server without personal links answers too.
+    // Why: the group's link asks with its code alone, so the server reads it as before personal links existed.
     override suspend fun fetchInvite(target: InviteTarget): Result<Invite?> = suspendRunCatching {
         val dto = if (target.memberCode == null) {
             remote.fetchInvite(target.code)

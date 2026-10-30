@@ -547,7 +547,7 @@ class JoinInviteViewModelTest {
         }
 
     @Test
-    fun `GIVEN a personal link that names no sharer WHEN the screen opens THEN the creator invites`() =
+    fun `GIVEN a personal link that names no sharer WHEN the screen opens THEN names nobody as the sender`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -560,7 +560,7 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(JoinInviteStatus.READY, state.status)
-            assertEquals("Pierre", state.inviterName)
+            assertNull(state.inviterName)
         }
 
     @Test

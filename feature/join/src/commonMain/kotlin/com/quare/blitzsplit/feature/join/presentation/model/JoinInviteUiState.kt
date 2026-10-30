@@ -19,8 +19,8 @@ data class JoinInviteUiState(
     // Why: "Pierre te chamou como Carla": the member a personal invite joins as, once the invite came.
     val personalMember: JoinMember?,
     /*
-     * Why: "Ana te chamou como Carla", whoever shared a personal link, or the creator when the link doesn't say; null
-     * once neither has an account.
+     * Why: "Ana te chamou como Carla", whoever shared a personal link; null when the link doesn't say, rather than
+     * naming the creator for someone else's link: "Você entra como Carla".
      */
     val inviterName: String?,
     // Why: "Entrar como Carla" on its way, which no button can start again.

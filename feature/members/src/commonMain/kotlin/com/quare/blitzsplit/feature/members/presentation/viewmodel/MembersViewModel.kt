@@ -138,7 +138,7 @@ class MembersViewModel(
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
-                displayLink = group.inviteCode?.let(InviteLink::of)?.substringAfter("://"),
+                displayLink = group.inviteCode?.let(InviteLink::of)?.let(InviteLink::displayOf),
                 members = members,
                 // Why: the member about to be removed may be gone, or have joined, by now.
                 memberToRemove = state.memberToRemove?.let { asked ->
@@ -192,8 +192,7 @@ class MembersViewModel(
         return PersonalInvite(
             member = member,
             link = link,
-            // Why: without who shares it, which only the copied and shared link needs.
-            displayLink = link.substringAfter("://").substringBefore("?"),
+            displayLink = InviteLink.displayOf(link),
             isLinkCopied = isLinkCopied,
         )
     }
