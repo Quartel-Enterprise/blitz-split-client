@@ -10,7 +10,7 @@ import AppKit
 /// Copies the recovery code and saves it to the Passwords app, which keeps it safer than a
 /// screenshot and brings it to the person's other Apple devices.
 enum RecoveryCodeSaver {
-    private static let domain = "borarachar.com"
+    private static let domain = "blitzsplit.com"
     /// The entry's name in the Passwords app, in the app's language like the app name
     /// ("Bora Rachar · código de recuperação" in Portuguese).
     private static var account: String {
@@ -22,9 +22,9 @@ enum RecoveryCodeSaver {
     }
 
     /*
-     * iOS: a shared web credential lands in the Passwords app, tied to borarachar.com by the
-     * webcredentials associated domain. macOS has no shared web credentials, so the code becomes an
-     * iCloud Keychain internet password for the same domain, which the Passwords app shows too.
+     * iOS: a shared web credential lands in the Passwords app, tied to blitzsplit.com by the
+     * webcredentials associated domain. macOS saves the code as an iCloud Keychain internet password
+     * for the same domain instead, which the Passwords app shows too.
      */
     static func saveToPasswords(_ code: String) async -> Bool {
         #if os(iOS)
