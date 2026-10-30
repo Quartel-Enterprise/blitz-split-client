@@ -970,7 +970,7 @@ class GroupsViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.Members("floripa")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members("floripa", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -984,7 +984,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("floripa")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("floripa", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test

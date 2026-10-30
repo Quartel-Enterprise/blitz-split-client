@@ -41,4 +41,7 @@ sealed interface MembersUiEvent : UiEvent {
     data object OnSaveClicked : MembersUiEvent
 
     data object OnEditorDismissed : MembersUiEvent
+
+    // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
+    data object OnProtectAccessClicked : MembersUiEvent
 }

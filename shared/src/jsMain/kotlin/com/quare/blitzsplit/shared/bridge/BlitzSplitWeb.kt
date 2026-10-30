@@ -3,11 +3,13 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
+import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
@@ -27,6 +29,14 @@ fun startBlitzSplit(sqliteWorker: Worker) {
     startBlitzSplitKoin(extraModules = listOf(module { single<Worker> { sqliteWorker } }))
     val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
     MainScope().launch { handleBrowserCallback(launchUrl) }
+    openInviteLink(launchUrl)
+}
+
+// Why: the page of a group's invite, blitzsplit.com/g/<code>, opens it once; the address goes back to the app's own.
+private fun openInviteLink(launchUrl: String) {
+    if (InviteLink.codeOf(launchUrl) == null) return
+    KoinPlatform.getKoin().get<LinkInbox>().receive(launchUrl)
+    window.history.replaceState(null, "", "/")
 }
 
 class JsWatch internal constructor(

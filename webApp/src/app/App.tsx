@@ -6,6 +6,8 @@ import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
+import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
+import { JoinPickScreen } from '@/features/join/JoinPickScreen'
 import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
@@ -63,6 +65,10 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <GroupsScreen />
     case 'members':
       return route ? <MembersScreen key={route.groupId} route={route} /> : null
+    case 'join-invite':
+      return route ? <JoinInviteScreen key={route.inviteCode} route={route} /> : null
+    case 'join-pick':
+      return route ? <JoinPickScreen key={route.inviteCode} route={route} /> : null
     // Why: the web edits name, photo and color inside the profile, so it never pushes the editor.
     case 'profile':
     case 'edit-profile':

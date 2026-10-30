@@ -36,10 +36,21 @@ sealed interface Route {
 
     /*
      * Why: "Membros", who is in the group and who joined. The group's own screen (flow 6) will hold it as a tab; until
-     * then a group opens here.
+     * then a group opens here. joinedAs is the name someone just joined the group as, for "Você entrou como Bruno".
      */
     data class Members(
         val groupId: String,
+        val joinedAs: String?,
+    ) : Route
+
+    // Why: an invite link opened, the group before joining it ("Convite"). A group already joined opens instead.
+    data class JoinInvite(
+        val code: String,
+    ) : Route
+
+    // Why: "Quem é você no grupo?", after "Entrar no grupo" on the invite.
+    data class JoinPick(
+        val code: String,
     ) : Route
 
     // Why: a new key of that method when keyId is null, otherwise that key, to edit or delete.

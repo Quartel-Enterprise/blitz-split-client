@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TTV2A365LG.com.quare.blitzsplit"],
+        "components": [
+          {
+            "/": "/g/*",
+            "comment": "A group's invite link"
+          }
+        ]
+      }
+    ]
+  }
+}

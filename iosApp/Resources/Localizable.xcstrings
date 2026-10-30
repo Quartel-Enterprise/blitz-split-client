@@ -5,6 +5,50 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ are already in the group" : {
+      "comment" : "The members who joined an invite link's group, as a list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ já estão no grupo"
+          }
+        }
+      }
+    },
+    "%@ invited you to %@" : {
+      "comment" : "The title of an invite link: who created the group and its name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te chamou para o grupo %2$@"
+          }
+        }
+      }
+    },
+    "%@ is already in the group" : {
+      "comment" : "The one member who joined an invite link's group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ já está no grupo"
+          }
+        }
+      }
+    },
+    "%@ just joined from another device" : {
+      "comment" : "Someone else joined as the member just picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ acabou de entrar por outro aparelho"
+          }
+        }
+      }
+    },
     "%@ · %@" : {
       "comment" : "The group's name and how many of its members joined, in the Members subtitle",
       "shouldTranslate" : false
@@ -49,6 +93,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ já está no grupo. Use um apelido para diferenciar."
+          }
+        }
+      }
+    },
+    "%@ · created by %@" : {
+      "comment" : "The member count and the creator of an invite link's group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · criado por %2$@"
           }
         }
       }
@@ -490,6 +545,27 @@
         }
       }
     },
+    "Already in the group" : {
+      "comment" : "The members of an invite link's group someone joined as",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já estão no grupo"
+          }
+        }
+      }
+    },
+    "Already joined" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já entrou"
+          }
+        }
+      }
+    },
     "An account is optional" : {
       "localizations" : {
         "pt-BR" : {
@@ -695,6 +771,17 @@
         }
       }
     },
+    "Choose a name" : {
+      "comment" : "The join button while no member is picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha um nome"
+          }
+        }
+      }
+    },
     "Choose photo" : {
       "localizations" : {
         "pt-BR" : {
@@ -851,6 +938,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para desconectar. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't join. Check your connection and try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para entrar. Confira a internet e tente de novo."
           }
         }
       }
@@ -1226,6 +1323,16 @@
         }
       }
     },
+    "Everything added for you shows up here." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo que for lançado para você aparece aqui."
+          }
+        }
+      }
+    },
     "Everything is synced with your %@ account. When you sign out, we erase the copy on this %@. Your groups come back when you sign in again." : {
       "comment" : "The first %@ is Google or Apple, the second the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -1338,6 +1445,16 @@
         }
       }
     },
+    "Go to home" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir para o início"
+          }
+        }
+      }
+    },
     "Go to the group" : {
       "comment" : "Offered on the invite while its link is pending",
       "localizations" : {
@@ -1415,6 +1532,17 @@
         }
       }
     },
+    "Haven't joined yet" : {
+      "comment" : "The members of an invite link's group nobody joined as yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda não entraram"
+          }
+        }
+      }
+    },
     "Home" : {
       "comment" : "A group type: people who live together",
       "localizations" : {
@@ -1466,6 +1594,16 @@
         }
       }
     },
+    "I'm not on the list" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não estou na lista"
+          }
+        }
+      }
+    },
     "I've saved it" : {
       "localizations" : {
         "pt-BR" : {
@@ -1482,6 +1620,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Já usei em outro aparelho"
+          }
+        }
+      }
+    },
+    "If it was you, talk to %@." : {
+      "comment" : "The group's creator, who can sort out a member taken by someone else",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se era você, fale com %@."
+          }
+        }
+      }
+    },
+    "If it was you, talk to whoever invited you." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se era você, fale com quem te chamou."
           }
         }
       }
@@ -1536,6 +1695,17 @@
         }
       }
     },
+    "Invite" : {
+      "comment" : "The chip over an invite link's group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convite"
+          }
+        }
+      }
+    },
     "Invite everyone to %@" : {
       "comment" : "%@ is the group's name",
       "localizations" : {
@@ -1578,6 +1748,16 @@
         }
       }
     },
+    "At least 2 letters, and not a name already in the group." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelo menos 2 letras, sem repetir um nome que já está no grupo."
+          }
+        }
+      }
+    },
     "It's also in %@." : {
       "comment" : "%@ is where the recovery code lives: Profile › Recovery on iOS, Settings › Recovery on the Mac",
       "localizations" : {
@@ -1604,12 +1784,43 @@
       "comment" : "The name field's placeholder, the same in every language",
       "shouldTranslate" : false
     },
+    "Join as %@" : {
+      "comment" : "Joins the group as the member picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar como %@"
+          }
+        }
+      }
+    },
+    "Join group" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar no grupo"
+          }
+        }
+      }
+    },
     "Join with a link or QR code" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entrar com link ou QR"
+          }
+        }
+      }
+    },
+    "Join with another name" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrar com outro nome"
           }
         }
       }
@@ -1835,6 +2046,16 @@
         }
       }
     },
+    "No account needed. On the next screen you pick who you are." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não precisa criar conta. Na próxima tela você escolhe quem é."
+          }
+        }
+      }
+    },
     "No code needed" : {
       "localizations" : {
         "pt-BR" : {
@@ -1871,6 +2092,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nenhum grupo ainda"
+          }
+        }
+      }
+    },
+    "No internet to open the invite" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet para abrir o convite"
           }
         }
       }
@@ -1923,6 +2154,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ainda não foi criado"
+          }
+        }
+      }
+    },
+    "Not now" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agora não"
           }
         }
       }
@@ -2135,6 +2376,16 @@
         }
       }
     },
+    "Pick your name. You'll see the expenses already added for that person." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha seu nome. Você vai ver os gastos que já foram lançados para essa pessoa."
+          }
+        }
+      }
+    },
     "Pix key" : {
       "localizations" : {
         "pt-BR" : {
@@ -2221,6 +2472,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil › Recuperação"
+          }
+        }
+      }
+    },
+    "Protect your access" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proteja seu acesso"
           }
         }
       }
@@ -2758,6 +3019,16 @@
         }
       }
     },
+    "The link was changed or the group was deleted. Ask whoever invited you for a new link." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O link foi trocado ou o grupo foi apagado. Peça um link novo para quem te chamou."
+          }
+        }
+      }
+    },
     "There: Profile › Recovery › Show QR code" : {
       "localizations" : {
         "pt-BR" : {
@@ -2775,6 +3046,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Este %@"
+          }
+        }
+      }
+    },
+    "This invite is no longer valid" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este convite não vale mais"
           }
         }
       }
@@ -2993,6 +3274,16 @@
         }
       }
     },
+    "We kept the link. As soon as the device connects, the invite opens by itself." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardamos o link. Assim que o aparelho conectar, o convite abre sozinho."
+          }
+        }
+      }
+    },
     "What do your friends call you?" : {
       "localizations" : {
         "pt-BR" : {
@@ -3049,6 +3340,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quando alguém diz que já te pagou"
+          }
+        }
+      }
+    },
+    "Who are you in the group?" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem é você no grupo?"
           }
         }
       }
@@ -3155,6 +3456,37 @@
         }
       }
     },
+    "You join as a new member. Expenses added before don't include you." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você entra como um membro novo. Os gastos lançados antes não incluem você."
+          }
+        }
+      }
+    },
+    "You joined as %@" : {
+      "comment" : "Members, right after joining the group through its link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você entrou como %@"
+          }
+        }
+      }
+    },
+    "You joined without an account. Save the code or connect Google or Apple." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você entrou sem conta. Guarde o código ou conecte Google ou Apple."
+          }
+        }
+      }
+    },
     "You keep using Blitz Split on this %@, without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -3183,6 +3515,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você usa sem conta. Ao sair, seu perfil e seus dados somem deste %@. Para voltar, só com o código de recuperação."
+          }
+        }
+      }
+    },
+    "You're invited to %@" : {
+      "comment" : "The title of an invite link whose creator deleted their account",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você foi chamado para o grupo %@"
           }
         }
       }

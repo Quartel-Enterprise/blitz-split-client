@@ -92,9 +92,10 @@ targets:
       path: Generated/iOS.entitlements
       properties:
         com.apple.developer.applesignin: [Default]
-        # Lets the recovery code be saved to the Passwords app (needs the webcredentials entry of
-        # https://borarachar.com/.well-known/apple-app-site-association)
-        com.apple.developer.associated-domains: [webcredentials:borarachar.com]
+        # webcredentials lets the recovery code be saved to the Passwords app (needs the entry of
+        # https://borarachar.com/.well-known/apple-app-site-association); applinks opens a group's
+        # invite link, blitzsplit.com/g/<code>, in the app (webApp/public/.well-known)
+        com.apple.developer.associated-domains: [webcredentials:borarachar.com, applinks:blitzsplit.com]
 
   BoraRachar-macOS:
     templates: [BoraRachar]
@@ -110,7 +111,7 @@ targets:
         com.apple.security.network.client: true
         com.apple.security.device.camera: true
         com.apple.developer.applesignin: [Default]
-        com.apple.developer.associated-domains: [webcredentials:borarachar.com]
+        com.apple.developer.associated-domains: [webcredentials:borarachar.com, applinks:blitzsplit.com]
 
 schemes:
   BoraRachar-iOS:

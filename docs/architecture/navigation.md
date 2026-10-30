@@ -51,6 +51,17 @@ private suspend fun finishSignIn() {
 `AppViewModel` starts the sync and replaces the stack with `Route.Groups` when Room already holds a profile, or
 `Route.Welcome` otherwise; until then its `uiState` is `AppUiState.LOADING` and every UI draws an empty surface.
 
+### Links opened from outside: `LinkInbox`
+
+An invite link (`https://blitzsplit.com/g/<code>`) can arrive before the app knows where it starts: Android's
+`MainActivity` gets it from the intent (App Links, `autoVerify` on `blitzsplit.com/g/`), Apple from `onOpenURL` /
+Universal Links through `BlitzSplitApple.handleDeepLink`, and the web from the page's own URL
+(`BlitzSplitWeb.openInviteLink`, which then puts `/` back in the address bar). Each one only drops the URL into the
+`LinkInbox` singleton of `:shared`. `AppViewModel` waits until its `uiState` is `READY`, takes the link and pushes
+`Route.JoinInvite(code)` over whatever started (the groups, or the welcome before there is a profile), so the start
+route logic stays in one place. `InviteLink.codeOf` reads the code from any host, so `borarachar.com` keeps working
+once it redirects there. Joining replaces the stack with `[Groups, Members(groupId, joinedAs)]`.
+
 **Navigation never belongs in a `UiAction`.** `UiAction` is for what only a platform can do (see
 [state-management.md](state-management.md#uiaction--one-shot-effects-only-a-platform-can-perform)).
 

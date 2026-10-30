@@ -157,6 +157,9 @@ private struct MembersList: View {
 
     var body: some View {
         List {
+            if let joinedAs = state.joinedAs {
+                JoinedSection(name: joinedAs, showsProtectAccess: state.showsProtectAccess) { model.send($0) }
+            }
             Section {
                 HStack(spacing: 12) {
                     Image(systemName: "link")
@@ -195,6 +198,50 @@ private struct MembersList: View {
         .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
         .frame(maxWidth: .infinity)
         .background(Palette.groupedBackground)
+    }
+}
+
+/// Right after joining through the link: "You joined as Bruno", and "Protect your access" while the account has no
+/// Google or Apple, which opens the profile.
+private struct JoinedSection: View {
+    let name: String
+    let showsProtectAccess: Bool
+    let send: (any MembersUiEvent) -> Void
+
+    var body: some View {
+        Section {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("You joined as \(name)")
+                        .font(.headline)
+                    Text("Everything added for you shows up here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } icon: {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(Palette.accent)
+            }
+            if showsProtectAccess {
+                Button {
+                    send(MembersUiEventOnProtectAccessClicked.shared)
+                } label: {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Protect your access")
+                                .font(.headline)
+                            Text("You joined without an account. Save the code or connect Google or Apple.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    } icon: {
+                        Image(systemName: "lock.shield")
+                            .foregroundStyle(Palette.accent)
+                    }
+                    .foregroundStyle(.primary)
+                }
+            }
+        }
     }
 }
 

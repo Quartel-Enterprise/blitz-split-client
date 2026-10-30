@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="join_close">Fechar</string>
+    <string name="join_chip">Convite</string>
+    <string name="join_title">%1$s te chamou para o grupo %2$s</string>
+    <string name="join_title_no_creator">Você foi chamado para o grupo %s</string>
+    <plurals name="join_member_count">
+        <item quantity="one">%d membro</item>
+        <item quantity="other">%d membros</item>
+    </plurals>
+    <string name="join_summary_creator">%1$s · criado por %2$s</string>
+    <plurals name="join_already_in">
+        <item quantity="one">%s já está no grupo</item>
+        <item quantity="other">%s já estão no grupo</item>
+    </plurals>
+    <string name="join_names_last_separator">" e "</string>
+    <string name="join_hint">Não precisa criar conta. Na próxima tela você escolhe quem é.</string>
+    <string name="join_join">Entrar no grupo</string>
+    <string name="join_not_now">Agora não</string>
+    <string name="join_invalid_title">Este convite não vale mais</string>
+    <string name="join_invalid_message">O link foi trocado ou o grupo foi apagado. Peça um link novo para quem te chamou.</string>
+    <string name="join_go_home">Ir para o início</string>
+    <string name="join_offline_title">Sem internet para abrir o convite</string>
+    <string name="join_offline_message">Guardamos o link. Assim que o aparelho conectar, o convite abre sozinho.</string>
+    <string name="join_retry">Tentar de novo</string>
+    <string name="join_pick_back">Voltar</string>
+    <string name="join_pick_title">Quem é você no grupo?</string>
+    <string name="join_pick_subtitle">Escolha seu nome. Você vai ver os gastos que já foram lançados para essa pessoa.</string>
+    <string name="join_pick_taken_title">%s acabou de entrar por outro aparelho</string>
+    <string name="join_pick_taken_message">Se era você, fale com %s.</string>
+    <string name="join_pick_taken_message_no_creator">Se era você, fale com quem te chamou.</string>
+    <string name="join_pick_not_joined">Ainda não entraram</string>
+    <string name="join_pick_joined">Já estão no grupo</string>
+    <string name="join_pick_status_joined">Já entrou</string>
+    <string name="join_pick_not_in_list">Não estou na lista</string>
+    <string name="join_pick_join_as">Entrar como %s</string>
+    <string name="join_pick_choose">Escolha um nome</string>
+    <string name="join_pick_new_title">Entrar com outro nome</string>
+    <string name="join_pick_new_message">Você entra como um membro novo. Os gastos lançados antes não incluem você.</string>
+    <string name="join_pick_new_name">Seu nome</string>
+    <string name="join_pick_new_helper">Pelo menos 2 letras, sem repetir um nome que já está no grupo.</string>
+    <string name="join_pick_cancel">Cancelar</string>
+    <string name="join_pick_new_join">Entrar no grupo</string>
+    <string name="join_pick_error">Não deu para entrar. Confira a internet e tente de novo.</string>
+</resources>

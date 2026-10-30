@@ -4,6 +4,9 @@ import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.data.dto.InviteDto
+import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -2702,4 +2705,8 @@ private class FakeGroupRemoteDataSource(
         fetchError?.let { throw it }
         return members
     }
+
+    override suspend fun fetchInvite(code: String): InviteDto? = error("unused")
+
+    override suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto = error("unused")
 }

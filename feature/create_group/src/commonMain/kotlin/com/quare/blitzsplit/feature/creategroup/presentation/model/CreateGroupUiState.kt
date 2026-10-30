@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.creategroup.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.MemberNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -30,11 +31,15 @@ data class CreateGroupUiState(
         get() = GroupCurrency.entries
 
     val canAddMember: Boolean
-        get() = draft.isNotBlank() && takenName == null
+        get() = MemberNameRules.isLongEnough(draft) && takenName == null
 
-    // Why: a draft typed and not added yet goes in with the group, so only a repeated one holds it back.
+    // Why: a draft typed and not added yet goes in with the group, so a repeated or single letter one holds it back.
     val canCreate: Boolean
-        get() = name.isNotBlank() && members.isNotEmpty() && takenName == null && !isCreating
+        get() = name.isNotBlank() &&
+            members.isNotEmpty() &&
+            (draft.isBlank() || MemberNameRules.isLongEnough(draft)) &&
+            takenName == null &&
+            !isCreating
 
     // Why: "Ninguém precisa ter o app agora", which the repeated name's warning takes the place of.
     val showsNoAppNotice: Boolean
