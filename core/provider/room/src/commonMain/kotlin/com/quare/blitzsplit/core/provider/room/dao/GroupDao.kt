@@ -171,6 +171,17 @@ interface GroupDao {
         inviteCode: String,
     )
 
+    // Why: the codes an upload brings back, written at once so whoever observes the members redraws once.
+    @Transaction
+    suspend fun updateMemberInviteCodes(codesById: Map<String, String>) {
+        codesById.forEach { (id, inviteCode) ->
+            updateMemberInviteCode(
+                id = id,
+                inviteCode = inviteCode,
+            )
+        }
+    }
+
     // Why: like the group's, the server makes the member's code and no client changes it.
     @Query("UPDATE group_member SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
     suspend fun updateMemberInviteCode(

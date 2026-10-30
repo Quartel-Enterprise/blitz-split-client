@@ -408,6 +408,37 @@ class GroupDaoTest {
     }
 
     @Test
+    fun `GIVEN members without codes WHEN setting the codes an upload brought THEN each member has its own`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(updatedAt = 1L),
+                members = listOf(
+                    member(id = "ana"),
+                    member(id = "bruno"),
+                    member(id = "carla"),
+                ),
+            )
+
+            // When
+            dao.updateMemberInviteCodes(
+                mapOf(
+                    "ana" to "Xy7kQ2",
+                    "carla" to "c3Rt9z",
+                ),
+            )
+
+            // Then
+            assertEquals(
+                listOf("Xy7kQ2", null, "c3Rt9z"),
+                dao
+                    .observeMembers()
+                    .first()
+                    .map { it.inviteCode },
+            )
+        }
+
+    @Test
     fun `GIVEN a member with an invite code WHEN renaming it THEN keeps the code`() = runTest {
         // Given
         prepareScenario(

@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 class MembersViewModel(
     private val route: Route.Members,
@@ -70,7 +70,6 @@ class MembersViewModel(
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
 
-    private val copiedDuration = 2.seconds
     private var copiedReset: Job? = null
 
     // Why: a sync may bring other members' changes while the screen is open, a removal of the whole group included.
@@ -214,7 +213,7 @@ class MembersViewModel(
         uiState.update { state -> state.copy(personalInvite = state.personalInvite?.copy(isLinkCopied = true)) }
         copiedReset?.cancel()
         copiedReset = viewModelScope.launch {
-            delay(copiedDuration)
+            delay(CopiedFeedback.duration)
             uiState.update { state -> state.copy(personalInvite = state.personalInvite?.copy(isLinkCopied = false)) }
         }
     }

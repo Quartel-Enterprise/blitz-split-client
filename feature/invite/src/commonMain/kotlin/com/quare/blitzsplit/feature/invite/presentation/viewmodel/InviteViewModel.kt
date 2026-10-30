@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
-import kotlin.time.Duration.Companion.seconds
 
 class InviteViewModel(
     private val route: Route.Invite,
@@ -60,7 +60,6 @@ class InviteViewModel(
     val stateWatcher: FlowWatcher<InviteUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<InviteUiAction> = FlowWatcher(uiAction)
 
-    private val copiedDuration = 2.seconds
     private var copiedReset: Job? = null
 
     /*
@@ -131,7 +130,7 @@ class InviteViewModel(
         uiState.update { it.copy(isLinkCopied = true) }
         copiedReset?.cancel()
         copiedReset = viewModelScope.launch {
-            delay(copiedDuration)
+            delay(CopiedFeedback.duration)
             uiState.update { it.copy(isLinkCopied = false) }
         }
     }

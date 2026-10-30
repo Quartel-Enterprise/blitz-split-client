@@ -112,16 +112,11 @@ class GroupRepositoryImpl(
                 }
         }
         if (pendingMembers.isNotEmpty()) {
-            remote
+            val codesById = remote
                 .upsertMembers(pendingMembers.map(mapper::toDto))
-                .forEach { dto ->
-                    dto.inviteCode?.let {
-                        local.updateMemberInviteCode(
-                            id = dto.id,
-                            inviteCode = it,
-                        )
-                    }
-                }
+                .mapNotNull { dto -> dto.inviteCode?.let { dto.id to it } }
+                .toMap()
+            if (codesById.isNotEmpty()) local.updateMemberInviteCodes(codesById)
         }
         // Why: before the deletes, so one that fails doesn't push again what the server already took.
         pendingGroups.forEach {

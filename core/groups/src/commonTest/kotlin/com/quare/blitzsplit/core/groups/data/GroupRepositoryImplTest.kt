@@ -2980,18 +2980,14 @@ private class FakeGroupLocalDataSource(
             )
         }
         entity.inviteCode?.let {
-            updateMemberInviteCode(
-                id = entity.id,
-                inviteCode = it,
-            )
+            updateMemberInviteCodes(mapOf(entity.id to it))
         }
     }
 
-    override suspend fun updateMemberInviteCode(
-        id: String,
-        inviteCode: String,
-    ) {
-        members.value = members.value.map { if (it.id == id) it.copy(inviteCode = inviteCode) else it }
+    override suspend fun updateMemberInviteCodes(codesById: Map<String, String>) {
+        members.value = members.value.map { member ->
+            codesById[member.id]?.let { member.copy(inviteCode = it) } ?: member
+        }
     }
 
     override suspend fun claimUnowned(ownerUserId: String) {

@@ -219,22 +219,11 @@ class JoinInviteViewModel(
         }
     }
 
-    /*
-     * Why: like after "Quem é você no grupo?", the group opens over the home, whatever was under the invite: the
-     * welcome too, since joining without a profile made one from the member.
-     */
     private fun openJoinedGroup(
         groupId: String,
         joinedAs: String?,
     ) {
-        if (!isOnTop()) return
-        navigator.replaceAll(Route.Groups)
-        navigator.navigate(
-            Route.Members(
-                groupId = groupId,
-                joinedAs = joinedAs,
-            ),
-        )
+        if (isOnTop()) navigator.openJoinedGroup(groupId, joinedAs)
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

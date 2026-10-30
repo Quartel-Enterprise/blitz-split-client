@@ -59,10 +59,7 @@ interface GroupLocalDataSource {
         inviteCode: String,
     )
 
-    suspend fun updateMemberInviteCode(
-        id: String,
-        inviteCode: String,
-    )
+    suspend fun updateMemberInviteCodes(codesById: Map<String, String>)
 
     suspend fun applyRemoteMember(entity: GroupMemberEntity)
 
