@@ -12,6 +12,7 @@
 
 ```bash
 ./scripts/ktlint.sh
+./scripts/cpd.sh
 ./gradlew build jvmTest :koverVerifyCi assertModuleGraph
 npm --prefix webApp run build
 ```
