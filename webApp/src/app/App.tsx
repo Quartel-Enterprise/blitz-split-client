@@ -8,6 +8,7 @@ import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
+import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
 import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
@@ -34,13 +35,14 @@ export function App() {
 
   if (!isReady || !backStack) return null
   const top = backStack[backStack.length - 1]
-  // Why: a payment key and the account deletion open as dialogs over the profile, and a new group and its invite
-  // over the home or the group's members, which stay mounted under them.
+  // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
+  // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
-  const isDialog = isCreateGroup || isInvite || isPaymentKey || isDeleteAccount
+  const isJoinWithLink = top.name === 'join-with-link'
+  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isPaymentKey || isDeleteAccount
   const page = isDialog ? backStack.at(-2) : top
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'groups')
   return (
@@ -50,6 +52,7 @@ export function App() {
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
+      {isJoinWithLink && <JoinWithLinkDialog />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
