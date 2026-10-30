@@ -23,8 +23,8 @@ enum RecoveryCodeSaver {
 
     /*
      * iOS: a shared web credential lands in the Passwords app, tied to blitzsplit.com by the
-     * webcredentials associated domain. macOS has no shared web credentials, so the code becomes an
-     * iCloud Keychain internet password for the same domain, which the Passwords app shows too.
+     * webcredentials associated domain. macOS saves the code as an iCloud Keychain internet password
+     * for the same domain instead, which the Passwords app shows too.
      */
     static func saveToPasswords(_ code: String) async -> Bool {
         #if os(iOS)
