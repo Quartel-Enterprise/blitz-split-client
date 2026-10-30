@@ -51,7 +51,7 @@ class ExpenseDaoTest {
         )
 
         // Then
-        assertEquals(listOf("bill-1"), dao.observeExpenses(GROUP_ID).first().map { it.id })
+        assertEquals(listOf("bill-1"), dao.observeExpenses(GROUP_ID).first().map { it.expense.id })
     }
 
     @Test
@@ -97,7 +97,7 @@ class ExpenseDaoTest {
         )
 
         // Then
-        val stored = dao.observeExpenses(GROUP_ID).first().single()
+        val stored = dao.observeExpenses(GROUP_ID).first().single().expense
         assertEquals("Supermercado" to false, stored.description to stored.pendingSync)
     }
 
@@ -125,7 +125,7 @@ class ExpenseDaoTest {
         )
 
         // Then
-        val stored = dao.observeExpenses(GROUP_ID).first().single()
+        val stored = dao.observeExpenses(GROUP_ID).first().single().expense
         assertEquals("Mercado" to true, stored.description to stored.pendingSync)
     }
 
@@ -149,7 +149,7 @@ class ExpenseDaoTest {
         )
 
         // Then
-        assertEquals(listOf("bill-pending"), dao.observeExpenses(GROUP_ID).first().map { it.id })
+        assertEquals(listOf("bill-pending"), dao.observeExpenses(GROUP_ID).first().map { it.expense.id })
     }
 
     @Test
@@ -175,7 +175,7 @@ class ExpenseDaoTest {
             )
 
             // When
-            val ids = dao.observeExpenses(GROUP_ID).first().map { it.id }
+            val ids = dao.observeExpenses(GROUP_ID).first().map { it.expense.id }
 
             // Then
             assertEquals(listOf("newer", "older"), ids)
@@ -219,6 +219,7 @@ class ExpenseDaoTest {
         isDeleted = isDeleted,
         addedAt = 1L,
         updatedAt = updatedAt,
+        updatedBy = null,
         pendingSync = pending,
     )
 

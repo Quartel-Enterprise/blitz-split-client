@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -37,6 +38,7 @@ class GroupDetailViewModel(
     private val navigator: Navigator,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
+    private val deletedBillNotice: DeletedBillNotice,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
 ) : ViewModel() {
@@ -75,13 +77,33 @@ class GroupDetailViewModel(
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
+        // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
+        combine(deletedBillNotice.groupId, navigator.backStack, ::Pair)
+            .onEach { (groupId, _) -> if (groupId == route.groupId && isOnTop()) showBillDeleted() }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: GroupDetailUiEvent) {
         when (event) {
             GroupDetailUiEvent.OnBackClicked -> leave()
 
-            GroupDetailUiEvent.OnSplitBillClicked -> if (isOnTop()) navigator.navigate(Route.SplitBill(route.groupId))
+            GroupDetailUiEvent.OnSplitBillClicked -> if (isOnTop()) {
+                navigator.navigate(
+                    Route.SplitBill(
+                        groupId = route.groupId,
+                        expenseId = null,
+                    ),
+                )
+            }
+
+            is GroupDetailUiEvent.OnExpenseClicked -> if (isOnTop()) {
+                navigator.navigate(
+                    Route.BillDetail(
+                        groupId = route.groupId,
+                        expenseId = event.expenseId,
+                    ),
+                )
+            }
 
             GroupDetailUiEvent.OnInviteClicked -> if (isOnTop()) navigator.navigate(Route.Invite(route.groupId))
 
@@ -90,9 +112,9 @@ class GroupDetailViewModel(
                 tab = Route.Members(route.groupId, joinedAs = null),
             )
 
-            GroupDetailUiEvent.OnBalancesTabClicked,
-            is GroupDetailUiEvent.OnExpenseClicked,
-            -> viewModelScope.launch { uiAction.emit(GroupDetailUiAction.ShowComingSoon) }
+            GroupDetailUiEvent.OnBalancesTabClicked -> viewModelScope.launch {
+                uiAction.emit(GroupDetailUiAction.ShowComingSoon)
+            }
         }
     }
 
@@ -140,9 +162,6 @@ class GroupDetailViewModel(
         meId: String?,
     ): ExpenseRow {
         val payerId = expense.payers.firstOrNull()?.memberId
-        val paid = expense.payers.filter { it.memberId == meId }.sumOf { it.amountMinor }
-        val owed = expense.shares.filter { it.memberId == meId }.sumOf { it.amountMinor }
-        val isInBill = expense.payers.any { it.memberId == meId } || expense.shares.any { it.memberId == meId }
         return ExpenseRow(
             id = expense.id,
             description = expense.description,
@@ -150,9 +169,14 @@ class GroupDetailViewModel(
             payerName = payerId?.let(namesById::get),
             payerIsMe = payerId != null && payerId == meId,
             totalMinor = expense.amountMinor,
-            myBalanceMinor = if (isInBill) paid - owed else null,
+            myBalanceMinor = meId?.let(expense::balanceOf),
             isPending = expense.isPending,
         )
+    }
+
+    private fun showBillDeleted() {
+        deletedBillNotice.consume(route.groupId)
+        viewModelScope.launch { uiAction.emit(GroupDetailUiAction.ShowBillDeleted) }
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

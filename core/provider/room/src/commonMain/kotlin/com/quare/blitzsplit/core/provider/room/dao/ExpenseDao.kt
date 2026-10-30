@@ -6,16 +6,30 @@ import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.coroutines.flow.Flow
 
 // Why: below SQLite's oldest cap on bound parameters (999), which some devices still have.
 private const val MAX_IDS_PER_QUERY = 500
 
+// Why: the member who last saved a bill, through the account the server recorded (ExpenseWithEditor).
+private const val EDITOR_COLUMN = "(SELECT group_member.id FROM group_member WHERE group_member.groupId = " +
+    "expense.groupId AND group_member.userId = expense.updatedBy LIMIT 1) AS updatedByMemberId"
+
 @Dao
 interface ExpenseDao {
     // Why: the most recent bill first, as the group's list shows them.
-    @Query("SELECT * FROM expense WHERE groupId = :groupId AND isDeleted = 0 ORDER BY spentAt DESC, addedAt DESC, id")
-    fun observeExpenses(groupId: String): Flow<List<ExpenseEntity>>
+    @Query(
+        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE groupId = :groupId AND isDeleted = 0 " +
+            "ORDER BY spentAt DESC, addedAt DESC, id",
+    )
+    fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>>
+
+    // Why: "Conta" and "Editar conta", which close once the bill is deleted, here or on another device.
+    @Query(
+        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE id = :id AND isDeleted = 0",
+    )
+    fun observeExpense(id: String): Flow<ExpenseWithEditor?>
 
     @Query("SELECT EXISTS(SELECT 1 FROM expense WHERE pendingSync = 1)")
     fun observeHasPending(): Flow<Boolean>
@@ -51,6 +65,37 @@ interface ExpenseDao {
     @Insert
     suspend fun insertExpense(entity: ExpenseEntity)
 
+    /*
+     * Why: "Editar conta" changes what the bill says and keeps who created it, when and in which group. Its version
+     * moves past the stored one even on a clock behind the device that saved it last, so Last-Write-Wins takes it.
+     * Answers how many bills changed: none once a sync deleted it meanwhile.
+     */
+    @Query(
+        "UPDATE expense SET description = :description, amountMinor = :amountMinor, splitMode = :splitMode, " +
+            "payersJson = :payersJson, sharesJson = :sharesJson, spentAt = :spentAt, " +
+            "updatedAt = MAX(:now, updatedAt + 1), pendingSync = 1 WHERE id = :id AND isDeleted = 0",
+    )
+    suspend fun updateExpense(
+        id: String,
+        description: String,
+        amountMinor: Long,
+        splitMode: String,
+        payersJson: String,
+        sharesJson: String,
+        spentAt: Long,
+        now: Long,
+    ): Int
+
+    // Why: "Apagar conta" leaves a tombstone that the sync takes up, so every device drops the bill.
+    @Query(
+        "UPDATE expense SET isDeleted = 1, updatedAt = MAX(:now, updatedAt + 1), pendingSync = 1 " +
+            "WHERE id = :id AND isDeleted = 0",
+    )
+    suspend fun markDeleted(
+        id: String,
+        now: Long,
+    ): Int
+
     // Why: a bill only the server has comes down whole; one the device has follows Last-Write-Wins, in one write.
     @Transaction
     suspend fun applyRemote(entity: ExpenseEntity) {
@@ -67,6 +112,7 @@ interface ExpenseDao {
             isDeleted = entity.isDeleted,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
+            updatedBy = entity.updatedBy,
         )
     }
 
@@ -89,7 +135,8 @@ interface ExpenseDao {
     @Query(
         "UPDATE expense SET createdBy = :createdBy, description = :description, amountMinor = :amountMinor, " +
             "splitMode = :splitMode, payersJson = :payersJson, sharesJson = :sharesJson, spentAt = :spentAt, " +
-            "isDeleted = :isDeleted, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "isDeleted = :isDeleted, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, updatedBy = :updatedBy, " +
+            "pendingSync = 0 " +
             "WHERE id = :id AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun updateFromRemote(
@@ -104,6 +151,7 @@ interface ExpenseDao {
         isDeleted: Boolean,
         addedAt: Long,
         remoteUpdatedAt: Long,
+        updatedBy: String?,
     )
 
     // Why: every bill a push took up in one transaction, so the observers of the table wake once rather than per bill.

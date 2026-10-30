@@ -20,6 +20,11 @@ class ExpenseRepositoryImpl(
         .map { entities -> entities.mapNotNull(mapper::toDomain) }
         .distinctUntilChanged()
 
+    override fun observeExpense(id: String): Flow<Expense?> = local
+        .observeExpense(id)
+        .map { row -> row?.let(mapper::toDomain) }
+        .distinctUntilChanged()
+
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
     override fun observePendingVersions(): Flow<List<Long>> = local.observePendingVersions().distinctUntilChanged()
@@ -33,6 +38,29 @@ class ExpenseRepositoryImpl(
                 expense = expense,
                 createdAt = createdAt,
             ),
+        )
+    }
+
+    override suspend fun updateExpense(
+        expense: Expense,
+        updatedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.updateExpense(
+            entity = mapper.toEntity(
+                expense = expense,
+                createdAt = updatedAt,
+            ),
+            now = updatedAt,
+        )
+    }
+
+    override suspend fun deleteExpense(
+        id: String,
+        deletedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.markDeleted(
+            id = id,
+            now = deletedAt,
         )
     }
 

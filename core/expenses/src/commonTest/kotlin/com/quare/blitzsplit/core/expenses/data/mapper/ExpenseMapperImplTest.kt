@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -23,7 +24,7 @@ class ExpenseMapperImplTest {
         val entities = listOf("equal", "amount", "percent", "shares").map { entity(splitMode = it) }
 
         // When
-        val modes = entities.map { mapper.toDomain(it)?.splitMode }
+        val modes = entities.map { mapper.toDomain(ExpenseWithEditor(it, updatedByMemberId = null))?.splitMode }
 
         // Then
         assertEquals(listOf(SplitMode.EQUAL, SplitMode.AMOUNT, SplitMode.PERCENT, SplitMode.SHARES), modes)
@@ -35,7 +36,7 @@ class ExpenseMapperImplTest {
         val entity = entity(splitMode = "itemized")
 
         // When
-        val expense = mapper.toDomain(entity)
+        val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
         assertNull(expense)
@@ -47,7 +48,7 @@ class ExpenseMapperImplTest {
         val entity = entity(sharesJson = "{\"memberId\": 1}")
 
         // When
-        val expense = mapper.toDomain(entity)
+        val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
         assertNull(expense)
@@ -63,7 +64,7 @@ class ExpenseMapperImplTest {
         )
 
         // When
-        val expense = mapper.toDomain(entity)
+        val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
         assertEquals(
@@ -98,7 +99,7 @@ class ExpenseMapperImplTest {
         val entity = entity(payersJson = """[{"member_id":"pierre","amount_minor":1000,"note":"pix"}]""")
 
         // When
-        val expense = mapper.toDomain(entity)
+        val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
         assertEquals(
@@ -118,7 +119,7 @@ class ExpenseMapperImplTest {
         val entity = entity(pendingSync = true)
 
         // When
-        val expense = mapper.toDomain(entity)
+        val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
         assertEquals(true, expense?.isPending)
@@ -147,7 +148,7 @@ class ExpenseMapperImplTest {
         val entity = mapper.toEntity(newExpense, createdAt = 7_000L)
 
         // When
-        val readBack = mapper.toDomain(entity)
+        val readBack = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
         assertEquals(newExpense, readBack)
@@ -271,6 +272,9 @@ class ExpenseMapperImplTest {
         ),
         spentAt = 5_000L,
         isPending = true,
+        // Why: the version it is stored at, the createdAt the tests pass.
+        updatedAt = 7_000L,
+        updatedByMemberId = null,
     )
 
     private fun entity(
@@ -292,6 +296,7 @@ class ExpenseMapperImplTest {
         isDeleted = false,
         addedAt = 1L,
         updatedAt = 1L,
+        updatedBy = null,
         pendingSync = pendingSync,
     )
 

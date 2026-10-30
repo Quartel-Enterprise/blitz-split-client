@@ -18,4 +18,9 @@ data class ExpenseDto(
     @SerialName("is_deleted") val isDeleted: Boolean,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,
+    /*
+     * Why: who last saved the bill, which the server sets whatever a push sends. Left out of a push, and read as null
+     * from a server that doesn't have it yet.
+     */
+    @SerialName("updated_by") val updatedBy: String? = null,
 )

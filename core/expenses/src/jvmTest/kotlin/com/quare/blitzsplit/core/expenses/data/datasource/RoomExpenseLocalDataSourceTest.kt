@@ -38,7 +38,7 @@ class RoomExpenseLocalDataSourceTest {
         )
 
         // Then
-        val stored = dataSource.observeExpenses(MY_GROUP).first().single()
+        val stored = dataSource.observeExpenses(MY_GROUP).first().single().expense
         assertEquals("bill-1", stored.id)
         assertTrue(stored.pendingSync)
         assertTrue(dataSource.observeHasPending().first())
@@ -91,7 +91,7 @@ class RoomExpenseLocalDataSourceTest {
         dataSource.applyRemote(listOf(serverBill))
 
         // Then
-        val stored = dataSource.observeExpenses(MY_GROUP).first().single()
+        val stored = dataSource.observeExpenses(MY_GROUP).first().single().expense
         assertEquals("Pizza" to false, stored.description to stored.pendingSync)
     }
 
@@ -151,6 +151,7 @@ class RoomExpenseLocalDataSourceTest {
                 .observeExpenses(MY_GROUP)
                 .first()
                 .single()
+                .expense
                 .pendingSync,
         )
         assertFalse(dataSource.observeHasPending().first())
@@ -186,6 +187,7 @@ class RoomExpenseLocalDataSourceTest {
                 .observeExpenses(MY_GROUP)
                 .first()
                 .single()
+                .expense
                 .pendingSync,
         )
     }
@@ -215,7 +217,7 @@ class RoomExpenseLocalDataSourceTest {
             val ids = dataSource
                 .observeExpenses(MY_GROUP)
                 .first()
-                .map { it.id }
+                .map { it.expense.id }
                 .toSet()
             assertEquals(setOf("kept-on-server", "pending-here"), ids)
         }
@@ -256,6 +258,7 @@ class RoomExpenseLocalDataSourceTest {
         isDeleted = false,
         addedAt = 1L,
         updatedAt = updatedAt,
+        updatedBy = null,
         pendingSync = pendingSync,
     )
 

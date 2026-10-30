@@ -24,6 +24,7 @@ private val exportedToApple = listOf(
     projects.feature.members,
     projects.feature.join,
     projects.feature.groupDetail,
+    projects.feature.billDetail,
     projects.feature.splitBill,
 )
 

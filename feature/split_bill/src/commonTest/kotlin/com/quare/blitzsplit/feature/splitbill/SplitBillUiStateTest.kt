@@ -138,6 +138,7 @@ class SplitBillUiStateTest {
         isLoaded: Boolean = true,
         isOnline: Boolean = true,
     ): SplitBillUiState = SplitBillUiState(
+        isEditing = false,
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
@@ -168,8 +169,11 @@ class SplitBillUiStateTest {
             currency = GroupCurrency.BRL,
         ),
         splitEditor = null,
+        conflict = null,
+        deletion = null,
         isOnline = isOnline,
         isSaving = isSaving,
+        isDeleting = false,
         isLoaded = isLoaded,
     )
 

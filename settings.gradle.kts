@@ -72,6 +72,7 @@ include(":feature:members")
 include(":feature:join")
 include(":feature:split_bill")
 include(":feature:group_detail")
+include(":feature:bill_detail")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")
@@ -92,4 +93,5 @@ include(":android:feature:invite")
 include(":android:feature:members")
 include(":android:feature:join")
 include(":android:feature:group_detail")
+include(":android:feature:bill_detail")
 include(":android:feature:split_bill")

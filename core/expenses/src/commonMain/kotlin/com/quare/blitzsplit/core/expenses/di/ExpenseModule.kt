@@ -8,11 +8,18 @@ import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -28,4 +35,8 @@ val expenseModule = module {
     single<CurrentTimeZone> { CurrentTimeZone { TimeZone.currentSystemDefault() } }
     factoryOf(::ObserveExpensesUseCase).bind<ObserveExpenses>()
     factoryOf(::CreateExpenseUseCase).bind<CreateExpense>()
+    factoryOf(::ObserveExpenseUseCase).bind<ObserveExpense>()
+    factoryOf(::UpdateExpenseUseCase).bind<UpdateExpense>()
+    factoryOf(::DeleteExpenseUseCase).bind<DeleteExpense>()
+    singleOf(::DeletedBillNotice)
 }

@@ -2,12 +2,15 @@ package com.quare.blitzsplit.core.expenses.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.coroutines.flow.Flow
 
 class RoomExpenseLocalDataSource(
     private val dao: ExpenseDao,
 ) : ExpenseLocalDataSource {
-    override fun observeExpenses(groupId: String): Flow<List<ExpenseEntity>> = dao.observeExpenses(groupId)
+    override fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>> = dao.observeExpenses(groupId)
+
+    override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = dao.observeExpense(id)
 
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()
 
@@ -18,6 +21,34 @@ class RoomExpenseLocalDataSource(
 
     override suspend fun insertExpense(entity: ExpenseEntity) {
         dao.insertExpenseIntoGroup(entity)
+    }
+
+    override suspend fun updateExpense(
+        entity: ExpenseEntity,
+        now: Long,
+    ) {
+        val changed = dao.updateExpense(
+            id = entity.id,
+            description = entity.description,
+            amountMinor = entity.amountMinor,
+            splitMode = entity.splitMode,
+            payersJson = entity.payersJson,
+            sharesJson = entity.sharesJson,
+            spentAt = entity.spentAt,
+            now = now,
+        )
+        check(changed == 1) { "No bill ${entity.id}" }
+    }
+
+    override suspend fun markDeleted(
+        id: String,
+        now: Long,
+    ) {
+        val changed = dao.markDeleted(
+            id = id,
+            now = now,
+        )
+        check(changed == 1) { "No bill $id" }
     }
 
     override suspend fun applyRemote(entities: List<ExpenseEntity>) {

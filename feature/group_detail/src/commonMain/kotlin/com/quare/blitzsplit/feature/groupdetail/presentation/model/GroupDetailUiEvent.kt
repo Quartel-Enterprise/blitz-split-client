@@ -17,7 +17,7 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: the "Saldos" tab.
     data object OnBalancesTabClicked : GroupDetailUiEvent
 
-    // Why: a bill on the list, whose screen (7.3) is not built yet.
+    // Why: a bill on the list, which opens "Conta".
     data class OnExpenseClicked(
         val expenseId: String,
     ) : GroupDetailUiEvent

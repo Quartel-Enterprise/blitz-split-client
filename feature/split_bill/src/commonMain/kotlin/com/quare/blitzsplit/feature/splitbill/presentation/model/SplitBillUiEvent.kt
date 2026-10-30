@@ -71,5 +71,14 @@ sealed interface SplitBillUiEvent : UiEvent {
 
     data object OnSaveClicked : SplitBillUiEvent
 
+    // Why: "Apagar conta" under the form of "Editar conta", which asks first.
+    data object OnDeleteClicked : SplitBillUiEvent
+
+    // Why: "Apagar" on "Apagar esta conta?".
+    data object OnDeleteConfirmed : SplitBillUiEvent
+
+    // Why: "Cancelar" on "Apagar esta conta?", or the dialog closed some other way.
+    data object OnDeleteDismissed : SplitBillUiEvent
+
     data object OnCloseClicked : SplitBillUiEvent
 }

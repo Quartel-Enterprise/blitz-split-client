@@ -75,7 +75,15 @@ class JsSplitEditor(
     val summary: Array<JsSplitFact>,
 )
 
+// Why: changedAt in epoch millis, which the page writes as how long ago.
+class JsBillConflict(
+    val changerName: String?,
+    val changerIsMe: Boolean,
+    val changedAt: Double,
+)
+
 class JsSplitBillState(
+    val isEditing: Boolean,
     val groupName: String,
     val groupInitials: String,
     val groupColor: String,
@@ -103,6 +111,11 @@ class JsSplitBillState(
     val canSave: Boolean,
     val isSaving: Boolean,
     val showsOfflineNotice: Boolean,
+    val conflict: JsBillConflict?,
+    val showsAnyoneCanEditHint: Boolean,
+    val deletion: JsBillDeletion?,
+    val canDelete: Boolean,
+    val isDeleting: Boolean,
     val isLoaded: Boolean,
 )
 
@@ -118,6 +131,7 @@ class SplitBillPresenter(
     fun observeState(onChange: (JsSplitBillState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsSplitBillState(
+                isEditing = state.isEditing,
                 groupName = state.groupName,
                 groupInitials = state.groupInitials,
                 groupColor = state.groupColor.code,
@@ -143,6 +157,17 @@ class SplitBillPresenter(
                 canSave = state.canSave,
                 isSaving = state.isSaving,
                 showsOfflineNotice = state.showsOfflineNotice,
+                conflict = state.conflict?.let {
+                    JsBillConflict(
+                        changerName = it.changerName,
+                        changerIsMe = it.changerIsMe,
+                        changedAt = it.changedAt.toDouble(),
+                    )
+                },
+                showsAnyoneCanEditHint = state.showsAnyoneCanEditHint,
+                deletion = state.deletion?.let(::toJsBillDeletion),
+                canDelete = state.canDelete,
+                isDeleting = state.isDeleting,
                 isLoaded = state.isLoaded,
             )
         }
@@ -150,15 +175,28 @@ class SplitBillPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "save-error", a toast in the page's words.
+    // Why: "save-error" or "delete-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 SplitBillUiAction.ShowSaveError -> "save-error"
+                SplitBillUiAction.ShowDeleteError -> "delete-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
+    }
+
+    fun deleteBill() {
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+    }
+
+    fun confirmDelete() {
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+    }
+
+    fun dismissDelete() {
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
     }
 
     fun changeAmount(text: String) {

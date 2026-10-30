@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -656,7 +657,7 @@ class GroupDetailViewModelTest {
             groups.groups.value = noGroups
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
         }
 
     @Test
@@ -726,7 +727,7 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
     }
 
     @Test
@@ -767,7 +768,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
         }
 
     @Test
@@ -797,7 +798,7 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)), navigator.backStack.value)
     }
 
     @Test
@@ -815,7 +816,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill on the list WHEN tapping it THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN a bill on the list WHEN tapping it THEN opens the bill`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
         val event = GroupDetailUiEvent.OnExpenseClicked("dinner")
@@ -824,8 +825,8 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")), navigator.backStack.value)
     }
 
     private fun ExpenseDay.ids(): List<String> = expenses.map { it.id }
@@ -914,6 +915,8 @@ class GroupDetailViewModelTest {
         shares = shares,
         spentAt = spentAt,
         isPending = isPending,
+        updatedAt = spentAt,
+        updatedByMemberId = null,
     )
 
     private fun TestScope.prepareScenario(
@@ -932,6 +935,7 @@ class GroupDetailViewModelTest {
             navigator = navigator,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
+            deletedBillNotice = DeletedBillNotice(),
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeExpenses = if (isRoomRead) {
                 ObserveExpensesUseCase(expenses)

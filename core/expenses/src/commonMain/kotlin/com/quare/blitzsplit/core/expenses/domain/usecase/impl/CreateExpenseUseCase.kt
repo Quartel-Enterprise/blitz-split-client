@@ -25,6 +25,7 @@ class CreateExpenseUseCase(
         spentAt: Long,
     ): Result<String> {
         val id = Uuid.random().toString()
+        val now = currentTimeMillis()
         return repository
             .createExpense(
                 expense = Expense(
@@ -43,8 +44,10 @@ class CreateExpenseUseCase(
                     shares = shares,
                     spentAt = spentAt,
                     isPending = true,
+                    updatedAt = now,
+                    updatedByMemberId = null,
                 ),
-                createdAt = currentTimeMillis(),
+                createdAt = now,
             ).map { id }
     }
 }

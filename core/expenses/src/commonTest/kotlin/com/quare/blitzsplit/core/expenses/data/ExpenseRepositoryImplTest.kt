@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -325,6 +326,9 @@ class ExpenseRepositoryImplTest {
         ),
         spentAt = 5_000L,
         isPending = true,
+        // Why: the version it is stored at, the createdAt the tests pass.
+        updatedAt = 7_000L,
+        updatedByMemberId = null,
     )
 
     private fun entity(
@@ -346,6 +350,7 @@ class ExpenseRepositoryImplTest {
         isDeleted = false,
         addedAt = 1L,
         updatedAt = updatedAt,
+        updatedBy = null,
         pendingSync = pendingSync,
     )
 
@@ -409,8 +414,13 @@ private class FakeExpenseLocalDataSource(
     val syncedVersions = mutableListOf<Pair<String, Long>>()
     val goneFromServerCalls = mutableListOf<Pair<String, Set<String>>>()
 
-    override fun observeExpenses(groupId: String): Flow<List<ExpenseEntity>> =
-        entities.map { list -> list.filter { it.groupId == groupId && !it.isDeleted } }
+    override fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>> = entities.map { list ->
+        list.filter { it.groupId == groupId && !it.isDeleted }.map { ExpenseWithEditor(it, updatedByMemberId = null) }
+    }
+
+    override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
+        list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, updatedByMemberId = null) }
+    }
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }
 
@@ -426,6 +436,34 @@ private class FakeExpenseLocalDataSource(
     override suspend fun insertExpense(entity: ExpenseEntity) {
         insertError?.let { throw it }
         entities.update { it + entity }
+    }
+
+    override suspend fun updateExpense(
+        entity: ExpenseEntity,
+        now: Long,
+    ) {
+        val current = checkNotNull(entities.value.firstOrNull { it.id == entity.id && !it.isDeleted })
+        val updated = entity.copy(
+            groupId = current.groupId,
+            createdBy = current.createdBy,
+            addedAt = current.addedAt,
+            updatedAt = maxOf(now, current.updatedAt + 1),
+            pendingSync = true,
+        )
+        entities.update { list -> list.map { if (it.id == entity.id) updated else it } }
+    }
+
+    override suspend fun markDeleted(
+        id: String,
+        now: Long,
+    ) {
+        val current = checkNotNull(entities.value.firstOrNull { it.id == id && !it.isDeleted })
+        val deleted = current.copy(
+            isDeleted = true,
+            updatedAt = maxOf(now, current.updatedAt + 1),
+            pendingSync = true,
+        )
+        entities.update { list -> list.map { if (it.id == id) deleted else it } }
     }
 
     override suspend fun applyRemote(entities: List<ExpenseEntity>) {

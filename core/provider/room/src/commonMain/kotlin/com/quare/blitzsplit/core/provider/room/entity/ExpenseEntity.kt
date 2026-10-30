@@ -44,5 +44,10 @@ data class ExpenseEntity(
     val isDeleted: Boolean,
     val addedAt: Long,
     val updatedAt: Long,
+    /*
+     * Why: the account that last saved the bill, which the server sets; "Ana mudou esta conta" while someone edits it.
+     * Null for a bill changed on this device and not synced yet.
+     */
+    val updatedBy: String?,
     val pendingSync: Boolean,
 )
