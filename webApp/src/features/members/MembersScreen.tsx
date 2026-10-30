@@ -1,5 +1,13 @@
-import { ArrowLeft, Check, ChevronRight, CircleCheck, EllipsisVertical, Link2, Pencil, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
-import { MembersPresenter, type JsMemberNameEditor, type JsMembersMember, type JsMembersState, type JsRoute } from 'blitzsplit-shared'
+import { ArrowLeft, Check, ChevronRight, CircleCheck, Copy, EllipsisVertical, Link2, Pencil, Share2, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
+import {
+  MembersPresenter,
+  type JsMemberNameEditor,
+  type JsMembersAction,
+  type JsMembersMember,
+  type JsMembersState,
+  type JsPersonalInvite,
+  type JsRoute,
+} from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -14,24 +22,35 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
 
 const nameId = 'member-name'
+const personalLinkId = 'personal-link'
 
 /**
  * "Membros", a group's page until the group's own screen exists: who is in it and who joined, the invite link,
- * and each person's options (rename, a personal invite that is coming soon, and removing someone who hasn't joined).
+ * and each person's options (rename, a personal invite link, and removing someone who hasn't joined).
  */
 export function MembersScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new MembersPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsMembersState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
-    toast(action === 'change-error' ? t('members_changeError') : t('members_comingSoon'))
+  useActions(presenter, (p, onAction: (action: JsMembersAction) => void) => p.observeActions(onAction), (action) => {
+    if (action.type === 'copy' && action.link) {
+      navigator.clipboard.writeText(action.link).catch(() => toast(t('members_copyFailed')))
+    } else if (action.type === 'share-personal' && action.link) {
+      sharePersonalLink(action.link, action.memberName ?? '', action.groupName ?? '')
+    } else if (action.type === 'change-error') {
+      toast(t('members_changeError'))
+    } else if (action.type === 'coming-soon') {
+      toast(t('members_comingSoon'))
+    }
   })
   if (!presenter || !state?.isLoaded) return null
 
@@ -75,6 +94,7 @@ export function MembersScreen({ route }: { route: JsRoute }) {
       </main>
       {state.editor && <MemberNameDialog presenter={presenter} editor={state.editor} />}
       {state.memberToRemoveName != null && <RemoveMemberDialog presenter={presenter} name={state.memberToRemoveName} />}
+      {state.personalInvite && <PersonalInviteDialog presenter={presenter} invite={state.personalInvite} groupName={state.groupName} />}
     </div>
   )
 }
@@ -131,7 +151,7 @@ function MemberRow({ presenter, member }: { presenter: MembersPresenter; member:
             {t('members_rename')}
           </DropdownMenuItem>
           {member.canBeInvited && (
-            <DropdownMenuItem onSelect={() => presenter.personalInvite(member.id)}>
+            <DropdownMenuItem disabled={!member.isPersonalInviteReady} onSelect={() => presenter.personalInvite(member.id)}>
               <Link2 />
               {t('members_personalInvite', { name: member.name })}
             </DropdownMenuItem>
@@ -151,6 +171,81 @@ function MemberRow({ presenter, member }: { presenter: MembersPresenter; member:
         </DropdownMenuContent>
       </DropdownMenu>
     </li>
+  )
+}
+
+/**
+ * "Convite pessoal para Carla": a link that joins straight in as that member, a dialog on desktop and tablet and a
+ * drawer on the phone, like "Convidar". Closing it any way is the ViewModel's dismissal.
+ */
+function PersonalInviteDialog({ presenter, invite, groupName }: { presenter: MembersPresenter; invite: JsPersonalInvite; groupName: string }) {
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const onOpenChange = (open: boolean) => {
+    if (!open) presenter.dismissPersonalInvite()
+  }
+  const title = t('members_personalInvite', { name: invite.memberName })
+  const description = t('members_personalMessage', { name: invite.memberName })
+  const heading = (
+    <div className="flex items-center gap-3 text-left">
+      <Avatar initial={invite.memberInitials} color={invite.memberColor} className="size-10 shrink-0 text-sm" />
+      <div className="min-w-0">
+        {isDesktop ? <DialogTitle className="truncate">{title}</DialogTitle> : <DrawerTitle className="truncate">{title}</DrawerTitle>}
+        <p className="truncate text-sm text-muted-foreground">{groupName}</p>
+      </div>
+    </div>
+  )
+  const body = (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={personalLinkId}>{t('members_personalLinkLabel')}</Label>
+      <div className="flex gap-2">
+        <Input id={personalLinkId} readOnly value={invite.displayLink} onFocus={(event) => event.currentTarget.select()} className="font-mono" />
+        <Button variant="secondary" onClick={() => presenter.copyPersonalLink()} aria-live="polite" className="shrink-0">
+          {invite.isLinkCopied ? <Check /> : <Copy />}
+          {invite.isLinkCopied ? t('members_copied') : t('members_copy')}
+        </Button>
+      </div>
+    </div>
+  )
+  const close = (
+    <Button variant="ghost" onClick={() => presenter.dismissPersonalInvite()} className={cn(!isDesktop && 'h-11')}>
+      {t('members_close')}
+    </Button>
+  )
+  const share = (
+    <Button onClick={() => presenter.sharePersonalLink()} className={cn(!isDesktop && 'h-11')}>
+      <Share2 />
+      {t('members_personalShare', { name: invite.memberName })}
+    </Button>
+  )
+
+  return isDesktop ? (
+    <Dialog open onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[460px]">
+        <DialogHeader className="gap-4">
+          {heading}
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {body}
+        <DialogFooter>
+          {close}
+          {share}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ) : (
+    <Drawer open onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader className="gap-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          {heading}
+          <DrawerDescription>{description}</DrawerDescription>
+        </DrawerHeader>
+        <div className="px-4">{body}</div>
+        <DrawerFooter>
+          {share}
+          {close}
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
@@ -245,4 +340,17 @@ function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; 
       </DialogContent>
     </Dialog>
   )
+}
+
+// Why: the browser's share sheet where there is one (phones, Safari), otherwise the link goes to the clipboard, as in "Convidar".
+function sharePersonalLink(link: string, memberName: string, groupName: string) {
+  const text = t('members_personalShareMessage', { group: groupName, name: memberName, link })
+  if (typeof navigator.share === 'function') {
+    navigator.share({ text }).catch(() => {})
+    return
+  }
+  navigator.clipboard
+    .writeText(link)
+    .then(() => toast(t('members_linkCopied')))
+    .catch(() => toast(t('members_copyFailed')))
 }
