@@ -4,6 +4,7 @@ import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
+import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
@@ -14,6 +15,7 @@ import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
+import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
 import { applyTheme } from '@/lib/theme'
@@ -36,13 +38,15 @@ export function App() {
   if (!isReady || !backStack) return null
   const top = backStack[backStack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
-  // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them.
+  // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
+  // bill opens over the group's expenses the same way.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
   const isJoinWithLink = top.name === 'join-with-link'
-  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isPaymentKey || isDeleteAccount
+  const isSplitBill = top.name === 'split-bill'
+  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isPaymentKey || isDeleteAccount
   const page = isDialog ? backStack.at(-2) : top
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'groups')
   return (
@@ -53,6 +57,7 @@ export function App() {
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
+      {isSplitBill && <SplitBillDialog key={top.groupId} route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
@@ -68,6 +73,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <GroupsScreen />
     case 'members':
       return route ? <MembersScreen key={route.groupId} route={route} /> : null
+    case 'group-detail':
+      return route ? <GroupDetailScreen key={route.groupId} route={route} /> : null
     case 'join-invite':
       // Why: the group's link and each member's personal link of the same group are different invites.
       return route ? <JoinInviteScreen key={`${route.inviteCode}/${route.inviteMemberCode ?? ''}`} route={route} /> : null

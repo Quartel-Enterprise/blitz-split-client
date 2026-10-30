@@ -188,6 +188,15 @@ class MembersPresenter(
         viewModel.onEvent(MembersUiEvent.OnProtectAccessClicked)
     }
 
+    // Why: the group's tabs, "Despesas" and "Saldos", beside "Membros".
+    fun expensesTab() {
+        viewModel.onEvent(MembersUiEvent.OnExpensesTabClicked)
+    }
+
+    fun balancesTab() {
+        viewModel.onEvent(MembersUiEvent.OnBalancesTabClicked)
+    }
+
     fun dispose() {
         holder.clear()
     }

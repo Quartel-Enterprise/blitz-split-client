@@ -22,6 +22,9 @@ enum Palette {
     /// The tertiary container of a notice that informs rather than warns (the CPF a payer sees).
     static let infoContainer = Color(light: 0xC3E7FF, dark: 0x004C69)
     static let onInfoContainer = Color(light: 0x001E2C, dark: 0xC3E7FF)
+    /// The status card of a split that doesn't add up yet ("$84.00 left").
+    static let errorContainer = Color(light: 0xFFDBCE, dark: 0x71361C)
+    static let onErrorContainer = Color(light: 0x370E00, dark: 0xFFDBCE)
     /// The selected segment of a custom segmented control, as the system draws its thumb.
     static let segmentThumb = Color(light: 0xFFFFFF, dark: 0x636366)
 

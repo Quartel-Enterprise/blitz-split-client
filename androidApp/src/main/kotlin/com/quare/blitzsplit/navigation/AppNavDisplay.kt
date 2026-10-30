@@ -18,6 +18,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
+import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
@@ -30,6 +31,8 @@ import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
+import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
+import com.quare.blitzsplit.android.feature.splitbill.rememberSplitBillUsesDialog
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.shared.app.AppUiState
@@ -54,6 +57,17 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     val usesFormDialog = rememberUsesFormDialog()
     val formDialogMetadata = if (usesFormDialog) {
+        DialogSceneStrategy.dialog(
+            DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        )
+    } else {
+        emptyMap()
+    }
+    val usesBillDialog = rememberSplitBillUsesDialog()
+    val billDialogMetadata = if (usesBillDialog) {
         DialogSceneStrategy.dialog(
             DialogProperties(
                 dismissOnClickOutside = false,
@@ -99,6 +113,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 InviteScreen(
                     route = route,
                     isDialog = usesFormDialog,
+                )
+            }
+            entry<Route.GroupDetail> { route -> GroupDetailScreen(route) }
+            // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.
+            entry<Route.SplitBill>(metadata = billDialogMetadata) { route ->
+                SplitBillScreen(
+                    route = route,
+                    isDialog = usesBillDialog,
                 )
             }
             entry<Route.Members> { route -> MembersScreen(route) }

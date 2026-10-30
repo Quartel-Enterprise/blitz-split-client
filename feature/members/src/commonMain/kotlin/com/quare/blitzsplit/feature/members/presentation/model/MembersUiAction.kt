@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
 sealed interface MembersUiAction {
-    // Why: the group's expenses and balances (flow 6) are not built yet.
+    // Why: the group's balances are not built yet.
     data object ShowComingSoon : MembersUiAction
 
     data class CopyLink(

@@ -15,6 +15,10 @@ enum AppRoute: Hashable, Identifiable {
     case invite(RouteInvite)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case members(RouteMembers)
+    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
+    case groupDetail(RouteGroupDetail)
+    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
+    case splitBill(RouteSplitBill)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
     case joinInvite(RouteJoinInvite)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
@@ -36,6 +40,8 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteCreateGroup: self = .createGroup
         case let invite as RouteInvite: self = .invite(invite)
         case let members as RouteMembers: self = .members(members)
+        case let groupDetail as RouteGroupDetail: self = .groupDetail(groupDetail)
+        case let splitBill as RouteSplitBill: self = .splitBill(splitBill)
         case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
         case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
         case let joinWithLink as RouteJoinWithLink: self = .joinWithLink(joinWithLink)
@@ -51,11 +57,12 @@ enum AppRoute: Hashable, Identifiable {
     var id: Self { self }
 
     /// iPad opens a key as a form sheet and the Mac as a sheet on its window, as the canvas draws
-    /// them; the iPhone pushes it. Deleting the account, a new group and its invite are sheets everywhere.
+    /// them; the iPhone pushes it. Deleting the account, a new group, its invite and a new bill are sheets
+    /// everywhere.
     /// The invite reader is a sheet on the Mac, and covers the whole screen on iPhone and iPad.
     var presentsAsSheet: Bool {
         switch self {
-        case .deleteAccount, .createGroup, .invite:
+        case .deleteAccount, .createGroup, .invite, .splitBill:
             return true
         case .joinWithLink:
             #if os(macOS)

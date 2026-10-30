@@ -2,6 +2,8 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -46,6 +48,7 @@ class SyncCoordinatorTest {
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var groups: FakeGroupRepository
+    private lateinit var expenses: FakeExpenseRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
@@ -3283,6 +3286,458 @@ class SyncCoordinatorTest {
         assertEquals(listOf(trip), groups.groups.value)
     }
 
+    @Test
+    fun `GIVEN a pending bill WHEN syncing THEN pulls and pushes the bills right after the groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+            pendingBills = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+        assertEquals(
+            listOf(
+                "profile download $userId",
+                "profile upload $userId",
+                "groups download $userId",
+                "groups upload $userId",
+                "bills download $userId",
+                "bills upload $userId",
+            ),
+            calls.filterNot { it.startsWith("keys ") || it.startsWith("preferences ") },
+        )
+        assertFalse(expenses.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN syncing THEN pulls and pushes the bills under its user id`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingBills = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), expenses.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), expenses.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN no profile and a pending bill WHEN syncing THEN neither pulls nor pushes the bills`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            pendingBills = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(expenses.downloadedUserIds.isEmpty())
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the profile fails to come down WHEN syncing THEN does not touch the bills`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+        )
+        profile.pullError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(expenses.downloadedUserIds.isEmpty())
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+        assertTrue(expenses.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN neither pulls nor pushes the bills`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+        )
+        groups.pullError = IllegalStateException("relation groups does not exist")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(expenses.downloadedUserIds.isEmpty())
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+        assertTrue(expenses.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the groups push fails WHEN syncing THEN neither pulls nor pushes the bills`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+            pendingBills = true,
+        )
+        groups.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(expenses.downloadedUserIds.isEmpty())
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+        assertTrue(expenses.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the bills fail to come down WHEN syncing THEN fails pushes none and the state is failed`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+        )
+        expenses.pullError = IllegalStateException("relation expenses does not exist")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.downloadedUserIds)
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+        assertTrue(expenses.hasPendingChanges.value)
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a pending bill and its push fails WHEN syncing THEN fails keeps it pending and is failed`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+        )
+        expenses.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.uploadedUserIds)
+        assertTrue(expenses.hasPendingChanges.value)
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN the bills fail to come down WHEN syncing THEN still syncs the keys and the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+            pendingPreferences = true,
+        )
+        expenses.pullError = IllegalStateException("relation expenses does not exist")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+        assertEquals(listOf(userId), paymentKeys.uploadedUserIds)
+        assertFalse(paymentKeys.hasPendingChanges.value)
+        assertEquals(listOf(userId), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user whose bills fail to come down WHEN syncing THEN still issues the recovery code`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            expenses.pullError = IllegalStateException("relation expenses does not exist")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(1, account.recoveryCodeCreations)
+        }
+
+    @Test
+    fun `GIVEN a sync that failed on the bills WHEN a retry succeeds THEN pushes them and the state is synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingBills = true,
+            )
+            expenses.pushError = IllegalStateException("server down")
+            coordinator.syncNow()
+            expenses.pushError = null
+
+            // When
+            coordinator.retry()
+            runCurrent()
+
+            // Then
+            assertFalse(expenses.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN switching to another Google user THEN syncs the bills under it`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), expenses.downloadedUserIds)
+        assertEquals(listOf(OTHER_USER_ID), expenses.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN nothing else pending and a bill saved offline WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+            expenses.hasPendingChanges.value = true
+            runCurrent()
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN only a pending bill online before any sync WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingBills = true,
+            )
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN a pending bill WHEN the sync pushes it THEN the sync state is synced`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a bills push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+        )
+        expenses.pushError = IllegalStateException("no answer")
+        coordinator.syncNow()
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncState.PENDING, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN only a bill becomes pending THEN pushes the bills`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = expenses.uploadedUserIds.size
+
+        // When
+        expenses.hasPendingChanges.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, expenses.uploadedUserIds.size)
+        assertFalse(expenses.hasPendingChanges.value)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a bills push that failed online WHEN another bill is saved THEN pushes the bills again`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        expenses.pushError = IllegalStateException("no answer")
+        expenses.hasPendingChanges.value = true
+        expenses.pendingVersions.value = listOf(1_000L)
+        runCurrent()
+        expenses.pushError = null
+        val uploadsBefore = expenses.uploadedUserIds.size
+
+        // When
+        expenses.pendingVersions.value = listOf(1_000L, 2_000L)
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, expenses.uploadedUserIds.size)
+        assertFalse(expenses.hasPendingChanges.value)
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a bill saved offline WHEN the device comes online THEN pushes the bills`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        expenses.hasPendingChanges.value = true
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.uploadedUserIds)
+        assertFalse(expenses.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a profile offline WHEN a bill is saved THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        expenses.hasPendingChanges.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(expenses.downloadedUserIds.isEmpty())
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+        assertTrue(expenses.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN no profile online WHEN a bill is saved THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(storedProfile = null)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        expenses.hasPendingChanges.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(expenses.downloadedUserIds.isEmpty())
+        assertTrue(expenses.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN only a bill queued online WHEN signing out once synced THEN pushes it before ending the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingBills = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals(listOf(userId), expenses.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(calls.indexOf("account sign out") > calls.lastIndexOf("bills upload $userId"))
+        }
+
+    @Test
+    fun `GIVEN the bills push fails WHEN signing out once synced THEN keeps the session and the schedule`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedGroups = listOf(trip),
+            pendingBills = true,
+        )
+        expenses.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.signOutWhenSynced()
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.signOutCount)
+        assertEquals(google, account.status)
+        assertEquals(0, groups.clearCount)
+        assertEquals(pierre, profile.profile.value)
+        assertTrue(expenses.hasPendingChanges.value)
+        assertTrue(account.signOutWhenSynced)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -3337,15 +3792,15 @@ class SyncCoordinatorTest {
     )
 
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {
-        it.startsWith("preferences ") || it.startsWith("groups ")
+        it.startsWith("preferences ") || it.startsWith("groups ") || it.startsWith("bills ")
     }
 
     private fun callsWithoutKeysAndGroups(): List<String> = calls.filterNot {
-        it.startsWith("keys ") || it.startsWith("groups ")
+        it.startsWith("keys ") || it.startsWith("groups ") || it.startsWith("bills ")
     }
 
     private fun callsWithoutKeysAndPreferences(): List<String> = calls.filterNot {
-        it.startsWith("keys ") || it.startsWith("preferences ")
+        it.startsWith("keys ") || it.startsWith("preferences ") || it.startsWith("bills ")
     }
 
     private fun TestScope.prepareScenario(
@@ -3366,6 +3821,7 @@ class SyncCoordinatorTest {
         storedGroups: List<Group> = emptyList(),
         pendingGroups: Boolean = false,
         groupQueuedDuringFirstPush: Boolean = false,
+        pendingBills: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
@@ -3379,6 +3835,7 @@ class SyncCoordinatorTest {
             it.hasPendingChanges.value = pendingPreferences
         }
         groups = FakeGroupRepository(initialGroups = storedGroups).also { it.hasPendingChanges.value = pendingGroups }
+        expenses = FakeExpenseRepository().also { it.hasPendingChanges.value = pendingBills }
         isOnline = MutableStateFlow(online)
         pullGate = CompletableDeferred()
         coordinator = SyncCoordinator(
@@ -3413,6 +3870,7 @@ class SyncCoordinatorTest {
                 delegate = if (groupQueuedDuringFirstPush) GroupDuringFirstPushGroupRepository(groups) else groups,
                 calls = calls,
             ),
+            expenseRepository = RecordingExpenseRepository(expenses, calls),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
@@ -3457,8 +3915,8 @@ private class KeyDuringFirstPushPaymentKeyRepository(
     }
 }
 
-// Why: one log across the account, the profile, the keys, the preferences and the groups, so a test can assert the
-// order of their calls.
+// Why: one log across the account, the profile, the keys, the preferences, the groups and the bills, so a test can
+// assert the order of their calls.
 private class RecordingAccountRepository(
     private val delegate: AccountRepository,
     private val calls: MutableList<String>,
@@ -3578,5 +4036,24 @@ private class GroupDuringFirstPushGroupRepository(
         val result = delegate.uploadPendingGroups(userId)
         if (delegate.uploadedUserIds.size == 1) delegate.hasPendingChanges.value = true
         return result
+    }
+}
+
+/*
+ * Why: FakeExpenseRepository keeps a bill pending after a push that succeeds, while the real repository marks it
+ * synced and the coordinator syncs again until nothing is pending.
+ */
+private class RecordingExpenseRepository(
+    private val delegate: FakeExpenseRepository,
+    private val calls: MutableList<String>,
+) : ExpenseRepository by delegate {
+    override suspend fun downloadExpenses(userId: String): Result<Unit> {
+        calls += "bills download $userId"
+        return delegate.downloadExpenses(userId)
+    }
+
+    override suspend fun uploadPendingExpenses(userId: String): Result<Unit> {
+        calls += "bills upload $userId"
+        return delegate.uploadPendingExpenses(userId)
     }
 }

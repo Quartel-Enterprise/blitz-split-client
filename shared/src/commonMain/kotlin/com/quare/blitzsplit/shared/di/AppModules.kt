@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.shared.di
 
 import com.quare.blitzsplit.core.account.di.accountModule
+import com.quare.blitzsplit.core.expenses.di.expenseModule
 import com.quare.blitzsplit.core.groups.di.groupModule
 import com.quare.blitzsplit.core.navigation.di.navigationModule
 import com.quare.blitzsplit.core.profile.di.profileModule
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
 import com.quare.blitzsplit.feature.editprofile.di.editProfileModule
+import com.quare.blitzsplit.feature.groupdetail.di.groupDetailModule
 import com.quare.blitzsplit.feature.groups.di.groupsModule
 import com.quare.blitzsplit.feature.invite.di.inviteModule
 import com.quare.blitzsplit.feature.join.di.joinModule
@@ -23,6 +25,7 @@ import com.quare.blitzsplit.feature.paymentkey.di.paymentKeyModule
 import com.quare.blitzsplit.feature.profilesetup.di.profileSetupModule
 import com.quare.blitzsplit.feature.recoverycode.di.recoveryCodeModule
 import com.quare.blitzsplit.feature.restore.di.restoreModule
+import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
@@ -51,6 +54,7 @@ val sharedModules: List<Module> = listOf(
     profileModule,
     accountModule,
     groupModule,
+    expenseModule,
     syncModule,
     settingsModule,
     welcomeModule,
@@ -67,6 +71,8 @@ val sharedModules: List<Module> = listOf(
     inviteModule,
     membersModule,
     joinModule,
+    groupDetailModule,
+    splitBillModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

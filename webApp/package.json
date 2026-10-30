@@ -13,6 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@js-joda/core": "3.2.0",
     "@sqlite.org/sqlite-wasm": "3.54.1-build1",
     "blitzsplit-shared": "file:../shared/build/dist/js/productionLibrary",
     "class-variance-authority": "^0.7.1",

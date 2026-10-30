@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
@@ -20,6 +21,7 @@ import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewMo
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewModel
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
@@ -89,6 +91,12 @@ object BlitzSplitApple : KoinComponent {
 
     fun createMembersViewModel(route: Route.Members): ViewModelHolder<MembersViewModel> =
         ViewModelHolder(MembersViewModel::class) { get { parametersOf(route) } }
+
+    fun createGroupDetailViewModel(route: Route.GroupDetail): ViewModelHolder<GroupDetailViewModel> =
+        ViewModelHolder(GroupDetailViewModel::class) { get { parametersOf(route) } }
+
+    fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
+        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }
 
     // Why: each invite link opens its own ViewModels, which read the code from their route.
     fun createJoinInviteViewModel(route: Route.JoinInvite): ViewModelHolder<JoinInviteViewModel> =

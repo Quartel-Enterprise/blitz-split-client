@@ -19,10 +19,12 @@ class JsRoute internal constructor(
     // Why: the key to edit for "payment-key", null for a new key and for every other route.
     val paymentKeyId: String? = (route as? Route.PaymentKey)?.keyId
 
-    // Why: the group of "invite" and "members", null for every other route.
+    // Why: the group of "invite", "members", "group-detail" and "split-bill", null for every other route.
     val groupId: String? = when (route) {
         is Route.Invite -> route.groupId
         is Route.Members -> route.groupId
+        is Route.GroupDetail -> route.groupId
+        is Route.SplitBill -> route.groupId
         else -> null
     }
 

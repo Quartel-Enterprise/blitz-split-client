@@ -321,10 +321,10 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping another tab THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN the screen open WHEN tapping the balances tab THEN says coming soon`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        val event = MembersUiEvent.OnOtherTabClicked
+        val event = MembersUiEvent.OnBalancesTabClicked
 
         // When
         viewModel.onEvent(event)
@@ -332,6 +332,19 @@ class MembersViewModelTest {
         // Then
         assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
     }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping the expenses tab THEN the group takes its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnExpensesTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1")), navigator.backStack.value)
+        }
 
     @Test
     fun `GIVEN someone whose link has not come yet WHEN tapping their personal invite THEN nothing opens`() =

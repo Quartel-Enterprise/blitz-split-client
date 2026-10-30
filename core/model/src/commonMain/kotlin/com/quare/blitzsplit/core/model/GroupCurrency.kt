@@ -8,6 +8,8 @@ package com.quare.blitzsplit.core.model
 enum class GroupCurrency(
     val code: String,
     private val regions: Set<String>,
+    // Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it.
+    val fractionDigits: Int = 2,
 ) {
     BRL("BRL", setOf("BR")),
     USD("USD", setOf("US", "EC", "SV", "PA", "PR")),
@@ -44,15 +46,15 @@ enum class GroupCurrency(
     ),
     GBP("GBP", setOf("GB")),
     ARS("ARS", setOf("AR")),
-    CLP("CLP", setOf("CL")),
+    CLP("CLP", setOf("CL"), fractionDigits = 0),
     COP("COP", setOf("CO")),
     MXN("MXN", setOf("MX")),
     PEN("PEN", setOf("PE")),
     UYU("UYU", setOf("UY")),
-    PYG("PYG", setOf("PY")),
+    PYG("PYG", setOf("PY"), fractionDigits = 0),
     CAD("CAD", setOf("CA")),
     AUD("AUD", setOf("AU")),
-    JPY("JPY", setOf("JP")),
+    JPY("JPY", setOf("JP"), fractionDigits = 0),
     CHF("CHF", setOf("CH", "LI")),
     ;
 

@@ -481,16 +481,32 @@ class InviteViewModelTest {
         }
 
     @Test
-    fun `GIVEN a pending link WHEN go to the group is tapped THEN members take its place`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroup = trip.copy(inviteCode = null))
+    fun `GIVEN a pending link WHEN go to the group is tapped THEN the group takes its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(inviteCode = null))
 
-        // When
-        viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
+            // When
+            viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
 
-        // Then
-        assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the screen opened from the group WHEN go to the group is tapped THEN goes back to it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(inviteCode = null))
+            navigator.replaceTop(Route.GroupDetail("group-1"))
+            navigator.navigate(Route.Invite("group-1"))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1")), navigator.backStack.value)
+        }
 
     @Test
     fun `GIVEN the screen opened from the members WHEN see who joined is tapped THEN goes back to them`() =
