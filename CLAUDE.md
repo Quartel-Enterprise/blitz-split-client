@@ -71,11 +71,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     link to copy or share, and no QR (`MembersUiState.personalInvite`). The link is
     `https://blitzsplit.com/g/<code>/<member code>?from=<sharer's member code>`: the server makes each member's
     code, so the item stays disabled until the member and the group are synced, and works offline after that
-    (`MembersMember.isPersonalInviteReady`). Opening it says "Ana te chamou como Carla", naming whoever shared it (the
-    creator when the link doesn't say): "Entrar como Carla" joins straight in as that member, and "Não sou Carla" opens
-    the whole list without spending the link. A member removed or already joined makes the link "Este convite não
-    vale mais", and so does a changed group link. The copy puts no article before a member's name ("Não sou Carla",
-    "Compartilhar com Carla"), since the app doesn't know it.
+    (`MembersMember.isPersonalInviteReady`). Opening it says "Ana te chamou como Carla", naming whoever shared it, or
+    "Você entra como Carla" when the link doesn't say (never the creator for someone else's link): "Entrar como
+    Carla" joins straight in as that member, and "Não sou Carla" opens the whole list without spending the link. A
+    member removed or already joined, or a changed group link, makes it "Este convite não vale mais", with "Alguém já
+    entrou por este link, ou ele foi trocado". The copy puts no article before a member's name ("Não sou Carla",
+    "Compartilhar com Carla") and avoids gendered words, since the app doesn't know either.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
