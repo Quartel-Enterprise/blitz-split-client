@@ -52,7 +52,7 @@ export function App() {
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
-      {isJoinWithLink && <JoinWithLinkDialog />}
+      {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )

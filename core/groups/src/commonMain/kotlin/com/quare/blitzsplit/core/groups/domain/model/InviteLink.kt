@@ -51,8 +51,8 @@ object InviteLink {
      * the app, a QR can hold any site's address, so only the domains Convidar shares count.
      */
     fun findIn(text: String): InviteTarget? = text.split(whitespace).firstNotNullOfOrNull { word ->
-        val link = word.trimStart('(').trimEnd('.', ',', ';', ')', '!')
-        val url = if ("://" in link) link else "https://$link"
+        val link = word.trimStart('(', '<', '"', '\'', '“').trimEnd('.', ',', ';', ')', '!', '>', '"', '\'', '”')
+        val url = if ("://" in link) toLowercaseScheme(link) else "https://$link"
         val host = url
             .substringAfter("://")
             .substringBefore('/')
@@ -60,4 +60,8 @@ object InviteLink {
             .lowercase()
         if (host in sharedHosts) targetOf(url) else null
     }
+
+    // Why: a phone's keyboard may capitalize the first letter of what was typed ("Https://").
+    private fun toLowercaseScheme(link: String): String = link.substringBefore("://").lowercase() + "://" +
+        link.substringAfter("://")
 }

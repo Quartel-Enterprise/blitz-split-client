@@ -63,8 +63,6 @@ fun JoinWithLinkContent(
     state: JoinWithLinkUiState,
     field: String,
     onFieldChange: (String) -> Unit,
-    hasTorch: Boolean,
-    isCameraUnavailable: Boolean,
     onPasteClicked: () -> Unit,
     onEvent: (JoinWithLinkUiEvent) -> Unit,
     camera: @Composable (Modifier) -> Unit,
@@ -79,8 +77,6 @@ fun JoinWithLinkContent(
             Row(modifier = Modifier.fillMaxSize()) {
                 CameraPane(
                     state = state,
-                    hasTorch = hasTorch,
-                    isCameraUnavailable = isCameraUnavailable,
                     onEvent = onEvent,
                     camera = camera,
                     modifier = Modifier
@@ -107,8 +103,6 @@ fun JoinWithLinkContent(
             Column(modifier = Modifier.fillMaxSize()) {
                 CameraPane(
                     state = state,
-                    hasTorch = hasTorch,
-                    isCameraUnavailable = isCameraUnavailable,
                     onEvent = onEvent,
                     camera = camera,
                     modifier = Modifier
@@ -255,6 +249,8 @@ private fun createPreviewState(
     isLinkInvalid = isLinkInvalid,
     isQrInvalid = isQrInvalid,
     cameraAccess = cameraAccess,
+    isCameraUnavailable = false,
+    hasTorch = true,
     isTorchOn = false,
 )
 
@@ -265,8 +261,6 @@ private fun JoinWithLinkPreviewContent(state: JoinWithLinkUiState) {
             state = state,
             field = state.link,
             onFieldChange = {},
-            hasTorch = true,
-            isCameraUnavailable = false,
             onPasteClicked = {},
             onEvent = {},
             camera = { Box(it.background(Color(0xFF2D3135))) },

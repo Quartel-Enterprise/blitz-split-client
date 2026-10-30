@@ -474,7 +474,16 @@ class JoinInviteViewModelTest {
             viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinWithLink(
+                        skippedCode = CODE,
+                        skippedMemberCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -490,7 +499,16 @@ class JoinInviteViewModelTest {
             viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinWithLink(
+                        skippedCode = CODE,
+                        skippedMemberCode = MEMBER_CODE,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -499,14 +517,14 @@ class JoinInviteViewModelTest {
             // Given
             prepareScenario(
                 invite = null,
-                under = listOf(Route.Groups, Route.JoinWithLink),
+                under = listOf(Route.Groups, reader),
             )
 
             // When
             viewModel.onEvent(JoinInviteUiEvent.OnScanAnotherClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
         }
 
     @Test
@@ -1309,6 +1327,12 @@ class JoinInviteViewModelTest {
         ),
         isPending = false,
         inviteCode = CODE,
+    )
+
+    // Why: the reader opened from the home, which skips no invite.
+    private val reader = Route.JoinWithLink(
+        skippedCode = null,
+        skippedMemberCode = null,
     )
 
     private val groupLink = Route.JoinInvite(

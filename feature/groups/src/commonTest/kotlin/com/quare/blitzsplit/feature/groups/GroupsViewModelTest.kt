@@ -161,7 +161,16 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnJoinWithLinkClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.JoinWithLink(
+                    skippedCode = null,
+                    skippedMemberCode = null,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test

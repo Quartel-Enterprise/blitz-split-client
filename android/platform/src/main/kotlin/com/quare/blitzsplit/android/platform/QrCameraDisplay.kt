@@ -38,30 +38,44 @@ import kotlinx.coroutines.awaitCancellation
 
 // Why: the camera reads the same QR on every frame, so the same one is reported a few times a second, not 30.
 private const val REPEAT_READ_INTERVAL_MILLIS = 250L
+private val unavailableErrors = setOf(
+    // Why: the camera can't be used while one of these lasts; a passing hiccup (ERROR_OTHER_RECOVERABLE_ERROR) isn't.
+    CameraState.ERROR_CAMERA_IN_USE,
+    CameraState.ERROR_MAX_CAMERAS_IN_USE,
+    CameraState.ERROR_CAMERA_DISABLED,
+    CameraState.ERROR_CAMERA_FATAL_ERROR,
+    CameraState.ERROR_DO_NOT_DISTURB_MODE_ENABLED,
+    CameraState.ERROR_STREAM_CONFIG,
+)
 
 /*
  * Why: the invite reader draws its own camera, so a wrong QR shows its warning while the camera keeps reading, and the
  * link can be pasted under it. Every QR read is reported, the same one again a few times a second. Needs the camera
- * permission; a device without a back camera uses the front one, and one without any, or whose camera CameraX can't
- * start or bind, is reported unavailable.
+ * permission; a device without a back camera uses the front one. A camera that opens is reported with whether it has a
+ * torch; one missing, or that CameraX can't start, bind or open (another app holds it), is reported unavailable, until
+ * it opens again.
  */
 @Composable
 fun QrCameraDisplay(
     isTorchOn: Boolean,
     onScanned: (String) -> Unit,
-    onTorchAvailabilityChanged: (Boolean) -> Unit,
+    onOpened: (hasTorch: Boolean) -> Unit,
     onUnavailable: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val rotation = rememberDisplayRotation()
+    val currentRotation by rememberUpdatedState(rotation)
+    val currentIsTorchOn by rememberUpdatedState(isTorchOn)
     val currentOnScanned by rememberUpdatedState(onScanned)
-    val currentOnTorchAvailabilityChanged by rememberUpdatedState(onTorchAvailabilityChanged)
+    val currentOnOpened by rememberUpdatedState(onOpened)
     val currentOnUnavailable by rememberUpdatedState(onUnavailable)
     var surfaceRequest by remember { mutableStateOf<SurfaceRequest?>(null) }
     var camera by remember { mutableStateOf<Camera?>(null) }
-    LaunchedEffect(context, lifecycleOwner, rotation) {
+    var preview by remember { mutableStateOf<Preview?>(null) }
+    var analysis by remember { mutableStateOf<ImageAnalysis?>(null) }
+    LaunchedEffect(context, lifecycleOwner) {
         // Why: CameraX fails to start on a device whose camera service doesn't answer; the paste remains.
         val provider = try {
             ProcessCameraProvider.awaitInstance(context)
@@ -81,16 +95,13 @@ fun QrCameraDisplay(
         val scanner = BarcodeScanning.getClient(
             BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build(),
         )
-        val preview = Preview.Builder().setTargetRotation(rotation).build().apply {
-            setSurfaceProvider {
-                surfaceRequest =
-                    it
-            }
+        val previewUseCase = Preview.Builder().setTargetRotation(currentRotation).build().apply {
+            setSurfaceProvider { surfaceRequest = it }
         }
-        val analysis = ImageAnalysis
+        val analysisUseCase = ImageAnalysis
             .Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setTargetRotation(rotation)
+            .setTargetRotation(currentRotation)
             .build()
             .apply {
                 setAnalyzer(
@@ -110,34 +121,55 @@ fun QrCameraDisplay(
         try {
             // Why: CameraX refuses to bind a camera that can't run both uses; the paste remains.
             val bound = try {
-                provider.bindToLifecycle(lifecycleOwner, selector, preview, analysis)
+                provider.bindToLifecycle(lifecycleOwner, selector, previewUseCase, analysisUseCase)
             } catch (_: IllegalArgumentException) {
                 null
             } catch (_: IllegalStateException) {
                 null
             }
             if (bound == null) currentOnUnavailable()
-            camera = bound?.also { currentOnTorchAvailabilityChanged(it.cameraInfo.hasFlashUnit()) }
+            camera = bound
+            preview = previewUseCase
+            analysis = analysisUseCase
             awaitCancellation()
         } finally {
-            provider.unbind(preview, analysis)
+            provider.unbind(previewUseCase, analysisUseCase)
             scanner.close()
             camera = null
+            preview = null
+            analysis = null
             surfaceRequest = null
         }
     }
+    // Why: turning the phone only turns the picture and the QR's frames; rebinding would close and reopen the camera.
+    LaunchedEffect(preview, analysis, rotation) {
+        preview?.targetRotation = rotation
+        analysis?.targetRotation = rotation
+    }
     /*
-     * Why: CameraX turns the torch off whenever the camera closes (the app in the background), so it is set again each
+     * Why: a camera held by another app binds fine and only fails to open, so its state says when it is unavailable.
+     * CameraX also turns the torch off whenever the camera closes (the app in the background), so it is set again each
      * time the camera opens.
      */
-    DisposableEffect(camera, isTorchOn, lifecycleOwner) {
-        val bound = camera?.takeIf { it.cameraInfo.hasFlashUnit() }
-        val cameraState = bound?.cameraInfo?.cameraState
+    DisposableEffect(camera, lifecycleOwner) {
+        val bound = camera ?: return@DisposableEffect onDispose {}
+        val cameraState = bound.cameraInfo.cameraState
         val observer = Observer<CameraState> { state ->
-            if (state.type == CameraState.Type.OPEN) bound?.cameraControl?.enableTorch(isTorchOn)
+            when {
+                state.type == CameraState.Type.OPEN -> {
+                    val hasTorch = bound.cameraInfo.hasFlashUnit()
+                    currentOnOpened(hasTorch)
+                    if (hasTorch) bound.cameraControl.enableTorch(currentIsTorchOn)
+                }
+
+                state.error?.code in unavailableErrors -> currentOnUnavailable()
+            }
         }
-        cameraState?.observe(lifecycleOwner, observer)
-        onDispose { cameraState?.removeObserver(observer) }
+        cameraState.observe(lifecycleOwner, observer)
+        onDispose { cameraState.removeObserver(observer) }
+    }
+    LaunchedEffect(camera, isTorchOn) {
+        camera?.takeIf { it.cameraInfo.hasFlashUnit() }?.cameraControl?.enableTorch(isTorchOn)
     }
     surfaceRequest?.let { request ->
         CameraXViewfinder(

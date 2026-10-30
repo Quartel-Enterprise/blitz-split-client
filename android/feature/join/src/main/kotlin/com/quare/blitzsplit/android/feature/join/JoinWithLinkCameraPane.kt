@@ -68,8 +68,6 @@ private val roomForTextUnderViewfinder = 140.dp
 @Composable
 internal fun CameraPane(
     state: JoinWithLinkUiState,
-    hasTorch: Boolean,
-    isCameraUnavailable: Boolean,
     onEvent: (JoinWithLinkUiEvent) -> Unit,
     camera: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
@@ -94,7 +92,6 @@ internal fun CameraPane(
             ) {
                 CameraTopBar(
                     state = state,
-                    hasTorch = hasTorch,
                     onEvent = onEvent,
                 )
                 BoxWithConstraints(
@@ -116,7 +113,7 @@ internal fun CameraPane(
                                 message = stringResource(R.string.join_scan_denied_message),
                                 onOpenSettings = { onEvent(JoinWithLinkUiEvent.OnOpenSettingsClicked) },
                             )
-                        } else if (isCameraUnavailable) {
+                        } else if (state.isCameraUnavailable) {
                             CameraProblemMessage(
                                 title = null,
                                 message = stringResource(R.string.join_scan_camera_failed),
@@ -138,7 +135,6 @@ internal fun CameraPane(
 @Composable
 private fun CameraTopBar(
     state: JoinWithLinkUiState,
-    hasTorch: Boolean,
     onEvent: (JoinWithLinkUiEvent) -> Unit,
 ) {
     Row(
@@ -162,7 +158,7 @@ private fun CameraTopBar(
             style = MaterialTheme.typography.titleLarge,
             color = onCamera,
         )
-        if (hasTorch && state.cameraAccess == CameraAccess.GRANTED) {
+        if (state.showsTorch) {
             IconButton(
                 onClick = { onEvent(JoinWithLinkUiEvent.OnTorchClicked) },
                 colors = IconButtonDefaults.iconButtonColors(

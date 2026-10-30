@@ -57,6 +57,8 @@ class JoinWithLinkViewModelTest {
                     isLinkInvalid = false,
                     isQrInvalid = false,
                     cameraAccess = CameraAccess.ASKING,
+                    isCameraUnavailable = false,
+                    hasTorch = false,
                     isTorchOn = false,
                 ),
                 state,
@@ -96,6 +98,7 @@ class JoinWithLinkViewModelTest {
             // Given
             prepareScenario()
             viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
             viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
 
             // When
@@ -107,10 +110,11 @@ class JoinWithLinkViewModelTest {
         }
 
     @Test
-    fun `GIVEN the camera granted WHEN tapping the torch THEN the torch goes on`() = runTest(testDispatcher) {
+    fun `GIVEN the camera open with a torch WHEN tapping the torch THEN the torch goes on`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
 
         // When
         viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
@@ -124,6 +128,7 @@ class JoinWithLinkViewModelTest {
         // Given
         prepareScenario()
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
         viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
 
         // When
@@ -281,7 +286,7 @@ class JoinWithLinkViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isQrInvalid)
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
         }
 
     @Test
@@ -296,7 +301,7 @@ class JoinWithLinkViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isQrInvalid)
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
         }
 
     @Test
@@ -421,7 +426,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals("https://example.com/menu", viewModel.uiState.value.link)
             assertTrue(viewModel.uiState.value.isLinkInvalid)
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
         }
 
     @Test
@@ -438,7 +443,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals("blitzsplit.com/g/AB", viewModel.uiState.value.link)
             assertFalse(viewModel.uiState.value.isLinkInvalid)
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
         }
 
     @Test
@@ -509,7 +514,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertTrue(viewModel.uiState.value.isLinkInvalid)
             assertEquals("blitzsplit.com/g/AB12", viewModel.uiState.value.link)
-            assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
         }
 
     @Test
@@ -523,7 +528,7 @@ class JoinWithLinkViewModelTest {
 
         // Then
         assertFalse(viewModel.uiState.value.isLinkInvalid)
-        assertEquals(listOf(Route.Groups, Route.JoinWithLink), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
     }
 
     @Test
@@ -579,13 +584,437 @@ class JoinWithLinkViewModelTest {
         viewModel.onEvent(JoinWithLinkUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.JoinWithLink, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, reader, Route.Profile), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN the torch on WHEN the camera cannot open THEN says so and the torch goes off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isCameraUnavailable)
+            assertFalse(viewModel.uiState.value.isTorchOn)
+            assertFalse(viewModel.uiState.value.showsTorch)
+        }
+
+    @Test
+    fun `GIVEN the camera unavailable WHEN the camera opens again THEN the camera is available again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isCameraUnavailable)
+            assertTrue(viewModel.uiState.value.showsTorch)
+        }
+
+    @Test
+    fun `GIVEN the torch on WHEN the camera reopens without a torch THEN the torch goes off and hides`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = false))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isTorchOn)
+            assertFalse(viewModel.uiState.value.showsTorch)
+        }
+
+    @Test
+    fun `GIVEN the torch on WHEN the camera reopens with a torch THEN the torch stays on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+        viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+        // Then
+        assertTrue(viewModel.uiState.value.isTorchOn)
+    }
+
+    @Test
+    fun `GIVEN the torch off WHEN the camera reopens with a torch THEN the torch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isTorchOn)
+        }
+
+    @Test
+    fun `GIVEN the camera allowed WHEN it opens with a torch THEN shows the torch`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasTorch)
+        assertTrue(viewModel.uiState.value.showsTorch)
+    }
+
+    @Test
+    fun `GIVEN the camera allowed WHEN it opens without a torch THEN hides the torch`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+
+        // When
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = false))
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsTorch)
+    }
+
+    @Test
+    fun `GIVEN the reader still asking for the camera WHEN a camera with a torch opens THEN hides the torch`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsTorch)
+        }
+
+    @Test
+    fun `GIVEN a camera with a torch WHEN the camera access is refused THEN hides the torch`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsTorch)
+        }
+
+    @Test
+    fun `GIVEN the camera open without a torch WHEN tapping the torch THEN the torch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = false))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isTorchOn)
+        }
+
+    @Test
+    fun `GIVEN a camera with a torch that became unavailable WHEN tapping the torch THEN the torch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isTorchOn)
+        }
+
+    @Test
+    fun `GIVEN a camera with a torch still asking for access WHEN tapping the torch THEN the torch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isTorchOn)
+        }
+
+    @Test
+    fun `GIVEN a camera with a torch and the access denied WHEN tapping the torch THEN the torch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch = true))
+            viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted = false))
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnTorchClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isTorchOn)
+        }
+
+    @Test
+    fun `GIVEN a failed group invite WHEN the reader it reopened reads that QR THEN nothing happens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = groupSkippingReader)
+            val content = "https://blitzsplit.com/g/$CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupSkippingReader), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.isQrInvalid)
+        }
+
+    @Test
+    fun `GIVEN a failed personal invite WHEN the reader it reopened reads that QR THEN nothing happens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = carlaSkippingReader)
+            val content = "https://blitzsplit.com/g/$CODE/$MEMBER_CODE?from=$INVITER_CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaSkippingReader), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.isQrInvalid)
+        }
+
+    @Test
+    fun `GIVEN a failed personal invite WHEN the reader reads it shared by someone else THEN nothing happens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = carlaSkippingReader)
+            val content = "https://blitzsplit.com/g/$CODE/$MEMBER_CODE?from=$OTHER_INVITER_CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaSkippingReader), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.isQrInvalid)
+        }
+
+    @Test
+    fun `GIVEN a failed personal invite WHEN the reader reads the link of its group THEN opens the group invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = carlaSkippingReader)
+            val content = "https://blitzsplit.com/g/$CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a failed personal invite WHEN the reader reads another member of its group THEN opens that member`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = carlaSkippingReader)
+            val content = "https://blitzsplit.com/g/$CODE/$OTHER_MEMBER_CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = OTHER_MEMBER_CODE,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a failed group invite WHEN the reader reads a personal link of that group THEN opens that member`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = groupSkippingReader)
+            val content = "https://blitzsplit.com/g/$CODE/$MEMBER_CODE?from=$INVITER_CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a failed group invite WHEN the reader it reopened reads another group THEN opens that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = groupSkippingReader)
+            val content = "https://blitzsplit.com/g/$OTHER_CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.JoinInvite(
+                        OTHER_CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a failed group invite WHEN pasting its link in the reader it reopened THEN opens it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = groupSkippingReader)
+            val text = "https://blitzsplit.com/g/$CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a failed personal link typed in the reader it reopened WHEN tapping open THEN opens it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = carlaSkippingReader)
+            viewModel.onEvent(
+                JoinWithLinkUiEvent.OnLinkChanged("blitzsplit.com/g/$CODE/$MEMBER_CODE?from=$INVITER_CODE"),
+            )
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnOpenClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a failed invite WHEN the reader it reopened reads a QR that is not an invite THEN warns`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = groupSkippingReader)
+            val content = "https://example.com/menu"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertTrue(viewModel.uiState.value.isQrInvalid)
+            assertEquals(listOf(Route.Groups, groupSkippingReader), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen over the reader WHEN the camera reads an invite THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+            val content = "https://blitzsplit.com/g/$CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, reader, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen opened over the reader WHEN pasting an invite THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+            val text = "https://blitzsplit.com/g/$CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
+
+            // Then
+            assertEquals(listOf(Route.Groups, reader, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a skipping reader in place of this one WHEN this one reads an invite THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.replaceTop(groupSkippingReader)
+            val content = "https://blitzsplit.com/g/$OTHER_CODE"
+
+            // When
+            viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupSkippingReader), navigator.backStack.value)
+        }
+
+    // Why: the reader "Escanear outro QR" reopens after the group link of CODE failed.
+    private val groupSkippingReader = Route.JoinWithLink(
+        skippedCode = CODE,
+        skippedMemberCode = null,
+    )
+
+    // Why: the reader "Escanear outro QR" reopens after Carla's personal link failed.
+    private val carlaSkippingReader = Route.JoinWithLink(
+        skippedCode = CODE,
+        skippedMemberCode = MEMBER_CODE,
+    )
 
     private val groupInvite = Route.JoinInvite(
         CODE,
         memberCode = null,
         inviterCode = null,
+    )
+
+    // Why: the reader opened from the home, which skips no invite.
+    private val reader = Route.JoinWithLink(
+        skippedCode = null,
+        skippedMemberCode = null,
     )
 
     // Why: Carla's personal link, shared by whoever has INVITER_CODE.
@@ -595,13 +1024,19 @@ class JoinWithLinkViewModelTest {
         inviterCode = INVITER_CODE,
     )
 
-    private fun TestScope.prepareScenario(under: List<Route> = listOf(Route.Groups)) {
+    private fun TestScope.prepareScenario(
+        under: List<Route> = listOf(Route.Groups),
+        route: Route.JoinWithLink = reader,
+    ) {
         actions.clear()
         navigator = BackStackNavigator(startRoute = under.first()).also { navigator ->
             under.drop(1).forEach(navigator::navigate)
-            navigator.navigate(Route.JoinWithLink)
+            navigator.navigate(route)
         }
-        viewModel = JoinWithLinkViewModel(navigator = navigator)
+        viewModel = JoinWithLinkViewModel(
+            route = route,
+            navigator = navigator,
+        )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 
@@ -609,5 +1044,8 @@ class JoinWithLinkViewModelTest {
         const val CODE = "AB12cd34"
         const val MEMBER_CODE = "c3Rt9z"
         const val INVITER_CODE = "x1Y2z3"
+        const val OTHER_CODE = "Zz98yX76"
+        const val OTHER_MEMBER_CODE = "q9W8e7"
+        const val OTHER_INVITER_CODE = "m5N4b3"
     }
 }

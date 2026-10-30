@@ -13,10 +13,11 @@ import AppKit
 final class JoinWithLinkModel {
     private(set) var state: JoinWithLinkUiState
 
-    @ObservationIgnored private let holder = BlitzSplitApple.shared.createJoinWithLinkViewModel()
+    @ObservationIgnored private let holder: ViewModelHolder<JoinWithLinkViewModel>
     @ObservationIgnored private let watches = WatchBag()
 
-    init() {
+    init(route: RouteJoinWithLink) {
+        holder = BlitzSplitApple.shared.createJoinWithLinkViewModel(route: route)
         let viewModel = holder.viewModel
         state = viewModel.uiState.value as! JoinWithLinkUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
@@ -58,6 +59,8 @@ final class JoinWithLinkModel {
 /// only the "Have the link?" panel follows the theme. It covers the whole screen on iPhone and iPad, and is a sheet on
 /// the Mac.
 struct JoinWithLinkView: View {
+    let route: RouteJoinWithLink
+
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: JoinWithLinkModel?
 
@@ -70,7 +73,7 @@ struct JoinWithLinkView: View {
             }
         }
         .onAppear {
-            if model == nil { model = JoinWithLinkModel() }
+            if model == nil { model = JoinWithLinkModel(route: route) }
         }
     }
 }
@@ -79,8 +82,6 @@ private struct JoinWithLinkContent: View {
     let model: JoinWithLinkModel
 
     @Environment(\.scenePhase) private var scenePhase
-    @State private var hasTorch = false
-    @State private var isCameraUnavailable = false
 
     #if os(iOS)
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -153,8 +154,8 @@ private struct JoinWithLinkContent: View {
                 InviteScannerView(
                     isTorchOn: state.isTorchOn,
                     onScanned: { model.send(JoinWithLinkUiEventOnQrScanned(content: $0)) },
-                    onTorchAvailabilityChanged: { hasTorch = $0 },
-                    onUnavailable: { isCameraUnavailable = true },
+                    onOpened: { model.send(JoinWithLinkUiEventOnCameraOpened(hasTorch: $0)) },
+                    onUnavailable: { model.send(JoinWithLinkUiEventOnCameraUnavailable.shared) },
                 )
             }
             // The design's scrim, dark toward the edges, so the white marks and text read over a bright room.
@@ -165,7 +166,7 @@ private struct JoinWithLinkContent: View {
                 Spacer(minLength: 8)
                 if state.cameraAccess == .denied {
                     cameraDenied
-                } else if isCameraUnavailable {
+                } else if state.isCameraUnavailable {
                     cameraUnavailable
                 } else {
                     viewfinder(state)
@@ -193,7 +194,7 @@ private struct JoinWithLinkContent: View {
                 .font(.headline)
                 .foregroundStyle(.white)
             Spacer()
-            if hasTorch, state.cameraAccess == .granted {
+            if state.showsTorch {
                 Button(
                     state.isTorchOn ? "Turn off the flashlight" : "Turn on the flashlight",
                     systemImage: state.isTorchOn ? "flashlight.on.fill" : "flashlight.off.fill",

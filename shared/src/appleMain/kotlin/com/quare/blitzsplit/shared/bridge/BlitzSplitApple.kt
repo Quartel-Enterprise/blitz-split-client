@@ -97,8 +97,8 @@ object BlitzSplitApple : KoinComponent {
     fun createJoinPickViewModel(route: Route.JoinPick): ViewModelHolder<JoinPickViewModel> =
         ViewModelHolder(JoinPickViewModel::class) { get { parametersOf(route) } }
 
-    fun createJoinWithLinkViewModel(): ViewModelHolder<JoinWithLinkViewModel> =
-        ViewModelHolder(JoinWithLinkViewModel::class) { get() }
+    fun createJoinWithLinkViewModel(route: Route.JoinWithLink): ViewModelHolder<JoinWithLinkViewModel> =
+        ViewModelHolder(JoinWithLinkViewModel::class) { get { parametersOf(route) } }
 
     // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
     fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =

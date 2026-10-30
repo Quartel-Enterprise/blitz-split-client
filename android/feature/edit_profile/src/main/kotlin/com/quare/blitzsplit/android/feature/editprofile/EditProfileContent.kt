@@ -44,6 +44,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -51,6 +53,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -86,6 +89,7 @@ private val avatarSize = 120.dp
 @Composable
 fun EditProfileContent(
     state: EditProfileUiState,
+    snackbarHostState: SnackbarHostState,
     onEvent: (EditProfileUiEvent) -> Unit,
     // Why: null on a device that can't take a photo, which only offers choosing one.
     onTakePhotoClick: (() -> Unit)?,
@@ -95,6 +99,7 @@ fun EditProfileContent(
     var isPhotoMenuOpen by rememberSaveable { mutableStateOf(false) }
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.edit_profile_title)) },
@@ -503,6 +508,7 @@ private fun EditProfilePreview() {
                 accountProvider = AccountProvider.GOOGLE,
                 accountPhotoUrl = null,
             ),
+            snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
             onTakePhotoClick = {},
             onChoosePhotoClick = {},

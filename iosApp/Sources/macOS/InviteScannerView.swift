@@ -7,7 +7,8 @@ import SwiftUI
 struct InviteScannerView: View {
     let isTorchOn: Bool
     let onScanned: (String) -> Void
-    let onTorchAvailabilityChanged: (Bool) -> Void
+    /// Whether the camera has a flashlight, once it reads: never on a Mac.
+    let onOpened: (Bool) -> Void
     let onUnavailable: () -> Void
 
     /// Made once the camera starts: SwiftUI rebuilds this view's value whenever the reader redraws, and a capture
@@ -23,7 +24,6 @@ struct InviteScannerView: View {
             }
         }
         .task {
-            onTorchAvailabilityChanged(false)
             guard AVCaptureDevice.default(for: .video) != nil else {
                 onUnavailable()
                 return
@@ -32,7 +32,7 @@ struct InviteScannerView: View {
             self.scanner = scanner
             await scanner.start(onScanned: onScanned)
             // Why: the camera wouldn't open (another app holds it), so only the paste is left.
-            if scanner.session.inputs.isEmpty { onUnavailable() }
+            if scanner.session.inputs.isEmpty { onUnavailable() } else { onOpened(false) }
         }
         .onDisappear { scanner?.stop() }
     }

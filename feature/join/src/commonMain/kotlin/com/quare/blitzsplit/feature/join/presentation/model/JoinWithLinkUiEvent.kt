@@ -8,6 +8,14 @@ sealed interface JoinWithLinkUiEvent : UiEvent {
         val isGranted: Boolean,
     ) : JoinWithLinkUiEvent
 
+    // Why: the platform's camera opened (again, after another app let it go), with or without a flashlight.
+    data class OnCameraOpened(
+        val hasTorch: Boolean,
+    ) : JoinWithLinkUiEvent
+
+    // Why: no camera, or one that won't open; only the paste is left until it opens.
+    data object OnCameraUnavailable : JoinWithLinkUiEvent
+
     // Why: "Abrir configurações" ("Abrir Ajustes" on the iPhone), with the camera denied.
     data object OnOpenSettingsClicked : JoinWithLinkUiEvent
 

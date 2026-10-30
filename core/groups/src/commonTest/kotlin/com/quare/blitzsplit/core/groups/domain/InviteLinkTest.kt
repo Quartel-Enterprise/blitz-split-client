@@ -1284,4 +1284,418 @@ class InviteLinkTest {
         // Then
         assertNull(target)
     }
+
+    @Test
+    fun `GIVEN a link in double quotes WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra no \"https://blitzsplit.com/g/AB12cd34\""
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link in single quotes WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra no 'https://blitzsplit.com/g/AB12cd34'"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link without https in curly quotes WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra no “blitzsplit.com/g/AB12cd34”"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link in angle brackets WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra no <https://blitzsplit.com/g/AB12cd34>"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a quoted link ending a sentence WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "O link é “https://blitzsplit.com/g/AB12cd34”."
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN an exclamation mark inside the quotes WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra: “https://blitzsplit.com/g/AB12cd34!”"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a quoted link inside parentheses WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Bora rachar (\"https://blitzsplit.com/g/AB12cd34\"),"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link followed by a spaced exclamation mark WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "Entra logo https://blitzsplit.com/g/AB12cd34 !"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a scheme capitalized by the keyboard WHEN finding the invite in it THEN keeps the code as typed`() {
+        // Given
+        val text = "Https://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a scheme in capitals WHEN finding the invite in it THEN keeps the code as typed`() {
+        // Given
+        val text = "HTTPS://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a scheme and a host in capitals WHEN finding the invite in it THEN keeps the code as typed`() {
+        // Given
+        val text = "Https://BlitzSplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a capitalized plain http scheme WHEN finding the invite in it THEN is the group`() {
+        // Given
+        val text = "HTTP://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a code of capitals only after a capital scheme WHEN finding the invite THEN keeps its case`() {
+        // Given
+        val text = "HTTPS://blitzsplit.com/g/ABCDEFGH"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "ABCDEFGH",
+                memberCode = null,
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link in curly quotes WHEN finding the invite in it THEN reads both codes`() {
+        // Given
+        val text = "Entra como Carla: “https://blitzsplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3”"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link in angle brackets ending a sentence WHEN finding the invite THEN reads both codes`() {
+        // Given
+        val text = "Entra como Carla <https://blitzsplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3>."
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link in single quotes with nobody sharing it WHEN finding it THEN is the member alone`() {
+        // Given
+        val text = "Entra como Carla: 'blitzsplit.com/g/AB12cd34/c3Rt9z'"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = null,
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link with a capitalized scheme WHEN finding the invite in it THEN keeps both codes`() {
+        // Given
+        val text = "Https://blitzsplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN a personal link in capitals and quotes ending a sentence WHEN finding it THEN keeps both codes`() {
+        // Given
+        val text = "Entra: \"HTTPS://BlitzSplit.com/g/AB12cd34/c3Rt9z?from=x1Y2z3\"."
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertEquals(
+            InviteTarget(
+                code = "AB12cd34",
+                memberCode = "c3Rt9z",
+                inviterCode = "x1Y2z3",
+            ),
+            target,
+        )
+    }
+
+    @Test
+    fun `GIVEN another site with the path of an invite in quotes WHEN finding the invite THEN finds nothing`() {
+        // Given
+        val text = "Menu: \"https://example.com/g/AB12cd34\""
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN another site in curly quotes without https WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "Menu: “example.com/g/AB12cd34”"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN another site with a scheme in capitals WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "HTTPS://EXAMPLE.COM/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN another site in angle brackets with a capital scheme WHEN finding the invite THEN finds nothing`() {
+        // Given
+        val text = "<Https://example.com/g/AB12cd34>"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN the app scheme in capitals with a group path WHEN finding the invite in it THEN finds nothing`() {
+        // Given
+        val text = "BORARACHAR://blitzsplit.com/g/AB12cd34"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
+
+    @Test
+    fun `GIVEN only quotes and brackets WHEN finding the invite in them THEN finds nothing`() {
+        // Given
+        val text = "Olha \"\" () <> “”"
+
+        // When
+        val target = InviteLink.findIn(text)
+
+        // Then
+        assertNull(target)
+    }
 }

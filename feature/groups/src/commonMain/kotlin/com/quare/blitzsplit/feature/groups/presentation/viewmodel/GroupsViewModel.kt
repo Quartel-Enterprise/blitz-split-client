@@ -116,7 +116,14 @@ class GroupsViewModel(
                 navigator.navigate(Route.Members(event.groupId, joinedAs = null))
             }
 
-            GroupsUiEvent.OnJoinWithLinkClicked -> if (isOnTop()) navigator.navigate(Route.JoinWithLink)
+            GroupsUiEvent.OnJoinWithLinkClicked -> if (isOnTop()) {
+                navigator.navigate(
+                    Route.JoinWithLink(
+                        skippedCode = null,
+                        skippedMemberCode = null,
+                    ),
+                )
+            }
 
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,

@@ -1,5 +1,5 @@
 import { CameraOff, ClipboardPaste, Flashlight, FlashlightOff, TriangleAlert, X } from 'lucide-react'
-import { JoinWithLinkPresenter, type JsJoinWithLinkState } from 'blitzsplit-shared'
+import { JoinWithLinkPresenter, type JsJoinWithLinkState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Button } from '@/components/ui/button'
@@ -28,8 +28,8 @@ interface TorchCapabilities extends MediaTrackCapabilities {
  * link can be pasted or typed under it. A dialog on desktop and tablet, a drawer on the phone. Closing it any
  * way (Esc, the overlay, the close button) is the ViewModel's back.
  */
-export function JoinWithLinkDialog() {
-  const presenter = usePresenter(() => new JoinWithLinkPresenter())
+export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
+  const presenter = usePresenter(() => new JoinWithLinkPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsJoinWithLinkState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
   // Why: a browser has no settings page to open, so "Try again" asks for the camera once more.
@@ -72,21 +72,22 @@ export function JoinWithLinkDialog() {
 
 function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPresenter; state: JsJoinWithLinkState; isDesktop: boolean }) {
   const video = useRef<HTMLVideoElement>(null)
-  const { problem, hasTorch } = useInviteCamera(video, presenter, state.isTorchOn)
+  const isUnsupported = useInviteCamera(video, presenter, state)
   const isDenied = state.cameraAccess === 'denied'
+  const problem = isUnsupported ? 'unsupported' : isDenied ? 'denied' : state.isCameraUnavailable ? 'failed' : null
 
   return (
     <div className={cn('relative w-full overflow-hidden rounded-xl bg-camera text-white', isDesktop ? 'aspect-square' : 'aspect-[4/3]')}>
       {/* Always mounted, so a second try after a refusal has the video to show the camera in */}
       <video ref={video} muted playsInline className="absolute inset-0 size-full object-cover" />
-      {problem || isDenied ? (
+      {problem ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-camera px-6 text-center">
           <CameraOff aria-hidden className="size-8 text-white/70" />
-          {isDenied && !problem && <p className="font-semibold">{t('join_linkDeniedTitle')}</p>}
+          {problem === 'denied' && <p className="font-semibold">{t('join_linkDeniedTitle')}</p>}
           <p className="text-sm text-white/80">
             {problem === 'unsupported' ? t('join_linkUnsupported') : problem === 'failed' ? t('join_linkCameraFailed') : t('join_linkDeniedMessage')}
           </p>
-          {isDenied && !problem && (
+          {problem === 'denied' && (
             <Button variant="secondary" onClick={() => presenter.openSettings()}>
               {t('join_retry')}
             </Button>
@@ -108,7 +109,7 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
           ) : (
             <p className="absolute inset-x-3 bottom-4 text-center text-sm font-medium [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">{t('join_linkHint')}</p>
           )}
-          {hasTorch && (
+          {state.showsTorch && (
             <Button
               type="button"
               size="icon"
@@ -148,11 +149,11 @@ function ViewfinderCorners({ isInvalid }: { isInvalid: boolean }) {
 }
 
 /**
- * The camera's answer goes to the ViewModel, which shows the refusal, while a browser without BarcodeDetector
- * (Safari, Firefox) or without a camera stays here. The flashlight is a constraint of the camera's track in Chrome
- * on Android.
+ * The camera's answer goes to the ViewModel: allowed or refused, opened with or without a flashlight, or failed.
+ * Only a browser without BarcodeDetector (Safari, Firefox), which can't read at all, stays here, for its own words.
+ * The flashlight is a constraint of the camera's track in Chrome on Android.
  */
-function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: JoinWithLinkPresenter, isTorchOn: boolean) {
+function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: JoinWithLinkPresenter, state: JsJoinWithLinkState) {
   const { problem, track } = useQrCamera(video, {
     isEnabled: true,
     readsContinuously: true,
@@ -161,15 +162,18 @@ function useInviteCamera(video: RefObject<HTMLVideoElement | null>, presenter: J
   })
   useEffect(() => {
     if (problem === 'denied') presenter.changeCameraAccess(false)
+    else if (problem === 'failed') presenter.failCamera()
   }, [problem, presenter])
-  const hasTorch = (track?.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true
   useEffect(() => {
-    if (!track || !hasTorch) return
-    track.applyConstraints({ advanced: [{ torch: isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
-  }, [track, hasTorch, isTorchOn])
+    if (!track) return
+    presenter.openCamera((track.getCapabilities?.() as TorchCapabilities | undefined)?.torch === true)
+  }, [track, presenter])
+  useEffect(() => {
+    if (!track || !state.showsTorch) return
+    track.applyConstraints({ advanced: [{ torch: state.isTorchOn } as MediaTrackConstraintSet] }).catch(() => {})
+  }, [track, state.showsTorch, state.isTorchOn])
 
-  // Why: a refusal shows as the ViewModel's denied state, with its "Try again".
-  return { problem: problem === 'denied' ? null : problem, hasTorch }
+  return problem === 'unsupported'
 }
 
 function PastePanel({ presenter, state }: { presenter: JoinWithLinkPresenter; state: JsJoinWithLinkState }) {

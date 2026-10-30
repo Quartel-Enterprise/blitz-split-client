@@ -7,6 +7,8 @@
     <string name="edit_profile_choose_photo">Escolher da galeria</string>
     <string name="edit_profile_use_account_photo">Usar foto da conta %1$s</string>
     <string name="edit_profile_remove_photo">Remover foto</string>
+    <string name="edit_profile_camera_denied">Permita a câmera nas configurações para tirar a foto.</string>
+    <string name="edit_profile_camera_settings">Configurações</string>
     <string name="edit_profile_photo_error">Não deu para usar essa foto. Tente outra.</string>
     <string name="edit_profile_avatar_color">Cor do avatar</string>
     <string name="edit_profile_avatar_color_hint">Aparece quando você está sem foto.</string>

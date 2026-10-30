@@ -230,8 +230,12 @@ class JoinInviteViewModel(
     // Why: a link opened over the reader goes back to it, since the back stack can't hold the same route twice.
     private fun scanAnother() {
         if (uiState.value.status != JoinInviteStatus.INVALID || !isOnTop()) return
-        val readerIndex = navigator.backStack.value.indexOf(Route.JoinWithLink)
-        if (readerIndex < 0) navigator.replaceTop(Route.JoinWithLink) else navigator.popTo(readerIndex + 1)
+        val readerIndex = navigator.backStack.value.indexOfFirst { it is Route.JoinWithLink }
+        val reader = Route.JoinWithLink(
+            skippedCode = route.code,
+            skippedMemberCode = route.memberCode,
+        )
+        if (readerIndex < 0) navigator.replaceTop(reader) else navigator.popTo(readerIndex + 1)
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

@@ -12,7 +12,7 @@ internal fun toRouteName(route: Route): String = when (route) {
     is Route.Members -> "members"
     is Route.JoinInvite -> "join-invite"
     is Route.JoinPick -> "join-pick"
-    Route.JoinWithLink -> "join-with-link"
+    is Route.JoinWithLink -> "join-with-link"
     Route.Profile -> "profile"
     Route.EditProfile -> "edit-profile"
     Route.DeleteAccount -> "delete-account"

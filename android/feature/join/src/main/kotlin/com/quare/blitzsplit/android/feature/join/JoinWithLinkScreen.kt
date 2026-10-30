@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.ClipboardReader
 import com.quare.blitzsplit.android.platform.QrCameraDisplay
 import com.quare.blitzsplit.android.platform.rememberCameraPermissionAccess
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
@@ -24,14 +25,16 @@ import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkView
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
+fun JoinWithLinkScreen(
+    route: Route.JoinWithLink,
+    viewModel: JoinWithLinkViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = remember(context) { ClipboardReader(context) }
-    var hasTorch by remember { mutableStateOf(false) }
-    var isCameraUnavailable by remember { mutableStateOf(false) }
     // Why: saved, since the activity may be recreated (a rotation) while the system dialog is on top of it.
     var hasAsked by rememberSaveable { mutableStateOf(false) }
     val cameraPermission = rememberCameraPermissionAccess { isGranted ->
@@ -78,16 +81,14 @@ fun JoinWithLinkScreen(viewModel: JoinWithLinkViewModel = koinViewModel()) {
             field = it
             viewModel.onEvent(JoinWithLinkUiEvent.OnLinkChanged(it))
         },
-        hasTorch = hasTorch,
-        isCameraUnavailable = isCameraUnavailable,
         onPasteClicked = { viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(clipboard.readText().orEmpty())) },
         onEvent = viewModel::onEvent,
         camera = { modifier ->
             QrCameraDisplay(
                 isTorchOn = state.isTorchOn,
                 onScanned = { viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(it)) },
-                onTorchAvailabilityChanged = { hasTorch = it },
-                onUnavailable = { isCameraUnavailable = true },
+                onOpened = { hasTorch -> viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch)) },
+                onUnavailable = { viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable) },
                 modifier = modifier,
             )
         },

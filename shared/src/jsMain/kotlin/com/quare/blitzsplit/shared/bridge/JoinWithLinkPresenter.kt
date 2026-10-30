@@ -2,12 +2,14 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkViewModel
 import kotlinx.coroutines.flow.map
+import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
 class JsJoinWithLinkState(
@@ -16,13 +18,20 @@ class JsJoinWithLinkState(
     val isQrInvalid: Boolean,
     // Why: the CameraAccess's name in lower case, "asking", "granted" or "denied".
     val cameraAccess: String,
+    val isCameraUnavailable: Boolean,
+    val showsTorch: Boolean,
     val isTorchOn: Boolean,
     val canOpen: Boolean,
     val showsPaste: Boolean,
 )
 
-class JoinWithLinkPresenter {
-    private val holder = ViewModelHolder(JoinWithLinkViewModel::class) { KoinPlatform.getKoin().get() }
+class JoinWithLinkPresenter(
+    route: JsRoute,
+) {
+    private val readerRoute = route.route as Route.JoinWithLink
+    private val holder = ViewModelHolder(JoinWithLinkViewModel::class) {
+        KoinPlatform.getKoin().get { parametersOf(readerRoute) }
+    }
     private val viewModel get() = holder.viewModel
 
     fun observeState(onChange: (JsJoinWithLinkState) -> Unit): JsWatch {
@@ -32,6 +41,8 @@ class JoinWithLinkPresenter {
                 isLinkInvalid = state.isLinkInvalid,
                 isQrInvalid = state.isQrInvalid,
                 cameraAccess = state.cameraAccess.name.lowercase(),
+                isCameraUnavailable = state.isCameraUnavailable,
+                showsTorch = state.showsTorch,
                 isTorchOn = state.isTorchOn,
                 canOpen = state.canOpen,
                 showsPaste = state.showsPaste,
@@ -54,6 +65,14 @@ class JoinWithLinkPresenter {
 
     fun changeCameraAccess(isGranted: Boolean) {
         viewModel.onEvent(JoinWithLinkUiEvent.OnCameraAccessChanged(isGranted))
+    }
+
+    fun openCamera(hasTorch: Boolean) {
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraOpened(hasTorch))
+    }
+
+    fun failCamera() {
+        viewModel.onEvent(JoinWithLinkUiEvent.OnCameraUnavailable)
     }
 
     fun openSettings() {

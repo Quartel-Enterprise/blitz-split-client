@@ -104,7 +104,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Members> { route -> MembersScreen(route) }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }
             entry<Route.JoinPick> { route -> JoinPickScreen(route) }
-            entry<Route.JoinWithLink> { JoinWithLinkScreen() }
+            entry<Route.JoinWithLink> { route -> JoinWithLinkScreen(route) }
         },
     )
 }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class JoinWithLinkViewModel(
+    private val route: Route.JoinWithLink,
     private val navigator: Navigator,
 ) : ViewModel() {
     val uiState: StateFlow<JoinWithLinkUiState>
@@ -31,6 +32,8 @@ class JoinWithLinkViewModel(
                 isLinkInvalid = false,
                 isQrInvalid = false,
                 cameraAccess = CameraAccess.ASKING,
+                isCameraUnavailable = false,
+                hasTorch = false,
                 isTorchOn = false,
             ),
         )
@@ -53,15 +56,30 @@ class JoinWithLinkViewModel(
                 )
             }
 
+            is JoinWithLinkUiEvent.OnCameraOpened -> uiState.update {
+                it.copy(
+                    isCameraUnavailable = false,
+                    hasTorch = event.hasTorch,
+                    isTorchOn = it.isTorchOn && event.hasTorch,
+                )
+            }
+
+            JoinWithLinkUiEvent.OnCameraUnavailable -> uiState.update {
+                it.copy(
+                    isCameraUnavailable = true,
+                    isTorchOn = false,
+                )
+            }
+
             JoinWithLinkUiEvent.OnOpenSettingsClicked -> viewModelScope.launch {
                 uiAction.emit(JoinWithLinkUiAction.OpenCameraSettings)
             }
 
             JoinWithLinkUiEvent.OnTorchClicked -> uiState.update {
-                it.copy(isTorchOn = !it.isTorchOn && it.cameraAccess == CameraAccess.GRANTED)
+                it.copy(isTorchOn = !it.isTorchOn && it.showsTorch)
             }
 
-            is JoinWithLinkUiEvent.OnQrScanned -> InviteLink.findIn(event.content)?.let(::open) ?: showInvalidQr()
+            is JoinWithLinkUiEvent.OnQrScanned -> scan(event.content)
 
             is JoinWithLinkUiEvent.OnLinkChanged -> uiState.update {
                 it.copy(
@@ -105,6 +123,13 @@ class JoinWithLinkViewModel(
         )
     }
 
+    // Why: the invite that just failed is skipped quietly: it is an invite, only not one that opens.
+    private fun scan(content: String) {
+        val target = InviteLink.findIn(content) ?: return showInvalidQr()
+        val isSkipped = target.code == route.skippedCode && target.memberCode == route.skippedMemberCode
+        if (!isSkipped) open(target)
+    }
+
     // Why: the camera keeps reading, so pointing at the wrong QR keeps the warning, and it goes a moment after.
     private fun showInvalidQr() {
         uiState.update { it.copy(isQrInvalid = true) }
@@ -126,5 +151,5 @@ class JoinWithLinkViewModel(
         }
     }
 
-    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.JoinWithLink
+    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 }

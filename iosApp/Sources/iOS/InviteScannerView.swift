@@ -7,13 +7,14 @@ import VisionKit
 struct InviteScannerView: View {
     let isTorchOn: Bool
     let onScanned: (String) -> Void
-    let onTorchAvailabilityChanged: (Bool) -> Void
+    /// Whether the camera has a flashlight, once it reads.
+    let onOpened: (Bool) -> Void
     let onUnavailable: () -> Void
 
     var body: some View {
         Group {
             if DataScannerViewController.isSupported, DataScannerViewController.isAvailable {
-                ScannerRepresentable(onScanned: onScanned, onUnavailable: onUnavailable)
+                ScannerRepresentable(onScanned: onScanned, onOpened: onOpened, onUnavailable: onUnavailable)
             } else {
                 Color.black
             }
@@ -23,7 +24,6 @@ struct InviteScannerView: View {
             // Why: the scanner needs a recent enough camera, not restricted on the device; without one, only the paste
             // is left.
             if !DataScannerViewController.isSupported || !DataScannerViewController.isAvailable { onUnavailable() }
-            onTorchAvailabilityChanged(Torch.device?.hasTorch ?? false)
         }
         .onChange(of: isTorchOn, initial: true) { _, isOn in Torch.set(isOn) }
         .onDisappear { Torch.set(false) }
@@ -45,6 +45,7 @@ private enum Torch {
 
 private struct ScannerRepresentable: UIViewControllerRepresentable {
     let onScanned: (String) -> Void
+    let onOpened: (Bool) -> Void
     let onUnavailable: () -> Void
 
     func makeUIViewController(context: Context) -> DataScannerViewController {
@@ -56,11 +57,15 @@ private struct ScannerRepresentable: UIViewControllerRepresentable {
             isHighlightingEnabled: false,
         )
         scanner.delegate = context.coordinator
+        // Why: reported after this update, which can't change the reader's state.
+        let onOpened = onOpened
+        let onUnavailable = onUnavailable
         do {
             try scanner.startScanning()
+            let hasTorch = Torch.device?.hasTorch ?? false
+            Task { @MainActor in onOpened(hasTorch) }
         } catch {
-            // Why: the camera won't start (another app holds it); only the paste is left. Not during this update.
-            let onUnavailable = onUnavailable
+            // Why: the camera won't start (another app holds it); only the paste is left.
             Task { @MainActor in onUnavailable() }
         }
         return scanner
