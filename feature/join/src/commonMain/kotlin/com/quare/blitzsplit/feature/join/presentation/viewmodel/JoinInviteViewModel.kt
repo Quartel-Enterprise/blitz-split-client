@@ -176,7 +176,7 @@ class JoinInviteViewModel(
         val state = uiState.value
         val invite = invite ?: return
         val member = state.personalMember ?: return
-        if (state.status != JoinInviteStatus.READY || state.isJoining) return
+        if (state.status != JoinInviteStatus.READY || state.isJoining || !isOnTop()) return
         uiState.update { it.copy(isJoining = true) }
         viewModelScope.launch {
             joinGroup(invite, JoinChoice.AsMember(member.id))

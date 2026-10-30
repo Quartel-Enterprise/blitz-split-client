@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.join
 
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteMember
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
@@ -80,6 +81,28 @@ class JoinPickViewModelTest {
             assertEquals("Pierre", state.creatorName)
             assertNull(state.selectedMemberId)
             assertFalse(state.canJoin)
+        }
+
+    @Test
+    fun `GIVEN the list WHEN the screen opens THEN reads the group invite with no member code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val targets = invites.fetchedTargets
+
+            // Then
+            assertEquals(
+                listOf(
+                    InviteTarget(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                targets,
+            )
         }
 
     @Test

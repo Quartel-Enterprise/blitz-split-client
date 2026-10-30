@@ -4,6 +4,9 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteMember
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
+import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
+import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -16,12 +19,15 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteStatus
+import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -31,7 +37,9 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class JoinInviteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -40,7 +48,9 @@ class JoinInviteViewModelTest {
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: JoinInviteViewModel
+    private val actions = mutableListOf<JoinInviteUiAction>()
     private var syncCount = 0
+    private var joinCalls = 0
 
     @BeforeTest
     fun setUp() {
@@ -454,6 +464,713 @@ class JoinInviteViewModelTest {
         )
     }
 
+    @Test
+    fun `GIVEN a group link WHEN the screen opens THEN reads the group invite and is not personal`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isPersonal)
+            assertNull(state.personalMember)
+            assertEquals(
+                listOf(
+                    InviteTarget(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                ),
+                invites.fetchedTargets,
+            )
+        }
+
+    @Test
+    fun `GIVEN a personal link on its way WHEN the screen opens THEN is personal with the member link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                fetchGate = CompletableDeferred(),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.LOADING, state.status)
+            assertTrue(state.isPersonal)
+            assertEquals("blitzsplit.com/g/$CODE/$MEMBER_CODE", state.displayLink)
+        }
+
+    @Test
+    fun `GIVEN a personal link shared by Ana WHEN the screen opens THEN reads the invite of that member and sharer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+
+            // When
+            val targets = invites.fetchedTargets
+
+            // Then
+            assertEquals(listOf(InviteTarget(CODE, MEMBER_CODE, INVITER_CODE)), targets)
+        }
+
+    @Test
+    fun `GIVEN Carla personal link shared by Ana WHEN the screen opens THEN shows Ana invited you as Carla`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, state.status)
+            assertTrue(state.isPersonal)
+            assertEquals(
+                JoinMember(CARLA_ID, "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
+                state.personalMember,
+            )
+            assertEquals("Ana", state.inviterName)
+            assertEquals("Viagem Floripa", state.groupName)
+            assertEquals(4, state.memberCount)
+        }
+
+    @Test
+    fun `GIVEN a personal link that names no sharer WHEN the screen opens THEN the creator invites`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink.copy(inviterCode = null),
+                invite = carlaInvite.copy(inviterName = null),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, state.status)
+            assertEquals("Pierre", state.inviterName)
+        }
+
+    @Test
+    fun `GIVEN neither the sharer nor the creator has an account WHEN the personal link opens THEN nobody invites`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite.copy(
+                    inviterName = null,
+                    creatorName = null,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, state.status)
+            assertNull(state.inviterName)
+        }
+
+    @Test
+    fun `GIVEN Carla renamed since the link was sent WHEN the personal link opens THEN shows her current name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(name = "Carla Souza"))),
+            )
+
+            // When
+            val member = viewModel.uiState.value.personalMember
+
+            // Then
+            assertEquals("Carla Souza", member?.name)
+        }
+
+    @Test
+    fun `GIVEN Carla was removed from the group WHEN her personal link opens THEN shows the invite is invalid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite.copy(
+                    members = listOf(pierre, ana, bruno),
+                    personalMemberId = null,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.INVALID, state.status)
+        }
+
+    @Test
+    fun `GIVEN someone already joined as Carla WHEN her personal link opens THEN shows the invite is invalid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true))),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.INVALID, state.status)
+        }
+
+    @Test
+    fun `GIVEN the group link was changed WHEN a personal link opens THEN shows the invite is invalid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.INVALID, state.status)
+        }
+
+    @Test
+    fun `GIVEN this account joined as Carla WHEN her personal link opens THEN opens the group in its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite.copy(
+                    isMember = true,
+                    members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true)),
+                ),
+                storedGroup = tripGroup,
+            )
+
+            // When
+            val backStack = navigator.backStack.value
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), backStack)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN a personal link opens THEN shows offline keeping the member link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                online = false,
+                fetchError = IllegalStateException("offline"),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(JoinInviteStatus.OFFLINE, state.status)
+            assertTrue(state.isPersonal)
+            assertEquals("blitzsplit.com/g/$CODE/$MEMBER_CODE", state.displayLink)
+        }
+
+    @Test
+    fun `GIVEN a personal link that could not open offline WHEN the device goes online THEN shows Carla invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                online = false,
+                fetchError = IllegalStateException("offline"),
+            )
+            invites.fetchError = null
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, viewModel.uiState.value.status)
+            assertEquals(
+                "Carla",
+                viewModel.uiState.value.personalMember
+                    ?.name,
+            )
+            assertEquals(InviteTarget(CODE, MEMBER_CODE, INVITER_CODE), invites.fetchedTargets.last())
+        }
+
+    @Test
+    fun `GIVEN a personal link that could not open WHEN trying again THEN reads the same personal invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                online = false,
+                fetchError = IllegalStateException("server down"),
+            )
+            invites.fetchError = null
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(JoinInviteStatus.READY, viewModel.uiState.value.status)
+            assertEquals(
+                listOf(
+                    InviteTarget(CODE, MEMBER_CODE, INVITER_CODE),
+                    InviteTarget(CODE, MEMBER_CODE, INVITER_CODE),
+                ),
+                invites.fetchedTargets,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla personal invite WHEN joining THEN joins straight in as Carla`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite,
+        )
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(1, joinCalls)
+        assertEquals(listOf(CODE), invites.joins.map { it.code })
+        assertEquals(listOf<JoinChoice>(JoinChoice.AsMember(CARLA_ID)), invites.joins.map { it.choice })
+    }
+
+    @Test
+    fun `GIVEN Carla personal invite WHEN joining THEN opens the group over the home as Carla`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.Joined(GROUP_ID),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Carla")), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.isJoining)
+        }
+
+    @Test
+    fun `GIVEN Carla link opened over the welcome WHEN joining as Carla THEN the welcome is gone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                under = listOf(Route.Welcome),
+                joinOutcome = JoinOutcome.Joined(GROUP_ID),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Carla")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN this account joined as Bruno before WHEN joining as Carla THEN opens the group as Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.AlreadyMember(GROUP_ID, memberId = BRUNO_ID),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN joined as a member not in the invite WHEN joining as Carla THEN opens the group unnamed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.AlreadyMember(GROUP_ID, memberId = "member-9"),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN joined as an unknown member WHEN joining as Carla THEN opens the group unnamed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.AlreadyMember(GROUP_ID, memberId = null),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Carla taken on another device WHEN joining as Carla THEN reads the invite again as invalid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.MemberTaken,
+            )
+            invites.invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true)))
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(2, invites.fetchedTargets.size)
+            assertEquals(JoinInviteStatus.INVALID, viewModel.uiState.value.status)
+            assertFalse(viewModel.uiState.value.isJoining)
+            assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Carla was removed meanwhile WHEN joining as Carla THEN reads the invite again as invalid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.MemberGone,
+            )
+            invites.invite = carlaInvite.copy(
+                members = listOf(pierre, ana, bruno),
+                personalMemberId = null,
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(2, invites.fetchedTargets.size)
+            assertEquals(JoinInviteStatus.INVALID, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN the server finds the name taken WHEN joining as Carla THEN reads the invite again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.NameTaken,
+            )
+            invites.invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true)))
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(2, invites.fetchedTargets.size)
+            assertEquals(JoinInviteStatus.INVALID, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN the group link was changed meanwhile WHEN joining as Carla THEN reads the invite again as invalid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinOutcome = JoinOutcome.InvalidLink,
+            )
+            invites.invite = null
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(2, invites.fetchedTargets.size)
+            assertEquals(JoinInviteStatus.INVALID, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN joining as Carla THEN shows the join error and stays on the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinError = IllegalStateException("offline"),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(listOf<JoinInviteUiAction>(JoinInviteUiAction.ShowJoinError), actions)
+            assertEquals(JoinInviteStatus.READY, viewModel.uiState.value.status)
+            assertFalse(viewModel.uiState.value.isJoining)
+            assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Carla personal invite WHEN the join is on its way THEN shows it joining`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite,
+            joinGate = CompletableDeferred(),
+        )
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isJoining)
+        assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a join as Carla on its way WHEN joining again THEN joins only once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite,
+            joinGate = CompletableDeferred(),
+        )
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(1, joinCalls)
+    }
+
+    @Test
+    fun `GIVEN a join as Carla on its way WHEN tapping not Carla THEN the list does not open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the invite was closed while joining as Carla WHEN the join goes through THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            val joinGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+                joinGate = joinGate,
+                joinOutcome = JoinOutcome.Joined(GROUP_ID),
+            )
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+            navigator.navigateBack()
+
+            // When
+            joinGate.complete(Unit)
+
+            // Then
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Carla personal link no longer valid WHEN joining THEN nothing is sent`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true))),
+        )
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(0, joinCalls)
+        assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Carla personal invite still loading WHEN joining THEN nothing is sent`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite,
+            fetchGate = CompletableDeferred(),
+        )
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+        // Then
+        assertEquals(0, joinCalls)
+        assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Carla personal invite WHEN tapping not Carla THEN opens who are you in the group without joining`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaLink, Route.JoinPick(CODE)), navigator.backStack.value)
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN Carla personal link no longer valid WHEN tapping not Carla THEN stays on the invite`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = null,
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaLink), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen over Carla personal invite WHEN tapping not Carla THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, carlaLink, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen over Carla personal invite WHEN joining as Carla THEN joins nobody`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(emptyList(), invites.joins)
+            assertEquals(listOf(Route.Groups, carlaLink, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN not Carla opened the list WHEN going back to the invite THEN reads the personal invite again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite,
+            )
+            viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
+            invites.invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true)))
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(InviteTarget(CODE, MEMBER_CODE, INVITER_CODE), invites.fetchedTargets.last())
+            assertEquals(JoinInviteStatus.INVALID, viewModel.uiState.value.status)
+        }
+
+    @Test
+    fun `GIVEN Carla personal invite on top WHEN tapping not now THEN leaves the invite`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = carlaLink,
+            invite = carlaInvite,
+        )
+
+        // When
+        viewModel.onEvent(JoinInviteUiEvent.OnNotNowClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(0, joinCalls)
+    }
+
+    @Test
+    fun `GIVEN an invalid personal link over other screens WHEN going home THEN pops back to the root`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = null,
+                under = listOf(Route.Groups, Route.Profile),
+            )
+
+            // When
+            viewModel.onEvent(JoinInviteUiEvent.OnGoHomeClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
     private val pierre = InviteMember("member-1", "Pierre", AvatarColor.BLUE, hasJoined = true)
     private val ana = InviteMember("member-2", "Ana", AvatarColor.PEACH, hasJoined = true)
     private val bruno = InviteMember("member-3", "Bruno", AvatarColor.GREEN, hasJoined = false)
@@ -493,7 +1210,25 @@ class JoinInviteViewModelTest {
         inviteCode = CODE,
     )
 
-    private fun prepareScenario(
+    private val groupLink = Route.JoinInvite(
+        CODE,
+        memberCode = null,
+        inviterCode = null,
+    )
+
+    // Why: Carla's personal link, shared by Ana.
+    private val carlaLink = Route.JoinInvite(
+        CODE,
+        memberCode = MEMBER_CODE,
+        inviterCode = INVITER_CODE,
+    )
+
+    private val carlaInvite = trip.copy(
+        personalMemberId = CARLA_ID,
+        inviterName = "Ana",
+    )
+
+    private fun TestScope.prepareScenario(
         invite: Invite? = trip,
         fetchError: Throwable? = null,
         fetchGate: CompletableDeferred<Unit>? = null,
@@ -501,33 +1236,37 @@ class JoinInviteViewModelTest {
         storedGroup: Group? = null,
         syncBrings: Group? = null,
         under: List<Route> = listOf(Route.Groups),
+        route: Route.JoinInvite = groupLink,
+        joinOutcome: JoinOutcome = JoinOutcome.Joined(GROUP_ID),
+        joinError: Throwable? = null,
+        joinGate: CompletableDeferred<Unit>? = null,
     ) {
-        invites = FakeInviteRepository(invite = invite).also {
+        invites = FakeInviteRepository(
+            invite = invite,
+            joinOutcome = joinOutcome,
+        ).also {
             it.fetchError = fetchError
             it.fetchGate = fetchGate
+            it.joinError = joinError
+            it.joinGate = joinGate
         }
         groups = FakeGroupRepository(initialGroups = listOfNotNull(storedGroup))
         isOnline = MutableStateFlow(online)
         syncCount = 0
+        joinCalls = 0
+        actions.clear()
         navigator = BackStackNavigator(startRoute = under.first()).also { navigator ->
             under.drop(1).forEach(navigator::navigate)
-            navigator.navigate(
-                Route.JoinInvite(
-                    CODE,
-                    memberCode = null,
-                    inviterCode = null,
-                ),
-            )
+            navigator.navigate(route)
         }
         viewModel = JoinInviteViewModel(
-            route = Route.JoinInvite(
-                CODE,
-                memberCode = null,
-                inviterCode = null,
-            ),
+            route = route,
             navigator = navigator,
             getInvite = GetInviteUseCase(invites),
-            joinGroup = JoinGroup { joined, choice -> invites.joinGroup(joined.code, choice, AvatarColor.default) },
+            joinGroup = JoinGroup { joined, choice ->
+                joinCalls++
+                invites.joinGroup(joined.code, choice, AvatarColor.default)
+            },
             observeGroup = ObserveGroupUseCase(groups),
             syncNow = SyncNow {
                 syncCount++
@@ -536,10 +1275,15 @@ class JoinInviteViewModelTest {
             },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 
     private companion object {
         const val CODE = "7Hk2pQxZ"
+        const val MEMBER_CODE = "c3Rt9z"
+        const val INVITER_CODE = "a1B2c3"
         const val GROUP_ID = "group-1"
+        const val BRUNO_ID = "member-3"
+        const val CARLA_ID = "member-4"
     }
 }
