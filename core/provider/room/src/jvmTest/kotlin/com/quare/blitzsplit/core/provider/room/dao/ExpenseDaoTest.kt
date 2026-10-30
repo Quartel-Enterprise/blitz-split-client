@@ -241,6 +241,35 @@ class ExpenseDaoTest {
         assertEquals(null to true, stored.updatedBy to stored.isDeleted)
     }
 
+    @Test
+    fun `GIVEN an edit here WHEN its push is taken up THEN who pushed it is its editor`() = runTest {
+        // Given
+        prepareScenario(
+            expenses = listOf(
+                expense(
+                    id = "bill-1",
+                    updatedAt = 5L,
+                    pending = true,
+                ),
+            ),
+        )
+
+        // When
+        dao.markAllSynced(
+            listOf(
+                expense(
+                    id = "bill-1",
+                    updatedAt = 5L,
+                    updatedBy = "user-1",
+                ),
+            ),
+        )
+
+        // Then
+        val stored = dao.observeExpense("bill-1").first()?.expense
+        assertEquals("user-1" to false, stored?.updatedBy to stored?.pendingSync)
+    }
+
     private fun group(
         name: String = "Viagem Floripa",
         updatedAt: Long = 1L,

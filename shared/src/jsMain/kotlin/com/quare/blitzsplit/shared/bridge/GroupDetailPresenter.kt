@@ -54,6 +54,7 @@ class JsGroupDetailState(
     val days: Array<JsExpenseDay>,
     val isEmpty: Boolean,
     val showsSplitBillButton: Boolean,
+    val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
 )
 
@@ -82,6 +83,7 @@ class GroupDetailPresenter(
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
                 isEmpty = state.isEmpty,
                 showsSplitBillButton = state.showsSplitBillButton,
+                showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
             )
         }
@@ -89,12 +91,11 @@ class GroupDetailPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" or "bill-deleted", a toast in the page's words.
+    // Why: "coming-soon", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupDetailUiAction.ShowComingSoon -> "coming-soon"
-                GroupDetailUiAction.ShowBillDeleted -> "bill-deleted"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -123,6 +124,10 @@ class GroupDetailPresenter(
 
     fun openExpense(expenseId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked(expenseId))
+    }
+
+    fun billDeletedNoticeShown() {
+        viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
     }
 
     fun dispose() {

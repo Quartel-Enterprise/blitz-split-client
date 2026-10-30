@@ -3,9 +3,10 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -38,9 +39,10 @@ class GroupDetailViewModel(
     private val navigator: Navigator,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
-    private val deletedBillNotice: DeletedBillNotice,
+    private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
+    observeDeletedBillNotice: ObserveDeletedBillNotice,
 ) : ViewModel() {
     val uiState: StateFlow<GroupDetailUiState>
         field = MutableStateFlow(
@@ -54,6 +56,7 @@ class GroupDetailViewModel(
                 notJoinedCount = 0,
                 totalSpentMinor = 0L,
                 days = emptyList(),
+                showsBillDeletedNotice = false,
                 isLoaded = false,
             ),
         )
@@ -78,8 +81,8 @@ class GroupDetailViewModel(
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
-        combine(deletedBillNotice.groupId, navigator.backStack, ::Pair)
-            .onEach { (groupId, _) -> if (groupId == route.groupId && isOnTop()) showBillDeleted() }
+        combine(observeDeletedBillNotice(route.groupId), navigator.backStack, ::Pair)
+            .onEach { (isOwed, _) -> if (isOwed && isOnTop()) showBillDeleted() }
             .launchIn(viewModelScope)
     }
 
@@ -115,6 +118,8 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnBalancesTabClicked -> viewModelScope.launch {
                 uiAction.emit(GroupDetailUiAction.ShowComingSoon)
             }
+
+            GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
         }
     }
 
@@ -175,8 +180,8 @@ class GroupDetailViewModel(
     }
 
     private fun showBillDeleted() {
-        deletedBillNotice.consume(route.groupId)
-        viewModelScope.launch { uiAction.emit(GroupDetailUiAction.ShowBillDeleted) }
+        consumeDeletedBillNotice(route.groupId)
+        uiState.update { it.copy(showsBillDeletedNotice = true) }
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

@@ -1,5 +1,6 @@
 import { ArrowLeft, ChevronRight, Plus, ReceiptText, UserPlus } from 'lucide-react'
 import { GroupDetailPresenter, type JsExpenseDay, type JsExpenseRow, type JsGroupDetailState, type JsRoute } from 'blitzsplit-shared'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, GroupTabs } from '@/components/common'
@@ -23,8 +24,14 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'coming-soon') toast(t('groups_comingSoon'))
-    else if (action === 'bill-deleted') toast(t('groupDetail_billDeleted'))
   })
+  // Why: state, not an action, so it waits for this screen while the bill's panel still covers it.
+  const showsBillDeletedNotice = state?.showsBillDeletedNotice === true
+  useEffect(() => {
+    if (!showsBillDeletedNotice) return
+    toast(t('groupDetail_billDeleted'))
+    presenter?.billDeletedNoticeShown()
+  }, [presenter, showsBillDeletedNotice])
   if (!presenter || !state?.isLoaded) return null
 
   const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)

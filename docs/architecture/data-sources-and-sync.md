@@ -189,6 +189,12 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   longer has (`ExpenseDao.deleteGoneFromServer`); pending ones stay. A bill with a split mode this version doesn't
   know stays in Room but out of the lists. The split math (`BillSplit`) is shared by every UI: the cents a split
   can't share evenly go to whoever paid while they are in the split, otherwise one each to the first members.
+  An edit stamps `updatedAt` with `MAX(now, updatedAt + 1)`, so it wins over the row it read even when the device
+  clock is behind, and a delete is a tombstone (`isDeleted`) that syncs like an edit; `observeExpense` emits `null`
+  for a deleted or gone bill. The server records who last saved each bill in `updated_by` (its triggers set it from
+  `auth.uid()` and never bump `updated_at`). Room clears `updatedBy` on any local write, since the edit is nobody
+  else's until it syncs, and `markSynced` sets it to whoever pushed; `ExpenseWithEditor` resolves it to the
+  member's name for the "someone changed this bill" banner.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

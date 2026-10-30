@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -29,6 +30,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillVi
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -51,7 +53,7 @@ class EditBillViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
-    private lateinit var notice: DeletedBillNotice
+    private lateinit var deletedBills: InMemoryDeletedBillRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
     private val actions = mutableListOf<SplitBillUiAction>()
@@ -626,7 +628,7 @@ class EditBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
 
             // Then
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -641,7 +643,7 @@ class EditBillViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -678,6 +680,65 @@ class EditBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN a delete in flight WHEN the question is dismissed THEN it stays open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
+
+        // Then
+        assertEquals(BillDeletion("Mercado", -10_400L), viewModel.uiState.value.deletion)
+    }
+
+    @Test
+    fun `GIVEN a bill paid by someone who left the group WHEN saving another change THEN they still paid it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = savedBill.copy(payers = listOf(ExpensePayer(DIEGO, 31_200L))))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Feira"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf(ExpensePayer(DIEGO, 31_200L)), expenses.updatedExpenses.single().payers)
+        }
+
+    @Test
+    fun `GIVEN a bill paid by someone who left the group WHEN Editar conta opens THEN a former member paid it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = savedBill.copy(payers = listOf(ExpensePayer(DIEGO, 31_200L))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(DIEGO, state.payerId)
+            assertNull(state.payer)
+            assertTrue(state.isPayerFormerMember)
+            assertTrue(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN an equal bill being edited WHEN someone joins the group THEN they stay out of its split`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            groups.groups.value = listOf(trip.copy(members = trip.members + diego))
+
+            // Then
+            val split = viewModel.uiState.value.split
+            assertFalse(split.rows.single { it.person.id == DIEGO }.isIncluded)
+            assertEquals(savedEqualShares, split.shares)
+        }
+
+    @Test
     fun `GIVEN a second confirm while deleting WHEN the delete finishes THEN deletes once and goes back once`() =
         runTest(testDispatcher) {
             // Given
@@ -693,7 +754,7 @@ class EditBillViewModelTest {
             // Then
             assertEquals(listOf(EXPENSE_ID), expenses.deletedIds)
             assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -711,7 +772,7 @@ class EditBillViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), billDetail), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -756,7 +817,7 @@ class EditBillViewModelTest {
             expenses.expenses.value = emptyList()
 
             // Then
-            assertEquals(GROUP_ID, notice.groupId.value)
+            assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
             assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
         }
 
@@ -770,7 +831,7 @@ class EditBillViewModelTest {
             expenses.expenses.value = emptyList()
 
             // Then
-            assertEquals(GROUP_ID, notice.groupId.value)
+            assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
             assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
         }
 
@@ -815,7 +876,7 @@ class EditBillViewModelTest {
             val stack = navigator.backStack.value
 
             // Then
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
             assertFalse(route in stack)
         }
 
@@ -828,7 +889,7 @@ class EditBillViewModelTest {
         groups.groups.value = emptyList()
 
         // Then
-        assertNull(notice.groupId.value)
+        assertNull(deletedBills.observeNoticeGroupId().first())
         assertFalse(route in navigator.backStack.value)
     }
 
@@ -967,7 +1028,7 @@ class EditBillViewModelTest {
             it.deleteError = deleteError
             it.deleteGate = deleteGate
         }
-        notice = DeletedBillNotice()
+        deletedBills = InMemoryDeletedBillRepository()
         navigator = BackStackNavigator(startRoute = underneath.first()).also { navigator ->
             underneath.drop(1).forEach(navigator::navigate)
             navigator.navigate(screen)
@@ -977,8 +1038,8 @@ class EditBillViewModelTest {
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { NOW_MILLIS },
             updateExpense = UpdateExpenseUseCase(expenses) { NOW_MILLIS },
-            deleteExpense = DeleteExpenseUseCase(expenses) { NOW_MILLIS },
-            deletedBillNotice = notice,
+            deleteExpense = DeleteExpenseUseCase(expenses, deletedBills) { NOW_MILLIS },
+            noticeBillGone = NoticeBillGoneUseCase(deletedBills),
             currentTimeMillis = { NOW_MILLIS },
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { decimalSeparator },

@@ -284,6 +284,7 @@ export const pt: Record<MessageKey, string> = {
   splitBill_offline: 'Sem internet: a conta fica salva neste navegador e entra nos saldos agora. Sincroniza ao reconectar.',
   splitBill_saveError: 'Não deu para salvar a conta. Tente de novo.',
   splitBill_editTitle: 'Editar conta',
+  splitBill_formerMember: 'Ex-membro',
   splitBill_editAmountHelp: 'Mudar o total refaz a divisão por valor proporcionalmente.',
   splitBill_anyoneCanEdit: 'Qualquer pessoa do grupo pode editar ou apagar.',
   splitBill_conflictOther: '{name} mudou esta conta {when}',

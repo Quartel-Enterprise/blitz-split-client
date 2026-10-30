@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -41,7 +41,7 @@ class BillDetailViewModel(
     private val route: Route.BillDetail,
     private val navigator: Navigator,
     private val deleteExpense: DeleteExpense,
-    private val deletedBillNotice: DeletedBillNotice,
+    private val noticeBillGone: NoticeBillGone,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     observeGroup: ObserveGroup,
@@ -79,10 +79,10 @@ class BillDetailViewModel(
 
     /*
      * Why: the group or the bill went while "Editar conta" covered this screen, which then leaves as soon as it is on
-     * top again. A bill someone else deleted says so on Despesas do grupo.
+     * top again. A bill that went after it showed says so on Despesas do grupo, unless this device deleted it.
      */
     private var isGone = false
-    private var isBillDeletedElsewhere = false
+    private var isBillGoneAfterShowing = false
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
@@ -97,10 +97,23 @@ class BillDetailViewModel(
     fun onEvent(event: BillDetailUiEvent) {
         when (event) {
             BillDetailUiEvent.OnBackClicked -> leave()
+
             BillDetailUiEvent.OnEditClicked -> edit()
+
             BillDetailUiEvent.OnDeleteClicked -> askToDelete()
+
             BillDetailUiEvent.OnDeleteConfirmed -> delete()
-            BillDetailUiEvent.OnDeleteDismissed -> uiState.update { it.copy(deletion = null) }
+
+            // Why: the question stays while the bill is being deleted, whatever closes it.
+            BillDetailUiEvent.OnDeleteDismissed -> uiState.update {
+                if (it.isDeleting) {
+                    it
+                } else {
+                    it.copy(
+                        deletion = null,
+                    )
+                }
+            }
         }
     }
 
@@ -109,20 +122,18 @@ class BillDetailViewModel(
         expense: Expense?,
     ) {
         when {
-            group == null -> markGone(isBillDeletedElsewhere = false)
+            group == null -> markGone(isBillGoneAfterShowing = false)
 
-            // Why: a bill deleted here leaves on its own; one that never showed (a stale link) leaves without a word.
-            expense == null -> markGone(
-                isBillDeletedElsewhere = this.expense != null && !uiState.value.isDeleting,
-            )
+            // Why: one that never showed (a stale link) leaves without a word.
+            expense == null -> markGone(isBillGoneAfterShowing = this.expense != null)
 
             else -> show(group, expense)
         }
     }
 
-    private fun markGone(isBillDeletedElsewhere: Boolean) {
+    private fun markGone(isBillGoneAfterShowing: Boolean) {
         isGone = true
-        this.isBillDeletedElsewhere = isBillDeletedElsewhere
+        this.isBillGoneAfterShowing = isBillGoneAfterShowing
         leave()
     }
 
@@ -267,21 +278,18 @@ class BillDetailViewModel(
         }
     }
 
-    private fun relativeDayOf(epochMillis: Long): RelativeDay {
-        val timeZone = currentTimeZone()
-        return SpentDay.relativeDayOf(
-            date = SpentDay.dateOf(epochMillis, timeZone),
-            nowMillis = currentTimeMillis(),
-            timeZone = timeZone,
-        )
-    }
+    private fun relativeDayOf(epochMillis: Long): RelativeDay = SpentDay.relativeDayOf(
+        epochMillis = epochMillis,
+        nowMillis = currentTimeMillis(),
+        timeZone = currentTimeZone(),
+    )
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     private fun leave() {
         if (!isOnTop()) return
-        if (isBillDeletedElsewhere) deletedBillNotice.post(route.groupId)
+        if (isBillGoneAfterShowing) noticeBillGone(route.groupId, route.expenseId)
         navigator.navigateBack()
     }
 }

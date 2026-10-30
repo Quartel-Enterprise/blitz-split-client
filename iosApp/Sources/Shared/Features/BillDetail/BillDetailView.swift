@@ -32,9 +32,9 @@ final class BillDetailModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// The alert closed without "Delete".
+    /// The alert closed without "Delete"; the ViewModel keeps it while the bill is being deleted.
     func dismissDeletion() {
-        if current.deletion != nil, !current.isDeleting { send(BillDetailUiEventOnDeleteDismissed.shared) }
+        if current.deletion != nil { send(BillDetailUiEventOnDeleteDismissed.shared) }
     }
 
     isolated deinit {

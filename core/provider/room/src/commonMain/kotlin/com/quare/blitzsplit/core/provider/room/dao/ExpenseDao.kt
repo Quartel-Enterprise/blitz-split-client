@@ -163,15 +163,22 @@ interface ExpenseDao {
             markSynced(
                 id = it.id,
                 syncedUpdatedAt = it.updatedAt,
+                updatedBy = it.updatedBy,
             )
         }
     }
 
-    // Why: a change made while the push was in flight keeps the bill pending.
-    @Query("UPDATE expense SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
+    /*
+     * Why: a change made while the push was in flight keeps the bill pending. Who pushed is who the server recorded,
+     * which the next download can't bring: it only takes a newer version.
+     */
+    @Query(
+        "UPDATE expense SET pendingSync = 0, updatedBy = :updatedBy WHERE id = :id AND updatedAt = :syncedUpdatedAt",
+    )
     suspend fun markSynced(
         id: String,
         syncedUpdatedAt: Long,
+        updatedBy: String?,
     )
 
     /*

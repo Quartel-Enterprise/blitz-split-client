@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail
 
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -30,6 +31,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetail
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -53,7 +55,7 @@ class BillDetailViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
-    private lateinit var notice: DeletedBillNotice
+    private lateinit var deletedBills: InMemoryDeletedBillRepository
     private lateinit var viewModel: BillDetailViewModel
     private val actions = mutableListOf<BillDetailUiAction>()
 
@@ -509,7 +511,7 @@ class BillDetailViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-        assertNull(notice.groupId.value)
+        assertNull(deletedBills.observeNoticeGroupId().first())
     }
 
     @Test
@@ -674,7 +676,7 @@ class BillDetailViewModelTest {
             assertEquals(listOf(EXPENSE_ID), expenses.deletedIds)
             assertEquals(listOf(nowMillis), expenses.deletedAts)
             assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
             assertTrue(actions.isEmpty())
         }
 
@@ -783,7 +785,7 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-            assertEquals(GROUP_ID, notice.groupId.value)
+            assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -797,7 +799,7 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, groupRoute), stack)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -811,7 +813,7 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -837,7 +839,7 @@ class BillDetailViewModelTest {
                 ),
                 navigator.backStack.value,
             )
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -853,7 +855,7 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-            assertEquals(GROUP_ID, notice.groupId.value)
+            assertEquals(GROUP_ID, deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -869,7 +871,7 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     @Test
@@ -885,7 +887,23 @@ class BillDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
-            assertNull(notice.groupId.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
+        }
+
+    @Test
+    fun `GIVEN Editar conta deleting the bill WHEN a back gesture shows the bill first THEN returns with no notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+            navigator.navigateBack()
+
+            // When
+            DeleteExpenseUseCase(expenses, deletedBills) { nowMillis }(EXPENSE_ID)
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
     private val route = Route.BillDetail(
@@ -984,14 +1002,14 @@ class BillDetailViewModelTest {
             it.navigate(groupRoute)
             it.navigate(route)
         }
-        notice = DeletedBillNotice()
+        deletedBills = InMemoryDeletedBillRepository()
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(
             route = route,
             navigator = navigator,
-            deleteExpense = DeleteExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
-            deletedBillNotice = notice,
+            deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),
+            noticeBillGone = NoticeBillGoneUseCase(deletedBills),
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },

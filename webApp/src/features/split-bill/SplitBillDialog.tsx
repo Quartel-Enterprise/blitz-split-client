@@ -170,7 +170,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         ? t('splitBill_myShare', { amount: money(state.myShareMinor) })
         : null
   // Why: editing a by-amount split, a new total changes everyone's value, not only the total.
-  const showsEditAmountHelp = state.isEditing && state.split.mode === 'amount'
+  const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
 
   return (
@@ -256,7 +256,10 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             <Label htmlFor={payerId}>{t('splitBill_payer')}</Label>
             <button id={payerId} type="button" aria-haspopup="dialog" onClick={() => presenter.openPayer()} className={controlClass}>
               {state.payer && <Avatar initial={state.payer.initials} color={state.payer.color} className="size-5 text-[10px]" />}
-              <span className="flex-1 truncate">{state.payer ? personName(state.payer) : ''}</span>
+              {/* Why: an edited bill keeps whoever paid it after they left the group. */}
+              <span className="flex-1 truncate">
+                {state.payer ? personName(state.payer) : state.isPayerFormerMember ? t('splitBill_formerMember') : ''}
+              </span>
               <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
             </button>
           </div>

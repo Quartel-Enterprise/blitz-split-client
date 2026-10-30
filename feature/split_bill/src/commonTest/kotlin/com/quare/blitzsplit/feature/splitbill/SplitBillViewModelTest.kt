@@ -1,12 +1,13 @@
 package com.quare.blitzsplit.feature.splitbill
 
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -2251,13 +2252,14 @@ class SplitBillViewModelTest {
             it.navigate(route)
         }
         val roomNeverAnswers = MutableSharedFlow<Group?>()
+        val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { now },
             updateExpense = UpdateExpenseUseCase(expenses) { now },
-            deleteExpense = DeleteExpenseUseCase(expenses) { now },
-            deletedBillNotice = DeletedBillNotice(),
+            deleteExpense = DeleteExpenseUseCase(expenses, deletedBills) { now },
+            noticeBillGone = NoticeBillGoneUseCase(deletedBills),
             currentTimeMillis = { clockMillis },
             currentTimeZone = { timeZone },
             decimalSeparator = { decimalSeparator },

@@ -99,6 +99,7 @@ class JsSplitBillState(
     val isAmountValid: Boolean,
     val payer: JsBillPerson?,
     val payerIsMe: Boolean,
+    val isPayerFormerMember: Boolean,
     val payerSelection: String?,
     val spentAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
@@ -113,6 +114,7 @@ class JsSplitBillState(
     val showsOfflineNotice: Boolean,
     val conflict: JsBillConflict?,
     val showsAnyoneCanEditHint: Boolean,
+    val showsProportionalAmountHint: Boolean,
     val deletion: JsBillDeletion?,
     val canDelete: Boolean,
     val isDeleting: Boolean,
@@ -146,6 +148,7 @@ class SplitBillPresenter(
                 isAmountValid = state.isAmountValid,
                 payer = state.payer?.let(::toJsBillPerson),
                 payerIsMe = state.payerIsMe,
+                isPayerFormerMember = state.isPayerFormerMember,
                 payerSelection = state.payerSelection,
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
@@ -165,6 +168,7 @@ class SplitBillPresenter(
                     )
                 },
                 showsAnyoneCanEditHint = state.showsAnyoneCanEditHint,
+                showsProportionalAmountHint = state.showsProportionalAmountHint,
                 deletion = state.deletion?.let(::toJsBillDeletion),
                 canDelete = state.canDelete,
                 isDeleting = state.isDeleting,

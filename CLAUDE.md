@@ -72,13 +72,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     on a phone), all over the group.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
-    conta"; saving goes back to Conta. Members who left the group are dropped from the edited split. Last-Write-Wins:
+    conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
+    left stays its payer ("Ex-membro") until someone else is picked, and someone who joined while it was being
+    edited starts out of an Igual split. Last-Write-Wins:
     when someone else's save syncs while editing, a banner says who changed it and when
     (`SplitBillUiState.conflict`, the server's `expenses.updated_by`), what was typed stays, and saving wins.
   - Apagar asks first: "“X” sai do grupo e a parte de cada um nesta conta deixa de contar.", plus "Você deixa de
     dever/receber R$ Y" while the bill moves the device user's balance (`BillDeletion`). It deletes offline as a
     tombstone and goes back to the group, past Conta. A bill someone else deleted while open closes, and Despesas
-    do grupo says "Esta conta foi apagada" (`DeletedBillNotice`).
+    do grupo says "Esta conta foi apagada" once it is on top (`GroupDetailUiState.showsBillDeletedNotice`); never
+    for a bill this device deleted (`NoticeBillGone`).
   - "Membros" (`Route.Members`) is the group's tab, and opens from Convidar's "Ver quem já entrou". Any member may
     rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
     someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite

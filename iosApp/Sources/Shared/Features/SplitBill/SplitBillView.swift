@@ -40,9 +40,9 @@ final class SplitBillModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// "Delete this bill?" closed without "Delete", which has already started deleting by the time it closes.
+    /// "Delete this bill?" closed without "Delete"; the ViewModel keeps it while the bill is being deleted.
     func dismissDeletion() {
-        if current.deletion != nil, !current.isDeleting { send(SplitBillUiEventOnDeleteDismissed.shared) }
+        if current.deletion != nil { send(SplitBillUiEventOnDeleteDismissed.shared) }
     }
 
     var amount: Binding<String> {
@@ -125,21 +125,24 @@ struct SplitBillView: View {
     }
 }
 
-/// Under the amount: what's wrong with it, what changing it does to a split by amount being edited, or what the
-/// bill means for this device's user.
+/// Under the amount: what's wrong with it or what the bill means for this device's user, then what changing it does
+/// to a split by amount being edited.
 private struct AmountHelp: View {
     let state: SplitBillUiState
 
     var body: some View {
-        if state.showsAmountError {
-            Text("Enter how much the bill was.")
-                .foregroundStyle(Palette.negative)
-        } else if state.isEditing, state.split.mode == .amount {
-            Text("Changing the total redoes a by-amount split proportionally.")
-        } else if let refund = state.refundMinor {
-            Text("You paid and get \(state.currency.format(refund.int64Value)) back.")
-        } else if let mine = state.myShareMinor {
-            Text("Your share: \(state.currency.format(mine.int64Value))")
+        VStack(alignment: .leading, spacing: 2) {
+            if state.showsAmountError {
+                Text("Enter how much the bill was.")
+                    .foregroundStyle(Palette.negative)
+            } else if let refund = state.refundMinor {
+                Text("You paid and get \(state.currency.format(refund.int64Value)) back.")
+            } else if let mine = state.myShareMinor {
+                Text("Your share: \(state.currency.format(mine.int64Value))")
+            }
+            if state.showsProportionalAmountHint {
+                Text("Changing the total redoes a by-amount split proportionally.")
+            }
         }
     }
 }
@@ -317,6 +320,10 @@ private struct PhoneSplitBill: View {
                     if let payer = state.payer {
                         AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: 24)
                         Text(verbatim: SplitBillCopy.name(payer))
+                            .foregroundStyle(.secondary)
+                    } else if state.isPayerFormerMember {
+                        // An edited bill keeps whoever paid it after they left the group
+                        Text("Former member")
                             .foregroundStyle(.secondary)
                     }
                     DisclosureIndicator()

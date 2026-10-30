@@ -18,6 +18,11 @@ data class GroupDetailUiState(
     val totalSpentMinor: Long,
     // Why: the most recent day first.
     val days: List<ExpenseDay>,
+    /*
+     * Why: "Esta conta foi apagada", once a bill someone else deleted closed while it was open. State rather than an
+     * action, so a screen drawn again only after it is back on top still shows it.
+     */
+    val showsBillDeletedNotice: Boolean,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {

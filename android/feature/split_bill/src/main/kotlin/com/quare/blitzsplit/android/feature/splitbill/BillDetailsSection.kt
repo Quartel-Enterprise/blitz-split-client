@@ -54,7 +54,11 @@ internal fun BillDetailsSection(
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         BillOptionRow(
             label = stringResource(R.string.split_bill_payer),
-            value = state.payer?.let { personNameOf(it) }.orEmpty(),
+            // Why: an edited bill keeps whoever paid it after they left the group.
+            value = state.payer?.let { personNameOf(it) }
+                ?: stringResource(R.string.split_bill_former_member)
+                    .takeIf { state.isPayerFormerMember }
+                    .orEmpty(),
             subtitle = null,
             shape = rowShapeOf(index = 0),
             onClick = { onEvent(SplitBillUiEvent.OnPayerClicked) },

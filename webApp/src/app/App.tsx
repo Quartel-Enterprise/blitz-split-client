@@ -49,7 +49,7 @@ export function App() {
   const isSplitBill = top.name === 'split-bill'
   const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isPaymentKey || isDeleteAccount
   let pageIndex = backStack.length - (isDialog ? 2 : 1)
-  // Why: a bill opens as a panel over the group's expenses, which keep receiving "bill-deleted" under it. Editar conta
+  // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
   const bill = backStack[pageIndex]?.name === 'bill-detail' ? backStack[pageIndex] : undefined
   if (bill) pageIndex -= 1

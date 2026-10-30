@@ -17,14 +17,20 @@ final class GroupDetailModel {
         state = viewModel.uiState.value as! GroupDetailUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+            // State, not an action, so it waits for this screen while the bill's screen still covers it
+            if state.showsBillDeletedNotice { self?.showBillDeleted() }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is GroupDetailUiActionShowComingSoon: self?.comingSoonCount += 1
-            case is GroupDetailUiActionShowBillDeleted: self?.billDeletedCount += 1
             default: break
             }
         })
+    }
+
+    private func showBillDeleted() {
+        billDeletedCount += 1
+        send(GroupDetailUiEventOnBillDeletedNoticeShown.shared)
     }
 
     func send(_ event: any GroupDetailUiEvent) {

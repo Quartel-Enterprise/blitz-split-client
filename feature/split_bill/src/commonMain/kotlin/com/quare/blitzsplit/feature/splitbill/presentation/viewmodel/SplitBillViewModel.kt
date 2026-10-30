@@ -6,7 +6,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -15,6 +14,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -53,7 +53,7 @@ class SplitBillViewModel(
     private val createExpense: CreateExpense,
     private val updateExpense: UpdateExpense,
     private val deleteExpense: DeleteExpense,
-    private val deletedBillNotice: DeletedBillNotice,
+    private val noticeBillGone: NoticeBillGone,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val decimalSeparator: DeviceDecimalSeparator,
@@ -165,7 +165,8 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnDeleteConfirmed -> delete()
 
-            SplitBillUiEvent.OnDeleteDismissed -> uiState.update { it.copy(deletion = null) }
+            // Why: the question stays while the bill is being deleted, whatever closes it.
+            SplitBillUiEvent.OnDeleteDismissed -> uiState.update { if (it.isDeleting) it else it.copy(deletion = null) }
 
             SplitBillUiEvent.OnCloseClicked -> leave()
         }
@@ -237,7 +238,8 @@ class SplitBillViewModel(
     private fun handleBillGone() {
         if (uiState.value.isDeleting || isBillGone) return
         isBillGone = true
-        if (editedExpense != null) deletedBillNotice.post(route.groupId)
+        val expenseId = route.expenseId
+        if (editedExpense != null && expenseId != null) noticeBillGone(route.groupId, expenseId)
         leaveToGroup()
     }
 
@@ -301,10 +303,14 @@ class SplitBillViewModel(
             total to entries.filter { entry -> people.any { it.id == entry.memberId } }
         }
         uiState.update { state ->
-            // Why: whoever this device's user is pays by default; someone else's choice stays while they're in the group.
-            val payerId = state.payerId.takeIf { id -> people.any { it.id == id } }
-                ?: people.firstOrNull { it.isMe }?.id
-                ?: people.firstOrNull()?.id.orEmpty()
+            /*
+             * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the
+             * group. A bill being edited keeps its payer even after they left it, so saving never moves who paid.
+             */
+            val payerId =
+                state.payerId.takeIf { id -> people.any { it.id == id } || (state.isEditing && id.isNotEmpty()) }
+                    ?: people.firstOrNull { it.isMe }?.id
+                    ?: people.firstOrNull()?.id.orEmpty()
             val shown = state.copy(
                 groupName = group.name,
                 groupInitials = Initials.of(group.name),
@@ -331,7 +337,10 @@ class SplitBillViewModel(
         hasJoined = member.hasJoined,
     )
 
-    // Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes.
+    /*
+     * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes.
+     * A bill being edited keeps its split, so saving it never adds whoever joined meanwhile.
+     */
     private fun SplitEditor.withPeople(
         people: List<BillPerson>,
         currency: GroupCurrency,
@@ -341,7 +350,7 @@ class SplitBillViewModel(
         val rows = people.map { person ->
             byId[person.id]?.copy(person = person) ?: SplitRow(
                 person = person,
-                isIncluded = true,
+                isIncluded = route.expenseId == null,
                 valueText = "",
                 parts = 0L,
                 shareMinor = null,
@@ -548,14 +557,11 @@ class SplitBillViewModel(
     private fun toAmountText(text: String): String =
         text.filter { it.isDigit() || it in amountSeparators }.take(AMOUNT_MAX_LENGTH)
 
-    private fun relativeDayOf(epochMillis: Long): RelativeDay {
-        val timeZone = currentTimeZone()
-        return SpentDay.relativeDayOf(
-            date = SpentDay.dateOf(epochMillis, timeZone),
-            nowMillis = currentTimeMillis(),
-            timeZone = timeZone,
-        )
-    }
+    private fun relativeDayOf(epochMillis: Long): RelativeDay = SpentDay.relativeDayOf(
+        epochMillis = epochMillis,
+        nowMillis = currentTimeMillis(),
+        timeZone = currentTimeZone(),
+    )
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 

@@ -21,4 +21,7 @@ sealed interface GroupDetailUiEvent : UiEvent {
     data class OnExpenseClicked(
         val expenseId: String,
     ) : GroupDetailUiEvent
+
+    // Why: "Esta conta foi apagada" was shown, so it doesn't show again.
+    data object OnBillDeletedNoticeShown : GroupDetailUiEvent
 }

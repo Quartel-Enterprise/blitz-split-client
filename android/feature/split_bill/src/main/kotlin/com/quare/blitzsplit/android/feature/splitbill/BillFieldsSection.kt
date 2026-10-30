@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
@@ -118,9 +117,7 @@ private fun AmountField(
             money = money,
         ),
         // Why: editing a bill split by amount, a new total rescales everyone's part.
-        stringResource(R.string.split_bill_amount_proportional).takeIf {
-            state.isEditing && state.split.mode == SplitMode.AMOUNT && !state.showsAmountError
-        },
+        stringResource(R.string.split_bill_amount_proportional).takeIf { state.showsProportionalAmountHint },
     ).joinToString("\n").ifEmpty { null }
     OutlinedTextField(
         value = state.amountText,

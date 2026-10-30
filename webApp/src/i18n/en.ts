@@ -283,6 +283,7 @@ export const en = {
   splitBill_offline: 'No internet: the bill is saved in this browser and counts in the balances now. It syncs when you reconnect.',
   splitBill_saveError: "Couldn't save the bill. Try again.",
   splitBill_editTitle: 'Edit bill',
+  splitBill_formerMember: 'Former member',
   splitBill_editAmountHelp: 'Changing the total redoes a by-amount split proportionally.',
   splitBill_anyoneCanEdit: 'Anyone in the group can edit or delete it.',
   splitBill_conflictOther: '{name} changed this bill {when}',

@@ -211,6 +211,78 @@ class SplitBillUiStateTest {
         assertFalse(canDelete)
     }
 
+    @Test
+    fun `GIVEN a by-amount bill being edited WHEN reading the amount help THEN says a new total rescales it`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            splitMode = SplitMode.AMOUNT,
+        )
+
+        // When
+        val showsHint = state.showsProportionalAmountHint
+
+        // Then
+        assertTrue(showsHint)
+    }
+
+    @Test
+    fun `GIVEN a by-amount bill with no valid total WHEN reading the amount help THEN only the error shows`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            splitMode = SplitMode.AMOUNT,
+            amountText = "",
+        )
+
+        // When
+        val showsHint = state.showsProportionalAmountHint
+
+        // Then
+        assertFalse(showsHint)
+    }
+
+    @Test
+    fun `GIVEN a new by-amount bill WHEN reading the amount help THEN says nothing of rescaling`() {
+        // Given
+        val state = state(splitMode = SplitMode.AMOUNT)
+
+        // When
+        val showsHint = state.showsProportionalAmountHint
+
+        // Then
+        assertFalse(showsHint)
+    }
+
+    @Test
+    fun `GIVEN an edited bill whose payer left the group WHEN reading Salvar THEN a former member paid and it saves`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            payerId = FORMER,
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertTrue(state.isPayerFormerMember)
+        assertTrue(canSave)
+    }
+
+    @Test
+    fun `GIVEN a new bill whose payer is no member WHEN reading Salvar THEN it is disabled`() {
+        // Given
+        val state = state(payerId = FORMER)
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertFalse(state.isPayerFormerMember)
+        assertFalse(canSave)
+    }
+
     private fun person(
         id: String,
         isMe: Boolean,
@@ -234,6 +306,7 @@ class SplitBillUiStateTest {
         isEditing: Boolean = false,
         isDeleting: Boolean = false,
         conflict: BillConflict? = null,
+        amountText: String = "100,00",
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupName = "Viagem Floripa",
@@ -241,7 +314,7 @@ class SplitBillUiStateTest {
         groupColor = AvatarColor.GREEN,
         currency = GroupCurrency.BRL,
         people = people,
-        amountText = "100,00",
+        amountText = amountText,
         description = "Mercado",
         hasEditedAmount = true,
         hasEditedDescription = true,
@@ -277,5 +350,6 @@ class SplitBillUiStateTest {
     private companion object {
         const val ANA = "member-1"
         const val PIERRE = "member-2"
+        const val FORMER = "member-9"
     }
 }

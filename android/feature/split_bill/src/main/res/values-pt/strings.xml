@@ -113,6 +113,7 @@
     <string name="split_bill_parts_decrease">Menos uma parte</string>
     <string name="split_bill_parts_increase">Mais uma parte</string>
     <string name="split_bill_edit_title">Editar conta</string>
+    <string name="split_bill_former_member">Ex-membro</string>
     <string name="split_bill_amount_proportional">Mudar o total refaz a divisão por valor proporcionalmente.</string>
     <string name="split_bill_anyone_can_edit">Qualquer pessoa do grupo pode editar ou apagar.</string>
     <string name="split_bill_conflict_named">%1$s mudou esta conta %2$s.</string>

@@ -1,12 +1,14 @@
 package com.quare.blitzsplit.feature.groupdetail
 
-import com.quare.blitzsplit.core.expenses.domain.model.DeletedBillNotice
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -27,6 +29,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -52,7 +55,7 @@ class GroupDetailViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupDetailViewModel
     private val actions = mutableListOf<GroupDetailUiAction>()
-    private val notice = DeletedBillNotice()
+    private val deletedBills = InMemoryDeletedBillRepository()
 
     @BeforeTest
     fun setUp() {
@@ -848,15 +851,28 @@ class GroupDetailViewModelTest {
             // Given
             prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
             navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
-            notice.post(GROUP_ID)
+            deletedBills.postNotice(GROUP_ID)
 
             // When
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowBillDeleted), actions)
-            assertNull(notice.groupId.value)
+            assertTrue(viewModel.uiState.value.showsBillDeletedNotice)
+            assertNull(deletedBills.observeNoticeGroupId().first())
         }
+
+    @Test
+    fun `GIVEN the deleted notice on screen WHEN it was shown THEN it hides`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        deletedBills.postNotice(GROUP_ID)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsBillDeletedNotice)
+    }
 
     @Test
     fun `GIVEN a bill of another group deleted elsewhere WHEN this group is on top THEN leaves the notice waiting`() =
@@ -865,11 +881,11 @@ class GroupDetailViewModelTest {
             prepareScenario()
 
             // When
-            notice.post("group-2")
+            deletedBills.postNotice("group-2")
 
             // Then
-            assertTrue(actions.isEmpty())
-            assertEquals("group-2", notice.groupId.value)
+            assertFalse(viewModel.uiState.value.showsBillDeletedNotice)
+            assertEquals("group-2", deletedBills.observeNoticeGroupId().first())
         }
 
     private fun ExpenseDay.ids(): List<String> = expenses.map { it.id }
@@ -978,13 +994,14 @@ class GroupDetailViewModelTest {
             navigator = navigator,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
-            deletedBillNotice = notice,
+            consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeExpenses = if (isRoomRead) {
                 ObserveExpensesUseCase(expenses)
             } else {
                 ObserveExpenses { expensesNeverAnswer }
             },
+            observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
