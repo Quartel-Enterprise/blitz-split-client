@@ -18,8 +18,11 @@ enum AppleSignInResult {
 final class AppleSignIn: NSObject {
     private var continuation: CheckedContinuation<AppleSignInResult, Never>?
     private var rawNonce = ""
+    private var anchor: ASPresentationAnchor?
 
     func signIn() async -> AppleSignInResult {
+        guard let anchor = PresentationAnchor.current else { return .failed }
+        self.anchor = anchor
         rawNonce = Self.createRawNonce()
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
@@ -82,13 +85,7 @@ extension AppleSignIn: ASAuthorizationControllerDelegate {
 
 extension AppleSignIn: ASAuthorizationControllerPresentationContextProviding {
     nonisolated func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        MainActor.assumeIsolated {
-            #if os(iOS)
-            let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            return scenes.compactMap(\.keyWindow).first ?? UIWindow(windowScene: scenes[0])
-            #else
-            NSApplication.shared.keyWindow ?? ASPresentationAnchor()
-            #endif
-        }
+        // Set by signIn before performRequests, the only thing that asks for it
+        MainActor.assumeIsolated { anchor! }
     }
 }
