@@ -121,6 +121,17 @@
         }
       }
     },
+    "%@ changed this bill %@." : {
+      "comment" : "Conflict banner of Edit bill: someone else saved it; first %@ is their name, second how long ago (2 minutes ago, just now)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mudou esta conta %@."
+          }
+        }
+      }
+    },
     "%@ each" : {
       "comment" : "Equal split: each one's part",
       "localizations" : {
@@ -348,6 +359,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passou %@"
+          }
+        }
+      }
+    },
+    "%@ owe you %@ each." : {
+      "comment" : "Under Your share, the payer: several people owe the same; first %@ is their names (Ana, Bruno and Carla), second the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ te devem %@ cada."
+          }
+        }
+      }
+    },
+    "%@ owe you %@ in total." : {
+      "comment" : "Under Your share, the payer: several people owe different parts; first %@ is their names, second the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ te devem %@ no total."
+          }
+        }
+      }
+    },
+    "%@ owes you %@." : {
+      "comment" : "Under Your share, the payer: one person owes; first %@ is their name, second the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ te deve %@."
           }
         }
       }
@@ -881,6 +925,17 @@
         }
       }
     },
+    "A former member paid" : {
+      "comment" : "Who paid a bill, once they left the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um ex-membro pagou"
+          }
+        }
+      }
+    },
     "A JSON file with your profile and keys" : {
       "localizations" : {
         "pt-BR" : {
@@ -1113,6 +1168,17 @@
         }
       }
     },
+    "Anyone in the group can edit or delete it." : {
+      "comment" : "Under the form of Edit bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa do grupo pode editar ou apagar."
+          }
+        }
+      }
+    },
     "Appearance" : {
       "localizations" : {
         "pt-BR" : {
@@ -1257,6 +1323,17 @@
         }
       }
     },
+    "By %% among %lld" : {
+      "comment" : "Header of a bill's split by percentage; %lld is how many people are in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por %% entre %lld"
+          }
+        }
+      }
+    },
     "By amount" : {
       "comment" : "How the bill splits: by amount",
       "localizations" : {
@@ -1264,6 +1341,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por valor"
+          }
+        }
+      }
+    },
+    "By amount among %lld" : {
+      "comment" : "Header of a bill's split by amount; %lld is how many people are in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por valor entre %lld"
           }
         }
       }
@@ -1286,6 +1374,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por partes"
+          }
+        }
+      }
+    },
+    "By shares among %lld" : {
+      "comment" : "Header of a bill's split by shares; %lld is how many people are in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por partes entre %lld"
           }
         }
       }
@@ -1370,6 +1469,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mudar o total depois refaz os valores proporcionalmente."
+          }
+        }
+      }
+    },
+    "Changing the total redoes a by-amount split proportionally." : {
+      "comment" : "Under the amount of Edit bill, when it splits by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudar o total refaz a divisão por valor proporcionalmente."
           }
         }
       }
@@ -1569,6 +1679,17 @@
         }
       }
     },
+    "Couldn't delete the bill. Try again." : {
+      "comment" : "The bill couldn't be deleted",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para apagar a conta. Tente de novo."
+          }
+        }
+      }
+    },
     "Couldn't delete your account. Try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -1668,6 +1789,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para salvar o grupo. Tente de novo."
+          }
+        }
+      }
+    },
+    "Counts toward what you owe %@ in Balances." : {
+      "comment" : "Under Your share, when someone else paid; %@ is who paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entra no que você deve a %@ em Saldos."
           }
         }
       }
@@ -1775,6 +1907,24 @@
         }
       }
     },
+    "Delete (a bill)" : {
+      "comment" : "Deletes a bill: the bill's toolbar button and the confirmation's button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar"
+          }
+        }
+      }
+    },
     "Delete account" : {
       "localizations" : {
         "pt-BR" : {
@@ -1805,12 +1955,45 @@
         }
       }
     },
+    "Delete bill" : {
+      "comment" : "Button under the form of Edit bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar conta"
+          }
+        }
+      }
+    },
+    "Delete Bill…" : {
+      "comment" : "Button of Edit bill's sheet on the Mac (title case), which asks first",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar Conta…"
+          }
+        }
+      }
+    },
     "Delete key" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Excluir chave"
+          }
+        }
+      }
+    },
+    "Delete this bill?" : {
+      "comment" : "Title of the confirmation before deleting a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar esta conta?"
           }
         }
       }
@@ -1970,6 +2153,39 @@
         }
       }
     },
+    "Edit" : {
+      "comment" : "Edits the bill: the bill's toolbar button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar"
+          }
+        }
+      }
+    },
+    "Edit Bill" : {
+      "comment" : "Title of the sheet that edits a bill on the Mac (title case)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar Conta"
+          }
+        }
+      }
+    },
+    "Edit bill" : {
+      "comment" : "Title of the form that edits a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar conta"
+          }
+        }
+      }
+    },
     "Edit Bitcoin key" : {
       "localizations" : {
         "pt-BR" : {
@@ -2017,6 +2233,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Editar perfil"
+          }
+        }
+      }
+    },
+    "Edit…" : {
+      "comment" : "Edits the bill: the button of the bill's sheet on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar…"
           }
         }
       }
@@ -2227,6 +2454,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Formato nome@dominio.com"
+          }
+        }
+      }
+    },
+    "Former member" : {
+      "comment" : "Someone in a bill who is no longer in the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ex-membro"
           }
         }
       }
@@ -2774,6 +3012,17 @@
         }
       }
     },
+    "just now" : {
+      "comment" : "How long ago a bill was changed, under a minute: \"Ana changed this bill just now\"",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "agora há pouco"
+          }
+        }
+      }
+    },
     "Just you" : {
       "comment" : "A group whose only member is the person using the app",
       "localizations" : {
@@ -3151,12 +3400,34 @@
         }
       }
     },
+    "Not in this bill" : {
+      "comment" : "Under a member left out of a bill's split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não participa"
+          }
+        }
+      }
+    },
     "Not now" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Agora não"
+          }
+        }
+      }
+    },
+    "nothing to settle" : {
+      "comment" : "Your share of a bill that changes nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nada a acertar"
           }
         }
       }
@@ -3334,6 +3605,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não participa"
+          }
+        }
+      }
+    },
+    "Paid %@" : {
+      "comment" : "Under whoever paid, in a bill's split; %@ is the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagou %@"
           }
         }
       }
@@ -3584,6 +3866,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "QR code do link de convite do grupo"
+          }
+        }
+      }
+    },
+    "Queued · syncs when you're back online" : {
+      "comment" : "A bill saved on this device and not on the server yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na fila · sincroniza ao reconectar"
           }
         }
       }
@@ -4066,6 +4359,17 @@
         }
       }
     },
+    "Someone changed this bill %@." : {
+      "comment" : "Conflict banner of Edit bill: someone not in the group saved it; %@ is how long ago",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguém mudou esta conta %@."
+          }
+        }
+      }
+    },
     "Someone marked a payment to me" : {
       "localizations" : {
         "pt-BR" : {
@@ -4154,6 +4458,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rachar conta"
+          }
+        }
+      }
+    },
+    "Split equally among %lld" : {
+      "comment" : "Header of a bill's equal split; %lld is how many people are in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual entre %lld"
           }
         }
       }
@@ -4261,6 +4576,17 @@
         }
       }
     },
+    "The last saved edit wins: if you save now, your edit replaces that change." : {
+      "comment" : "Conflict banner of Edit bill, after who changed it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vale a última edição salva: se você salvar agora, a sua edição substitui essa mudança."
+          }
+        }
+      }
+    },
     "The link to your %@ account" : {
       "comment" : "%@ is the account: Google or Apple",
       "localizations" : {
@@ -4321,6 +4647,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Este %@"
+          }
+        }
+      }
+    },
+    "This bill was deleted" : {
+      "comment" : "A bill open on this device was deleted by someone else",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta foi apagada"
           }
         }
       }
@@ -4439,6 +4776,17 @@
         }
       }
     },
+    "to get back" : {
+      "comment" : "Your share of a bill, after a positive amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a receber"
+          }
+        }
+      }
+    },
     "To read the QR code, allow Blitz Split to use the camera in Settings. Or paste the link below." : {
       "comment" : "The camera permission was denied, on iPhone and iPad",
       "localizations" : {
@@ -4473,7 +4821,7 @@
       }
     },
     "Today, %@" : {
-      "comment" : "When a bill was, today; %@ is the short date (Oct 28)",
+      "comment" : "When a bill was, today; %@ is the short date (Oct 28) or the time (2:30 PM)",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
@@ -4976,7 +5324,7 @@
       }
     },
     "Yesterday, %@" : {
-      "comment" : "When a bill was, yesterday; %@ is the short date (Oct 27)",
+      "comment" : "When a bill was, yesterday; %@ is the short date (Oct 27) or the time (9:10 PM)",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
@@ -5013,6 +5361,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você pode mudar depois em Perfil."
+          }
+        }
+      }
+    },
+    "You changed this bill on another device %@." : {
+      "comment" : "Conflict banner of Edit bill: this user saved it on another device; %@ is how long ago",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você mudou esta conta em outro aparelho %@."
           }
         }
       }
@@ -5077,6 +5436,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você continua usando o Bora Rachar neste %@, sem conta. Seus grupos ficam aqui e a sincronização passa a usar um ID anônimo. Em seguida mostramos seu código de recuperação: guarde-o para não perder o acesso."
+          }
+        }
+      }
+    },
+    "You no longer get back %@." : {
+      "comment" : "Deleting a bill this user paid; %@ is what they were to get back",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você deixa de receber %@."
+          }
+        }
+      }
+    },
+    "You no longer owe %@." : {
+      "comment" : "Deleting a bill this user owes in; %@ is what they owed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você deixa de dever %@."
+          }
+        }
+      }
+    },
+    "you owe" : {
+      "comment" : "Your share of a bill, after the amount owed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você deve"
           }
         }
       }
@@ -5376,6 +5768,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "você"
+          }
+        }
+      }
+    },
+    "“%@” leaves the group and everyone's share of it stops counting." : {
+      "comment" : "Body of the confirmation before deleting a bill; %@ is its description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” sai do grupo e a parte de cada um nesta conta deixa de contar."
           }
         }
       }

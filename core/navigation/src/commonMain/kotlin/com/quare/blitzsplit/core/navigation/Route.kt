@@ -44,9 +44,16 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
-    // Why: "Rachar conta", a new bill in the group, with "Dividir" drawn over it.
+    // Why: "Rachar conta", a new bill in the group, or "Editar conta" for expenseId, with "Dividir" drawn over it.
     data class SplitBill(
         val groupId: String,
+        val expenseId: String?,
+    ) : Route
+
+    // Why: "Conta", one bill of the group: what it was, who paid and how it splits.
+    data class BillDetail(
+        val groupId: String,
+        val expenseId: String,
     ) : Route
 
     /*

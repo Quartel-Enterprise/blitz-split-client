@@ -10,8 +10,11 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
+
+private const val PREVIEW_TWO_MINUTES_MILLIS = 120_000L
 
 @Composable
 fun SplitBillContent(
@@ -27,7 +30,7 @@ fun SplitBillContent(
     val dates = rememberDateTimeTextFormatter()
     SplitBillFormLayout(
         chrome = FormChrome(
-            title = stringResource(R.string.split_bill_title),
+            title = stringResource(if (state.isEditing) R.string.split_bill_edit_title else R.string.split_bill_title),
             navigationIcon = Icons.Outlined.Close,
             navigationLabel = stringResource(R.string.split_bill_close),
             onNavigate = { onEvent(SplitBillUiEvent.OnCloseClicked) },
@@ -40,6 +43,7 @@ fun SplitBillContent(
         isDialog = isDialog,
         snackbarHostState = snackbarHostState,
         first = {
+            state.conflict?.let { BillConflictBanner(it) }
             if (state.isLoaded) {
                 BillFieldsSection(
                     state = state,
@@ -57,6 +61,12 @@ fun SplitBillContent(
                     onWhenClick = onWhenClick,
                     onEvent = onEvent,
                 )
+                if (state.isEditing) {
+                    BillEditingFooter(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
             }
         },
         modifier = modifier,
@@ -84,6 +94,27 @@ private fun SplitBillContentInvalidPreview() {
 @Composable
 private fun SplitBillContentOfflinePreview() {
     PreviewSplitBillContent(createPreviewBillState(isOnline = false))
+}
+
+@DevicePreviews
+@Composable
+private fun SplitBillContentEditingPreview() {
+    PreviewSplitBillContent(createPreviewBillState(isEditing = true))
+}
+
+@DevicePreviews
+@Composable
+private fun SplitBillContentConflictPreview() {
+    PreviewSplitBillContent(
+        createPreviewBillState(
+            isEditing = true,
+            conflict = BillConflict(
+                changerName = "Ana",
+                changerIsMe = false,
+                changedAt = System.currentTimeMillis() - PREVIEW_TWO_MINUTES_MILLIS,
+            ),
+        ),
+    )
 }
 
 @Composable

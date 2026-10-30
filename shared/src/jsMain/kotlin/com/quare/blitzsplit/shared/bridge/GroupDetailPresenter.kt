@@ -54,6 +54,7 @@ class JsGroupDetailState(
     val days: Array<JsExpenseDay>,
     val isEmpty: Boolean,
     val showsSplitBillButton: Boolean,
+    val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
 )
 
@@ -82,6 +83,7 @@ class GroupDetailPresenter(
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
                 isEmpty = state.isEmpty,
                 showsSplitBillButton = state.showsSplitBillButton,
+                showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
             )
         }
@@ -134,6 +136,10 @@ class GroupDetailPresenter(
 
     fun openExpense(expenseId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked(expenseId))
+    }
+
+    fun billDeletedNoticeShown() {
+        viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
     }
 
     fun dispose() {

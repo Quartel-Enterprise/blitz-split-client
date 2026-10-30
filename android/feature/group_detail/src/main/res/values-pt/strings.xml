@@ -31,4 +31,5 @@
     <string name="group_detail_empty_message">Lance a primeira despesa ou chame quem vai dividir com você. Quem ainda não tem o app também entra na conta.</string>
     <string name="group_detail_split_bill">Rachar conta</string>
     <string name="group_detail_coming_soon">Em breve</string>
+    <string name="group_detail_bill_deleted">Esta conta foi apagada</string>
 </resources>

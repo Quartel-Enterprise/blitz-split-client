@@ -145,4 +145,20 @@ class SpentDayTest {
         // Then
         assertEquals(RelativeDay.YESTERDAY, relativeDay)
     }
+
+    @Test
+    fun `GIVEN a late evening bill WHEN naming its day by its instant THEN it is the local day`() {
+        // Given
+        val epochMillis = lateEveningInSaoPaulo
+
+        // When
+        val relativeDay = SpentDay.relativeDayOf(
+            epochMillis = epochMillis,
+            nowMillis = lateEveningInSaoPaulo,
+            timeZone = saoPaulo,
+        )
+
+        // Then
+        assertEquals(RelativeDay.TODAY, relativeDay)
+    }
 }

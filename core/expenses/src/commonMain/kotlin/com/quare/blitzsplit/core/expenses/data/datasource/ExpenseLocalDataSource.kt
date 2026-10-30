@@ -1,10 +1,14 @@
 package com.quare.blitzsplit.core.expenses.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.coroutines.flow.Flow
 
 interface ExpenseLocalDataSource {
-    fun observeExpenses(groupId: String): Flow<List<ExpenseEntity>>
+    fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>>
+
+    // Why: null once the bill is deleted, here or by a sync.
+    fun observeExpense(id: String): Flow<ExpenseWithEditor?>
 
     fun observeHasPending(): Flow<Boolean>
 
@@ -14,6 +18,18 @@ interface ExpenseLocalDataSource {
 
     // Why: fails when the group is no longer on the device, which a sync may have removed meanwhile.
     suspend fun insertExpense(entity: ExpenseEntity)
+
+    // Why: what the bill says, from the entity; fails when the bill is gone, which a sync may have deleted meanwhile.
+    suspend fun updateExpense(
+        entity: ExpenseEntity,
+        now: Long,
+    )
+
+    // Why: fails when the bill is already gone.
+    suspend fun markDeleted(
+        id: String,
+        now: Long,
+    )
 
     // Why: skips a bill of a group this device doesn't have, which waits for the sync that brings the group.
     suspend fun applyRemote(entities: List<ExpenseEntity>)

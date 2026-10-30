@@ -2,6 +2,7 @@ import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
+import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
@@ -49,17 +50,23 @@ export function App() {
   const isSplitBill = top.name === 'split-bill'
   const isEditGroup = top.name === 'edit-group'
   const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isPaymentKey || isDeleteAccount
-  const page = isDialog ? backStack.at(-2) : top
+  let pageIndex = backStack.length - (isDialog ? 2 : 1)
+  // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
+  // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
+  const bill = backStack[pageIndex]?.name === 'bill-detail' ? backStack[pageIndex] : undefined
+  if (bill) pageIndex -= 1
+  const page = backStack[pageIndex]
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'groups')
   return (
     <>
       <Screen name={pageName} route={page} />
+      {bill && <BillDetailSheet key={`${bill.groupId}/${bill.expenseId}`} route={bill} isCovered={bill !== top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
-      {isSplitBill && <SplitBillDialog key={top.groupId} route={top} />}
+      {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
       {isEditGroup && <EditGroupDialog key={top.groupId} route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>

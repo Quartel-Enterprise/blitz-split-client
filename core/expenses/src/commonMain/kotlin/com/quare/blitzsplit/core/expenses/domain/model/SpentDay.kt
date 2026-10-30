@@ -33,6 +33,17 @@ object SpentDay {
             else -> RelativeDay.OTHER
         }
     }
+
+    // Why: "Hoje" or "Ontem" for the moment a bill was spent, as a bill's own screen and its form name it.
+    fun relativeDayOf(
+        epochMillis: Long,
+        nowMillis: Long,
+        timeZone: TimeZone,
+    ): RelativeDay = relativeDayOf(
+        date = dateOf(epochMillis, timeZone),
+        nowMillis = nowMillis,
+        timeZone = timeZone,
+    )
 }
 
 // Why: injected so tests pick the time zone the days are counted in.

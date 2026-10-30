@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -71,7 +72,10 @@ internal fun createPreviewBillState(
     description: String = "Mercado",
     isOnline: Boolean = true,
     splitEditor: SplitEditor? = null,
+    isEditing: Boolean = false,
+    conflict: BillConflict? = null,
 ): SplitBillUiState = SplitBillUiState(
+    isEditing = isEditing,
     groupName = "Viagem Floripa",
     groupInitials = "VF",
     groupColor = AvatarColor.PEACH,
@@ -91,8 +95,11 @@ internal fun createPreviewBillState(
         isAnyoneIn = true,
     ),
     splitEditor = splitEditor,
+    conflict = conflict,
+    deletion = null,
     isOnline = isOnline,
     isSaving = false,
+    isDeleting = false,
     isLoaded = true,
 )
 

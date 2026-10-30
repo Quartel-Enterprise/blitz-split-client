@@ -248,6 +248,7 @@ private fun createPreviewState(days: List<ExpenseDay>): GroupDetailUiState = Gro
     notJoinedCount = 1,
     totalSpentMinor = if (days.isEmpty()) 0L else 241_860L,
     days = days,
+    showsBillDeletedNotice = false,
     isLoaded = true,
 )
 

@@ -120,6 +120,7 @@ class GroupDetailUiStateTest {
         notJoinedCount = 0,
         totalSpentMinor = if (hasBills) 12_000 else 0,
         days = if (hasBills) listOf(day) else emptyList(),
+        showsBillDeletedNotice = false,
         isLoaded = isLoaded,
     )
 

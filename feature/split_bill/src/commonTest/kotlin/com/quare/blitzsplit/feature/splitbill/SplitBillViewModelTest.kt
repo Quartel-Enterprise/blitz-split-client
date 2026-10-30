@@ -1,10 +1,15 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -2177,7 +2182,7 @@ class SplitBillViewModelTest {
 
     private fun SplitEditor.valueByMember(): Map<String, String> = rows.associate { it.person.id to it.valueText }
 
-    private val route = Route.SplitBill(GROUP_ID)
+    private val route = Route.SplitBill(GROUP_ID, expenseId = null)
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
@@ -2247,14 +2252,19 @@ class SplitBillViewModelTest {
             it.navigate(route)
         }
         val roomNeverAnswers = MutableSharedFlow<Group?>()
+        val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
             route = route,
             navigator = navigator,
             createExpense = CreateExpenseUseCase(expenses) { now },
+            updateExpense = UpdateExpenseUseCase(expenses) { now },
+            deleteExpense = DeleteExpenseUseCase(expenses, deletedBills) { now },
+            noticeBillGone = NoticeBillGoneUseCase(deletedBills),
             currentTimeMillis = { clockMillis },
             currentTimeZone = { timeZone },
             decimalSeparator = { decimalSeparator },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
+            observeExpense = ObserveExpenseUseCase(expenses),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

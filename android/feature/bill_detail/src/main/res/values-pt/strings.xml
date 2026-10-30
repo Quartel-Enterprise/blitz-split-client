@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bill_detail_back">Voltar</string>
+    <string name="bill_detail_edit">Editar</string>
+    <string name="bill_detail_delete">Apagar</string>
+    <string name="bill_detail_when_today">Hoje, %s</string>
+    <string name="bill_detail_when_yesterday">Ontem, %s</string>
+    <string name="bill_detail_when_other">%1$s, %2$s</string>
+    <string name="bill_detail_you_paid">Você pagou</string>
+    <string name="bill_detail_someone_paid">%s pagou</string>
+    <string name="bill_detail_former_member_paid">Um ex-membro pagou</string>
+    <string name="bill_detail_pending">Na fila · sincroniza ao reconectar</string>
+    <string name="bill_detail_my_part">Sua parte</string>
+    <string name="bill_detail_you_owe">você deve</string>
+    <string name="bill_detail_to_get_back">a receber</string>
+    <string name="bill_detail_nothing_to_settle">nada a acertar</string>
+    <string name="bill_detail_owes_payer">Entra no que você deve a %s em Saldos.</string>
+    <string name="bill_detail_you">Você</string>
+    <string name="bill_detail_former_member">Ex-membro</string>
+    <string name="bill_detail_paid">Pagou %s</string>
+    <string name="bill_detail_not_joined">Ainda não entrou</string>
+    <string name="bill_detail_not_in">Não participa</string>
+    <string name="bill_detail_no_share">—</string>
+    <string name="bill_detail_delete_error">Não deu para apagar a conta. Tente de novo.</string>
+    <plurals name="bill_detail_owe_you_each">
+        <item quantity="one">%1$s te deve %2$s.</item>
+        <item quantity="other">%1$s te devem %2$s cada.</item>
+    </plurals>
+    <plurals name="bill_detail_owe_you_total">
+        <item quantity="one">%1$s te deve %2$s.</item>
+        <item quantity="other">%1$s te devem %2$s no total.</item>
+    </plurals>
+    <plurals name="bill_detail_mode_equal">
+        <item quantity="one">Igual entre %d</item>
+        <item quantity="other">Igual entre %d</item>
+    </plurals>
+    <plurals name="bill_detail_mode_amount">
+        <item quantity="one">Por valor entre %d</item>
+        <item quantity="other">Por valor entre %d</item>
+    </plurals>
+    <plurals name="bill_detail_mode_percent">
+        <item quantity="one">Por %% entre %d</item>
+        <item quantity="other">Por %% entre %d</item>
+    </plurals>
+    <plurals name="bill_detail_mode_shares">
+        <item quantity="one">Por partes entre %d</item>
+        <item quantity="other">Por partes entre %d</item>
+    </plurals>
+</resources>

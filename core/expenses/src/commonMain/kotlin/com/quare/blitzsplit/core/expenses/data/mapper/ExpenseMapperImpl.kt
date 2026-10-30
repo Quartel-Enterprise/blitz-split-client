@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
@@ -15,7 +16,8 @@ class ExpenseMapperImpl : ExpenseMapper {
     private val json = Json { ignoreUnknownKeys = true }
 
     // Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips.
-    override fun toDomain(entity: ExpenseEntity): Expense? {
+    override fun toDomain(row: ExpenseWithEditor): Expense? {
+        val entity = row.expense
         val splitMode = SplitMode.fromCodeOrNull(entity.splitMode) ?: return null
         val payers = decodeOrNull { decodePayers(entity.payersJson) } ?: return null
         val shares = decodeOrNull { decodeShares(entity.sharesJson) } ?: return null
@@ -40,6 +42,8 @@ class ExpenseMapperImpl : ExpenseMapper {
             },
             spentAt = entity.spentAt,
             isPending = entity.pendingSync,
+            updatedAt = entity.updatedAt,
+            updatedByMemberId = row.updatedByMemberId,
         )
     }
 
@@ -74,6 +78,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         isDeleted = false,
         addedAt = createdAt,
         updatedAt = createdAt,
+        updatedBy = null,
         pendingSync = true,
     )
 
@@ -90,6 +95,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         isDeleted = dto.isDeleted,
         addedAt = dto.addedAt,
         updatedAt = dto.updatedAt,
+        updatedBy = dto.updatedBy,
         pendingSync = false,
     )
 
@@ -110,6 +116,8 @@ class ExpenseMapperImpl : ExpenseMapper {
         isDeleted = entity.isDeleted,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
+        // Why: the server records the session's user anyway, which is the one pushing.
+        updatedBy = userId,
     )
 
     private fun <T> decodeOrNull(decode: () -> T): T? = try {

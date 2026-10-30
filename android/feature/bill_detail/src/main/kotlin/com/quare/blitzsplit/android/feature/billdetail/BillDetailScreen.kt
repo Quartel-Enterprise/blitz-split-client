@@ -1,0 +1,59 @@
+package com.quare.blitzsplit.android.feature.billdetail
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
+import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+fun BillDetailScreen(
+    route: Route.BillDetail,
+    // Why: a tablet and the upright foldable keep the group behind the bill, as a dialog.
+    isDialog: Boolean,
+    viewModel: BillDetailViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val deleteError = stringResource(R.string.bill_detail_delete_error)
+    LaunchedEffect(viewModel) {
+        viewModel.uiAction.collect { action ->
+            when (action) {
+                BillDetailUiAction.ShowDeleteError -> {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
+                    launch { snackbarHostState.showSnackbar(deleteError) }
+                }
+            }
+        }
+    }
+    BackHandler { viewModel.onEvent(BillDetailUiEvent.OnBackClicked) }
+    BillDetailContent(
+        state = state,
+        isDialog = isDialog,
+        snackbarHostState = snackbarHostState,
+        onEvent = viewModel::onEvent,
+    )
+    state.deletion?.let { deletion ->
+        DeleteBillDialog(
+            description = deletion.description,
+            myBalanceMinor = deletion.myBalanceMinor,
+            isDeleting = state.isDeleting,
+            money = rememberMoneyFormatter(state.currency),
+            onConfirm = { viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed) },
+            onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed) },
+        )
+    }
+}

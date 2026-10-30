@@ -111,10 +111,14 @@ private fun AmountField(
     LaunchedEffect(focusRequester) {
         if (isAmountEmpty) focusRequester.requestFocus()
     }
-    val help = amountHelpOrNull(
-        state = state,
-        money = money,
-    )
+    val help = listOfNotNull(
+        amountHelpOrNull(
+            state = state,
+            money = money,
+        ),
+        // Why: editing a bill split by amount, a new total rescales everyone's part.
+        stringResource(R.string.split_bill_amount_proportional).takeIf { state.showsProportionalAmountHint },
+    ).joinToString("\n").ifEmpty { null }
     OutlinedTextField(
         value = state.amountText,
         onValueChange = { onEvent(SplitBillUiEvent.OnAmountChanged(it)) },

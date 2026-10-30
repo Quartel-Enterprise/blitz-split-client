@@ -1,5 +1,6 @@
 import { ArrowLeft, ChevronRight, Ellipsis, LogOut, Pencil, Plus, ReceiptText, Trash2, UserPlus } from 'lucide-react'
 import { GroupDetailPresenter, type JsExpenseDay, type JsExpenseRow, type JsGroupDetailState, type JsRoute } from 'blitzsplit-shared'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, GroupTabs } from '@/components/common'
@@ -22,7 +23,8 @@ const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1
 
 /**
  * "Despesas do grupo": the group's bills by day, newest first, with "Rachar conta" a primary button beside the
- * group's name (at the bottom on the phone), and the group's tabs, Despesas selected.
+ * group's name (at the bottom on the phone), and the group's tabs, Despesas selected. A bill opens "Conta" over it,
+ * and a bill someone else deleted while it was open says so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))
@@ -30,6 +32,13 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'coming-soon') toast(t('groups_comingSoon'))
   })
+  // Why: state, not an action, so it waits for this screen while the bill's panel still covers it.
+  const showsBillDeletedNotice = state?.showsBillDeletedNotice === true
+  useEffect(() => {
+    if (!showsBillDeletedNotice) return
+    toast(t('groupDetail_billDeleted'))
+    presenter?.billDeletedNoticeShown()
+  }, [presenter, showsBillDeletedNotice])
   if (!presenter || !state?.isLoaded) return null
 
   const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Event
@@ -32,14 +31,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 private const val SPLIT_FACE_COUNT = 3
-private val outerRadius = 20.dp
-private val innerRadius = 6.dp
+private const val OPTION_ROW_COUNT = 3
 private val splitFaceSize = 26.dp
 
 // Why: the controls: who paid, when, how it splits, and the offline note under them.
@@ -54,7 +53,11 @@ internal fun BillDetailsSection(
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         BillOptionRow(
             label = stringResource(R.string.split_bill_payer),
-            value = state.payer?.let { personNameOf(it) }.orEmpty(),
+            // Why: an edited bill keeps whoever paid it after they left the group.
+            value = state.payer?.let { personNameOf(it) }
+                ?: stringResource(R.string.split_bill_former_member)
+                    .takeIf { state.isPayerFormerMember }
+                    .orEmpty(),
             subtitle = null,
             shape = rowShapeOf(index = 0),
             onClick = { onEvent(SplitBillUiEvent.OnPayerClicked) },
@@ -117,15 +120,11 @@ internal fun BillDetailsSection(
     }
 }
 
-private fun rowShapeOf(index: Int): Shape {
-    val lastIndex = 2
-    return RoundedCornerShape(
-        topStart = if (index == 0) outerRadius else innerRadius,
-        topEnd = if (index == 0) outerRadius else innerRadius,
-        bottomStart = if (index == lastIndex) outerRadius else innerRadius,
-        bottomEnd = if (index == lastIndex) outerRadius else innerRadius,
-    )
-}
+// Why: Quem pagou, Quando and Dividir, read as one card.
+private fun rowShapeOf(index: Int): Shape = groupedRowShapeOf(
+    index = index,
+    count = OPTION_ROW_COUNT,
+)
 
 @Composable
 private fun BillOptionRow(

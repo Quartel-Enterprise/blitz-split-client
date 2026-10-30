@@ -26,8 +26,11 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: "Apagar grupo" in the ⋮ menu, which waits for the balances.
     data object OnDeleteGroupClicked : GroupDetailUiEvent
 
-    // Why: a bill on the list, whose screen (7.3) is not built yet.
+    // Why: a bill on the list, which opens "Conta".
     data class OnExpenseClicked(
         val expenseId: String,
     ) : GroupDetailUiEvent
+
+    // Why: "Esta conta foi apagada" was shown, so it doesn't show again.
+    data object OnBillDeletedNoticeShown : GroupDetailUiEvent
 }

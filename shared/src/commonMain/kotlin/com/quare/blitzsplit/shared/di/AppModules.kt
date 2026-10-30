@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.settings.di.settingsModule
 import com.quare.blitzsplit.core.sync.di.syncModule
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
+import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
 import com.quare.blitzsplit.feature.editgroup.di.editGroupModule
@@ -73,6 +74,7 @@ val sharedModules: List<Module> = listOf(
     membersModule,
     joinModule,
     groupDetailModule,
+    billDetailModule,
     splitBillModule,
     editGroupModule,
 )

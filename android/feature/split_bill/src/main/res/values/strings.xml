@@ -112,4 +112,15 @@
     <string name="split_bill_person_parts">%s\'s shares</string>
     <string name="split_bill_parts_decrease">One share less</string>
     <string name="split_bill_parts_increase">One more share</string>
+    <string name="split_bill_edit_title">Edit bill</string>
+    <string name="split_bill_former_member">Former member</string>
+    <string name="split_bill_amount_proportional">Changing the total redoes a by-amount split proportionally.</string>
+    <string name="split_bill_anyone_can_edit">Anyone in the group can edit or delete it.</string>
+    <string name="split_bill_conflict_named">%1$s changed this bill %2$s.</string>
+    <string name="split_bill_conflict_me">You changed this bill on another device %s.</string>
+    <string name="split_bill_conflict_someone">Someone changed this bill %s.</string>
+    <string name="split_bill_conflict_last_wins">The last saved edit wins: if you save now, your edit replaces that change.</string>
+    <string name="split_bill_conflict_just_now">just now</string>
+    <string name="split_bill_delete">Delete bill</string>
+    <string name="split_bill_delete_error">Couldn\'t delete the bill. Try again.</string>
 </resources>

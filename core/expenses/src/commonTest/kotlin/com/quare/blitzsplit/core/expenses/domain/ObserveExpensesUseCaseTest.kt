@@ -77,6 +77,8 @@ class ObserveExpensesUseCaseTest {
         shares = emptyList(),
         spentAt = spentAt,
         isPending = false,
+        updatedAt = 1L,
+        updatedByMemberId = null,
     )
 
     private fun prepareScenario(stored: List<Expense> = emptyList()) {

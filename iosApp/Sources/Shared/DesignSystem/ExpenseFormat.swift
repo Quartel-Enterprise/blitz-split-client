@@ -73,6 +73,16 @@ enum ExpenseFormat {
         return "\(day) · \(time(millis))"
     }
 
+    /// Under a bill's description: "Today, 2:30 PM", "Yesterday, 9:10 PM" or "Oct 27, 9:10 PM" ("Hoje, 14:30",
+    /// "27 de out., 21:10").
+    static func dayTime(_ millis: Int64, relativeDay: RelativeDay) -> String {
+        switch relativeDay {
+        case .today: String(localized: "Today, \(time(millis))")
+        case .yesterday: String(localized: "Yesterday, \(time(millis))")
+        default: "\(shortDate(millis)), \(time(millis))"
+        }
+    }
+
     /// "Oct 28" or "28 de out.".
     private static func shortDate(_ millis: Int64) -> String {
         date(of: millis).formatted(.dateTime.day().month(.abbreviated))

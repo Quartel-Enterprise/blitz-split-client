@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
+import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
@@ -127,6 +128,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.
             entry<Route.SplitBill>(metadata = billDialogMetadata) { route ->
                 SplitBillScreen(
+                    route = route,
+                    isDialog = usesBillDialog,
+                )
+            }
+            // Why: like Rachar conta, a tablet and the upright foldable keep the group behind the bill.
+            entry<Route.BillDetail>(metadata = billDialogMetadata) { route ->
+                BillDetailScreen(
                     route = route,
                     isDialog = usesBillDialog,
                 )

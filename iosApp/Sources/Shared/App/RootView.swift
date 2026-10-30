@@ -2,8 +2,9 @@ import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack
 /// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac) and push the
-/// profile inside the Groups tab. A route that opens as a sheet (a key on iPad and Mac, deleting the account, a new group, its invite, editing a group, a new bill) shows over
-/// the whole window.
+/// profile inside the Groups tab. A route that opens as a sheet (a key or a bill on iPad and Mac, deleting the account,
+/// a new group, its invite, editing a group, a new or edited bill) shows over the whole window, and a sheet opened
+/// from a sheet stacks over it.
 struct RootView: View {
     @State private var app = AppModel()
 
@@ -26,6 +27,12 @@ struct RootView: View {
         .sheet(item: $app.sheet) { route in
             NavigationStack {
                 screen(for: route)
+            }
+            // A bill open as a sheet (iPad, Mac) is edited in a sheet over it
+            .sheet(item: $app.stackedSheet) { route in
+                NavigationStack {
+                    screen(for: route)
+                }
             }
         }
         #if os(iOS)
@@ -54,6 +61,7 @@ struct RootView: View {
         case let .members(route): MembersView(route: route)
         case let .groupDetail(route): GroupDetailView(route: route)
         case let .splitBill(route): SplitBillView(route: route)
+        case let .billDetail(route): BillDetailView(route: route)
         case let .editGroup(route): EditGroupView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)

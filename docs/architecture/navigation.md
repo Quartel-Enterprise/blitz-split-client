@@ -111,6 +111,11 @@ button, the edge swipe): the `NavigationStack` already moved, so the setter only
 entries remain with `popTo`. When the root is `.groups`, `RootView` swaps the stack for `MainTabView`, the
 `TabView` with `.tabViewStyle(.sidebarAdaptable)` (a tab bar on iPhone, a sidebar on iPad and Mac).
 
+Some routes open as a sheet instead of a push (`AppRoute.presentsAsSheet`: a payment key, and a bill on iPad and
+Mac). `AppModel.sheet` shows the top entry when it is one, and `path` leaves it out. When the two top entries are
+both sheets ("Editar conta" over a bill's "Conta"), `AppModel.stackedSheet` presents the second over the first
+instead of replacing it, and closing either pops the shared stack down to what is still shown.
+
 ### Web: last entry and browser history
 
 `AppPresenter.observeBackStack` sends the stack as `JsRoute`s: a route name (`RouteName.kt`: `welcome`,
@@ -137,5 +142,6 @@ The tabs Saldos, Contatos and Atividade are drawn on every platform but not buil
 1. Add a `data object` (or `data class`) to `Route`.
 2. Android: an `entry<Route.X> { XScreen() }` in `AppNavDisplay`.
 3. Apple: a case in `AppRoute`, its mapping in `AppRoute.init` (an unknown route falls back to `.welcome`, so a
-   missing case fails silently) and in `RootView.screen(for:)`.
+   missing case fails silently) and in `RootView.screen(for:)`. A route pushed over the groups also needs its case
+   in `MainTabView`'s `navigationDestination`, whose `default` is the profile.
 4. Web: a name in `toRouteName` (`RouteName.kt`, an exhaustive `when`) and a case in `Screen` of `App.tsx`.

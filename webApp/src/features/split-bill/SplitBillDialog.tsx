@@ -1,7 +1,7 @@
-import { CalendarDays, ChevronsUpDown, Loader2 } from 'lucide-react'
-import { SplitBillPresenter, type JsBillPerson, type JsRoute, type JsSplitBillState, type JsSplitEditor } from 'blitzsplit-shared'
+import { CalendarDays, ChevronsUpDown, Info, Loader2 } from 'lucide-react'
+import { SplitBillPresenter, type JsBillConflict, type JsBillPerson, type JsRoute, type JsSplitBillState, type JsSplitEditor } from 'blitzsplit-shared'
 import { Popover } from 'radix-ui'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -10,11 +10,12 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { formatWhen, fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/dates'
+import { formatTimeAgo, formatWhen, fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol, formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { splitPane } from './SplitPane'
@@ -23,6 +24,7 @@ import { personName, splitSummary, type Money } from './splitText'
 const formId = 'split-bill-form'
 const amountId = 'split-bill-amount'
 const amountHelpId = 'split-bill-amount-help'
+const amountEditHelpId = 'split-bill-amount-edit-help'
 const descriptionId = 'split-bill-description'
 const descriptionHelpId = 'split-bill-description-help'
 const payerId = 'split-bill-payer'
@@ -43,7 +45,7 @@ const controlClass =
  * "Rachar conta", over the group's page: a dialog on desktop and tablet, a drawer on the phone, like "Entrar com
  * link ou QR". "Dividir" takes the dialog's place while it is open, as the canvas draws it; "Quem pagou" opens over
  * it on desktop and in its place on the phone. Closing it any way is the ViewModel's: Dividir's back, Quem pagou's
- * dismissal or the bill's close.
+ * dismissal or the bill's close. With a bill to edit it is "Editar conta", over Conta, and can delete the bill.
  */
 export function SplitBillDialog({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new SplitBillPresenter(route))
@@ -51,6 +53,7 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'save-error') toast(t('splitBill_saveError'))
+    else if (action === 'delete-error') toast(t('billDetail_deleteError'))
   })
   if (!presenter || !state?.isLoaded) return null
 
@@ -68,6 +71,15 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
   if (editor) pane = splitPane(presenter, state, editor, money)
   else if (isPayerOpen && !isDesktop) pane = payerPane(presenter, state, money)
   else pane = billPane(presenter, state, money)
+  const deletion = state.deletion && (
+    <BillDeleteDialog
+      deletion={state.deletion}
+      isDeleting={state.isDeleting}
+      money={money}
+      onConfirm={() => presenter.confirmDelete()}
+      onDismiss={() => presenter.dismissDelete()}
+    />
+  )
 
   return isDesktop ? (
     <>
@@ -82,19 +94,23 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
         </DialogContent>
       </Dialog>
       {!editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
+      {deletion}
     </>
   ) : (
-    <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
-      <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
-          <DrawerTitle>{pane.title}</DrawerTitle>
-          <DrawerDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DrawerDescription>
-        </DrawerHeader>
-        <div className="overflow-y-auto px-4">{pane.body}</div>
-        {/* Why: the phone puts the main action first, under the thumb. */}
-        <DrawerFooter className="flex-col-reverse">{pane.footer}</DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    <>
+      <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
+        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
+          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+            <DrawerTitle>{pane.title}</DrawerTitle>
+            <DrawerDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DrawerDescription>
+          </DrawerHeader>
+          <div className="overflow-y-auto px-4">{pane.body}</div>
+          {/* Why: the phone puts the main action first, under the thumb. */}
+          <DrawerFooter className="flex-col-reverse">{pane.footer}</DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+      {deletion}
+    </>
   )
 }
 
@@ -108,11 +124,22 @@ export interface PaneParts {
 
 function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money: Money): PaneParts {
   return {
-    title: t('splitBill_title'),
+    title: t(state.isEditing ? 'splitBill_editTitle' : 'splitBill_title'),
     body: <BillForm presenter={presenter} state={state} money={money} />,
     // Why: keys of their own, so React never turns another pane's button into this submit button mid-click.
     footer: (
       <>
+        {state.isEditing && (
+          <Button
+            key="bill-delete"
+            variant="ghost"
+            disabled={!state.canDelete}
+            onClick={() => presenter.deleteBill()}
+            className="text-destructive hover:text-destructive sm:mr-auto"
+          >
+            {t('splitBill_delete')}
+          </Button>
+        )}
         <Button key="bill-cancel" variant="outline" onClick={() => presenter.close()}>
           {t('common_cancel')}
         </Button>
@@ -142,6 +169,9 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       : state.myShareMinor != null
         ? t('splitBill_myShare', { amount: money(state.myShareMinor) })
         : null
+  // Why: editing a by-amount split, a new total changes everyone's value, not only the total.
+  const showsEditAmountHelp = state.showsProportionalAmountHint
+  const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
 
   return (
     <form
@@ -152,6 +182,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         presenter.save()
       }}
     >
+      {state.conflict && <ConflictBanner conflict={state.conflict} />}
       <div className="grid gap-x-6 gap-y-4 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-4">
           {/* Not a control: the bill stays in this group (no switching groups yet). */}
@@ -183,7 +214,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                 value={amount}
                 placeholder={amountPlaceholder(state.fractionDigits)}
                 aria-invalid={state.showsAmountError}
-                aria-describedby={amountHelp ? amountHelpId : undefined}
+                aria-describedby={amountDescribedBy}
                 onChange={(event) => setAmount(event.target.value)}
                 className="min-w-0 flex-1 bg-transparent text-[28px] font-semibold tabular-nums outline-none placeholder:text-muted-foreground/60"
               />
@@ -191,6 +222,11 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             {amountHelp && (
               <p id={amountHelpId} className={cn('text-[13px]', state.showsAmountError ? 'text-destructive' : 'text-muted-foreground')}>
                 {amountHelp}
+              </p>
+            )}
+            {showsEditAmountHelp && (
+              <p id={amountEditHelpId} className="text-[13px] text-muted-foreground">
+                {t('splitBill_editAmountHelp')}
               </p>
             )}
           </div>
@@ -220,7 +256,10 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             <Label htmlFor={payerId}>{t('splitBill_payer')}</Label>
             <button id={payerId} type="button" aria-haspopup="dialog" onClick={() => presenter.openPayer()} className={controlClass}>
               {state.payer && <Avatar initial={state.payer.initials} color={state.payer.color} className="size-5 text-[10px]" />}
-              <span className="flex-1 truncate">{state.payer ? personName(state.payer) : ''}</span>
+              {/* Why: an edited bill keeps whoever paid it after they left the group. */}
+              <span className="flex-1 truncate">
+                {state.payer ? personName(state.payer) : state.isPayerFormerMember ? t('splitBill_formerMember') : ''}
+              </span>
               <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
             </button>
           </div>
@@ -238,8 +277,42 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
           {t('splitBill_offline')}
         </p>
       )}
+      {state.showsAnyoneCanEditHint && <p className="text-[13px] leading-[18px] text-muted-foreground">{t('splitBill_anyoneCanEdit')}</p>}
     </form>
   )
+}
+
+/**
+ * Someone saved the bill while it was open here: "Ana mudou esta conta há 2 minutos", and that the last saved edit
+ * wins. How long ago follows the clock, so it is redrawn every few seconds.
+ */
+function ConflictBanner({ conflict }: { conflict: JsBillConflict }) {
+  const now = useNow(15_000)
+  const when = formatTimeAgo(conflict.changedAt, now) ?? t('splitBill_conflictJustNow')
+  const title = conflict.changerIsMe
+    ? t('splitBill_conflictMe', { when })
+    : conflict.changerName != null
+      ? t('splitBill_conflictOther', { name: conflict.changerName, when })
+      : t('splitBill_conflictSomeone', { when })
+  return (
+    <div role="status" className="flex gap-3 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-5">
+      <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+      <p className="flex flex-col gap-1">
+        <strong className="font-semibold">{title}</strong>
+        <span>{t('splitBill_conflictBody')}</span>
+      </p>
+    </div>
+  )
+}
+
+/** The current time, updated every `intervalMs`. */
+function useNow(intervalMs: number): number {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), intervalMs)
+    return () => window.clearInterval(id)
+  }, [intervalMs])
+  return now
 }
 
 /**

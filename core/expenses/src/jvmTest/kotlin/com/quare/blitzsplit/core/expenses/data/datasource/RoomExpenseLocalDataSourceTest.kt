@@ -5,6 +5,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
+import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
@@ -12,9 +13,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-// Why: the data source over a real in-memory Room, since its one rule (skip a bill whose group isn't here) is SQL.
+// Why: the data source over a real in-memory Room, since its rules (the group check, the edit, the tombstone) are SQL.
 class RoomExpenseLocalDataSourceTest {
     private lateinit var database: AppDatabase
     private lateinit var dataSource: RoomExpenseLocalDataSource
@@ -38,7 +40,11 @@ class RoomExpenseLocalDataSourceTest {
         )
 
         // Then
-        val stored = dataSource.observeExpenses(MY_GROUP).first().single()
+        val stored = dataSource
+            .observeExpenses(MY_GROUP)
+            .first()
+            .single()
+            .expense
         assertEquals("bill-1", stored.id)
         assertTrue(stored.pendingSync)
         assertTrue(dataSource.observeHasPending().first())
@@ -91,7 +97,11 @@ class RoomExpenseLocalDataSourceTest {
         dataSource.applyRemote(listOf(serverBill))
 
         // Then
-        val stored = dataSource.observeExpenses(MY_GROUP).first().single()
+        val stored = dataSource
+            .observeExpenses(MY_GROUP)
+            .first()
+            .single()
+            .expense
         assertEquals("Pizza" to false, stored.description to stored.pendingSync)
     }
 
@@ -151,6 +161,7 @@ class RoomExpenseLocalDataSourceTest {
                 .observeExpenses(MY_GROUP)
                 .first()
                 .single()
+                .expense
                 .pendingSync,
         )
         assertFalse(dataSource.observeHasPending().first())
@@ -186,6 +197,7 @@ class RoomExpenseLocalDataSourceTest {
                 .observeExpenses(MY_GROUP)
                 .first()
                 .single()
+                .expense
                 .pendingSync,
         )
     }
@@ -215,9 +227,216 @@ class RoomExpenseLocalDataSourceTest {
             val ids = dataSource
                 .observeExpenses(MY_GROUP)
                 .first()
-                .map { it.id }
+                .map { it.expense.id }
                 .toSet()
             assertEquals(setOf("kept-on-server", "pending-here"), ids)
+        }
+
+    @Test
+    fun `GIVEN a bill another user created WHEN editing it THEN takes the edit and keeps its creator group and time`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(
+                        id = "bill-1",
+                        createdBy = "user-2",
+                    ),
+                ),
+            )
+            val edit = expense(
+                id = "bill-1",
+                groupId = OTHER_USER_GROUP,
+                createdBy = null,
+                description = "Feira",
+                amountMinor = 1_500L,
+                addedAt = 9_000L,
+                pendingSync = true,
+            )
+
+            // When
+            dataSource.updateExpense(edit, now = 9_000L)
+
+            // Then
+            val stored = checkNotNull(dataSource.observeExpense("bill-1").first()).expense
+            assertEquals("Feira" to 1_500L, stored.description to stored.amountMinor)
+            assertEquals("user-2", stored.createdBy)
+            assertEquals(MY_GROUP, stored.groupId)
+            assertEquals(1L, stored.addedAt)
+            assertEquals(9_000L, stored.updatedAt)
+            assertTrue(stored.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a bill last saved on a device with its clock ahead WHEN editing it THEN its version still moves past`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(
+                        id = "bill-1",
+                        updatedAt = 10_000L,
+                    ),
+                ),
+            )
+            val edit = expense(
+                id = "bill-1",
+                description = "Feira",
+            )
+
+            // When
+            dataSource.updateExpense(edit, now = 9_000L)
+
+            // Then
+            val stored = checkNotNull(dataSource.observeExpense("bill-1").first()).expense
+            assertEquals(10_001L, stored.updatedAt)
+        }
+
+    @Test
+    fun `GIVEN a deleted bill WHEN editing it THEN fails and it stays deleted`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                expense(
+                    id = "bill-1",
+                    isDeleted = true,
+                ),
+            ),
+        )
+        val edit = expense(
+            id = "bill-1",
+            description = "Feira",
+        )
+
+        // When
+        val result = runCatching { dataSource.updateExpense(edit, now = 9_000L) }
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertNull(dataSource.observeExpense("bill-1").first())
+        assertFalse(dataSource.observeHasPending().first())
+    }
+
+    @Test
+    fun `GIVEN no such bill WHEN editing it THEN fails`() = runTest {
+        // Given
+        prepareScenario()
+        val edit = expense(id = "bill-1")
+
+        // When
+        val result = runCatching { dataSource.updateExpense(edit, now = 9_000L) }
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN a synced bill WHEN deleting it THEN it leaves the group and a pending tombstone waits for the sync`() =
+        runTest {
+            // Given
+            prepareScenario(stored = listOf(expense(id = "bill-1")))
+
+            // When
+            dataSource.markDeleted("bill-1", now = 9_000L)
+
+            // Then
+            assertTrue(dataSource.observeExpenses(MY_GROUP).first().isEmpty())
+            assertNull(dataSource.observeExpense("bill-1").first())
+            val tombstone = dataSource.getPendingExpenses(ownerUserId = USER_ID).single()
+            assertEquals("bill-1", tombstone.id)
+            assertTrue(tombstone.isDeleted)
+            assertEquals(9_000L, tombstone.updatedAt)
+        }
+
+    @Test
+    fun `GIVEN a deleted bill WHEN deleting it again THEN fails`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                expense(
+                    id = "bill-1",
+                    isDeleted = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = runCatching { dataSource.markDeleted("bill-1", now = 9_000L) }
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertFalse(dataSource.observeHasPending().first())
+    }
+
+    @Test
+    fun `GIVEN an open bill WHEN a sync brings it deleted on another device THEN the bill is gone`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(expense(id = "bill-1")))
+        val deletedElsewhere = expense(
+            id = "bill-1",
+            isDeleted = true,
+            updatedAt = 9_000L,
+        )
+
+        // When
+        dataSource.applyRemote(listOf(deletedElsewhere))
+
+        // Then
+        assertNull(dataSource.observeExpense("bill-1").first())
+    }
+
+    @Test
+    fun `GIVEN a bill a member of the group saved WHEN observing it THEN shows that member as its editor`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                expense(
+                    id = "bill-1",
+                    updatedBy = "user-2",
+                ),
+            ),
+            members = listOf(
+                member(
+                    id = "member-ana",
+                    groupId = MY_GROUP,
+                    userId = "user-2",
+                ),
+            ),
+        )
+
+        // When
+        val row = dataSource.observeExpense("bill-1").first()
+
+        // Then
+        assertEquals("member-ana", row?.updatedByMemberId)
+    }
+
+    @Test
+    fun `GIVEN a bill saved by an account no longer a member of its group WHEN observing it THEN shows no editor`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(
+                        id = "bill-1",
+                        updatedBy = "user-2",
+                    ),
+                ),
+                members = listOf(
+                    member(
+                        id = "member-ana-elsewhere",
+                        groupId = OTHER_USER_GROUP,
+                        userId = "user-2",
+                    ),
+                ),
+            )
+
+            // When
+            val row = dataSource.observeExpense("bill-1").first()
+
+            // Then
+            assertEquals("bill-1", row?.expense?.id)
+            assertNull(row?.updatedByMemberId)
         }
 
     private fun group(
@@ -237,29 +456,56 @@ class RoomExpenseLocalDataSourceTest {
         inviteCode = null,
     )
 
+    private fun member(
+        id: String,
+        groupId: String,
+        userId: String,
+    ): GroupMemberEntity = GroupMemberEntity(
+        id = id,
+        groupId = groupId,
+        name = "Ana",
+        avatarColor = "pink",
+        userId = userId,
+        isMe = false,
+        addedAt = 1L,
+        updatedAt = 1L,
+        pendingSync = false,
+        isRemoved = false,
+        inviteCode = null,
+    )
+
     private fun expense(
         id: String,
         groupId: String = MY_GROUP,
+        createdBy: String? = USER_ID,
         description: String = "Mercado",
+        amountMinor: Long = 1_000L,
+        isDeleted: Boolean = false,
+        addedAt: Long = 1L,
         pendingSync: Boolean = false,
         updatedAt: Long = 1L,
+        updatedBy: String? = null,
     ): ExpenseEntity = ExpenseEntity(
         id = id,
         groupId = groupId,
-        createdBy = USER_ID,
+        createdBy = createdBy,
         description = description,
-        amountMinor = 1_000L,
+        amountMinor = amountMinor,
         splitMode = "equal",
         payersJson = "[]",
         sharesJson = "[]",
         spentAt = 1_000L,
-        isDeleted = false,
-        addedAt = 1L,
+        isDeleted = isDeleted,
+        addedAt = addedAt,
         updatedAt = updatedAt,
+        updatedBy = updatedBy,
         pendingSync = pendingSync,
     )
 
-    private suspend fun prepareScenario(stored: List<ExpenseEntity> = emptyList()) {
+    private suspend fun prepareScenario(
+        stored: List<ExpenseEntity> = emptyList(),
+        members: List<GroupMemberEntity> = emptyList(),
+    ) {
         database = Room.inMemoryDatabaseBuilder<AppDatabase>().setDriver(BundledSQLiteDriver()).build()
         database.groupDao().upsertGroup(
             group(
@@ -273,6 +519,7 @@ class RoomExpenseLocalDataSourceTest {
                 ownerUserId = "user-2",
             ),
         )
+        database.groupDao().upsertMembers(members)
         dataSource = RoomExpenseLocalDataSource(database.expenseDao())
         stored.forEach { dataSource.insertExpense(it) }
     }

@@ -1,12 +1,16 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
+import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 data class SplitBillUiState(
+    // Why: "Editar conta" rather than "Rachar conta", with "Apagar conta" under the form.
+    val isEditing: Boolean,
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
@@ -30,8 +34,13 @@ data class SplitBillUiState(
     val split: SplitEditor,
     // Why: "Dividir", open while not null; it changes the bill's split only on "Pronto".
     val splitEditor: SplitEditor?,
+    // Why: someone else saved the bill while it was being edited here.
+    val conflict: BillConflict?,
+    // Why: "Apagar esta conta?", open while not null.
+    val deletion: BillDeletion?,
     val isOnline: Boolean,
     val isSaving: Boolean,
+    val isDeleting: Boolean,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {
@@ -58,6 +67,10 @@ data class SplitBillUiState(
     val payerIsMe: Boolean
         get() = payer?.isMe == true
 
+    // Why: "Ex-membro pagou": a bill being edited keeps a payer who left the group, unless someone else is picked.
+    val isPayerFormerMember: Boolean
+        get() = isEditing && isLoaded && payer == null && payerId.isNotEmpty()
+
     // Why: "Sua parte: R$ 118,00", null while the split doesn't add up or leaves this device's user out.
     val myShareMinor: Long?
         get() {
@@ -75,9 +88,22 @@ data class SplitBillUiState(
 
     // Why: Salvar stays disabled until the bill can be saved.
     val canSave: Boolean
-        get() = isLoaded && isAmountValid && isDescriptionValid && payer != null && split.addsUp && !isSaving
+        get() = isLoaded && isAmountValid && isDescriptionValid && (payer != null || isPayerFormerMember) &&
+            split.addsUp && !isSaving && !isDeleting
+
+    // Why: "Apagar conta" only when editing, and not while saving or deleting.
+    val canDelete: Boolean
+        get() = isEditing && isLoaded && !isSaving && !isDeleting
+
+    // Why: "Mudar o total refaz a divisão por valor proporcionalmente.", under the amount next to its other help.
+    val showsProportionalAmountHint: Boolean
+        get() = isEditing && split.mode == SplitMode.AMOUNT && !showsAmountError
 
     // Why: "Sem internet: a conta fica salva no aparelho e entra nos saldos agora."
     val showsOfflineNotice: Boolean
         get() = !isOnline
+
+    // Why: "Qualquer pessoa do grupo pode editar ou apagar." under the form when editing.
+    val showsAnyoneCanEditHint: Boolean
+        get() = isEditing && conflict == null
 }

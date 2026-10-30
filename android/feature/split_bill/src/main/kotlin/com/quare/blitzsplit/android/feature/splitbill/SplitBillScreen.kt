@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
@@ -42,16 +43,17 @@ fun SplitBillScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val saveError = stringResource(R.string.split_bill_save_error)
+    val deleteError = stringResource(R.string.split_bill_delete_error)
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
-            when (action) {
-                SplitBillUiAction.ShowSaveError -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
-                    launch { snackbarHostState.showSnackbar(saveError) }
-                }
+            val message = when (action) {
+                SplitBillUiAction.ShowSaveError -> saveError
+                SplitBillUiAction.ShowDeleteError -> deleteError
             }
+            snackbarHostState.currentSnackbarData?.dismiss()
+            // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
+            launch { snackbarHostState.showSnackbar(message) }
         }
     }
     BackHandler {
@@ -92,6 +94,16 @@ fun SplitBillScreen(
             selectedId = selectedId,
             money = rememberMoneyFormatter(state.currency),
             onEvent = viewModel::onEvent,
+        )
+    }
+    state.deletion?.let { deletion ->
+        DeleteBillDialog(
+            description = deletion.description,
+            myBalanceMinor = deletion.myBalanceMinor,
+            isDeleting = state.isDeleting,
+            money = rememberMoneyFormatter(state.currency),
+            onConfirm = { viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed) },
+            onDismiss = { viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed) },
         )
     }
     if (isPickingSpentAt) {

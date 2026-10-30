@@ -1,11 +1,14 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -26,6 +29,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -51,6 +55,7 @@ class GroupDetailViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupDetailViewModel
     private val actions = mutableListOf<GroupDetailUiAction>()
+    private val deletedBills = InMemoryDeletedBillRepository()
 
     @BeforeTest
     fun setUp() {
@@ -656,7 +661,10 @@ class GroupDetailViewModelTest {
             groups.groups.value = noGroups
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -726,7 +734,10 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -767,7 +778,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -797,7 +811,10 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -815,7 +832,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill on the list WHEN tapping it THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN a bill on the list WHEN tapping it THEN opens the bill`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
         val event = GroupDetailUiEvent.OnExpenseClicked("dinner")
@@ -824,9 +841,52 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN an open bill deleted elsewhere WHEN its screen closes THEN says it was deleted once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+            deletedBills.postNotice(GROUP_ID)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsBillDeletedNotice)
+            assertNull(deletedBills.observeNoticeGroupId().first())
+        }
+
+    @Test
+    fun `GIVEN the deleted notice on screen WHEN it was shown THEN it hides`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        deletedBills.postNotice(GROUP_ID)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsBillDeletedNotice)
+    }
+
+    @Test
+    fun `GIVEN a bill of another group deleted elsewhere WHEN this group is on top THEN leaves the notice waiting`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            deletedBills.postNotice("group-2")
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsBillDeletedNotice)
+            assertEquals("group-2", deletedBills.observeNoticeGroupId().first())
+        }
 
     @Test
     fun `GIVEN the screen on top WHEN tapping Editar grupo THEN opens the edit of the group`() =
@@ -853,7 +913,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnEditGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.SplitBill(GROUP_ID)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -970,6 +1033,8 @@ class GroupDetailViewModelTest {
         shares = shares,
         spentAt = spentAt,
         isPending = isPending,
+        updatedAt = spentAt,
+        updatedByMemberId = null,
     )
 
     private fun TestScope.prepareScenario(
@@ -988,12 +1053,14 @@ class GroupDetailViewModelTest {
             navigator = navigator,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
+            consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeExpenses = if (isRoomRead) {
                 ObserveExpensesUseCase(expenses)
             } else {
                 ObserveExpenses { expensesNeverAnswer }
             },
+            observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

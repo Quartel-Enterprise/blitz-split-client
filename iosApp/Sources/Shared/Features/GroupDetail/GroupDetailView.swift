@@ -6,6 +6,7 @@ import SwiftUI
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
     private(set) var comingSoonCount = 0
+    private(set) var billDeletedCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -16,10 +17,20 @@ final class GroupDetailModel {
         state = viewModel.uiState.value as! GroupDetailUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+            // State, not an action, so it waits for this screen while the bill's screen still covers it
+            if state.showsBillDeletedNotice { self?.showBillDeleted() }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            if action is GroupDetailUiActionShowComingSoon { self?.comingSoonCount += 1 }
+            switch action {
+            case is GroupDetailUiActionShowComingSoon: self?.comingSoonCount += 1
+            default: break
+            }
         })
+    }
+
+    private func showBillDeleted() {
+        billDeletedCount += 1
+        send(GroupDetailUiEventOnBillDeletedNoticeShown.shared)
     }
 
     func send(_ event: any GroupDetailUiEvent) {
@@ -82,6 +93,7 @@ struct GroupDetailView: View {
         #endif
         .toolbar { toolbar }
         .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
+        .glassToast("This bill was deleted", trigger: model?.billDeletedCount ?? 0)
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
         }
@@ -252,7 +264,7 @@ private func payerText(_ row: ExpenseRow) -> String {
 }
 
 /// No categories yet: every bill gets the same receipt.
-private struct ExpenseIcon: View {
+struct ExpenseIcon: View {
     var size: CGFloat = 38
 
     var body: some View {

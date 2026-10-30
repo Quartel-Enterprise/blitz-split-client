@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.core.navigation.Route
@@ -24,15 +25,25 @@ fun GroupDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val comingSoon = stringResource(R.string.group_detail_coming_soon)
+    val billDeleted = stringResource(R.string.group_detail_bill_deleted)
+    val scope = rememberCoroutineScope()
+    val showSnackbar = { message: String ->
+        snackbarHostState.currentSnackbarData?.dismiss()
+        // Why: on its own, so the next one replaces this snackbar instead of waiting until it hides.
+        scope.launch { snackbarHostState.showSnackbar(message) }
+    }
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                GroupDetailUiAction.ShowComingSoon -> {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                    // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
-                    launch { snackbarHostState.showSnackbar(comingSoon) }
-                }
+                GroupDetailUiAction.ShowComingSoon -> showSnackbar(comingSoon)
             }
+        }
+    }
+    // Why: state, not an action, so it waits for this screen while the bill's screen still covers it.
+    LaunchedEffect(state.showsBillDeletedNotice) {
+        if (state.showsBillDeletedNotice) {
+            showSnackbar(billDeleted)
+            viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
         }
     }
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }

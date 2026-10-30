@@ -1,8 +1,5 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
-import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
@@ -25,26 +22,21 @@ class CreateExpenseUseCase(
         spentAt: Long,
     ): Result<String> {
         val id = Uuid.random().toString()
+        val now = currentTimeMillis()
         return repository
             .createExpense(
-                expense = Expense(
+                expense = pendingExpenseOf(
                     id = id,
                     groupId = groupId,
-                    // Why: trimmed again after the cap, which may end on a space.
-                    description = ExpenseRules.toCapped(description.trim()).trimEnd(),
+                    description = description,
                     amountMinor = amountMinor,
+                    payerId = payerId,
                     splitMode = splitMode,
-                    payers = listOf(
-                        ExpensePayer(
-                            memberId = payerId,
-                            amountMinor = amountMinor,
-                        ),
-                    ),
                     shares = shares,
                     spentAt = spentAt,
-                    isPending = true,
+                    now = now,
                 ),
-                createdAt = currentTimeMillis(),
+                createdAt = now,
             ).map { id }
     }
 }

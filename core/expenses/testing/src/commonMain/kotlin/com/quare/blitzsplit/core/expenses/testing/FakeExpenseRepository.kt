@@ -18,12 +18,21 @@ class FakeExpenseRepository(
     val pendingVersions = MutableStateFlow(emptyList<Long>())
     val createdExpenses = mutableListOf<Expense>()
     val createdAts = mutableListOf<Long>()
+    val updatedExpenses = mutableListOf<Expense>()
+    val updatedAts = mutableListOf<Long>()
+    val deletedIds = mutableListOf<String>()
+    val deletedAts = mutableListOf<Long>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var createError: Throwable? = null
+    var updateError: Throwable? = null
+    var deleteError: Throwable? = null
 
     // Why: while set, a create waits for it, so a test can act while the save is in flight.
     var createGate: CompletableDeferred<Unit>? = null
+
+    // Why: while set, a delete waits for it, so a test can act while the delete is in flight.
+    var deleteGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
 
@@ -31,6 +40,8 @@ class FakeExpenseRepository(
     override fun observeExpenses(groupId: String): Flow<List<Expense>> = expenses.map { list ->
         list.filter { it.groupId == groupId }.sortedByDescending { it.spentAt }
     }
+
+    override fun observeExpense(id: String): Flow<Expense?> = expenses.map { list -> list.firstOrNull { it.id == id } }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
@@ -45,6 +56,39 @@ class FakeExpenseRepository(
         createdExpenses += expense
         createdAts += createdAt
         expenses.update { it + expense }
+        return Result.success(Unit)
+    }
+
+    // Why: like Room, the bill keeps its group and takes the new version; a bill that is gone fails.
+    override suspend fun updateExpense(
+        expense: Expense,
+        updatedAt: Long,
+    ): Result<Unit> {
+        updateError?.let { return Result.failure(it) }
+        val current = expenses.value.firstOrNull { it.id == expense.id }
+            ?: return Result.failure(IllegalStateException("No bill ${expense.id}"))
+        updatedExpenses += expense
+        updatedAts += updatedAt
+        val updated = expense.copy(
+            groupId = current.groupId,
+            isPending = true,
+            updatedAt = maxOf(updatedAt, current.updatedAt + 1),
+            updatedByMemberId = current.updatedByMemberId,
+        )
+        expenses.update { list -> list.map { if (it.id == expense.id) updated else it } }
+        return Result.success(Unit)
+    }
+
+    override suspend fun deleteExpense(
+        id: String,
+        deletedAt: Long,
+    ): Result<Unit> {
+        deleteGate?.await()
+        deleteError?.let { return Result.failure(it) }
+        if (expenses.value.none { it.id == id }) return Result.failure(IllegalStateException("No bill $id"))
+        deletedIds += id
+        deletedAts += deletedAt
+        expenses.update { list -> list.filterNot { it.id == id } }
         return Result.success(Unit)
     }
 

@@ -51,7 +51,7 @@ class ExpenseDaoTest {
         )
 
         // Then
-        assertEquals(listOf("bill-1"), dao.observeExpenses(GROUP_ID).first().map { it.id })
+        assertEquals(listOf("bill-1"), dao.observeExpenses(GROUP_ID).first().map { it.expense.id })
     }
 
     @Test
@@ -97,7 +97,11 @@ class ExpenseDaoTest {
         )
 
         // Then
-        val stored = dao.observeExpenses(GROUP_ID).first().single()
+        val stored = dao
+            .observeExpenses(GROUP_ID)
+            .first()
+            .single()
+            .expense
         assertEquals("Supermercado" to false, stored.description to stored.pendingSync)
     }
 
@@ -125,7 +129,11 @@ class ExpenseDaoTest {
         )
 
         // Then
-        val stored = dao.observeExpenses(GROUP_ID).first().single()
+        val stored = dao
+            .observeExpenses(GROUP_ID)
+            .first()
+            .single()
+            .expense
         assertEquals("Mercado" to true, stored.description to stored.pendingSync)
     }
 
@@ -149,7 +157,7 @@ class ExpenseDaoTest {
         )
 
         // Then
-        assertEquals(listOf("bill-pending"), dao.observeExpenses(GROUP_ID).first().map { it.id })
+        assertEquals(listOf("bill-pending"), dao.observeExpenses(GROUP_ID).first().map { it.expense.id })
     }
 
     @Test
@@ -175,11 +183,92 @@ class ExpenseDaoTest {
             )
 
             // When
-            val ids = dao.observeExpenses(GROUP_ID).first().map { it.id }
+            val ids = dao.observeExpenses(GROUP_ID).first().map { it.expense.id }
 
             // Then
             assertEquals(listOf("newer", "older"), ids)
         }
+
+    @Test
+    fun `GIVEN a bill another user saved WHEN edited here THEN nobody is its editor until it syncs`() = runTest {
+        // Given
+        prepareScenario(
+            expenses = listOf(
+                expense(
+                    id = "bill-1",
+                    updatedBy = "user-2",
+                ),
+            ),
+        )
+
+        // When
+        dao.updateExpense(
+            id = "bill-1",
+            description = "Supermercado",
+            amountMinor = 2_000L,
+            splitMode = "equal",
+            payersJson = "[]",
+            sharesJson = "[]",
+            spentAt = 1_000L,
+            now = 9L,
+        )
+
+        // Then
+        val stored = dao.observeExpense("bill-1").first()?.expense
+        assertEquals(null to true, stored?.updatedBy to stored?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a bill another user saved WHEN deleted here THEN nobody is its editor until it syncs`() = runTest {
+        // Given
+        prepareScenario(
+            expenses = listOf(
+                expense(
+                    id = "bill-1",
+                    updatedBy = "user-2",
+                ),
+            ),
+        )
+
+        // When
+        dao.markDeleted(
+            id = "bill-1",
+            now = 9L,
+        )
+
+        // Then
+        val stored = dao.getPendingExpenses("user-1").single()
+        assertEquals(null to true, stored.updatedBy to stored.isDeleted)
+    }
+
+    @Test
+    fun `GIVEN an edit here WHEN its push is taken up THEN who pushed it is its editor`() = runTest {
+        // Given
+        prepareScenario(
+            expenses = listOf(
+                expense(
+                    id = "bill-1",
+                    updatedAt = 5L,
+                    pending = true,
+                ),
+            ),
+        )
+
+        // When
+        dao.markAllSynced(
+            listOf(
+                expense(
+                    id = "bill-1",
+                    updatedAt = 5L,
+                    updatedBy = "user-1",
+                ),
+            ),
+        )
+
+        // Then
+        val stored = dao.observeExpense("bill-1").first()?.expense
+        assertEquals("user-1" to false, stored?.updatedBy to stored?.pendingSync)
+    }
 
     private fun group(
         name: String = "Viagem Floripa",
@@ -206,6 +295,7 @@ class ExpenseDaoTest {
         updatedAt: Long = 1L,
         pending: Boolean = false,
         isDeleted: Boolean = false,
+        updatedBy: String? = null,
     ): ExpenseEntity = ExpenseEntity(
         id = id,
         groupId = groupId,
@@ -219,6 +309,7 @@ class ExpenseDaoTest {
         isDeleted = isDeleted,
         addedAt = 1L,
         updatedAt = updatedAt,
+        updatedBy = updatedBy,
         pendingSync = pending,
     )
 

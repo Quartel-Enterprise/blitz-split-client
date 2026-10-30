@@ -1179,6 +1179,8 @@ class EditGroupViewModelTest {
         ),
         spentAt = 1_000L,
         isPending = false,
+        updatedAt = 1_000L,
+        updatedByMemberId = null,
     )
 
     private fun prepareScenario(

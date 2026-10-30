@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 
 class ExpenseRepositoryImpl(
     private val local: ExpenseLocalDataSource,
@@ -19,6 +20,20 @@ class ExpenseRepositoryImpl(
         .observeExpenses(groupId)
         .map { entities -> entities.mapNotNull(mapper::toDomain) }
         .distinctUntilChanged()
+
+    /*
+     * Why: null only for a bill that is gone. One this version can't read (a newer split mode) still exists, so it
+     * emits nothing rather than having an open Conta take it for a deletion.
+     */
+    override fun observeExpense(id: String): Flow<Expense?> = local
+        .observeExpense(id)
+        .transform { row ->
+            if (row == null) {
+                emit(null)
+            } else {
+                mapper.toDomain(row)?.let { emit(it) }
+            }
+        }.distinctUntilChanged()
 
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
@@ -36,12 +51,36 @@ class ExpenseRepositoryImpl(
         )
     }
 
+    override suspend fun updateExpense(
+        expense: Expense,
+        updatedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.updateExpense(
+            entity = mapper.toEntity(
+                expense = expense,
+                createdAt = updatedAt,
+            ),
+            now = updatedAt,
+        )
+    }
+
+    override suspend fun deleteExpense(
+        id: String,
+        deletedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.markDeleted(
+            id = id,
+            now = deletedAt,
+        )
+    }
+
     // Why: only the bills of this user's groups, which went up before them in the same sync.
     override suspend fun uploadPendingExpenses(userId: String): Result<Unit> = suspendRunCatching {
         val pending = local.getPendingExpenses(userId)
         if (pending.isEmpty()) return@suspendRunCatching
         remote.upsertExpenses(pending.map { mapper.toDto(it, userId) })
-        local.markSynced(pending)
+        // Why: the server records whoever pushes as who last saved each bill.
+        local.markSynced(pending.map { it.copy(updatedBy = userId) })
     }
 
     override suspend fun downloadExpenses(userId: String): Result<Unit> = suspendRunCatching {

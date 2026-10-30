@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -33,11 +32,10 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 
 private val singleColumnMaxWidth = 592.dp
-private val dialogWidth = 560.dp
-private val wideDialogWidth = 920.dp
 private val columnSpacing = 20.dp
 
 // Why: what the top bar (or the dialog's header and actions) of Rachar conta and Dividir hold.
@@ -72,37 +70,25 @@ internal fun SplitBillFormLayout(
     val layout = rememberDeviceLayout()
     val usesTwoColumns = if (isDialog) layout.isTablet && layout.isLandscape else layout.isLandscape
     if (isDialog) {
-        Box(
-            modifier = modifier.padding(vertical = 24.dp),
-            contentAlignment = Alignment.BottomCenter,
+        DialogCard(
+            isWide = usesTwoColumns,
+            spacing = columnSpacing,
+            snackbarHostState = snackbarHostState,
+            modifier = modifier,
+            cardModifier = Modifier.imePadding(),
         ) {
-            Surface(
-                modifier = Modifier
-                    .widthIn(max = if (usesTwoColumns) wideDialogWidth else dialogWidth)
-                    .fillMaxWidth()
-                    .imePadding(),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainer,
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(columnSpacing),
-                ) {
-                    DialogHeader(chrome)
-                    FormColumnsLayout(
-                        usesTwoColumns = usesTwoColumns,
-                        contentPadding = PaddingValues(0.dp),
-                        first = first,
-                        second = second,
-                        modifier = Modifier.weight(
-                            weight = 1f,
-                            fill = false,
-                        ),
-                    )
-                    DialogActionsRow(chrome)
-                }
-            }
-            SnackbarHost(snackbarHostState)
+            DialogHeader(chrome)
+            FormColumnsLayout(
+                usesTwoColumns = usesTwoColumns,
+                contentPadding = PaddingValues(0.dp),
+                first = first,
+                second = second,
+                modifier = Modifier.weight(
+                    weight = 1f,
+                    fill = false,
+                ),
+            )
+            DialogActionsRow(chrome)
         }
     } else {
         Scaffold(
