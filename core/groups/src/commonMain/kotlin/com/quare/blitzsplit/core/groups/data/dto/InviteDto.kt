@@ -13,4 +13,6 @@ data class InviteDto(
     @SerialName("creator_name") val creatorName: String?,
     @SerialName("is_member") val isMember: Boolean,
     @SerialName("members") val members: List<InviteMemberDto>,
+    @SerialName("personal_member_id") val personalMemberId: String?,
+    @SerialName("inviter_name") val inviterName: String?,
 )

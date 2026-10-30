@@ -9,6 +9,7 @@ import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
+import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
@@ -23,6 +24,24 @@ class JsMembersMember(
     val hasJoined: Boolean,
     val canBeRemoved: Boolean,
     val canBeInvited: Boolean,
+    // Why: "Convite pessoal para Carla" stays disabled until the member's link exists.
+    val isPersonalInviteReady: Boolean,
+)
+
+class JsPersonalInvite(
+    val memberName: String,
+    val memberInitials: String,
+    val memberColor: String,
+    val displayLink: String,
+    val isLinkCopied: Boolean,
+)
+
+// Why: "coming-soon" and "change-error", each a toast in the page's words; "copy" and "share-personal" with the link.
+class JsMembersAction(
+    val type: String,
+    val link: String?,
+    val memberName: String?,
+    val groupName: String?,
 )
 
 class JsMemberNameEditor(
@@ -42,6 +61,8 @@ class JsMembersState(
     val editor: JsMemberNameEditor?,
     // Why: the name in "Remover Carla do grupo?", null while nobody is about to be removed.
     val memberToRemoveName: String?,
+    // Why: the "Convite pessoal" sheet, null while closed.
+    val personalInvite: JsPersonalInvite?,
     val isLoaded: Boolean,
     // Why: "Você entrou como Bruno", null unless the group was just joined through its link.
     val joinedAs: String?,
@@ -67,6 +88,7 @@ class MembersPresenter(
                 joinedCount = state.joinedCount,
                 editor = state.editor?.let(::toJsMemberNameEditor),
                 memberToRemoveName = state.memberToRemove?.name,
+                personalInvite = state.personalInvite?.let(::toJsPersonalInvite),
                 isLoaded = state.isLoaded,
                 joinedAs = state.joinedAs,
                 showsProtectAccess = state.showsProtectAccess,
@@ -76,12 +98,21 @@ class MembersPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" and "change-error", each a toast in the page's words.
-    fun observeActions(onAction: (String) -> Unit): JsWatch {
+    fun observeActions(onAction: (JsMembersAction) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                MembersUiAction.ShowComingSoon -> "coming-soon"
-                MembersUiAction.ShowChangeError -> "change-error"
+                MembersUiAction.ShowComingSoon -> JsMembersAction("coming-soon", null, null, null)
+
+                MembersUiAction.ShowChangeError -> JsMembersAction("change-error", null, null, null)
+
+                is MembersUiAction.CopyLink -> JsMembersAction("copy", action.link, null, null)
+
+                is MembersUiAction.SharePersonalLink -> JsMembersAction(
+                    type = "share-personal",
+                    link = action.link,
+                    memberName = action.memberName,
+                    groupName = action.groupName,
+                )
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -106,6 +137,18 @@ class MembersPresenter(
 
     fun personalInvite(memberId: String) {
         viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked(memberId))
+    }
+
+    fun dismissPersonalInvite() {
+        viewModel.onEvent(MembersUiEvent.OnPersonalInviteDismissed)
+    }
+
+    fun copyPersonalLink() {
+        viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+    }
+
+    fun sharePersonalLink() {
+        viewModel.onEvent(MembersUiEvent.OnPersonalLinkShareClicked)
     }
 
     fun remove(memberId: String) {
@@ -159,6 +202,15 @@ private fun toJsMembersMember(member: MembersMember): JsMembersMember = JsMember
     hasJoined = member.hasJoined,
     canBeRemoved = member.canBeRemoved,
     canBeInvited = member.canBeInvited,
+    isPersonalInviteReady = member.isPersonalInviteReady,
+)
+
+private fun toJsPersonalInvite(invite: PersonalInvite): JsPersonalInvite = JsPersonalInvite(
+    memberName = invite.member.name,
+    memberInitials = invite.member.initials,
+    memberColor = invite.member.avatarColor.code,
+    displayLink = invite.displayLink,
+    isLinkCopied = invite.isLinkCopied,
 )
 
 private fun toJsMemberNameEditor(editor: MemberNameEditor): JsMemberNameEditor = JsMemberNameEditor(

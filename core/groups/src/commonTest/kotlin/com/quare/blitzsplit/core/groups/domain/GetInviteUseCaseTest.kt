@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain
 
 import com.quare.blitzsplit.core.groups.domain.model.Invite
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeInviteRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -22,7 +23,7 @@ class GetInviteUseCaseTest {
         prepareScenario(invite = invite)
 
         // When
-        val result = useCase("aB3dE5gH")
+        val result = useCase(groupLink)
 
         // Then
         assertEquals(invite, result.getOrThrow())
@@ -35,7 +36,7 @@ class GetInviteUseCaseTest {
         prepareScenario(invite = null)
 
         // When
-        val result = useCase("aB3dE5gH")
+        val result = useCase(groupLink)
 
         // Then
         assertNull(result.getOrThrow())
@@ -47,11 +48,17 @@ class GetInviteUseCaseTest {
         prepareScenario(fetchError = IllegalStateException("offline"))
 
         // When
-        val result = useCase("aB3dE5gH")
+        val result = useCase(groupLink)
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
     }
+
+    private val groupLink = InviteTarget(
+        code = "aB3dE5gH",
+        memberCode = null,
+        inviterCode = null,
+    )
 
     private val invite = Invite(
         code = "aB3dE5gH",
@@ -63,6 +70,8 @@ class GetInviteUseCaseTest {
         creatorName = "Pierre",
         isMember = false,
         members = emptyList(),
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private fun prepareScenario(

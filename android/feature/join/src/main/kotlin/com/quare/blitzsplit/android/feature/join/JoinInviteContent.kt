@@ -21,16 +21,21 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -57,6 +62,7 @@ private const val SHOWN_FACES = 3
 @Composable
 fun JoinInviteContent(
     state: JoinInviteUiState,
+    snackbarHostState: SnackbarHostState,
     onEvent: (JoinInviteUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -91,7 +97,13 @@ fun JoinInviteContent(
                     JoinInviteStatus.INVALID -> ProblemContent(
                         icon = Icons.Outlined.LinkOff,
                         title = stringResource(R.string.join_invalid_title),
-                        message = stringResource(R.string.join_invalid_message),
+                        message = stringResource(
+                            if (state.isPersonal) {
+                                R.string.join_invalid_personal_message
+                            } else {
+                                R.string.join_invalid_message
+                            },
+                        ),
                         displayLink = null,
                         onRetry = null,
                         onEvent = onEvent,
@@ -107,6 +119,10 @@ fun JoinInviteContent(
                     )
                 }
             }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
         }
     }
 }
@@ -123,11 +139,13 @@ private fun LoadingBox() {
     }
 }
 
+// Why: a personal link names the member it joins as, and "Não sou Carla" goes on to the whole list instead.
 @Composable
 private fun InviteContent(
     state: JoinInviteUiState,
     onEvent: (JoinInviteUiEvent) -> Unit,
 ) {
+    val personalMember = state.personalMember
     Column(
         modifier = Modifier.padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -137,7 +155,7 @@ private fun InviteContent(
             color = MaterialTheme.colorScheme.secondaryContainer,
         ) {
             Text(
-                text = stringResource(R.string.join_chip),
+                text = stringResource(if (personalMember == null) R.string.join_chip else R.string.join_personal_chip),
                 modifier = Modifier.padding(
                     horizontal = 12.dp,
                     vertical = 6.dp,
@@ -146,8 +164,10 @@ private fun InviteContent(
             )
         }
         Text(
-            text = state.creatorName?.let { stringResource(R.string.join_title, it, state.groupName) }
-                ?: stringResource(R.string.join_title_no_creator, state.groupName),
+            text = inviteTitleOf(
+                state = state,
+                personalMember = personalMember,
+            ),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
         )
@@ -159,29 +179,65 @@ private fun InviteContent(
             )
         }
         Text(
-            text = stringResource(R.string.join_hint),
+            text = personalMember?.let { stringResource(R.string.join_personal_hint, it.name) }
+                ?: stringResource(R.string.join_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = { onEvent(JoinInviteUiEvent.OnJoinClicked) },
+                enabled = !state.isJoining,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 56.dp),
             ) {
-                Text(stringResource(R.string.join_join))
+                if (state.isJoining) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(end = ButtonDefaults.IconSpacing)
+                            .size(ButtonDefaults.IconSize),
+                        color = LocalContentColor.current,
+                        strokeWidth = 2.dp,
+                    )
+                }
+                Text(
+                    personalMember?.let { stringResource(R.string.join_personal_join, it.name) }
+                        ?: stringResource(R.string.join_join),
+                )
+            }
+            val secondaryEvent = if (personalMember == null) {
+                JoinInviteUiEvent.OnNotNowClicked
+            } else {
+                JoinInviteUiEvent.OnNotMeClicked
             }
             TextButton(
-                onClick = { onEvent(JoinInviteUiEvent.OnNotNowClicked) },
+                onClick = { onEvent(secondaryEvent) },
+                enabled = !state.isJoining,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 48.dp),
             ) {
-                Text(stringResource(R.string.join_not_now))
+                Text(
+                    personalMember?.let { stringResource(R.string.join_personal_not_me, it.name) }
+                        ?: stringResource(R.string.join_not_now),
+                )
             }
         }
     }
+}
+
+// Why: "Ana te chamou como Carla" names whoever shared a personal link, "Você entra como Carla" when it doesn't say.
+@Composable
+private fun inviteTitleOf(
+    state: JoinInviteUiState,
+    personalMember: JoinMember?,
+): String = if (personalMember == null) {
+    state.creatorName?.let { stringResource(R.string.join_title, it, state.groupName) }
+        ?: stringResource(R.string.join_title_no_creator, state.groupName)
+} else {
+    state.inviterName?.let { stringResource(R.string.join_personal_title, it, personalMember.name) }
+        ?: stringResource(R.string.join_personal_title_no_inviter, personalMember.name)
 }
 
 @Composable
@@ -352,19 +408,35 @@ private fun ProblemContent(
     }
 }
 
+private fun createPreviewMembers(): List<JoinMember> = listOf(
+    JoinMember("1", "Pierre", "PI", AvatarColor.BLUE, hasJoined = true),
+    JoinMember("2", "Ana", "AN", AvatarColor.GREEN, hasJoined = true),
+    JoinMember("3", "Bruno", "BR", AvatarColor.PEACH, hasJoined = false),
+    JoinMember("4", "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
+)
+
 private fun createPreviewState(status: JoinInviteStatus): JoinInviteUiState = JoinInviteUiState(
     status = status,
     groupName = "Viagem Floripa",
     groupInitials = "VF",
     groupColor = AvatarColor.BLUE,
     creatorName = "Pierre",
-    members = listOf(
-        JoinMember("1", "Pierre", "PI", AvatarColor.BLUE, hasJoined = true),
-        JoinMember("2", "Ana", "AN", AvatarColor.GREEN, hasJoined = true),
-        JoinMember("3", "Bruno", "BR", AvatarColor.PEACH, hasJoined = false),
-        JoinMember("4", "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
-    ),
+    members = createPreviewMembers(),
     displayLink = "blitzsplit.com/g/7Hk2pQxa",
+    isPersonal = false,
+    personalMember = null,
+    inviterName = "Pierre",
+    isJoining = false,
+)
+
+private fun createPersonalPreviewState(isJoining: Boolean): JoinInviteUiState = createPreviewState(
+    JoinInviteStatus.READY,
+).copy(
+    displayLink = "blitzsplit.com/g/7Hk2pQxa/c3Rt9z",
+    isPersonal = true,
+    personalMember = createPreviewMembers().last(),
+    inviterName = "Ana",
+    isJoining = isJoining,
 )
 
 @DevicePreviews
@@ -373,6 +445,31 @@ private fun JoinInviteContentPreview() {
     BlitzSplitTheme {
         JoinInviteContent(
             state = createPreviewState(JoinInviteStatus.READY),
+            snackbarHostState = remember { SnackbarHostState() },
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun JoinInvitePersonalPreview() {
+    BlitzSplitTheme {
+        JoinInviteContent(
+            state = createPersonalPreviewState(isJoining = false),
+            snackbarHostState = remember { SnackbarHostState() },
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun JoinInvitePersonalJoiningPreview() {
+    BlitzSplitTheme {
+        JoinInviteContent(
+            state = createPersonalPreviewState(isJoining = true),
+            snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
         )
     }
@@ -384,6 +481,7 @@ private fun JoinInviteOfflinePreview() {
     BlitzSplitTheme {
         JoinInviteContent(
             state = createPreviewState(JoinInviteStatus.OFFLINE),
+            snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
         )
     }

@@ -7,10 +7,12 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.InviteMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.InviteRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteMember
+import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -29,13 +31,25 @@ class InviteRepositoryImplTest {
     private lateinit var remote: FakeInviteRemoteDataSource
     private lateinit var repository: InviteRepositoryImpl
 
+    private val groupLink = InviteTarget(
+        code = "aB3dE5gH",
+        memberCode = null,
+        inviterCode = null,
+    )
+
+    private val personalLink = InviteTarget(
+        code = "aB3dE5gH",
+        memberCode = "Xy7kQ2",
+        inviterCode = "Pq9Rs4",
+    )
+
     @Test
     fun `GIVEN a code of a group WHEN fetching its invite THEN returns the group as the invite shows it`() = runTest {
         // Given
         prepareScenario(invite = inviteDto)
 
         // When
-        val result = repository.fetchInvite("aB3dE5gH")
+        val result = repository.fetchInvite(groupLink)
 
         // Then
         assertEquals(
@@ -56,6 +70,8 @@ class InviteRepositoryImplTest {
                         hasJoined = true,
                     ),
                 ),
+                personalMemberId = null,
+                inviterName = null,
             ),
             result.getOrThrow(),
         )
@@ -68,7 +84,7 @@ class InviteRepositoryImplTest {
         prepareScenario(invite = null)
 
         // When
-        val result = repository.fetchInvite("aB3dE5gH")
+        val result = repository.fetchInvite(groupLink)
 
         // Then
         assertTrue(result.isSuccess)
@@ -81,7 +97,7 @@ class InviteRepositoryImplTest {
         prepareScenario(fetchError = IllegalStateException("offline"))
 
         // When
-        val result = repository.fetchInvite("aB3dE5gH")
+        val result = repository.fetchInvite(groupLink)
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
@@ -93,7 +109,123 @@ class InviteRepositoryImplTest {
         prepareScenario(fetchError = CancellationException("left the screen"))
 
         // When
-        val error = assertFailsWith<CancellationException> { repository.fetchInvite("aB3dE5gH") }
+        val error = assertFailsWith<CancellationException> { repository.fetchInvite(groupLink) }
+
+        // Then
+        assertEquals("left the screen", error.message)
+    }
+
+    @Test
+    fun `GIVEN the link of a group WHEN fetching its invite THEN asks the server with the code alone`() = runTest {
+        // Given
+        prepareScenario(invite = inviteDto)
+
+        // When
+        repository.fetchInvite(groupLink)
+
+        // Then
+        assertEquals(listOf("aB3dE5gH"), remote.fetchedCodes)
+        assertTrue(remote.fetchedPersonal.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a personal link with who shares it WHEN fetching its invite THEN asks for both`() = runTest {
+        // Given
+        prepareScenario(invite = inviteDto)
+
+        // When
+        repository.fetchInvite(personalLink)
+
+        // Then
+        assertEquals(
+            listOf(
+                PersonalInviteParamsDto(
+                    code = "aB3dE5gH",
+                    memberCode = "Xy7kQ2",
+                    inviterCode = "Pq9Rs4",
+                ),
+            ),
+            remote.fetchedPersonal,
+        )
+        assertTrue(remote.fetchedCodes.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a personal link nobody known shares WHEN fetching its invite THEN asks for that member alone`() =
+        runTest {
+            // Given
+            prepareScenario(invite = inviteDto)
+            val target = personalLink.copy(inviterCode = null)
+
+            // When
+            repository.fetchInvite(target)
+
+            // Then
+            assertEquals(
+                listOf(
+                    PersonalInviteParamsDto(
+                        code = "aB3dE5gH",
+                        memberCode = "Xy7kQ2",
+                        inviterCode = null,
+                    ),
+                ),
+                remote.fetchedPersonal,
+            )
+        }
+
+    @Test
+    fun `GIVEN a personal link WHEN fetching its invite THEN returns the member it joins as and who shared it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                invite = inviteDto.copy(
+                    personalMemberId = "m-2",
+                    inviterName = "Ana",
+                ),
+            )
+
+            // When
+            val result = repository.fetchInvite(personalLink)
+
+            // Then
+            val invite = result.getOrThrow()
+            assertEquals("aB3dE5gH", invite?.code)
+            assertEquals("m-2", invite?.personalMemberId)
+            assertEquals("Ana", invite?.inviterName)
+        }
+
+    @Test
+    fun `GIVEN a personal link no group has WHEN fetching its invite THEN succeeds with no invite`() = runTest {
+        // Given
+        prepareScenario(invite = null)
+
+        // When
+        val result = repository.fetchInvite(personalLink)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(result.getOrThrow())
+    }
+
+    @Test
+    fun `GIVEN the server can not be reached WHEN fetching a personal invite THEN returns the error`() = runTest {
+        // Given
+        prepareScenario(fetchError = IllegalStateException("offline"))
+
+        // When
+        val result = repository.fetchInvite(personalLink)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN the fetch is cancelled WHEN fetching a personal invite THEN the cancellation goes through`() = runTest {
+        // Given
+        prepareScenario(fetchError = CancellationException("left the screen"))
+
+        // When
+        val error = assertFailsWith<CancellationException> { repository.fetchInvite(personalLink) }
 
         // Then
         assertEquals("left the screen", error.message)
@@ -242,6 +374,8 @@ class InviteRepositoryImplTest {
                 hasJoined = true,
             ),
         ),
+        personalMemberId = null,
+        inviterName = null,
     )
 
     private fun prepareScenario(
@@ -269,10 +403,17 @@ private class FakeInviteRemoteDataSource(
     private val joinError: Throwable?,
 ) : GroupRemoteDataSource {
     val fetchedCodes = mutableListOf<String>()
+    val fetchedPersonal = mutableListOf<PersonalInviteParamsDto>()
     val joins = mutableListOf<JoinGroupParamsDto>()
 
     override suspend fun fetchInvite(code: String): InviteDto? {
         fetchedCodes += code
+        fetchError?.let { throw it }
+        return invite
+    }
+
+    override suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto? {
+        fetchedPersonal += params
         fetchError?.let { throw it }
         return invite
     }
@@ -285,7 +426,7 @@ private class FakeInviteRemoteDataSource(
 
     override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> = error("unused")
 
-    override suspend fun upsertMembers(members: List<GroupMemberDto>) = error("unused")
+    override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> = error("unused")
 
     override suspend fun deleteMembers(ids: List<String>) = error("unused")
 

@@ -17,8 +17,15 @@
     <string name="join_hint">No account needed. On the next screen you pick who you are.</string>
     <string name="join_join">Join group</string>
     <string name="join_not_now">Not now</string>
+    <string name="join_personal_chip">Personal invite</string>
+    <string name="join_personal_title">%1$s invited you as %2$s</string>
+    <string name="join_personal_title_no_inviter">You\'re joining as %s</string>
+    <string name="join_personal_hint">This link is just for you. You join as %s, without picking from the list.</string>
+    <string name="join_personal_join">Join as %s</string>
+    <string name="join_personal_not_me">I\'m not %s</string>
     <string name="join_invalid_title">This invite is no longer valid</string>
     <string name="join_invalid_message">The link was changed or the group was deleted. Ask whoever invited you for a new link.</string>
+    <string name="join_invalid_personal_message">Someone already joined through this link, or it was changed. Ask whoever sent it for a new one.</string>
     <string name="join_go_home">Go to home</string>
     <string name="join_offline_title">No internet to open the invite</string>
     <string name="join_offline_message">We kept the link. As soon as the device connects, the invite opens by itself.</string>

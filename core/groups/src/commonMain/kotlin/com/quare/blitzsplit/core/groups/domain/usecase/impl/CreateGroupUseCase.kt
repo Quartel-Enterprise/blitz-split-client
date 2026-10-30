@@ -40,6 +40,7 @@ class CreateGroupUseCase(
                             avatarColor = member.avatarColor,
                             isMe = member.isMe,
                             hasJoined = member.isMe,
+                            inviteCode = null,
                         )
                     },
                     isPending = true,

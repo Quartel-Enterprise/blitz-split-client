@@ -10,4 +10,9 @@ data class GroupMember(
     val isMe: Boolean,
     // Why: someone who opened the invite link and picked this member; the others are still just a name.
     val hasJoined: Boolean,
+    /*
+     * Why: the code of the member's personal invite link, which the server makes; null for a member made on this
+     * device until its first sync brings it.
+     */
+    val inviteCode: String?,
 )

@@ -32,4 +32,6 @@ data class GroupMemberEntity(
      */
     @ColumnInfo(defaultValue = "0")
     val isRemoved: Boolean,
+    // Why: the code of the member's personal invite link, which the server makes; null until the first sync brings it.
+    val inviteCode: String?,
 )

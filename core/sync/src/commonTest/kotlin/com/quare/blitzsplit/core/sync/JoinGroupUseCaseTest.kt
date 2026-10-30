@@ -478,6 +478,8 @@ class JoinGroupUseCaseTest {
                 hasJoined = false,
             ),
         ),
+        personalMemberId = null,
+        inviterName = null,
     )
     private val asAna = JoinChoice.AsMember(ana.id)
     private val asNewMember = JoinChoice.AsNewMember("  Bruno ")

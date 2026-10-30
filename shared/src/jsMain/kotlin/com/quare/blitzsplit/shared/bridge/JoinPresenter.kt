@@ -5,6 +5,7 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiAction
@@ -35,6 +36,12 @@ class JsJoinInviteState(
     val memberCount: Int,
     val joinedNames: Array<String>,
     val displayLink: String,
+    // Why: a personal link ("Convite pessoal"), which joins as personalMember with "Entrar como Carla".
+    val isPersonal: Boolean,
+    val personalMember: JsJoinMember?,
+    // Why: "Ana te chamou como Carla": whoever shared the link, null when the link doesn't say.
+    val inviterName: String?,
+    val isJoining: Boolean,
 )
 
 class JoinInvitePresenter(
@@ -58,14 +65,34 @@ class JoinInvitePresenter(
                 memberCount = state.memberCount,
                 joinedNames = state.joinedNames.toTypedArray(),
                 displayLink = state.displayLink,
+                isPersonal = state.isPersonal,
+                personalMember = state.personalMember?.let(::toJsJoinMember),
+                inviterName = state.inviterName,
+                isJoining = state.isJoining,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
+    // Why: "join-error", a toast in the page's words.
+    fun observeActions(onAction: (String) -> Unit): JsWatch {
+        val actions = viewModel.uiAction.map { action ->
+            when (action) {
+                JoinInviteUiAction.ShowJoinError -> "join-error"
+            }
+        }
+        val watch = FlowWatcher(actions).observe(onAction)
+        return JsWatch(watch::cancel)
+    }
+
     fun join() {
         viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
+    }
+
+    // Why: "Não sou Carla", the whole list.
+    fun notMe() {
+        viewModel.onEvent(JoinInviteUiEvent.OnNotMeClicked)
     }
 
     fun notNow() {

@@ -66,7 +66,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
     case 'members':
       return route ? <MembersScreen key={route.groupId} route={route} /> : null
     case 'join-invite':
-      return route ? <JoinInviteScreen key={route.inviteCode} route={route} /> : null
+      // Why: the group's link and each member's personal link of the same group are different invites.
+      return route ? <JoinInviteScreen key={`${route.inviteCode}/${route.inviteMemberCode ?? ''}`} route={route} /> : null
     case 'join-pick':
       return route ? <JoinPickScreen key={route.inviteCode} route={route} /> : null
     // Why: the web edits name, photo and color inside the profile, so it never pushes the editor.

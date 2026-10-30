@@ -66,6 +66,8 @@ class InviteMapperImplTest {
                         hasJoined = false,
                     ),
                 ),
+                personalMemberId = null,
+                inviterName = null,
             ),
             invite,
         )
@@ -165,6 +167,54 @@ class InviteMapperImplTest {
 
         // Then
         assertFalse(invite.members.single().hasJoined)
+    }
+
+    @Test
+    fun `GIVEN the invite of a personal link WHEN mapping it THEN keeps the member it joins as and who shared it`() {
+        // Given
+        val dto = inviteDto(
+            personalMemberId = "m-2",
+            inviterName = "Ana",
+        )
+
+        // When
+        val invite = mapper.toDomain("aB3dE5gH", dto)
+
+        // Then
+        assertEquals("m-2", invite.personalMemberId)
+        assertEquals("Ana", invite.inviterName)
+    }
+
+    @Test
+    fun `GIVEN a personal link not saying who shared it WHEN mapping the invite THEN has the member and no inviter`() {
+        // Given
+        val dto = inviteDto(
+            personalMemberId = "m-2",
+            inviterName = null,
+        )
+
+        // When
+        val invite = mapper.toDomain("aB3dE5gH", dto)
+
+        // Then
+        assertEquals("m-2", invite.personalMemberId)
+        assertNull(invite.inviterName)
+    }
+
+    @Test
+    fun `GIVEN the invite of the group link WHEN mapping it THEN has no member to join as and no inviter`() {
+        // Given
+        val dto = inviteDto(
+            personalMemberId = null,
+            inviterName = null,
+        )
+
+        // When
+        val invite = mapper.toDomain("aB3dE5gH", dto)
+
+        // Then
+        assertNull(invite.personalMemberId)
+        assertNull(invite.inviterName)
     }
 
     @Test
@@ -286,6 +336,8 @@ class InviteMapperImplTest {
         creatorName: String? = "Pierre",
         isMember: Boolean = false,
         members: List<InviteMemberDto> = listOf(memberDto()),
+        personalMemberId: String? = null,
+        inviterName: String? = null,
     ): InviteDto = InviteDto(
         groupId = "group-1",
         name = "Viagem Floripa",
@@ -295,6 +347,8 @@ class InviteMapperImplTest {
         creatorName = creatorName,
         isMember = isMember,
         members = members,
+        personalMemberId = personalMemberId,
+        inviterName = inviterName,
     )
 
     private fun memberDto(

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.invite.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.model.QrCode
 
 data class InviteUiState(
@@ -27,7 +28,7 @@ data class InviteUiState(
 
     // Why: "blitzsplit.com/g/7Hk2pQ", the link as the card shows it; copying and sharing send the whole link.
     val displayLink: String?
-        get() = link?.substringAfter("://")
+        get() = link?.let(InviteLink::displayOf)
 
     // Why: "Quem abrir o link escolhe quem é na lista: Ana, Bruno ou Carla".
     val notJoinedNames: List<String>

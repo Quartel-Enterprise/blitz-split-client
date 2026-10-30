@@ -71,9 +71,74 @@ class MembersMemberTest {
         assertFalse(canBeRemovedAndInvited.second)
     }
 
+    @Test
+    fun `GIVEN someone not joined with a personal link WHEN reading the member THEN the personal invite is ready`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            personalLink = CARLA_LINK,
+        )
+
+        // When
+        val isReady = member.isPersonalInviteReady
+
+        // Then
+        assertTrue(isReady)
+    }
+
+    @Test
+    fun `GIVEN someone not joined without a link yet WHEN reading the member THEN the personal invite is not ready`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            personalLink = null,
+        )
+
+        // When
+        val isReady = member.isPersonalInviteReady
+
+        // Then
+        assertFalse(isReady)
+    }
+
+    @Test
+    fun `GIVEN someone who joined with a link WHEN reading the member THEN the personal invite is not ready`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = true,
+            personalLink = CARLA_LINK,
+        )
+
+        // When
+        val isReady = member.isPersonalInviteReady
+
+        // Then
+        assertFalse(isReady)
+    }
+
+    @Test
+    fun `GIVEN this device user with a link WHEN reading the member THEN the personal invite is not ready`() {
+        // Given
+        val member = member(
+            isMe = true,
+            hasJoined = false,
+            personalLink = CARLA_LINK,
+        )
+
+        // When
+        val isReady = member.isPersonalInviteReady
+
+        // Then
+        assertFalse(isReady)
+    }
+
     private fun member(
         isMe: Boolean,
         hasJoined: Boolean,
+        personalLink: String? = null,
     ): MembersMember = MembersMember(
         id = "member-2",
         name = "Ana",
@@ -81,5 +146,10 @@ class MembersMemberTest {
         avatarColor = AvatarColor.PEACH,
         isMe = isMe,
         hasJoined = hasJoined,
+        personalLink = personalLink,
     )
+
+    private companion object {
+        const val CARLA_LINK = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=p1Er2e"
+    }
 }

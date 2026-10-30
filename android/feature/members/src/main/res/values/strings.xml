@@ -24,6 +24,11 @@
     <string name="members_options">Options for %s</string>
     <string name="members_rename">Rename</string>
     <string name="members_personal_invite">Personal invite for %s</string>
+    <string name="members_personal_message">Whoever opens this link joins straight in as %s, without picking from the list. It works once.</string>
+    <string name="members_personal_copy">Copy link</string>
+    <string name="members_personal_copied">Copied</string>
+    <string name="members_personal_share">Share with %s</string>
+    <string name="members_personal_share_message">Join %1$s as %2$s on Blitz Split: %3$s</string>
     <string name="members_remove">Remove from group</string>
     <string name="members_remove_joined">%s already joined the group</string>
     <string name="members_remove_title">Remove %s from the group?</string>

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteCodeParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
@@ -18,9 +19,10 @@ class SupabaseGroupRemoteDataSource(
         .upsert(groups) { select() }
         .decodeList<GroupDto>()
 
-    override suspend fun upsertMembers(members: List<GroupMemberDto>) {
-        postgrest.from(MEMBERS).upsert(members)
-    }
+    override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> = postgrest
+        .from(MEMBERS)
+        .upsert(members) { select() }
+        .decodeList<GroupMemberDto>()
 
     // Why: a few ids per request, so the filter in the URL stays short.
     override suspend fun deleteMembers(ids: List<String>) {
@@ -39,6 +41,12 @@ class SupabaseGroupRemoteDataSource(
         .rpc(
             function = GET_INVITE,
             parameters = InviteCodeParamsDto(code),
+        ).decodeAs<InviteDto?>()
+
+    override suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto? = postgrest
+        .rpc(
+            function = GET_INVITE,
+            parameters = params,
         ).decodeAs<InviteDto?>()
 
     override suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto = postgrest

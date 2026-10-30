@@ -5,6 +5,7 @@ import SwiftUI
 @Observable
 final class JoinInviteModel {
     private(set) var state: JoinInviteUiState
+    private(set) var joinErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<JoinInviteViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -15,6 +16,9 @@ final class JoinInviteModel {
         state = viewModel.uiState.value as! JoinInviteUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+        })
+        watches.add(viewModel.actionWatcher.observe { [weak self] action in
+            if action is JoinInviteUiActionShowJoinError { self?.joinErrorCount += 1 }
         })
     }
 
@@ -28,12 +32,15 @@ final class JoinInviteModel {
 }
 
 /// "Invite": a group's invite link opened, pushed over the groups, or over the welcome before there is a profile.
-/// Offline it keeps the link and opens the invite by itself once the device is online.
+/// Offline it keeps the link and opens the invite by itself once the device is online. A personal link joins straight
+/// in as the member it was made for, or goes on to the list with "I'm not Carla".
 struct JoinInviteView: View {
     let route: RouteJoinInvite
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: JoinInviteModel?
+    @State private var showsJoinError = false
+    @State private var hidesJoinError: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -55,6 +62,28 @@ struct JoinInviteView: View {
                 }
             }
         }
+        .overlay(alignment: .top) {
+            if showsJoinError {
+                Text("Couldn't join. Check your connection and try again.")
+                    .font(.subheadline.weight(.semibold))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .glassEffect(.regular, in: .capsule)
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
+        .onChange(of: model?.joinErrorCount ?? 0) {
+            withAnimation { showsJoinError = true }
+            hidesJoinError?.cancel()
+            hidesJoinError = Task {
+                try? await Task.sleep(for: .seconds(3))
+                guard !Task.isCancelled else { return }
+                withAnimation { showsJoinError = false }
+            }
+        }
         .onAppear {
             if model == nil { model = JoinInviteModel(route: route) }
         }
@@ -70,12 +99,18 @@ private struct JoinInviteContent: View {
             Group {
                 switch state.status {
                 case .ready:
-                    invite(state)
+                    if state.isPersonal, let member = state.personalMember {
+                        personalInvite(state, member: member)
+                    } else {
+                        invite(state)
+                    }
                 case .invalid:
                     problem(
                         systemImage: "xmark.circle",
                         title: "This invite is no longer valid",
-                        message: "The link was changed or the group was deleted. Ask whoever invited you for a new link.",
+                        message: state.isPersonal
+                            ? "Someone already joined through this link, or it was changed. Ask whoever sent it for a new one."
+                            : "The link was changed or the group was deleted. Ask whoever invited you for a new link.",
                         displayLink: nil,
                     )
                 case .offline:
@@ -99,11 +134,7 @@ private struct JoinInviteContent: View {
 
     private func invite(_ state: JoinInviteUiState) -> some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Invite")
-                .font(.subheadline.weight(.semibold))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .glassEffect(.regular.tint(Palette.accent.opacity(0.2)), in: .capsule)
+            chip("Invite")
             Group {
                 if let creatorName = state.creatorName {
                     Text("\(creatorName) invited you to \(state.groupName)")
@@ -112,26 +143,7 @@ private struct JoinInviteContent: View {
                 }
             }
             .font(.largeTitle.bold())
-            GroupedCard {
-                HStack(spacing: 16) {
-                    GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 56)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(verbatim: state.groupName)
-                            .font(.title3.weight(.semibold))
-                        summary(state)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            if !state.joinedNames.isEmpty {
-                HStack(spacing: 12) {
-                    faces(state.joined)
-                    alreadyIn(state.joinedNames)
-                        .font(.subheadline)
-                }
-            }
+            group(state)
             Text("No account needed. On the next screen you pick who you are.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -143,6 +155,80 @@ private struct JoinInviteContent: View {
                     model.send(JoinInviteUiEventOnNotNowClicked.shared)
                 }
                 .controlSize(.large)
+            }
+        }
+    }
+
+    /// "Pierre invited you as Carla": a link made for one member, which joins straight in as them. The Mac shows
+    /// the member's row, the only one on its list.
+    private func personalInvite(_ state: JoinInviteUiState, member: JoinMember) -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            chip("Personal invite")
+            Group {
+                if let inviterName = state.inviterName {
+                    Text("\(inviterName) invited you as \(member.name)")
+                } else {
+                    Text("You're joining as \(member.name)")
+                }
+            }
+            .font(.largeTitle.bold())
+            group(state)
+            #if os(macOS)
+            GroupedCard {
+                HStack(spacing: 12) {
+                    AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+                    Text(verbatim: member.name)
+                        .font(.headline)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+            }
+            #endif
+            Text("This link is just for you. You join as \(member.name), without picking from the list.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            VStack(spacing: 8) {
+                PrimaryButton(title: "Join as \(member.name)", isEnabled: !state.isJoining, isLoading: state.isJoining) {
+                    model.send(JoinInviteUiEventOnJoinClicked.shared)
+                }
+                Button("I'm not \(member.name)") {
+                    model.send(JoinInviteUiEventOnNotMeClicked.shared)
+                }
+                .controlSize(.large)
+                .disabled(state.isJoining)
+            }
+        }
+    }
+
+    private func chip(_ title: LocalizedStringKey) -> some View {
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .glassEffect(.regular.tint(Palette.accent.opacity(0.2)), in: .capsule)
+    }
+
+    /// The group's card and the faces of who already joined.
+    @ViewBuilder
+    private func group(_ state: JoinInviteUiState) -> some View {
+        GroupedCard {
+            HStack(spacing: 16) {
+                GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 56)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(verbatim: state.groupName)
+                        .font(.title3.weight(.semibold))
+                    summary(state)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 0)
+            }
+        }
+        if !state.joinedNames.isEmpty {
+            HStack(spacing: 12) {
+                faces(state.joined)
+                alreadyIn(state.joinedNames)
+                    .font(.subheadline)
             }
         }
     }

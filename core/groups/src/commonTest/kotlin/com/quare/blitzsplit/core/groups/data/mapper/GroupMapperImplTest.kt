@@ -178,6 +178,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
             mapped.members.single(),
         )
@@ -508,6 +509,7 @@ class GroupMapperImplTest {
                 avatarColor = "green",
                 addedAt = 3L,
                 updatedAt = 1L,
+                inviteCode = null,
             ),
             dto,
         )
@@ -615,6 +617,7 @@ class GroupMapperImplTest {
                 updatedAt = 8L,
                 pendingSync = false,
                 isRemoved = false,
+                inviteCode = null,
             ),
             entity,
         )
@@ -755,6 +758,7 @@ class GroupMapperImplTest {
             avatarColor = AvatarColor.SAND,
             isMe = false,
             hasJoined = false,
+            inviteCode = null,
         )
 
         // When
@@ -777,6 +781,7 @@ class GroupMapperImplTest {
                 updatedAt = 5_000L,
                 pendingSync = true,
                 isRemoved = false,
+                inviteCode = null,
             ),
             entity,
         )
@@ -798,6 +803,107 @@ class GroupMapperImplTest {
         assertTrue(entities.none { it.isRemoved })
     }
 
+    @Test
+    fun `GIVEN a member on the server with its invite code WHEN mapping it to an entity THEN keeps the code`() {
+        // Given
+        val dto = memberDto(
+            id = "m-1",
+            userId = null,
+            inviteCode = "Xy7kQ2",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, userId = "user-1")
+
+        // Then
+        assertEquals("Xy7kQ2", entity.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a stored member with an invite code WHEN mapping to the domain THEN the member carries the code`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"))
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                inviteCode = "Xy7kQ2",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, members).single()
+
+        // Then
+        assertEquals("Xy7kQ2", mapped.members.single().inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a stored member without an invite code WHEN mapping to the domain THEN the member has no code`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"))
+        val members = listOf(memberEntity(id = "m-1"))
+
+        // When
+        val mapped = mapper.toDomain(groups, members).single()
+
+        // Then
+        assertNull(mapped.members.single().inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a stored member with an invite code WHEN mapping it to a DTO THEN sends no code`() {
+        // Given
+        val entity = memberEntity(
+            id = "m-1",
+            inviteCode = "Xy7kQ2",
+        )
+
+        // When
+        val dto = mapper.toDto(entity)
+
+        // Then
+        assertNull(dto.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a person with a code added to a group WHEN mapping them THEN the new row has no code`() {
+        // Given
+        val member = GroupMember(
+            id = "m-4",
+            name = "Carla",
+            avatarColor = AvatarColor.SAND,
+            isMe = false,
+            hasJoined = false,
+            inviteCode = "Xy7kQ2",
+        )
+
+        // When
+        val entity = mapper.toMemberEntity(
+            groupId = "group-1",
+            member = member,
+            addedAt = 5_000L,
+        )
+
+        // Then
+        assertNull(entity.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a new group whose members carry codes WHEN mapping its members THEN none of them has a code`() {
+        // Given
+        val group = newGroup.copy(members = newGroup.members.map { it.copy(inviteCode = "Xy7kQ2") })
+
+        // When
+        val entities = mapper.toMemberEntities(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertEquals(listOf(null, null, null), entities.map { it.inviteCode })
+    }
+
     private val newGroup = Group(
         id = "group-1",
         name = "Viagem Floripa",
@@ -811,6 +917,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                inviteCode = null,
             ),
             GroupMember(
                 id = "m-2",
@@ -818,6 +925,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
             GroupMember(
                 id = "m-3",
@@ -825,6 +933,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.SAND,
                 isMe = false,
                 hasJoined = false,
+                inviteCode = null,
             ),
         ),
         isPending = true,
@@ -865,6 +974,7 @@ class GroupMapperImplTest {
         addedAt: Long = 1L,
         pendingSync: Boolean = false,
         isRemoved: Boolean = false,
+        inviteCode: String? = null,
     ): GroupMemberEntity = GroupMemberEntity(
         id = id,
         groupId = groupId,
@@ -876,6 +986,7 @@ class GroupMapperImplTest {
         updatedAt = 1L,
         pendingSync = pendingSync,
         isRemoved = isRemoved,
+        inviteCode = inviteCode,
     )
 
     private fun groupDto(
@@ -897,6 +1008,7 @@ class GroupMapperImplTest {
     private fun memberDto(
         id: String,
         userId: String?,
+        inviteCode: String? = null,
     ): GroupMemberDto = GroupMemberDto(
         id = id,
         groupId = "group-1",
@@ -905,5 +1017,6 @@ class GroupMapperImplTest {
         avatarColor = "green",
         addedAt = 2L,
         updatedAt = 8L,
+        inviteCode = inviteCode,
     )
 }

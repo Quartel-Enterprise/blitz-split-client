@@ -22,6 +22,8 @@ final class MembersModel {
             switch action {
             case is MembersUiActionShowComingSoon: self?.comingSoonCount += 1
             case is MembersUiActionShowChangeError: self?.changeErrorCount += 1
+            case let copy as MembersUiActionCopyLink: Pasteboard.copy(copy.link)
+            // The personal invite's ShareLink shares the link itself: a share sheet can't be opened from code.
             default: break
             }
         })
@@ -43,7 +45,8 @@ final class MembersModel {
 }
 
 /// "Members": who is in the group and who joined, pushed over the groups. A tap on a person opens their options:
-/// rename, a personal invite (coming soon) and removal, which only someone who hasn't joined allows.
+/// rename, a personal invite, which joins straight in as someone nobody joined as yet, and removal, which only
+/// someone who hasn't joined allows.
 struct MembersView: View {
     let route: RouteMembers
 
@@ -73,6 +76,11 @@ struct MembersView: View {
         .sheet(isPresented: editorShown) {
             if let model {
                 MemberNameSheet(model: model)
+            }
+        }
+        .sheet(isPresented: personalInviteShown) {
+            if let model {
+                PersonalInviteSheet(model: model)
             }
         }
         .alert(removeTitle, isPresented: removalShown, presenting: model?.state.memberToRemove) { member in
@@ -117,6 +125,16 @@ struct MembersView: View {
             get: { model?.state.editor != nil },
             set: { shown in
                 if !shown { model?.send(MembersUiEventOnEditorDismissed.shared) }
+            },
+        )
+    }
+
+    /// Dismissing the sheet (a swipe down, Esc) closes the personal invite in the ViewModel too.
+    private var personalInviteShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.personalInvite != nil },
+            set: { shown in
+                if !shown { model?.send(MembersUiEventOnPersonalInviteDismissed.shared) }
             },
         )
     }
@@ -254,10 +272,18 @@ private struct MemberRow: View {
             Button("Rename", systemImage: "pencil") {
                 send(MembersUiEventOnRenameClicked(memberId: member.id))
             }
+            // Disabled until the sync brings the member's link.
             if member.canBeInvited {
-                Button("Personal invite", systemImage: "link") {
+                Button {
                     send(MembersUiEventOnPersonalInviteClicked(memberId: member.id))
+                } label: {
+                    #if os(macOS)
+                    Label("Personal invite for \(member.name)…", systemImage: "link")
+                    #else
+                    Label("Personal invite for \(member.name)", systemImage: "link")
+                    #endif
                 }
+                .disabled(!member.isPersonalInviteReady)
             }
             if !member.isMe {
                 Divider()
@@ -372,3 +398,167 @@ private struct MemberNameSheet: View {
         )
     }
 }
+
+/// "Personal invite": a link that joins straight in as someone nobody joined as yet, and works once. A form sheet
+/// with the person's avatar on iPhone and iPad, a sheet on the window with its buttons in a row on the Mac.
+private struct PersonalInviteSheet: View {
+    let model: MembersModel
+
+    var body: some View {
+        if let invite = model.state.personalInvite {
+            #if os(macOS)
+            MacPersonalInvite(invite: invite, groupName: model.state.groupName) { model.send($0) }
+            #else
+            PhonePersonalInvite(invite: invite, groupName: model.state.groupName) { model.send($0) }
+            #endif
+        }
+    }
+}
+
+/// "Join Viagem Floripa as Carla on Blitz Split:", which the link follows.
+private func personalShareMessage(groupName: String, memberName: String) -> Text {
+    Text("Join \(groupName) as \(memberName) on Blitz Split:")
+}
+
+private func personalInviteText(memberName: String) -> Text {
+    Text("Whoever opens this link joins straight in as \(memberName), without picking from the list. It works once.")
+}
+
+#if os(iOS)
+private struct PhonePersonalInvite: View {
+    let invite: PersonalInvite
+    let groupName: String
+    let send: (any MembersUiEvent) -> Void
+
+    private var member: MembersMember {
+        invite.member
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    VStack(spacing: 6) {
+                        AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 60)
+                        Text(verbatim: member.name)
+                            .font(.title2.bold())
+                        personalInviteText(memberName: member.name)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    HStack(spacing: 8) {
+                        Text(verbatim: invite.displayLink)
+                            .font(.body.monospaced())
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Button {
+                            send(MembersUiEventOnPersonalLinkCopyClicked.shared)
+                        } label: {
+                            if invite.isLinkCopied {
+                                Label("Copied", systemImage: "checkmark")
+                            } else {
+                                Label("Copy", systemImage: "doc.on.doc")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        .accessibilityAddTraits(.updatesFrequently)
+                    }
+                    .padding(.leading, 16)
+                    .padding(.trailing, 6)
+                    .padding(.vertical, 6)
+                    .background(.fill.tertiary, in: .capsule)
+                    ShareLink(item: invite.link, message: personalShareMessage(groupName: groupName, memberName: member.name)) {
+                        Label("Share with \(member.name)", systemImage: "square.and.arrow.up")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 36)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.large)
+                }
+                .padding(20)
+            }
+            .navigationTitle("Personal invite")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", systemImage: "xmark", role: .cancel) {
+                        send(MembersUiEventOnPersonalInviteDismissed.shared)
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+}
+#endif
+
+#if os(macOS)
+private struct MacPersonalInvite: View {
+    let invite: PersonalInvite
+    let groupName: String
+    let send: (any MembersUiEvent) -> Void
+
+    private var member: MembersMember {
+        invite.member
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 40)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Personal invite for \(member.name)")
+                        .font(.headline)
+                    Text(verbatim: groupName)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            personalInviteText(memberName: member.name)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(verbatim: invite.displayLink)
+                .font(.body.monospaced())
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .textSelection(.enabled)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.background, in: .rect(cornerRadius: 8))
+                .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.separator))
+            HStack(spacing: 8) {
+                Spacer()
+                Button("Close") {
+                    send(MembersUiEventOnPersonalInviteDismissed.shared)
+                }
+                .keyboardShortcut(.cancelAction)
+                ShareLink(item: invite.link, message: personalShareMessage(groupName: groupName, memberName: member.name)) {
+                    Text("Share…")
+                }
+                Button {
+                    send(MembersUiEventOnPersonalLinkCopyClicked.shared)
+                } label: {
+                    if invite.isLinkCopied {
+                        Text("Copied")
+                    } else {
+                        Text("Copy link")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
+                .accessibilityAddTraits(.updatesFrequently)
+            }
+            .controlSize(.large)
+            .padding(.top, 4)
+        }
+        .padding(20)
+        .frame(width: 400)
+    }
+}
+#endif

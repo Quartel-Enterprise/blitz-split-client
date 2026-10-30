@@ -5,12 +5,14 @@ import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 
 interface GroupRemoteDataSource {
     // Why: the rows as the server kept them, with the invite code it made for a new group.
     suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto>
 
-    suspend fun upsertMembers(members: List<GroupMemberDto>)
+    // Why: the rows as the server kept them, with the invite code it made for a new member.
+    suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto>
 
     // Why: the server only deletes members nobody joined as; it leaves the others where they are.
     suspend fun deleteMembers(ids: List<String>)
@@ -22,6 +24,9 @@ interface GroupRemoteDataSource {
 
     // Why: the group behind an invite code, which nobody outside it may read otherwise; null for a code no group has.
     suspend fun fetchInvite(code: String): InviteDto?
+
+    // Why: the same for a personal link, with the member it joins as and whoever shared it.
+    suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto?
 
     suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto
 }

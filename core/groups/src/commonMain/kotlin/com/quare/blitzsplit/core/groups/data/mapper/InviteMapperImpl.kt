@@ -25,6 +25,8 @@ class InviteMapperImpl : InviteMapper {
         creatorName = dto.creatorName,
         isMember = dto.isMember,
         members = dto.members.map(::toDomain),
+        personalMemberId = dto.personalMemberId,
+        inviterName = dto.inviterName,
     )
 
     // Why: a status this version doesn't know can only come from a newer server, which a retry can't fix either.

@@ -158,7 +158,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both
     the push and the download store it with `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this
     device created comes back with the same `updatedAt`, which `updateGroupFromRemote` leaves alone. A group created
-    offline has no code until then, and `InviteUiState.isLinkPending` says so.
+    offline has no code until then, and `InviteUiState.isLinkPending` says so. Each member's code (`invite_code` of
+    `group_members`, the `<member code>` of a personal link `blitzsplit.com/g/<code>/<member code>`) follows the same
+    path: read back from the members' upsert and stored with `GroupDao.updateMemberInviteCode`, outside
+    Last-Write-Wins, so a member added offline has no personal link until it goes up.
   - **Joining through the invite link**: a group the user is not in yet can't be read through the tables, so the
     invite screen asks `get_invite` (open to `anon` too, so only looking at an invite creates no account) and the
     join asks `join_group`, both security definer functions on the server. `JoinGroupUseCase` (in `:core:sync`)
@@ -167,7 +170,9 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     profile from the name joined as when there is none, then runs `syncNow()` so the group is in Room before
     Membros opens it. Joining is online only: the link waits on the invite screen until the device is online. A
     member someone else took first (`MemberTaken`) or a name already in the group (`NameTaken`) comes back as an
-    outcome, not an error, and the pick screen reloads the list.
+    outcome, not an error, and the pick screen reloads the list. A personal link asks `get_invite` with the member's
+    code and the sharer's too, which answer `personal_member_id` and `inviter_name`, and joins with `join_group` as
+    that member right from the invite screen.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

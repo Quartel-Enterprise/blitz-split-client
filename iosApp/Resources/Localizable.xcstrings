@@ -16,6 +16,17 @@
         }
       }
     },
+    "%@ invited you as %@" : {
+      "comment" : "The title of a personal invite link: who shared it and the member it joins as",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te chamou como %2$@"
+          }
+        }
+      }
+    },
     "%@ invited you to %@" : {
       "comment" : "The title of an invite link: who created the group and its name",
       "localizations" : {
@@ -902,6 +913,17 @@
         }
       }
     },
+    "Copy link" : {
+      "comment" : "Copies a member's personal invite link, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar link"
+          }
+        }
+      }
+    },
     "Couldn't connect right now. Try again." : {
       "localizations" : {
         "pt-BR" : {
@@ -1594,6 +1616,17 @@
         }
       }
     },
+    "I'm not %@" : {
+      "comment" : "On a personal invite link: goes on to pick another name from the list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não sou %@"
+          }
+        }
+      }
+    },
     "I'm not on the list" : {
       "localizations" : {
         "pt-BR" : {
@@ -1783,6 +1816,17 @@
     "John Doe" : {
       "comment" : "The name field's placeholder, the same in every language",
       "shouldTranslate" : false
+    },
+    "Join %@ as %@ on Blitz Split:" : {
+      "comment" : "The message shared with a personal invite link, which follows it: the group's name, then the member's",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entra no grupo %1$@ como %2$@ no Bora Rachar:"
+          }
+        }
+      }
     },
     "Join as %@" : {
       "comment" : "Joins the group as the member picked",
@@ -2355,12 +2399,34 @@
       }
     },
     "Personal invite" : {
-      "comment" : "A link that joins straight in as this member (coming soon)",
+      "comment" : "A link that joins straight in as a member: the title of its sheet and the chip of the invite",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Convite pessoal"
+          }
+        }
+      }
+    },
+    "Personal invite for %@" : {
+      "comment" : "Opens a member's personal invite from their menu, and its title on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convite pessoal para %@"
+          }
+        }
+      }
+    },
+    "Personal invite for %@…" : {
+      "comment" : "Opens a member's personal invite from their menu, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convite pessoal para %@…"
           }
         }
       }
@@ -2765,6 +2831,28 @@
         }
       }
     },
+    "Share with %@" : {
+      "comment" : "Shares a member's personal invite link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar com %@"
+          }
+        }
+      }
+    },
+    "Share…" : {
+      "comment" : "Shares a member's personal invite link, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar…"
+          }
+        }
+      }
+    },
     "Shown first when settling up." : {
       "localizations" : {
         "pt-BR" : {
@@ -2882,6 +2970,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sai assim que tudo subir"
+          }
+        }
+      }
+    },
+    "Someone already joined through this link, or it was changed. Ask whoever sent it for a new one." : {
+      "comment" : "Why a personal invite link no longer works: its member joined or was removed, or the group's link changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguém já entrou por este link, ou ele foi trocado. Peça um novo a quem te mandou."
           }
         }
       }
@@ -3106,6 +3205,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Isto não é um Lightning Address (nome@carteira) nem um LNURL."
+          }
+        }
+      }
+    },
+    "This link is just for you. You join as %@, without picking from the list." : {
+      "comment" : "Under a personal invite link; %@ is the member it joins as",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este link é só seu. Você entra como %@, sem escolher na lista."
           }
         }
       }
@@ -3396,6 +3506,17 @@
         }
       }
     },
+    "Whoever opens this link joins straight in as %@, without picking from the list. It works once." : {
+      "comment" : "Explains a member's personal invite link; %@ is the member",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem abrir este link entra direto como %@, sem escolher na lista. Ele vale uma vez."
+          }
+        }
+      }
+    },
     "Whoever owes you sees your default key when settling up." : {
       "localizations" : {
         "pt-BR" : {
@@ -3526,6 +3647,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você foi chamado para o grupo %@"
+          }
+        }
+      }
+    },
+    "You're joining as %@" : {
+      "comment" : "The title of a personal invite link that doesn't say who shared it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você entra como %@"
           }
         }
       }
