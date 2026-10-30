@@ -482,7 +482,7 @@ class JoinGroupUseCaseTest {
     private val asAna = JoinChoice.AsMember(ana.id)
     private val asNewMember = JoinChoice.AsNewMember("  Bruno ")
     private val joined = JoinOutcome.Joined(invite.groupId)
-    private val alreadyMember = JoinOutcome.AlreadyMember(invite.groupId)
+    private val alreadyMember = JoinOutcome.AlreadyMember(invite.groupId, memberId = ana.id)
     private val pierre = UserProfile("Pierre", AvatarColor.LILAC, photo = null)
 
     private fun TestScope.prepareScenario(

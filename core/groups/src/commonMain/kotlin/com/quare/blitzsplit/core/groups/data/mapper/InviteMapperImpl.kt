@@ -30,7 +30,7 @@ class InviteMapperImpl : InviteMapper {
     // Why: a status this version doesn't know can only come from a newer server, which a retry can't fix either.
     override fun toDomain(dto: JoinGroupResultDto): JoinOutcome = when (dto.status) {
         JOINED -> JoinOutcome.Joined(requireNotNull(dto.groupId))
-        ALREADY_MEMBER -> JoinOutcome.AlreadyMember(requireNotNull(dto.groupId))
+        ALREADY_MEMBER -> JoinOutcome.AlreadyMember(requireNotNull(dto.groupId), dto.memberId)
         TAKEN -> JoinOutcome.MemberTaken
         MEMBER_GONE -> JoinOutcome.MemberGone
         NAME_TAKEN -> JoinOutcome.NameTaken

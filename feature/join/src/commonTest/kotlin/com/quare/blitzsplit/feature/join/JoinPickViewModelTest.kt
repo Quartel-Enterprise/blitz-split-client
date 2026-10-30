@@ -195,8 +195,25 @@ class JoinPickViewModelTest {
     fun `GIVEN the join went through on an earlier try WHEN joining as Bruno again THEN opens the group as Bruno`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(joinOutcome = JoinOutcome.AlreadyMember(GROUP_ID))
+            prepareScenario(joinOutcome = JoinOutcome.AlreadyMember(GROUP_ID, memberId = BRUNO_ID))
             viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(BRUNO_ID))
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the account joined as Bruno on an earlier try WHEN joining as Carla THEN opens the group as Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinOutcome = JoinOutcome.AlreadyMember(GROUP_ID, memberId = BRUNO_ID))
+            viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(CARLA_ID))
 
             // When
             viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
@@ -496,6 +513,27 @@ class JoinPickViewModelTest {
         // Then
         assertTrue(invites.joins.isEmpty())
     }
+
+    @Test
+    fun `GIVEN the server found Daniel taken WHEN the reload lists no Daniel THEN keeps the name taken`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinOutcome = JoinOutcome.NameTaken)
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // Then
+            assertEquals(
+                NewMemberDraft(
+                    name = "Daniel",
+                    isNameTaken = true,
+                ),
+                viewModel.uiState.value.newMember,
+            )
+        }
 
     @Test
     fun `GIVEN someone joined as Daniel meanwhile WHEN confirming Daniel THEN flags the name as taken and reloads`() =

@@ -153,6 +153,7 @@ class InviteRepositoryImplTest {
             joinResult = JoinGroupResultDto(
                 status = "joined",
                 groupId = "group-1",
+                memberId = "member-9",
             ),
         )
 
@@ -170,6 +171,7 @@ class InviteRepositoryImplTest {
             joinResult = JoinGroupResultDto(
                 status = "taken",
                 groupId = "group-1",
+                memberId = null,
             ),
         )
 
@@ -213,6 +215,7 @@ class InviteRepositoryImplTest {
             joinResult = JoinGroupResultDto(
                 status = "joined",
                 groupId = null,
+                memberId = "member-9",
             ),
         )
 
@@ -247,6 +250,7 @@ class InviteRepositoryImplTest {
         joinResult: JoinGroupResultDto = JoinGroupResultDto(
             status = "joined",
             groupId = "group-1",
+            memberId = "member-9",
         ),
         joinError: Throwable? = null,
     ) {

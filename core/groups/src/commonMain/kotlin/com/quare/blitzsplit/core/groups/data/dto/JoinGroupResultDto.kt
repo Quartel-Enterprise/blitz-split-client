@@ -8,4 +8,6 @@ data class JoinGroupResultDto(
     @SerialName("status") val status: String,
     // Why: null when the code matches no group.
     @SerialName("group_id") val groupId: String?,
+    // Why: the member the account is in the group, on joined and already_member.
+    @SerialName("member_id") val memberId: String?,
 )

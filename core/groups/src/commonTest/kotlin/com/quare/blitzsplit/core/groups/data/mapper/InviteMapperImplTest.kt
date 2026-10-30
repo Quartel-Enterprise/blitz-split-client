@@ -173,6 +173,7 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "joined",
             groupId = "group-1",
+            memberId = "member-9",
         )
 
         // When
@@ -188,13 +189,14 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "already_member",
             groupId = "group-1",
+            memberId = "member-9",
         )
 
         // When
         val outcome = mapper.toDomain(dto)
 
         // Then
-        assertEquals(JoinOutcome.AlreadyMember("group-1"), outcome)
+        assertEquals(JoinOutcome.AlreadyMember("group-1", memberId = "member-9"), outcome)
     }
 
     @Test
@@ -203,6 +205,7 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "taken",
             groupId = "group-1",
+            memberId = null,
         )
 
         // When
@@ -218,6 +221,7 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "member_gone",
             groupId = "group-1",
+            memberId = null,
         )
 
         // When
@@ -233,6 +237,7 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "name_taken",
             groupId = "group-1",
+            memberId = null,
         )
 
         // When
@@ -248,6 +253,7 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "invalid",
             groupId = null,
+            memberId = null,
         )
 
         // When
@@ -263,6 +269,7 @@ class InviteMapperImplTest {
         val dto = JoinGroupResultDto(
             status = "group_full",
             groupId = "group-1",
+            memberId = null,
         )
 
         // When

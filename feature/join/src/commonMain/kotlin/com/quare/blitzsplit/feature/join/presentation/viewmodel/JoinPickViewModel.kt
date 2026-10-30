@@ -52,6 +52,9 @@ class JoinPickViewModel(
 
     private var invite: Invite? = null
 
+    // Why: a name the server found taken stays taken, even where its comparison differs from this device's.
+    private var rejectedName: String? = null
+
     init {
         viewModelScope.launch { load() }
     }
@@ -134,7 +137,10 @@ class JoinPickViewModel(
 
     private fun checkNewName() {
         val draft = uiState.value.newMember ?: return
-        val isTaken = checkOf(draft.name) is MemberNameCheck.Taken
+        val check = checkOf(draft.name)
+        val isTaken =
+            check is MemberNameCheck.Taken ||
+                (rejectedName != null && (check as? MemberNameCheck.Available)?.name == rejectedName)
         uiState.update { state -> state.copy(newMember = state.newMember?.copy(isNameTaken = isTaken)) }
     }
 
@@ -168,8 +174,10 @@ class JoinPickViewModel(
         when (outcome) {
             is JoinOutcome.Joined -> openGroup(outcome.groupId, joinedAs = nameOf(choice))
 
-            // Why: a retry after the join went through but its sync failed, so this device still made that choice.
-            is JoinOutcome.AlreadyMember -> openGroup(outcome.groupId, joinedAs = nameOf(choice))
+            is JoinOutcome.AlreadyMember -> openGroup(
+                outcome.groupId,
+                joinedAs = findJoinedName(outcome.memberId, choice),
+            )
 
             JoinOutcome.MemberTaken -> {
                 uiState.update {
@@ -187,6 +195,7 @@ class JoinPickViewModel(
             }
 
             JoinOutcome.NameTaken -> {
+                rejectedName = (choice as? JoinChoice.AsNewMember)?.name
                 uiState.update { state -> state.copy(newMember = state.newMember?.copy(isNameTaken = true)) }
                 load()
             }
@@ -194,6 +203,17 @@ class JoinPickViewModel(
             JoinOutcome.InvalidLink -> leave()
         }
     }
+
+    /*
+     * Why: the member the server says the account is, usually a retry after the join went through but its sync
+     * failed. A new member the list doesn't hold yet is the name this device sent.
+     */
+    private fun findJoinedName(
+        memberId: String?,
+        choice: JoinChoice,
+    ): String? = uiState.value.members
+        .firstOrNull { it.id == memberId }
+        ?.name ?: (choice as? JoinChoice.AsNewMember)?.name
 
     private fun nameOf(choice: JoinChoice): String? = when (choice) {
         is JoinChoice.AsMember ->

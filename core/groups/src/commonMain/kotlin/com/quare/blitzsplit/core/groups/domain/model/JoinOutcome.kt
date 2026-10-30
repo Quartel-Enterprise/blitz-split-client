@@ -5,9 +5,10 @@ sealed interface JoinOutcome {
         val groupId: String,
     ) : JoinOutcome
 
-    // Why: this account had joined already, from this device or another; nothing changed.
+    // Why: this account had joined already, from this device or another, as memberId; nothing changed.
     data class AlreadyMember(
         val groupId: String,
+        val memberId: String?,
     ) : JoinOutcome
 
     // Why: someone else joined as that member first, from another device.
