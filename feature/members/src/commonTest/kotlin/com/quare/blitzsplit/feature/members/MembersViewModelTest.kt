@@ -22,13 +22,16 @@ import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
+import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -38,6 +41,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
 class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -343,6 +347,576 @@ class MembersViewModelTest {
             assertNull(viewModel.uiState.value.personalInvite)
             assertEquals(emptyList(), actions)
             assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the codes synced WHEN the screen opens THEN Carla has her link from this device user`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(carlaLink, state.members.first { it.id == "member-4" }.personalLink)
+            assertTrue(state.members.first { it.id == "member-4" }.isPersonalInviteReady)
+        }
+
+    @Test
+    fun `GIVEN this device user without a code yet WHEN the screen opens THEN the personal link has no sender`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes.copy(members = listOf(pierre, ana, brunoWithCode, carlaWithCode)),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
+                state.members.first { it.id == "member-4" }.personalLink,
+            )
+        }
+
+    @Test
+    fun `GIVEN a member added on this device WHEN the screen opens THEN that member has no personal link yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.members.first { it.id == "member-2" }.personalLink)
+            assertFalse(state.members.first { it.id == "member-2" }.isPersonalInviteReady)
+        }
+
+    @Test
+    fun `GIVEN the member code synced but no group code WHEN the screen opens THEN Carla has no personal link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes.copy(inviteCode = null))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.members.first { it.id == "member-4" }.personalLink)
+            assertFalse(state.members.first { it.id == "member-4" }.isPersonalInviteReady)
+        }
+
+    @Test
+    fun `GIVEN Carla with her personal link WHEN tapping her personal invite THEN opens it with her link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                PersonalInvite(
+                    member = carlaWithLink,
+                    link = carlaLink,
+                    displayLink = "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
+                    isLinkCopied = false,
+                ),
+                viewModel.uiState.value.personalInvite,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN this device user without a code yet WHEN tapping a personal invite THEN the link has no sender`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes.copy(members = listOf(pierre, ana, brunoWithCode, carlaWithCode)),
+            )
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals("https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z", invite?.link)
+            assertEquals("blitzsplit.com/g/7Hk2pQ8x/c3Rt9z", invite?.displayLink)
+        }
+
+    @Test
+    fun `GIVEN just joined with an anonymous account WHEN tapping a personal invite THEN opens it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes,
+                joinedAs = "Pierre",
+                accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+            )
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                carlaLink,
+                viewModel.uiState.value.personalInvite
+                    ?.link,
+            )
+        }
+
+    @Test
+    fun `GIVEN connected with Google WHEN tapping a personal invite THEN opens it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = tripWithCodes,
+            accountStatus = withGoogle,
+        )
+        val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(
+            carlaLink,
+            viewModel.uiState.value.personalInvite
+                ?.link,
+        )
+    }
+
+    @Test
+    fun `GIVEN the codes synced WHEN tapping the personal invite of an unknown member THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-99")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.personalInvite)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the codes synced WHEN tapping the personal invite of this device user THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-1")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.personalInvite)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the codes synced WHEN tapping the personal invite of someone who joined THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-3")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.personalInvite)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a member added on this device WHEN tapping their personal invite THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-2")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.personalInvite)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Carla has a code but the group has none yet WHEN tapping her personal invite THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes.copy(inviteCode = null))
+            val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.personalInvite)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN dismissing it THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = tripWithCodes)
+        viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnPersonalInviteDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.personalInvite)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN copying THEN copies her whole link and shows it copied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+
+            // Then
+            assertEquals(listOf<MembersUiAction>(MembersUiAction.CopyLink(carlaLink)), actions)
+            assertEquals(
+                true,
+                viewModel.uiState.value.personalInvite
+                    ?.isLinkCopied,
+            )
+        }
+
+    @Test
+    fun `GIVEN the personal link just copied WHEN two seconds pass THEN it no longer shows copied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+            advanceTimeBy(1_999.milliseconds)
+            runCurrent()
+            val copiedJustBefore = viewModel.uiState.value.personalInvite
+                ?.isLinkCopied
+
+            // When
+            advanceTimeBy(1.milliseconds)
+            runCurrent()
+
+            // Then
+            assertEquals(true, copiedJustBefore)
+            assertEquals(
+                false,
+                viewModel.uiState.value.personalInvite
+                    ?.isLinkCopied,
+            )
+        }
+
+    @Test
+    fun `GIVEN the personal link copied 1500 ms ago WHEN copying again THEN shows copied 2 s from the second tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+            advanceTimeBy(1_500.milliseconds)
+            runCurrent()
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+
+            // Then
+            advanceTimeBy(1_000.milliseconds)
+            runCurrent()
+            val copiedAfterTheFirstTimer = viewModel.uiState.value.personalInvite
+                ?.isLinkCopied
+            advanceTimeBy(1_000.milliseconds)
+            runCurrent()
+            assertEquals(true, copiedAfterTheFirstTimer)
+            assertEquals(
+                false,
+                viewModel.uiState.value.personalInvite
+                    ?.isLinkCopied,
+            )
+            assertEquals(
+                listOf<MembersUiAction>(MembersUiAction.CopyLink(carlaLink), MembersUiAction.CopyLink(carlaLink)),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN the personal link just copied WHEN closing the invite and two seconds pass THEN it stays closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteDismissed)
+
+            // Then
+            advanceTimeBy(2_000.milliseconds)
+            runCurrent()
+            assertNull(viewModel.uiState.value.personalInvite)
+        }
+
+    @Test
+    fun `GIVEN the personal link copied and the invite closed WHEN opening it again THEN it does not show copied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteDismissed)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            assertEquals(
+                false,
+                viewModel.uiState.value.personalInvite
+                    ?.isLinkCopied,
+            )
+        }
+
+    @Test
+    fun `GIVEN no personal invite open WHEN copying the personal link THEN copies nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = tripWithCodes)
+        val event = MembersUiEvent.OnPersonalLinkCopyClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(actions.isEmpty())
+        assertNull(viewModel.uiState.value.personalInvite)
+    }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN sharing THEN shares her link with her name and the group name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkShareClicked)
+
+            // Then
+            assertEquals(
+                listOf<MembersUiAction>(MembersUiAction.SharePersonalLink(carlaLink, "Carla", "Viagem Floripa")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN no personal invite open WHEN sharing the personal link THEN shares nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = tripWithCodes)
+        val event = MembersUiEvent.OnPersonalLinkShareClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN a sync renames her THEN shows her new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            val carlaRenamed = tripWithCodes.copy(
+                members = listOf(pierreWithCode, ana, brunoWithCode, carlaWithCode.copy(name = "Carla M.")),
+            )
+
+            // When
+            groups.groups.value = listOf(carlaRenamed)
+
+            // Then
+            assertEquals(
+                PersonalInvite(
+                    member = carlaWithLink.copy(
+                        name = "Carla M.",
+                        initials = "CM",
+                    ),
+                    link = carlaLink,
+                    displayLink = "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
+                    isLinkCopied = false,
+                ),
+                viewModel.uiState.value.personalInvite,
+            )
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open and a sync renamed her WHEN sharing THEN shares with her new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            groups.groups.value = listOf(
+                tripWithCodes.copy(
+                    members = listOf(pierreWithCode, ana, brunoWithCode, carlaWithCode.copy(name = "Carla M.")),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkShareClicked)
+
+            // Then
+            assertEquals(
+                listOf<MembersUiAction>(MembersUiAction.SharePersonalLink(carlaLink, "Carla M.", "Viagem Floripa")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN the personal link of Carla copied WHEN a sync renames her THEN still shows it copied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+            val carlaRenamed = tripWithCodes.copy(
+                members = listOf(pierreWithCode, ana, brunoWithCode, carlaWithCode.copy(name = "Carla M.")),
+            )
+
+            // When
+            groups.groups.value = listOf(carlaRenamed)
+
+            // Then
+            assertEquals(
+                true,
+                viewModel.uiState.value.personalInvite
+                    ?.isLinkCopied,
+            )
+            assertEquals(
+                "Carla M.",
+                viewModel.uiState.value.personalInvite
+                    ?.member
+                    ?.name,
+            )
+        }
+
+    @Test
+    fun `GIVEN copied and a sync renamed Carla WHEN two seconds pass THEN it no longer shows copied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            viewModel.onEvent(MembersUiEvent.OnPersonalLinkCopyClicked)
+            groups.groups.value = listOf(
+                tripWithCodes.copy(
+                    members = listOf(pierreWithCode, ana, brunoWithCode, carlaWithCode.copy(name = "Carla M.")),
+                ),
+            )
+
+            // When
+            advanceTimeBy(2_000.milliseconds)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                false,
+                viewModel.uiState.value.personalInvite
+                    ?.isLinkCopied,
+            )
+            assertEquals(
+                "Carla M.",
+                viewModel.uiState.value.personalInvite
+                    ?.member
+                    ?.name,
+            )
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN a sync says someone joined as her THEN closes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            val carlaJoined = tripWithCodes.copy(
+                members = listOf(pierreWithCode, ana, brunoWithCode, carlaWithCode.copy(hasJoined = true)),
+            )
+
+            // When
+            groups.groups.value = listOf(carlaJoined)
+
+            // Then
+            assertNull(viewModel.uiState.value.personalInvite)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN a sync removes her THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = tripWithCodes)
+        viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+        val withoutCarla = tripWithCodes.copy(members = listOf(pierreWithCode, ana, brunoWithCode))
+
+        // When
+        groups.groups.value = listOf(withoutCarla)
+
+        // Then
+        assertNull(viewModel.uiState.value.personalInvite)
+    }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN a sync adds someone else THEN keeps it as it was`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+            val before = viewModel.uiState.value.personalInvite
+            val withDiego = tripWithCodes.copy(members = tripWithCodes.members + diego)
+
+            // When
+            groups.groups.value = listOf(withDiego)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value.personalInvite)
+        }
+
+    @Test
+    fun `GIVEN the personal invite open with no sender WHEN a sync brings the code of this device user THEN adds it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes.copy(members = listOf(pierre, ana, brunoWithCode, carlaWithCode)),
+            )
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            groups.groups.value = listOf(tripWithCodes)
+
+            // Then
+            assertEquals(
+                carlaLink,
+                viewModel.uiState.value.personalInvite
+                    ?.link,
+            )
+            assertEquals(
+                "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
+                viewModel.uiState.value.personalInvite
+                    ?.displayLink,
+            )
         }
 
     @Test
@@ -1397,6 +1971,18 @@ class MembersViewModelTest {
         isPending = false,
         inviteCode = null,
     )
+
+    private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")
+    private val brunoWithCode = bruno.copy(inviteCode = "b7Ru2n")
+    private val carlaWithCode = carla.copy(inviteCode = "c3Rt9z")
+
+    private val tripWithCodes = trip.copy(
+        members = listOf(pierreWithCode, ana, brunoWithCode, carlaWithCode),
+        inviteCode = "7Hk2pQ8x",
+    )
+
+    private val carlaLink = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=p1Er2e"
+    private val carlaWithLink = carlaOnScreen.copy(personalLink = carlaLink)
 
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
