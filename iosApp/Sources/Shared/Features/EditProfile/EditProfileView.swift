@@ -191,7 +191,7 @@ private struct PhotoEditor: View {
                     #endif
                     // Why: the system picker needs no photo library permission and returns one image, or nothing.
                     Button("Choose photo", systemImage: "photo.on.rectangle") { showsPhotoPicker = true }
-                    if state.showsUseAccountPhoto, let provider = state.accountProvider {
+                    if let provider = state.accountPhotoProvider {
                         Button("Use \(provider.displayName) account photo", systemImage: "person.crop.circle") {
                             model.send(EditProfileUiEventOnAccountPhotoSelected.shared)
                         }

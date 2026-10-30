@@ -96,9 +96,9 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
                   <DropdownMenuItem onSelect={() => choosePhoto(false)}>
                     <ImageIcon /> {t('editProfile_choosePhoto')}
                   </DropdownMenuItem>
-                  {state.showsUseAccountPhoto && state.accountProvider && (
+                  {state.accountPhotoProvider && (
                     <DropdownMenuItem onSelect={() => presenter.useAccountPhoto()}>
-                      <UserRound /> {t('editProfile_useAccountPhoto', { provider: providerLabel(state.accountProvider as AccountProvider, true) })}
+                      <UserRound /> {t('editProfile_useAccountPhoto', { provider: providerLabel(state.accountPhotoProvider as AccountProvider, true) })}
                     </DropdownMenuItem>
                   )}
                   {state.hasPhoto && (

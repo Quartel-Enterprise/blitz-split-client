@@ -57,6 +57,10 @@ data class EditProfileUiState(
     val showsUseAccountPhoto: Boolean
         get() = accountPhotoUrl != null && photo != ProfilePhoto.Remote(accountPhotoUrl)
 
+    // Why: names whose picture is offered, so the UIs check this one value instead of the flag and the provider.
+    val accountPhotoProvider: AccountProvider?
+        get() = accountProvider.takeIf { showsUseAccountPhoto }
+
     val canSave: Boolean
         get() = isNameValid && hasChanges && !isSaving && !isPreparingPhoto
 

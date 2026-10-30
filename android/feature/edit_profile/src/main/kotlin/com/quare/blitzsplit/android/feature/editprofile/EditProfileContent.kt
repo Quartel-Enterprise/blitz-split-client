@@ -135,8 +135,7 @@ fun EditProfileContent(
     if (isPhotoMenuOpen) {
         PhotoMenuSheet(
             hasPhoto = state.hasPhoto,
-            showsUseAccountPhoto = state.showsUseAccountPhoto,
-            accountProvider = state.accountProvider,
+            accountPhotoProvider = state.accountPhotoProvider,
             onDismiss = { isPhotoMenuOpen = false },
             onTakePhotoClick = onTakePhotoClick,
             onChoosePhotoClick = onChoosePhotoClick,
@@ -411,9 +410,8 @@ private fun AvatarColorRow(
 @Composable
 private fun PhotoMenuSheet(
     hasPhoto: Boolean,
-    showsUseAccountPhoto: Boolean,
-    // Why: names whose picture is offered.
-    accountProvider: AccountProvider?,
+    // Why: names whose picture is offered, null when there is none to offer.
+    accountPhotoProvider: AccountProvider?,
     onDismiss: () -> Unit,
     onTakePhotoClick: (() -> Unit)?,
     onChoosePhotoClick: () -> Unit,
@@ -432,12 +430,12 @@ private fun PhotoMenuSheet(
                 onDismiss()
                 onChoosePhotoClick()
             }
-            if (showsUseAccountPhoto && accountProvider != null) {
+            if (accountPhotoProvider != null) {
                 PhotoMenuItem(
                     icon = Icons.Outlined.AccountCircle,
                     label = stringResource(
                         R.string.edit_profile_use_account_photo,
-                        stringResource(accountProvider.labelRes),
+                        stringResource(accountPhotoProvider.labelRes),
                     ),
                 ) {
                     onDismiss()

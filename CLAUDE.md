@@ -51,6 +51,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     symbol of the device's region, `$` when there is none.
   - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the three not built yet
     answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
+    gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
+    color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
   - "Novo grupo": tapping the group's avatar cycles its color through the palette (no shapes yet), and Moeda starts
     in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo

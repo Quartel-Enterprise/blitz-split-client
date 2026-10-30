@@ -267,6 +267,38 @@ class EditProfileUiStateTest {
     }
 
     @Test
+    fun `GIVEN an offered account picture WHEN reading the account photo provider THEN is the account provider`() {
+        // Given
+        val uiState = state(
+            photo = null,
+            accountProvider = AccountProvider.GOOGLE,
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val provider = uiState.accountPhotoProvider
+
+        // Then
+        assertEquals(AccountProvider.GOOGLE, provider)
+    }
+
+    @Test
+    fun `GIVEN the account picture already is the photo WHEN reading the account photo provider THEN is none`() {
+        // Given
+        val uiState = state(
+            photo = ProfilePhoto.Remote("https://google/pierre"),
+            accountProvider = AccountProvider.GOOGLE,
+            accountPhotoUrl = "https://google/pierre",
+        )
+
+        // When
+        val provider = uiState.accountPhotoProvider
+
+        // Then
+        assertNull(provider)
+    }
+
+    @Test
     fun `GIVEN a Google account WHEN reading the account notice THEN shows it`() {
         // Given
         val uiState = state(accountProvider = AccountProvider.GOOGLE)

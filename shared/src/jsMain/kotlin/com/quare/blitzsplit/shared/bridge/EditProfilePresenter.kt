@@ -19,7 +19,8 @@ class JsEditProfileState(
     val photoUrl: String?,
     val hasPhoto: Boolean,
     val showsAvatarColors: Boolean,
-    val showsUseAccountPhoto: Boolean,
+    // Why: "google" or "apple" while that account's picture is offered as the photo, otherwise null.
+    val accountPhotoProvider: String?,
     val isPreparingPhoto: Boolean,
     val showsPhotoError: Boolean,
     // Why: null while the name is valid; otherwise the EditProfileNameError's name.
@@ -48,7 +49,7 @@ class EditProfilePresenter {
                 photoUrl = state.photoUrl,
                 hasPhoto = state.hasPhoto,
                 showsAvatarColors = state.showsAvatarColors,
-                showsUseAccountPhoto = state.showsUseAccountPhoto,
+                accountPhotoProvider = state.accountPhotoProvider?.code,
                 isPreparingPhoto = state.isPreparingPhoto,
                 showsPhotoError = state.showsPhotoError,
                 nameError = state.nameError?.name,

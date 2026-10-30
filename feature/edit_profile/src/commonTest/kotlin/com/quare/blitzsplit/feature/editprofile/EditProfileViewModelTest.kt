@@ -1285,7 +1285,7 @@ class EditProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN a Google account with a picture WHEN another Google user replaces it THEN offers that user's picture`() =
+    fun `GIVEN a Google account with a picture WHEN another Google user replaces it THEN offers the new picture`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
