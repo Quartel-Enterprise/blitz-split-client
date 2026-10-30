@@ -2,6 +2,9 @@ package com.quare.blitzsplit.core.groups.domain.repository
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupType
 import kotlinx.coroutines.flow.Flow
 
 interface GroupRepository {
@@ -14,6 +17,16 @@ interface GroupRepository {
     suspend fun createGroup(
         group: Group,
         createdAt: Long,
+    ): Result<Unit>
+
+    // Why: "Editar grupo", by any member; the members stay as they are.
+    suspend fun updateGroup(
+        groupId: String,
+        name: String,
+        type: GroupType,
+        color: AvatarColor,
+        currency: GroupCurrency,
+        updatedAt: Long,
     ): Result<Unit>
 
     suspend fun addMember(

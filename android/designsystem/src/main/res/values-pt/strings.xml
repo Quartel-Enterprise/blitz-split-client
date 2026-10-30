@@ -11,4 +11,9 @@
     <string name="designsystem_delete_bill_no_longer_get_back">Você deixa de receber %s.</string>
     <string name="designsystem_delete_bill_confirm">Apagar</string>
     <string name="designsystem_delete_bill_cancel">Cancelar</string>
+    <string name="designsystem_group_type_trip">Viagem</string>
+    <string name="designsystem_group_type_home">Casa</string>
+    <string name="designsystem_group_type_event">Evento</string>
+    <string name="designsystem_group_type_other">Outro</string>
+    <string name="designsystem_currency_value">%1$s (%2$s)</string>
 </resources>

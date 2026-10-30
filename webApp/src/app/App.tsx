@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
+import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
@@ -40,14 +41,15 @@ export function App() {
   const top = backStack[backStack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
   // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
-  // bill opens over the group's expenses the same way.
+  // bill and the group's editor open over the group's expenses the same way.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
   const isJoinWithLink = top.name === 'join-with-link'
   const isSplitBill = top.name === 'split-bill'
-  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isPaymentKey || isDeleteAccount
+  const isEditGroup = top.name === 'edit-group'
+  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isPaymentKey || isDeleteAccount
   let pageIndex = backStack.length - (isDialog ? 2 : 1)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -65,6 +67,7 @@ export function App() {
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
+      {isEditGroup && <EditGroupDialog key={top.groupId} route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )

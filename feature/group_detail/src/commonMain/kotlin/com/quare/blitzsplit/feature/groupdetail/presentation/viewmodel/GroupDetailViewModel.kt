@@ -115,9 +115,12 @@ class GroupDetailViewModel(
                 tab = Route.Members(route.groupId, joinedAs = null),
             )
 
-            GroupDetailUiEvent.OnBalancesTabClicked -> viewModelScope.launch {
-                uiAction.emit(GroupDetailUiAction.ShowComingSoon)
-            }
+            GroupDetailUiEvent.OnEditGroupClicked -> if (isOnTop()) navigator.navigate(Route.EditGroup(route.groupId))
+
+            GroupDetailUiEvent.OnBalancesTabClicked,
+            GroupDetailUiEvent.OnLeaveGroupClicked,
+            GroupDetailUiEvent.OnDeleteGroupClicked,
+            -> viewModelScope.launch { uiAction.emit(GroupDetailUiAction.ShowComingSoon) }
 
             GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
         }

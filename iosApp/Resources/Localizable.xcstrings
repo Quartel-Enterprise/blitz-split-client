@@ -66,6 +66,17 @@
         }
       }
     },
+    "Anyone in the group can change the name, the icon and the type." : {
+      "comment" : "The note at the end of edit group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa do grupo pode mudar o nome, o ícone e o tipo."
+          }
+        }
+      }
+    },
     "%@ are already in the group" : {
       "comment" : "The members who joined an invite link's group, as a list",
       "localizations" : {
@@ -88,6 +99,28 @@
         }
       }
     },
+    "Change color" : {
+      "comment" : "The edit group button under the avatar, which changes its color",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar cor"
+          }
+        }
+      }
+    },
+    "Delete group" : {
+      "comment" : "The group menu's item to delete the group, not built yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar grupo"
+          }
+        }
+      }
+    },
     "%@ changed this bill %@." : {
       "comment" : "Conflict banner of Edit bill: someone else saved it; first %@ is their name, second how long ago (2 minutes ago, just now)",
       "localizations" : {
@@ -106,6 +139,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ para cada um"
+          }
+        }
+      }
+    },
+    "Edit group" : {
+      "comment" : "The title of the edit group sheet, and the group menu's item that opens it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar grupo"
+          }
+        }
+      }
+    },
+    "Edit group…" : {
+      "comment" : "The Mac group menu's item that opens the edit group sheet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar grupo…"
+          }
+        }
+      }
+    },
+    "Everyone in the group sees the new name." : {
+      "comment" : "The help under the edit group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo do grupo vê o nome novo."
+          }
+        }
+      }
+    },
+    "Give the group a name, up to 40 characters." : {
+      "comment" : "The edit group's error while the name is empty",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dê um nome ao grupo, com até 40 caracteres."
           }
         }
       }
@@ -209,6 +286,17 @@
         }
       }
     },
+    "Leave group" : {
+      "comment" : "The group menu's item to leave the group, not built yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair do grupo"
+          }
+        }
+      }
+    },
     "%@ left" : {
       "comment" : "The split still misses an amount or percentage",
       "localizations" : {
@@ -216,6 +304,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Faltam %@"
+          }
+        }
+      }
+    },
+    "Locked" : {
+      "comment" : "VoiceOver label of the lock next to a group's currency, which no longer changes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Travada"
+          }
+        }
+      }
+    },
+    "More group options" : {
+      "comment" : "The group's ⋯ menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais opções do grupo"
+          }
+        }
+      }
+    },
+    "No internet: the change holds on this %@ now and reaches the others once it reconnects." : {
+      "comment" : "The note at the end of edit group while offline; the device is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: a mudança vale neste %@ agora e chega aos outros quando ele reconectar."
           }
         }
       }
@@ -289,6 +410,17 @@
     "%@ · %@" : {
       "comment" : "The group's name and how many of its members joined, in the Members subtitle",
       "shouldTranslate" : false
+    },
+    "The currency doesn’t change after the first expense." : {
+      "comment" : "Under the edit group's currency",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A moeda não muda depois da primeira despesa."
+          }
+        }
+      }
     },
     "%@ (you)" : {
       "comment" : "This device's user in the group's members",

@@ -1,25 +1,18 @@
 package com.quare.blitzsplit.android.feature.creategroup
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
@@ -34,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -42,7 +34,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,7 +50,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
+import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -67,11 +61,7 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
-import java.util.Currency
-import java.util.Locale
 
-private val singleColumnMaxWidth = 592.dp
-private val dialogWidth = 560.dp
 internal val listEndRadius = 20.dp
 internal val listInnerRadius = 6.dp
 
@@ -83,66 +73,21 @@ fun CreateGroupContent(
     onEvent: (CreateGroupUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (isDialog) {
-        Surface(
-            modifier = modifier
-                .widthIn(max = dialogWidth)
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        ) {
-            Column {
-                CreateGroupTopBar(
-                    state = state,
-                    onEvent = onEvent,
-                    isDialog = true,
-                )
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .imePadding()
-                        .padding(bottom = 24.dp),
-                ) {
-                    CreateGroupFormColumn(
-                        state = state,
-                        onEvent = onEvent,
-                    )
-                }
-            }
-        }
-    } else {
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                CreateGroupTopBar(
-                    state = state,
-                    onEvent = onEvent,
-                    isDialog = false,
-                )
-            },
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .imePadding(),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .widthIn(max = singleColumnMaxWidth)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(bottom = 32.dp),
-                ) {
-                    CreateGroupFormColumn(
-                        state = state,
-                        onEvent = onEvent,
-                    )
-                }
-            }
-        }
+    FormLayout(
+        isDialog = isDialog,
+        topBar = { isInDialog ->
+            CreateGroupTopBar(
+                state = state,
+                onEvent = onEvent,
+                isDialog = isInDialog,
+            )
+        },
+        modifier = modifier,
+    ) {
+        CreateGroupFormColumn(
+            state = state,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -312,14 +257,6 @@ private fun TypeChipRow(
     }
 }
 
-private val GroupType.labelRes: Int
-    @StringRes get() = when (this) {
-        GroupType.TRIP -> R.string.create_group_type_trip
-        GroupType.HOME -> R.string.create_group_type_home
-        GroupType.EVENT -> R.string.create_group_type_event
-        GroupType.OTHER -> R.string.create_group_type_other
-    }
-
 @Composable
 private fun CurrencyRow(
     state: CreateGroupUiState,
@@ -353,7 +290,7 @@ private fun CurrencyRow(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
-                    text = currencyLabel(state.currency, locale),
+                    text = groupCurrencyLabel(state.currency, locale),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -370,7 +307,7 @@ private fun CurrencyRow(
         ) {
             state.currencies.forEach { currency ->
                 DropdownMenuItem(
-                    text = { Text(currencyLabel(currency, locale)) },
+                    text = { Text(groupCurrencyLabel(currency, locale)) },
                     onClick = {
                         isMenuOpen = false
                         onEvent(CreateGroupUiEvent.OnCurrencySelected(currency))
@@ -389,19 +326,6 @@ private fun CurrencyRow(
             }
         }
     }
-}
-
-// Why: "Real brasileiro (R$)", named by the platform in the device's language.
-@Composable
-private fun currencyLabel(
-    currency: GroupCurrency,
-    locale: Locale,
-): String {
-    val label = remember(currency, locale) {
-        val platform = Currency.getInstance(currency.code)
-        platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
-    }
-    return stringResource(R.string.create_group_currency_value, label.first, label.second)
 }
 
 @DevicePreviews

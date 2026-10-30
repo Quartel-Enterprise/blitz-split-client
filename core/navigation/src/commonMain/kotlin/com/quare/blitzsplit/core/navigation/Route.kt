@@ -39,6 +39,11 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    // Why: "Editar grupo", from the group's ⋮ menu: a sheet over the group on iOS and macOS, a dialog on the web.
+    data class EditGroup(
+        val groupId: String,
+    ) : Route
+
     // Why: "Rachar conta", a new bill in the group, or "Editar conta" for expenseId, with "Dividir" drawn over it.
     data class SplitBill(
         val groupId: String,

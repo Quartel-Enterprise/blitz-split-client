@@ -11,4 +11,9 @@
     <string name="designsystem_delete_bill_no_longer_get_back">You no longer get back %s.</string>
     <string name="designsystem_delete_bill_confirm">Delete</string>
     <string name="designsystem_delete_bill_cancel">Cancel</string>
+    <string name="designsystem_group_type_trip">Trip</string>
+    <string name="designsystem_group_type_home">Home</string>
+    <string name="designsystem_group_type_event">Event</string>
+    <string name="designsystem_group_type_other">Other</string>
+    <string name="designsystem_currency_value">%1$s (%2$s)</string>
 </resources>

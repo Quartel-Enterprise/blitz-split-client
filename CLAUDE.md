@@ -87,6 +87,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
     someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite
     pessoal" answers "Em breve".
+  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo; the last two
+    wait for the balances and answer "Em breve". "Editar grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
+    the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
+    stays editable; there is no "Divisão padrão" yet. Moeda locks once the group has a bill on the device ("Não muda
+    depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
+    device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
+    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS, a dialog on the web and
+    on Android tablets.
   - "Rachar conta" (`Route.SplitBill`): one person paid the whole bill (several payers aren't built yet), "Quando"
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the

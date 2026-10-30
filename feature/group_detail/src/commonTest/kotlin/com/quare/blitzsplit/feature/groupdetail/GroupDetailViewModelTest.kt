@@ -888,6 +888,65 @@ class GroupDetailViewModelTest {
             assertEquals("group-2", deletedBills.observeNoticeGroupId().first())
         }
 
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Editar grupo THEN opens the edit of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnEditGroupClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Rachar conta already opened WHEN tapping Editar grupo THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnEditGroupClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping Sair do grupo THEN says coming soon`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = GroupDetailUiEvent.OnLeaveGroupClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
+        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping Apagar grupo THEN says coming soon`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = GroupDetailUiEvent.OnDeleteGroupClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
+        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+    }
+
     private fun ExpenseDay.ids(): List<String> = expenses.map { it.id }
 
     private val route = Route.GroupDetail(GROUP_ID)

@@ -1781,6 +1781,185 @@ class GroupRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a stored group WHEN editing it THEN stores the new name type color and currency at that time`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+            // When
+            val result = repository.updateGroup(
+                groupId = "group-1",
+                name = "Casa da praia",
+                type = GroupType.HOME,
+                color = AvatarColor.PEACH,
+                currency = GroupCurrency.USD,
+                updatedAt = 7_000L,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            val stored = local.group("group-1")
+            assertEquals("Casa da praia", stored?.name)
+            assertEquals("home", stored?.type)
+            assertEquals("peach", stored?.color)
+            assertEquals("USD", stored?.currency)
+            assertEquals(7_000L, stored?.updatedAt)
+        }
+
+    @Test
+    fun `GIVEN a synced group WHEN editing it THEN the group shows pending until the next sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = false,
+                ),
+            ),
+        )
+        repository.updateGroup(
+            groupId = "group-1",
+            name = "Casa da praia",
+            type = GroupType.HOME,
+            color = AvatarColor.PEACH,
+            currency = GroupCurrency.USD,
+            updatedAt = 7_000L,
+        )
+
+        // When
+        val group = repository.observeGroups().first().single()
+
+        // Then
+        assertTrue(group.isPending)
+        assertEquals("Casa da praia", group.name)
+        assertEquals(GroupType.HOME, group.type)
+        assertEquals(AvatarColor.PEACH, group.color)
+        assertEquals(GroupCurrency.USD, group.currency)
+        assertTrue(repository.observeHasPendingChanges().first())
+    }
+
+    @Test
+    fun `GIVEN a group with members and an invite code WHEN editing it THEN keeps its creator members and code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        createdBy = "user-1",
+                        ownerUserId = "user-1",
+                        inviteCode = "Xy7kQ2",
+                    ),
+                ),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Pierre",
+                        userId = "user-1",
+                        isMe = true,
+                    ),
+                    member(
+                        id = "m-2",
+                        groupId = "group-1",
+                        name = "Ana",
+                        inviteCode = "Ab3dE5",
+                    ),
+                ),
+            )
+            val membersBefore = local.members.value
+
+            // When
+            repository.updateGroup(
+                groupId = "group-1",
+                name = "Casa da praia",
+                type = GroupType.HOME,
+                color = AvatarColor.PEACH,
+                currency = GroupCurrency.USD,
+                updatedAt = 7_000L,
+            )
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("user-1", stored?.createdBy)
+            assertEquals("user-1", stored?.ownerUserId)
+            assertEquals("Xy7kQ2", stored?.inviteCode)
+            assertEquals(1L, stored?.addedAt)
+            assertEquals(membersBefore, local.members.value)
+        }
+
+    @Test
+    fun `GIVEN two stored groups WHEN editing one THEN the other stays as it was`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(id = "group-1"),
+                group(
+                    id = "group-2",
+                    name = "Rep",
+                ),
+            ),
+        )
+        val otherBefore = local.group("group-2")
+
+        // When
+        repository.updateGroup(
+            groupId = "group-1",
+            name = "Casa da praia",
+            type = GroupType.HOME,
+            color = AvatarColor.PEACH,
+            currency = GroupCurrency.USD,
+            updatedAt = 7_000L,
+        )
+
+        // Then
+        assertEquals(otherBefore, local.group("group-2"))
+    }
+
+    @Test
+    fun `GIVEN a stored group WHEN editing it THEN calls nothing on the server`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+        // When
+        repository.updateGroup(
+            groupId = "group-1",
+            name = "Casa da praia",
+            type = GroupType.HOME,
+            color = AvatarColor.PEACH,
+            currency = GroupCurrency.USD,
+            updatedAt = 7_000L,
+        )
+
+        // Then
+        assertTrue(remote.calls.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the device fails to write WHEN editing a group THEN returns the error instead of throwing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            groupWriteError = IllegalStateException("disk full"),
+        )
+
+        // When
+        val result = repository.updateGroup(
+            groupId = "group-1",
+            name = "Casa da praia",
+            type = GroupType.HOME,
+            color = AvatarColor.PEACH,
+            currency = GroupCurrency.USD,
+            updatedAt = 7_000L,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("Viagem Floripa", local.group("group-1")?.name)
+        assertEquals(false, local.group("group-1")?.pendingSync)
+    }
+
+    @Test
     fun `GIVEN a member who has not joined WHEN removing them THEN keeps the removal pending at that time`() = runTest {
         // Given
         prepareScenario(
@@ -2784,12 +2963,14 @@ class GroupRepositoryImplTest {
         insertError: Throwable? = null,
         serverInviteCodes: Map<String, String> = emptyMap(),
         memberWriteError: Throwable? = null,
+        groupWriteError: Throwable? = null,
         deleteMembersError: Throwable? = null,
         serverMemberInviteCodes: Map<String, String> = emptyMap(),
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
             it.memberWriteError = memberWriteError
+            it.groupWriteError = groupWriteError
         }
         remote = FakeGroupRemoteDataSource(
             groups = remoteGroups,
@@ -2823,6 +3004,9 @@ private class FakeGroupLocalDataSource(
 
     // Why: the add, rename and remove of one member, which fail alike when the device can't write.
     var memberWriteError: Throwable? = null
+
+    // Why: "Editar grupo" when the device can't write.
+    var groupWriteError: Throwable? = null
 
     fun group(id: String): GroupEntity? = groups.value.find { it.id == id }
 
@@ -2884,6 +3068,31 @@ private class FakeGroupLocalDataSource(
                 it.copy(
                     name = name,
                     updatedAt = updatedAt,
+                    pendingSync = true,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun updateGroup(
+        id: String,
+        name: String,
+        type: String,
+        color: String,
+        currency: String,
+        updatedAt: Long,
+    ) {
+        groupWriteError?.let { throw it }
+        groups.value = groups.value.map {
+            if (it.id == id) {
+                it.copy(
+                    name = name,
+                    type = type,
+                    color = color,
+                    currency = currency,
+                    updatedAt = maxOf(updatedAt, it.updatedAt + 1),
                     pendingSync = true,
                 )
             } else {

@@ -51,9 +51,9 @@ class CreateGroupPresenter {
                 initials = state.initials,
                 color = state.color.code,
                 type = state.type.code,
-                types = state.types.map(GroupType::code).toTypedArray(),
+                types = state.types.toCodes(),
                 currency = state.currency.code,
-                currencies = state.currencies.map(GroupCurrency::code).toTypedArray(),
+                currencies = state.currencies.toCurrencyCodes(),
                 members = state.members
                     .map { member ->
                         JsCreateGroupMember(

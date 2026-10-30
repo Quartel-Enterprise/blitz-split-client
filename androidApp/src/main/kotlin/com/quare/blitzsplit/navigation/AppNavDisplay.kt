@@ -18,6 +18,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
+import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
@@ -117,6 +118,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 )
             }
             entry<Route.GroupDetail> { route -> GroupDetailScreen(route) }
+            // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
+            entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
+                EditGroupScreen(
+                    route = route,
+                    isDialog = usesFormDialog,
+                )
+            }
             // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.
             entry<Route.SplitBill>(metadata = billDialogMetadata) { route ->
                 SplitBillScreen(

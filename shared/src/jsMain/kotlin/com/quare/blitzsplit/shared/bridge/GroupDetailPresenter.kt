@@ -122,6 +122,18 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
     }
 
+    fun editGroup() {
+        viewModel.onEvent(GroupDetailUiEvent.OnEditGroupClicked)
+    }
+
+    fun leaveGroup() {
+        viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+    }
+
+    fun deleteGroup() {
+        viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+    }
+
     fun openExpense(expenseId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked(expenseId))
     }

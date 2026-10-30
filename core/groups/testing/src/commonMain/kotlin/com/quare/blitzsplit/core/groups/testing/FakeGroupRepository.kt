@@ -3,6 +3,9 @@ package com.quare.blitzsplit.core.groups.testing
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +26,12 @@ class FakeGroupRepository(
     val memberChangeTimes = mutableListOf<Long>()
     val renamedMembers = mutableListOf<Pair<String, String>>()
     val removedMemberIds = mutableListOf<String>()
+    val updatedGroupIds = mutableListOf<String>()
+    val groupUpdateTimes = mutableListOf<Long>()
+    var updateGroupError: Throwable? = null
+
+    // Why: while set, an update waits for it, so a test can act while the save is in flight.
+    var updateGroupGate: CompletableDeferred<Unit>? = null
 
     // Why: one knob for the three member edits, which fail alike.
     var memberChangeError: Throwable? = null
@@ -47,6 +56,35 @@ class FakeGroupRepository(
         createdGroups += group
         createdAts += createdAt
         groups.value = listOf(group) + groups.value
+        hasPendingChanges.value = true
+        return Result.success(Unit)
+    }
+
+    override suspend fun updateGroup(
+        groupId: String,
+        name: String,
+        type: GroupType,
+        color: AvatarColor,
+        currency: GroupCurrency,
+        updatedAt: Long,
+    ): Result<Unit> {
+        updateGroupGate?.await()
+        updateGroupError?.let { return Result.failure(it) }
+        updatedGroupIds += groupId
+        groupUpdateTimes += updatedAt
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) {
+                group.copy(
+                    name = name,
+                    type = type,
+                    color = color,
+                    currency = currency,
+                    isPending = true,
+                )
+            } else {
+                group
+            }
+        }
         hasPendingChanges.value = true
         return Result.success(Unit)
     }

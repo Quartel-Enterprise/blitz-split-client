@@ -2,6 +2,10 @@
 <resources>
     <string name="group_detail_back">Voltar</string>
     <string name="group_detail_invite">Convidar pessoas</string>
+    <string name="group_detail_more">Mais opções do grupo</string>
+    <string name="group_detail_edit_group">Editar grupo</string>
+    <string name="group_detail_leave_group">Sair do grupo</string>
+    <string name="group_detail_delete_group">Apagar grupo</string>
     <plurals name="group_detail_member_count">
         <item quantity="one">%d membro</item>
         <item quantity="other">%d membros</item>

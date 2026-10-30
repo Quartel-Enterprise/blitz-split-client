@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
+import com.quare.blitzsplit.feature.editgroup.di.editGroupModule
 import com.quare.blitzsplit.feature.editprofile.di.editProfileModule
 import com.quare.blitzsplit.feature.groupdetail.di.groupDetailModule
 import com.quare.blitzsplit.feature.groups.di.groupsModule
@@ -75,6 +76,7 @@ val sharedModules: List<Module> = listOf(
     groupDetailModule,
     billDetailModule,
     splitBillModule,
+    editGroupModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

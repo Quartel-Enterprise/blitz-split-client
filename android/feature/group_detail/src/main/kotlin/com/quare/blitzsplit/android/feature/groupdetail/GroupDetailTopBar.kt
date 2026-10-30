@@ -1,17 +1,30 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -77,7 +90,83 @@ internal fun GroupDetailTopBar(
                     contentDescription = stringResource(R.string.group_detail_invite),
                 )
             }
+            GroupMenu(
+                isEnabled = state.isLoaded,
+                onEvent = onEvent,
+            )
         },
         scrollBehavior = scrollBehavior,
     )
+}
+
+// Why: the ⋮ menu keeps only what changes the group itself (6.1i).
+@Composable
+private fun GroupMenu(
+    // Why: the group's own fields are only there to edit once Room is read.
+    isEnabled: Boolean,
+    onEvent: (GroupDetailUiEvent) -> Unit,
+) {
+    var isOpen by rememberSaveable { mutableStateOf(false) }
+    Box {
+        IconButton(
+            onClick = { isOpen = true },
+            enabled = isEnabled,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(R.string.group_detail_more),
+            )
+        }
+        DropdownMenu(
+            expanded = isOpen,
+            onDismissRequest = { isOpen = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.group_detail_edit_group)) },
+                onClick = {
+                    isOpen = false
+                    onEvent(GroupDetailUiEvent.OnEditGroupClicked)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = null,
+                    )
+                },
+            )
+            HorizontalDivider()
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.group_detail_leave_group)) },
+                onClick = {
+                    isOpen = false
+                    onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Logout,
+                        contentDescription = null,
+                    )
+                },
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(R.string.group_detail_delete_group),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                },
+                onClick = {
+                    isOpen = false
+                    onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                },
+            )
+        }
+    }
 }
