@@ -17,6 +17,15 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: the "Saldos" tab.
     data object OnBalancesTabClicked : GroupDetailUiEvent
 
+    // Why: "Editar grupo" in the ⋮ menu.
+    data object OnEditGroupClicked : GroupDetailUiEvent
+
+    // Why: "Sair do grupo" in the ⋮ menu, which waits for the balances.
+    data object OnLeaveGroupClicked : GroupDetailUiEvent
+
+    // Why: "Apagar grupo" in the ⋮ menu, which waits for the balances.
+    data object OnDeleteGroupClicked : GroupDetailUiEvent
+
     // Why: a bill on the list, whose screen (7.3) is not built yet.
     data class OnExpenseClicked(
         val expenseId: String,

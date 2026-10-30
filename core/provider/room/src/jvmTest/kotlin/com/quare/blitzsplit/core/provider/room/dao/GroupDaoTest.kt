@@ -467,6 +467,71 @@ class GroupDaoTest {
         assertEquals("Xy7kQ2", stored.inviteCode)
     }
 
+    @Test
+    fun `GIVEN a synced group with its code WHEN editing it THEN changes its fields and keeps who made it`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                updatedAt = 1L,
+                inviteCode = "7Hk2pQxa",
+            ),
+        )
+
+        // When
+        dao.updateGroup(
+            id = "group-1",
+            name = "Casa da praia",
+            type = "home",
+            color = "peach",
+            currency = "USD",
+            updatedAt = 6L,
+        )
+
+        // Then
+        assertEquals(
+            entity(
+                updatedAt = 6L,
+                pendingSync = true,
+                inviteCode = "7Hk2pQxa",
+            ).copy(
+                name = "Casa da praia",
+                type = "home",
+                color = "peach",
+                currency = "USD",
+            ),
+            dao
+                .observeGroups()
+                .first()
+                .single(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a group stamped by a clock ahead WHEN editing it THEN the edit is stamped after it`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 9L))
+
+        // When
+        dao.updateGroup(
+            id = "group-1",
+            name = "Casa da praia",
+            type = "trip",
+            color = "blue",
+            currency = "BRL",
+            updatedAt = 6L,
+        )
+
+        // Then
+        assertEquals(
+            10L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .updatedAt,
+        )
+    }
+
     private fun entity(
         name: String = "Viagem Floripa",
         updatedAt: Long,

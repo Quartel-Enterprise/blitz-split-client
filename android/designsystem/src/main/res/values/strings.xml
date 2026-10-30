@@ -5,4 +5,9 @@
     <string name="designsystem_google_short">Google</string>
     <string name="designsystem_apple_short">Apple</string>
     <string name="designsystem_back">Back</string>
+    <string name="designsystem_group_type_trip">Trip</string>
+    <string name="designsystem_group_type_home">Home</string>
+    <string name="designsystem_group_type_event">Event</string>
+    <string name="designsystem_group_type_other">Other</string>
+    <string name="designsystem_currency_value">%1$s (%2$s)</string>
 </resources>

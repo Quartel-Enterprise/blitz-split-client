@@ -1,9 +1,16 @@
-import { ArrowLeft, ChevronRight, Plus, ReceiptText, UserPlus } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Ellipsis, LogOut, Pencil, Plus, ReceiptText, Trash2, UserPlus } from 'lucide-react'
 import { GroupDetailPresenter, type JsExpenseDay, type JsExpenseRow, type JsGroupDetailState, type JsRoute } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, GroupTabs } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
@@ -51,6 +58,29 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
         <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => presenter.invite()} className="md:hidden">
           <UserPlus />
         </Button>
+        {/* Why: the ⋯ menu keeps only what changes the group itself (6.1i). */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label={t('groupDetail_moreOptions')}>
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuItem onSelect={() => presenter.editGroup()}>
+              <Pencil />
+              {t('groupDetail_editGroup')}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => presenter.leaveGroup()}>
+              <LogOut />
+              {t('groupDetail_leaveGroup')}
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onSelect={() => presenter.deleteGroup()}>
+              <Trash2 />
+              {t('groupDetail_deleteGroup')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">

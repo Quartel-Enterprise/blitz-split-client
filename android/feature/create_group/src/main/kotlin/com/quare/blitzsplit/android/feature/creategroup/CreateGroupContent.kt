@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.creategroup
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +41,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +57,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
+import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -67,8 +67,6 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
-import java.util.Currency
-import java.util.Locale
 
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
@@ -312,14 +310,6 @@ private fun TypeChipRow(
     }
 }
 
-private val GroupType.labelRes: Int
-    @StringRes get() = when (this) {
-        GroupType.TRIP -> R.string.create_group_type_trip
-        GroupType.HOME -> R.string.create_group_type_home
-        GroupType.EVENT -> R.string.create_group_type_event
-        GroupType.OTHER -> R.string.create_group_type_other
-    }
-
 @Composable
 private fun CurrencyRow(
     state: CreateGroupUiState,
@@ -353,7 +343,7 @@ private fun CurrencyRow(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
-                    text = currencyLabel(state.currency, locale),
+                    text = groupCurrencyLabel(state.currency, locale),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -370,7 +360,7 @@ private fun CurrencyRow(
         ) {
             state.currencies.forEach { currency ->
                 DropdownMenuItem(
-                    text = { Text(currencyLabel(currency, locale)) },
+                    text = { Text(groupCurrencyLabel(currency, locale)) },
                     onClick = {
                         isMenuOpen = false
                         onEvent(CreateGroupUiEvent.OnCurrencySelected(currency))
@@ -389,19 +379,6 @@ private fun CurrencyRow(
             }
         }
     }
-}
-
-// Why: "Real brasileiro (R$)", named by the platform in the device's language.
-@Composable
-private fun currencyLabel(
-    currency: GroupCurrency,
-    locale: Locale,
-): String {
-    val label = remember(currency, locale) {
-        val platform = Currency.getInstance(currency.code)
-        platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
-    }
-    return stringResource(R.string.create_group_currency_value, label.first, label.second)
 }
 
 @DevicePreviews

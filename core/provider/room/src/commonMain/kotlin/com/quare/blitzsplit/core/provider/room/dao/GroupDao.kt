@@ -140,6 +140,24 @@ interface GroupDao {
         updatedAt: Long,
     )
 
+    /*
+     * Why: "Editar grupo" changes the group's own fields; who created it, its members and its invite code stay. The
+     * edit is stamped after the row it changes, even when that row came from a device whose clock runs ahead, or
+     * Last-Write-Wins would drop it on the next sync.
+     */
+    @Query(
+        "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
+            "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
+    )
+    suspend fun updateGroup(
+        id: String,
+        name: String,
+        type: String,
+        color: String,
+        currency: String,
+        updatedAt: Long,
+    )
+
     // Why: someone who joined sees the group too, so only a member nobody is yet can be removed.
     @Query(
         "UPDATE group_member SET isRemoved = 1, updatedAt = :removedAt, pendingSync = 1 " +

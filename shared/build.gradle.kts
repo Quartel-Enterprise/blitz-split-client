@@ -25,6 +25,7 @@ private val exportedToApple = listOf(
     projects.feature.join,
     projects.feature.groupDetail,
     projects.feature.splitBill,
+    projects.feature.editGroup,
 )
 
 kotlin {

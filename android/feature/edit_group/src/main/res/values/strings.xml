@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_group_title">Edit group</string>
+    <string name="edit_group_close">Close</string>
+    <string name="edit_group_save">Save</string>
+    <string name="edit_group_change_color">Change color</string>
+    <string name="edit_group_change_color_description">Change the group\'s color</string>
+    <string name="edit_group_name_label">Group name</string>
+    <string name="edit_group_name_help">Everyone in the group sees the new name.</string>
+    <string name="edit_group_name_error">Give the group a name, up to 40 characters.</string>
+    <string name="edit_group_name_count">%1$d/%2$d</string>
+    <string name="edit_group_type_label">Type</string>
+    <string name="edit_group_currency">Currency</string>
+    <string name="edit_group_currency_lock">Doesn\'t change after the first expense</string>
+    <string name="edit_group_currency_locked">Locked</string>
+    <string name="edit_group_note">Anyone in the group can change the name, the icon and the type.</string>
+    <string name="edit_group_offline_note">No internet: the change holds on this device now and reaches the others once it reconnects.</string>
+    <string name="edit_group_save_error">Couldn’t save the group. Try again.</string>
+</resources>
