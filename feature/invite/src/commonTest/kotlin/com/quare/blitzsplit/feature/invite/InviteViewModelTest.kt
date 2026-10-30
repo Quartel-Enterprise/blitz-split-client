@@ -508,6 +508,21 @@ class InviteViewModelTest {
         }
 
     @Test
+    fun `GIVEN the screen opened from the members just joined WHEN see who joined is tapped THEN goes back to them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.replaceTop(Route.Members("group-1", joinedAs = "Bruno"))
+            navigator.navigate(Route.Invite("group-1"))
+
+            // When
+            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno")), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN another screen on top WHEN see who joined is tapped THEN stays where it is`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

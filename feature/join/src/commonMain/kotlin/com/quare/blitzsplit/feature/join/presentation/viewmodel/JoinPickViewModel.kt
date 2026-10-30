@@ -195,11 +195,11 @@ class JoinPickViewModel(
         }
     }
 
-    private fun nameOf(choice: JoinChoice): String = when (choice) {
+    private fun nameOf(choice: JoinChoice): String? = when (choice) {
         is JoinChoice.AsMember ->
             uiState.value.members
-                .first { it.id == choice.memberId }
-                .name
+                .firstOrNull { it.id == choice.memberId }
+                ?.name
 
         is JoinChoice.AsNewMember -> choice.name
     }

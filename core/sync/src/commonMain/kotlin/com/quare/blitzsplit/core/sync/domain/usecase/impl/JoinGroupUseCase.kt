@@ -33,9 +33,7 @@ class JoinGroupUseCase(
         val profile = profileRepository.observeProfile().first()
         val avatarColor = profile?.avatarColor ?: colorOf(invite, choice)
         // Why: a member named before names needed 2 letters can't become a profile, so it isn't joined at all.
-        if (profile ==
-            null
-        ) {
+        if (profile == null) {
             require(MemberNameRules.isLongEnough(nameOf(invite, choice))) { "Name too short for a profile" }
         }
         accountRepository.ensureRegistered().getOrThrow()

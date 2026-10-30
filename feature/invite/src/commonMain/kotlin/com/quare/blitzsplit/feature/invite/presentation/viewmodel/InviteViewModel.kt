@@ -158,12 +158,12 @@ class InviteViewModel(
     private fun openMembers() {
         val backStack = navigator.backStack.value
         if (backStack.lastOrNull() != route) return
-        val members = Route.Members(route.groupId, joinedAs = null)
         val below = backStack.getOrNull(backStack.lastIndex - 1)
-        if (below == members) {
+        // Why: by the group alone, since the members just joined ("Você entrou como Bruno") are the same screen.
+        if ((below as? Route.Members)?.groupId == route.groupId) {
             navigator.navigateBack()
         } else {
-            navigator.replaceTop(members)
+            navigator.replaceTop(Route.Members(route.groupId, joinedAs = null))
         }
     }
 

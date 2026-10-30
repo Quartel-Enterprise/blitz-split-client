@@ -51,7 +51,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     symbol of the device's region, `$` when there is none.
   - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the three not built yet
     answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
-  - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
   - "Novo grupo": tapping the group's avatar cycles its color through the palette (no shapes yet), and Moeda starts
     in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
@@ -64,11 +63,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined), after confirming
     "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" and Android's Despesas and
     Saldos tabs answer "Em breve".
-  - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
-    Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
-    "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
-    color joined as. A member someone else already joined as says "Se era você, fale com <criador>": "Liberar nome"
-    isn't built yet.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.

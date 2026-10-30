@@ -86,7 +86,8 @@ class AppViewModel(
 
     /*
      * Why: an invite link opens its invite over wherever the app is, once the first screen is in place, so back leaves
-     * it for the groups, or the welcome without a profile. The same invite already on top isn't opened twice.
+     * it for the groups, or the welcome without a profile. The same invite already open comes back to the top instead
+     * of being pushed twice, which Navigation 3 can't hold since it keys each entry by its route.
      */
     private fun openInviteLinks() {
         linkInbox
@@ -96,7 +97,8 @@ class AppViewModel(
                 linkInbox.take(url)
                 val code = InviteLink.codeOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(code)
-                if (navigator.backStack.value.lastOrNull() != invite) navigator.navigate(invite)
+                val openIndex = navigator.backStack.value.indexOf(invite)
+                if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
             }.launchIn(viewModelScope)
     }
 
