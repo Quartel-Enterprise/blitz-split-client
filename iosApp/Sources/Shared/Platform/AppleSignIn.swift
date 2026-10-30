@@ -82,13 +82,6 @@ extension AppleSignIn: ASAuthorizationControllerDelegate {
 
 extension AppleSignIn: ASAuthorizationControllerPresentationContextProviding {
     nonisolated func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        MainActor.assumeIsolated {
-            #if os(iOS)
-            let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            return scenes.compactMap(\.keyWindow).first ?? UIWindow(windowScene: scenes[0])
-            #else
-            NSApplication.shared.keyWindow ?? ASPresentationAnchor()
-            #endif
-        }
+        MainActor.assumeIsolated { PresentationAnchor.current }
     }
 }
