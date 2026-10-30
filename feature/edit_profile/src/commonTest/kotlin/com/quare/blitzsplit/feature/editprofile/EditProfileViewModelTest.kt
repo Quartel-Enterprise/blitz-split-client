@@ -1264,6 +1264,50 @@ class EditProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN a slow session read WHEN the account disconnects THEN drops the notice without waiting for the read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("u", AccountProvider.GOOGLE),
+                sessionUser = googleUser,
+                holdsSession = true,
+            )
+
+            // When
+            account.status = AccountStatus.LocalOnly
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.accountProvider)
+            assertFalse(state.showsAccountNotice)
+            heldSession.complete(Unit)
+            assertNull(viewModel.uiState.value.accountPhotoUrl)
+        }
+
+    @Test
+    fun `GIVEN a Google account with a picture WHEN another Google user replaces it THEN offers that user's picture`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = pierreWithUpload,
+                status = AccountStatus.Connected("u", AccountProvider.GOOGLE),
+                sessionUser = googleUser,
+            )
+            account.sessionUser = googleUser.copy(
+                userId = "v",
+                photoUrl = OTHER_GOOGLE_PHOTO_URL,
+            )
+
+            // When
+            account.status = AccountStatus.Connected("v", AccountProvider.GOOGLE)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(AccountProvider.GOOGLE, state.accountProvider)
+            assertEquals(OTHER_GOOGLE_PHOTO_URL, state.accountPhotoUrl)
+        }
+
+    @Test
     fun `GIVEN a connected account without a session user WHEN the editor opens THEN offers no account photo`() =
         runTest(testDispatcher) {
             // Given
@@ -1498,6 +1542,7 @@ class EditProfileViewModelTest {
 
     private companion object {
         const val GOOGLE_PHOTO_URL = "https://lh3.googleusercontent.com/a/pierre"
+        const val OTHER_GOOGLE_PHOTO_URL = "https://lh3.googleusercontent.com/a/ana"
         const val UPLOADED_PHOTO_URL = "https://supabase/storage/avatars/pierre.jpg"
     }
 }

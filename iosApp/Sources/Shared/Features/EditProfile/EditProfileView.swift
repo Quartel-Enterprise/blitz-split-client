@@ -154,9 +154,10 @@ private struct PhotoEditor: View {
     @State private var pickedPhoto: PhotosPickerItem?
     @State private var showsPhotoPicker = false
     @State private var showsCamera = false
-    @State private var showsCameraDenied = false
 
     #if os(iOS)
+    @State private var showsCameraDenied = false
+
     /// Why: the system camera shows a black screen when access was refused, so ask first and explain a "no".
     private func takePhoto() async {
         let isAllowed = switch AVCaptureDevice.authorizationStatus(for: .video) {

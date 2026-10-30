@@ -23,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -68,21 +69,27 @@ class EditProfileViewModel(
             .filterNotNull()
             .onEach(::onSavedProfileChanged)
             .launchIn(viewModelScope)
-        observeAccount()
-            .map { account -> (account.status as? AccountStatus.Connected)?.provider }
-            .distinctUntilChanged()
-            .onEach { provider ->
-                // Why: the notice names the provider at once; the picture follows once the session is read.
-                uiState.update {
-                    it.copy(
-                        accountProvider = provider,
-                        accountPhotoUrl = null,
-                    )
+        /*
+         * Why: keyed on the user too, so another account of the same provider reads its own picture; and a newer
+         * status drops a session read still running, so the notice never waits on it.
+         */
+        viewModelScope.launch {
+            observeAccount()
+                .map { account -> account.status as? AccountStatus.Connected }
+                .distinctUntilChanged()
+                .collectLatest { connected ->
+                    // Why: the notice names the provider at once; the picture follows once the session is read.
+                    uiState.update {
+                        it.copy(
+                            accountProvider = connected?.provider,
+                            accountPhotoUrl = null,
+                        )
+                    }
+                    // Why: only a connected account has a picture of its own to offer.
+                    val accountPhotoUrl = connected?.let { getSessionUser()?.photoUrl }
+                    uiState.update { it.copy(accountPhotoUrl = accountPhotoUrl) }
                 }
-                // Why: only a connected account has a picture of its own to offer.
-                val accountPhotoUrl = provider?.let { getSessionUser()?.photoUrl }
-                uiState.update { it.copy(accountPhotoUrl = accountPhotoUrl) }
-            }.launchIn(viewModelScope)
+        }
     }
 
     fun onEvent(event: EditProfileUiEvent) {

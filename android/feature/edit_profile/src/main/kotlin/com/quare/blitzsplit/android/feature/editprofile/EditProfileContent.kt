@@ -65,6 +65,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -348,7 +349,7 @@ private fun NameSection(
 
 @Composable
 private fun AccountNoticeCard(provider: AccountProvider) {
-    val providerName = stringResource(provider.nameRes)
+    val providerName = stringResource(provider.labelRes)
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -436,7 +437,7 @@ private fun PhotoMenuSheet(
                     icon = Icons.Outlined.AccountCircle,
                     label = stringResource(
                         R.string.edit_profile_use_account_photo,
-                        stringResource(accountProvider.nameRes),
+                        stringResource(accountProvider.labelRes),
                     ),
                 ) {
                     onDismiss()
@@ -475,13 +476,6 @@ private fun PhotoMenuItem(
         )
     }
 }
-
-@get:StringRes
-private val AccountProvider.nameRes: Int
-    get() = when (this) {
-        AccountProvider.GOOGLE -> DesignR.string.designsystem_google_short
-        AccountProvider.APPLE -> DesignR.string.designsystem_apple_short
-    }
 
 @get:StringRes
 private val AvatarColor.labelRes: Int
