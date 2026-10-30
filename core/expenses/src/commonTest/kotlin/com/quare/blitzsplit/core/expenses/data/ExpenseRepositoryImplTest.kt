@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -192,7 +195,7 @@ class ExpenseRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a bill with a split mode this version does not know WHEN observing it THEN shows no bill`() = runTest {
+    fun `GIVEN a bill with a split mode this version does not know WHEN observing it THEN nothing shows`() = runTest {
         // Given
         prepareScenario(
             stored = listOf(
@@ -204,10 +207,34 @@ class ExpenseRepositoryImplTest {
         )
 
         // When
-        val expense = repository.observeExpense("bill-1").first()
+        val shown = mutableListOf<Expense?>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeExpense("bill-1").toList(shown)
+        }
 
         // Then
-        assertNull(expense)
+        assertTrue(shown.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an open bill WHEN an unreadable version syncs THEN keeps the bill instead of a deletion`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "bill-1")))
+        val shown = mutableListOf<Expense?>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeExpense("bill-1").toList(shown)
+        }
+
+        // When
+        local.entities.value = listOf(
+            entity(
+                id = "bill-1",
+                splitMode = "itemized",
+            ),
+        )
+
+        // Then
+        assertEquals(listOf<String?>("bill-1"), shown.map { it?.id })
     }
 
     @Test

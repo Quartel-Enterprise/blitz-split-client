@@ -281,4 +281,28 @@ class InitialsTest {
             else -> false
         }
     }
+
+    @Test
+    fun `GIVEN the device user WHEN taking a member initials THEN gives one letter`() {
+        // Given
+        val name = "Pierre Vieira"
+
+        // When
+        val initials = Initials.ofMember(name, isMe = true)
+
+        // Then
+        assertEquals("P", initials)
+    }
+
+    @Test
+    fun `GIVEN another member WHEN taking a member initials THEN gives two letters`() {
+        // Given
+        val name = "Ana Paula"
+
+        // When
+        val initials = Initials.ofMember(name, isMe = false)
+
+        // Then
+        assertEquals("AP", initials)
+    }
 }

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 
 class ExpenseRepositoryImpl(
     private val local: ExpenseLocalDataSource,
@@ -20,10 +21,19 @@ class ExpenseRepositoryImpl(
         .map { entities -> entities.mapNotNull(mapper::toDomain) }
         .distinctUntilChanged()
 
+    /*
+     * Why: null only for a bill that is gone. One this version can't read (a newer split mode) still exists, so it
+     * emits nothing rather than having an open Conta take it for a deletion.
+     */
     override fun observeExpense(id: String): Flow<Expense?> = local
         .observeExpense(id)
-        .map { row -> row?.let(mapper::toDomain) }
-        .distinctUntilChanged()
+        .transform { row ->
+            if (row == null) {
+                emit(null)
+            } else {
+                mapper.toDomain(row)?.let { emit(it) }
+            }
+        }.distinctUntilChanged()
 
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 

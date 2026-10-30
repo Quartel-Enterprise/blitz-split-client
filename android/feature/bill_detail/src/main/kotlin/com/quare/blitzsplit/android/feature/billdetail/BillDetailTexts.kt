@@ -1,12 +1,11 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
-import android.icu.text.ListFormatter
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
@@ -78,9 +77,7 @@ internal fun myPartNoteTextOf(
 
     is MyPartNote.OwedBy -> {
         val formerMember = stringResource(R.string.bill_detail_former_member)
-        val names = ListFormatter
-            .getInstance(LocalLocale.current.platformLocale)
-            .format(note.names.map { it ?: formerMember })
+        val names = nameListOf(note.names.map { it ?: formerMember })
         val each = note.eachMinor
         if (each != null) {
             pluralStringResource(R.plurals.bill_detail_owe_you_each, note.names.size, names, money.toText(each))

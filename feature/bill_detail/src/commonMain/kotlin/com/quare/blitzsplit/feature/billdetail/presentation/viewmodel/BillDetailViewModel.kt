@@ -170,7 +170,7 @@ class BillDetailViewModel(
 
     private fun toPayer(member: GroupMember): BillPayer = BillPayer(
         name = member.name,
-        initials = initialsOf(member),
+        initials = Initials.ofMember(member.name, member.isMe),
         avatarColor = member.avatarColor,
         isMe = member.isMe,
     )
@@ -187,7 +187,7 @@ class BillDetailViewModel(
             BillShareRow(
                 memberId = member.id,
                 name = member.name,
-                initials = initialsOf(member),
+                initials = Initials.ofMember(member.name, member.isMe),
                 avatarColor = member.avatarColor,
                 isMe = member.isMe,
                 hasJoined = member.hasJoined,
@@ -239,9 +239,6 @@ class BillDetailViewModel(
             totalMinor = debtors.sumOf { it.amountMinor },
         )
     }
-
-    private fun initialsOf(member: GroupMember): String =
-        if (member.isMe) Initials.firstOf(member.name) else Initials.of(member.name)
 
     private fun edit() {
         if (!uiState.value.areActionsEnabled || !isOnTop()) return

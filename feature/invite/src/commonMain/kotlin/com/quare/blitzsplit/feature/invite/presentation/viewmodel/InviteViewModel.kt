@@ -130,7 +130,7 @@ class InviteViewModel(
     private fun toInviteMember(member: GroupMember): InviteMember = InviteMember(
         id = member.id,
         name = member.name,
-        initials = if (member.isMe) Initials.firstOf(member.name) else Initials.of(member.name),
+        initials = Initials.ofMember(member.name, member.isMe),
         avatarColor = member.avatarColor,
         isMe = member.isMe,
         hasJoined = member.hasJoined,

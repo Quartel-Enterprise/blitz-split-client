@@ -1,12 +1,11 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
-import android.icu.text.ListFormatter
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -18,12 +17,8 @@ private const val PART_SEPARATOR = " · "
 internal fun personNameOf(person: BillPerson): String =
     if (person.isMe) stringResource(R.string.split_bill_you) else person.name
 
-// Why: "Diego e Elisa", joined the way the UI's language lists names.
 @Composable
-internal fun namesOf(people: List<BillPerson>): String {
-    val names = people.map { personNameOf(it) }
-    return ListFormatter.getInstance(LocalLocale.current.platformLocale).format(names)
-}
+internal fun namesOf(people: List<BillPerson>): String = nameListOf(people.map { personNameOf(it) })
 
 @Composable
 internal fun sentenceOf(text: String): String = stringResource(R.string.split_bill_sentence, text)
