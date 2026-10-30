@@ -11,5 +11,8 @@
         ]
       }
     ]
+  },
+  "webcredentials": {
+    "apps": ["TTV2A365LG.com.quare.blitzsplit"]
   }
 }
