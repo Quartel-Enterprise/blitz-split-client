@@ -71,7 +71,7 @@ class RemoveMemberUseCaseTest {
         ),
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     private fun prepareScenario(

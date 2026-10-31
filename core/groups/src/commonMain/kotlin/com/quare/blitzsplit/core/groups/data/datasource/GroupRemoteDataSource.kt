@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 
 interface GroupRemoteDataSource {
     // Why: the rows as the server kept them, with the invite code it made for a new group.
@@ -32,4 +33,7 @@ interface GroupRemoteDataSource {
 
     // Why: the group's new invite code; anyone but the group's creator gets NotGroupCreatorException.
     suspend fun rotateInviteCode(groupId: String): String
+
+    // Why: the member as the server keeps it once released; null for a member no longer on the server.
+    suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto?
 }

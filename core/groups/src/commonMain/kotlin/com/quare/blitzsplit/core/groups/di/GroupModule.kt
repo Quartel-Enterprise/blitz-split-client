@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
@@ -29,6 +30,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
@@ -52,6 +54,7 @@ val groupModule = module {
     factoryOf(::AddMemberUseCase).bind<AddMember>()
     factoryOf(::RenameMemberUseCase).bind<RenameMember>()
     factoryOf(::RemoveMemberUseCase).bind<RemoveMember>()
+    factoryOf(::ReleaseMemberUseCase).bind<ReleaseMember>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
     factoryOf(::GetInviteUseCase).bind<GetInvite>()
 }

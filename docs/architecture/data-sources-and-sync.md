@@ -154,8 +154,16 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   (`claimUnowned`). A member is just a name: `userId` stays null until someone picks that member from the invite
   link, and the server never lets a client take over a member that has an account. The server keeps the newer row
   too, with the same trigger as the keys. The download reads every group and member page by page and deletes the
-  synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay. When an account is
-  deleted, the server unlinks it from its groups and deletes the groups nobody with an account is left in.
+  synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay, except a group that went
+  up once (it has its invite code): the server would refuse its changes now, so it leaves with its members, bills and
+  payments. When an account is deleted, the server unlinks it from its groups and deletes the groups nobody with an
+  account is left in.
+  - **Releasing a member** ("Liberar nome"): the group's creator turns a member someone joined as back into a name,
+    online only, through the `release_member` RPC, which also gives the member a new personal invite code. The
+    device stores the member as the RPC answers it (`GroupRepository.requestMemberRelease`). The released account no longer
+    sees the group, so its devices drop it on their next download, pending changes included. A push only ever sends
+    this device's own account as a member's `userId` (`GroupMapper.toDto`): the server keeps a joined member's
+    account anyway, and refuses, with the whole upsert, an account the member no longer has.
   - **Removing a member**: only a member nobody has joined as can be removed, on the server too (its delete policy
     asks for a null `user_id`). The device marks the row `isRemoved` and pending, so the UIs hide it at once; the
     push deletes the removed members on the server after the upserts, then drops their rows
@@ -177,7 +185,8 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     write the old code back, and in the app's scope, so leaving Convidar mid-call keeps it. The server leaves
     `updated_at` alone: the other devices take the new code on their next download, as with any code, and a
     member's earlier offline edit of the group still wins Last-Write-Wins. A failure starts a sync, since the
-    server may have changed the code anyway with its answer lost on the way.
+    server may have changed the code anyway with its answer lost on the way; a refusal (not the creator,
+    `NotGroupCreatorException`) changed nothing and starts none.
   - **Joining through the invite link**: a group the user is not in yet can't be read through the tables, so the
     invite screen asks `get_invite` (open to `anon` too, so only looking at an invite creates no account) and the
     join asks `join_group`, both security definer functions on the server. `JoinGroupUseCase` (in `:core:sync`)

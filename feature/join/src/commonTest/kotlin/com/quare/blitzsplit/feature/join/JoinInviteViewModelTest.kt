@@ -1327,7 +1327,7 @@ class JoinInviteViewModelTest {
         ),
         isPending = false,
         inviteCode = CODE,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     // Why: the reader opened from the home, which skips no invite.

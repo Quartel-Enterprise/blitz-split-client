@@ -42,8 +42,11 @@ interface GroupDao {
     )
     suspend fun getRemovedMemberIds(ownerUserId: String): List<String>
 
-    @Query("SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND pendingSync = 0")
-    suspend fun getSyncedGroupIds(ownerUserId: String): List<String>
+    // Why: a group with an invite code went up once, whatever this device changed in it since.
+    @Query(
+        "SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND (pendingSync = 0 OR inviteCode IS NOT NULL)",
+    )
+    suspend fun getGroupIdsOnServer(ownerUserId: String): List<String>
 
     @Query(
         "SELECT * FROM group_member WHERE pendingSync = 0 AND groupId IN " +
@@ -102,6 +105,11 @@ interface GroupDao {
             isMe = entity.isMe,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
+        )
+        updateMemberAccount(
+            id = entity.id,
+            userId = entity.userId,
+            isMe = entity.isMe,
         )
         entity.inviteCode?.let {
             updateMemberInviteCode(
@@ -208,6 +216,20 @@ interface GroupDao {
         inviteCode: String,
     )
 
+    /*
+     * Why: like the code, the account a member is belongs to the server: someone joins as them there, or the creator
+     * releases them ("Liberar nome"), so it is taken even when this device holds a newer edit of the member.
+     */
+    @Query(
+        "UPDATE group_member SET userId = :userId, isMe = :isMe " +
+            "WHERE id = :id AND (userId IS NOT :userId OR isMe != :isMe)",
+    )
+    suspend fun updateMemberAccount(
+        id: String,
+        userId: String?,
+        isMe: Boolean,
+    )
+
     @Query("UPDATE group_member SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
     suspend fun markMemberSynced(
         id: String,
@@ -285,8 +307,10 @@ interface GroupDao {
     suspend fun deleteOtherUsersGroupRows(ownerUserId: String)
 
     /*
-     * Why: the synced groups the server no longer gives this user were removed there, with all their members; so
-     * were the synced members missing from a group the server still has. A group edited here keeps its members.
+     * Why: the groups that went up and the server no longer gives this user were removed there, or the user was
+     * released from them ("Liberar nome"), with all their members, even with changes made here the server would refuse
+     * now. So were the synced members missing from a group the server still has. A group created here and not up yet
+     * stays, and so does a member added or edited here in a group the server still has.
      */
     @Transaction
     suspend fun deleteGoneFromServer(
@@ -294,7 +318,7 @@ interface GroupDao {
         serverGroupIds: Set<String>,
         serverMemberIds: Set<String>,
     ) {
-        val goneGroups = getSyncedGroupIds(ownerUserId).filterNot { it in serverGroupIds }
+        val goneGroups = getGroupIdsOnServer(ownerUserId).filterNot { it in serverGroupIds }
         val goneMembers = getSyncedMembers(ownerUserId)
             .filter { it.groupId in serverGroupIds && it.id !in serverMemberIds }
             .map { it.id }

@@ -115,6 +115,8 @@ class MembersUiStateTest {
         members = members,
         editor = null,
         memberToRemove = null,
+        memberToRelease = null,
+        isReleasing = false,
         isLoaded = true,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
@@ -136,5 +138,6 @@ class MembersUiStateTest {
         hasJoined = hasJoined,
         personalLink = null,
         balance = null,
+        canBeReleased = false,
     )
 }

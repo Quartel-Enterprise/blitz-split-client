@@ -1108,7 +1108,7 @@ class GroupsViewModelTest {
         ),
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     private fun group(
@@ -1125,7 +1125,7 @@ class GroupsViewModelTest {
         members = members,
         isPending = isPending,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     private fun member(

@@ -34,6 +34,11 @@
     <string name="members_remove_title">Remove %s from the group?</string>
     <string name="members_remove_message">%s hasn\'t joined yet. You can add them again later.</string>
     <string name="members_remove_confirm">Remove</string>
+    <string name="members_release">Release name</string>
+    <string name="members_release_title">Release %s\'s name?</string>
+    <string name="members_release_message">Whoever joined as %1$s leaves the group. %1$s\'s name, color and bills stay, and %1$s can be picked again through the group\'s link.</string>
+    <string name="members_release_confirm">Release</string>
+    <string name="members_release_error">Couldn\'t release the name. Check your connection and try again.</string>
     <string name="members_add">Add person</string>
     <string name="members_name_label">Name</string>
     <string name="members_name_taken">%s is already in the group. Use a nickname to tell them apart.</string>

@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
 import com.quare.blitzsplit.core.groups.domain.usecase.AddMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -53,6 +54,7 @@ class MembersViewModel(
     private val addMember: AddMember,
     private val renameMember: RenameMember,
     private val removeMember: RemoveMember,
+    private val releaseMember: ReleaseMember,
     consumeRecordedPayment: ConsumeRecordedPayment,
     deleteSettlement: DeleteSettlement,
     observeGroup: ObserveGroup,
@@ -69,6 +71,8 @@ class MembersViewModel(
                 members = emptyList(),
                 editor = null,
                 memberToRemove = null,
+                memberToRelease = null,
+                isReleasing = false,
                 personalInvite = null,
                 myBalance = null,
                 isEveryoneSettled = false,
@@ -172,6 +176,12 @@ class MembersViewModel(
 
             MembersUiEvent.OnRemoveDismissed -> uiState.update { it.copy(memberToRemove = null) }
 
+            is MembersUiEvent.OnReleaseClicked -> askToRelease(event.memberId)
+
+            MembersUiEvent.OnReleaseConfirmed -> release()
+
+            MembersUiEvent.OnReleaseDismissed -> dismissRelease()
+
             is MembersUiEvent.OnDraftChanged -> changeDraft(event.draft)
 
             is MembersUiEvent.OnSuggestionClicked -> saveSuggestion(event.name)
@@ -192,7 +202,7 @@ class MembersViewModel(
 
     private fun show(group: Group) {
         val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
-        val members = group.members.map { toMembersMember(it, group.inviteCode, inviterCode) }
+        val members = group.members.map { toMembersMember(it, group, inviterCode) }
         val meId = group.members.firstOrNull { it.isMe }?.id
         uiState.update { state ->
             state.copy(
@@ -205,6 +215,10 @@ class MembersViewModel(
                 // Why: the member about to be removed may be gone, or have joined, by now.
                 memberToRemove = state.memberToRemove?.let { asked ->
                     members.firstOrNull { it.id == asked.id && it.canBeRemoved }
+                },
+                // Why: the same for a release, unless it is already on its way: its answer closes the confirmation.
+                memberToRelease = state.memberToRelease?.let { asked ->
+                    if (state.isReleasing) asked else members.firstOrNull { it.id == asked.id && it.canBeReleased }
                 },
                 // Why: the member invited may be gone, or have joined, by now, or have another name.
                 personalInvite = state.personalInvite?.let { open ->
@@ -226,7 +240,7 @@ class MembersViewModel(
 
     private fun toMembersMember(
         member: GroupMember,
-        groupCode: String?,
+        group: Group,
         inviterCode: String?,
     ): MembersMember = MembersMember(
         id = member.id,
@@ -236,7 +250,7 @@ class MembersViewModel(
         isMe = member.isMe,
         hasJoined = member.hasJoined,
         personalLink = member.inviteCode?.let { memberCode ->
-            groupCode?.let {
+            group.inviteCode?.let {
                 InviteLink.personalOf(
                     inviteCode = it,
                     memberCode = memberCode,
@@ -245,6 +259,7 @@ class MembersViewModel(
             }
         },
         balance = balances.balanceOrNull(member.id),
+        canBeReleased = group.isCreatedByMe && member.hasJoined && !member.isMe,
     )
 
     // Why: "Acertar" on the balance card: this person pays whoever they owe the most.
@@ -415,6 +430,38 @@ class MembersViewModel(
         uiState.update { it.copy(memberToRemove = null) }
         viewModelScope.launch {
             removeMember(member.id).onFailure { uiAction.emit(MembersUiAction.ShowChangeError) }
+        }
+    }
+
+    /*
+     * Why: one release at a time. Apple's alert is gone while one is on its way, so another member's "Liberar nome"
+     * can be tapped, and would otherwise take the place of the one the answer closes.
+     */
+    private fun askToRelease(memberId: String) {
+        val member = uiState.value.members.firstOrNull { it.id == memberId } ?: return
+        if (member.canBeReleased) uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = member) }
+    }
+
+    // Why: a release on its way can't be called back, so its confirmation waits for the answer.
+    private fun dismissRelease() {
+        uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = null) }
+    }
+
+    // Why: online only, so the confirmation stays open until the server answers, and closes either way.
+    private fun release() {
+        val state = uiState.value
+        val member = state.memberToRelease ?: return
+        if (state.isReleasing) return
+        uiState.update { it.copy(isReleasing = true) }
+        viewModelScope.launch {
+            val result = releaseMember(member.id)
+            uiState.update {
+                it.copy(
+                    memberToRelease = null,
+                    isReleasing = false,
+                )
+            }
+            result.onFailure { uiAction.emit(MembersUiAction.ShowReleaseError) }
         }
     }
 

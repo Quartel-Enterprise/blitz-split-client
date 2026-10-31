@@ -36,6 +36,6 @@ class ObserveGroupsUseCaseTest {
         members = emptyList(),
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 }

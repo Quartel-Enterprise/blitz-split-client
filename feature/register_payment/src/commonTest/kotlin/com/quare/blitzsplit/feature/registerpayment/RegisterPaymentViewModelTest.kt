@@ -1239,7 +1239,7 @@ class RegisterPaymentViewModelTest {
         members = listOf(ana, pierre, bruno, diego),
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     // Why: Ana owes Pierre 162,30, Pierre owes Bruno 50,00 and Diego owes Bruno 80,00; Ana and Bruno owe nothing.

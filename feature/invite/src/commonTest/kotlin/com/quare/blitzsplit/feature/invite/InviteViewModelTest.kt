@@ -918,7 +918,7 @@ class InviteViewModelTest {
         members = listOf(pierre, ana, bruno, carla),
         isPending = true,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     // Why: a QR code that differs per text, so a case can tell which link was encoded.

@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -40,6 +41,7 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -74,6 +76,9 @@ class MembersViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: MembersViewModel
     private val actions = mutableListOf<MembersUiAction>()
+
+    // Why: the server's answer to a release, which the cases that wait for it complete.
+    private val serverAnswer = CompletableDeferred<Unit>()
 
     @BeforeTest
     fun setUp() {
@@ -125,6 +130,7 @@ class MembersViewModelTest {
                         hasJoined = true,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = false,
                     ),
                     MembersMember(
                         "member-2",
@@ -135,6 +141,7 @@ class MembersViewModelTest {
                         hasJoined = false,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = false,
                     ),
                     MembersMember(
                         "member-3",
@@ -145,6 +152,7 @@ class MembersViewModelTest {
                         hasJoined = true,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = true,
                     ),
                     MembersMember(
                         "member-4",
@@ -155,6 +163,7 @@ class MembersViewModelTest {
                         hasJoined = false,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = false,
                     ),
                 ),
                 state.members,
@@ -2938,6 +2947,407 @@ class MembersViewModelTest {
         assertEquals(listOf(settlementId), settlements.settlements.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN this device user did not create the group WHEN the screen opens THEN nobody can be released`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(isCreatedByMe = false))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(false, false, false, false), state.members.map { it.canBeReleased })
+        }
+
+    @Test
+    fun `GIVEN Bruno joined and owes this device user WHEN the screen opens THEN he can still be released`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-3"),
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            val bruno = state.members.first { it.id == "member-3" }
+            assertTrue(bruno.hasOpenBalance)
+            assertTrue(bruno.canBeReleased)
+            assertEquals(listOf(false, false, true, false), state.members.map { it.canBeReleased })
+        }
+
+    @Test
+    fun `GIVEN Bruno joined WHEN the creator taps Liberar nome on him THEN asks first without releasing him`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = MembersUiEvent.OnReleaseClicked("member-3")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(brunoOnScreen, viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+            assertTrue(groups.releasedMemberIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN this device user WHEN tapping Liberar nome on them THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = MembersUiEvent.OnReleaseClicked("member-1")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertNull(viewModel.uiState.value.memberToRelease)
+        assertTrue(groups.releasedMemberIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Carla nobody joined as WHEN tapping Liberar nome on her THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = MembersUiEvent.OnReleaseClicked("member-4")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertNull(viewModel.uiState.value.memberToRelease)
+        assertTrue(groups.releasedMemberIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unknown member WHEN tapping Liberar nome on them THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = MembersUiEvent.OnReleaseClicked("member-unknown")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertNull(viewModel.uiState.value.memberToRelease)
+        assertTrue(groups.releasedMemberIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN this device user did not create the group WHEN tapping Liberar nome on Bruno THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(isCreatedByMe = false))
+            val event = MembersUiEvent.OnReleaseClicked("member-3")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertTrue(groups.releasedMemberIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN dismissing it THEN closes it without releasing him`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+            assertTrue(groups.releasedMemberIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no release asked WHEN confirming a release THEN nothing is released`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = MembersUiEvent.OnReleaseConfirmed
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(groups.releasedMemberIds.isEmpty())
+        assertFalse(viewModel.uiState.value.isReleasing)
+        assertNull(viewModel.uiState.value.memberToRelease)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN confirming THEN Liberar waits for the server with the question open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isReleasing)
+            assertEquals(brunoOnScreen, viewModel.uiState.value.memberToRelease)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the server answering the release of Bruno WHEN dismissing it THEN the question stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseDismissed)
+
+            // Then
+            assertEquals(brunoOnScreen, viewModel.uiState.value.memberToRelease)
+            assertTrue(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN Liberar tapped twice while the server answers WHEN it answers THEN releases Bruno once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // When
+            serverAnswer.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf("member-3"), groups.releasedMemberIds)
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN the server answering the release of Bruno WHEN it succeeds THEN closes and he has not joined`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // When
+            serverAnswer.complete(Unit)
+            runCurrent()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.memberToRelease)
+            assertFalse(state.isReleasing)
+            val bruno = state.members.first { it.id == "member-3" }
+            assertEquals("Bruno", bruno.name)
+            assertEquals(AvatarColor.GREEN, bruno.avatarColor)
+            assertFalse(bruno.hasJoined)
+            assertFalse(bruno.canBeReleased)
+            assertTrue(bruno.canBeInvited)
+            assertEquals(4, state.memberCount)
+            assertEquals(1, state.joinedCount)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN confirming THEN asks the server to release Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // Then
+            assertEquals(listOf("member-3"), groups.releasedMemberIds)
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN no internet or a server error WHEN confirming the release of Bruno THEN says it could not release`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(releaseError = IllegalStateException("offline"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // Then
+            assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowReleaseError), actions)
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+            assertTrue(
+                viewModel.uiState.value.members
+                    .first { it.id == "member-3" }
+                    .hasJoined,
+            )
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN a sync says nobody joined as him THEN closes the question`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            val brunoNotJoined = trip.copy(members = listOf(pierre, ana, bruno.copy(hasJoined = false), carla))
+
+            // When
+            groups.groups.value = listOf(brunoNotJoined)
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN a sync removes him THEN closes the question`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            val withoutBruno = trip.copy(members = listOf(pierre, ana, carla))
+
+            // When
+            groups.groups.value = listOf(withoutBruno)
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRelease)
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked and a sync removed him WHEN confirming THEN nothing is released`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            groups.groups.value = listOf(trip.copy(members = listOf(pierre, ana, carla)))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // Then
+            assertTrue(groups.releasedMemberIds.isEmpty())
+            assertFalse(viewModel.uiState.value.isReleasing)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno asked WHEN a sync renames him THEN still asks with his new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            val brunoRenamed = trip.copy(members = listOf(pierre, ana, bruno.copy(name = "Bruno M."), carla))
+
+            // When
+            groups.groups.value = listOf(brunoRenamed)
+
+            // Then
+            assertEquals(
+                brunoOnScreen.copy(
+                    name = "Bruno M.",
+                    initials = "BM",
+                ),
+                viewModel.uiState.value.memberToRelease,
+            )
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno on its way WHEN a sync says nobody joined as him THEN the question stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+            val brunoNotJoined = trip.copy(members = listOf(pierre, ana, bruno.copy(hasJoined = false), carla))
+
+            // When
+            groups.groups.value = listOf(brunoNotJoined)
+
+            // Then
+            assertEquals(brunoOnScreen, viewModel.uiState.value.memberToRelease)
+            assertTrue(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN the server answering the release of Bruno WHEN a sync removes him THEN the question stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+            val withoutBruno = trip.copy(members = listOf(pierre, ana, carla))
+
+            // When
+            groups.groups.value = listOf(withoutBruno)
+
+            // Then
+            assertEquals(brunoOnScreen, viewModel.uiState.value.memberToRelease)
+            assertTrue(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN a sync came while the server answered WHEN the server answers THEN closes the question`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(waitsForServer = true)
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+            groups.groups.value = listOf(trip.copy(members = listOf(pierre, ana, bruno.copy(hasJoined = false), carla)))
+
+            // When
+            serverAnswer.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRelease)
+            assertFalse(viewModel.uiState.value.isReleasing)
+        }
+
+    @Test
+    fun `GIVEN the release of Bruno on its way WHEN tapping Liberar nome on Carla THEN it stays on Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true))),
+                waitsForServer = true,
+            )
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-4"))
+
+            // Then
+            assertEquals(
+                "member-3",
+                viewModel.uiState.value.memberToRelease
+                    ?.id,
+            )
+            assertTrue(viewModel.uiState.value.isReleasing)
+        }
+
     private val withGoogle = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val withApple = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
 
@@ -2999,6 +3409,19 @@ class MembersViewModelTest {
         hasJoined = false,
         personalLink = null,
         balance = null,
+        canBeReleased = false,
+    )
+
+    private val brunoOnScreen = MembersMember(
+        "member-3",
+        "Bruno",
+        "BR",
+        AvatarColor.GREEN,
+        isMe = false,
+        hasJoined = true,
+        personalLink = null,
+        balance = null,
+        canBeReleased = true,
     )
 
     private val trip = Group(
@@ -3010,7 +3433,7 @@ class MembersViewModelTest {
         members = listOf(pierre, ana, bruno, carla),
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")
@@ -3084,6 +3507,8 @@ class MembersViewModelTest {
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
+        releaseError: Throwable? = null,
+        waitsForServer: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = accountStatus)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
@@ -3092,6 +3517,8 @@ class MembersViewModelTest {
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { 1_000L }
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.memberChangeError = memberChangeError
+            it.releaseError = releaseError
+            if (waitsForServer) it.releaseGate = serverAnswer
         }
         navigator =
             BackStackNavigator(
@@ -3105,6 +3532,7 @@ class MembersViewModelTest {
             addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
             renameMember = RenameMemberUseCase(groups) { 1_000L },
             removeMember = RemoveMemberUseCase(groups) { 1_000L },
+            releaseMember = ReleaseMemberUseCase(groups),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
             observeGroup = ObserveGroup { groupId ->

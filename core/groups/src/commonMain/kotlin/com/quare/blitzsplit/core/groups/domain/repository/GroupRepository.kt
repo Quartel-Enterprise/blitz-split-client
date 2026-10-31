@@ -53,6 +53,12 @@ interface GroupRepository {
      */
     suspend fun rotateInviteCode(groupId: String): Result<Unit>
 
+    /*
+     * Why: "Liberar nome", online only: the server gives the member a new personal invite code and turns it back into
+     * someone nobody joined as, and the device takes the member as the server answers it.
+     */
+    suspend fun requestMemberRelease(memberId: String): Result<Unit>
+
     suspend fun uploadPendingGroups(userId: String): Result<Unit>
 
     /*

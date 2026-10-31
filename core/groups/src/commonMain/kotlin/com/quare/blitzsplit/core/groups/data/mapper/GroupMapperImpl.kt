@@ -32,7 +32,8 @@ class GroupMapperImpl : GroupMapper {
                 members = ofGroup.filterNot { it.isRemoved }.map(::toDomain),
                 isPending = group.pendingSync || ofGroup.any { it.pendingSync },
                 inviteCode = group.inviteCode,
-                isCreatedByMe = group.createdBy != null && group.createdBy == group.ownerUserId,
+                // Why: both are null for a group made here before any account, which the first sync gives this one.
+                isCreatedByMe = group.createdBy == group.ownerUserId,
             )
         }
     }
@@ -109,10 +110,14 @@ class GroupMapperImpl : GroupMapper {
         inviteCode = null,
     )
 
+    /*
+     * Why: only this device's own account goes up. The server keeps the account of a member someone joined as anyway,
+     * and refuses one the member no longer has, as after "Liberar nome", with the whole upload.
+     */
     override fun toDto(entity: GroupMemberEntity): GroupMemberDto = GroupMemberDto(
         id = entity.id,
         groupId = entity.groupId,
-        userId = entity.userId,
+        userId = entity.userId.takeIf { entity.isMe },
         name = entity.name,
         avatarColor = entity.avatarColor,
         addedAt = entity.addedAt,

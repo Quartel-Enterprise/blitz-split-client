@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -235,6 +236,16 @@ private fun MemberMenu(
             }
             if (!member.isMe) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                if (member.canBeReleased) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.members_release)) },
+                        onClick = {
+                            isOpen = false
+                            onEvent(MembersUiEvent.OnReleaseClicked(member.id))
+                        },
+                        leadingIcon = { Icon(Icons.Outlined.LockOpen, contentDescription = null) },
+                    )
+                }
                 DropdownMenuItem(
                     text = {
                         Column {

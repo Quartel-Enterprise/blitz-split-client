@@ -26,6 +26,11 @@ class FakeGroupRepository(
     val memberChangeTimes = mutableListOf<Long>()
     val renamedMembers = mutableListOf<Pair<String, String>>()
     val removedMemberIds = mutableListOf<String>()
+    val releasedMemberIds = mutableListOf<String>()
+    var releaseError: Throwable? = null
+
+    // Why: while set, a release waits for it, so a test can act while the server is answering.
+    var releaseGate: CompletableDeferred<Unit>? = null
     val updatedGroupIds = mutableListOf<String>()
     val groupUpdateTimes = mutableListOf<Long>()
     var updateGroupError: Throwable? = null
@@ -121,6 +126,28 @@ class FakeGroupRepository(
     ): Result<Unit> = updateMembers(groupIdOf(memberId), removedAt) { members ->
         removedMemberIds += memberId
         members.filterNot { it.id == memberId && !it.isMe && !it.hasJoined }
+    }
+
+    // Why: as the server answers it, a member nobody joined as, with a new personal invite code.
+    override suspend fun requestMemberRelease(memberId: String): Result<Unit> {
+        releaseGate?.await()
+        releasedMemberIds += memberId
+        releaseError?.let { return Result.failure(it) }
+        groups.value = groups.value.map { group ->
+            group.copy(
+                members = group.members.map { member ->
+                    if (member.id == memberId && !member.isMe) {
+                        member.copy(
+                            hasJoined = false,
+                            inviteCode = "released",
+                        )
+                    } else {
+                        member
+                    }
+                },
+            )
+        }
+        return Result.success(Unit)
     }
 
     private fun groupIdOf(memberId: String): String? =

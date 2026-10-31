@@ -1006,7 +1006,7 @@ class GroupDetailViewModelTest {
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     private fun member(

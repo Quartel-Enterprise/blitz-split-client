@@ -299,7 +299,7 @@ class AddMemberUseCaseTest {
         },
         isPending = false,
         inviteCode = null,
-        isCreatedByMe = false,
+        isCreatedByMe = true,
     )
 
     private val trip = group(
