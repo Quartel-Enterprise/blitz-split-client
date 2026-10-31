@@ -127,7 +127,8 @@ When a test fails, decide which side is wrong:
 - **The code** (it contradicts the intent): keep the test as it is, failing, and report it as a
   suspected bug. Don't `@Ignore` it and don't change the code: the author decides.
 
-Leave out `koverVerify` and the full `./gradlew build`: `create-pr` runs them for the whole branch.
+Leave out `:koverVerifyCi` and the other platforms: `create-pr` checks the coverage and compiles
+`commonTest` for Kotlin/Native and JS for the whole branch.
 
 ## 5. Report
 
