@@ -18,6 +18,26 @@ object ExpenseRules {
 
     fun isDescriptionValid(description: String): Boolean = description.isNotBlank()
 
+    /*
+     * Why: what the API's expense_adds_up check keeps, so a bill it would refuse never waits in the sync queue for
+     * good: at least one payer and one share, each member once in each, no negative amount, both adding up to the
+     * total, and the percentages adding up to 100 for "Porcentagem".
+     */
+    fun isSplitValid(
+        amountMinor: Long,
+        splitMode: SplitMode,
+        payers: List<ExpensePayer>,
+        shares: List<ExpenseShare>,
+    ): Boolean = payers.isNotEmpty() &&
+        shares.isNotEmpty() &&
+        payers.distinctBy { it.memberId }.size == payers.size &&
+        shares.distinctBy { it.memberId }.size == shares.size &&
+        payers.all { it.amountMinor >= 0 } &&
+        shares.all { it.amountMinor >= 0 && it.weight >= 0 } &&
+        payers.sumOf { it.amountMinor } == amountMinor &&
+        shares.sumOf { it.amountMinor } == amountMinor &&
+        (splitMode != SplitMode.PERCENT || shares.sumOf { it.weight } == BillSplit.FULL_PERCENT)
+
     // Why: never ends on half of an emoji, which would leave a lone surrogate on the way to JSON and Postgres.
     fun toCapped(description: String): String {
         val capped = description.take(DESCRIPTION_MAX_LENGTH)

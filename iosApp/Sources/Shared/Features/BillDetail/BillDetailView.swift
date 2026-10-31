@@ -124,16 +124,22 @@ struct BillDetailView: View {
 
 /// "Bruno paid" next to Bruno's face, or "A former member paid".
 private struct PayerLine: View {
-    let payer: BillPayer?
+    let payers: [BillPayer]
     let size: CGFloat
 
     var body: some View {
         HStack(spacing: 8) {
-            if let payer {
-                AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: size)
-                    .accessibilityHidden(true)
+            // Whoever left the group has no face
+            let faces = payers.filter { $0.name != nil }.prefix(3)
+            if !faces.isEmpty {
+                HStack(spacing: -size * 0.3) {
+                    ForEach(Array(faces.enumerated()), id: \.offset) { _, payer in
+                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: size)
+                    }
+                }
+                .accessibilityHidden(true)
             }
-            Text(verbatim: BillCopy.paid(payer))
+            Text(verbatim: BillCopy.paid(payers))
         }
     }
 }
@@ -288,7 +294,7 @@ private struct PhoneBillDetail: View {
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    PayerLine(payer: state.payer, size: 24)
+                    PayerLine(payers: state.payers, size: 24)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     if state.isPending {
@@ -395,7 +401,7 @@ private struct MacBillDetail: View {
                 Text(verbatim: state.currency.format(state.totalMinor))
                     .font(.system(size: 34, weight: .bold))
                     .monospacedDigit()
-                PayerLine(payer: state.payer, size: 20)
+                PayerLine(payers: state.payers, size: 20)
                     .foregroundStyle(.secondary)
                 if state.isPending {
                     PendingLine()

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
+import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { personName, splitStatus, type Money } from './splitText'
@@ -38,7 +39,18 @@ const maxParts = 99
  * ViewModel keeps until "Pronto", which only works once it adds up; "Voltar" leaves the bill's split as it was.
  */
 export function splitPane(presenter: SplitBillPresenter, state: JsSplitBillState, editor: JsSplitEditor, money: Money): PaneParts {
-  const paid = state.payer == null ? null : state.payer.isMe ? t('split_youPaid') : t('split_paid', { name: state.payer.name })
+  const several = state.severalPayers
+  const payerNames = several?.paying.map((row) => (row.person ? personName(row.person) : t('splitBill_formerMember'))) ?? []
+  // Why: "Ana pagou" once the other payers of a new bill left the group and only one is left paying part of it.
+  const paid = several
+    ? payerNames.length === 1
+      ? t('split_paid', { name: payerNames[0] })
+      : t('split_paidSeveral', { names: payerNamesText(payerNames) })
+    : state.payer == null
+      ? null
+      : state.payer.isMe
+        ? t('split_youPaid')
+        : t('split_paid', { name: state.payer.name })
   const lead = [state.description.trim(), paid, money(editor.totalMinor)].filter(Boolean).join(' · ')
   return {
     title: t('split_title'),
@@ -109,7 +121,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
               mode={editor.mode}
               currency={state.currency}
               fractionDigits={state.fractionDigits}
-              isPayer={row.person.id === state.payer?.id}
+              paidLabel={state.payerIds.includes(row.person.id) ? (state.severalPayers ? 'split_paidPart' : 'split_paidBill') : null}
               isOut={excludedIds.has(row.person.id)}
               isMissing={missingIds.has(row.person.id)}
               money={money}
@@ -129,7 +141,8 @@ interface RowProps {
   mode: string
   currency: string
   fractionDigits: number
-  isPayer: boolean
+  // Why: "Pagou a conta", or "Pagou parte da conta" for one of several payers; null for whoever didn't pay.
+  paidLabel: MessageKey | null
   // Why: out of the split in this mode: unchecked, blank or at 0.
   isOut: boolean
   // Why: "Sem valor", a blank part in Valores while the split doesn't add up.
@@ -137,7 +150,7 @@ interface RowProps {
   money: Money
 }
 
-function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, isPayer, isOut, isMissing, money }: RowProps) {
+function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLabel, isOut, isMissing, money }: RowProps) {
   const person = row.person
   const name = personName(person)
   // Why: "Parte de Pierre" reads better to a screen reader than "Parte de Você".
@@ -150,8 +163,8 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, isPaye
   let control
   switch (mode) {
     case 'amount':
-      subtitle = isPayer
-        ? t('split_paidBill')
+      subtitle = paidLabel
+        ? t(paidLabel)
         : isMissing
           ? t('split_noValue')
           : !person.hasJoined
@@ -182,7 +195,7 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, isPaye
       )
       break
     default:
-      subtitle = isPayer ? t('split_paidBill') : row.isIncluded ? t('split_in') : t('split_out')
+      subtitle = paidLabel ? t(paidLabel) : row.isIncluded ? t('split_in') : t('split_out')
       control = <span className="font-mono text-[13px] tabular-nums">{share ?? '—'}</span>
   }
 

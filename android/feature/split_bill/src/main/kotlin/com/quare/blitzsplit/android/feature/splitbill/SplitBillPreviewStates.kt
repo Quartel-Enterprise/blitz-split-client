@@ -6,6 +6,8 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
@@ -14,6 +16,7 @@ private const val PREVIEW_SPENT_AT = 1_761_683_400_000L
 private const val PREVIEW_TOTAL_MINOR = 31_200L
 private const val PREVIEW_DINNER_TOTAL_MINOR = 64_200L
 private const val PREVIEW_ME_ID = "pv"
+private const val PREVIEW_ANA_ID = "an"
 private const val PREVIEW_DIEGO_ID = "di"
 private const val PREVIEW_BRUNO_ID = "br"
 private val previewPeople: List<BillPerson> = listOf(
@@ -26,7 +29,7 @@ private val previewPeople: List<BillPerson> = listOf(
         hasJoined = true,
     ),
     BillPerson(
-        "an",
+        PREVIEW_ANA_ID,
         "Ana",
         "AN",
         AvatarColor.GREEN,
@@ -85,8 +88,10 @@ internal fun createPreviewBillState(
     description = description,
     hasEditedAmount = true,
     hasEditedDescription = true,
-    payerId = splitEditor?.payerId ?: PREVIEW_ME_ID,
+    payerId = splitEditor?.payerIds?.firstOrNull() ?: PREVIEW_ME_ID,
+    severalPayers = null,
     payerSelection = null,
+    payerAmounts = null,
     spentAt = PREVIEW_SPENT_AT,
     spentDay = RelativeDay.TODAY,
     latestSpentAt = PREVIEW_SPENT_AT,
@@ -203,6 +208,22 @@ private fun createPreviewEditor(
     mode = mode,
     rows = previewPeople.map(rowOf),
     totalMinor = totalMinor,
-    payerId = payerId,
+    payerIds = listOf(payerId),
     currency = GroupCurrency.BRL,
 )
+
+// Why: "Várias pessoas pagaram" once it adds up, as the canvas draws it: Você R$ 200,00 and Ana R$ 112,00.
+internal fun createPreviewPayerAmounts(): PayerAmounts {
+    val paid = mapOf(PREVIEW_ME_ID to "200,00", PREVIEW_ANA_ID to "112,00")
+    return PayerAmounts(
+        rows = previewPeople.map { person ->
+            PayerAmountRow(
+                memberId = person.id,
+                person = person,
+                amountText = paid[person.id].orEmpty(),
+            )
+        },
+        totalMinor = PREVIEW_TOTAL_MINOR,
+        currency = GroupCurrency.BRL,
+    )
+}

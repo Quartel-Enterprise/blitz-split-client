@@ -1,5 +1,5 @@
 import { Pencil, ReceiptText, Trash2, X } from 'lucide-react'
-import { BillDetailPresenter, type JsBillDetailState, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
+import { BillDetailPresenter, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -11,6 +11,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
+import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import { BillDeleteDialog } from './BillDeleteDialog'
 
@@ -115,7 +116,8 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
  * two columns put the split beside the summary on desktop, one under the other below that.
  */
 function BillBody({ state, money, title, description }: { state: JsBillDetailState; money: Money; title: ReactNode; description: ReactNode }) {
-  const paid = state.payer == null ? t('billDetail_paidByFormer') : state.payer.isMe ? t('billDetail_paidByMe') : t('billDetail_paidBy', { name: state.payer.name })
+  const paid = paidText(state.payers)
+  const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
   return (
     <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
       <div className="flex min-w-0 flex-col gap-5">
@@ -131,7 +133,13 @@ function BillBody({ state, money, title, description }: { state: JsBillDetailSta
         <div className="flex flex-col gap-1.5">
           <span className="text-[32px] leading-10 font-semibold tracking-tight tabular-nums">{money(state.totalMinor)}</span>
           <span className="flex items-center gap-2 text-sm text-muted-foreground">
-            {state.payer && <Avatar initial={state.payer.initials} color={state.payer.color} className="size-5 text-[10px]" />}
+            {faces.length > 0 && (
+              <span aria-hidden className="flex shrink-0">
+                {faces.map((payer, index) => (
+                  <Avatar key={index} initial={payer.initials} color={payer.color} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
+                ))}
+              </span>
+            )}
             {paid}
           </span>
           {state.isPending && (
@@ -161,6 +169,14 @@ function BillBody({ state, money, title, description }: { state: JsBillDetailSta
   )
 }
 
+/** "Bruno pagou", "Você pagou", "Um ex-membro pagou", "Você e Ana pagaram" or "3 pessoas pagaram". */
+function paidText(payers: JsBillPayer[]): string {
+  if (payers.length > 1) return t('billDetail_paidBySeveral', { names: payerNamesText(payers.map((payer) => (payer.isMe ? t('splitBill_you') : nameOrFormer(payer.name)))) })
+  const payer = payers[0]
+  if (payer == null || payer.name == null) return t('billDetail_paidByFormer')
+  return payer.isMe ? t('billDetail_paidByMe') : t('billDetail_paidBy', { name: payer.name })
+}
+
 /** "Sua parte": what the bill does to your balance, and with whom it settles. */
 function MyPart({ balance, note, money }: { balance: number; note: JsMyPartNote | null | undefined; money: Money }) {
   const amount = balance > 0 ? `+${money(balance)}` : money(Math.abs(balance))
@@ -185,8 +201,8 @@ function nameOrFormer(name: string | null | undefined): string {
 
 /** "Entra no que você deve a Bruno em Saldos.", "Ana te deve R$ 50,00." or "Ana, Bruno e Carla te devem R$ 62,40 cada." */
 function myPartNoteText(note: JsMyPartNote, money: Money): string {
-  if (note.kind === 'owes-payer') return t('billDetail_noteOwesPayer', { name: nameOrFormer(note.payerName) })
   const names = note.names.map(nameOrFormer)
+  if (note.kind === 'owes-payers') return t('billDetail_noteOwesPayer', { name: formatNames(names) })
   if (names.length === 1) return t('billDetail_noteOwedByOne', { name: names[0], amount: money(note.eachMinor ?? note.totalMinor ?? 0) })
   if (note.eachMinor != null) return t('billDetail_noteOwedByEach', { names: formatNames(names), amount: money(note.eachMinor) })
   return t('billDetail_noteOwedByTotal', { names: formatNames(names), amount: money(note.totalMinor ?? 0) })

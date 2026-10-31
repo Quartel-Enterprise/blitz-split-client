@@ -10,12 +10,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
@@ -138,7 +140,8 @@ class GroupDetailViewModel(
         val now = currentTimeMillis()
         val namesById = group.members.associate { it.id to it.name }
         val meId = group.members.firstOrNull { it.isMe }?.id
-        val entries = expenses.map { it.spentAt to toRow(it, namesById, meId) } +
+        val payerOrder = PayerOrder(group.members)
+        val entries = expenses.map { it.spentAt to toRow(it, namesById, meId, payerOrder) } +
             settlements.map { it.paidAt to toRow(it, namesById, meId) }
         val days = entries
             .sortedByDescending { (time, _) -> time }
@@ -169,14 +172,19 @@ class GroupDetailViewModel(
         expense: Expense,
         namesById: Map<String, String>,
         meId: String?,
+        payerOrder: PayerOrder,
     ): DayEntry {
-        val payerId = expense.payers.firstOrNull()?.memberId
+        val payers = payerOrder.sort(expense.payers.map { it.memberId }).map { id ->
+            ExpenseRowPayer(
+                name = namesById[id],
+                isMe = id == meId,
+            )
+        }
         return ExpenseRow(
             id = expense.id,
             description = expense.description,
             spentAt = expense.spentAt,
-            payerName = payerId?.let(namesById::get),
-            payerIsMe = payerId != null && payerId == meId,
+            payers = payers,
             totalMinor = expense.amountMinor,
             myBalanceMinor = meId?.let(expense::balanceOf),
             isPending = expense.isPending,

@@ -5,6 +5,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -42,12 +44,73 @@ internal fun splitEditorOf(
         mode = expense.splitMode,
         rows = rows,
         totalMinor = expense.amountMinor,
-        payerId = expense.payers
-            .firstOrNull()
-            ?.memberId
-            .orEmpty(),
+        payerIds = expense.payers.map { it.memberId },
         currency = currency,
     )
+}
+
+internal fun GroupMember.toBillPerson(): BillPerson = BillPerson(
+    id = id,
+    name = name,
+    initials = Initials.ofMember(name, isMe),
+    avatarColor = avatarColor,
+    isMe = isMe,
+    hasJoined = hasJoined,
+)
+
+/*
+ * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes.
+ * A bill being edited keeps its split, so saving it never adds whoever joined meanwhile.
+ */
+internal fun SplitEditor.withPeople(
+    people: List<BillPerson>,
+    currency: GroupCurrency,
+    payerIds: List<String>,
+    includesNewcomers: Boolean,
+): SplitEditor {
+    val byId = rows.associateBy { it.person.id }
+    val rows = people.map { person ->
+        byId[person.id]?.copy(person = person) ?: SplitRow(
+            person = person,
+            isIncluded = includesNewcomers,
+            valueText = "",
+            parts = 0L,
+            shareMinor = null,
+        )
+    }
+    return copy(
+        rows = rows,
+        currency = currency,
+        payerIds = payerIds,
+    ).withShares()
+}
+
+/*
+ * Why: "Mudar o total refaz a divisão por valor proporcionalmente", from the parts of "Valores" last set in "Dividir"
+ * with the total they were set for (the anchor).
+ */
+internal fun SplitEditor.withTotal(
+    totalMinor: Long,
+    anchor: Pair<Long, List<SplitEntry>>?,
+    decimalSeparator: Char,
+): SplitEditor {
+    if (totalMinor == this.totalMinor) return this
+    if (mode != SplitMode.AMOUNT || anchor == null || totalMinor == 0L) {
+        return copy(totalMinor = totalMinor).withShares()
+    }
+    val (anchorTotal, anchorEntries) = anchor
+    val scaled = BillSplit
+        .calculateRescaledAmounts(
+            entries = anchorEntries,
+            oldTotalMinor = anchorTotal,
+            newTotalMinor = totalMinor,
+            payerIds = payerIds,
+        ).associate { it.memberId to it.value }
+    return copy(totalMinor = totalMinor)
+        .withRows { row ->
+            val value = scaled[row.person.id] ?: 0L
+            row.copy(valueText = if (value > 0) formatAmount(value, decimalSeparator) else "")
+        }.withShares()
 }
 
 /*
@@ -115,6 +178,6 @@ private fun SplitEditor.splitEvenly(
         totalMinor = total,
         mode = SplitMode.EQUAL,
         entries = entries,
-        payerId = payerId,
+        payerIds = payerIds,
     )?.associate { it.memberId to it.amountMinor }
     .orEmpty()

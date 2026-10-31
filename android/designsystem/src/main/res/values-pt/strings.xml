@@ -46,4 +46,11 @@
     <string name="designsystem_payment_recorded_to">Pagamento para %s registrado.</string>
     <string name="designsystem_payment_recorded">Pagamento registrado.</string>
     <string name="designsystem_payment_undo">Desfazer</string>
+    <string name="designsystem_paid_by_one">%s pagou</string>
+    <string name="designsystem_paid_by_several">%s pagaram</string>
+    <plurals name="designsystem_payers_count">
+        <item quantity="one">%d pessoa</item>
+        <item quantity="many">%d pessoas</item>
+        <item quantity="other">%d pessoas</item>
+    </plurals>
 </resources>

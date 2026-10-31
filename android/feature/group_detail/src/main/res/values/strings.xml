@@ -60,6 +60,7 @@
     <string name="group_detail_balances_empty_message">Balances show up once the first expense is added.</string>
     <string name="group_detail_balances_settled_title">Everyone\'s settled up</string>
     <string name="group_detail_balances_settled_message">Nobody owes anything in this group. If the trip is over, you can delete the group for everyone.</string>
+    <string name="group_detail_you">You</string>
     <string name="group_detail_needs_internet">Needs internet</string>
     <string name="group_detail_leave_error">Couldn\'t leave the group. Check your connection and try again.</string>
     <string name="group_detail_delete_error">Couldn\'t delete the group. Check your connection and try again.</string>

@@ -23,9 +23,14 @@ data class SplitBillUiState(
     // Why: a field's error only shows once it was typed in, so a new bill doesn't open in red.
     val hasEditedAmount: Boolean,
     val hasEditedDescription: Boolean,
+    // Why: whoever paid the whole bill, empty while several people paid it.
     val payerId: String,
-    // Why: the "Quem pagou" sheet, open while not null, with the person marked in it until "Pronto".
-    val payerSelection: String?,
+    // Why: "Várias pessoas pagaram", each one with what they paid; null while one person paid the whole bill.
+    val severalPayers: PayerAmounts?,
+    // Why: the "Quem pagou" sheet, open while not null, with what is marked in it until "Pronto".
+    val payerSelection: PayerSelection?,
+    // Why: the "Várias pessoas pagaram" sheet, open while not null; it changes who paid only on "Pronto".
+    val payerAmounts: PayerAmounts?,
     // Why: "Quando", date and time; each UI writes the date, after "Hoje" or "Ontem" when it is one of them.
     val spentAt: Long,
     val spentDay: RelativeDay,
@@ -61,6 +66,7 @@ data class SplitBillUiState(
     val showsDescriptionError: Boolean
         get() = hasEditedDescription && !isDescriptionValid
 
+    // Why: whoever paid the whole bill, null while several people paid it or the payer left the group.
     val payer: BillPerson?
         get() = people.firstOrNull { it.id == payerId }
 
@@ -71,6 +77,18 @@ data class SplitBillUiState(
     val isPayerFormerMember: Boolean
         get() = isEditing && isLoaded && payer == null && payerId.isNotEmpty()
 
+    // Why: who paid the bill, whom the cents a split can't share evenly go to.
+    val payerIds: List<String>
+        get() = severalPayers?.payers?.map { it.memberId } ?: listOf(payerId).filter { it.isNotEmpty() }
+
+    // Why: what this device's user paid of the bill, 0 when they paid nothing.
+    val myPaidMinor: Long
+        get() {
+            val me = people.firstOrNull { it.isMe } ?: return 0L
+            val several = severalPayers ?: return if (payerIsMe) amountMinor ?: 0L else 0L
+            return several.payers.filter { it.memberId == me.id }.sumOf { it.amountMinor }
+        }
+
     // Why: "Sua parte: R$ 118,00", null while the split doesn't add up or leaves this device's user out.
     val myShareMinor: Long?
         get() {
@@ -78,18 +96,27 @@ data class SplitBillUiState(
             return split.shares?.firstOrNull { it.memberId == me.id }?.amountMinor
         }
 
-    // Why: "Você pagou e recebe R$ 249,60 de volta."
+    /*
+     * Why: "Você pagou e recebe R$ 249,60 de volta.", while this device's user paid more than their part. Null while
+     * they paid nothing or what they paid doesn't add up with the others yet; with several payers also when nothing
+     * comes back, so "Sua parte" shows instead of a refund of R$ 0,00.
+     */
     val refundMinor: Long?
         get() {
-            val amount = amountMinor?.takeIf { isAmountValid && payerIsMe } ?: return null
-            if (split.shares == null) return null
-            return amount - (myShareMinor ?: 0L)
+            if (!isAmountValid || split.shares == null || severalPayers?.addsUp == false) return null
+            val paid = myPaidMinor.takeIf { it > 0 } ?: return null
+            val refund = paid - (myShareMinor ?: 0L)
+            return refund.takeIf { it > 0 || (it == 0L && severalPayers == null) }
         }
+
+    // Why: who paid is settled: one person (or one who left a bill being edited), or several adding up to the total.
+    val isPayerValid: Boolean
+        get() = severalPayers?.addsUp ?: (payer != null || isPayerFormerMember)
 
     // Why: Salvar stays disabled until the bill can be saved.
     val canSave: Boolean
-        get() = isLoaded && isAmountValid && isDescriptionValid && (payer != null || isPayerFormerMember) &&
-            split.addsUp && !isSaving && !isDeleting
+        get() = isLoaded && isAmountValid && isDescriptionValid && isPayerValid && split.addsUp && !isSaving &&
+            !isDeleting
 
     // Why: "Apagar conta" only when editing, and not while saving or deleting.
     val canDelete: Boolean

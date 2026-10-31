@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
+// Why: name null for "Ex-membro".
 class JsBillPayer(
-    val name: String,
+    val name: String?,
     val initials: String,
     val color: String,
     val isMe: Boolean,
@@ -34,12 +35,11 @@ class JsBillShareRow(
 )
 
 /*
- * Why: the line under "Sua parte", flat. kind is "owes-payer" (payerName set) or "owed-by" (names, eachMinor when
- * they all owe the same, and totalMinor set); a null name in names is "Ex-membro".
+ * Why: the line under "Sua parte", flat. kind is "owes-payers" (names) or "owed-by" (names, eachMinor when they all
+ * owe the same, and totalMinor set); a null name in names is "Ex-membro".
  */
 class JsMyPartNote(
     val kind: String,
-    val payerName: String?,
     val names: Array<String?>,
     val eachMinor: Double?,
     val totalMinor: Double?,
@@ -55,7 +55,8 @@ class JsBillDetailState(
     val spentAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
     val spentDay: String,
-    val payer: JsBillPayer?,
+    // Why: this device's user first, then the group's order, then whoever left it.
+    val payers: Array<JsBillPayer>,
     val isPending: Boolean,
     val myBalanceMinor: Double?,
     val myPartNote: JsMyPartNote?,
@@ -89,14 +90,15 @@ class BillDetailPresenter(
                 totalMinor = state.totalMinor.toDouble(),
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
-                payer = state.payer?.let {
-                    JsBillPayer(
-                        name = it.name,
-                        initials = it.initials,
-                        color = it.avatarColor.code,
-                        isMe = it.isMe,
-                    )
-                },
+                payers = state.payers
+                    .map {
+                        JsBillPayer(
+                            name = it.name,
+                            initials = it.initials,
+                            color = it.avatarColor.code,
+                            isMe = it.isMe,
+                        )
+                    }.toTypedArray(),
                 isPending = state.isPending,
                 myBalanceMinor = state.myBalanceMinor?.toDouble(),
                 myPartNote = state.myPartNote?.let(::toJsMyPartNote),
@@ -162,17 +164,15 @@ private fun toJsBillShareRow(row: BillShareRow): JsBillShareRow = JsBillShareRow
 )
 
 private fun toJsMyPartNote(note: MyPartNote): JsMyPartNote = when (note) {
-    is MyPartNote.OwesPayer -> JsMyPartNote(
-        kind = "owes-payer",
-        payerName = note.payerName,
-        names = emptyArray(),
+    is MyPartNote.OwesPayers -> JsMyPartNote(
+        kind = "owes-payers",
+        names = note.names.toTypedArray(),
         eachMinor = null,
         totalMinor = null,
     )
 
     is MyPartNote.OwedBy -> JsMyPartNote(
         kind = "owed-by",
-        payerName = null,
         names = note.names.toTypedArray(),
         eachMinor = note.eachMinor?.toDouble(),
         totalMinor = note.totalMinor.toDouble(),

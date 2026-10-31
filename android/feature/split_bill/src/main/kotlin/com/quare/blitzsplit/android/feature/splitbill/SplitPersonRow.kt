@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -55,7 +56,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 
 private const val DIMMED_ALPHA = 0.5f
 private const val PERCENT_SUFFIX = "%"
-private val amountFieldWidth = 128.dp
+internal val amountFieldWidth = 128.dp
 private val percentFieldWidth = 88.dp
 
 // Why: one person in Dividir; who is out of the split stays listed, dimmed, so they can be put back.
@@ -64,7 +65,8 @@ internal fun SplitPersonRow(
     row: SplitRow,
     mode: SplitMode,
     isIn: Boolean,
-    isPayer: Boolean,
+    // Why: "Pagou a conta", or "Pagou parte da conta" for one of several payers; null for whoever didn't pay.
+    @StringRes paidLabel: Int?,
     isWithoutValue: Boolean,
     isNobodyIn: Boolean,
     shape: Shape,
@@ -137,7 +139,7 @@ internal fun SplitPersonRow(
                         row = row,
                         mode = mode,
                         isIn = isIn,
-                        isPayer = isPayer,
+                        paidLabel = paidLabel,
                         isWithoutValue = isWithoutValue,
                         money = money,
                     ),
@@ -195,14 +197,14 @@ private fun rowSubtitleOf(
     row: SplitRow,
     mode: SplitMode,
     isIn: Boolean,
-    isPayer: Boolean,
+    @StringRes paidLabel: Int?,
     isWithoutValue: Boolean,
     money: MoneyFormatter,
 ): String = when (mode) {
     SplitMode.EQUAL -> stringResource(
         when {
             !row.isIncluded -> R.string.split_bill_row_out
-            isPayer -> R.string.split_bill_row_paid
+            paidLabel != null -> paidLabel
             else -> R.string.split_bill_row_in
         },
     )
@@ -210,7 +212,7 @@ private fun rowSubtitleOf(
     SplitMode.AMOUNT -> stringResource(
         when {
             isWithoutValue -> R.string.split_bill_row_no_value
-            isPayer -> R.string.split_bill_row_paid
+            paidLabel != null -> paidLabel
             !row.person.hasJoined -> R.string.split_bill_not_joined
             else -> R.string.split_bill_row_value
         },
@@ -222,7 +224,7 @@ private fun rowSubtitleOf(
 
 // Why: the canvas's 44dp field, shorter than a text field's 56dp, so six people fit a phone without scrolling.
 @Composable
-private fun CompactNumberField(
+internal fun CompactNumberField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,

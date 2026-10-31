@@ -178,13 +178,15 @@ class BillDetailViewModelTest {
 
         // Then
         assertEquals(
-            BillPayer(
-                name = "Ana",
-                initials = "AN",
-                avatarColor = AvatarColor.PEACH,
-                isMe = false,
+            listOf(
+                BillPayer(
+                    name = "Ana",
+                    initials = "AN",
+                    avatarColor = AvatarColor.PEACH,
+                    isMe = false,
+                ),
             ),
-            state.payer,
+            state.payers,
         )
     }
 
@@ -198,18 +200,20 @@ class BillDetailViewModelTest {
 
         // Then
         assertEquals(
-            BillPayer(
-                name = "Pierre",
-                initials = "P",
-                avatarColor = AvatarColor.BLUE,
-                isMe = true,
+            listOf(
+                BillPayer(
+                    name = "Pierre",
+                    initials = "P",
+                    avatarColor = AvatarColor.BLUE,
+                    isMe = true,
+                ),
             ),
-            state.payer,
+            state.payers,
         )
     }
 
     @Test
-    fun `GIVEN whoever paid left the group WHEN it opens THEN there is no payer to show`() = runTest(testDispatcher) {
+    fun `GIVEN whoever paid left the group WHEN it opens THEN the payer has no name`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpense = expense(payerId = FORMER))
 
@@ -217,8 +221,125 @@ class BillDetailViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertNull(state.payer)
+        assertEquals(listOf(null), state.payers.map { it.name })
     }
+
+    @Test
+    fun `GIVEN Bruno and Ana paid in that order WHEN it opens THEN lists them in the order they joined the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(BRUNO, 18_000), paid(ANA, 30_000))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(
+                    BillPayer(
+                        name = "Ana",
+                        initials = "AN",
+                        avatarColor = AvatarColor.PEACH,
+                        isMe = false,
+                    ),
+                    BillPayer(
+                        name = "Bruno",
+                        initials = "BR",
+                        avatarColor = AvatarColor.GREEN,
+                        isMe = false,
+                    ),
+                ),
+                state.payers,
+            )
+        }
+
+    @Test
+    fun `GIVEN the device user paid along with Ana and Bruno WHEN it opens THEN lists the device user first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 16_000), paid(BRUNO, 16_000), paid(PIERRE, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf("Pierre", "Ana", "Bruno"), state.payers.map { it.name })
+            assertEquals(listOf(true, false, false), state.payers.map { it.isMe })
+        }
+
+    @Test
+    fun `GIVEN a former member paid along with Ana and the device user WHEN it opens THEN lists them last`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(FORMER, 18_000), paid(ANA, 20_000), paid(PIERRE, 10_000)),
+                    shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(
+                    BillPayer(
+                        name = "Pierre",
+                        initials = "P",
+                        avatarColor = AvatarColor.BLUE,
+                        isMe = true,
+                    ),
+                    BillPayer(
+                        name = "Ana",
+                        initials = "AN",
+                        avatarColor = AvatarColor.PEACH,
+                        isMe = false,
+                    ),
+                    BillPayer(
+                        name = null,
+                        initials = "",
+                        avatarColor = AvatarColor.entries.first(),
+                        isMe = false,
+                    ),
+                ),
+                state.payers,
+            )
+        }
+
+    @Test
+    fun `GIVEN two people who left the group paid WHEN it opens THEN lists one payer without a name for each`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(FORMER, 24_000), paid(OTHER_FORMER, 24_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(null, null), state.payers.map { it.name })
+        }
+
+    @Test
+    fun `GIVEN Carla paid without being in the split WHEN it opens THEN Carla is the payer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payerId = CARLA))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf("Carla"), state.payers.map { it.name })
+        }
 
     @Test
     fun `GIVEN someone else paid and the device user is in it WHEN it opens THEN they owe the payer`() =
@@ -232,7 +353,7 @@ class BillDetailViewModelTest {
             // Then
             assertTrue(state.showsMyPart)
             assertEquals(-16_000, state.myBalanceMinor)
-            assertEquals(MyPartNote.OwesPayer(payerName = "Ana"), state.myPartNote)
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Ana")), state.myPartNote)
         }
 
     @Test
@@ -385,6 +506,284 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Ana and Bruno paid more than their parts WHEN it opens THEN the device user owes both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(-16_000, state.myBalanceMinor)
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Ana", "Bruno")), state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN Bruno comes before Ana in the split WHEN it opens THEN names the payers in the order of the split`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000)),
+                    shares = listOf(share(BRUNO, 16_000), share(PIERRE, 16_000), share(ANA, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Bruno", "Ana")), state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN Bruno paid only his own part along with Ana WHEN it opens THEN the device user owes only Ana`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 32_000), paid(BRUNO, 16_000))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Ana")), state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN Bruno owes earlier in the split and covers Ana WHEN it opens THEN the device user owes only Carla`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 24_000), paid(CARLA, 24_000)),
+                    shares = listOf(
+                        share(ANA, 12_000),
+                        share(BRUNO, 12_000),
+                        share(PIERRE, 12_000),
+                        share(CARLA, 12_000),
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(-12_000, state.myBalanceMinor)
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Carla")), state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN Ana and a former member paid WHEN it opens THEN the device user owes Ana and a nameless payer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 24_000), paid(FORMER, 24_000)),
+                    shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Ana", null)), state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN every payer the device user owes left the group WHEN it opens THEN there is no note`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(FORMER, 24_000), paid(OTHER_FORMER, 24_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(-16_000, state.myBalanceMinor)
+            assertNull(state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN Carla paid without being in the split WHEN it opens THEN the device user owes Carla`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payerId = CARLA))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(-16_000, state.myBalanceMinor)
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Carla")), state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN the device user paid most and Ana paid less than her part WHEN it opens THEN Ana and Bruno owe them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(PIERRE, 40_000), paid(ANA, 8_000))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(24_000, state.myBalanceMinor)
+            assertEquals(
+                MyPartNote.OwedBy(
+                    names = listOf("Ana", "Bruno"),
+                    eachMinor = null,
+                    totalMinor = 24_000,
+                ),
+                state.myPartNote,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana paid over her part along with the device user WHEN it opens THEN Bruno owes them part of his`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(ANA, 18_000), paid(PIERRE, 30_000))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(14_000, state.myBalanceMinor)
+            assertEquals(
+                MyPartNote.OwedBy(
+                    names = listOf("Bruno"),
+                    eachMinor = 14_000,
+                    totalMinor = 14_000,
+                ),
+                state.myPartNote,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana paid exactly her part along with the device user WHEN it opens THEN Bruno and Carla owe the same`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(PIERRE, 36_000), paid(ANA, 12_000)),
+                    shares = listOf(
+                        share(ANA, 12_000),
+                        share(PIERRE, 12_000),
+                        share(BRUNO, 12_000),
+                        share(CARLA, 12_000),
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                MyPartNote.OwedBy(
+                    names = listOf("Bruno", "Carla"),
+                    eachMinor = 12_000,
+                    totalMinor = 24_000,
+                ),
+                state.myPartNote,
+            )
+        }
+
+    @Test
+    fun `GIVEN the device user and Ana paid and a former member owes WHEN it opens THEN that debtor has no name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(PIERRE, 32_000), paid(ANA, 16_000)),
+                    shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(FORMER, 16_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                MyPartNote.OwedBy(
+                    names = listOf(null),
+                    eachMinor = 16_000,
+                    totalMinor = 16_000,
+                ),
+                state.myPartNote,
+            )
+        }
+
+    @Test
+    fun `GIVEN the device user paid without being in the split WHEN it opens THEN Bruno owes them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(PIERRE, 24_000), paid(ANA, 24_000)),
+                    shares = listOf(share(ANA, 24_000), share(BRUNO, 24_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsMyPart)
+            assertEquals(24_000, state.myBalanceMinor)
+            assertEquals(
+                MyPartNote.OwedBy(
+                    names = listOf("Bruno"),
+                    eachMinor = 24_000,
+                    totalMinor = 24_000,
+                ),
+                state.myPartNote,
+            )
+        }
+
+    @Test
+    fun `GIVEN the device user paid exactly their part along with Ana WHEN it opens THEN shows zero with no note`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense(payers = listOf(paid(PIERRE, 16_000), paid(ANA, 32_000))))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsMyPart)
+            assertEquals(0, state.myBalanceMinor)
+            assertNull(state.myPartNote)
+        }
+
+    @Test
+    fun `GIVEN Ana and Bruno paid and split it between them WHEN it opens THEN hides the device user part`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 30_000), paid(BRUNO, 18_000)),
+                    shares = listOf(share(ANA, 24_000), share(BRUNO, 24_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsMyPart)
+            assertNull(state.myBalanceMinor)
+            assertNull(state.myPartNote)
+        }
+
+    @Test
     fun `GIVEN a bill split among three of four members WHEN it opens THEN lists every member with their part`() =
         runTest(testDispatcher) {
             // Given
@@ -476,6 +875,27 @@ class BillDetailViewModelTest {
             assertTrue(former.hasJoined)
             assertEquals(48_000, former.paidMinor)
             assertEquals(16_000, former.shareMinor)
+            assertEquals(3, state.participantCount)
+        }
+
+    @Test
+    fun `GIVEN Ana Carla and someone who left paid WHEN it opens THEN each row shows what that person paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(
+                    payers = listOf(paid(ANA, 20_000), paid(CARLA, 10_000), paid(FORMER, 18_000)),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(ANA, PIERRE, BRUNO, CARLA, FORMER), state.people.map { it.memberId })
+            assertEquals(listOf(20_000L, null, null, 10_000L, 18_000L), state.people.map { it.paidMinor })
+            assertEquals(listOf(16_000L, 16_000L, 16_000L, null, null), state.people.map { it.shareMinor })
+            assertNull(state.people.last().name)
             assertEquals(3, state.participantCount)
         }
 
@@ -964,12 +1384,21 @@ class BillDetailViewModelTest {
         weight = 1,
     )
 
+    private fun paid(
+        memberId: String,
+        amountMinor: Long,
+    ): ExpensePayer = ExpensePayer(
+        memberId = memberId,
+        amountMinor = amountMinor,
+    )
+
     // Why: by default Ana paid R$ 480 split equally among Ana, Pierre (this device's user) and Bruno; Carla is out.
     private fun expense(
         description: String = "Mercado",
         amountMinor: Long = 48_000,
         splitMode: SplitMode = SplitMode.EQUAL,
         payerId: String = ANA,
+        payers: List<ExpensePayer> = listOf(paid(payerId, amountMinor)),
         shares: List<ExpenseShare> = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(BRUNO, 16_000)),
         spentAt: Long = earlierToday,
         isPending: Boolean = false,
@@ -979,7 +1408,7 @@ class BillDetailViewModelTest {
         description = description,
         amountMinor = amountMinor,
         splitMode = splitMode,
-        payers = listOf(ExpensePayer(payerId, amountMinor)),
+        payers = payers,
         shares = shares,
         spentAt = spentAt,
         isPending = isPending,
@@ -1033,5 +1462,6 @@ class BillDetailViewModelTest {
         const val BRUNO = "member-3"
         const val CARLA = "member-4"
         const val FORMER = "member-9"
+        const val OTHER_FORMER = "member-10"
     }
 }

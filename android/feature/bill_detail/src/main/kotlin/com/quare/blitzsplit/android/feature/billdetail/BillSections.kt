@@ -31,8 +31,10 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 
+private const val PAYER_FACE_COUNT = 3
 private val payerAvatarSize = 32.dp
 private val rowAvatarSize = 40.dp
 
@@ -68,18 +70,9 @@ internal fun BillSummaryColumn(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val payer = state.payer
-            if (payer != null) {
-                AvatarBadge(
-                    initial = payer.initials,
-                    color = payer.avatarColor,
-                    size = payerAvatarSize,
-                )
-            } else {
-                FormerMemberBadge(payerAvatarSize)
-            }
+            PayerFacesRow(state.payers)
             Text(
-                text = payerTextOf(payer),
+                text = payerTextOf(state.payers),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
             )
@@ -259,6 +252,31 @@ private fun ShareRow(
                     MaterialTheme.colorScheme.onSurface
                 },
             )
+        }
+    }
+}
+
+// Why: the faces of whoever paid, overlapping when several did, as iOS and the web draw them: only members' faces.
+@Composable
+private fun PayerFacesRow(payers: List<BillPayer>) {
+    val faces = payers.filter { it.name != null }.take(PAYER_FACE_COUNT)
+    if (faces.isEmpty()) {
+        FormerMemberBadge(payerAvatarSize)
+        return
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy((-10).dp)) {
+        faces.forEach { payer ->
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface, CircleShape)
+                    .padding(2.dp),
+            ) {
+                AvatarBadge(
+                    initial = payer.initials,
+                    color = payer.avatarColor,
+                    size = payerAvatarSize,
+                )
+            }
         }
     }
 }

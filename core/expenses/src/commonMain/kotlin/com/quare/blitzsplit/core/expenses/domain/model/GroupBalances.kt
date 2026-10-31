@@ -46,7 +46,7 @@ data class GroupBalances(
             settlements: List<Settlement>,
         ): GroupBalances {
             val owed = mutableMapOf<Pair<String, String>, Long>()
-            expenses.forEach { expense -> owed.addDebtsOf(expense) }
+            expenses.flatMap(::findDebtsWithin).forEach { owed.add(it.fromMemberId, it.toMemberId, it.amountMinor) }
             // Why: a payment from Ana to Bruno cancels that much of what Ana owes him, or makes him owe her past it.
             settlements.forEach { owed.add(it.toMemberId, it.fromMemberId, it.amountMinor) }
             val debts = owed.keys
@@ -73,25 +73,27 @@ data class GroupBalances(
         /*
          * Why: within one bill, whoever paid more than their part is owed by whoever paid less, matched in the
          * bill's order. With one payer, everyone else owes that payer their part; with several, the amounts still
-         * add up to the cent.
+         * add up to the cent. Conta's "Sua parte" names the same people Saldos counts the bill toward.
          */
-        private fun MutableMap<Pair<String, String>, Long>.addDebtsOf(expense: Expense) {
+        fun findDebtsWithin(expense: Expense): List<Debt> {
             val memberIds = (expense.shares.map { it.memberId } + expense.payers.map { it.memberId }).distinct()
             val nets = memberIds.associateWith { expense.balanceOf(it) ?: 0L }
             val creditors = memberIds.filter { nets.getValue(it) > 0 }.map { it to nets.getValue(it) }.toMutableList()
-            val debtors = memberIds.filter { nets.getValue(it) < 0 }.map { it to -nets.getValue(it) }.toMutableList()
+            val debtors = memberIds.filter { nets.getValue(it) < 0 }.map { it to -nets.getValue(it) }
+            val debts = mutableListOf<Debt>()
             var creditorIndex = 0
             debtors.forEach { (debtorId, owes) ->
                 var left = owes
                 while (left > 0 && creditorIndex < creditors.size) {
                     val (creditorId, credit) = creditors[creditorIndex]
                     val paid = minOf(left, credit)
-                    add(debtorId, creditorId, paid)
+                    debts += Debt(debtorId, creditorId, paid)
                     left -= paid
                     creditors[creditorIndex] = creditorId to credit - paid
                     if (credit == paid) creditorIndex++
                 }
             }
+            return debts
         }
 
         private fun MutableMap<Pair<String, String>, Long>.add(

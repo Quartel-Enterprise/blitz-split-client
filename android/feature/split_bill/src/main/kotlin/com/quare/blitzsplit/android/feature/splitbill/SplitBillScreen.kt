@@ -69,10 +69,17 @@ fun SplitBillScreen(
             )
         }
     }
-    state.payerSelection?.let { selectedId ->
+    state.payerSelection?.let { selection ->
         PayerSheet(
             state = state,
-            selectedId = selectedId,
+            selection = selection,
+            money = rememberMoneyFormatter(state.currency),
+            onEvent = viewModel::onEvent,
+        )
+    }
+    state.payerAmounts?.let { amounts ->
+        SeveralPayersSheet(
+            amounts = amounts,
             money = rememberMoneyFormatter(state.currency),
             onEvent = viewModel::onEvent,
         )

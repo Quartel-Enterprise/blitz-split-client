@@ -13,7 +13,8 @@ data class SplitEditor(
     val rows: List<SplitRow>,
     // Why: the bill's amount, 0 while the field holds no valid amount.
     val totalMinor: Long,
-    val payerId: String,
+    // Why: who paid the bill, who keep the cents a split can't share evenly while they are in it.
+    val payerIds: List<String>,
     val currency: GroupCurrency,
 ) {
     /*
@@ -38,7 +39,7 @@ data class SplitEditor(
         totalMinor = totalMinor,
         mode = mode,
         entries = entries,
-        payerId = payerId,
+        payerIds = payerIds,
     )
 
     // Why: "Pronto" only once it adds up.

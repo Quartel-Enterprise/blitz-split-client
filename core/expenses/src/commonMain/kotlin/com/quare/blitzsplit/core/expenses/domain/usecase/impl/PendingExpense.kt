@@ -6,13 +6,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 
-// Why: a new bill and an edited one are saved alike, one person paying it all, until they sync.
+// Why: a new bill and an edited one are saved alike until they sync.
 internal fun pendingExpenseOf(
     id: String,
     groupId: String,
     description: String,
     amountMinor: Long,
-    payerId: String,
+    payers: List<ExpensePayer>,
     splitMode: SplitMode,
     shares: List<ExpenseShare>,
     spentAt: Long,
@@ -24,12 +24,7 @@ internal fun pendingExpenseOf(
     description = ExpenseRules.toCapped(description.trim()).trimEnd(),
     amountMinor = amountMinor,
     splitMode = splitMode,
-    payers = listOf(
-        ExpensePayer(
-            memberId = payerId,
-            amountMinor = amountMinor,
-        ),
-    ),
+    payers = payers,
     shares = shares,
     spentAt = spentAt,
     isPending = true,

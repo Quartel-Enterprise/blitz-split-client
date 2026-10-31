@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="group_detail_back">Voltar</string>
     <string name="group_detail_invite">Convidar pessoas</string>
     <string name="group_detail_more">Mais opções do grupo</string>
@@ -60,6 +60,7 @@
     <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
     <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
     <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
+    <string name="group_detail_you">Você</string>
     <string name="group_detail_needs_internet">Precisa de internet</string>
     <string name="group_detail_leave_error">Não deu para sair do grupo. Confira a conexão e tente de novo.</string>
     <string name="group_detail_delete_error">Não deu para apagar o grupo. Confira a conexão e tente de novo.</string>
@@ -69,7 +70,8 @@
     <string name="group_detail_leave_blocked_message">Você ainda tem saldo em aberto em “%s”. Sair agora deixaria a conta sem fechar para os outros.</string>
     <string name="group_detail_leave_title">Sair de “%s”?</string>
     <plurals name="group_detail_leave_message">
-        <item quantity="one">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para o outro membro. Para voltar, alguém precisa te convidar de novo.</item>
+        <!-- Zero other members shows group_detail_leave_message_alone, so "one" is only ever 1 -->
+        <item quantity="one" tools:ignore="ImpliedQuantity">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para o outro membro. Para voltar, alguém precisa te convidar de novo.</item>
         <item quantity="other">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para os outros %d membros. Para voltar, alguém precisa te convidar de novo.</item>
     </plurals>
     <string name="group_detail_leave_message_alone">Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez.</string>

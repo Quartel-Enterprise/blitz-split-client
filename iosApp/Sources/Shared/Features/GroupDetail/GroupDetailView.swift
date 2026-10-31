@@ -173,23 +173,17 @@ struct GroupDetailView: View {
     }
 }
 
-/// The bill's line on the list: "21:30 · Bruno paid", "17:40 · queued · You paid", or just the time once whoever
-/// paid left the group.
+/// The bill's line on the list: "21:30 · Bruno paid", "17:40 · queued · You paid", "21:30 · You and Ana paid", or
+/// just the time once whoever paid alone left the group.
 private func expenseMeta(_ row: ExpenseRow) -> String {
     let time = ExpenseFormat.time(row.spentAt)
     let when = row.isPending ? String(localized: "\(time) · queued") : time
-    if row.payerIsMe {
-        return "\(when) · \(String(localized: "You paid"))"
-    } else if let payerName = row.payerName {
-        return "\(when) · \(String(localized: "\(payerName) paid"))"
-    }
-    return when
+    guard let paid = payerText(row) else { return when }
+    return "\(when) · \(paid)"
 }
 
-private func payerText(_ row: ExpenseRow) -> String {
-    if row.payerIsMe { return String(localized: "You paid") }
-    if let payerName = row.payerName { return String(localized: "\(payerName) paid") }
-    return ""
+private func payerText(_ row: ExpenseRow) -> String? {
+    ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
 }
 
 /// No categories yet: every bill gets the same receipt, and a payment the banknote.
@@ -449,7 +443,7 @@ private struct MacGroupExpenses: View {
             }
             .width(min: 50, ideal: 60, max: 80)
             TableColumn("Who paid") { item in
-                Text(verbatim: item.expense.map(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
+                Text(verbatim: item.expense.flatMap(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
                     .foregroundStyle(.secondary)
             }
             TableColumn("Total") { item in

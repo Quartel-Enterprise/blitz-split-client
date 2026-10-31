@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -660,7 +661,7 @@ class SplitBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
 
             // Then
-            assertEquals(PIERRE, viewModel.uiState.value.payerSelection)
+            assertEquals(PayerSelection(PIERRE), viewModel.uiState.value.payerSelection)
         }
 
     @Test
@@ -674,7 +675,7 @@ class SplitBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(BRUNO))
 
             // Then
-            assertEquals(BRUNO, viewModel.uiState.value.payerSelection)
+            assertEquals(PayerSelection(BRUNO), viewModel.uiState.value.payerSelection)
             assertEquals(PIERRE, viewModel.uiState.value.payerId)
         }
 
@@ -688,7 +689,7 @@ class SplitBillViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnPayerPicked("someone-else"))
 
         // Then
-        assertEquals(PIERRE, viewModel.uiState.value.payerSelection)
+        assertEquals(PayerSelection(PIERRE), viewModel.uiState.value.payerSelection)
     }
 
     @Test
@@ -705,7 +706,7 @@ class SplitBillViewModelTest {
             // Then
             assertEquals(BRUNO, viewModel.uiState.value.payerId)
             assertNull(viewModel.uiState.value.payerSelection)
-            assertEquals(BRUNO, viewModel.uiState.value.split.payerId)
+            assertEquals(listOf(BRUNO), viewModel.uiState.value.split.payerIds)
         }
 
     @Test
@@ -1782,7 +1783,7 @@ class SplitBillViewModelTest {
 
         // Then
         assertEquals(PIERRE, viewModel.uiState.value.payerId)
-        assertEquals(PIERRE, viewModel.uiState.value.split.payerId)
+        assertEquals(listOf(PIERRE), viewModel.uiState.value.split.payerIds)
     }
 
     @Test
@@ -1827,7 +1828,7 @@ class SplitBillViewModelTest {
             groups.groups.value = listOf(trip.copy(members = listOf(ana, pierre, carla)))
 
             // Then
-            assertEquals(ANA, viewModel.uiState.value.payerSelection)
+            assertEquals(PayerSelection(ANA), viewModel.uiState.value.payerSelection)
         }
 
     @Test

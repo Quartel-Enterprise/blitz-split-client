@@ -14,8 +14,8 @@ data class BillDetailUiState(
     // Why: "ontem, 27 de out."; each UI writes the date and the time, after "Hoje" or "Ontem" when it is one of them.
     val spentAt: Long,
     val spentDay: RelativeDay,
-    // Why: null when whoever paid is no longer in the group.
-    val payer: BillPayer?,
+    // Why: who paid, this device's user first, then in the order they were added to the group, then who left it.
+    val payers: List<BillPayer>,
     // Why: "Na fila · sincroniza ao reconectar".
     val isPending: Boolean,
     // Why: "Sua parte", what the bill does to this device's user's balance; null when they aren't in it.

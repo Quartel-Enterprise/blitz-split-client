@@ -16,6 +16,7 @@ import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
+import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage } from './GroupPage'
@@ -193,11 +194,19 @@ function DayRow({
 function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailPresenter; expense: JsExpenseRow; state: JsGroupDetailState }) {
   const { currency, fractionDigits } = state.header
   const time = formatTime(expense.spentAt)
-  const paid = expense.payerIsMe
-    ? t('groupDetail_metaPaidByMe', { time })
-    : expense.payerName != null
-      ? t('groupDetail_metaPaidBy', { time, name: expense.payerName })
-      : time
+  const payers = expense.payers
+  const payer = payers.length === 1 ? payers[0] : null
+  const paid =
+    payers.length > 1
+      ? t('groupDetail_metaPaidBySeveral', {
+          time,
+          names: payerNamesText(payers.map((it) => (it.isMe ? t('splitBill_you') : nameOrFormer(it.name)))),
+        })
+      : payer?.isMe
+        ? t('groupDetail_metaPaidByMe', { time })
+        : payer?.name != null
+          ? t('groupDetail_metaPaidBy', { time, name: payer.name })
+          : time
   const balance = expense.myBalanceMinor
   return (
     <DayRow

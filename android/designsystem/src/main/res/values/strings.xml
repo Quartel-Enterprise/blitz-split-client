@@ -46,4 +46,10 @@
     <string name="designsystem_payment_recorded_to">Payment to %s recorded.</string>
     <string name="designsystem_payment_recorded">Payment recorded.</string>
     <string name="designsystem_payment_undo">Undo</string>
+    <string name="designsystem_paid_by_one">%s paid</string>
+    <string name="designsystem_paid_by_several">%s paid</string>
+    <plurals name="designsystem_payers_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
 </resources>

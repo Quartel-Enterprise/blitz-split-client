@@ -511,6 +511,217 @@ class GroupBalancesTest {
         assertNull(balance)
     }
 
+    @Test
+    fun `GIVEN a bill with two payers and one paid by its debtor WHEN computing THEN the pair nets across both`() {
+        // Given
+        val taxi = bill(
+            id = "taxi",
+            payers = listOf(paid(BIA, 60L)),
+            shares = listOf(
+                share(PIERRE, 30L),
+                share(BIA, 30L),
+            ),
+        )
+
+        // When
+        val balances = GroupBalances.of(listOf(anaPaidHerPartBiaOwesPierre, taxi), settlements = emptyList())
+
+        // Then
+        assertEquals(listOf(Debt(BIA, PIERRE, 70L)), balances.debts)
+    }
+
+    @Test
+    fun `GIVEN a payer who paid exactly their part WHEN reading their balance THEN they are settled`() {
+        // Given
+        val balances = GroupBalances.of(listOf(anaPaidHerPartBiaOwesPierre), settlements = emptyList())
+
+        // When
+        val balance = balances.balanceOf(ANA)
+
+        // Then
+        assertTrue(balance.isSettled)
+        assertEquals(listOf(Debt(BIA, PIERRE, 100L)), balances.debts)
+    }
+
+    @Test
+    fun `GIVEN a payer of a bill is the largest debtor of another WHEN computing THEN their debts net across both`() {
+        // Given
+        val trip = bill(
+            id = "trip",
+            payers = listOf(
+                paid(PIERRE, 300L),
+                paid(ANA, 300L),
+            ),
+            shares = listOf(
+                share(PIERRE, 200L),
+                share(ANA, 200L),
+                share(BIA, 200L),
+            ),
+        )
+        val hotel = bill(
+            id = "hotel",
+            payers = listOf(paid(BIA, 900L)),
+            shares = listOf(
+                share(PIERRE, 100L),
+                share(ANA, 500L),
+                share(BIA, 300L),
+            ),
+        )
+
+        // When
+        val balances = GroupBalances.of(listOf(trip, hotel), settlements = emptyList())
+
+        // Then
+        assertEquals(listOf(Debt(ANA, BIA, 400L)), balances.debts)
+        assertTrue(balances.balanceOf(PIERRE).isSettled)
+    }
+
+    @Test
+    fun `GIVEN a member owing two payers of a bill WHEN finding their largest creditor THEN gets the one owed most`() {
+        // Given
+        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements = emptyList())
+
+        // When
+        val creditor = balances.findLargestCreditorOrNull(BIA)
+
+        // Then
+        assertEquals(PIERRE, creditor)
+    }
+
+    @Test
+    fun `GIVEN a member owing two payers of one bill WHEN she pays one of them in full THEN she owes only the other`() {
+        // Given
+        val settlements = listOf(
+            payment(
+                from = BIA,
+                to = ANA,
+                amountMinor = 40L,
+            ),
+        )
+
+        // When
+        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements)
+
+        // Then
+        assertEquals(listOf(Debt(BIA, PIERRE, 60L)), balances.debts)
+        assertEquals(
+            MemberBalance(
+                receivesMinor = 0L,
+                owesMinor = 60L,
+            ),
+            balances.balanceOf(BIA),
+        )
+    }
+
+    @Test
+    fun `GIVEN a member owing two payers of one bill WHEN she pays both in full THEN everyone is settled`() {
+        // Given
+        val settlements = listOf(
+            payment(
+                from = BIA,
+                to = PIERRE,
+                amountMinor = 60L,
+            ),
+            payment(
+                from = BIA,
+                to = ANA,
+                amountMinor = 40L,
+            ),
+        )
+
+        // When
+        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements)
+
+        // Then
+        assertTrue(balances.debts.isEmpty())
+        assertTrue(balances.isEveryoneSettled)
+    }
+
+    @Test
+    fun `GIVEN two payers of one bill WHEN one records a payment to the other THEN the other owes it back`() {
+        // Given
+        val settlements = listOf(
+            payment(
+                from = PIERRE,
+                to = ANA,
+                amountMinor = 25L,
+            ),
+        )
+
+        // When
+        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements)
+
+        // Then
+        assertEquals(
+            listOf(
+                Debt(BIA, PIERRE, 60L),
+                Debt(BIA, ANA, 40L),
+                Debt(ANA, PIERRE, 25L),
+            ),
+            balances.debts,
+        )
+    }
+
+    @Test
+    fun `GIVEN 100 million paid by two and part of it paid back WHEN computing THEN the rest stays to the cent`() {
+        // Given
+        val expenses = listOf(
+            bill(
+                id = "house",
+                payers = listOf(
+                    paid(PIERRE, 5_000_000_000L),
+                    paid(ANA, 5_000_000_000L),
+                ),
+                shares = listOf(share(BIA, 10_000_000_000L)),
+            ),
+        )
+        val settlements = listOf(
+            payment(
+                from = BIA,
+                to = PIERRE,
+                amountMinor = 4_999_999_999L,
+            ),
+        )
+
+        // When
+        val balances = GroupBalances.of(expenses, settlements)
+
+        // Then
+        assertEquals(
+            listOf(
+                Debt(BIA, ANA, 5_000_000_000L),
+                Debt(BIA, PIERRE, 1L),
+            ),
+            balances.debts,
+        )
+    }
+
+    private val biaOwesPierre60AndAna40 = bill(
+        id = "lunch",
+        payers = listOf(
+            paid(PIERRE, 160L),
+            paid(ANA, 140L),
+        ),
+        shares = listOf(
+            share(PIERRE, 100L),
+            share(ANA, 100L),
+            share(BIA, 100L),
+        ),
+    )
+
+    private val anaPaidHerPartBiaOwesPierre = bill(
+        id = "market",
+        payers = listOf(
+            paid(PIERRE, 200L),
+            paid(ANA, 100L),
+        ),
+        shares = listOf(
+            share(PIERRE, 100L),
+            share(ANA, 100L),
+            share(BIA, 100L),
+        ),
+    )
+
     private val anaOwesPierre100 = bill(
         id = "dinner",
         payers = listOf(paid(PIERRE, 100L)),

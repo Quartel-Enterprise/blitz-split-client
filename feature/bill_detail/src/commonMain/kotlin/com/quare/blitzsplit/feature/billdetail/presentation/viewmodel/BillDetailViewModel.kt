@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -56,7 +58,7 @@ class BillDetailViewModel(
                 totalMinor = 0L,
                 spentAt = 0L,
                 spentDay = RelativeDay.OTHER,
-                payer = null,
+                payers = emptyList(),
                 isPending = false,
                 myBalanceMinor = null,
                 myPartNote = null,
@@ -145,8 +147,6 @@ class BillDetailViewModel(
         val me = group.members.firstOrNull { it.isMe }
         myMemberId = me?.id
         val membersById = group.members.associateBy { it.id }
-        val payerId = expense.payers.firstOrNull()?.memberId
-        val payer = payerId?.let(membersById::get)
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
@@ -155,7 +155,7 @@ class BillDetailViewModel(
                 totalMinor = expense.amountMinor,
                 spentAt = expense.spentAt,
                 spentDay = relativeDayOf(expense.spentAt),
-                payer = payer?.let(::toPayer),
+                payers = payersOf(group, expense, membersById),
                 isPending = expense.isPending,
                 myBalanceMinor = me?.id?.let(expense::balanceOf),
                 myPartNote = me?.let { myPartNoteOf(expense, it, membersById) },
@@ -168,12 +168,20 @@ class BillDetailViewModel(
         }
     }
 
-    private fun toPayer(member: GroupMember): BillPayer = BillPayer(
-        name = member.name,
-        initials = Initials.ofMember(member.name, member.isMe),
-        avatarColor = member.avatarColor,
-        isMe = member.isMe,
-    )
+    // Why: in PayerOrder's order; someone who left the group has no name and is drawn as "Ex-membro".
+    private fun payersOf(
+        group: Group,
+        expense: Expense,
+        membersById: Map<String, GroupMember>,
+    ): List<BillPayer> = PayerOrder(group.members).sort(expense.payers.map { it.memberId }).map { id ->
+        val member = membersById[id]
+        BillPayer(
+            name = member?.name,
+            initials = member?.let { Initials.ofMember(it.name, it.isMe) }.orEmpty(),
+            avatarColor = member?.avatarColor ?: AvatarColor.entries.first(),
+            isMe = member?.isMe == true,
+        )
+    }
 
     private fun rowsOf(
         group: Group,
@@ -215,8 +223,10 @@ class BillDetailViewModel(
     }
 
     /*
-     * Why: whoever paid is owed by everyone else in the split; anyone else in it owes whoever paid. Nothing to say for
-     * someone whose part settles nothing: who paid only their own part, or got a zero part of a cent.
+     * Why: who owes whom within the bill, as Saldos counts it: with one payer, everyone else in the split owes them;
+     * with several, whoever paid less than their part owes whoever paid more. Nothing to say for someone whose part
+     * settles nothing: who paid only their own part, or got a zero part of a cent; nor for a debt only to people who
+     * left the group.
      */
     private fun myPartNoteOf(
         expense: Expense,
@@ -225,16 +235,16 @@ class BillDetailViewModel(
     ): MyPartNote? {
         val balance = expense.balanceOf(me.id)
         if (balance == null || balance == 0L) return null
-        val payerId = expense.payers.firstOrNull()?.memberId ?: return null
-        if (payerId != me.id) {
-            val payerName = membersById[payerId]?.name ?: return null
-            return MyPartNote.OwesPayer(payerName)
+        val debts = GroupBalances.findDebtsWithin(expense)
+        if (balance < 0) {
+            val names = debts.filter { it.fromMemberId == me.id }.map { membersById[it.toMemberId]?.name }
+            return names.takeIf { it.any { name -> name != null } }?.let(MyPartNote::OwesPayers)
         }
-        val debtors = expense.shares.filter { it.memberId != me.id && it.amountMinor > 0 }
+        val debtors = debts.filter { it.toMemberId == me.id }
         if (debtors.isEmpty()) return null
         val amounts = debtors.map { it.amountMinor }.distinct()
         return MyPartNote.OwedBy(
-            names = debtors.map { membersById[it.memberId]?.name },
+            names = debtors.map { membersById[it.fromMemberId]?.name },
             eachMinor = amounts.singleOrNull(),
             totalMinor = debtors.sumOf { it.amountMinor },
         )

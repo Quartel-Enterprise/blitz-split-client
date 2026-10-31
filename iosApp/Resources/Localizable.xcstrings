@@ -7048,6 +7048,144 @@
           }
         }
       }
+    },
+    "Several people" : {
+      "comment" : "Who paid a bill: more than one person",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Várias pessoas"
+          }
+        }
+      }
+    },
+    "Each one says how much they paid" : {
+      "comment" : "Under “Several people” in Who paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada uma diz quanto pagou"
+          }
+        }
+      }
+    },
+    "Several people paid" : {
+      "comment" : "Title of the sheet where several people say how much they paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Várias pessoas pagaram"
+          }
+        }
+      }
+    },
+    "Say how much each one paid of %@" : {
+      "comment" : "Under Several people paid; %@ is the bill's total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga quanto cada uma pagou de %@"
+          }
+        }
+      }
+    },
+    "Say how much each one paid" : {
+      "comment" : "Under Several people paid, while the bill has no total yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diga quanto cada uma pagou"
+          }
+        }
+      }
+    },
+    "%@ of %@. Adds up." : {
+      "comment" : "What several people paid adds up to the total; the paid amount, then the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ de %2$@. Fechou."
+          }
+        }
+      }
+    },
+    "How much %@ paid" : {
+      "comment" : "Accessibility label of a payer's amount field; %@ is the member's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quanto %@ pagou"
+          }
+        }
+      }
+    },
+    "Several People…" : {
+      "comment" : "Mac pop-up item of Who paid that opens what each one paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Várias pessoas…"
+          }
+        }
+      }
+    },
+    "Change Amounts…" : {
+      "comment" : "Mac button that opens what each of several payers paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alterar valores…"
+          }
+        }
+      }
+    },
+    "Several People Paid" : {
+      "comment" : "Mac title of the sheet where several people say how much they paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Várias pessoas pagaram"
+          }
+        }
+      }
+    },
+    "Several people paid a bill" : {
+      "comment" : "Who paid a bill several people paid; %@ is their names, or how many they are",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ paid"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pagaram"
+          }
+        }
+      }
+    },
+    "Paid part of the bill" : {
+      "comment" : "A row in Split: one of several people who paid the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagou parte da conta"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

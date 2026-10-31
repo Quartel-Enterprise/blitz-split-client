@@ -79,10 +79,15 @@ enum SplitBillCopy {
         return String(localized: "\(ExpenseFormat.names(people.map(name))) have no amount")
     }
 
-    /// "Groceries · you paid", "Dinner · Bruno paid", or "You paid" while the bill has no description.
-    static func paidBy(_ lead: String, payer: BillPerson?) -> String {
+    /// "Groceries · you paid", "Dinner · Bruno paid", "Dinner · You and Ana paid", or "You paid" while the bill has
+    /// no description.
+    static func paidBy(_ lead: String, state: SplitBillUiState) -> String {
         let lead = lead.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let payer else { return lead }
+        if let several = state.severalPayers {
+            let paid = ExpenseFormat.paidBySeveral(payerNames(several))
+            return lead.isEmpty ? paid : "\(lead) · \(paid)"
+        }
+        guard let payer = state.payer else { return lead }
         if lead.isEmpty {
             return payer.isMe ? String(localized: "You paid") : String(localized: "\(payer.name) paid")
         }
@@ -97,6 +102,37 @@ enum SplitBillCopy {
         guard count > 0 else { return String(localized: "Nobody is in yet") }
         let facts = split.summary.map { text($0, currency: split.currency) }
         return ([String(localized: "Among \(count)")] + facts).joined(separator: " · ")
+    }
+
+    /// Whoever paid part of the bill: "You", a name, or "Former member" for someone who left the group.
+    static func payerNames(_ amounts: PayerAmounts) -> [String] {
+        amounts.paying.map(payerName)
+    }
+
+    static func payerName(_ row: PayerAmountRow) -> String {
+        row.person.map(name) ?? String(localized: "Former member")
+    }
+
+    /// "R$ 112,00 left" or "R$ 12,00 over": how far what several people paid is from the total.
+    static func payersMismatch(_ amounts: PayerAmounts) -> String {
+        let amount = amounts.currency.format(abs(amounts.remainingMinor))
+        return amounts.remainingMinor > 0 ? String(localized: "\(amount) left") : String(localized: "\(amount) over")
+    }
+
+    /// Under "Several people paid": "R$ 312,00 of R$ 312,00. Adds up.", or what is missing or over.
+    static func payersStatus(_ amounts: PayerAmounts) -> String? {
+        if amounts.addsUp {
+            let paid = amounts.currency.format(amounts.paidMinor)
+            return String(localized: "\(paid) of \(amounts.currency.format(amounts.totalMinor)). Adds up.")
+        }
+        return amounts.showsMismatch ? payersMismatch(amounts) : nil
+    }
+
+    /// "Say how much each one paid of R$ 312,00", the total only while there is one.
+    static func payersLead(_ amounts: PayerAmounts) -> String {
+        amounts.totalMinor > 0
+            ? String(localized: "Say how much each one paid of \(amounts.currency.format(amounts.totalMinor))")
+            : String(localized: "Say how much each one paid")
     }
 
     /// "Who paid"'s second line: "R$ 312,00 · Mercado", each part only once it is filled in.
@@ -207,14 +243,20 @@ enum SplitBillCopy {
         (Double(value) / 100).formatted(.percent)
     }
 
-    /// A person's second line in "Split", by mode.
-    static func rowSubtitle(_ row: SplitRow, editor: SplitEditor, isOut: Bool) -> (text: String, isError: Bool) {
+    /// A person's second line in "Split", by mode: "Paid part of the bill" for one of several payers.
+    static func rowSubtitle(
+        _ row: SplitRow,
+        editor: SplitEditor,
+        isOut: Bool,
+        hasSeveralPayers: Bool,
+    ) -> (text: String, isError: Bool) {
         let person = row.person
-        let isPayer = person.id == editor.payerId
+        let isPayer = editor.payerIds.contains(person.id)
+        let paid = hasSeveralPayers ? String(localized: "Paid part of the bill") : String(localized: "Paid the bill")
         let share = row.shareMinor.map { editor.currency.format($0.int64Value) }
         switch editor.mode {
         case .amount:
-            if isPayer { return (String(localized: "Paid the bill"), false) }
+            if isPayer { return (paid, false) }
             if !editor.addsUp, editor.withoutValue.contains(where: { $0.id == person.id }) {
                 return (String(localized: "No amount"), true)
             }
@@ -224,7 +266,7 @@ enum SplitBillCopy {
             if isOut { return (String(localized: "Out"), false) }
             return (share ?? "—", false)
         default:
-            if isPayer { return (String(localized: "Paid the bill"), false) }
+            if isPayer { return (paid, false) }
             return (row.isIncluded ? String(localized: "In") : String(localized: "Out"), false)
         }
     }

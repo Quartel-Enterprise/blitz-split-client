@@ -17,13 +17,19 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
+// Why: a null name is "Ex-membro".
+class JsExpenseRowPayer(
+    val name: String?,
+    val isMe: Boolean,
+)
+
 // Why: amounts in the currency's minor unit and instants in epoch millis, as numbers JavaScript reads exactly.
 class JsExpenseRow(
     val id: String,
     val description: String,
     val spentAt: Double,
-    val payerName: String?,
-    val payerIsMe: Boolean,
+    // Why: this device's user first, then the group's order, then whoever left it.
+    val payers: Array<JsExpenseRowPayer>,
     val totalMinor: Double,
     val myBalanceMinor: Double?,
     val isPending: Boolean,
@@ -211,8 +217,13 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
     id = row.id,
     description = row.description,
     spentAt = row.spentAt.toDouble(),
-    payerName = row.payerName,
-    payerIsMe = row.payerIsMe,
+    payers = row.payers
+        .map {
+            JsExpenseRowPayer(
+                name = it.name,
+                isMe = it.isMe,
+            )
+        }.toTypedArray(),
     totalMinor = row.totalMinor.toDouble(),
     myBalanceMinor = row.myBalanceMinor?.toDouble(),
     isPending = row.isPending,

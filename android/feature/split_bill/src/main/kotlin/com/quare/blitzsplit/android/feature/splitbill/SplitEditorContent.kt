@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
@@ -99,6 +100,7 @@ internal fun SplitEditorContent(
         second = {
             SplitPeopleList(
                 editor = editor,
+                hasSeveralPayers = state.severalPayers != null,
                 rowMinHeight = rowMinHeight,
                 money = money,
                 onEvent = onEvent,
@@ -122,9 +124,11 @@ private fun SplitSummaryRow(
     editor: SplitEditor,
     money: MoneyFormatter,
 ) {
-    val payer = state.people.firstOrNull { it.id == editor.payerId }
+    val several = state.severalPayers
+    val payer = state.payer
     val description = state.description.trim()
     val paid = when {
+        several != null -> paidBySeveralOf(payerNamesOf(several))
         payer == null -> null
         payer.isMe && description.isEmpty() -> stringResource(R.string.split_bill_summary_you_paid_alone)
         payer.isMe -> stringResource(R.string.split_bill_summary_you_paid)
@@ -173,6 +177,7 @@ private fun SplitSummaryRow(
 @Composable
 private fun SplitPeopleList(
     editor: SplitEditor,
+    hasSeveralPayers: Boolean,
     rowMinHeight: Dp,
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
@@ -221,7 +226,11 @@ private fun SplitPeopleList(
                 row = row,
                 mode = editor.mode,
                 isIn = row.person.id in includedIds,
-                isPayer = row.person.id == editor.payerId,
+                paidLabel = when {
+                    row.person.id !in editor.payerIds -> null
+                    hasSeveralPayers -> R.string.split_bill_row_paid_part
+                    else -> R.string.split_bill_row_paid
+                },
                 isWithoutValue = row.person.id in withoutValueIds,
                 isNobodyIn = isNobodyIn,
                 shape = RoundedCornerShape(

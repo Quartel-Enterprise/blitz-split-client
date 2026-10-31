@@ -7,6 +7,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -75,6 +77,24 @@ class JsSplitEditor(
     val summary: Array<JsSplitFact>,
 )
 
+// Why: person is null for someone who left the group, "Ex-membro".
+class JsPayerAmountRow(
+    val memberId: String,
+    val person: JsBillPerson?,
+    val amountText: String,
+)
+
+// Why: "Várias pessoas pagaram", amounts in the currency's minor unit.
+class JsPayerAmounts(
+    val rows: Array<JsPayerAmountRow>,
+    val totalMinor: Double,
+    val paidMinor: Double,
+    val remainingMinor: Double,
+    val addsUp: Boolean,
+    val showsMismatch: Boolean,
+    val paying: Array<JsPayerAmountRow>,
+)
+
 // Why: changedAt in epoch millis, which the page writes as how long ago.
 class JsBillConflict(
     val changerName: String?,
@@ -100,7 +120,13 @@ class JsSplitBillState(
     val payer: JsBillPerson?,
     val payerIsMe: Boolean,
     val isPayerFormerMember: Boolean,
+    // Why: who paid, whom Dividir marks as keeping the cents.
+    val payerIds: Array<String>,
+    val severalPayers: JsPayerAmounts?,
+    // Why: "Quem pagou" is open, with payerSelection marked, or "Várias pessoas" while it is null.
+    val isPayerOpen: Boolean,
     val payerSelection: String?,
+    val payerAmounts: JsPayerAmounts?,
     val spentAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
     val spentDay: String,
@@ -149,7 +175,11 @@ class SplitBillPresenter(
                 payer = state.payer?.let(::toJsBillPerson),
                 payerIsMe = state.payerIsMe,
                 isPayerFormerMember = state.isPayerFormerMember,
-                payerSelection = state.payerSelection,
+                payerIds = state.payerIds.toTypedArray(),
+                severalPayers = state.severalPayers?.let(::toJsPayerAmounts),
+                isPayerOpen = state.payerSelection != null,
+                payerSelection = state.payerSelection?.memberId,
+                payerAmounts = state.payerAmounts?.let(::toJsPayerAmounts),
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
                 latestSpentAt = state.latestSpentAt.toDouble(),
@@ -232,6 +262,32 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnPayerDismissed)
     }
 
+    fun openSeveralPayers() {
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersClicked)
+    }
+
+    fun changePayerAmount(
+        memberId: String,
+        text: String,
+    ) {
+        viewModel.onEvent(SplitBillUiEvent.OnPayerAmountChanged(memberId, text))
+    }
+
+    // Why: the field reads the filtered text back in the same keystroke.
+    fun getPayerAmount(memberId: String): String = viewModel.uiState.value.payerAmounts
+        ?.rows
+        ?.firstOrNull { it.memberId == memberId }
+        ?.amountText
+        .orEmpty()
+
+    fun confirmSeveralPayers() {
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDone)
+    }
+
+    fun dismissSeveralPayers() {
+        viewModel.onEvent(SplitBillUiEvent.OnSeveralPayersDismissed)
+    }
+
     fun openSpentAt() {
         viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
     }
@@ -307,6 +363,22 @@ private fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     color = person.avatarColor.code,
     isMe = person.isMe,
     hasJoined = person.hasJoined,
+)
+
+private fun toJsPayerAmountRow(row: PayerAmountRow): JsPayerAmountRow = JsPayerAmountRow(
+    memberId = row.memberId,
+    person = row.person?.let(::toJsBillPerson),
+    amountText = row.amountText,
+)
+
+private fun toJsPayerAmounts(amounts: PayerAmounts): JsPayerAmounts = JsPayerAmounts(
+    rows = amounts.rows.map(::toJsPayerAmountRow).toTypedArray(),
+    totalMinor = amounts.totalMinor.toDouble(),
+    paidMinor = amounts.paidMinor.toDouble(),
+    remainingMinor = amounts.remainingMinor.toDouble(),
+    addsUp = amounts.addsUp,
+    showsMismatch = amounts.showsMismatch,
+    paying = amounts.paying.map(::toJsPayerAmountRow).toTypedArray(),
 )
 
 private fun toJsSplitRow(row: SplitRow): JsSplitRow = JsSplitRow(
