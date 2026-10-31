@@ -101,11 +101,11 @@ struct RegisterPaymentView: View {
 /// The words of the sheet, which follow who is recording the payment.
 private enum RegisterPaymentCopy {
     static func from(_ state: RegisterPaymentUiState) -> String {
-        state.from?.name ?? ""
+        PaymentCopy.name(state.from?.name)
     }
 
     static func to(_ state: RegisterPaymentUiState) -> String {
-        state.to?.name ?? ""
+        PaymentCopy.name(state.to?.name)
     }
 
     /// "Did Ana pay you?", "Did you pay Bruno?" or "Did Diego pay Bruno?".
@@ -172,6 +172,11 @@ private struct PaymentFaces: View {
     private func face(_ person: PaymentPerson?) -> some View {
         if let person {
             AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+        } else {
+            // Someone no longer in the group, a blank face as Saldos draws them
+            Circle()
+                .fill(.fill.tertiary)
+                .frame(width: size, height: size)
         }
     }
 }

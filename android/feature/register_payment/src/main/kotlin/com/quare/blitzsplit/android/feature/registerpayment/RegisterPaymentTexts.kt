@@ -5,13 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 
 // Why: "Ana te pagou?", "Você pagou Bruno?" or "Diego pagou Bruno?".
 @Composable
 internal fun titleOf(state: RegisterPaymentUiState): String {
-    val from = state.from?.name.orEmpty()
-    val to = state.to?.name.orEmpty()
+    val from = nameOf(state.from)
+    val to = nameOf(state.to)
     return when (state.kind) {
         PaymentKind.RECEIVED -> stringResource(R.string.register_payment_title_received, from)
         PaymentKind.PAID -> stringResource(R.string.register_payment_title_paid, to)
@@ -80,11 +81,16 @@ private fun pairTextOf(
     @StringRes between: Int,
 ): String {
     val amount = money.toText(amountMinor)
-    val from = state.from?.name.orEmpty()
-    val to = state.to?.name.orEmpty()
+    val from = nameOf(state.from)
+    val to = nameOf(state.to)
     return when (state.kind) {
         PaymentKind.RECEIVED -> stringResource(received, from, amount)
         PaymentKind.PAID -> stringResource(paid, to, amount)
         PaymentKind.BETWEEN_OTHERS -> stringResource(between, from, to, amount)
     }
 }
+
+// Why: "Ex-membro" for someone no longer in the group, whose debt can still be paid.
+@Composable
+internal fun nameOf(person: PaymentPerson?): String =
+    person?.name ?: stringResource(R.string.register_payment_former_member)

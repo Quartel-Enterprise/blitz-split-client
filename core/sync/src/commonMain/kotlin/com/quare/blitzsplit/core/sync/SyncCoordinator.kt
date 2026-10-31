@@ -246,11 +246,15 @@ class SyncCoordinator(
         hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney
     }.distinctUntilChanged()
 
-    // Why: the versions of the bills and the payments waiting to go up, which change with each one saved.
-    private fun observePendingMoneyVersions(): Flow<List<Long>> = combine(
+    /*
+     * Why: the versions of the bills and the payments waiting to go up, which change with each one saved. Kept apart,
+     * so a bill going up while a payment of the same version is saved still counts as a change.
+     */
+    private fun observePendingMoneyVersions(): Flow<Pair<List<Long>, List<Long>>> = combine(
         expenseRepository.observePendingVersions(),
         settlementRepository.observePendingVersions(),
-    ) { bills, payments -> bills + payments }
+        ::Pair,
+    )
 
     private suspend fun offerRecoveryCodeIfDue() {
         val account = accountRepository.observeAccount().first()

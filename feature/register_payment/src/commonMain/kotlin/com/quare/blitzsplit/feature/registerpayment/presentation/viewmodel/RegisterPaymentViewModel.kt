@@ -60,6 +60,9 @@ class RegisterPaymentViewModel(
     // Why: the debt is gone (paid elsewhere, the pair or the group gone) while another screen covered this one.
     private var isDebtGone = false
 
+    // Why: what Room said last, read again when a save fails, since the changes meanwhile were set aside.
+    private var latest: Pair<Group?, GroupBalances>? = null
+
     /*
      * Why: a sync may bring a payment or a bill that changes the debt while the form is open, settle it, or remove
      * either person or the whole group, which leaves nothing to pay.
@@ -130,21 +133,23 @@ class RegisterPaymentViewModel(
         group: Group?,
         balances: GroupBalances,
     ) {
+        latest = group to balances
         // Why: once saved, the debt drops by the payment; the form is on its way out and keeps what it shows.
         if (uiState.value.isSaving) return
-        val from = group?.members?.firstOrNull { it.id == route.fromMemberId }
-        val to = group?.members?.firstOrNull { it.id == route.toMemberId }
         val debtMinor = balances.debtOf(route.fromMemberId, route.toMemberId)
-        if (group == null || from == null || to == null || debtMinor == 0L) {
-            isDebtGone = true
+        isDebtGone = group == null || debtMinor == 0L
+        if (group == null || isDebtGone) {
             leave()
             return
         }
+        // Why: a debt with someone removed from the group stays until it is paid, "Ex-membro" on the form.
+        val from = group.members.firstOrNull { it.id == route.fromMemberId }
+        val to = group.members.firstOrNull { it.id == route.toMemberId }
         uiState.update {
             it.copy(
                 currency = group.currency,
-                from = toPerson(from),
-                to = toPerson(to),
+                from = from?.let(::toPerson),
+                to = to?.let(::toPerson),
                 debtMinor = debtMinor,
                 // Why: until something is typed, the field follows the whole debt as a sync changes it.
                 amountText = if (it.hasEditedAmount) it.amountText else toAmountText(debtMinor, group.currency),
@@ -194,6 +199,7 @@ class RegisterPaymentViewModel(
                 leave()
             }.onFailure {
                 uiState.update { it.copy(isSaving = false) }
+                latest?.let { (group, balances) -> handle(group, balances) }
                 uiAction.emit(RegisterPaymentUiAction.ShowSaveError)
             }
         }
@@ -202,7 +208,7 @@ class RegisterPaymentViewModel(
     private fun toPerson(member: GroupMember): PaymentPerson = PaymentPerson(
         id = member.id,
         name = member.name,
-        initials = Initials.of(member.name),
+        initials = Initials.ofMember(member.name, member.isMe),
         avatarColor = member.avatarColor,
         isMe = member.isMe,
     )

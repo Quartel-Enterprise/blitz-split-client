@@ -457,6 +457,60 @@ class GroupBalancesTest {
         assertNull(creditor)
     }
 
+    @Test
+    fun `GIVEN no bills nor payments WHEN reading the balance or null of a member THEN there is none`() {
+        // Given
+        val balances = GroupBalances.of(
+            expenses = emptyList(),
+            settlements = emptyList(),
+        )
+
+        // When
+        val balance = balances.balanceOrNull(ANA)
+
+        // Then
+        assertNull(balance)
+    }
+
+    @Test
+    fun `GIVEN only a payment WHEN reading the balance or null of the payer THEN gets what the payment moved`() {
+        // Given
+        val balances = GroupBalances.of(
+            expenses = emptyList(),
+            settlements = listOf(
+                payment(
+                    from = ANA,
+                    to = PIERRE,
+                    amountMinor = 40L,
+                ),
+            ),
+        )
+
+        // When
+        val balance = balances.balanceOrNull(ANA)
+
+        // Then
+        assertEquals(
+            MemberBalance(
+                receivesMinor = 40L,
+                owesMinor = 0L,
+            ),
+            balance,
+        )
+    }
+
+    @Test
+    fun `GIVEN bills WHEN reading the balance or null of no member THEN there is none`() {
+        // Given
+        val balances = GroupBalances.of(listOf(anaOwesPierre100), settlements = emptyList())
+
+        // When
+        val balance = balances.balanceOrNull(null)
+
+        // Then
+        assertNull(balance)
+    }
+
     private val anaOwesPierre100 = bill(
         id = "dinner",
         payers = listOf(paid(PIERRE, 100L)),

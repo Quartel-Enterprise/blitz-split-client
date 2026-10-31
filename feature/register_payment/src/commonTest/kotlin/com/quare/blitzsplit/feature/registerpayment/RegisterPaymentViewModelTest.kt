@@ -241,7 +241,7 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(PaymentPerson(ANA, "Ana", "AN", AvatarColor.PEACH, isMe = false), state.from)
-            assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "PV", AvatarColor.BLUE, isMe = true), state.to)
+            assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "P", AvatarColor.BLUE, isMe = true), state.to)
             assertEquals(PaymentKind.RECEIVED, state.kind)
         }
 
@@ -257,7 +257,7 @@ class RegisterPaymentViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "PV", AvatarColor.BLUE, isMe = true), state.from)
+        assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "P", AvatarColor.BLUE, isMe = true), state.from)
         assertEquals(PaymentPerson(BRUNO, "Bruno", "BR", AvatarColor.GREEN, isMe = false), state.to)
         assertEquals(PaymentKind.PAID, state.kind)
         assertEquals(5_000L, state.debtMinor)
@@ -956,6 +956,57 @@ class RegisterPaymentViewModelTest {
         }
 
     @Test
+    fun `GIVEN a sync settling the whole debt while saving WHEN the save fails THEN closes it`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                recordError = IllegalStateException("disk full"),
+                recordGate = gate,
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            settlements.settlements.update {
+                it + settlement(
+                    from = ANA,
+                    to = PIERRE,
+                    amountMinor = 16_230L,
+                )
+            }
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a sync lowering the debt while saving WHEN the save fails THEN shows the new debt`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                recordError = IllegalStateException("disk full"),
+                recordGate = gate,
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            settlements.settlements.update {
+                it + settlement(
+                    from = ANA,
+                    to = PIERRE,
+                    amountMinor = 6_230L,
+                )
+            }
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(10_000L, viewModel.uiState.value.debtMinor)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN no debt between the pair WHEN the screen opens THEN closes it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -1009,31 +1060,35 @@ class RegisterPaymentViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN the payer leaves the group THEN closes it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN the screen open WHEN the payer leaves the group THEN stays open with a former member`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        removeMember(ANA)
+            // When
+            removeMember(ANA)
 
-        // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertNull(viewModel.uiState.value.from)
+        }
 
     @Test
-    fun `GIVEN the screen open WHEN the receiver leaves the group THEN closes it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            from = DIEGO,
-            to = BRUNO,
-        )
+    fun `GIVEN the screen open WHEN the receiver leaves the group THEN stays open with a former member`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = DIEGO,
+                to = BRUNO,
+            )
 
-        // When
-        removeMember(BRUNO)
+            // When
+            removeMember(BRUNO)
 
-        // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertNull(viewModel.uiState.value.to)
+        }
 
     @Test
     fun `GIVEN the screen open WHEN the group is deleted THEN closes it`() = runTest(testDispatcher) {

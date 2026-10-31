@@ -168,8 +168,13 @@ class GroupDetailViewModel(
                     balances = balances,
                 ),
                 days = days,
-                // Why: a payment someone else undid meanwhile has nothing left to delete.
-                paymentToDelete = it.paymentToDelete?.takeIf { payment -> settlements.any { s -> s.id == payment.id } },
+                // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
+                paymentToDelete = it.paymentToDelete?.let { asked ->
+                    days.flatMap { day -> day.entries }.filterIsInstance<PaymentRow>().firstOrNull { row ->
+                        row.id ==
+                            asked.id
+                    }
+                },
                 isLoaded = true,
             )
         }

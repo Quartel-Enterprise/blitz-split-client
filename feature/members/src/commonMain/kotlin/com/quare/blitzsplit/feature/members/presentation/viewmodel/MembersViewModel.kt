@@ -190,7 +190,7 @@ class MembersViewModel(
             state.copy(
                 groupName = group.name,
                 currency = group.currency,
-                myBalance = meId?.takeIf { balances.hasBills }?.let(balances::balanceOf),
+                myBalance = balances.balanceOrNull(meId),
                 isEveryoneSettled = balances.isEveryoneSettled,
                 displayLink = group.inviteCode?.let(InviteLink::of)?.let(InviteLink::displayOf),
                 members = members,
@@ -236,7 +236,7 @@ class MembersViewModel(
                 )
             }
         },
-        balance = member.id.takeIf { balances.hasBills }?.let(balances::balanceOf),
+        balance = balances.balanceOrNull(member.id),
     )
 
     // Why: "Acertar" on the balance card: this person pays whoever they owe the most.

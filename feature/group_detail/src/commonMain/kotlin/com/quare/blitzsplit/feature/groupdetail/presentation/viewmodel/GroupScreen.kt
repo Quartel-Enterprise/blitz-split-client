@@ -173,7 +173,7 @@ internal fun groupHeaderOf(
         memberCount = group.members.size,
         notJoinedCount = group.members.count { !it.hasJoined },
         totalSpentMinor = totalSpentMinor,
-        myBalance = meId?.takeIf { balances.hasBills || balances.debts.isNotEmpty() }?.let(balances::balanceOf),
+        myBalance = balances.balanceOrNull(meId),
         isEveryoneSettled = balances.isEveryoneSettled,
     )
 }

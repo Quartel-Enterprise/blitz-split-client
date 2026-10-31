@@ -14,6 +14,13 @@ data class GroupBalances(
     val isEveryoneSettled: Boolean
         get() = hasBills && debts.isEmpty()
 
+    /*
+     * Why: "Seu saldo neste grupo" and each member's balance, also when only payments are left (their bill was
+     * deleted), the same on Despesas, Saldos and Membros; null while the group never had anything to owe.
+     */
+    fun balanceOrNull(memberId: String?): MemberBalance? =
+        memberId?.takeIf { hasBills || debts.isNotEmpty() }?.let(::balanceOf)
+
     fun balanceOf(memberId: String): MemberBalance = MemberBalance(
         receivesMinor = debts.filter { it.toMemberId == memberId }.sumOf { it.amountMinor },
         owesMinor = debts.filter { it.fromMemberId == memberId }.sumOf { it.amountMinor },

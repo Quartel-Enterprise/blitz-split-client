@@ -7,7 +7,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 
 data class RegisterPaymentUiState(
     val currency: GroupCurrency,
-    // Why: null until Room is read.
+    // Why: null until Room is read, and for someone no longer in the group ("Ex-membro").
     val from: PaymentPerson?,
     val to: PaymentPerson?,
     // Why: "Ana te deve R$ 162,30", what the pair owes now, which a payment never goes past.

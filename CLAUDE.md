@@ -102,8 +102,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and "Quando" (date and time, never after now). "Acertar" opens it too: paying through the receiver's Pix key
     (4.5) comes later, since other members' keys never reach the device. It is a bottom sheet on an Android phone
     and a dialog on its tablets, a sheet on iOS and macOS, a dialog on the web (a drawer on a phone). It works
-    offline. A payment is never edited: "Pagamento de Ana registrado." offers "Desfazer", and the payment shows in
-    Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a tombstone, offline too). No
+    offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Ex-membro"
+    and closes only once the debt or the group is gone. A payment is never edited: "Pagamento de Ana registrado."
+    offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
+    tombstone, offline too). No
     notifications nor Atividade yet, and no warning when a bill is edited after a payment (7.4b).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo; the last two
     answer "Em breve". "Editar grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping

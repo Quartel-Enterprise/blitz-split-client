@@ -96,13 +96,19 @@ function personName(person: JsPaymentPerson | null | undefined): string {
   return nameOrFormer(person?.name)
 }
 
+/** A member's face, blank for someone no longer in the group, as Saldos draws them. */
+function PersonFace({ person }: { person: JsPaymentPerson | null | undefined }) {
+  if (!person) return <span className="size-10 rounded-full bg-muted" />
+  return <Avatar initial={person.initials} color={person.color} className="size-10 text-sm" />
+}
+
 /** Whoever paid → whoever received, at the top. */
 function PairFaces({ from, to }: { from: JsPaymentPerson | null | undefined; to: JsPaymentPerson | null | undefined }) {
   return (
     <span aria-hidden className="mb-1 flex items-center gap-2">
-      {from && <Avatar initial={from.initials} color={from.color} className="size-10 text-sm" />}
+      <PersonFace person={from} />
       <ArrowRight className="size-4 text-muted-foreground" />
-      {to && <Avatar initial={to.initials} color={to.color} className="size-10 text-sm" />}
+      <PersonFace person={to} />
     </span>
   )
 }

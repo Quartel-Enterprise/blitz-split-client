@@ -1,12 +1,15 @@
 package com.quare.blitzsplit.android.feature.registerpayment
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Check
@@ -142,7 +145,15 @@ private fun PaymentHeader(
 
 @Composable
 private fun PersonFaceBadge(person: PaymentPerson?) {
-    if (person == null) return
+    // Why: a blank face for someone no longer in the group, as Saldos draws them.
+    if (person == null) {
+        Box(
+            modifier = Modifier
+                .size(faceSize)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape),
+        )
+        return
+    }
     AvatarBadge(
         initial = person.initials,
         color = person.avatarColor,
@@ -213,7 +224,7 @@ private fun MethodSection(
 @Composable
 private fun InfoLine(state: RegisterPaymentUiState) {
     val forOthers = if (state.kind == PaymentKind.BETWEEN_OTHERS) {
-        stringResource(R.string.register_payment_for_others, state.from?.name.orEmpty(), state.to?.name.orEmpty())
+        stringResource(R.string.register_payment_for_others, nameOf(state.from), nameOf(state.to))
     } else {
         null
     }
