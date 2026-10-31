@@ -8,7 +8,7 @@ data class JoinPickUiState(
     val selectedMemberId: String?,
     // Why: "Bruno acabou de entrar por outro aparelho", once someone else joined as the picked member first.
     val takenName: String?,
-    // Why: "Se era você, fale com o Pierre"; null once the creator's account was deleted.
+    // Why: "Se era você, peça para Pierre liberar o nome em Membros"; null once the creator's account was deleted.
     val creatorName: String?,
     // Why: the "Entrar com outro nome" sheet, open while not null.
     val newMember: NewMemberDraft?,

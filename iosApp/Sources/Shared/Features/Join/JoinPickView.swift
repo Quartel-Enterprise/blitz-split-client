@@ -123,7 +123,7 @@ private struct JoinPickList: View {
                             Text("\(takenName) just joined from another device")
                                 .font(.headline)
                             if let creatorName = state.creatorName {
-                                Text("If it was you, talk to \(creatorName).")
+                                Text("If it was you, ask \(creatorName) to release the name in Members.")
                             } else {
                                 Text("If it was you, talk to whoever invited you.")
                             }

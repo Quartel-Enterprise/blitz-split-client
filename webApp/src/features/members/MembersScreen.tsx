@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, ChevronRight, CircleCheck, Copy, EllipsisVertical, Link2, Pencil, Share2, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, Check, ChevronRight, CircleCheck, Copy, EllipsisVertical, Link2, LockOpen, Pencil, Share2, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
 import {
   MembersPresenter,
   type JsMemberBalance,
@@ -31,7 +31,8 @@ const personalLinkId = 'personal-link'
 
 /**
  * "Membros", the group's tab beside Despesas and Saldos: who is in it and who joined, the invite link, and each
- * person's options (rename, a personal invite link, and removing someone who hasn't joined).
+ * person's options (rename, a personal invite link, removing someone who hasn't joined, and, for the group's creator,
+ * releasing the name of someone who joined).
  */
 export function MembersScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new MembersPresenter(route))
@@ -43,6 +44,8 @@ export function MembersScreen({ route }: { route: JsRoute }) {
       sharePersonalLink(action.link, action.memberName ?? '', action.groupName ?? '')
     } else if (action.type === 'change-error') {
       toast(t('members_changeError'))
+    } else if (action.type === 'release-error') {
+      toast(t('members_releaseError'))
     }
   })
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
@@ -104,6 +107,7 @@ export function MembersScreen({ route }: { route: JsRoute }) {
       </main>
       {state.editor && <MemberNameDialog presenter={presenter} editor={state.editor} />}
       {state.memberToRemoveName != null && <RemoveMemberDialog presenter={presenter} name={state.memberToRemoveName} />}
+      {state.memberToReleaseName != null && <ReleaseMemberDialog presenter={presenter} name={state.memberToReleaseName} isReleasing={state.isReleasing} />}
       {state.personalInvite && <PersonalInviteDialog presenter={presenter} invite={state.personalInvite} groupName={state.groupName} />}
     </div>
   )
@@ -184,6 +188,12 @@ function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; 
           {!member.isMe && (
             <>
               <DropdownMenuSeparator />
+              {member.canBeReleased && (
+                <DropdownMenuItem onSelect={() => presenter.release(member.id)}>
+                  <LockOpen />
+                  {t('members_release')}
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem variant="destructive" disabled={!member.canBeRemoved} onSelect={() => presenter.remove(member.id)} className="items-start">
                 <Trash2 className="mt-0.5" />
                 <span className="flex flex-col">
@@ -287,6 +297,20 @@ function RemoveMemberDialog({ presenter, name }: { presenter: MembersPresenter; 
       confirmLabel={t('members_removeConfirm')}
       onConfirm={() => presenter.confirmRemove()}
       onDismiss={() => presenter.dismissRemove()}
+    />
+  )
+}
+
+/** "Liberar nome" waits for the server with the dialog open, since it only works online. */
+function ReleaseMemberDialog({ presenter, name, isReleasing }: { presenter: MembersPresenter; name: string; isReleasing: boolean }) {
+  return (
+    <ConfirmDialog
+      title={t('members_releaseTitle', { name })}
+      description={t('members_releaseMessage', { name })}
+      confirmLabel={t('members_releaseConfirm')}
+      isBusy={isReleasing}
+      onConfirm={() => presenter.confirmRelease()}
+      onDismiss={() => presenter.dismissRelease()}
     />
   )
 }

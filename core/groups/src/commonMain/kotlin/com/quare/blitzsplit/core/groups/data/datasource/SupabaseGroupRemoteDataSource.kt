@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
@@ -55,6 +56,12 @@ class SupabaseGroupRemoteDataSource(
             parameters = params,
         ).decodeAs<JoinGroupResultDto>()
 
+    override suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto? = postgrest
+        .rpc(
+            function = RELEASE_MEMBER,
+            parameters = params,
+        ).decodeAs<GroupMemberDto?>()
+
     /*
      * Why: page by page, since the server answers at most max_rows per request, until a page comes back empty: a
      * short page proves nothing if max_rows is below the page asked for. A row missing from the answer would read as
@@ -86,6 +93,7 @@ class SupabaseGroupRemoteDataSource(
         const val MEMBERS = "group_members"
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
+        const val RELEASE_MEMBER = "release_member"
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L

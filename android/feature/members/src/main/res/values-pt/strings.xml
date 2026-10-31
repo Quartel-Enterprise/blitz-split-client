@@ -34,6 +34,11 @@
     <string name="members_remove_title">Remover %s do grupo?</string>
     <string name="members_remove_message">%s ainda não entrou. Dá para adicionar de novo depois.</string>
     <string name="members_remove_confirm">Remover</string>
+    <string name="members_release">Liberar nome</string>
+    <string name="members_release_title">Liberar o nome %s?</string>
+    <string name="members_release_message">Quem entrou como %1$s sai do grupo. O nome, a cor e as contas de %1$s ficam, e dá para escolher %1$s de novo pelo link do grupo.</string>
+    <string name="members_release_confirm">Liberar</string>
+    <string name="members_release_error">Não deu para liberar o nome. Confira a internet e tente de novo.</string>
     <string name="members_add">Adicionar pessoa</string>
     <string name="members_name_label">Nome</string>
     <string name="members_name_taken">%s já está no grupo. Use um apelido para diferenciar.</string>

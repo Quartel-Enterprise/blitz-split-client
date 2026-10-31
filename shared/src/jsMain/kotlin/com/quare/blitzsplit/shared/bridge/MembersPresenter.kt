@@ -30,6 +30,8 @@ class JsMembersMember(
     val balance: JsMemberBalance?,
     // Why: "Carla tem saldo em aberto" under the disabled "Remover do grupo".
     val hasOpenBalance: Boolean,
+    // Why: "Liberar nome", for the group's creator on someone else who joined.
+    val canBeReleased: Boolean,
 )
 
 class JsPersonalInvite(
@@ -40,7 +42,7 @@ class JsPersonalInvite(
     val isLinkCopied: Boolean,
 )
 
-// Why: "change-error", a toast in the page's words; "copy" and "share-personal" with the link.
+// Why: "change-error" and "release-error", toasts in the page's words; "copy" and "share-personal" with the link.
 class JsMembersAction(
     val type: String,
     val link: String?,
@@ -68,6 +70,10 @@ class JsMembersState(
     val editor: JsMemberNameEditor?,
     // Why: the name in "Remover Carla do grupo?", null while nobody is about to be removed.
     val memberToRemoveName: String?,
+    // Why: the name in "Liberar o nome Carla?", null while nobody is about to be released.
+    val memberToReleaseName: String?,
+    // Why: "Liberar" waits for the server with the confirmation open.
+    val isReleasing: Boolean,
     // Why: the "Convite pessoal" sheet, null while closed.
     val personalInvite: JsPersonalInvite?,
     val isLoaded: Boolean,
@@ -101,6 +107,8 @@ class MembersPresenter(
                 joinedCount = state.joinedCount,
                 editor = state.editor?.let(::toJsMemberNameEditor),
                 memberToRemoveName = state.memberToRemove?.name,
+                memberToReleaseName = state.memberToRelease?.name,
+                isReleasing = state.isReleasing,
                 personalInvite = state.personalInvite?.let(::toJsPersonalInvite),
                 isLoaded = state.isLoaded,
                 joinedAs = state.joinedAs,
@@ -118,6 +126,8 @@ class MembersPresenter(
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 MembersUiAction.ShowChangeError -> JsMembersAction("change-error", null, null, null)
+
+                MembersUiAction.ShowReleaseError -> JsMembersAction("release-error", null, null, null)
 
                 is MembersUiAction.CopyLink -> JsMembersAction("copy", action.link, null, null)
 
@@ -175,6 +185,18 @@ class MembersPresenter(
 
     fun dismissRemove() {
         viewModel.onEvent(MembersUiEvent.OnRemoveDismissed)
+    }
+
+    fun release(memberId: String) {
+        viewModel.onEvent(MembersUiEvent.OnReleaseClicked(memberId))
+    }
+
+    fun confirmRelease() {
+        viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+    }
+
+    fun dismissRelease() {
+        viewModel.onEvent(MembersUiEvent.OnReleaseDismissed)
     }
 
     fun changeDraft(draft: String) {
@@ -241,6 +263,7 @@ private fun toJsMembersMember(member: MembersMember): JsMembersMember = JsMember
     isPersonalInviteReady = member.isPersonalInviteReady,
     balance = member.balance?.let(::toJsMemberBalance),
     hasOpenBalance = member.hasOpenBalance,
+    canBeReleased = member.canBeReleased,
 )
 
 private fun toJsPersonalInvite(invite: PersonalInvite): JsPersonalInvite = JsPersonalInvite(

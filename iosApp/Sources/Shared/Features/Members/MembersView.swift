@@ -6,6 +6,7 @@ import SwiftUI
 final class MembersModel {
     private(set) var state: MembersUiState
     private(set) var changeErrorCount = 0
+    private(set) var releaseErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<MembersViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -20,6 +21,7 @@ final class MembersModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is MembersUiActionShowChangeError: self?.changeErrorCount += 1
+            case is MembersUiActionShowReleaseError: self?.releaseErrorCount += 1
             case let copy as MembersUiActionCopyLink: Pasteboard.copy(copy.link)
             // The personal invite's ShareLink shares the link itself: a share sheet can't be opened from code.
             default: break
@@ -54,7 +56,8 @@ final class MembersModel {
 /// "Members": who is in the group and who joined, the group's tab next to Expenses, with the same tabs on top (in
 /// the toolbar on the Mac). A tap on a person opens their options: rename, a personal invite, which joins straight
 /// in as someone nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing
-/// allows. "Your balance in this group" heads the list and each person shows theirs.
+/// allows. The group's creator may also release the name of someone who joined, online only. "Your balance in this
+/// group" heads the list and each person shows theirs.
 struct MembersView: View {
     let route: RouteMembers
 
@@ -112,8 +115,22 @@ struct MembersView: View {
         } message: { member in
             Text("\(member.name) hasn't joined yet. You can add them again later.")
         }
+        .alert(releaseTitle, isPresented: releaseShown, presenting: model?.state.memberToRelease) { member in
+            Button("Release", role: .destructive) {
+                model?.send(MembersUiEventOnReleaseConfirmed.shared)
+            }
+            Button("Cancel", role: .cancel) {
+                model?.send(MembersUiEventOnReleaseDismissed.shared)
+            }
+        } message: { member in
+            Text("Whoever joined as \(member.name) leaves the group. \(member.name)'s name, color and bills stay, and \(member.name) can be picked again through the group's link.")
+        }
         // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
         .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
+        .glassToast(
+            "Couldn't release the name. Check your connection and try again.",
+            trigger: model?.releaseErrorCount ?? 0,
+        )
         .recordedPaymentNotice(
             model?.state.recordedPayment,
             onUndo: { model?.send(MembersUiEventOnUndoPaymentClicked.shared) },
@@ -162,6 +179,21 @@ struct MembersView: View {
             get: { model?.state.memberToRemove != nil },
             set: { shown in
                 if !shown { model?.send(MembersUiEventOnRemoveDismissed.shared) }
+            },
+        )
+    }
+
+    private var releaseTitle: Text {
+        guard let member = model?.state.memberToRelease else { return Text(verbatim: "") }
+        return Text("Release \(member.name)'s name?")
+    }
+
+    /// An alert closes on any of its buttons, so once "Release" is on its way the member's row shows the wait instead.
+    private var releaseShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.memberToRelease != nil && model?.state.isReleasing == false },
+            set: { shown in
+                if !shown { model?.send(MembersUiEventOnReleaseDismissed.shared) }
             },
         )
     }
@@ -227,7 +259,11 @@ private struct MembersList: View {
             }
             Section("People") {
                 ForEach(state.members, id: \.id) { member in
-                    MemberRow(member: member, currency: state.currency) { model.send($0) }
+                    MemberRow(
+                        member: member,
+                        currency: state.currency,
+                        isReleasing: state.isReleasing && state.memberToRelease?.id == member.id,
+                    ) { model.send($0) }
                 }
             }
         }
@@ -287,6 +323,8 @@ private struct JoinedSection: View {
 private struct MemberRow: View {
     let member: MembersMember
     let currency: GroupCurrency
+    /// "Release" waits for the server here, since the alert is gone by then.
+    let isReleasing: Bool
     let send: (any MembersUiEvent) -> Void
 
     var body: some View {
@@ -309,6 +347,17 @@ private struct MemberRow: View {
             }
             if !member.isMe {
                 Divider()
+                if member.canBeReleased {
+                    Button {
+                        send(MembersUiEventOnReleaseClicked(memberId: member.id))
+                    } label: {
+                        #if os(macOS)
+                        Label("Release name…", systemImage: "lock.open")
+                        #else
+                        Label("Release name", systemImage: "lock.open")
+                        #endif
+                    }
+                }
                 Button(role: .destructive) {
                     send(MembersUiEventOnRemoveClicked(memberId: member.id))
                 } label: {
@@ -352,7 +401,10 @@ private struct MemberRow: View {
                     MemberBalanceText(balance: balance, currency: currency)
                         .font(.footnote.weight(.semibold))
                 }
-                if member.hasJoined {
+                if isReleasing {
+                    ProgressView()
+                        .controlSize(.small)
+                } else if member.hasJoined {
                     Image(systemName: "checkmark")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(Palette.accent)

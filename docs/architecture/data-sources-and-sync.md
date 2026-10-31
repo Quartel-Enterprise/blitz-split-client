@@ -154,8 +154,16 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   (`claimUnowned`). A member is just a name: `userId` stays null until someone picks that member from the invite
   link, and the server never lets a client take over a member that has an account. The server keeps the newer row
   too, with the same trigger as the keys. The download reads every group and member page by page and deletes the
-  synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay. When an account is
-  deleted, the server unlinks it from its groups and deletes the groups nobody with an account is left in.
+  synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay, except a group that went
+  up once (it has its invite code): the server would refuse its changes now, so it leaves with its members, bills and
+  payments. When an account is deleted, the server unlinks it from its groups and deletes the groups nobody with an
+  account is left in.
+  - **Releasing a member** ("Liberar nome"): the group's creator turns a member someone joined as back into a name,
+    online only, through the `release_member` RPC, which also gives the member a new personal invite code. The
+    device stores the member as the RPC answers it (`GroupRepository.requestMemberRelease`). The released account no longer
+    sees the group, so its devices drop it on their next download, pending changes included. A push only ever sends
+    this device's own account as a member's `userId` (`GroupMapper.toDto`): the server keeps a joined member's
+    account anyway, and refuses, with the whole upsert, an account the member no longer has.
   - **Removing a member**: only a member nobody has joined as can be removed, on the server too (its delete policy
     asks for a null `user_id`). The device marks the row `isRemoved` and pending, so the UIs hide it at once; the
     push deletes the removed members on the server after the upserts, then drops their rows

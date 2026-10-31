@@ -35,7 +35,7 @@
     <string name="join_pick_title">Who are you in the group?</string>
     <string name="join_pick_subtitle">Pick your name. You\'ll see the expenses already added for that person.</string>
     <string name="join_pick_taken_title">%s just joined from another device</string>
-    <string name="join_pick_taken_message">If it was you, talk to %s.</string>
+    <string name="join_pick_taken_message">If it was you, ask %s to release the name in Members.</string>
     <string name="join_pick_taken_message_no_creator">If it was you, talk to whoever invited you.</string>
     <string name="join_pick_not_joined">Haven\'t joined yet</string>
     <string name="join_pick_joined">Already in the group</string>

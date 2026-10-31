@@ -14,4 +14,7 @@ sealed interface MembersUiAction {
 
     // Why: the device couldn't save the change, which is rare enough to just say so.
     data object ShowChangeError : MembersUiAction
+
+    // Why: releasing a name needs the server, so it fails offline.
+    data object ShowReleaseError : MembersUiAction
 }

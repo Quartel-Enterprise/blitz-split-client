@@ -98,6 +98,7 @@ class ObserveGroupUseCaseTest {
         members = emptyList(),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = true,
     )
     private val home = Group(
         id = "group-2",
@@ -108,6 +109,7 @@ class ObserveGroupUseCaseTest {
         members = emptyList(),
         isPending = false,
         inviteCode = "Zx9Yw8Vu",
+        isCreatedByMe = true,
     )
 
     private fun prepareScenario(storedGroups: List<Group>) {
