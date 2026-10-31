@@ -55,10 +55,14 @@ final class GroupsModel {
     /// Pulled down: asks for a sync and waits until the shared code says it ended (at once offline).
     func refresh() async {
         send(GroupsUiEventOnRefresh.shared)
-        // The state that says it started arrives through the watcher, a moment after the event
-        try? await Task.sleep(for: .milliseconds(150))
-        while state.isRefreshing {
-            try? await Task.sleep(for: .milliseconds(100))
+        // The view model's own state, which the event already set, rather than the watcher's copy that follows it.
+        // A cancelled pull stops waiting: Task.sleep then throws at once, which would otherwise spin here.
+        while (holder.viewModel.uiState.value as! GroupsUiState).isRefreshing {
+            do {
+                try await Task.sleep(for: .milliseconds(100))
+            } catch {
+                return
+            }
         }
     }
 

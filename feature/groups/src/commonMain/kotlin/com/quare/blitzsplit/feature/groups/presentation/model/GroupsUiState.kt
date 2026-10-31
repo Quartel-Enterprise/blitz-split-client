@@ -49,14 +49,17 @@ data class GroupsUiState(
 
     // Why: "Em aberto · 4", the groups where somebody still owes or nothing was spent yet.
     val openGroups: List<GroupRow>
-        get() = groups.filter { !it.isSettled && matchesFilter(it) }
+        get() = filteredGroups.filter { !it.isSettled }
 
     // Why: "Quitados · 1", the groups where everybody settled.
     val settledGroups: List<GroupRow>
-        get() = groups.filter { it.isSettled && matchesFilter(it) }
+        get() = filteredGroups.filter { it.isSettled }
 
-    private fun matchesFilter(row: GroupRow): Boolean {
-        val query = GroupNameFilter.toFolded(filterQuery.trim())
-        return query.isEmpty() || GroupNameFilter.toFolded(row.name).contains(query)
-    }
+    // Why: the query is folded once, not once per row.
+    private val filteredGroups: List<GroupRow>
+        get() {
+            val query = GroupNameFilter.toFolded(filterQuery.trim())
+            if (query.isEmpty()) return groups
+            return groups.filter { GroupNameFilter.toFolded(it.name).contains(query) }
+        }
 }

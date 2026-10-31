@@ -7,10 +7,13 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 data class GroupsSummary(
     val totals: List<BalanceTotal>,
 ) {
-    // Why: "a receber, somando os grupos" or "a pagar, somando os grupos", from the first currency's net.
+    /*
+     * Why: "a receber, somando os grupos" or "a pagar, somando os grupos", from the first currency with a net, the
+     * first amount the card shows: a zero currency isn't drawn, so it can't call the card "quitado".
+     */
     val kind: GroupBalanceKind
         get() {
-            val net = totals.firstOrNull()?.netMinor ?: 0L
+            val net = totals.firstOrNull { it.netMinor != 0L }?.netMinor ?: 0L
             return when {
                 net > 0 -> GroupBalanceKind.TO_RECEIVE
                 net < 0 -> GroupBalanceKind.YOU_OWE

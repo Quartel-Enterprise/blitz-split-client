@@ -1690,6 +1690,38 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN only the second currency has a net WHEN the groups open THEN the summary is to receive`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(id = "home"),
+                    trio(id = "work"),
+                    trio(
+                        id = "trip",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "e",
+                        groupId = "trip",
+                        paidBy = "Pierre",
+                        amountMinor = 600L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val summary = viewModel.uiState.value.summary
+
+            // Then
+            assertEquals(GroupCurrency.BRL, summary.totals.first().currency)
+            assertEquals(GroupBalanceKind.TO_RECEIVE, summary.kind)
+        }
+
+    @Test
     fun `GIVEN nothing to receive WHEN tapping A receber THEN does nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(

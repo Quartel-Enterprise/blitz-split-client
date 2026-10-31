@@ -89,7 +89,7 @@ private struct GroupsSummaryCards: View {
                 label: "Overall balance",
                 amounts: GroupsCopy.amounts(summary.totals) { $0.netMinor },
                 caption: GroupsCopy.summaryHint(summary.kind),
-                color: GroupsCopy.amountColor(summary.totals.first?.netMinor ?? 0),
+                color: GroupsCopy.amountColor(summary.totals.first { $0.netMinor != 0 }?.netMinor ?? 0),
                 isEnabled: true,
             ) {
                 send(GroupsUiEventOnBalancesTabClicked.shared)

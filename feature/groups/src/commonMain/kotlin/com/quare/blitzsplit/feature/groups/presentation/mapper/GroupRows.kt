@@ -13,7 +13,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import kotlinx.datetime.daysUntil
 
-// Why: three faces on a row, the rest "+N"; "1 semana" up to "4 semanas", and from the 28th day on, the date.
+// Why: three faces on a row, the rest "+N"; "1 semana" up to "3 semanas", and from the 28th day on, the date.
 private const val MAX_FACES = 3
 private const val DAYS_IN_WEEK = 7
 private const val MAX_WEEKS = 4

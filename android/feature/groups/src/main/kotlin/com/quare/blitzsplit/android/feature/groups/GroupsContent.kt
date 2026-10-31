@@ -226,9 +226,10 @@ private fun GroupsListPane(
     ) {
         LazyColumn(
             state = listState,
+            // Why: the cap comes before fillMaxSize, which would otherwise fix the width to the whole pane.
             modifier = Modifier
-                .fillMaxSize()
-                .then(if (layout.isTablet) Modifier.widthIn(max = 560.dp) else Modifier),
+                .then(if (layout.isTablet) Modifier.widthIn(max = 560.dp) else Modifier)
+                .fillMaxSize(),
             contentPadding = PaddingValues(
                 start = horizontalPaddingOf(layout),
                 end = horizontalPaddingOf(layout),
