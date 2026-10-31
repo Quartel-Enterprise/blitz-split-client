@@ -66,7 +66,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iOS, "Trocar link…" in the ⋯ menu on macOS, and "Alguém que não devia tem o link? Trocar link" below the link on
     the web. It asks "Trocar o link do convite?" first, then shows the new link and QR code right away; the old link
     and every personal link not used yet stop working (the "invite no longer valid" screen), whoever joined stays, and the other
-    members' devices get the new code on their next sync. A server error keeps the old link and says so. Nobody may
+    members' devices get the new code on their next sync. A server error says so and keeps the link shown until a sync brings the server's. Nobody may
     change it once the creator's account is deleted.
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the

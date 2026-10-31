@@ -6,7 +6,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
-import com.quare.blitzsplit.core.groups.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.SyncState
@@ -15,6 +14,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteMember
@@ -125,13 +125,18 @@ class InviteViewModel(
         isSyncFailed: Boolean,
     ) {
         val link = group.inviteCode?.let(InviteLink::of)
+        /*
+         * Why: encoded again only when the link changes, not on every edit of the group, and outside update, which
+         * may run its block again.
+         */
+        val current = uiState.value
+        val qrCode = if (link == current.link) current.qrCode else link?.let { encodeQrCode(it) }
         uiState.update { state ->
             val isSameLink = link == state.link
             val shown = state.copy(
                 groupName = group.name,
                 link = link,
-                // Why: encoded again only when the link changes, not on every edit of the group.
-                qrCode = if (isSameLink) state.qrCode else link?.let { encodeQrCode(it) },
+                qrCode = qrCode,
                 members = group.members.map(::toInviteMember),
                 isOnline = isOnline,
                 isSyncFailed = isSyncFailed,

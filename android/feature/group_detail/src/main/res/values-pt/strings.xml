@@ -42,7 +42,6 @@
     <string name="group_detail_delete_payment_title">Apagar este acerto?</string>
     <string name="group_detail_delete_payment_message">O pagamento sai do grupo e a dívida volta aos saldos.</string>
     <string name="group_detail_delete_payment_confirm">Apagar</string>
-    <string name="group_detail_delete_payment_cancel">Cancelar</string>
     <string name="group_detail_balances_with_you">Com você</string>
     <string name="group_detail_balances_between_others">Entre os outros</string>
     <string name="group_detail_balances_hint_get">recebe %s</string>

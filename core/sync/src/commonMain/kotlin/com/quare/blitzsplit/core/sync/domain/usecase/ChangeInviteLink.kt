@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.core.groups.domain.usecase
+package com.quare.blitzsplit.core.sync.domain.usecase
 
 /*
  * Why: "Trocar link", by the group's creator and online only. The old link and QR code stop working, and so does

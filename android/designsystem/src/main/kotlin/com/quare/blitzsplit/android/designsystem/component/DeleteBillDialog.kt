@@ -1,10 +1,5 @@
 package com.quare.blitzsplit.android.designsystem.component
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.R
@@ -34,19 +29,12 @@ fun DeleteBillDialog(
 
         else -> stringResource(R.string.designsystem_delete_bill_no_longer_get_back, money.toText(myBalanceMinor))
     }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.designsystem_delete_bill_title)) },
-        text = { Text(listOfNotNull(consequence, myPart).joinToString(" ")) },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                enabled = !isDeleting,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) { Text(stringResource(R.string.designsystem_delete_bill_confirm)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_delete_bill_cancel)) }
-        },
+    ConfirmDialog(
+        title = stringResource(R.string.designsystem_delete_bill_title),
+        message = listOfNotNull(consequence, myPart).joinToString(" "),
+        confirmLabel = stringResource(R.string.designsystem_delete_bill_confirm),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        isBusy = isDeleting,
     )
 }

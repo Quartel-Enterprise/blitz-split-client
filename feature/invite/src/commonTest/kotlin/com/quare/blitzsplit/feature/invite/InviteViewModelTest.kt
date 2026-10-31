@@ -4,7 +4,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.ChangeInviteLinkUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -14,6 +13,7 @@ import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteMember
@@ -958,7 +958,7 @@ class InviteViewModelTest {
                 qrCodeOf(text)
             },
             retrySync = RetrySync { syncRetries++ },
-            changeInviteLink = ChangeInviteLinkUseCase(groups),
+            changeInviteLink = ChangeInviteLink { groups.rotateInviteCode(it) },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeSyncState = ObserveSyncState { syncState },
             connectivityObserver = NetworkConnectivityObserver {

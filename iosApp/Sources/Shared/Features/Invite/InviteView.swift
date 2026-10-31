@@ -76,7 +76,7 @@ struct InviteView: View {
             Text("The current link and QR code stop working, unused personal invites included. Whoever already joined stays in the group.")
         }
         // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
-        .glassToast("Couldn't change the link. The current one still works.", trigger: model?.changeLinkErrorCount ?? 0)
+        .glassToast("Couldn't change the link. Try again.", trigger: model?.changeLinkErrorCount ?? 0)
         #if os(macOS)
         .frame(minWidth: 420, idealWidth: 460, minHeight: 600, idealHeight: 680)
         #endif

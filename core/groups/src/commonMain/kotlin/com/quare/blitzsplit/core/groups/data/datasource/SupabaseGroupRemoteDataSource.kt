@@ -58,7 +58,7 @@ class SupabaseGroupRemoteDataSource(
 
     override suspend fun rotateInviteCode(groupId: String): String = postgrest
         .rpc(
-            function = CHANGE_INVITE_CODE,
+            function = ROTATE_INVITE_CODE,
             parameters = RotateInviteCodeParamsDto(groupId),
         ).decodeAs<String>()
 
@@ -93,7 +93,7 @@ class SupabaseGroupRemoteDataSource(
         const val MEMBERS = "group_members"
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
-        const val CHANGE_INVITE_CODE = "change_invite_code"
+        const val ROTATE_INVITE_CODE = "rotate_invite_code"
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L

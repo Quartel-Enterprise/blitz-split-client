@@ -148,9 +148,9 @@ class FakeGroupRepository(
     }
 
     override suspend fun rotateInviteCode(groupId: String): Result<Unit> {
+        rotatedInviteCodeGroupIds += groupId
         rotateInviteCodeGate?.await()
         rotateInviteCodeError?.let { return Result.failure(it) }
-        rotatedInviteCodeGroupIds += groupId
         groups.value = groups.value.map { group ->
             if (group.id == groupId) group.copy(inviteCode = nextInviteCode) else group
         }

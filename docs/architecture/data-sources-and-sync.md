@@ -163,7 +163,7 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     renamed it) brings the member back, as Last-Write-Wins says, and the other devices lose it through
     `deleteGoneFromServer`.
   - **Invite code**: the server makes each group's code (`invite_code`, the `blitzsplit.com/g/<code>` of "Convidar")
-    when the group first goes up, and no client sends or changes it. The push reads it back from the upsert's answer,
+    when the group first goes up, and no client sends it. The push reads it back from the upsert's answer,
     since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both
     the push and the download store it with `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this
     device created comes back with the same `updatedAt`, which `updateGroupFromRemote` leaves alone. A group created
@@ -171,6 +171,13 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     `group_members`, the `<member code>` of a personal link `blitzsplit.com/g/<code>/<member code>`) follows the same
     path: read back from the members' upsert and stored with `GroupDao.updateMemberInviteCode`, outside
     Last-Write-Wins, so a member added offline has no personal link until it goes up.
+  - **Changing the invite link** ("Trocar link"): only the group's creator, online, through the `rotate_invite_code`
+    RPC, which answers with the new code. `SyncCoordinator.rotateInviteCode` stores it with
+    `GroupDao.updateInviteCode` right away, under the sync lock, so a download that read the group before can't
+    write the old code back, and in the app's scope, so leaving Convidar mid-call keeps it. The server leaves
+    `updated_at` alone: the other devices take the new code on their next download, as with any code, and a
+    member's earlier offline edit of the group still wins Last-Write-Wins. A failure starts a sync, since the
+    server may have changed the code anyway with its answer lost on the way.
   - **Joining through the invite link**: a group the user is not in yet can't be read through the tables, so the
     invite screen asks `get_invite` (open to `anon` too, so only looking at an invite creates no account) and the
     join asks `join_group`, both security definer functions on the server. `JoinGroupUseCase` (in `:core:sync`)

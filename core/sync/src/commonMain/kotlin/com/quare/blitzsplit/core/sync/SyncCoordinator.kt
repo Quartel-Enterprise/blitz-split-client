@@ -159,6 +159,16 @@ class SyncCoordinator(
         .await()
 
     /*
+     * Why: "Trocar link". Under the sync lock, so a download that read the group before can't write the old code
+     * back over the new one, and in the app's scope, so leaving Convidar mid-call can't lose the new code. A failure
+     * may hide a change the server made anyway (an answer lost on the way), so a sync brings the code it holds.
+     */
+    suspend fun rotateInviteCode(groupId: String): Result<Unit> = scope
+        .async { syncLock.withLock { groupRepository.rotateInviteCode(groupId) } }
+        .await()
+        .onFailure { retry() }
+
+    /*
      * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the
      * session ends after the sync that empties the queue, now if nothing waits, or once back online.
      */

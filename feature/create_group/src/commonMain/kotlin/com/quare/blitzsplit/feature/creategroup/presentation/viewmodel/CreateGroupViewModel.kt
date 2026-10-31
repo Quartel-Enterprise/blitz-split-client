@@ -222,15 +222,13 @@ class CreateGroupViewModel(
 
     // Why: "Convidar" takes the form's place, so back goes to the home; only while the form is still on top, as leave.
     private fun openInvite(groupId: String) {
-        if (navigator.backStack.value.lastOrNull() ==
-            Route.CreateGroup
-        ) {
-            navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))
-        }
+        if (isOnTop()) navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))
     }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {
-        if (navigator.backStack.value.lastOrNull() == Route.CreateGroup) navigator.navigateBack()
+        if (isOnTop()) navigator.navigateBack()
     }
+
+    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.CreateGroup
 }

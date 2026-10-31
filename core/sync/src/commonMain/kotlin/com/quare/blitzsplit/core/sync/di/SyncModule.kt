@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapper
 import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
+import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
@@ -18,6 +19,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CancelSignOutWhenSyncedUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.ChangeInviteLinkUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CompleteSignInUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteAccountUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ExportUserDataUseCase
@@ -68,4 +70,5 @@ val syncModule = module {
     factoryOf(::UserDataExportMapperImpl).bind<UserDataExportMapper>()
     factoryOf(::ExportUserDataUseCase).bind<ExportUserData>()
     factoryOf(::JoinGroupUseCase).bind<JoinGroup>()
+    factoryOf(::ChangeInviteLinkUseCase).bind<ChangeInviteLink>()
 }

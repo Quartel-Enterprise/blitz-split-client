@@ -121,6 +121,17 @@
         }
       }
     },
+    "Couldn't change the link. Try again." : {
+      "comment" : "Invite: changing the link failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para trocar o link. Tente de novo."
+          }
+        }
+      }
+    },
     "Delete group" : {
       "comment" : "The group menu's item to delete the group, not built yet",
       "localizations" : {
@@ -1688,17 +1699,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copiar link"
-          }
-        }
-      }
-    },
-    "Couldn't change the link. The current one still works." : {
-      "comment" : "Invite: the server didn't change the link",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não deu para trocar o link. O atual continua valendo."
           }
         }
       }

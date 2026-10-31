@@ -1859,6 +1859,114 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a sync in flight WHEN changing the invite link THEN waits for it before rotating the code`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pullHangs = true,
+            storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+        )
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        backgroundScope.launch { coordinator.rotateInviteCode("dinner") }
+        runCurrent()
+        val rotatedDuringSync = groups.rotatedInviteCodeGroupIds.toList()
+
+        // When
+        pullGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertTrue(rotatedDuringSync.isEmpty())
+        assertEquals(listOf("dinner"), groups.rotatedInviteCodeGroupIds)
+        val rotation = calls.indexOf("groups rotate invite code dinner")
+        assertTrue(rotation > calls.indexOfLast { it.startsWith("groups upload") })
+        assertEquals(
+            "newCode1",
+            groups.groups.value
+                .single()
+                .inviteCode,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link change waiting on a sync WHEN the screen that asked leaves THEN still rotates the code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pullHangs = true,
+                storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+            )
+            backgroundScope.launch { coordinator.syncNow() }
+            runCurrent()
+            val caller = backgroundScope.launch { coordinator.rotateInviteCode("dinner") }
+            runCurrent()
+
+            // When
+            caller.cancel()
+            pullGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf("dinner"), groups.rotatedInviteCodeGroupIds)
+            assertEquals(
+                "newCode1",
+                groups.groups.value
+                    .single()
+                    .inviteCode,
+            )
+        }
+
+    @Test
+    fun `GIVEN the server fails the link change WHEN changing it THEN fails and syncs to bring the code it holds`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+            )
+            groups.rotateInviteCodeError = IllegalStateException("network")
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(
+                "oldCode1",
+                groups.groups.value
+                    .single()
+                    .inviteCode,
+            )
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN the server changes the link WHEN changing it THEN succeeds without another sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+        )
+
+        // When
+        val result = coordinator.rotateInviteCode("dinner")
+        runCurrent()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            "newCode1",
+            groups.groups.value
+                .single()
+                .inviteCode,
+        )
+        assertTrue(groups.downloadedUserIds.isEmpty())
+    }
+
+    @Test
     fun `GIVEN a local profile WHEN syncing THEN syncs the preferences after the profile under the same user id`() =
         runTest {
             // Given
@@ -4576,6 +4684,11 @@ private class RecordingGroupRepository(
     override suspend fun clear() {
         calls += "groups clear"
         delegate.clear()
+    }
+
+    override suspend fun rotateInviteCode(groupId: String): Result<Unit> {
+        calls += "groups rotate invite code $groupId"
+        return delegate.rotateInviteCode(groupId)
     }
 }
 
