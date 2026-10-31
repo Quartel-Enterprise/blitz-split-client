@@ -30,8 +30,9 @@ private struct GlassToast: ViewModifier {
                         .accessibilityAddTraits(.isStaticText)
                 }
             }
+            // Why: when two grow in one update, the later message in the list wins, so a screen lists its errors last.
             .onChange(of: messages.map(\.trigger)) { old, new in
-                guard let index = new.indices.first(where: { old.indices.contains($0) && old[$0] != new[$0] })
+                guard let index = new.indices.last(where: { old.indices.contains($0) && old[$0] != new[$0] })
                 else { return }
                 show(messages[index].text)
             }
