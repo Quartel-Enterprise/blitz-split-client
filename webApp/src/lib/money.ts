@@ -39,6 +39,12 @@ export function formatSignedMoney(minor: number, currency: string, fractionDigit
   return amount
 }
 
+/** "120,00" or "120.00" with no symbol, where the currency is already on the same line ("you get 120.00 and owe 218.00"). */
+export function formatPlainMoney(minor: number, fractionDigits: number): string {
+  const major = minor / 10 ** fractionDigits
+  return new Intl.NumberFormat(uiTag, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(major)
+}
+
 /** The symbol before an amount field: "R$", "$", or "US$" for dollars in Portuguese. */
 export function currencySymbol(currency: string): string {
   try {

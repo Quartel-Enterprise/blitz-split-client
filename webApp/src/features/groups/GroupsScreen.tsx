@@ -1,11 +1,11 @@
-import { CloudOff, Plus, ReceiptText, RefreshCw, RotateCw, UserRound, Users, Wallet } from 'lucide-react'
-import { GroupsPresenter, type JsGroupRow, type JsGroupsState } from 'blitzsplit-shared'
+import { Plus, ReceiptText, UserRound, Users, Wallet } from 'lucide-react'
+import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
 import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
-import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
@@ -31,15 +31,8 @@ const accountLabels: Record<AccountProvider, MessageKey> = {
   apple: 'groups_appleAccount',
 }
 
-// Everything synced has no badge: it only shows when the sync asks for attention.
-const syncLabels: Record<string, { label: MessageKey; icon: ReactNode }> = {
-  OFFLINE: { label: 'groups_syncOffline', icon: <CloudOff className="size-3.5" /> },
-  SYNCING: { label: 'groups_syncSyncing', icon: <RefreshCw className="size-3.5" /> },
-  FAILED: { label: 'groups_syncFailed', icon: <RotateCw className="size-3.5" /> },
-}
-
 /**
- * The home: the empty card before any group exists, a minimal list after. Desktop (1024+) has the full sidebar, tablet (768–1023) an
+ * The home: the empty card before any group exists, the groups page after. Desktop (1024+) has the full sidebar, tablet (768–1023) an
  * icon rail and the phone a top bar with a bottom navigation, as the canvas draws them.
  */
 export function GroupsScreen() {
@@ -61,7 +54,6 @@ export function GroupsScreen() {
   }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
   if (!presenter || !state) return null
 
-  const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null
   const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
   return (
     <div className="flex min-h-dvh">
@@ -108,35 +100,34 @@ export function GroupsScreen() {
           </button>
         </header>
 
-        <main className="flex flex-1 flex-col gap-6 p-4 sm:p-8">
+        <main className="flex flex-1 flex-col gap-5 p-4 sm:p-8 lg:px-10">
           {/* Why: the selected Groups tab already names the page; the heading stays for screen readers. */}
           <h1 className="sr-only">{t('groups_title')}</h1>
-          {sync && (
-            <SyncBadge canRetry={state.canRetrySync} onRetry={() => presenter.retrySync()}>
-              {sync.icon}
-              {t(sync.label)}
-            </SyncBadge>
-          )}
           {state.groups.length > 0 ? (
-            <GroupsList presenter={presenter} groups={state.groups} />
+            <GroupsPage presenter={presenter} state={state} />
           ) : (
-            state.showsEmptyState && (
-              <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
-                <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                  <Users className="size-6" />
-                </span>
-                <h2 className="mt-1 text-lg font-semibold">{t('groups_emptyTitle')}</h2>
-                <p className="max-w-sm text-sm text-muted-foreground">{t('groups_emptyBody')}</p>
-                <div className="flex w-full flex-col gap-2 pt-2 sm:w-auto sm:flex-row">
-                  <Button onClick={() => presenter.createGroup()}>
-                    <Plus /> {t('groups_create')}
-                  </Button>
-                  <Button variant="outline" onClick={() => presenter.joinWithLink()}>
-                    {t('groups_joinWithLink')}
-                  </Button>
-                </div>
-              </section>
-            )
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <SyncStatus state={state} presenter={presenter} />
+              </div>
+              {state.showsEmptyState && (
+                <section className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-8 text-center">
+                  <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                    <Users className="size-6" />
+                  </span>
+                  <h2 className="mt-1 text-lg font-semibold">{t('groups_emptyTitle')}</h2>
+                  <p className="max-w-sm text-sm text-muted-foreground">{t('groups_emptyBody')}</p>
+                  <div className="flex w-full flex-col gap-2 pt-2 sm:w-auto sm:flex-row">
+                    <Button onClick={() => presenter.createGroup()}>
+                      <Plus /> {t('groups_create')}
+                    </Button>
+                    <Button variant="outline" onClick={() => presenter.joinWithLink()}>
+                      {t('groups_joinWithLink')}
+                    </Button>
+                  </div>
+                </section>
+              )}
+            </>
           )}
         </main>
 
@@ -157,72 +148,5 @@ export function GroupsScreen() {
 
       {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     </div>
-  )
-}
-
-const syncBadgeClass = 'inline-flex h-6 self-start items-center gap-1.5 rounded-md border px-2 text-xs font-medium text-muted-foreground'
-
-function SyncBadge({ canRetry, onRetry, children }: { canRetry: boolean; onRetry: () => void; children: ReactNode }) {
-  if (!canRetry) return <span className={syncBadgeClass}>{children}</span>
-  return (
-    <button
-      onClick={onRetry}
-      className={cn(syncBadgeClass, 'outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring')}
-    >
-      {children}
-    </button>
-  )
-}
-
-/**
- * The minimal list of the home until the full one (balances, the row's menu) arrives with the group's own
- * page. A row opens the group; no group has expenses yet.
- */
-function GroupsList({ presenter, groups }: { presenter: GroupsPresenter; groups: JsGroupRow[] }) {
-  return (
-    <section aria-labelledby="groups-open" className="flex w-full max-w-3xl flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
-        <h2 id="groups-open" className="text-base font-semibold text-muted-foreground">
-          {t('groups_openTitle')}
-        </h2>
-        <Button variant="secondary" onClick={() => presenter.createGroup()}>
-          <Plus /> {t('groups_newGroup')}
-        </Button>
-      </div>
-      <ul className="flex flex-col divide-y rounded-xl border bg-card">
-        {groups.map((group) => (
-          <li key={group.id}>
-            <button
-              onClick={() => presenter.openGroup(group.id)}
-              className="flex w-full items-center gap-4 px-4 py-3 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
-            >
-              <GroupAvatar initials={group.initials} color={group.color} className="size-11 text-sm" />
-              <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="truncate font-semibold">{group.name}</span>
-                <GroupMeta group={group} />
-              </span>
-              <span className="shrink-0 text-xs text-muted-foreground">{t('groups_noExpenses')}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
-}
-
-function GroupMeta({ group }: { group: JsGroupRow }) {
-  // Why: a group of one is "Just you", so the count is always plural.
-  const members = group.memberCount === 1 ? t('groups_onlyYou') : t('groups_memberCount', { count: group.memberCount })
-  return (
-    <span className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
-      <span aria-hidden className="flex shrink-0 items-center -space-x-1.5">
-        {group.faces.map((face, index) => (
-          <Avatar key={index} initial={face.initial} color={face.color} className="size-5 text-[10px] ring-2 ring-card" />
-        ))}
-        {group.extraMemberCount > 0 && <span className="pl-2.5 text-xs font-medium">+{group.extraMemberCount}</span>}
-      </span>
-      {group.isPending && <span aria-hidden className="size-2 shrink-0 rounded-full bg-orange-500" />}
-      <span className="truncate">{group.isPending ? t('groups_metaPending', { members }) : members}</span>
-    </span>
   )
 }

@@ -21,6 +21,12 @@ function weekdayDate(millis: number): string {
   return capitalize((isThisYear ? weekdayFormat : weekdayYearFormat).format(millis))
 }
 
+/** "3 de out." or "Oct 3": a day of this year, short. */
+export function formatShortDate(millis: number): string {
+  const isThisYear = new Date(millis).getFullYear() === new Date().getFullYear()
+  return (isThisYear ? dayMonthFormat : dayMonthYearFormat).format(millis)
+}
+
 /** A day's heading on the group's list: "Hoje", "Ontem" or "Sex., 24 de out.". */
 export function formatDayLabel(dayStartMillis: number, relativeDay: string): string {
   if (relativeDay === 'today') return t('date_today')
