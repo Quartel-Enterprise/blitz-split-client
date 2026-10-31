@@ -3,15 +3,20 @@ package com.quare.blitzsplit.core.groups.data
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
+import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -35,6 +40,7 @@ import kotlin.test.assertTrue
 class GroupRepositoryImplTest {
     private lateinit var local: FakeGroupLocalDataSource
     private lateinit var remote: FakeGroupRemoteDataSource
+    private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var repository: GroupRepositoryImpl
 
     @Test
@@ -1115,6 +1121,266 @@ class GroupRepositoryImplTest {
         assertTrue(result.isSuccess)
         assertEquals(listOf("group-kept"), local.groups.value.map { it.id })
         assertEquals(listOf("m-kept"), local.members.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a group someone else deleted WHEN downloading THEN it leaves even pending and its deletion is posted`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-deleted",
+                        pendingSync = true,
+                        inviteCode = "7Hk2pQxZ",
+                    ),
+                ),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-deleted",
+                        pendingSync = true,
+                    ),
+                ),
+                removedGroups = listOf(
+                    removedGroup(
+                        groupId = "group-deleted",
+                        reason = "deleted",
+                        removedBy = "user-2",
+                        removedByName = "Ana",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(local.groups.value.isEmpty())
+            assertTrue(local.members.value.isEmpty())
+            assertEquals(
+                listOf(
+                    GroupDeletion(
+                        groupId = "group-deleted",
+                        groupName = "Viagem Floripa",
+                        deletedByName = "Ana",
+                    ),
+                ),
+                deletions.observeDeletions().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a group this user left or deleted elsewhere WHEN downloading THEN it leaves with no deletion posted`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-left",
+                        pendingSync = true,
+                        inviteCode = "7Hk2pQxZ",
+                    ),
+                    group(id = "group-deleted-by-me"),
+                ),
+                removedGroups = listOf(
+                    removedGroup(
+                        groupId = "group-left",
+                        reason = "left",
+                        removedBy = "user-1",
+                        removedByName = "Pierre",
+                    ),
+                    removedGroup(
+                        groupId = "group-deleted-by-me",
+                        reason = "deleted",
+                        removedBy = "user-1",
+                        removedByName = "Pierre",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(local.groups.value.isEmpty())
+            assertTrue(deletions.observeDeletions().first().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN removed groups that fail to load WHEN downloading THEN it succeeds and the gone groups still leave`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(id = "group-gone"),
+                    group(
+                        id = "group-pending",
+                        pendingSync = true,
+                        inviteCode = "7Hk2pQxZ",
+                    ),
+                ),
+                removedGroupsError = IllegalStateException("no removed_groups yet"),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(local.groups.value.isEmpty())
+            assertTrue(deletions.observeDeletions().first().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN every stored group still on the server WHEN downloading THEN asks for no removed group`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            remoteGroups = listOf(groupDto(id = "group-1")),
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.askedRemovedGroupIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group created offline and not pushed yet WHEN downloading THEN asks nothing and keeps it`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-new",
+                    pendingSync = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.askedRemovedGroupIds.isEmpty())
+        assertEquals(listOf("group-new"), local.groups.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN the server lets this person leave WHEN leaving THEN the group leaves the device with its members`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1"), group(id = "group-2")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                    ),
+                    member(
+                        id = "m-2",
+                        groupId = "group-2",
+                    ),
+                ),
+                exitStatus = "left",
+            )
+
+            // When
+            val result = repository.requestLeaveGroup("group-1")
+
+            // Then
+            assertEquals(GroupExitOutcome.DONE, result.getOrNull())
+            assertEquals(listOf("group-1"), remote.leftGroupIds)
+            assertEquals(listOf("group-2"), local.groups.value.map { it.id })
+            assertEquals(listOf("m-2"), local.members.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN this person still has a balance WHEN leaving THEN answers it and keeps the group`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            exitStatus = "has_balance",
+        )
+
+        // When
+        val result = repository.requestLeaveGroup("group-1")
+
+        // Then
+        assertEquals(GroupExitOutcome.HAS_BALANCE, result.getOrNull())
+        assertEquals(listOf("group-1"), local.groups.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN another device already took this person out WHEN leaving THEN the group leaves this one too`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                exitStatus = "not_member",
+            )
+
+            // When
+            val result = repository.requestLeaveGroup("group-1")
+
+            // Then
+            assertEquals(GroupExitOutcome.DONE, result.getOrNull())
+            assertTrue(local.groups.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the server deletes the group WHEN deleting THEN the group leaves the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            exitStatus = "deleted",
+        )
+
+        // When
+        val result = repository.deleteGroup("group-1")
+
+        // Then
+        assertEquals(GroupExitOutcome.DONE, result.getOrNull())
+        assertEquals(listOf("group-1"), remote.deletedGroupIds)
+        assertTrue(local.groups.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN someone still owes WHEN deleting THEN answers it and keeps the group`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            exitStatus = "has_balance",
+        )
+
+        // When
+        val result = repository.deleteGroup("group-1")
+
+        // Then
+        assertEquals(GroupExitOutcome.HAS_BALANCE, result.getOrNull())
+        assertEquals(listOf("group-1"), local.groups.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN the server unreachable WHEN deleting THEN fails and keeps the group`() = runTest {
+        // Given
+        val error = IllegalStateException("offline")
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            exitError = error,
+        )
+
+        // When
+        val result = repository.deleteGroup("group-1")
+
+        // Then
+        assertEquals(error, result.exceptionOrNull())
+        assertEquals(listOf("group-1"), local.groups.value.map { it.id })
     }
 
     @Test
@@ -3292,6 +3558,19 @@ class GroupRepositoryImplTest {
         inviteCode = inviteCode,
     )
 
+    private fun removedGroup(
+        groupId: String,
+        reason: String,
+        removedBy: String?,
+        removedByName: String?,
+    ): RemovedGroupDto = RemovedGroupDto(
+        groupId = groupId,
+        groupName = "Viagem Floripa",
+        reason = reason,
+        removedBy = removedBy,
+        removedByName = removedByName,
+    )
+
     private fun groupDto(
         id: String,
         name: String = "Viagem Floripa",
@@ -3346,6 +3625,10 @@ class GroupRepositoryImplTest {
         rotateInviteCodeError: Throwable? = null,
         releasedMember: GroupMemberDto? = null,
         releaseError: Throwable? = null,
+        exitStatus: String = "left",
+        exitError: Throwable? = null,
+        removedGroups: List<RemovedGroupDto> = emptyList(),
+        removedGroupsError: Throwable? = null,
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
@@ -3365,12 +3648,18 @@ class GroupRepositoryImplTest {
             it.rotateInviteCodeError = rotateInviteCodeError
             it.releasedMember = releasedMember
             it.releaseError = releaseError
+            it.exitStatus = exitStatus
+            it.exitError = exitError
+            it.removedGroups = removedGroups
+            it.removedGroupsError = removedGroupsError
         }
+        deletions = InMemoryGroupDeletionRepository()
         repository = GroupRepositoryImpl(
             local = local,
             remote = remote,
             profileLocal = FakeGroupOwnerProfileLocalDataSource(profileOwnerUserId),
             mapper = GroupMapperImpl(),
+            deletions = deletions,
         )
     }
 }
@@ -3624,6 +3913,15 @@ private class FakeGroupLocalDataSource(
         groups.value = groups.value.filterNot { it.id in goneGroups }
     }
 
+    override suspend fun getUploadedGroupIds(ownerUserId: String): List<String> = groups.value
+        .filter { it.ownerUserId == ownerUserId && (!it.pendingSync || it.inviteCode != null) }
+        .map { it.id }
+
+    override suspend fun deleteGroups(ids: List<String>) {
+        members.value = members.value.filterNot { it.groupId in ids }
+        groups.value = groups.value.filterNot { it.id in ids }
+    }
+
     override suspend fun clear() {
         members.value = emptyList()
         groups.value = emptyList()
@@ -3689,6 +3987,15 @@ private class FakeGroupRemoteDataSource(
     var inviteCodes: Map<String, String> = emptyMap()
     var memberInviteCodes: Map<String, String> = emptyMap()
 
+    // Why: what leave_group and delete_group answer, and what removed_groups holds for this user.
+    var exitStatus: String = "left"
+    var exitError: Throwable? = null
+    val leftGroupIds = mutableListOf<String>()
+    val deletedGroupIds = mutableListOf<String>()
+    var removedGroups: List<RemovedGroupDto> = emptyList()
+    val askedRemovedGroupIds = mutableListOf<List<String>>()
+    var removedGroupsError: Throwable? = null
+
     override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> {
         calls += "groups"
         onUpsertGroups()
@@ -3743,5 +4050,23 @@ private class FakeGroupRemoteDataSource(
         releasedMemberIds += params.memberId
         releaseError?.let { throw it }
         return releasedMember
+    }
+
+    override suspend fun requestLeaveGroup(groupId: String): GroupExitResultDto {
+        exitError?.let { throw it }
+        leftGroupIds += groupId
+        return GroupExitResultDto(exitStatus)
+    }
+
+    override suspend fun deleteGroup(groupId: String): GroupExitResultDto {
+        exitError?.let { throw it }
+        deletedGroupIds += groupId
+        return GroupExitResultDto(exitStatus)
+    }
+
+    override suspend fun fetchRemovedGroups(groupIds: List<String>): List<RemovedGroupDto> {
+        removedGroupsError?.let { throw it }
+        askedRemovedGroupIds += groupIds
+        return removedGroups.filter { it.groupId in groupIds }
     }
 }

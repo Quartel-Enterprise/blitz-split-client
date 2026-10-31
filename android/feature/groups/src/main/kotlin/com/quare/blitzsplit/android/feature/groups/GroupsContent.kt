@@ -490,6 +490,7 @@ private fun GroupsOfflinePreview() {
                 showsRecoveryCodePrompt = false,
                 groups = emptyList(),
                 hasLoadedGroups = true,
+                deletedGroupNotice = null,
             ),
             onEvent = {},
         )
@@ -536,6 +537,7 @@ private fun GroupsListPreview() {
                     ),
                 ),
                 hasLoadedGroups = true,
+                deletedGroupNotice = null,
             ),
             onEvent = {},
         )

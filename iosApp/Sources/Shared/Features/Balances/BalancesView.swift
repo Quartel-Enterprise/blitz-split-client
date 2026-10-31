@@ -5,7 +5,8 @@ import SwiftUI
 @Observable
 final class BalancesModel {
     private(set) var state: BalancesUiState
-    private(set) var comingSoonCount = 0
+    private(set) var leaveErrorCount = 0
+    private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<BalancesViewModel>
@@ -20,7 +21,8 @@ final class BalancesModel {
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
-            case is BalancesUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is BalancesUiActionShowLeaveError: self?.leaveErrorCount += 1
+            case is BalancesUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is BalancesUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
@@ -50,6 +52,9 @@ final class BalancesModel {
             deleteGroup: { [weak self] in self?.send(BalancesUiEventOnDeleteGroupClicked.shared) },
             splitBill: { [weak self] in self?.send(BalancesUiEventOnSplitBillClicked.shared) },
             settle: { [weak self] in self?.send(BalancesUiEventOnSettleClicked.shared) },
+            confirmExit: { [weak self] in self?.send(BalancesUiEventOnGroupExitConfirmed.shared) },
+            dismissExit: { [weak self] in self?.send(BalancesUiEventOnGroupExitDismissed.shared) },
+            backToGroups: { [weak self] in self?.send(BalancesUiEventOnBackToGroupsClicked.shared) },
         )
     }
 
@@ -105,10 +110,14 @@ struct BalancesView: View {
             hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
             showsInlineTitle: showsInlineTitle,
+            exit: model?.state.exit,
             actions: model?.actions ?? .disabled,
         )
-        .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
-        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
+        .glassToast(GroupExitCopy.errorToasts(
+            leave: model?.leaveErrorCount ?? 0,
+            delete: model?.deleteErrorCount ?? 0,
+            change: model?.changeErrorCount ?? 0,
+        ))
         .recordedPaymentNotice(
             model?.state.recordedPayment,
             onUndo: { model?.send(BalancesUiEventOnUndoPaymentClicked.shared) },
@@ -145,7 +154,7 @@ private struct BalancesSections: View {
             .listRowBackground(Color.clear)
         } else if state.header.isEveryoneSettled {
             Section {
-                EveryoneSettled {
+                EveryoneSettled(canDelete: state.exit.canLeaveOrDelete) {
                     model.send(BalancesUiEventOnDeleteGroupClicked.shared)
                 }
             }
@@ -205,8 +214,9 @@ private struct BalancesSections: View {
     }
 }
 
-/// "Everyone's settled up", which offers deleting the group once the trip is over.
+/// "Everyone's settled up", which offers deleting the group once the trip is over; offline it needs the internet.
 private struct EveryoneSettled: View {
+    let canDelete: Bool
     let onDelete: () -> Void
 
     var body: some View {
@@ -225,8 +235,38 @@ private struct EveryoneSettled: View {
             Button("Delete group", role: .destructive, action: onDelete)
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
+                .disabled(!canDelete)
         }
         .padding(.vertical, 4)
+    }
+}
+
+/// How a pair reads, in Balances and in the dialogs of "Leave group" and "Delete group".
+enum DebtCopy {
+    static func sentence(_ row: DebtRow) -> String {
+        let from = PaymentCopy.name(row.fromName)
+        let to = PaymentCopy.name(row.toName)
+        switch row.kind {
+        case .youOwe:
+            // "You owe $118.00" is the balance card's: Portuguese words the two apart ("Você deve a Bruno")
+            return String(
+                localized: "You owe %@ (a member)",
+                defaultValue: "You owe \(to)",
+                comment: "A pair in Balances; %@ is whom this device's user owes",
+            )
+        case .owesYou:
+            return String(localized: "\(from) owes you")
+        default:
+            return String(localized: "\(from) owes \(to)")
+        }
+    }
+
+    static func amount(_ row: DebtRow, currency: GroupCurrency) -> String {
+        switch row.kind {
+        case .youOwe: currency.formatSigned(-row.amountMinor)
+        case .owesYou: currency.formatSigned(row.amountMinor)
+        default: currency.format(row.amountMinor)
+        }
     }
 }
 
@@ -267,29 +307,11 @@ private struct DebtRowView: View {
     }
 
     private var sentence: String {
-        let from = PaymentCopy.name(row.fromName)
-        let to = PaymentCopy.name(row.toName)
-        switch row.kind {
-        case .youOwe:
-            // "You owe $118.00" is the balance card's: Portuguese words the two apart ("Você deve a Bruno")
-            return String(
-                localized: "You owe %@ (a member)",
-                defaultValue: "You owe \(to)",
-                comment: "A pair in Balances; %@ is whom this device's user owes",
-            )
-        case .owesYou:
-            return String(localized: "\(from) owes you")
-        default:
-            return String(localized: "\(from) owes \(to)")
-        }
+        DebtCopy.sentence(row)
     }
 
     private var amount: String {
-        switch row.kind {
-        case .youOwe: currency.formatSigned(-row.amountMinor)
-        case .owesYou: currency.formatSigned(row.amountMinor)
-        default: currency.format(row.amountMinor)
-        }
+        DebtCopy.amount(row, currency: currency)
     }
 
     private var amountColor: Color {

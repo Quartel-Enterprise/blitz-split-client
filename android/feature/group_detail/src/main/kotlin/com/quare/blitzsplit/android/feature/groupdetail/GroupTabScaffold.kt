@@ -51,6 +51,8 @@ internal class GroupTabFrame(
     val hasBills: Boolean,
     val isLoaded: Boolean,
     val showsSplitBillButton: Boolean,
+    // Why: "Sair do grupo" and "Apagar grupo" need the internet, which the ⋮ menu says.
+    val isOnline: Boolean,
     val money: MoneyFormatter,
 )
 
@@ -80,6 +82,7 @@ internal fun GroupTabScaffold(
                 GroupTopBar(
                     header = frame.header,
                     hasBills = frame.hasBills,
+                    isOnline = frame.isOnline,
                     money = frame.money,
                     scrollBehavior = scrollBehavior,
                     onAction = onAction,

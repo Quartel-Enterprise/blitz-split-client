@@ -12,6 +12,10 @@ struct GroupScreenActions {
     let deleteGroup: () -> Void
     let splitBill: () -> Void
     let settle: () -> Void
+    /// The main button, the cancel and "Back to Groups" of the dialogs Leave and Delete open.
+    let confirmExit: () -> Void
+    let dismissExit: () -> Void
+    let backToGroups: () -> Void
 
     /// Before a screen's model exists its bars are disabled, so these never run.
     static let disabled = GroupScreenActions(
@@ -23,19 +27,24 @@ struct GroupScreenActions {
         deleteGroup: {},
         splitBill: {},
         settle: {},
+        confirmExit: {},
+        dismissExit: {},
+        backToGroups: {},
     )
 }
 
 extension View {
     /// The bars of a group's tab: its name, "Invite people", the "⋯" menu and "Split a bill" (the bottom toolbar's
     /// prominent glass item on iPhone, iOS has no FAB; the window toolbar's primary button on the Mac, with the tabs
-    /// in the toolbar). `header` is nil until the screen is loaded, which disables the buttons.
+    /// in the toolbar). `header` is nil until the screen is loaded, which disables the buttons. Offline, the menu's
+    /// Leave and Delete need the internet; the dialogs they open come with the bars.
     func groupScreenBars(
         tab: GroupTab,
         header: GroupHeader?,
         hasExpenses: Bool,
         showsSplitBill: Bool,
         showsInlineTitle: Bool,
+        exit: GroupExitUiState?,
         actions: GroupScreenActions,
     ) -> some View {
         modifier(
@@ -45,9 +54,11 @@ extension View {
                 hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
                 showsInlineTitle: showsInlineTitle,
+                isOnline: exit?.isOnline ?? true,
                 actions: actions,
             ),
         )
+        .groupExitDialogs(exit: exit, currency: header?.currency, actions: actions)
     }
 }
 
@@ -57,6 +68,7 @@ private struct GroupScreenBars: ViewModifier {
     let hasExpenses: Bool
     let showsSplitBill: Bool
     let showsInlineTitle: Bool
+    let isOnline: Bool
     let actions: GroupScreenActions
 
     #if os(iOS)
@@ -117,16 +129,34 @@ private struct GroupScreenBars: ViewModifier {
         }
     }
 
-    /// "⋯": only what changes the group itself (6.1i); Leave and Delete aren't built yet. The Mac's items that open
-    /// a dialog end in "…".
+    /// "⋯": only what changes the group itself (6.1i); offline, Leave and Delete say they need the internet (6.1j).
+    /// The Mac's items that open a dialog end in "…".
     private var groupMenu: some View {
         Menu("More group options", systemImage: "ellipsis") {
             Button(editGroupTitle, systemImage: "pencil", action: actions.editGroup)
             Divider()
-            Button("Leave group", systemImage: "rectangle.portrait.and.arrow.right", action: actions.leaveGroup)
-            Button("Delete group", systemImage: "trash", role: .destructive, action: actions.deleteGroup)
+            Button(action: actions.leaveGroup) {
+                menuLabel(leaveGroupTitle, systemImage: "rectangle.portrait.and.arrow.right")
+            }
+            .disabled(!isOnline)
+            Button(role: .destructive, action: actions.deleteGroup) {
+                menuLabel(deleteGroupTitle, systemImage: "trash")
+            }
+            .disabled(!isOnline)
         }
         .disabled(!isLoaded)
+    }
+
+    /// A menu shows a label's second line as its subtitle: "Needs internet" while offline.
+    private func menuLabel(_ title: LocalizedStringKey, systemImage: String) -> some View {
+        Label {
+            Text(title)
+            if !isOnline {
+                Text("Needs internet")
+            }
+        } icon: {
+            Image(systemName: systemImage)
+        }
     }
 
     private var editGroupTitle: LocalizedStringKey {
@@ -134,6 +164,22 @@ private struct GroupScreenBars: ViewModifier {
         "Edit group…"
         #else
         "Edit group"
+        #endif
+    }
+
+    private var leaveGroupTitle: LocalizedStringKey {
+        #if os(macOS)
+        "Leave group…"
+        #else
+        "Leave group"
+        #endif
+    }
+
+    private var deleteGroupTitle: LocalizedStringKey {
+        #if os(macOS)
+        "Delete group…"
+        #else
+        "Delete group"
         #endif
     }
 

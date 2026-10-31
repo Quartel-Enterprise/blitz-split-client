@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain.repository
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -59,11 +60,18 @@ interface GroupRepository {
      */
     suspend fun requestMemberRelease(memberId: String): Result<Unit>
 
+    // Why: "Sair do grupo", online only: the server checks this person's balance; then the group leaves the device.
+    suspend fun requestLeaveGroup(groupId: String): Result<GroupExitOutcome>
+
+    // Why: "Apagar grupo", online only: the server checks nobody owes anything; then the group leaves the device.
+    suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome>
+
     suspend fun uploadPendingGroups(userId: String): Result<Unit>
 
     /*
      * Why: after a switch, another user's groups give way to this user's, even ones not pushed yet, and the synced
-     * groups and members the server no longer has leave the device.
+     * groups and members the server no longer has leave the device. A group this user left, or a member deleted,
+     * leaves it even with changes not pushed yet, and one someone else deleted posts its "Grupo apagado".
      */
     suspend fun downloadGroups(userId: String): Result<Unit>
 

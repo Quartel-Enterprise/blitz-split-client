@@ -21,9 +21,12 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -31,10 +34,13 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -46,6 +52,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -67,6 +74,7 @@ class GroupDetailPaymentsViewModelTest {
     private lateinit var viewModel: GroupDetailViewModel
     private val recordedPayments = InMemoryRecordedPaymentRepository()
     private val isRoomRead = MutableStateFlow(true)
+    private val groupDeletions = InMemoryGroupDeletionRepository()
 
     @BeforeTest
     fun setUp() {
@@ -1215,19 +1223,26 @@ class GroupDetailPaymentsViewModelTest {
         val observeStoredGroup = ObserveGroupUseCase(groups)
         viewModel = GroupDetailViewModel(
             route = route,
-            navigator = navigator,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
-            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
-            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
-            observeGroup = ObserveGroup { groupId ->
-                isRoomRead.flatMapLatest { isRead -> if (isRead) observeStoredGroup(groupId) else emptyFlow() }
-            },
-            observeExpenses = ObserveExpensesUseCase(expenses),
-            observeSettlements = ObserveSettlementsUseCase(settlements),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
-            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+            useCases = GroupScreenUseCases(
+                navigator = navigator,
+                observeGroup = ObserveGroup { groupId ->
+                    isRoomRead.flatMapLatest { isRead -> if (isRead) observeStoredGroup(groupId) else emptyFlow() }
+                },
+                observeExpenses = ObserveExpensesUseCase(expenses),
+                observeSettlements = ObserveSettlementsUseCase(settlements),
+                observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+                consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+                deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
+                observeGroupDeletions = ObserveGroupDeletionsUseCase(groupDeletions),
+                consumeGroupDeletion = ConsumeGroupDeletionUseCase(groupDeletions),
+                connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
+                leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
+                deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+            ),
         )
     }
 

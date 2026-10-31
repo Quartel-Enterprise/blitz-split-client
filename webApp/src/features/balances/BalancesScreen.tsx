@@ -1,14 +1,14 @@
 import { ArrowRight, CircleCheck, Scale } from 'lucide-react'
 import { BalancesPresenter, type JsBalancesState, type JsDebtRow, type JsGroupFace, type JsRoute } from 'blitzsplit-shared'
-import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { GroupPage } from '@/features/group-detail/GroupPage'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
-import { balanceTone, nameOrFormer, useRecordedPaymentNotice } from './BalanceCard'
+import { balanceTone, debtSentence, useRecordedPaymentNotice } from './BalanceCard'
 
 type Money = (minor: number) => string
 
@@ -32,10 +32,7 @@ const debtButtons: Record<string, MessageKey> = {
 export function BalancesScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new BalancesPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsBalancesState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
-    if (action === 'coming-soon') toast(t('groups_comingSoon'))
-    if (action === 'change-error') toast(t('groupDetail_changeError'))
-  })
+  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   if (!presenter || !state?.isLoaded) return null
 
@@ -50,6 +47,7 @@ export function BalancesScreen({ route }: { route: JsRoute }) {
       tab="balances"
       hasExpenses={state.hasBills}
       showsSplitBillButton={state.showsSplitBillButton}
+      exit={state.exit}
       events={presenter}
       onSelectTab={(tab) => {
         if (tab === 'expenses') presenter.expensesTab()
@@ -73,7 +71,12 @@ export function BalancesScreen({ route }: { route: JsRoute }) {
                 <h2 className="font-semibold">{t('balances_allSettledTitle')}</h2>
                 <p className="text-sm text-muted-foreground">{t('balances_allSettledBody')}</p>
               </div>
-              <Button variant="outline" onClick={() => presenter.deleteGroup()} className="self-start text-destructive hover:text-destructive sm:self-center">
+              <Button
+                variant="outline"
+                disabled={!state.exit.canLeaveOrDelete}
+                onClick={() => presenter.deleteGroup()}
+                className="self-start text-destructive hover:text-destructive sm:self-center"
+              >
                 {t('groupDetail_deleteGroup')}
               </Button>
             </section>
@@ -138,13 +141,6 @@ function DebtSection({
       </ul>
     </section>
   )
-}
-
-/** "Você deve a Bruno", "Ana te deve" or "Diego deve a Bruno". */
-function debtSentence(debt: JsDebtRow): string {
-  if (debt.kind === 'you-owe') return t('balances_youOwe', { name: nameOrFormer(debt.toName) })
-  if (debt.kind === 'owes-you') return t('balances_owesYou', { name: nameOrFormer(debt.fromName) })
-  return t('balances_owes', { from: nameOrFormer(debt.fromName), to: nameOrFormer(debt.toName) })
 }
 
 /** "−R$ 118,00" what you owe, "+R$ 162,30" what you get back, "R$ 64,00" between the others. */
