@@ -126,7 +126,7 @@ struct MembersView: View {
     /// "Viagem Floripa · 2 of 4 joined".
     private var subtitle: Text {
         guard let state = model?.state, state.isLoaded else { return Text(verbatim: "") }
-        let joined = Text("\(state.joinedCount) of \(state.memberCount) joined")
+        let joined = Text("\(Int(state.joinedCount)) of \(Int(state.memberCount)) joined")
         return Text("\(Text(verbatim: state.groupName)) · \(joined)")
     }
 

@@ -286,6 +286,10 @@ No linter runs on Swift yet; follow what the app already does.
   for a reason.
 - User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR
   translation in `Localizable.xcstrings` (the development language is English).
+- A Kotlin `Int` is a Swift `Int32`: interpolate it as `Int(count)` in a localized literal. An `Int32` makes the key
+  `%d …`, which misses the catalog's `%lld …` entry and its pt-BR and plural forms, so the build's "Check the
+  localized keys" phase (`iosApp/check-localized-keys.py`) fails on it. An `appendInterpolation(Int32)` overload
+  isn't the way out: the compiler stops extracting any literal that goes through it.
 
 ## TypeScript and React
 

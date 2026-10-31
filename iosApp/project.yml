@@ -59,6 +59,11 @@ targetTemplates:
           fi
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    postCompileScripts:
+      - name: Check the localized keys
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/check-localized-keys.py" "$OBJECT_FILE_DIR_normal"
     info:
       properties:
         # borarachar://auth-callback brings back the browser sign in (Google)
