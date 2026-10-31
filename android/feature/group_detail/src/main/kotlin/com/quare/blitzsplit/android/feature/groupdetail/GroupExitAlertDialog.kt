@@ -34,6 +34,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDeletedNotice
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitDialog
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitUiState
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: what "Sair do grupo" and "Apagar grupo" open (5.3c to 5.3f), and "Grupo apagado" (6.1k), over either tab.
 @Composable
@@ -85,7 +86,7 @@ internal fun GroupExitAlertDialog(
             debts = emptyList(),
             money = money,
             confirm = stringResource(R.string.group_detail_leave_confirm),
-            dismiss = stringResource(R.string.group_detail_delete_payment_cancel),
+            dismiss = stringResource(DesignR.string.designsystem_confirm_cancel),
             isDestructive = true,
             isRunning = exit.isRunning,
             onConfirm = onConfirm,
@@ -122,7 +123,7 @@ internal fun GroupExitAlertDialog(
             debts = emptyList(),
             money = money,
             confirm = stringResource(R.string.group_detail_delete_confirm),
-            dismiss = stringResource(R.string.group_detail_delete_payment_cancel),
+            dismiss = stringResource(DesignR.string.designsystem_confirm_cancel),
             isDestructive = true,
             isRunning = exit.isRunning,
             onConfirm = onConfirm,
