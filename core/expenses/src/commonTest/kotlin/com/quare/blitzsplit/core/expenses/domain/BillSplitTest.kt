@@ -531,6 +531,293 @@ class BillSplitTest {
         assertEquals(listOf(0L, 6_000_000_000L, 3_999_999_999L), rescaled.map { it.value })
     }
 
+    @Test
+    fun `GIVEN two payers in an equal split WHEN a cent is left over THEN the first in the group order takes it`() {
+        // Given
+        val entries = listOf(entry(ANA, 1), entry(BRUNO, 1), entry(PIERRE, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_000,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(PIERRE, BRUNO),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 333, 1), share(BRUNO, 334, 1), share(PIERRE, 333, 1)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers in an equal split WHEN two cents are left over THEN each payer takes one`() {
+        // Given
+        val entries = listOf(entry(ANA, 1), entry(BRUNO, 1), entry(PIERRE, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_001,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(PIERRE, ANA),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 334, 1), share(BRUNO, 333, 1), share(PIERRE, 334, 1)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers in an equal split WHEN three cents are left THEN the first takes two and the other one`() {
+        // Given
+        val entries = listOf(entry(ANA, 1), entry(BRUNO, 1), entry(CARLA, 1), entry(PIERRE, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_003,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(CARLA, ANA),
+        )
+
+        // Then
+        assertEquals(
+            listOf(share(ANA, 252, 1), share(BRUNO, 250, 1), share(CARLA, 251, 1), share(PIERRE, 250, 1)),
+            shares,
+        )
+    }
+
+    @Test
+    fun `GIVEN three payers in an equal split WHEN two cents are left over THEN the first two payers take one each`() {
+        // Given
+        val entries = listOf(entry(ANA, 1), entry(BRUNO, 1), entry(CARLA, 1), entry(PIERRE, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_002,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(PIERRE, CARLA, BRUNO),
+        )
+
+        // Then
+        assertEquals(
+            listOf(share(ANA, 250, 1), share(BRUNO, 251, 1), share(CARLA, 251, 1), share(PIERRE, 250, 1)),
+            shares,
+        )
+    }
+
+    @Test
+    fun `GIVEN a payer out of the split and one in it WHEN cents are left THEN only the one in the split takes them`() {
+        // Given
+        val entries = listOf(entry(PIERRE, 0), entry(ANA, 1), entry(BRUNO, 1), entry(CARLA, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_001,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(PIERRE, CARLA),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 333, 1), share(BRUNO, 333, 1), share(CARLA, 335, 1)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers both out of the split WHEN two cents are left THEN the first two members take one each`() {
+        // Given
+        val entries = listOf(entry(PIERRE, 0), entry(CARLA, 0), entry(ANA, 1), entry(BRUNO, 1), entry(DANI, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_001,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(PIERRE, CARLA),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 334, 1), share(BRUNO, 334, 1), share(DANI, 333, 1)), shares)
+    }
+
+    @Test
+    fun `GIVEN payers who left the group WHEN a cent is left over THEN the first member in the split takes it`() {
+        // Given
+        val entries = listOf(entry(ANA, 1), entry(BRUNO, 1), entry(PIERRE, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_000,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(FORMER_MEMBER, CARLA),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 334, 1), share(BRUNO, 333, 1), share(PIERRE, 333, 1)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers in a split by percentage WHEN a cent is left THEN the first in the group order takes it`() {
+        // Given
+        val entries = listOf(entry(ANA, 33), entry(BRUNO, 33), entry(PIERRE, 34))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_001,
+            mode = SplitMode.PERCENT,
+            entries = entries,
+            payerIds = listOf(PIERRE, ANA),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 331, 33), share(BRUNO, 330, 33), share(PIERRE, 340, 34)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers in a split by percentage WHEN two cents are left over THEN each payer takes one`() {
+        // Given
+        val entries = listOf(entry(ANA, 33), entry(BRUNO, 33), entry(PIERRE, 34))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_002,
+            mode = SplitMode.PERCENT,
+            entries = entries,
+            payerIds = listOf(PIERRE, ANA),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 331, 33), share(BRUNO, 330, 33), share(PIERRE, 341, 34)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers in a split by parts WHEN two cents are left over THEN each payer takes one`() {
+        // Given
+        val entries = listOf(entry(PIERRE, 1), entry(ANA, 1), entry(BRUNO, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 200,
+            mode = SplitMode.SHARES,
+            entries = entries,
+            payerIds = listOf(BRUNO, PIERRE),
+        )
+
+        // Then
+        assertEquals(listOf(share(PIERRE, 67, 1), share(ANA, 66, 1), share(BRUNO, 67, 1)), shares)
+    }
+
+    @Test
+    fun `GIVEN two payers WHEN splitting by amount THEN each pays what was typed`() {
+        // Given
+        val entries = listOf(entry(ANA, 333), entry(BRUNO, 333), entry(PIERRE, 334))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 1_000,
+            mode = SplitMode.AMOUNT,
+            entries = entries,
+            payerIds = listOf(ANA, BRUNO),
+        )
+
+        // Then
+        assertEquals(listOf(share(ANA, 333, 333), share(BRUNO, 333, 333), share(PIERRE, 334, 334)), shares)
+    }
+
+    @Test
+    fun `GIVEN 100 million split equally with two payers WHEN a cent is left over THEN the first payer takes it`() {
+        // Given
+        val entries = listOf(entry(PIERRE, 1), entry(ANA, 1), entry(BRUNO, 1))
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = 10_000_000_000,
+            mode = SplitMode.EQUAL,
+            entries = entries,
+            payerIds = listOf(BRUNO, ANA),
+        )
+
+        // Then
+        assertEquals(listOf(3_333_333_333L, 3_333_333_334L, 3_333_333_333L), shares?.map { it.amountMinor })
+    }
+
+    @Test
+    fun `GIVEN 100 million in huge parts and two payers WHEN splitting by parts THEN the payers take the cents`() {
+        // Given
+        val total = 10_000_000_000L
+        val entries = listOf(
+            entry(PIERRE, 0),
+            entry(ANA, 999_999_999_999),
+            entry(BRUNO, 999_999_999_998),
+            entry(CARLA, 7),
+        )
+
+        // When
+        val shares = BillSplit.split(
+            totalMinor = total,
+            mode = SplitMode.SHARES,
+            entries = entries,
+            payerIds = listOf(PIERRE, BRUNO, CARLA),
+        )
+
+        // Then
+        assertNotNull(shares)
+        assertEquals(total, shares.sumOf { it.amountMinor })
+        assertTrue(shares.all { it.amountMinor >= 0 })
+        assertEquals(listOf(4_999_999_999L, 5_000_000_000L, 1L), shares.map { it.amountMinor })
+    }
+
+    @Test
+    fun `GIVEN two payers in the amounts WHEN the new total leaves two cents over THEN each payer takes one`() {
+        // Given
+        val entries = listOf(entry(ANA, 333), entry(BRUNO, 333), entry(PIERRE, 334))
+
+        // When
+        val rescaled = BillSplit.calculateRescaledAmounts(
+            entries = entries,
+            oldTotalMinor = 1_000,
+            newTotalMinor = 1_002,
+            payerIds = listOf(PIERRE, ANA),
+        )
+
+        // Then
+        assertEquals(listOf(entry(ANA, 334), entry(BRUNO, 333), entry(PIERRE, 335)), rescaled)
+    }
+
+    @Test
+    fun `GIVEN two payers in the amounts WHEN the new total leaves a cent THEN the first in group order takes it`() {
+        // Given
+        val entries = listOf(entry(ANA, 333), entry(BRUNO, 333), entry(PIERRE, 334))
+
+        // When
+        val rescaled = BillSplit.calculateRescaledAmounts(
+            entries = entries,
+            oldTotalMinor = 1_000,
+            newTotalMinor = 1_001,
+            payerIds = listOf(PIERRE, BRUNO),
+        )
+
+        // Then
+        assertEquals(listOf(entry(ANA, 333), entry(BRUNO, 334), entry(PIERRE, 334)), rescaled)
+    }
+
+    @Test
+    fun `GIVEN a payer out of the amounts and one in them WHEN the total leaves a cent THEN the one in takes it`() {
+        // Given
+        val entries = listOf(entry(PIERRE, 0), entry(ANA, 500), entry(BRUNO, 500))
+
+        // When
+        val rescaled = BillSplit.calculateRescaledAmounts(
+            entries = entries,
+            oldTotalMinor = 1_000,
+            newTotalMinor = 1_001,
+            payerIds = listOf(PIERRE, BRUNO),
+        )
+
+        // Then
+        assertEquals(listOf(entry(PIERRE, 0), entry(ANA, 500), entry(BRUNO, 501)), rescaled)
+    }
+
     private fun entry(
         memberId: String,
         value: Long,
@@ -554,5 +841,7 @@ class BillSplitTest {
         const val ANA = "ana"
         const val BRUNO = "bruno"
         const val CARLA = "carla"
+        const val DANI = "dani"
+        const val FORMER_MEMBER = "former-member"
     }
 }

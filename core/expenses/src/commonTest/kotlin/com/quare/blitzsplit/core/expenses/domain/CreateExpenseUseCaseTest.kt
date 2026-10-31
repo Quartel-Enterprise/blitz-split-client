@@ -94,6 +94,42 @@ class CreateExpenseUseCaseTest {
     }
 
     @Test
+    fun `GIVEN several payers WHEN creating the bill THEN stores what each one paid in the order given`() = runTest {
+        // Given
+        prepareScenario()
+        val payers = listOf(
+            ExpensePayer(
+                memberId = "ana",
+                amountMinor = 2_240L,
+            ),
+            ExpensePayer(
+                memberId = PIERRE,
+                amountMinor = 4_000L,
+            ),
+        )
+
+        // When
+        useCase(
+            groupId = GROUP_ID,
+            description = "Mercado",
+            amountMinor = 6_240L,
+            payers = payers,
+            splitMode = SplitMode.EQUAL,
+            shares = shares,
+            spentAt = 5_000L,
+        )
+
+        // Then
+        assertEquals(payers, repository.createdExpenses.single().payers)
+        assertEquals(
+            payers,
+            repository.expenses.value
+                .single()
+                .payers,
+        )
+    }
+
+    @Test
     fun `GIVEN a description between spaces WHEN creating the bill THEN stores it trimmed`() = runTest {
         // Given
         prepareScenario()

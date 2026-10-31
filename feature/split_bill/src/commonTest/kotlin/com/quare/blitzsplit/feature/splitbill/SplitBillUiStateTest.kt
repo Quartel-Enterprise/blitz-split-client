@@ -6,6 +6,8 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
@@ -283,6 +285,201 @@ class SplitBillUiStateTest {
         assertFalse(canSave)
     }
 
+    @Test
+    fun `GIVEN several payers one of them blank WHEN reading who paid THEN lists those with an amount`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "20,00", PIERRE to "80,00", BRUNO to ""),
+        )
+
+        // When
+        val payerIds = state.payerIds
+
+        // Then
+        assertEquals(listOf(ANA, PIERRE), payerIds)
+    }
+
+    @Test
+    fun `GIVEN one payer WHEN reading who paid THEN lists only them`() {
+        // Given
+        val state = state(payerId = ANA)
+
+        // When
+        val payerIds = state.payerIds
+
+        // Then
+        assertEquals(listOf(ANA), payerIds)
+    }
+
+    @Test
+    fun `GIVEN nobody paying yet WHEN reading who paid THEN lists nobody`() {
+        // Given
+        val state = state(payerId = "")
+
+        // When
+        val payerIds = state.payerIds
+
+        // Then
+        assertTrue(payerIds.isEmpty())
+        assertFalse(state.isPayerValid)
+    }
+
+    @Test
+    fun `GIVEN several payers with this device user WHEN reading what they paid THEN it is their amount`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "20,00", PIERRE to "80,00"),
+        )
+
+        // When
+        val paid = state.myPaidMinor
+
+        // Then
+        assertEquals(8_000L, paid)
+    }
+
+    @Test
+    fun `GIVEN several payers without this device user WHEN reading what they paid THEN it is nothing`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "60,00", BRUNO to "40,00"),
+        )
+
+        // When
+        val paid = state.myPaidMinor
+
+        // Then
+        assertEquals(0L, paid)
+        assertNull(state.refundMinor)
+    }
+
+    @Test
+    fun `GIVEN this device user paid alone WHEN reading what they paid THEN it is the whole total`() {
+        // Given
+        val state = state(payerId = PIERRE)
+
+        // When
+        val paid = state.myPaidMinor
+
+        // Then
+        assertEquals(10_000L, paid)
+    }
+
+    @Test
+    fun `GIVEN someone else paid alone WHEN reading what this device user paid THEN it is nothing`() {
+        // Given
+        val state = state(payerId = ANA)
+
+        // When
+        val paid = state.myPaidMinor
+
+        // Then
+        assertEquals(0L, paid)
+        assertNull(state.refundMinor)
+    }
+
+    @Test
+    fun `GIVEN several payers adding up WHEN reading the help THEN refunds what this user paid over their part`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "20,00", PIERRE to "80,00"),
+        )
+
+        // When
+        val refund = state.refundMinor
+
+        // Then
+        assertEquals(5_000L, state.myShareMinor)
+        assertEquals(3_000L, refund)
+    }
+
+    @Test
+    fun `GIVEN this user paid less than their part WHEN reading the help THEN shows no refund`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "60,00", PIERRE to "40,00"),
+        )
+
+        // When
+        val refund = state.refundMinor
+
+        // Then
+        assertNull(refund)
+    }
+
+    @Test
+    fun `GIVEN this user paid exactly their part WHEN reading the help THEN shows no refund`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "50,00", PIERRE to "50,00"),
+        )
+
+        // When
+        val refund = state.refundMinor
+
+        // Then
+        assertNull(refund)
+    }
+
+    @Test
+    fun `GIVEN several payers not adding up WHEN reading the help and Salvar THEN no refund and it is disabled`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "20,00", PIERRE to "90,00"),
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertFalse(canSave)
+        assertFalse(state.isPayerValid)
+        assertNull(state.refundMinor)
+        assertEquals(9_000L, state.myPaidMinor)
+    }
+
+    @Test
+    fun `GIVEN several payers adding up WHEN reading Salvar THEN it is enabled with no single payer`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "20,00", PIERRE to "80,00"),
+        )
+
+        // When
+        val canSave = state.canSave
+
+        // Then
+        assertTrue(canSave)
+        assertTrue(state.isPayerValid)
+        assertNull(state.payer)
+        assertFalse(state.isPayerFormerMember)
+    }
+
+    @Test
+    fun `GIVEN several payers adding up and an amount over the limit WHEN reading the help THEN shows no refund`() {
+        // Given
+        val state = state(
+            payerId = "",
+            severalPayers = several(ANA to "20,00", PIERRE to "80,00"),
+            amountText = "100000000,01",
+        )
+
+        // When
+        val refund = state.refundMinor
+
+        // Then
+        assertNull(refund)
+        assertFalse(state.canSave)
+    }
+
     private fun person(
         id: String,
         isMe: Boolean,
@@ -293,6 +490,15 @@ class SplitBillUiStateTest {
         avatarColor = AvatarColor.BLUE,
         isMe = isMe,
         hasJoined = true,
+    )
+
+    // Why: "Várias pessoas pagaram" of the 100,00 bill, with what each one typed.
+    private fun several(vararg typed: Pair<String, String>): PayerAmounts = PayerAmounts(
+        rows = typed.map { (memberId, text) ->
+            PayerAmountRow(memberId, person(memberId, isMe = memberId == PIERRE), text)
+        },
+        totalMinor = 10_000L,
+        currency = GroupCurrency.BRL,
     )
 
     // Why: a 100,00 bill between Ana and Pierre, who paid, split equally unless the mode says otherwise.
@@ -307,6 +513,7 @@ class SplitBillUiStateTest {
         isDeleting: Boolean = false,
         conflict: BillConflict? = null,
         amountText: String = "100,00",
+        severalPayers: PayerAmounts? = null,
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupName = "Viagem Floripa",
@@ -319,7 +526,7 @@ class SplitBillUiStateTest {
         hasEditedAmount = true,
         hasEditedDescription = true,
         payerId = payerId,
-        severalPayers = null,
+        severalPayers = severalPayers,
         payerSelection = null,
         payerAmounts = null,
         spentAt = 0L,
@@ -337,7 +544,7 @@ class SplitBillUiStateTest {
                 )
             },
             totalMinor = 10_000L,
-            payerIds = listOf(payerId),
+            payerIds = severalPayers?.payers?.map { it.memberId } ?: listOf(payerId),
             currency = GroupCurrency.BRL,
         ),
         splitEditor = null,
@@ -352,6 +559,7 @@ class SplitBillUiStateTest {
     private companion object {
         const val ANA = "member-1"
         const val PIERRE = "member-2"
+        const val BRUNO = "member-3"
         const val FORMER = "member-9"
     }
 }

@@ -93,6 +93,43 @@ class UpdateExpenseUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a bill paid by two WHEN the edit leaves one payer THEN the bill keeps only that payer`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                mercado.copy(
+                    payers = listOf(
+                        ExpensePayer(
+                            memberId = "pierre",
+                            amountMinor = 600L,
+                        ),
+                        ExpensePayer(
+                            memberId = "ana",
+                            amountMinor = 400L,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        updateExpense()
+
+        // Then
+        assertEquals(
+            listOf(
+                ExpensePayer(
+                    memberId = "pierre",
+                    amountMinor = 1_000L,
+                ),
+            ),
+            repository.expenses.value
+                .single()
+                .payers,
+        )
+    }
+
+    @Test
     fun `GIVEN a description between spaces WHEN saving the edit THEN stores it trimmed`() = runTest {
         // Given
         prepareScenario()

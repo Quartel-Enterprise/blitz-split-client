@@ -98,13 +98,15 @@ data class SplitBillUiState(
 
     /*
      * Why: "Você pagou e recebe R$ 249,60 de volta.", while this device's user paid more than their part. Null while
-     * they paid nothing or what they paid doesn't add up with the others yet.
+     * they paid nothing or what they paid doesn't add up with the others yet; with several payers also when nothing
+     * comes back, so "Sua parte" shows instead of a refund of R$ 0,00.
      */
     val refundMinor: Long?
         get() {
             if (!isAmountValid || split.shares == null || severalPayers?.addsUp == false) return null
             val paid = myPaidMinor.takeIf { it > 0 } ?: return null
-            return (paid - (myShareMinor ?: 0L)).takeIf { it >= 0 }
+            val refund = paid - (myShareMinor ?: 0L)
+            return refund.takeIf { it > 0 || (it == 0L && severalPayers == null) }
         }
 
     // Why: who paid is settled: one person (or one who left a bill being edited), or several adding up to the total.
