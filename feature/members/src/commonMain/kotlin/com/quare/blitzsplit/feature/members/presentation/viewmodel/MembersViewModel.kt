@@ -139,7 +139,11 @@ class MembersViewModel(
         when (event) {
             MembersUiEvent.OnBackClicked -> leave()
 
-            MembersUiEvent.OnShareClicked -> if (isOnTop()) navigator.navigate(Route.Invite(route.groupId))
+            MembersUiEvent.OnShareClicked -> if (isOnTop()) {
+                navigator.navigate(
+                    Route.Invite(route.groupId, isNewGroup = false),
+                )
+            }
 
             MembersUiEvent.OnExpensesTabClicked -> navigator.openGroupTab(
                 from = route,

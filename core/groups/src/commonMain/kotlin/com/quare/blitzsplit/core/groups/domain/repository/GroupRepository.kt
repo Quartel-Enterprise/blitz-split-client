@@ -49,6 +49,12 @@ interface GroupRepository {
     ): Result<Unit>
 
     /*
+     * Why: "Trocar link", online only. The server makes the new code, and the device shows it right away instead of
+     * waiting for the next sync.
+     */
+    suspend fun rotateInviteCode(groupId: String): Result<Unit>
+
+    /*
      * Why: "Liberar nome", online only: the server gives the member a new personal invite code and turns it back into
      * someone nobody joined as, and the device takes the member as the server answers it.
      */

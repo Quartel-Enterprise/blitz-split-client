@@ -5,6 +5,7 @@ import SwiftUI
 @Observable
 final class InviteModel {
     private(set) var state: InviteUiState
+    private(set) var changeLinkErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<InviteViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -16,8 +17,12 @@ final class InviteModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
-        watches.add(viewModel.actionWatcher.observe { action in
-            if let copy = action as? InviteUiActionCopyLink { Pasteboard.copy(copy.link) }
+        watches.add(viewModel.actionWatcher.observe { [weak self] action in
+            switch action {
+            case let copy as InviteUiActionCopyLink: Pasteboard.copy(copy.link)
+            case is InviteUiActionShowChangeLinkFailed: self?.changeLinkErrorCount += 1
+            default: break
+            }
         })
     }
 
@@ -30,7 +35,8 @@ final class InviteModel {
     }
 }
 
-/// "Invite", right after a group is created: a sheet on iPhone, iPad and Mac, taking the new group's place.
+/// "Invite", right after a group is created, taking the new group's place, or from the group: a sheet on iPhone, iPad
+/// and Mac.
 /// The QR code and the link come once the group's first sync brings its code; until then a dashed box says why.
 struct InviteView: View {
     let route: RouteInvite
@@ -55,13 +61,57 @@ struct InviteView: View {
                     model?.send(InviteUiEventOnCloseClicked.shared)
                 }
             }
+            if let model, model.state.showsChangeLink {
+                ToolbarItem(placement: .primaryAction) { changeLinkButton(model: model) }
+            }
         }
+        .alert("Change the invite link?", isPresented: changeLinkShown) {
+            Button("Change link", role: .destructive) {
+                model?.send(InviteUiEventOnChangeLinkConfirmed.shared)
+            }
+            Button("Cancel", role: .cancel) {
+                model?.send(InviteUiEventOnChangeLinkDismissed.shared)
+            }
+        } message: {
+            Text("The current link and QR code stop working, unused personal invites included. Whoever already joined stays in the group.")
+        }
+        // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
+        .glassToast("Couldn't change the link. Try again.", trigger: model?.changeLinkErrorCount ?? 0)
         #if os(macOS)
         .frame(minWidth: 420, idealWidth: 460, minHeight: 600, idealHeight: 680)
         #endif
         .onAppear {
             if model == nil { model = InviteModel(route: route) }
         }
+    }
+
+    /// "Trocar link", the group's creator only: at the top on iPhone and iPad, in the "⋯" menu on the Mac, whose
+    /// items that open a dialog end in "…".
+    @ViewBuilder
+    private func changeLinkButton(model: InviteModel) -> some View {
+        #if os(macOS)
+        Menu("More invite options", systemImage: "ellipsis") {
+            Button("Change link…", systemImage: "arrow.triangle.2.circlepath") {
+                model.send(InviteUiEventOnChangeLinkClicked.shared)
+            }
+        }
+        .disabled(model.state.isChangingLink)
+        #else
+        Button("Change link") {
+            model.send(InviteUiEventOnChangeLinkClicked.shared)
+        }
+        .disabled(model.state.isChangingLink)
+        #endif
+    }
+
+    /// Dismissing the alert (Esc, a tap outside on iPad) closes the confirmation in the ViewModel too.
+    private var changeLinkShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.isConfirmingLinkChange ?? false },
+            set: { shown in
+                if !shown { model?.send(InviteUiEventOnChangeLinkDismissed.shared) }
+            },
+        )
     }
 }
 
@@ -76,12 +126,14 @@ private struct InviteContent: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Group created", systemImage: "checkmark")
-                        .font(.footnote.weight(.semibold))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(Palette.accent)
-                        .background(Palette.accent.opacity(0.14), in: .capsule)
+                    if state.isNewGroup {
+                        Label("Group created", systemImage: "checkmark")
+                            .font(.footnote.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .foregroundStyle(Palette.accent)
+                            .background(Palette.accent.opacity(0.14), in: .capsule)
+                    }
                     Text("Invite everyone to \(state.groupName)")
                         .font(.title2.bold())
                 }

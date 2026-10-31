@@ -11,7 +11,10 @@ import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
+import com.quare.blitzsplit.core.groups.data.dto.RotateInviteCodeParamsDto
+import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 
@@ -58,6 +61,17 @@ class SupabaseGroupRemoteDataSource(
             function = JOIN_GROUP,
             parameters = params,
         ).decodeAs<JoinGroupResultDto>()
+
+    override suspend fun rotateInviteCode(groupId: String): String = try {
+        postgrest
+            .rpc(
+                function = ROTATE_INVITE_CODE,
+                parameters = RotateInviteCodeParamsDto(groupId),
+            ).decodeAs<String>()
+    } catch (exception: PostgrestRestException) {
+        if (exception.code == INSUFFICIENT_PRIVILEGE) throw NotGroupCreatorException()
+        throw exception
+    }
 
     override suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto? = postgrest
         .rpc(
@@ -119,8 +133,11 @@ class SupabaseGroupRemoteDataSource(
         const val MEMBERS = "group_members"
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
+        const val ROTATE_INVITE_CODE = "rotate_invite_code"
         const val RELEASE_MEMBER = "release_member"
 
+        // Why: the Postgres code rotate_invite_code raises for anyone but the group's creator.
+        const val INSUFFICIENT_PRIVILEGE = "42501"
         const val LEAVE_GROUP = "leave_group"
         const val DELETE_GROUP = "delete_group"
         const val REMOVED_GROUPS = "removed_groups"

@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteMember
@@ -499,7 +500,7 @@ class InviteViewModelTest {
             // Given
             prepareScenario(storedGroup = trip.copy(inviteCode = null))
             navigator.replaceTop(Route.GroupDetail("group-1"))
-            navigator.navigate(Route.Invite("group-1"))
+            navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
             viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
@@ -514,7 +515,7 @@ class InviteViewModelTest {
             // Given
             prepareScenario()
             navigator.replaceTop(Route.Members("group-1", joinedAs = null))
-            navigator.navigate(Route.Invite("group-1"))
+            navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
             viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
@@ -529,7 +530,7 @@ class InviteViewModelTest {
             // Given
             prepareScenario()
             navigator.replaceTop(Route.Members("group-1", joinedAs = "Bruno"))
-            navigator.navigate(Route.Invite("group-1"))
+            navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
             viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
@@ -548,7 +549,10 @@ class InviteViewModelTest {
         viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Invite("group-1"), Route.Profile), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.Invite("group-1", isNewGroup = true), Route.Profile),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -802,7 +806,7 @@ class InviteViewModelTest {
         // Then
         assertEquals(1, syncRetries)
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.Invite("group-1")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Invite("group-1", isNewGroup = true)), navigator.backStack.value)
     }
 
     @Test
@@ -929,24 +933,32 @@ class InviteViewModelTest {
         online: Boolean = true,
         isConnectivityKnown: Boolean = true,
         sync: SyncState = SyncState.PENDING,
+        isNewGroup: Boolean = true,
     ) {
         groups = FakeGroupRepository(initialGroups = listOfNotNull(storedGroup))
         isOnline = MutableStateFlow(online)
         syncState = MutableStateFlow(sync)
+        val route = Route.Invite("group-1", isNewGroup = isNewGroup)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.CreateGroup)
-            it.replaceTop(Route.Invite("group-1"))
+            if (isNewGroup) {
+                it.navigate(Route.CreateGroup)
+                it.replaceTop(route)
+            } else {
+                it.navigate(Route.GroupDetail("group-1"))
+                it.navigate(route)
+            }
         }
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         val connectivityNeverAnswers = MutableSharedFlow<Boolean>()
         viewModel = InviteViewModel(
-            route = Route.Invite("group-1"),
+            route = route,
             navigator = navigator,
             encodeQrCode = EncodeQrCode { text ->
                 encodedTexts += text
                 qrCodeOf(text)
             },
             retrySync = RetrySync { syncRetries++ },
+            changeInviteLink = ChangeInviteLink { groups.rotateInviteCode(it) },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeSyncState = ObserveSyncState { syncState },
             connectivityObserver = NetworkConnectivityObserver {

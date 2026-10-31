@@ -16,6 +16,9 @@ data class Group(
     val isPending: Boolean,
     // Why: the code of the invite link, null until the group's first sync brings the one the server made.
     val inviteCode: String?,
-    // Why: only the group's creator may release a member someone joined as ("Liberar nome").
+    /*
+     * Why: only the group's creator may release a member someone joined as ("Liberar nome") or change the
+     * invite link ("Trocar link").
+     */
     val isCreatedByMe: Boolean,
 )

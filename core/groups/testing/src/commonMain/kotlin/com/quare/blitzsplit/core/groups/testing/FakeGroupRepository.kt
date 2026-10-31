@@ -44,6 +44,14 @@ class FakeGroupRepository(
 
     // Why: while set, a create waits for it, so a test can act while the save is in flight.
     var createGate: CompletableDeferred<Unit>? = null
+    val rotatedInviteCodeGroupIds = mutableListOf<String>()
+
+    // Why: the code the server makes for the next change of a group's link.
+    var nextInviteCode = "newCode1"
+    var rotateInviteCodeError: Throwable? = null
+
+    // Why: while set, a change of the link waits for it, so a test can act while the call is in flight.
+    var rotateInviteCodeGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
     var clearError: Throwable? = null
@@ -173,6 +181,16 @@ class FakeGroupRepository(
             }
         }
         hasPendingChanges.value = true
+        return Result.success(Unit)
+    }
+
+    override suspend fun rotateInviteCode(groupId: String): Result<Unit> {
+        rotatedInviteCodeGroupIds += groupId
+        rotateInviteCodeGate?.await()
+        rotateInviteCodeError?.let { return Result.failure(it) }
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) group.copy(inviteCode = nextInviteCode) else group
+        }
         return Result.success(Unit)
     }
 

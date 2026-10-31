@@ -10,4 +10,7 @@ sealed interface InviteUiAction {
         val link: String,
         val groupName: String,
     ) : InviteUiAction
+
+    // Why: the change failed; a sync then brings whichever code the server holds, in case it changed anyway.
+    data object ShowChangeLinkFailed : InviteUiAction
 }

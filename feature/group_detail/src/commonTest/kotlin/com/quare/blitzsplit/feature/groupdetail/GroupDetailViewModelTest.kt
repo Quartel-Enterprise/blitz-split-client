@@ -747,13 +747,13 @@ class GroupDetailViewModelTest {
     fun `GIVEN another screen on top WHEN tapping back THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Invite(GROUP_ID))
+        navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
         // When
         viewModel.onEvent(GroupDetailUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
     }
 
     @Test
@@ -783,7 +783,10 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -796,7 +799,7 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
     }
 
     @Test

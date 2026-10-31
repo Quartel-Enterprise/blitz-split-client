@@ -89,5 +89,4 @@
     <string name="payment_key_delete_title">Delete this key?</string>
     <string name="payment_key_delete_body">People who owe you won\'t see it when settling up anymore.</string>
     <string name="payment_key_delete_confirm">Delete</string>
-    <string name="payment_key_delete_cancel">Cancel</string>
 </resources>

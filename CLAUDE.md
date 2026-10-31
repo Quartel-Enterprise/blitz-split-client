@@ -60,9 +60,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
     grupo") and "Ana 2".
-  - "Convidar" opens in the new group's place right after it is created (`Route.Invite`). The server makes each
-    group's invite code, and only the group's creator may change it ("Trocar link", not built yet), which
-    invalidates the old link.
+  - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
+    only time it shows the "Grupo criado" badge. The server makes each group's invite code, and only the group's creator may change it ("Trocar link",
+    `InviteUiState.showsChangeLink`): only on Convidar opened from the group and online, at the top on Android and
+    iOS, "Trocar link…" in the ⋯ menu on macOS, and "Alguém que não devia tem o link? Trocar link" below the link on
+    the web. It asks "Trocar o link do convite?" first, then shows the new link and QR code right away; the old link
+    and every personal link not used yet stop working (the "invite no longer valid" screen), whoever joined stays,
+    and the other members' devices get the new code on their next sync. A failure says so and keeps the link shown
+    until a sync brings the server's. Nobody may change it once the creator's account is deleted.
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so

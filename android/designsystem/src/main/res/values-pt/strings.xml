@@ -10,7 +10,7 @@
     <string name="designsystem_delete_bill_no_longer_owe">Você deixa de dever %s.</string>
     <string name="designsystem_delete_bill_no_longer_get_back">Você deixa de receber %s.</string>
     <string name="designsystem_delete_bill_confirm">Apagar</string>
-    <string name="designsystem_delete_bill_cancel">Cancelar</string>
+    <string name="designsystem_confirm_cancel">Cancelar</string>
     <string name="designsystem_group_type_trip">Viagem</string>
     <string name="designsystem_group_type_home">Casa</string>
     <string name="designsystem_group_type_event">Evento</string>

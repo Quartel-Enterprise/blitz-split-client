@@ -162,6 +162,17 @@
         }
       }
     },
+    "Change link" : {
+      "comment" : "Invite: the creator changes the group's invite link, and confirms it in the alert",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar link"
+          }
+        }
+      }
+    },
     "Couldn't delete the group. Check your connection and try again." : {
       "comment" : "Deleting the group failed: no sync or no answer from the server",
       "localizations" : {
@@ -723,6 +734,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acerte antes de sair"
+          }
+        }
+      }
+    },
+    "The current link and QR code stop working, unused personal invites included. Whoever already joined stays in the group." : {
+      "comment" : "Invite: the message of the alert before changing the link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O link e o QR code atuais deixam de funcionar, inclusive os convites pessoais ainda não usados. Quem já entrou continua no grupo."
           }
         }
       }
@@ -1888,6 +1910,17 @@
         }
       }
     },
+    "Change link…" : {
+      "comment" : "Invite on the Mac: the item of the ⋯ menu that asks to change the invite link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar link…"
+          }
+        }
+      }
+    },
     "Change the group's color" : {
       "comment" : "VoiceOver label of the new group's avatar, which changes its color on a tap",
       "localizations" : {
@@ -1895,6 +1928,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trocar a cor do grupo"
+          }
+        }
+      }
+    },
+    "Change the invite link?" : {
+      "comment" : "Invite: the title of the alert before changing the link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar o link do convite?"
           }
         }
       }
@@ -2113,6 +2157,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copiar link"
+          }
+        }
+      }
+    },
+    "Couldn't change the link. Try again." : {
+      "comment" : "Invite: changing the link failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para trocar o link. Tente de novo."
           }
         }
       }
@@ -3594,6 +3649,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Celular com DDD"
+          }
+        }
+      }
+    },
+    "More invite options" : {
+      "comment" : "Invite on the Mac: the ⋯ menu of the toolbar",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais opções do convite"
           }
         }
       }

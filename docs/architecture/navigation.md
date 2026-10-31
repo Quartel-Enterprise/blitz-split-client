@@ -31,7 +31,7 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | --- | --- | --- |
 | `navigate(route)` | Pushes `route` | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
 | `navigateBack()` | Pops the top entry, never the last one | `OnBackClicked -> navigator.navigateBack()` |
-| `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo", and the group's tabs (Despesas, Saldos, Membros), go through `openGroupTab`, which treats the three tabs as one group screen: it goes back to the tab asked for when it is right below, puts it in the other tab's place, or replaces the top |
+| `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo", and the group's tabs (Despesas, Saldos, Membros), go through `openGroupTab`, which treats the three tabs as one group screen: it goes back to the tab asked for when it is right below, puts it in the other tab's place, or replaces the top |
 | `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Groups)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
 

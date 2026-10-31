@@ -18,5 +18,9 @@
     <string name="invite_share">Compartilhar link</string>
     <string name="invite_see_who_joined">Ver quem já entrou</string>
     <string name="invite_go_to_group">Ir para o grupo</string>
+    <string name="invite_change_link">Trocar link</string>
+    <string name="invite_change_link_title">Trocar o link do convite?</string>
+    <string name="invite_change_link_message">O link e o QR code atuais deixam de funcionar, inclusive os convites pessoais ainda não usados. Quem já entrou continua no grupo.</string>
+    <string name="invite_change_link_failed">Não deu para trocar o link. Tente de novo.</string>
     <string name="invite_share_message">Bora rachar as contas do grupo %1$s no Bora Rachar? Entra pelo link: %2$s</string>
 </resources>

@@ -32,6 +32,8 @@ sealed interface Route {
     // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
     data class Invite(
         val groupId: String,
+        // Why: right after "Novo grupo", rather than from the group; only the latter offers "Trocar link".
+        val isNewGroup: Boolean,
     ) : Route
 
     // Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens.

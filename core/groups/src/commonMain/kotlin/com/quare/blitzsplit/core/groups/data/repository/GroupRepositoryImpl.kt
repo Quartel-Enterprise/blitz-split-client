@@ -114,6 +114,13 @@ class GroupRepositoryImpl(
         )
     }
 
+    override suspend fun rotateInviteCode(groupId: String): Result<Unit> = suspendRunCatching {
+        local.updateInviteCode(
+            id = groupId,
+            inviteCode = remote.rotateInviteCode(groupId),
+        )
+    }
+
     override suspend fun requestLeaveGroup(groupId: String): Result<GroupExitOutcome> = suspendRunCatching {
         exitOutcomeOf(groupId, remote.requestLeaveGroup(groupId))
     }

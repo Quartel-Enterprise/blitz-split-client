@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.sync
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -171,6 +172,19 @@ class SyncCoordinator(
     suspend fun removeSocialIdentity(): Result<Unit> = scope
         .async { syncLock.withLock { accountRepository.removeSocialIdentity() } }
         .await()
+
+    /*
+     * Why: "Trocar link". Under the sync lock, so a download that read the group before can't write the old code
+     * back over the new one, and in the app's scope, so leaving Convidar mid-call can't lose the new code. A failure
+     * may hide a change the server made anyway (an answer lost on the way), so a sync brings the code it holds, also
+     * once Convidar is gone; a refusal changed nothing, so it needs none.
+     */
+    suspend fun rotateInviteCode(groupId: String): Result<Unit> = scope
+        .async {
+            syncLock
+                .withLock { groupRepository.rotateInviteCode(groupId) }
+                .onFailure { if (it !is NotGroupCreatorException) retry() }
+        }.await()
 
     /*
      * Why: "Sair ao sincronizar" keeps the queued changes on the device until they are up, so the

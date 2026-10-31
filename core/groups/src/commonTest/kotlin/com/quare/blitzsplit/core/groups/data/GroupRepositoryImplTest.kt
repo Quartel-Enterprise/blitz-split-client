@@ -1890,6 +1890,196 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a group with an invite code WHEN changing its link THEN asks the server and stores the new code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "aB3dE5gH",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.rotateInviteCode("group-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("group-1"), remote.rotatedInviteCodeGroupIds)
+            assertEquals("newCode1", local.group("group-1")?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN a group with an invite code WHEN changing its link THEN the group shows the new code without a sync`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        inviteCode = "aB3dE5gH",
+                    ),
+                ),
+            )
+
+            // When
+            repository.rotateInviteCode("group-1")
+
+            // Then
+            assertEquals(
+                "newCode1",
+                repository
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .inviteCode,
+            )
+            assertTrue(remote.calls.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a synced group WHEN changing its link THEN it stays synced with nothing to push`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 5L,
+                    pendingSync = false,
+                    inviteCode = "aB3dE5gH",
+                ),
+            ),
+        )
+
+        // When
+        repository.rotateInviteCode("group-1")
+
+        // Then
+        assertEquals(false, local.group("group-1")?.pendingSync)
+        assertEquals(5L, local.group("group-1")?.updatedAt)
+        assertFalse(repository.observeHasPendingChanges().first())
+    }
+
+    @Test
+    fun `GIVEN the server refuses WHEN changing the link THEN returns the error and keeps the old code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    inviteCode = "aB3dE5gH",
+                ),
+            ),
+            rotateInviteCodeError = IllegalStateException("only the creator may change the link"),
+        )
+
+        // When
+        val result = repository.rotateInviteCode("group-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("aB3dE5gH", local.group("group-1")?.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN two groups with invite codes WHEN changing the link of one THEN the other keeps its code`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    inviteCode = "aB3dE5gH",
+                ),
+                group(
+                    id = "group-2",
+                    inviteCode = "Zx9Yw8Vu",
+                ),
+            ),
+        )
+        val otherBefore = local.group("group-2")
+
+        // When
+        repository.rotateInviteCode("group-1")
+
+        // Then
+        assertEquals("newCode1", local.group("group-1")?.inviteCode)
+        assertEquals(otherBefore, local.group("group-2"))
+    }
+
+    @Test
+    fun `GIVEN a profile of an account WHEN creating a group THEN the group shows as created by me`() = runTest {
+        // Given
+        prepareScenario(profileOwnerUserId = "user-1")
+        repository.createGroup(newGroup, createdAt = 1_000L)
+
+        // When
+        val group = repository.observeGroups().first().single()
+
+        // Then
+        assertTrue(group.isCreatedByMe)
+    }
+
+    @Test
+    fun `GIVEN a group created before any account WHEN observing THEN it shows as created by me`() = runTest {
+        // Given
+        prepareScenario(profileOwnerUserId = null)
+        repository.createGroup(newGroup, createdAt = 1_000L)
+
+        // When
+        val group = repository.observeGroups().first().single()
+
+        // Then
+        assertTrue(group.isCreatedByMe)
+    }
+
+    @Test
+    fun `GIVEN a group created before any account WHEN a download claims it THEN it shows as created by me`() =
+        runTest {
+            // Given
+            prepareScenario(profileOwnerUserId = null)
+            repository.createGroup(newGroup, createdAt = 1_000L)
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(
+                repository
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .isCreatedByMe,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group another account created WHEN downloading THEN it is not created by me`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    createdBy = "user-2",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertFalse(
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .isCreatedByMe,
+        )
+    }
+
+    @Test
     fun `GIVEN a group on the device WHEN adding a member THEN stores them pending with no account at that time`() =
         runTest {
             // Given
@@ -3432,6 +3622,7 @@ class GroupRepositoryImplTest {
         groupWriteError: Throwable? = null,
         deleteMembersError: Throwable? = null,
         serverMemberInviteCodes: Map<String, String> = emptyMap(),
+        rotateInviteCodeError: Throwable? = null,
         releasedMember: GroupMemberDto? = null,
         releaseError: Throwable? = null,
         exitStatus: String = "left",
@@ -3454,6 +3645,7 @@ class GroupRepositoryImplTest {
             it.inviteCodes = serverInviteCodes
             it.memberInviteCodes = serverMemberInviteCodes
             it.deleteMembersError = deleteMembersError
+            it.rotateInviteCodeError = rotateInviteCodeError
             it.releasedMember = releasedMember
             it.releaseError = releaseError
             it.exitStatus = exitStatus
@@ -3840,6 +4032,18 @@ private class FakeGroupRemoteDataSource(
     override suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto? = error("unused")
 
     override suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto = error("unused")
+
+    val rotatedInviteCodeGroupIds = mutableListOf<String>()
+
+    // Why: the code the server makes for the next change of a group's link.
+    var nextInviteCode = "newCode1"
+    var rotateInviteCodeError: Throwable? = null
+
+    override suspend fun rotateInviteCode(groupId: String): String {
+        rotatedInviteCodeGroupIds += groupId
+        rotateInviteCodeError?.let { throw it }
+        return nextInviteCode
+    }
 
     override suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto? {
         calls += "release"
