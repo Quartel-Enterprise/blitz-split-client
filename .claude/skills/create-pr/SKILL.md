@@ -1,13 +1,15 @@
 ---
 name: create-pr
-description: "Create a pull request following all project conventions: ktlint formatting, AI review of the changes, the checks of every area the branch touches (shared Kotlin, Android, Apple, web), Conventional Commits title, description, assignee, and labels."
+description: "Create a pull request following all project conventions: ktlint formatting, AI review of the changes with every finding fixed, the checks of every area the branch touches (shared Kotlin, Android, Apple, web), Conventional Commits title, description, assignee, and labels; then add merge-when-green and auto fix the pull request until it merges."
 ---
 
 # Create PR
 
-This skill formats the code, reviews the changes, runs the checks of every area the branch touches,
-commits any uncommitted changes, pushes the branch, and opens a pull request with a clear title and
-description inferred from the actual changes.
+This skill formats the code, reviews the changes and fixes what the reviews find, runs the checks of
+every area the branch touches, commits any uncommitted changes, pushes the branch, and opens a pull
+request with a clear title and description inferred from the actual changes. Then it adds the
+`merge-when-green` label and fixes the pull request's failing checks and review threads until it
+merges, without asking.
 
 ## Step-by-step workflow
 
@@ -152,15 +154,18 @@ most severe findings. The skill remembers the flag, so the user's own `/code-rev
 every finding too, until they pass `--max-findings default`. Invoke the `review-conventions` skill
 with the description from step 6 as its argument. Wait for both results before going on.
 
-If neither reports anything, continue to step 8. Otherwise stop and show the user every finding,
-grouped by review, then use the `AskUserQuestion` tool to ask "Como quer seguir com os apontamentos
-da review?", with these options:
-
-- "Corrigir os apontamentos" (all of them, or the ones the user picks)
-- "Seguir sem mudanças"
+If neither reports anything, continue to step 8. Otherwise fix every finding of both reviews, the
+cleanups and nitpicks too, without asking the user first. Check each one against the code before
+changing it: a finding that turns out wrong (the code already handles the case, or the fix would
+contradict a doc under `docs/` or a product decision of `CLAUDE.md`) stays unfixed. A finding that
+is a bug gets its regression test, as the "Who writes the unit tests" section of
+[docs/ai_agents.md](../../../docs/ai_agents.md) says. Ask the user only when a fix needs a product
+choice nobody wrote down yet (`CLAUDE.md` makes those Pierre's call), and fix the others meanwhile.
 
 After fixing, run step 2 again if a Kotlin file changed, and update the description from step 6 if
-what the branch does changed. Don't run the reviews again unless the user asks.
+what the branch does changed. Don't run the reviews again unless the user asks. Then show the user,
+grouped by review, the findings fixed and the ones left as they are, each with one line on why, and
+go on to step 8.
 
 ### 8. Run the checks of each area the branch touches
 
@@ -336,19 +341,17 @@ buttons in the Compose, SwiftUI and React UIs:
   > disabled look until the device is back online. "Usar sem conta" stays enabled offline. No change
   > to `WelcomeViewModel`: `showsOfflineNotice` and `areAccountButtonsEnabled` already drove both.
 
-### 12. Squash and merge (optional)
+### 12. Merge when green and auto fix
 
-If the user's request already asked for the merge (e.g. "abre o PR e mergeia"), skip the question
-and merge. Otherwise, after the PR is created, use the `AskUserQuestion` tool to ask "Quer que eu
-faça o squash merge agora?", with these options:
+Right after the pull request is created, without asking, add the `merge-when-green` label and turn on
+auto fix: from then on the pull request is this session's to drive until it merges, fixing failing
+checks, review threads and conflicts with `main` as they show up. The label merges it (see
+[docs/ci.md](../../../docs/ci.md#merge-when-green)), unless the user asked to merge right away (e.g.
+"mergeia agora"): then merge directly, as below. Skip this step only when the user's request said not
+to merge (e.g. "só abre o PR"), and stop after step 11.
 
-- "Sim, faz o squash merge e limpa a task"
-- "Não, para por aqui"
-
-If yes, the `merge-when-green` label merges it (see
-[docs/ci.md](../../../docs/ci.md#merge-when-green)), unless the user asked to merge right away: then
-merge directly, as below. The label needs the `MERGE_WHEN_GREEN_TOKEN` repository secret, so check
-for it first:
+In a session without `gh` (a Claude Code cloud session), make the same calls through the GitHub MCP
+tools. The label needs the `MERGE_WHEN_GREEN_TOKEN` repository secret, so check for it first:
 
 ```bash
 gh secret list | grep -qw MERGE_WHEN_GREEN_TOKEN
@@ -365,8 +368,14 @@ gh pr edit --add-label merge-when-green
 
 The workflow squash merges the pull request once every check on its head commit has passed and
 every review conversation is resolved, including the checks of the fix commit the opening
-`claude-review` pushes. That happens minutes later, so wait for it in the background: run this with
-the Bash tool's `run_in_background`, which calls you back when it exits.
+`claude-review` pushes. That happens minutes later, so wait for it without blocking the turn:
+
+- **With the `subscribe_pr_activity` tool** (a Claude Code cloud session), call it for the pull
+  request and end the turn: check results, reviews and comments wake the session as PR events, and
+  the rules that arrive with the subscription govern them. Handle each event as the outcomes below
+  say, then call `unsubscribe_pr_activity` once the pull request merges or closes.
+- **Without it**, run this with the Bash tool's `run_in_background`, which calls you back when it
+  exits.
 
 ```bash
 pr=$(gh pr view --json number -q .number)
@@ -391,20 +400,29 @@ done
 exit 4
 ```
 
-Tell the user the label is on and that the task gets cleaned up once the merge happens. When the
-command exits:
+Tell the user the label and auto fix are on, and that the task gets cleaned up once the merge
+happens. Every fix below goes the same way, without asking: pull first (the opening `claude-review`
+may have pushed its fix commit), fix, run step 2 again if a Kotlin file changed and the step 8
+checks of the areas the fix touches, commit it with step 9's message rules, push (step 10), and
+wait again as above. Never amend, rebase or force push what is already on `origin`, and never skip,
+disable or loosen a test or a check to get it green. When the command exits, or a PR event says the
+same:
 
 - **0, merged:** run the `finish-task` skill right away, as after a direct merge below.
 - **2, a check failed or was cancelled:** see which one (`gh pr checks <pr>`).
   - `merge-when-green` failed: read its run (`gh run view <run> --log-failed`). When the
     `MERGE_WHEN_GREEN_TOKEN` secret is missing or expired, remove the label
     (`gh pr edit --remove-label merge-when-green`), tell the user, and merge directly as below.
-  - Any other check: report it and stop. The label stays on, so re-running the check until it's
-    green still merges the pull request; `finish-task` then runs when the user asks for it.
+  - Any other check: read its failed log (`gh run view <run> --log-failed`), reproduce the failure
+    locally with that area's step 8 check, and fix it as above; the label stays on, so the green
+    checks of the fix commit merge the pull request. When the failure isn't the branch's (the
+    runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait
+    again instead. Report it and stop, with the label still on, when it can't be reproduced, needs
+    a product choice nobody wrote down yet, or the same check still fails after two fixes.
 - **3, label removed:** `merge-when-green` removes its label with a comment saying why. Read its
   latest comment (`gh pr view <pr> --comments`):
   - **Unresolved review conversations**, often `claude-review` findings, after every check passed
-    or was held. List them and show them to the user:
+    or was held. List them:
 
     ```bash
     gh api graphql -F pr="$pr" -F owner='{owner}' -F repo='{repo}' -f query='
@@ -420,11 +438,14 @@ command exits:
         | select(.isResolved | not) | {path, body: .comments.nodes[0].body}'
     ```
 
-    For each one, fix it or reply with why the code stays as it is, then resolve it on GitHub, add
-    the label again and start the wait above again in the background.
-  - **GitHub refused the merge** (e.g. a conflict with `main`), or **a `review-gate` check failed
-    without holding anything**: tell the user what the comment and the `merge-when-green` run say,
-    and stop.
+    For each one, without asking, fix it as above (checking it against the code first, as in step
+    7) or reply with why the code stays as it is, then resolve it on GitHub and add the label
+    again. Show the user what was fixed and what was answered.
+  - **A conflict with `main`**: merge `origin/main` into the branch (a merge commit, never a
+    rebase), resolve the conflicts keeping what both sides meant, then push as above and add the
+    label again. Ask the user only when a conflict needs a product choice nobody wrote down yet.
+  - **GitHub refused the merge for another reason**, or **a `review-gate` check failed without
+    holding anything**: tell the user what the comment and the `merge-when-green` run say, and stop.
   - **No such comment:** someone removed the label by hand. Tell the user and stop.
 - **1, closed without merging:** tell the user and stop.
 - **4, still open after two hours:** a check is stuck pending, or no workflow completion is left to
@@ -448,7 +469,7 @@ gh pr checks
   gh pr merge --squash
   ```
 
-  If a check fails, report it and stop. A failed `review-gate` check (its `Hold for the open
+  If a check fails, fix it as in the auto fix above, then watch again. A failed `review-gate` check (its `Hold for the open
   threads` step) means the Claude review left threads open, and the ruleset refuses the merge while
   any conversation is unresolved: fix or answer each one and resolve it. A fix pushed runs the checks
   again; with no push, add the `run-checks` label, which re-runs the held checks (see
@@ -468,8 +489,8 @@ a ruleset, a conflict with `main`), notify the user with the reason and stop. Do
 `finish-task` deletes the branch, locally and on GitHub.
 
 Once the squash merge succeeds, immediately run the `finish-task` skill in the same turn; don't
-wait for the user to ask for it. Asking for the squash merge is also the request to clean up the
-task. `finish-task` handles both worktree and in-place tasks and checks the merge before removing
+wait for the user to ask for it. Opening the pull request through this skill is also the request to
+merge it and clean up the task. `finish-task` handles both worktree and in-place tasks and checks the merge before removing
 the branch (and the worktree, the emulator and the simulator, if there are any), so don't duplicate
 its logic here.
 
