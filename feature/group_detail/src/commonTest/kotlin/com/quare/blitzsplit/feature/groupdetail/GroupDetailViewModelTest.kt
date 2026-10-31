@@ -507,6 +507,56 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Carla a former member and Bruno paid WHEN the screen opens THEN lists them in group order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "boat",
+                        spentAt = thisMorning,
+                        amountMinor = 90_000,
+                        payers = listOf(
+                            ExpensePayer(CARLA, 30_000),
+                            ExpensePayer(FORMER, 30_000),
+                            ExpensePayer(BRUNO, 30_000),
+                        ),
+                        shares = listOf(
+                            share(PIERRE, 45_000),
+                            share(ANA, 45_000),
+                        ),
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.days
+                .single()
+                .entries
+                .filterIsInstance<ExpenseRow>()
+                .single()
+
+            // Then
+            assertEquals(
+                listOf(
+                    ExpenseRowPayer(
+                        name = "Bruno",
+                        isMe = false,
+                    ),
+                    ExpenseRowPayer(
+                        name = "Carla",
+                        isMe = false,
+                    ),
+                    ExpenseRowPayer(
+                        name = null,
+                        isMe = false,
+                    ),
+                ),
+                row.payers,
+            )
+        }
+
+    @Test
     fun `GIVEN a bill this device user neither paid nor shares WHEN the screen opens THEN has no balance`() =
         runTest(testDispatcher) {
             // Given
@@ -1131,5 +1181,6 @@ class GroupDetailViewModelTest {
         const val CARLA = "member-4"
         const val DIEGO = "member-5"
         const val ELISA = "member-6"
+        const val FORMER = "member-left"
     }
 }
