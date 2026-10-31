@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -2867,6 +2868,7 @@ class GroupRepositoryImplTest {
         ),
         isPending = true,
         inviteCode = null,
+        isCreatedByMe = true,
     )
 
     private fun group(
@@ -3230,7 +3232,7 @@ private class FakeGroupLocalDataSource(
     ) {
         val owned = groups.value.filter { it.ownerUserId == ownerUserId }
         val goneGroups = owned
-            .filter { !it.pendingSync && it.id !in serverGroupIds }
+            .filter { (!it.pendingSync || it.inviteCode != null) && it.id !in serverGroupIds }
             .map { it.id }
             .toSet()
         val ownedIds = owned.map { it.id }.toSet()
@@ -3298,6 +3300,9 @@ private class FakeGroupRemoteDataSource(
     val deletedMemberIds = mutableListOf<List<String>>()
     var deleteMembersError: Throwable? = null
     var onUpsertGroups: () -> Unit = {}
+    val releasedMemberIds = mutableListOf<String>()
+    var releasedMember: GroupMemberDto? = null
+    var releaseError: Throwable? = null
 
     // Why: the code the server makes for each group id, which the upsert answers with.
     var inviteCodes: Map<String, String> = emptyMap()
@@ -3339,4 +3344,11 @@ private class FakeGroupRemoteDataSource(
     override suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto? = error("unused")
 
     override suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto = error("unused")
+
+    override suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto? {
+        calls += "release"
+        releasedMemberIds += params.memberId
+        releaseError?.let { throw it }
+        return releasedMember
+    }
 }

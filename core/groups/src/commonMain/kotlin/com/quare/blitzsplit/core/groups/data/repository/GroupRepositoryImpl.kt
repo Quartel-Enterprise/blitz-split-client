@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.groups.data.repository
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -106,6 +107,16 @@ class GroupRepositoryImpl(
             id = memberId,
             removedAt = removedAt,
         )
+    }
+
+    /*
+     * Why: a release only reaches a group the server has, so the device already holds its owner. The server answers a
+     * member nobody joined as, which is never this device's user.
+     */
+    override suspend fun requestMemberRelease(memberId: String): Result<Unit> = suspendRunCatching {
+        val released = remote.requestMemberRelease(ReleaseMemberParamsDto(memberId)) ?: return@suspendRunCatching
+        val userId = checkNotNull(profileLocal.get()?.ownerUserId) { "No account to release a member with" }
+        local.applyRemoteMember(mapper.toEntity(released, userId = userId))
     }
 
     /*

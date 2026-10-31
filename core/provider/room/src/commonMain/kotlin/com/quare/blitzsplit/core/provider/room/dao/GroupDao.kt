@@ -42,8 +42,11 @@ interface GroupDao {
     )
     suspend fun getRemovedMemberIds(ownerUserId: String): List<String>
 
-    @Query("SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND pendingSync = 0")
-    suspend fun getSyncedGroupIds(ownerUserId: String): List<String>
+    // Why: a group with an invite code went up once, whatever this device changed in it since.
+    @Query(
+        "SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND (pendingSync = 0 OR inviteCode IS NOT NULL)",
+    )
+    suspend fun getGroupIdsOnServer(ownerUserId: String): List<String>
 
     @Query(
         "SELECT * FROM group_member WHERE pendingSync = 0 AND groupId IN " +
@@ -284,8 +287,10 @@ interface GroupDao {
     suspend fun deleteOtherUsersGroupRows(ownerUserId: String)
 
     /*
-     * Why: the synced groups the server no longer gives this user were removed there, with all their members; so
-     * were the synced members missing from a group the server still has. A group edited here keeps its members.
+     * Why: the groups that went up and the server no longer gives this user were removed there, or the user was
+     * released from them ("Liberar nome"), with all their members, even with changes made here the server would refuse
+     * now. So were the synced members missing from a group the server still has. A group created here and not up yet
+     * stays, and a group edited here keeps its members.
      */
     @Transaction
     suspend fun deleteGoneFromServer(
@@ -293,7 +298,7 @@ interface GroupDao {
         serverGroupIds: Set<String>,
         serverMemberIds: Set<String>,
     ) {
-        val goneGroups = getSyncedGroupIds(ownerUserId).filterNot { it in serverGroupIds }
+        val goneGroups = getGroupIdsOnServer(ownerUserId).filterNot { it in serverGroupIds }
         val goneMembers = getSyncedMembers(ownerUserId)
             .filter { it.groupId in serverGroupIds && it.id !in serverMemberIds }
             .map { it.id }

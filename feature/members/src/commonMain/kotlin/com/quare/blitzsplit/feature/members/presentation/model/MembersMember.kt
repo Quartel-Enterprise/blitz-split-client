@@ -20,6 +20,11 @@ data class MembersMember(
     val personalLink: String?,
     // Why: "+R$ 223,50 a receber" or "−R$ 118,00 deve", null while the group has no bill.
     val balance: MemberBalance?,
+    /*
+     * Why: "Liberar nome", for the group's creator only, on someone else who joined: whoever joined as them leaves,
+     * so the right person can pick the name. Bills and balances stay with the member.
+     */
+    val canBeReleased: Boolean,
 ) {
     // Why: someone who still owes or is owed stays, or their part of the bills would vanish from the balances.
     val canBeRemoved: Boolean

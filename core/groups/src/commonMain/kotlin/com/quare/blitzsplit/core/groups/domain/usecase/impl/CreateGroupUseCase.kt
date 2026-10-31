@@ -45,6 +45,7 @@ class CreateGroupUseCase(
                     },
                     isPending = true,
                     inviteCode = null,
+                    isCreatedByMe = true,
                 ),
                 createdAt = currentTimeMillis(),
             ).map { id }

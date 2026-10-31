@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -125,6 +126,7 @@ class MembersViewModelTest {
                         hasJoined = true,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = false,
                     ),
                     MembersMember(
                         "member-2",
@@ -135,6 +137,7 @@ class MembersViewModelTest {
                         hasJoined = false,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = false,
                     ),
                     MembersMember(
                         "member-3",
@@ -145,6 +148,7 @@ class MembersViewModelTest {
                         hasJoined = true,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = true,
                     ),
                     MembersMember(
                         "member-4",
@@ -155,6 +159,7 @@ class MembersViewModelTest {
                         hasJoined = false,
                         personalLink = null,
                         balance = null,
+                        canBeReleased = false,
                     ),
                 ),
                 state.members,
@@ -2975,6 +2980,7 @@ class MembersViewModelTest {
         hasJoined = false,
         personalLink = null,
         balance = null,
+        canBeReleased = false,
     )
 
     private val trip = Group(
@@ -2986,6 +2992,7 @@ class MembersViewModelTest {
         members = listOf(pierre, ana, bruno, carla),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = true,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")
@@ -3080,6 +3087,7 @@ class MembersViewModelTest {
             addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
             renameMember = RenameMemberUseCase(groups) { 1_000L },
             removeMember = RemoveMemberUseCase(groups) { 1_000L },
+            releaseMember = ReleaseMemberUseCase(groups),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
             observeGroup = ObserveGroup { groupId ->

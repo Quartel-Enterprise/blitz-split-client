@@ -14,6 +14,10 @@ data class MembersUiState(
     val editor: MemberNameEditor?,
     // Why: "Remover Carla do grupo?", asked while not null; always someone who can be removed.
     val memberToRemove: MembersMember?,
+    // Why: "Liberar o nome Carla?", asked while not null; always someone who can be released.
+    val memberToRelease: MembersMember?,
+    // Why: the release goes to the server, so "Liberar" waits for it with the confirmation open.
+    val isReleasing: Boolean,
     // Why: the "Convite pessoal" sheet, open while not null; always someone nobody joined as, with a link.
     val personalInvite: PersonalInvite?,
     // Why: "Seu saldo neste grupo" over the tabs, null while there is no bill to owe anything for.

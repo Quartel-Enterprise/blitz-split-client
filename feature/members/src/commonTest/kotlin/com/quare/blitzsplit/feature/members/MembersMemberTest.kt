@@ -287,6 +287,7 @@ class MembersMemberTest {
         hasJoined = hasJoined,
         personalLink = personalLink,
         balance = balance,
+        canBeReleased = false,
     )
 
     private companion object {

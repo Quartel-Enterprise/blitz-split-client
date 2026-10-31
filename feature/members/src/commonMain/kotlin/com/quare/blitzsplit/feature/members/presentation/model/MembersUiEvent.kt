@@ -42,6 +42,15 @@ sealed interface MembersUiEvent : UiEvent {
 
     data object OnRemoveDismissed : MembersUiEvent
 
+    // Why: "Liberar nome" in the menu of someone who joined, for the group's creator, which asks first.
+    data class OnReleaseClicked(
+        val memberId: String,
+    ) : MembersUiEvent
+
+    data object OnReleaseConfirmed : MembersUiEvent
+
+    data object OnReleaseDismissed : MembersUiEvent
+
     data class OnDraftChanged(
         val draft: String,
     ) : MembersUiEvent

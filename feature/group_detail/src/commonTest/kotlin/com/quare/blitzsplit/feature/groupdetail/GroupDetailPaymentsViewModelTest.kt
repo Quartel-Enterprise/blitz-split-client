@@ -1111,6 +1111,7 @@ class GroupDetailPaymentsViewModelTest {
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = true,
     )
 
     // Why: this device's user owes Ana 6.000 and Bruno 9.000.

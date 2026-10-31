@@ -486,13 +486,14 @@ class GroupMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a stored member WHEN mapping it to a DTO THEN carries its fields`() {
+    fun `GIVEN the member of this device user WHEN mapping it to a DTO THEN carries its fields`() {
         // Given
         val entity = memberEntity(
             id = "m-1",
             name = "Ana",
             avatarColor = "green",
             userId = "user-2",
+            isMe = true,
             addedAt = 3L,
         )
 
@@ -938,6 +939,7 @@ class GroupMapperImplTest {
         ),
         isPending = true,
         inviteCode = null,
+        isCreatedByMe = true,
     )
 
     private fun groupEntity(

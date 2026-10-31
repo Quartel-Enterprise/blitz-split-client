@@ -1153,6 +1153,7 @@ class EditGroupViewModelTest {
                 hasJoined = false,
                 inviteCode = null,
             ),
+            isCreatedByMe = true,
         ),
         isPending = false,
         inviteCode = "AB12CD",
