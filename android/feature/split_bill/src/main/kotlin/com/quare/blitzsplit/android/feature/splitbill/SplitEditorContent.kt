@@ -224,7 +224,11 @@ private fun SplitPeopleList(
                 row = row,
                 mode = editor.mode,
                 isIn = row.person.id in includedIds,
-                isPayer = row.person.id in editor.payerIds,
+                paidLabel = when {
+                    row.person.id !in editor.payerIds -> null
+                    state.severalPayers != null -> R.string.split_bill_row_paid_part
+                    else -> R.string.split_bill_row_paid
+                },
                 isWithoutValue = row.person.id in withoutValueIds,
                 isNobodyIn = isNobodyIn,
                 shape = RoundedCornerShape(

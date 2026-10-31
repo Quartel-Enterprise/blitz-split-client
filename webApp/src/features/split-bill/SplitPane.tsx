@@ -117,7 +117,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
               mode={editor.mode}
               currency={state.currency}
               fractionDigits={state.fractionDigits}
-              isPayer={state.payerIds.includes(row.person.id)}
+              paidLabel={state.payerIds.includes(row.person.id) ? (state.severalPayers ? 'split_paidPart' : 'split_paidBill') : null}
               isOut={excludedIds.has(row.person.id)}
               isMissing={missingIds.has(row.person.id)}
               money={money}
@@ -137,7 +137,8 @@ interface RowProps {
   mode: string
   currency: string
   fractionDigits: number
-  isPayer: boolean
+  // Why: "Pagou a conta", or "Pagou parte da conta" for one of several payers; null for whoever didn't pay.
+  paidLabel: MessageKey | null
   // Why: out of the split in this mode: unchecked, blank or at 0.
   isOut: boolean
   // Why: "Sem valor", a blank part in Valores while the split doesn't add up.
@@ -145,7 +146,7 @@ interface RowProps {
   money: Money
 }
 
-function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, isPayer, isOut, isMissing, money }: RowProps) {
+function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLabel, isOut, isMissing, money }: RowProps) {
   const person = row.person
   const name = personName(person)
   // Why: "Parte de Pierre" reads better to a screen reader than "Parte de Você".
@@ -158,8 +159,8 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, isPaye
   let control
   switch (mode) {
     case 'amount':
-      subtitle = isPayer
-        ? t('split_paidBill')
+      subtitle = paidLabel
+        ? t(paidLabel)
         : isMissing
           ? t('split_noValue')
           : !person.hasJoined
@@ -190,7 +191,7 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, isPaye
       )
       break
     default:
-      subtitle = isPayer ? t('split_paidBill') : row.isIncluded ? t('split_in') : t('split_out')
+      subtitle = paidLabel ? t(paidLabel) : row.isIncluded ? t('split_in') : t('split_out')
       control = <span className="font-mono text-[13px] tabular-nums">{share ?? '—'}</span>
   }
 

@@ -6681,6 +6681,17 @@
           }
         }
       }
+    },
+    "Paid part of the bill" : {
+      "comment" : "A row in Split: one of several people who paid the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagou parte da conta"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

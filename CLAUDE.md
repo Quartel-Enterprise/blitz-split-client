@@ -131,8 +131,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).
     Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's
-    user first) and count more ("3 pessoas pagaram"); Conta's "Sua parte" names whom the bill puts it on, as Saldos
-    does (`GroupBalances.findDebtsWithin`).
+    user first, `PayerOrder`) and count more ("3 pessoas pagaram"), and Dividir marks each of several payers "Pagou
+    parte da conta"; Conta's "Sua parte" names whom the bill puts it on, as Saldos does
+    (`GroupBalances.findDebtsWithin`).
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and

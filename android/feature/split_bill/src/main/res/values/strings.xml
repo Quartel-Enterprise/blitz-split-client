@@ -126,4 +126,5 @@
     <string name="split_bill_several_payers_lead_no_total">Say how much each one paid</string>
     <string name="split_bill_payers_add_up">%1$s of %2$s. Adds up.</string>
     <string name="split_bill_payer_amount">How much %s paid</string>
+    <string name="split_bill_row_paid_part">Paid part of the bill</string>
 </resources>

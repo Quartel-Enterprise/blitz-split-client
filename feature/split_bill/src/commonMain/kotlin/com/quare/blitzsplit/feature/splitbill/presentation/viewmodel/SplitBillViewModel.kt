@@ -335,9 +335,11 @@ class SplitBillViewModel(
             /*
              * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the
              * group. A bill being edited keeps its payer even after they left it, so saving never moves who paid.
-             * Several payers keep theirs in severalPayers.
+             * Several payers keep theirs in severalPayers, until every one of them left a new bill.
              */
-            val severalPayers = state.severalPayers?.withPeople(people, group.currency, keepsFormer = state.isEditing)
+            val severalPayers = state.severalPayers
+                ?.withPeople(people, group.currency, keepsFormer = state.isEditing)
+                ?.takeIf { it.payers.isNotEmpty() }
             val payerId = if (severalPayers != null) {
                 ""
             } else {
@@ -345,7 +347,6 @@ class SplitBillViewModel(
                     ?: people.firstOrNull { it.isMe }?.id
                     ?: people.firstOrNull()?.id.orEmpty()
             }
-            val payerIds = severalPayers?.payers?.map { it.memberId } ?: listOf(payerId).filter { it.isNotEmpty() }
             val shown = state.copy(
                 groupName = group.name,
                 groupInitials = Initials.of(group.name),
@@ -354,21 +355,19 @@ class SplitBillViewModel(
                 people = people,
                 payerId = payerId,
                 severalPayers = severalPayers,
+                // Why: the payer of a bill being edited stays marked after they left the group.
                 payerSelection = state.payerSelection?.takeIf { selection ->
-                    selection.memberId == null || people.any { it.id == selection.memberId }
+                    selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
                 },
                 payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
-                split = state.split.withPeople(people, group.currency, payerIds, includesNewcomers = !state.isEditing),
-                splitEditor = state.splitEditor?.withPeople(
-                    people = people,
-                    currency = group.currency,
-                    payerIds = payerIds,
-                    includesNewcomers = !state.isEditing,
-                ),
                 isLoaded = true,
             )
+            val withSplit = shown.copy(
+                split = state.split.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
+                splitEditor = state.splitEditor?.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
+            )
             // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
-            shown.withBillTotal()
+            withSplit.withBillTotal()
         }
     }
 

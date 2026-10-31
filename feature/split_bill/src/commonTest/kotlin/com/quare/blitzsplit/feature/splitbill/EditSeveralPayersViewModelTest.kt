@@ -294,6 +294,20 @@ class EditSeveralPayersViewModelTest {
         }
 
     @Test
+    fun `GIVEN Quem pagou open on a bill whose one payer left WHEN a sync brings the group THEN it stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = billPaidByFormer)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+
+            // When
+            groups.groups.value = listOf(trip.copy(members = trip.members + diego))
+
+            // Then
+            assertEquals(PayerSelection(FORMER), viewModel.uiState.value.payerSelection)
+        }
+
+    @Test
     fun `GIVEN the former member still holding the total WHEN tapping Pronto THEN they remain the only payer`() =
         runTest(testDispatcher) {
             // Given

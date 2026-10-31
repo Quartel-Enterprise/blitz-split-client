@@ -256,31 +256,32 @@ private fun ShareRow(
     }
 }
 
-// Why: someone who left the group keeps no name nor color, so a plain person icon stands for them.
-// Why: the faces of whoever paid, overlapping when several did; someone who left the group has a blank one.
+// Why: the faces of whoever paid, overlapping when several did, as iOS and the web draw them: only members' faces.
 @Composable
 private fun PayerFacesRow(payers: List<BillPayer>) {
+    val faces = payers.filter { it.name != null }.take(PAYER_FACE_COUNT)
+    if (faces.isEmpty()) {
+        FormerMemberBadge(payerAvatarSize)
+        return
+    }
     Row(horizontalArrangement = Arrangement.spacedBy((-10).dp)) {
-        payers.take(PAYER_FACE_COUNT).ifEmpty { listOf(null) }.forEach { payer ->
+        faces.forEach { payer ->
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surface, CircleShape)
                     .padding(2.dp),
             ) {
-                if (payer != null && payer.name != null) {
-                    AvatarBadge(
-                        initial = payer.initials,
-                        color = payer.avatarColor,
-                        size = payerAvatarSize,
-                    )
-                } else {
-                    FormerMemberBadge(payerAvatarSize)
-                }
+                AvatarBadge(
+                    initial = payer.initials,
+                    color = payer.avatarColor,
+                    size = payerAvatarSize,
+                )
             }
         }
     }
 }
 
+// Why: someone who left the group keeps no name nor color, so a plain person icon stands for them.
 @Composable
 private fun FormerMemberBadge(size: Dp) {
     Box(

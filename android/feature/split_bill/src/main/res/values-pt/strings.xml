@@ -126,4 +126,5 @@
     <string name="split_bill_several_payers_lead_no_total">Diga quanto cada uma pagou</string>
     <string name="split_bill_payers_add_up">%1$s de %2$s. Fechou.</string>
     <string name="split_bill_payer_amount">Quanto %s pagou</string>
+    <string name="split_bill_row_paid_part">Pagou parte da conta</string>
 </resources>

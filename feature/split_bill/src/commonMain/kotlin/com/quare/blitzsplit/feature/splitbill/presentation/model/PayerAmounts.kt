@@ -15,7 +15,10 @@ data class PayerAmounts(
     val totalMinor: Long,
     val currency: GroupCurrency,
 ) {
-    // Why: who paid and how much, in the rows' order; worked out once per state, like SplitEditor's shares.
+    /*
+     * Why: who paid and how much, in the rows' order. This and the facts below are worked out once per state, like
+     * SplitEditor's shares, since every UI reads them many times on each keystroke.
+     */
     val payers: List<ExpensePayer> = rows.mapNotNull { row ->
         AmountInput
             .parse(row.amountText, currency)
@@ -29,22 +32,24 @@ data class PayerAmounts(
     }
 
     // Why: "R$ 312,00 de R$ 312,00".
-    val paidMinor: Long
-        get() = payers.sumOf { it.amountMinor }
+    val paidMinor: Long = payers.sumOf { it.amountMinor }
 
     // Why: "Faltam R$ 112,00" while positive, "Passou R$ 12,00" while negative.
-    val remainingMinor: Long
-        get() = totalMinor - paidMinor
+    val remainingMinor: Long = totalMinor - paidMinor
 
     // Why: "Fechou": the amounts add up to the total, which "Pronto" and Salvar wait for.
-    val addsUp: Boolean
-        get() = totalMinor > 0 && payers.isNotEmpty() && remainingMinor == 0L
+    val addsUp: Boolean = totalMinor > 0 && payers.isNotEmpty() && remainingMinor == 0L
 
     // Why: what is missing or over, only while there is a total to compare with.
-    val showsMismatch: Boolean
-        get() = totalMinor > 0 && remainingMinor != 0L
+    val showsMismatch: Boolean = totalMinor > 0 && remainingMinor != 0L
 
-    // Why: the rows of whoever paid something, as "Quem pagou" names them: "Você e Ana", "3 pessoas".
-    val paying: List<PayerAmountRow>
-        get() = rows.filter { row -> payers.any { it.memberId == row.memberId } }
+    /*
+     * Why: the rows of whoever paid something, as "Quem pagou" and Dividir name them ("Você e Ana", "3 pessoas"): in
+     * PayerOrder's order, this device's user first, since the rows already come in the group's order, then who left.
+     */
+    val paying: List<PayerAmountRow> = payers
+        .map { it.memberId }
+        .toSet()
+        .let { paidIds -> rows.filter { it.memberId in paidIds } }
+        .sortedByDescending { it.person?.isMe == true }
 }

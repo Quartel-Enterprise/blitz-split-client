@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -167,33 +168,21 @@ class BillDetailViewModel(
         }
     }
 
-    // Why: this device's user first ("Você e Ana pagaram"), then the group's order, then whoever left it.
+    // Why: in PayerOrder's order; someone who left the group has no name and is drawn as "Ex-membro".
     private fun payersOf(
         group: Group,
         expense: Expense,
     ): List<BillPayer> {
-        val payerIds = expense.payers.map { it.memberId }.distinct()
-        val members = group.members
-            .filter { it.id in payerIds }
-            .sortedByDescending { it.isMe }
-            .map { member ->
-                BillPayer(
-                    name = member.name,
-                    initials = Initials.ofMember(member.name, member.isMe),
-                    avatarColor = member.avatarColor,
-                    isMe = member.isMe,
-                )
-            }
-        val formerCount = payerIds.count { id -> group.members.none { it.id == id } }
-        val former = List(formerCount) {
+        val membersById = group.members.associateBy { it.id }
+        return PayerOrder(group.members).sort(expense.payers.map { it.memberId }).map { id ->
+            val member = membersById[id]
             BillPayer(
-                name = null,
-                initials = "",
-                avatarColor = AvatarColor.entries.first(),
-                isMe = false,
+                name = member?.name,
+                initials = member?.let { Initials.ofMember(it.name, it.isMe) }.orEmpty(),
+                avatarColor = member?.avatarColor ?: AvatarColor.entries.first(),
+                isMe = member?.isMe == true,
             )
         }
-        return members + former
     }
 
     private fun rowsOf(

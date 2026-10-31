@@ -163,7 +163,8 @@ class SeveralPayersViewModelTest {
             assertEquals(-10_000L, amounts.remainingMinor)
             assertTrue(amounts.showsMismatch)
             assertFalse(amounts.addsUp)
-            assertEquals(listOf(ANA, PIERRE), amounts.paying.map { it.memberId })
+            // Why: this device's user is named first, though Ana comes before them in the group.
+            assertEquals(listOf(PIERRE, ANA), amounts.paying.map { it.memberId })
         }
 
     @Test
@@ -687,6 +688,26 @@ class SeveralPayersViewModelTest {
             assertEquals(listOf(ANA), state.split.payerIds)
             assertFalse(state.isPayerValid)
             assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN several payers set WHEN every one of them leaves the group THEN this device user pays it all`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("312,00")
+            describe("Mercado")
+            paySeveral(ANA to "200,00", BRUNO to "112,00")
+
+            // When
+            groups.groups.value = listOf(trip.copy(members = listOf(pierre, carla)))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.severalPayers)
+            assertEquals(PIERRE, state.payerId)
+            assertEquals(listOf(PIERRE), state.split.payerIds)
+            assertTrue(state.canSave)
         }
 
     @Test

@@ -374,6 +374,7 @@ export const pt: Record<MessageKey, string> = {
   split_checkAll: 'Marcar todos',
   split_uncheckAll: 'Desmarcar todos',
   split_paidBill: 'Pagou a conta',
+  split_paidPart: 'Pagou parte da conta',
   split_in: 'Participa',
   split_out: 'Não participa',
   split_noValue: 'Sem valor',

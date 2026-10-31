@@ -373,6 +373,7 @@ export const en = {
   split_checkAll: 'Check all',
   split_uncheckAll: 'Uncheck all',
   split_paidBill: 'Paid the bill',
+  split_paidPart: 'Paid part of the bill',
   split_in: 'In',
   split_out: 'Out',
   split_noValue: 'No amount',

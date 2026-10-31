@@ -88,7 +88,12 @@ private struct SplitPersonRow: View {
     }
 
     private var content: some View {
-        let subtitle = SplitBillCopy.rowSubtitle(row, editor: editor, isOut: isOut)
+        let subtitle = SplitBillCopy.rowSubtitle(
+            row,
+            editor: editor,
+            isOut: isOut,
+            hasSeveralPayers: model.state.severalPayers != nil,
+        )
         return HStack(spacing: 12) {
             if editor.mode == .equal {
                 Image(systemName: row.isIncluded ? "checkmark.circle.fill" : "circle")

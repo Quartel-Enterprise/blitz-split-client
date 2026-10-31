@@ -243,14 +243,20 @@ enum SplitBillCopy {
         (Double(value) / 100).formatted(.percent)
     }
 
-    /// A person's second line in "Split", by mode.
-    static func rowSubtitle(_ row: SplitRow, editor: SplitEditor, isOut: Bool) -> (text: String, isError: Bool) {
+    /// A person's second line in "Split", by mode: "Paid part of the bill" for one of several payers.
+    static func rowSubtitle(
+        _ row: SplitRow,
+        editor: SplitEditor,
+        isOut: Bool,
+        hasSeveralPayers: Bool,
+    ) -> (text: String, isError: Bool) {
         let person = row.person
         let isPayer = editor.payerIds.contains(person.id)
+        let paid = hasSeveralPayers ? String(localized: "Paid part of the bill") : String(localized: "Paid the bill")
         let share = row.shareMinor.map { editor.currency.format($0.int64Value) }
         switch editor.mode {
         case .amount:
-            if isPayer { return (String(localized: "Paid the bill"), false) }
+            if isPayer { return (paid, false) }
             if !editor.addsUp, editor.withoutValue.contains(where: { $0.id == person.id }) {
                 return (String(localized: "No amount"), true)
             }
@@ -260,7 +266,7 @@ enum SplitBillCopy {
             if isOut { return (String(localized: "Out"), false) }
             return (share ?? "—", false)
         default:
-            if isPayer { return (String(localized: "Paid the bill"), false) }
+            if isPayer { return (paid, false) }
             return (row.isIncluded ? String(localized: "In") : String(localized: "Out"), false)
         }
     }
