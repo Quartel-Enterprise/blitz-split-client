@@ -243,7 +243,7 @@ private struct GroupListRow: View {
                     Text(verbatim: group.currency.formatSigned(group.netMinor))
                         .font(.body.bold())
                         .monospacedDigit()
-                        .foregroundStyle(GroupsCopy.amountColor(group.netMinor))
+                        .foregroundStyle(Palette.balance(group.netMinor))
                     Text(verbatim: GroupsCopy.balanceLabel(group.balanceKind))
                         .font(.caption)
                         .foregroundStyle(.secondary)

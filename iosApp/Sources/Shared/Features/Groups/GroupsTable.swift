@@ -49,7 +49,7 @@ struct GroupsTable: View {
                     Text(verbatim: item.balance)
                         .fontWeight(.semibold)
                         .monospacedDigit()
-                        .foregroundStyle(GroupsCopy.amountColor(item.row.isSettled ? 0 : item.row.netMinor))
+                        .foregroundStyle(Palette.balance(item.row.isSettled ? 0 : item.row.netMinor))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .width(min: 110, ideal: 130)
@@ -99,7 +99,7 @@ private struct GroupsSummaryCards: View {
                 label: "Overall balance",
                 amounts: GroupsCopy.amounts(summary.totals) { $0.netMinor },
                 caption: GroupsCopy.summaryHint(summary.kind),
-                color: GroupsCopy.amountColor(summary.totals.first { $0.netMinor != 0 }?.netMinor ?? 0),
+                color: Palette.balance(summary.totals.first { $0.netMinor != 0 }?.netMinor ?? 0),
                 isEnabled: true,
             ) {
                 send(GroupsUiEventOnBalancesTabClicked.shared)

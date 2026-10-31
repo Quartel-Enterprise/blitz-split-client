@@ -171,7 +171,7 @@ private struct MyPartContent: View {
                     Text(verbatim: BillCopy.myPartWord(minor))
                         .font(.body.weight(.semibold))
                 }
-                .foregroundStyle(BillCopy.myPartColor(minor))
+                .foregroundStyle(Palette.balance(minor))
                 if let note = BillCopy.myPartNote(state.myPartNote, currency: state.currency) {
                     Text(verbatim: note)
                         .font(.footnote)

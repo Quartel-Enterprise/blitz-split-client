@@ -114,13 +114,6 @@ enum GroupsCopy {
         return totals.first.map { [$0.currency.format(0)] } ?? []
     }
 
-    /// The accent for what comes back, the negative color for what is owed, secondary for zero.
-    static func amountColor(_ minor: Int64) -> Color {
-        if minor > 0 { return Palette.accent }
-        if minor < 0 { return Palette.negative }
-        return .secondary
-    }
-
     /// "Oct 3" or "3 de out.".
     private static func shortDate(_ millis: Int64) -> String {
         ExpenseFormat.date(of: millis).formatted(.dateTime.day().month(.abbreviated))

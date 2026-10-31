@@ -28,6 +28,14 @@ enum Palette {
     /// The selected segment of a custom segmented control, as the system draws its thumb.
     static let segmentThumb = Color(light: 0xFFFFFF, dark: 0x636366)
 
+    /// A balance or a share in minor units: the accent for what comes back, the negative color for what is owed,
+    /// secondary at zero.
+    static func balance(_ minor: Int64) -> Color {
+        if minor > 0 { return accent }
+        if minor < 0 { return negative }
+        return .secondary
+    }
+
     #if os(iOS)
     static let groupedBackground = Color(uiColor: .systemGroupedBackground)
     static let card = Color(uiColor: .secondarySystemGroupedBackground)

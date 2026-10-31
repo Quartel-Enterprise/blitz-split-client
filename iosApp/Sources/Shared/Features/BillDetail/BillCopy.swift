@@ -66,12 +66,6 @@ enum BillCopy {
         return String(localized: "nothing to settle")
     }
 
-    static func myPartColor(_ minor: Int64) -> Color {
-        if minor < 0 { return Palette.negative }
-        if minor > 0 { return Palette.accent }
-        return .secondary
-    }
-
     /// Under "Your share": who settles it with whom.
     static func myPartNote(_ note: (any MyPartNote)?, currency: GroupCurrency) -> String? {
         switch note {
