@@ -768,6 +768,7 @@ class SeveralPayersViewModelTest {
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = true,
     )
 
     private fun member(
