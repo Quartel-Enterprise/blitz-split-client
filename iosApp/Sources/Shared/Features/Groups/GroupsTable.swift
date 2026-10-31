@@ -3,8 +3,8 @@ import Shared
 import SwiftUI
 
 /// The Mac's home: "Overall balance", "To get back" and "To pay" over a zebra table of the groups that the
-/// toolbar's Open / Settled up segments pick. Clicking a row opens the group; its ⋯ menu and the grid come with
-/// their own flows.
+/// toolbar's Open / Settled up segments pick. Clicking a row opens the group; its ⋯ and its right click hold the
+/// group's actions. The grid comes with its own flow.
 struct GroupsTable: View {
     let model: GroupsModel
 
@@ -53,6 +53,15 @@ struct GroupsTable: View {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .width(min: 110, ideal: 130)
+                TableColumn(String()) { item in
+                    GroupRowMenuButton(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
+                }
+                .width(32)
+            }
+            .contextMenu(forSelectionType: String.self) { groupIds in
+                if let item = rows.first(where: { groupIds.contains($0.id) }) {
+                    GroupRowActions(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
+                }
             }
             .alternatingRowBackgrounds(.enabled)
             .onChange(of: selection) { _, groupId in

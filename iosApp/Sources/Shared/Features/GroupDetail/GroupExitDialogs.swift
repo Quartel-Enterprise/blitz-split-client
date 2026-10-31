@@ -1,7 +1,7 @@
 import Shared
 import SwiftUI
 
-/// The words of "Leave group" and "Delete group", the same on Expenses and Balances.
+/// The words of "Leave group" and "Delete group", the same on Expenses, Balances and the home.
 enum GroupExitCopy {
     /// The errors a group's tab toasts: leaving or deleting that didn't reach the server, a change not saved.
     static func errorToasts(leave: Int, delete: Int, change: Int) -> [GlassToastMessage] {
@@ -92,6 +92,26 @@ extension View {
                 onConfirm: actions.confirmExit,
                 onDismiss: actions.dismissExit,
                 onBackToGroups: actions.backToGroups,
+            ),
+        )
+    }
+}
+
+extension View {
+    /// The same dialogs over the home, from a row's ⋯ menu or long press, which never shows "Group deleted".
+    func groupExitDialogs(
+        exit: GroupExitUiState,
+        currency: GroupCurrency?,
+        onConfirm: @escaping () -> Void,
+        onDismiss: @escaping () -> Void,
+    ) -> some View {
+        modifier(
+            GroupExitDialogs(
+                exit: exit,
+                currency: currency,
+                onConfirm: onConfirm,
+                onDismiss: onDismiss,
+                onBackToGroups: onDismiss,
             ),
         )
     }
