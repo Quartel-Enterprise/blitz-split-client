@@ -7,12 +7,13 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.presentation)
             api(projects.core.model)
+            // Why: the dialogs of "Sair do grupo" and "Apagar grupo" draw core:expenses' models, as the group's do.
+            api(projects.core.expenses)
             implementation(projects.core.navigation)
             implementation(projects.core.profile)
             implementation(projects.core.account)
             implementation(projects.core.sync)
             implementation(projects.core.groups)
-            implementation(projects.core.expenses)
             implementation(projects.core.utils)
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))

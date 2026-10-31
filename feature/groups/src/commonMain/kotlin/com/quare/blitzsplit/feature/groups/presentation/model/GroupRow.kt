@@ -45,6 +45,16 @@ data class GroupRow(
             else -> GroupRowDetail.ACTIVITY
         }
 
+    // Why: "Acerte os R$ 98,00 antes" under "Sair do grupo": what you owe, else what you're owed; 0 once settled.
+    val settleBeforeLeavingMinor: Long
+        get() = if (owesMinor > 0) owesMinor else receivesMinor
+
+    // Why: "Só quando todos tiverem acertado" under "Apagar grupo", while anybody in the group still owes anybody.
+    val hasOpenDebts: Boolean
+        get() = balanceKind == GroupBalanceKind.TO_RECEIVE ||
+            balanceKind == GroupBalanceKind.YOU_OWE ||
+            balanceKind == GroupBalanceKind.YOU_ARE_SETTLED
+
     private companion object {
         // Why: about what one line of a phone's row holds next to the balance.
         const val LONG_NAME_LENGTH = 28

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 
@@ -36,7 +37,17 @@ data class GroupsUiState(
      * action, so it waits until the home is drawn and on top.
      */
     val deletedGroupNotice: DeletedGroupNotice?,
+    /*
+     * Why: "Sair do grupo" and "Apagar grupo" from a row, the same dialogs as inside the group; offline both show
+     * disabled with "Precisa de internet".
+     */
+    val exit: GroupExitUiState,
+    // Why: the group of the last of those asked for, whose currency the dialog's amounts are in.
+    val exitGroupId: String?,
 ) {
+    val exitGroup: GroupRow?
+        get() = exitGroupId?.let { id -> groups.firstOrNull { it.id == id } }
+
     val showsEmptyState: Boolean
         get() = hasLoadedGroups && groups.isEmpty()
 
