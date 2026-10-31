@@ -358,34 +358,33 @@ class ExpenseRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN pending bills WHEN uploading THEN pushes those of the user with the user as creator of the new ones`() =
-        runTest {
-            // Given
-            prepareScenario(
-                stored = listOf(
-                    entity(
-                        id = "bill-new",
-                        createdBy = null,
-                        pendingSync = true,
-                    ),
-                    entity(
-                        id = "bill-edited",
-                        createdBy = "user-2",
-                        pendingSync = true,
-                    ),
-                    entity(id = "bill-synced"),
+    fun `GIVEN pending bills WHEN uploading THEN pushes those of the user as their creator`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "bill-new",
+                    createdBy = null,
+                    pendingSync = true,
                 ),
-            )
+                entity(
+                    id = "bill-edited",
+                    createdBy = "user-2",
+                    pendingSync = true,
+                ),
+                entity(id = "bill-synced"),
+            ),
+        )
 
-            // When
-            repository.uploadPendingExpenses("user-1")
+        // When
+        repository.uploadPendingExpenses("user-1")
 
-            // Then
-            assertEquals(listOf("user-1"), local.pendingOwners)
-            val pushed = remote.upserted.single()
-            assertEquals(listOf("bill-new", "bill-edited"), pushed.map { it.id })
-            assertEquals(listOf("user-1", "user-2"), pushed.map { it.createdBy })
-        }
+        // Then
+        assertEquals(listOf("user-1"), local.pendingOwners)
+        val pushed = remote.upserted.single()
+        assertEquals(listOf("bill-new", "bill-edited"), pushed.map { it.id })
+        assertEquals(listOf("user-1", "user-1"), pushed.map { it.createdBy })
+    }
 
     @Test
     fun `GIVEN pending bills WHEN the upload succeeds THEN marks each synced at the version pushed`() = runTest {
