@@ -39,8 +39,6 @@ struct JoinInviteView: View {
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: JoinInviteModel?
-    @State private var showsJoinError = false
-    @State private var hidesJoinError: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -62,28 +60,12 @@ struct JoinInviteView: View {
                 }
             }
         }
-        .overlay(alignment: .top) {
-            if showsJoinError {
-                Text("Couldn't join. Check your connection and try again.")
-                    .font(.subheadline.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .glassEffect(.regular, in: .capsule)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
         // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
-        .onChange(of: model?.joinErrorCount ?? 0) {
-            withAnimation { showsJoinError = true }
-            hidesJoinError?.cancel()
-            hidesJoinError = Task {
-                try? await Task.sleep(for: .seconds(3))
-                guard !Task.isCancelled else { return }
-                withAnimation { showsJoinError = false }
-            }
-        }
+        .glassToast(
+            "Couldn't join. Check your connection and try again.",
+            trigger: model?.joinErrorCount ?? 0,
+            duration: .seconds(3)
+        )
         .onAppear {
             if model == nil { model = JoinInviteModel(route: route) }
         }

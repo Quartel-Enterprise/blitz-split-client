@@ -524,6 +524,27 @@ class ProfileSetupViewModelTest {
         }
 
     @Test
+    fun `GIVEN a pick being prepared WHEN the next pick is unreadable THEN stops preparing and keeps the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sessionUser = googleUser,
+                holdsPhotos = true,
+            )
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoPicked(photoSource))
+            viewModel.onEvent(ProfileSetupUiEvent.OnPhotoUnreadable)
+
+            // When
+            heldPhotos.forEach { it.complete(Unit) }
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isPreparingPhoto)
+            assertTrue(state.showsPhotoError)
+            assertEquals(ProfilePhoto.Remote(GOOGLE_PHOTO_URL), state.photo)
+        }
+
+    @Test
     fun `GIVEN a prepared photo WHEN continuing THEN saves the profile with it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

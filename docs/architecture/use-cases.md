@@ -72,10 +72,19 @@ A screen that signs in with Google or Apple (the welcome, the restore) drives `P
 `AccountStatus.Connected` or returning after the web reload, the one abandoned, and `CompleteSignIn`. A sign in the
 screen completes itself (the recovery code) goes through `signInDirectly`, so the browser observer leaves it alone.
 Unlike `ProviderConnector` it keeps no state on screen: each call reports a `SignInStep` (`Started` on a provider,
-`SignedIn` with the `SignInOutcome`, `Ended` failed or not), and the ViewModel turns it into its own
-`connectingProvider`, its own error enum (the restore's also holds the recovery code's errors, which the person
-dismisses) and its own navigation. It still sets `connectingProvider` at the tap, and passes `observeBrowserSignIn`
-whether it is on top of the stack, since `:core:sync` doesn't see the `Navigator`.
+`SignedIn` with the `SignInOutcome`, `Ended` failed or not). The ViewModel doesn't read the steps itself: it creates
+a `ProviderSignInController` with its `viewModelScope`, its `Navigator` and three lambdas: `connectingProvider` reads
+its spinner, `showConnecting(provider, hasFailed)` writes it and its own error enum (the restore's also holds the
+recovery code's errors, which the person dismisses), and `launchNativeSignIn` emits its `UiAction` for the native
+sheet. The controller sets `connectingProvider` at the tap, keeps the spinner on the provider clicked, and opens the
+groups or the profile setup once signed in; the recovery code goes through its `signInDirectly` too. The ViewModel
+keeps its guards (the click while the buttons are disabled) and tells `observeBrowserSignIn` whether it is on top of
+the stack.
+
+The profile setup and "Editar perfil" prepare a picked photo the same way, through `ProfilePhotoPicker`
+(`:core:profile`): a newer pick cancels the one still being prepared, and `fail()` stops it for a photo that couldn't
+be read. The ViewModel shows the spinner and the error (`showStatus`) and the photo (`onPrepared`) in its own state,
+and ignores a pick while saving; the profile setup's Continue waits for `pickInProgress`.
 
 ### Many use cases in one ViewModel
 

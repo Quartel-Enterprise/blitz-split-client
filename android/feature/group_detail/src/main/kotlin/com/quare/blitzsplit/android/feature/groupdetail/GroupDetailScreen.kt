@@ -9,11 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,11 +27,7 @@ fun GroupDetailScreen(
     val comingSoon = stringResource(R.string.group_detail_coming_soon)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val scope = rememberCoroutineScope()
-    val showSnackbar = { message: String ->
-        snackbarHostState.currentSnackbarData?.dismiss()
-        // Why: on its own, so the next one replaces this snackbar instead of waiting until it hides.
-        scope.launch { snackbarHostState.showSnackbar(message) }
-    }
+    val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {

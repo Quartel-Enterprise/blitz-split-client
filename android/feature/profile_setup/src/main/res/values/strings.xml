@@ -12,9 +12,4 @@
     <string name="profile_setup_name_hint">You can change it later in Profile.</string>
     <string name="profile_setup_saved_locally">Saved only on this device for now.</string>
     <string name="profile_setup_continue">Continue</string>
-    <string name="profile_setup_color_blue">Blue</string>
-    <string name="profile_setup_color_peach">Peach</string>
-    <string name="profile_setup_color_green">Green</string>
-    <string name="profile_setup_color_lilac">Lilac</string>
-    <string name="profile_setup_color_sand">Sand</string>
 </resources>

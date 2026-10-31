@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
@@ -311,12 +310,7 @@ private fun JoinButton(
 
 private fun createPreviewState(): JoinPickUiState = JoinPickUiState(
     isLoaded = true,
-    members = listOf(
-        JoinMember("1", "Pierre", "PI", AvatarColor.BLUE, hasJoined = true),
-        JoinMember("2", "Ana", "AN", AvatarColor.GREEN, hasJoined = true),
-        JoinMember("3", "Bruno", "BR", AvatarColor.PEACH, hasJoined = false),
-        JoinMember("4", "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
-    ),
+    members = createPreviewMembers(),
     selectedMemberId = "3",
     takenName = null,
     creatorName = "Pierre",

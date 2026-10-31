@@ -19,9 +19,4 @@
     <string name="edit_profile_name_too_long">Use up to %d characters.</string>
     <string name="edit_profile_account_notice">Name and photo came from your %1$s account. Changing them here only applies to Blitz Split and doesn\'t change your %1$s account.</string>
     <string name="edit_profile_footer">Only people in your groups see your name and photo.</string>
-    <string name="edit_profile_color_blue">Blue</string>
-    <string name="edit_profile_color_peach">Peach</string>
-    <string name="edit_profile_color_green">Green</string>
-    <string name="edit_profile_color_lilac">Lilac</string>
-    <string name="edit_profile_color_sand">Sand</string>
 </resources>

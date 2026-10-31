@@ -14,11 +14,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
+import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiState
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -29,9 +28,9 @@ class ProfileSetupViewModel(
     private val observeProfile: ObserveProfile,
     private val getSessionUser: GetSessionUser,
     private val validateDisplayName: ValidateDisplayName,
-    private val prepareProfilePhoto: PrepareProfilePhoto,
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
+    prepareProfilePhoto: PrepareProfilePhoto,
 ) : ViewModel() {
     val uiState: StateFlow<ProfileSetupUiState>
         field = MutableStateFlow(
@@ -47,7 +46,12 @@ class ProfileSetupViewModel(
             ),
         )
 
-    private var photoJob: Job? = null
+    private val photoPicker = ProfilePhotoPicker(
+        prepareProfilePhoto = prepareProfilePhoto,
+        scope = viewModelScope,
+        showStatus = ::showPhotoStatus,
+        onPrepared = ::showPhoto,
+    )
 
     val stateWatcher: FlowWatcher<ProfileSetupUiState> = FlowWatcher(uiState)
 
@@ -60,7 +64,7 @@ class ProfileSetupViewModel(
             is ProfileSetupUiEvent.OnNameChanged -> updateName(event.name)
             is ProfileSetupUiEvent.OnAvatarColorSelected -> uiState.update { it.copy(avatarColor = event.color) }
             is ProfileSetupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
-            ProfileSetupUiEvent.OnPhotoUnreadable -> uiState.update { it.copy(showsPhotoError = true) }
+            ProfileSetupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             ProfileSetupUiEvent.OnContinueClicked -> save()
             ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBack()
         }
@@ -107,38 +111,30 @@ class ProfileSetupViewModel(
         else -> null
     }
 
-    /*
-     * Why: a newer pick replaces the one still being prepared, and a failed one keeps the photo shown.
-     * Once Continue is waiting on a pick, a later one would cancel the photo being saved, so it is ignored.
-     */
+    // Why: once Continue is waiting on a pick, a later one would cancel the photo being saved, so it is ignored.
     private fun preparePhoto(source: ByteArray) {
         if (uiState.value.isSaving) return
-        photoJob?.cancel()
+        photoPicker.prepare(source)
+    }
+
+    private fun showPhotoStatus(
+        isPreparing: Boolean,
+        hasFailed: Boolean,
+    ) {
         uiState.update {
             it.copy(
-                isPreparingPhoto = true,
-                showsPhotoError = false,
+                isPreparingPhoto = isPreparing,
+                showsPhotoError = hasFailed,
             )
         }
-        photoJob = viewModelScope.launch {
-            val result = prepareProfilePhoto(source)
-            ensureActive()
-            result
-                .onSuccess { photo ->
-                    uiState.update {
-                        it.copy(
-                            photo = photo,
-                            isPreparingPhoto = false,
-                        )
-                    }
-                }.onFailure {
-                    uiState.update {
-                        it.copy(
-                            isPreparingPhoto = false,
-                            showsPhotoError = true,
-                        )
-                    }
-                }
+    }
+
+    private fun showPhoto(photo: ProfilePhoto) {
+        uiState.update {
+            it.copy(
+                photo = photo,
+                isPreparingPhoto = false,
+            )
         }
     }
 
@@ -149,7 +145,7 @@ class ProfileSetupViewModel(
     private fun save() {
         if (!uiState.value.canContinue || uiState.value.isSaving) return
         uiState.update { it.copy(isSaving = true) }
-        val pickInProgress = photoJob?.takeIf { it.isActive }
+        val pickInProgress = photoPicker.pickInProgress
         viewModelScope.launch {
             pickInProgress?.join()
             if (pickInProgress != null && uiState.value.showsPhotoError) {

@@ -8,6 +8,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.model)
             implementation(projects.core.utils)
+            implementation(projects.core.navigation)
             implementation(projects.core.account)
             implementation(projects.core.profile)
             implementation(projects.core.groups)

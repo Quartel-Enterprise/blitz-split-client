@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 /*
  * Why: every screen that signs in with Google or Apple (the welcome, the restore) walks the same sign in, so a
- * fix to the native or browser path reaches all of them. Each screen keeps its own state, guards, error and
- * navigation, reads the outcome from a SignInStep, and launches these calls in its own scope.
+ * fix to the native or browser path reaches all of them. A screen drives it through ProviderSignInController,
+ * which shows each SignInStep in the screen's own state and opens the next screen.
  */
 interface ProviderSignIn {
     // Why: fails only when the browser sign in couldn't start; a native one goes on in the platform's sheet.
@@ -23,7 +23,7 @@ interface ProviderSignIn {
         authorizationCode: String?,
     ): SignInStep
 
-    // Why: a sign in the screen completes itself (the recovery code); fails with signIn's own error.
+    // Why: a sign in the screen completes itself (the recovery code), through ProviderSignInController.
     suspend fun signInDirectly(signIn: suspend () -> Result<*>): Result<SignInStep>
 
     fun observeBrowserSignIn(

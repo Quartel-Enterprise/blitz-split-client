@@ -1,8 +1,9 @@
 ## Navigation
 
-There is **one back stack**, in `:core:navigation`, and the shared ViewModels move it. Each UI only draws it:
-Navigation 3 on Android, a `NavigationStack` path on Apple, the last entry plus the browser history on the web. So
-navigation logic is tested once, in the ViewModel tests, and every platform walks the same flow.
+There is **one back stack**, in `:core:navigation`, and the shared ViewModels move it, directly or through a
+controller they hand their `Navigator` to. Each UI only draws it: Navigation 3 on Android, a `NavigationStack` path
+on Apple, the last entry plus the browser history on the web. So navigation logic is tested once, in the ViewModel
+tests, and every platform walks the same flow.
 
 ### Routes
 
@@ -34,16 +35,16 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Groups)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
 
+A flow two screens share takes the ViewModel's `Navigator` along: `ProviderSignInController` (`:core:sync`),
+created by the Welcome and Restore ViewModels, opens the next screen once a Google or Apple sign in is done.
+
 ```kotlin
-private suspend fun finishSignIn() {
-    completeSignIn()
-        .onSuccess { outcome ->
-            finishConnecting(error = null)
-            when (outcome) {
-                SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Groups)
-                SignInOutcome.NEEDS_PROFILE -> navigator.navigate(Route.ProfileSetup)
-            }
-        }.onFailure { finishConnecting(error = WelcomeError.SIGN_IN_FAILED) }
+is SignInStep.SignedIn -> {
+    showConnecting(null, false)
+    when (step.outcome) {
+        SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Groups)
+        SignInOutcome.NEEDS_PROFILE -> navigator.navigate(Route.ProfileSetup)
+    }
 }
 ```
 

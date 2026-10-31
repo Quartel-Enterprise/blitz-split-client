@@ -113,7 +113,8 @@ src/commonMain/kotlin/com/quare/blitzsplit/core/<name>/
 │   ├── mapper/          # DTO / entity ↔ domain
 │   └── repository/      # XRepositoryImpl
 ├── connect/             # :core:sync only: ProviderConnector, the Google or Apple link state every screen shares
-├── signin/              # :core:sync only: ProviderSignIn, the Google or Apple sign in every screen shares
+├── signin/              # :core:sync only: ProviderSignIn and ProviderSignInController, the Google or Apple sign in every screen shares
+├── photo/               # :core:profile only: ProfilePhotoPicker, the photo picked in the profile setup and "Editar perfil"
 ├── di/                  # One Koin module
 └── domain/
     ├── model/           # Domain models and exceptions
