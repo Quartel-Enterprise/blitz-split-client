@@ -2,6 +2,14 @@ package com.quare.blitzsplit.feature.members
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -47,6 +55,9 @@ class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var account: FakeAccountRepository
+    private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
+    private val recordedPayments = InMemoryRecordedPaymentRepository()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: MembersViewModel
     private val actions = mutableListOf<MembersUiAction>()
@@ -100,6 +111,7 @@ class MembersViewModelTest {
                         isMe = true,
                         hasJoined = true,
                         personalLink = null,
+                        balance = null,
                     ),
                     MembersMember(
                         "member-2",
@@ -109,6 +121,7 @@ class MembersViewModelTest {
                         isMe = false,
                         hasJoined = false,
                         personalLink = null,
+                        balance = null,
                     ),
                     MembersMember(
                         "member-3",
@@ -118,6 +131,7 @@ class MembersViewModelTest {
                         isMe = false,
                         hasJoined = true,
                         personalLink = null,
+                        balance = null,
                     ),
                     MembersMember(
                         "member-4",
@@ -127,6 +141,7 @@ class MembersViewModelTest {
                         isMe = false,
                         hasJoined = false,
                         personalLink = null,
+                        balance = null,
                     ),
                 ),
                 state.members,
@@ -321,7 +336,7 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping the balances tab THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN the screen open WHEN tapping the balances tab THEN Saldos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         val event = MembersUiEvent.OnBalancesTabClicked
@@ -330,7 +345,7 @@ class MembersViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
+        assertEquals(listOf(Route.Groups, Route.Balances("group-1")), navigator.backStack.value)
     }
 
     @Test
@@ -1972,6 +1987,7 @@ class MembersViewModelTest {
         isMe = false,
         hasJoined = false,
         personalLink = null,
+        balance = null,
     )
 
     private val trip = Group(
@@ -2003,8 +2019,11 @@ class MembersViewModelTest {
         memberChangeError: Throwable? = null,
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
+        storedExpenses: List<Expense> = emptyList(),
     ) {
         account = FakeAccountRepository(initialStatus = accountStatus)
+        expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        settlements = FakeSettlementRepository()
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.memberChangeError = memberChangeError
         }
@@ -2021,7 +2040,11 @@ class MembersViewModelTest {
             addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
             renameMember = RenameMemberUseCase(groups) { 1_000L },
             removeMember = RemoveMemberUseCase(groups) { 1_000L },
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
             observeGroup = if (isRoomRead) observeGroup else ObserveGroup { roomNeverAnswers },
+            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
+            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             observeAccount = ObserveAccountUseCase(account),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

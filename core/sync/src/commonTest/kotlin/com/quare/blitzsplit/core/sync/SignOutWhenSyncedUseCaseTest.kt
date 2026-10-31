@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -73,6 +74,7 @@ class SignOutWhenSyncedUseCaseTest {
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 groupRepository = FakeGroupRepository(),
                 expenseRepository = FakeExpenseRepository(),
+                settlementRepository = FakeSettlementRepository(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),

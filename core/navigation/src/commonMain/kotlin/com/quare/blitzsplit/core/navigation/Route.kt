@@ -56,6 +56,21 @@ sealed interface Route {
         val expenseId: String,
     ) : Route
 
+    // Why: "Saldos", who owes whom in the group: the group's tab next to Despesas and Membros, which takes its place.
+    data class Balances(
+        val groupId: String,
+    ) : Route
+
+    /*
+     * Why: "Registrar pagamento", a payment from one member to another made outside the app: Recebi, Já pagou or
+     * Acertar in Saldos, or Acertar on the group's balance card. A sheet or a dialog over the group.
+     */
+    data class RegisterPayment(
+        val groupId: String,
+        val fromMemberId: String,
+        val toMemberId: String,
+    ) : Route
+
     /*
      * Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
      * joinedAs is the name someone just joined the group as, for "Você entrou como Bruno".

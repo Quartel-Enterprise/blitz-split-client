@@ -54,6 +54,14 @@ sealed interface MembersUiEvent : UiEvent {
 
     data object OnEditorDismissed : MembersUiEvent
 
+    // Why: "Acertar" on "Seu saldo neste grupo", which pays whoever this person owes the most.
+    data object OnSettleClicked : MembersUiEvent
+
+    // Why: "Desfazer" on the notice of a payment just recorded.
+    data object OnUndoPaymentClicked : MembersUiEvent
+
+    data object OnRecordedPaymentNoticeShown : MembersUiEvent
+
     // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
     data object OnProtectAccessClicked : MembersUiEvent
 }

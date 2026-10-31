@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members
 
+import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import kotlin.test.Test
@@ -94,6 +95,7 @@ class MembersMemberTest {
             isMe = false,
             hasJoined = false,
             personalLink = null,
+            balance = null,
         )
 
         // When
@@ -139,6 +141,7 @@ class MembersMemberTest {
         isMe: Boolean,
         hasJoined: Boolean,
         personalLink: String? = null,
+        balance: MemberBalance? = null,
     ): MembersMember = MembersMember(
         id = "member-2",
         name = "Ana",
@@ -147,6 +150,7 @@ class MembersMemberTest {
         isMe = isMe,
         hasJoined = hasJoined,
         personalLink = personalLink,
+        balance = balance,
     )
 
     private companion object {

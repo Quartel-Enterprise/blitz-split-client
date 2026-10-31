@@ -7,6 +7,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -22,7 +23,7 @@ class GroupDetailUiStateTest {
         )
 
         // When
-        val extra = state.extraMemberCount
+        val extra = state.header.extraMemberCount
 
         // Then
         assertEquals(2, extra)
@@ -37,7 +38,7 @@ class GroupDetailUiStateTest {
         )
 
         // When
-        val extra = state.extraMemberCount
+        val extra = state.header.extraMemberCount
 
         // Then
         assertEquals(0, extra)
@@ -52,7 +53,7 @@ class GroupDetailUiStateTest {
         )
 
         // When
-        val extra = state.extraMemberCount
+        val extra = state.header.extraMemberCount
 
         // Then
         assertEquals(0, extra)
@@ -111,15 +112,21 @@ class GroupDetailUiStateTest {
         isLoaded: Boolean = true,
         hasBills: Boolean = true,
     ): GroupDetailUiState = GroupDetailUiState(
-        groupName = "Viagem de Floripa",
-        groupInitials = "VF",
-        groupColor = AvatarColor.LILAC,
-        currency = GroupCurrency.BRL,
-        faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH) },
-        memberCount = memberCount,
-        notJoinedCount = 0,
-        totalSpentMinor = if (hasBills) 12_000 else 0,
+        header = GroupHeader(
+            groupName = "Viagem de Floripa",
+            groupInitials = "VF",
+            groupColor = AvatarColor.LILAC,
+            currency = GroupCurrency.BRL,
+            faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH) },
+            memberCount = memberCount,
+            notJoinedCount = 0,
+            totalSpentMinor = if (hasBills) 12_000 else 0,
+            myBalance = null,
+            isEveryoneSettled = false,
+        ),
         days = if (hasBills) listOf(day) else emptyList(),
+        paymentToDelete = null,
+        recordedPayment = null,
         showsBillDeletedNotice = false,
         isLoaded = isLoaded,
     )
@@ -127,7 +134,7 @@ class GroupDetailUiStateTest {
     private val day = ExpenseDay(
         dayStartMillis = 0L,
         relativeDay = RelativeDay.TODAY,
-        expenses = listOf(
+        entries = listOf(
             ExpenseRow(
                 id = "dinner",
                 description = "Jantar",

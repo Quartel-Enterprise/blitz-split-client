@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.members
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
 import kotlin.test.Test
@@ -109,6 +110,7 @@ class MembersUiStateTest {
         isAccountUnprotected: Boolean = false,
     ): MembersUiState = MembersUiState(
         groupName = "Viagem Floripa",
+        currency = GroupCurrency.BRL,
         displayLink = null,
         members = members,
         editor = null,
@@ -117,6 +119,9 @@ class MembersUiStateTest {
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
         personalInvite = null,
+        myBalance = null,
+        isEveryoneSettled = false,
+        recordedPayment = null,
     )
 
     private fun member(
@@ -130,5 +135,6 @@ class MembersUiStateTest {
         isMe = isMe,
         hasJoined = hasJoined,
         personalLink = null,
+        balance = null,
     )
 }

@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -3871,6 +3872,7 @@ class SyncCoordinatorTest {
                 calls = calls,
             ),
             expenseRepository = RecordingExpenseRepository(expenses, calls),
+            settlementRepository = FakeSettlementRepository(),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )

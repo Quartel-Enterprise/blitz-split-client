@@ -10,6 +10,7 @@ import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGro
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
@@ -22,6 +23,7 @@ import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
+import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewModel
@@ -96,6 +98,12 @@ object BlitzSplitApple : KoinComponent {
 
     fun createGroupDetailViewModel(route: Route.GroupDetail): ViewModelHolder<GroupDetailViewModel> =
         ViewModelHolder(GroupDetailViewModel::class) { get { parametersOf(route) } }
+
+    fun createBalancesViewModel(route: Route.Balances): ViewModelHolder<BalancesViewModel> =
+        ViewModelHolder(BalancesViewModel::class) { get { parametersOf(route) } }
+
+    fun createRegisterPaymentViewModel(route: Route.RegisterPayment): ViewModelHolder<RegisterPaymentViewModel> =
+        ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
         ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }

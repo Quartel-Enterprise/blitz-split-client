@@ -20,13 +20,15 @@ class JsRoute internal constructor(
     val paymentKeyId: String? = (route as? Route.PaymentKey)?.keyId
 
     /*
-     * Why: the group of "invite", "members", "group-detail", "split-bill", "bill-detail" and "edit-group", null for
-     * every other route.
+     * Why: the group of "invite", "members", "group-detail", "balances", "register-payment", "split-bill",
+     * "bill-detail" and "edit-group", null for every other route.
      */
     val groupId: String? = when (route) {
         is Route.Invite -> route.groupId
         is Route.Members -> route.groupId
         is Route.GroupDetail -> route.groupId
+        is Route.Balances -> route.groupId
+        is Route.RegisterPayment -> route.groupId
         is Route.SplitBill -> route.groupId
         is Route.BillDetail -> route.groupId
         is Route.EditGroup -> route.groupId
@@ -39,6 +41,10 @@ class JsRoute internal constructor(
         is Route.BillDetail -> route.expenseId
         else -> null
     }
+
+    // Why: who paid and who received in "register-payment", null for every other route.
+    val fromMemberId: String? = (route as? Route.RegisterPayment)?.fromMemberId
+    val toMemberId: String? = (route as? Route.RegisterPayment)?.toMemberId
 
     // Why: the invite code of "join-invite" and "join-pick", null for every other route.
     val inviteCode: String? = when (route) {

@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
+import com.quare.blitzsplit.core.provider.room.dao.SettlementDao
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
@@ -19,6 +20,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
+import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 
 @Database(
     entities = [
@@ -30,8 +32,9 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
         GroupEntity::class,
         GroupMemberEntity::class,
         ExpenseEntity::class,
+        SettlementEntity::class,
     ],
-    version = 14,
+    version = 15,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -86,6 +89,10 @@ import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
             from = 13,
             to = 14,
         ),
+        AutoMigration(
+            from = 14,
+            to = 15,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -103,4 +110,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun groupDao(): GroupDao
 
     abstract fun expenseDao(): ExpenseDao
+
+    abstract fun settlementDao(): SettlementDao
 }

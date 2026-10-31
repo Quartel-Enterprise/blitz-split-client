@@ -74,6 +74,7 @@ include(":feature:split_bill")
 include(":feature:group_detail")
 include(":feature:bill_detail")
 include(":feature:edit_group")
+include(":feature:register_payment")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")

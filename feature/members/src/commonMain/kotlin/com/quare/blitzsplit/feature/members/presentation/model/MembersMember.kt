@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 
 data class MembersMember(
@@ -17,9 +18,16 @@ data class MembersMember(
      * until the sync brings the codes the server makes for the group and the member, offline for one added here.
      */
     val personalLink: String?,
+    // Why: "+R$ 223,50 a receber" or "−R$ 118,00 deve", null while the group has no bill.
+    val balance: MemberBalance?,
 ) {
+    // Why: someone who still owes or is owed stays, or their part of the bills would vanish from the balances.
     val canBeRemoved: Boolean
-        get() = !isMe && !hasJoined
+        get() = !isMe && !hasJoined && !hasOpenBalance
+
+    // Why: "Carla tem saldo em aberto" under the disabled "Remover do grupo".
+    val hasOpenBalance: Boolean
+        get() = balance?.isSettled == false
 
     // Why: "Convite pessoal para Carla" is only for someone nobody joined as.
     val canBeInvited: Boolean
