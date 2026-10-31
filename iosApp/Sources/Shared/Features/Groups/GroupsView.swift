@@ -52,6 +52,16 @@ final class GroupsModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// Pulled down: asks for a sync and waits until the shared code says it ended (at once offline).
+    func refresh() async {
+        send(GroupsUiEventOnRefresh.shared)
+        // The state that says it started arrives through the watcher, a moment after the event
+        try? await Task.sleep(for: .milliseconds(150))
+        while state.isRefreshing {
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+    }
+
     isolated deinit {
         holder.clear()
     }
@@ -140,9 +150,24 @@ struct GroupsView: View {
         let state = model.state
         Group {
             if !state.groups.isEmpty {
+                #if os(iOS)
                 GroupsList(model: model)
+                #else
+                GroupsTable(model: model)
+                #endif
             } else if state.showsEmptyState {
                 emptyState
+                    #if os(iOS)
+                    // The empty home has no list to hold the sync status, which only shows when it asks for attention
+                    .safeAreaInset(edge: .top) {
+                        if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
+                            Text(verbatim: status)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 8)
+                        }
+                    }
+                    #endif
             } else {
                 // Nothing until the groups are read, so the empty state never flashes before the list
                 Color.clear
@@ -151,29 +176,43 @@ struct GroupsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .navigationTitle("Groups")
-        // Why: on iPhone and iPad the selected Groups tab already names the screen, so the bar shows only the sync
-        // status in the title's place. The title still names the screen in the back stack, and the status keeps it
-        // as its VoiceOver label.
+        // Why: on iPhone and iPad the selected Groups tab already names the screen, so the bar shows no title. The
+        // title still names the screen in the back stack, and VoiceOver still reads it as the header.
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                syncText(state.syncBadge)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    // Why: the slot sits between the bar's buttons, too narrow for the offline text on one line.
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
+                Color.clear
+                    .frame(width: 1, height: 1)
+                    .accessibilityElement()
                     .accessibilityLabel(Text("Groups"))
-                    .accessibilityValue(syncText(state.syncBadge))
                     .accessibilityAddTraits(.isHeader)
             }
             .sharedBackgroundVisibility(.hidden)
+            ToolbarItemGroup(placement: .primaryAction) {
+                joinButton
+                profileButton
+            }
+            ToolbarSpacer(.fixed, placement: .primaryAction)
+            ToolbarItem(placement: .primaryAction) {
+                Button("Split a bill", systemImage: "plus") {
+                    model.send(GroupsUiEventOnSplitBillClicked.shared)
+                }
+                .buttonStyle(.glassProminent)
+            }
         }
         #else
-        .navigationSubtitle(syncText(state.syncBadge))
-        #endif
+        .navigationSubtitle(macSubtitle)
         .toolbar {
+            if !state.groups.isEmpty {
+                ToolbarItem(placement: .principal) {
+                    Picker("Status", selection: settledBinding) {
+                        Text("Open").tag(false)
+                        Text("Settled up").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
             if state.canRetrySync {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Try again", systemImage: "arrow.clockwise") {
@@ -181,22 +220,75 @@ struct GroupsView: View {
                     }
                 }
             }
+            ToolbarItemGroup(placement: .primaryAction) {
+                joinButton
+                Button("New group", systemImage: "plus.square.on.square") {
+                    model.send(GroupsUiEventOnCreateGroupClicked.shared)
+                }
+                profileButton
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    model.send(GroupsUiEventOnProfileClicked.shared)
+                    model.send(GroupsUiEventOnSplitBillClicked.shared)
                 } label: {
-                    AvatarPhoto(
-                        initial: state.avatarInitial,
-                        color: state.avatarColor,
-                        photoUrl: state.photoUrl,
-                        size: 32,
-                        font: .subheadline.weight(.semibold),
-                    )
+                    // A toolbar draws a Label as its icon only: the canvas spells "Split a bill" out
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus")
+                        Text("Split a bill")
+                    }
+                    .fontWeight(.semibold)
                 }
-                .accessibilityLabel("Profile")
+                .buttonStyle(.borderedProminent)
             }
         }
+        #endif
     }
+
+    private var joinButton: some View {
+        Button("Join with a link or QR code", systemImage: "qrcode") {
+            model.send(GroupsUiEventOnJoinWithLinkClicked.shared)
+        }
+    }
+
+    private var profileButton: some View {
+        Button {
+            model.send(GroupsUiEventOnProfileClicked.shared)
+        } label: {
+            AvatarPhoto(
+                initial: model.state.avatarInitial,
+                color: model.state.avatarColor,
+                photoUrl: model.state.photoUrl,
+                size: 32,
+                font: .subheadline.weight(.semibold),
+            )
+        }
+        .accessibilityLabel("Profile")
+    }
+
+    #if os(macOS)
+    /// Open or Settled up, the toolbar's segments.
+    private var settledBinding: Binding<Bool> {
+        Binding(
+            get: { model.state.showsSettledGroups },
+            set: { model.send(GroupsUiEventOnShowSettledChanged(isShown: $0)) },
+        )
+    }
+
+    /// "Offline · 1 change queued · 4 open", "4 open" or "1 settled up".
+    private var macSubtitle: Text {
+        let state = model.state
+        guard !state.groups.isEmpty else {
+            return Text(verbatim: GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) ?? "")
+        }
+        let count = state.showsSettledGroups
+            ? String(localized: "\(state.settledGroups.count) settled up")
+            : String(localized: "\(state.openGroups.count) open")
+        guard let sync = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) else {
+            return Text(verbatim: count)
+        }
+        return Text(verbatim: "\(sync) · \(count)")
+    }
+    #endif
 
     private var emptyState: some View {
         ContentUnavailableView {
@@ -214,96 +306,5 @@ struct GroupsView: View {
             }
             .frame(maxWidth: 320)
         }
-    }
-
-    // Everything synced shows no subtitle: the state only appears when it asks for attention.
-    private func syncText(_ badge: SyncBadge?) -> Text {
-        switch badge {
-        case nil: Text(verbatim: "")
-        case .offline: Text("Offline · everything is saved on your \(DeviceName.current)")
-        case .failed: Text("No response from the server · try again")
-        default: Text("Syncing…")
-        }
-    }
-}
-
-/// The minimal list of the home until the full one (balances, the row's menu) arrives with the group's own
-/// screen. A row opens the group; no group has expenses yet.
-private struct GroupsList: View {
-    let model: GroupsModel
-
-    var body: some View {
-        List {
-            Section {
-                ForEach(model.state.groups, id: \.id) { group in
-                    Button {
-                        model.send(GroupsUiEventOnGroupClicked(groupId: group.id))
-                    } label: {
-                        GroupListRow(group: group)
-                    }
-                    .buttonStyle(.plain)
-                }
-            } header: {
-                HStack {
-                    Text("Open")
-                    Spacer()
-                    Button("New group", systemImage: "plus") {
-                        model.send(GroupsUiEventOnCreateGroupClicked.shared)
-                    }
-                    .buttonStyle(.bordered)
-                    .textCase(nil)
-                }
-            }
-        }
-        #if os(iOS)
-        .listStyle(.insetGrouped)
-        #endif
-    }
-}
-
-private struct GroupListRow: View {
-    let group: GroupRow
-
-    private var members: Text {
-        group.memberCount == 1 ? Text("Just you") : Text("\(Int(group.memberCount)) members")
-    }
-
-    var body: some View {
-        HStack(spacing: 14) {
-            GroupAvatar(initials: group.initials, color: group.color, size: 44)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: group.name)
-                    .font(.body.weight(.semibold))
-                    .lineLimit(1)
-                HStack(spacing: 6) {
-                    HStack(spacing: -6) {
-                        ForEach(Array(group.faces.enumerated()), id: \.offset) { _, face in
-                            AvatarPhoto(initial: face.initial, color: face.color, photoUrl: nil, size: 20)
-                        }
-                        if group.extraMemberCount > 0 {
-                            Text(verbatim: "+\(group.extraMemberCount)")
-                                .font(.caption2.weight(.semibold))
-                                .padding(.leading, 10)
-                        }
-                    }
-                    .accessibilityHidden(true)
-                    if group.isPending {
-                        Circle()
-                            .fill(.orange)
-                            .frame(width: 8, height: 8)
-                            .accessibilityHidden(true)
-                    }
-                    (group.isPending ? Text("\(members) · queued") : members)
-                        .lineLimit(1)
-                }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 8)
-            Text("no expenses")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .contentShape(.rect)
     }
 }
