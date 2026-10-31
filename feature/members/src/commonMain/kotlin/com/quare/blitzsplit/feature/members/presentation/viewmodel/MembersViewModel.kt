@@ -429,9 +429,13 @@ class MembersViewModel(
         }
     }
 
+    /*
+     * Why: one release at a time. Apple's alert is gone while one is on its way, so another member's "Liberar nome"
+     * can be tapped, and would otherwise take the place of the one the answer closes.
+     */
     private fun askToRelease(memberId: String) {
         val member = uiState.value.members.firstOrNull { it.id == memberId } ?: return
-        if (member.canBeReleased) uiState.update { it.copy(memberToRelease = member) }
+        if (member.canBeReleased) uiState.update { if (it.isReleasing) it else it.copy(memberToRelease = member) }
     }
 
     // Why: a release on its way can't be called back, so its confirmation waits for the answer.

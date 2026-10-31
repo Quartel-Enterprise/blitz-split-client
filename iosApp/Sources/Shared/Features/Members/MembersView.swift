@@ -348,15 +348,15 @@ private struct MemberRow: View {
             if !member.isMe {
                 Divider()
                 if member.canBeReleased {
-                    #if os(macOS)
-                    Button("Release name…", systemImage: "lock.open") {
+                    Button {
                         send(MembersUiEventOnReleaseClicked(memberId: member.id))
+                    } label: {
+                        #if os(macOS)
+                        Label("Release name…", systemImage: "lock.open")
+                        #else
+                        Label("Release name", systemImage: "lock.open")
+                        #endif
                     }
-                    #else
-                    Button("Release name", systemImage: "lock.open") {
-                        send(MembersUiEventOnReleaseClicked(memberId: member.id))
-                    }
-                    #endif
                 }
                 Button(role: .destructive) {
                     send(MembersUiEventOnRemoveClicked(memberId: member.id))

@@ -111,11 +111,12 @@ class GroupRepositoryImpl(
 
     /*
      * Why: a release only reaches a group the server has, so the device already holds its owner. The server answers a
-     * member nobody joined as, which is never this device's user.
+     * member nobody joined as, which is never this device's user. The account is checked before the call, so a release
+     * the server made never reads as failed.
      */
     override suspend fun requestMemberRelease(memberId: String): Result<Unit> = suspendRunCatching {
-        val released = remote.requestMemberRelease(ReleaseMemberParamsDto(memberId)) ?: return@suspendRunCatching
         val userId = checkNotNull(profileLocal.get()?.ownerUserId) { "No account to release a member with" }
+        val released = remote.requestMemberRelease(ReleaseMemberParamsDto(memberId)) ?: return@suspendRunCatching
         local.applyRemoteMember(mapper.toEntity(released, userId = userId))
     }
 

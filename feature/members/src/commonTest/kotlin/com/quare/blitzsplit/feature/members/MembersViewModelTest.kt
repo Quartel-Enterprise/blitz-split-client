@@ -3301,6 +3301,25 @@ class MembersViewModelTest {
             assertFalse(viewModel.uiState.value.isReleasing)
         }
 
+    @Test
+    fun `GIVEN the release of Bruno on its way WHEN tapping Liberar nome on Carla THEN it stays on Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true))),
+                waitsForServer = true,
+            )
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-3"))
+            viewModel.onEvent(MembersUiEvent.OnReleaseConfirmed)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-4"))
+
+            // Then
+            assertEquals("member-3", viewModel.uiState.value.memberToRelease?.id)
+            assertTrue(viewModel.uiState.value.isReleasing)
+        }
+
     private val withGoogle = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val withApple = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
 
