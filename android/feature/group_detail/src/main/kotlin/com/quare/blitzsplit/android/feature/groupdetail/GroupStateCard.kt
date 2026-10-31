@@ -73,9 +73,12 @@ internal fun EmptyBalancesCard() {
     )
 }
 
-// Why: "Todo mundo acertou", which offers deleting the group once the trip is over.
+// Why: "Todo mundo acertou", which offers deleting the group once the trip is over; offline it needs the internet.
 @Composable
-internal fun EveryoneSettledCard(onAction: (GroupAction) -> Unit) {
+internal fun EveryoneSettledCard(
+    canDelete: Boolean,
+    onAction: (GroupAction) -> Unit,
+) {
     GroupStateCard(
         icon = Icons.Outlined.Celebration,
         title = stringResource(R.string.group_detail_balances_settled_title),
@@ -83,6 +86,7 @@ internal fun EveryoneSettledCard(onAction: (GroupAction) -> Unit) {
     ) {
         OutlinedButton(
             onClick = { onAction(GroupAction.DELETE_GROUP) },
+            enabled = canDelete,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp),

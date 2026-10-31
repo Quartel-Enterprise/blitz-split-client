@@ -15,6 +15,8 @@ data class GroupDetailUiState(
      * action, so a screen drawn again only after it is back on top still shows it.
      */
     val showsBillDeletedNotice: Boolean,
+    // Why: "Sair do grupo" and "Apagar grupo", and "Grupo apagado".
+    val exit: GroupExitUiState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {

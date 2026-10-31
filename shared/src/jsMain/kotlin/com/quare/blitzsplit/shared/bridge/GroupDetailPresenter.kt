@@ -64,6 +64,7 @@ class JsGroupDetailState(
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: JsPaymentRow?,
     val recordedPayment: JsPaymentNotice?,
+    val exit: JsGroupExit,
     val isEmpty: Boolean,
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
@@ -86,6 +87,7 @@ class GroupDetailPresenter(
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
                 paymentToDelete = state.paymentToDelete?.let(::toJsPaymentRow),
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
+                exit = toJsGroupExit(state.exit),
                 isEmpty = state.isEmpty,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,
@@ -96,11 +98,12 @@ class GroupDetailPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" and "change-error", a toast in the page's words.
+    // Why: "leave-error", "delete-error" and "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                GroupDetailUiAction.ShowComingSoon -> "coming-soon"
+                GroupDetailUiAction.ShowLeaveError -> "leave-error"
+                GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
             }
         }
@@ -138,6 +141,20 @@ class GroupDetailPresenter(
 
     fun deleteGroup() {
         viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+    }
+
+    // Why: the main button of the dialog Sair or Apagar opened.
+    fun confirmGroupExit() {
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+    }
+
+    fun dismissGroupExit() {
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+    }
+
+    // Why: "Voltar para Grupos" on "Grupo apagado".
+    fun backToGroups() {
+        viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked)
     }
 
     fun openExpense(expenseId: String) {

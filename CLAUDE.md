@@ -101,7 +101,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
     (between others), which all open "Registrar pagamento". Once there were bills and nobody owes anything, "Todo
-    mundo acertou" offers "Apagar grupo" ("Em breve" for now).
+    mundo acertou" offers "Apagar grupo".
   - "Seu saldo neste grupo" sits above the tabs of Despesas, Saldos and Membros while the group has a bill: "R$ 0,00 ·
     você está quitado" when settled, and its "Acertar" opens Registrar pagamento with whoever you owe the most, hidden
     when you owe nobody.
@@ -116,14 +116,27 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
     tombstone, offline too). No
     notifications nor Atividade yet, and no warning when a bill is edited after a payment (7.4b).
-  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo; the last two
-    answer "Em breve". "Editar grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
+  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
+    grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
     the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
     stays editable; there is no "Divisão padrão" yet. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
     rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS, a dialog on the web and
     on Android tablets.
+  - "Sair do grupo" and "Apagar grupo" (5.3c to 5.3f, 6.1i to 6.1k) need the internet: offline the ⋮ menu shows
+    them disabled with "Precisa de internet", since only the server knows every device's bills and payments. The
+    device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
+    own balance settled ("Acerte antes de sair" lists what is still open, with "Acertar" while you owe, "Ver saldos"
+    otherwise); you go back to Grupos, and your member stays as a name in the bills and payments, not joined, so the
+    invite link can bring you back. A group nobody else with an account is in goes, which "Sair" says
+    (`ConfirmLeave.deletesGroup`). Any member may delete the group
+    once nobody owes anything ("Ainda há saldo em aberto" lists the pairs, with "Ver saldos"), for everyone, with its
+    bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
+    even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
+    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitUiState.deletedNotice`), once on top again if
+    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and the home says "Carla
+    apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): one person paid the whole bill (several payers aren't built yet), "Quando"
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the

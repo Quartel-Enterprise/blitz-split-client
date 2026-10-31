@@ -17,9 +17,14 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPay
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
+import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -27,14 +32,22 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDeletedNotice
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitDialog
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -45,11 +58,13 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
@@ -64,6 +79,7 @@ class GroupDetailViewModelTest {
     private val deletedBills = InMemoryDeletedBillRepository()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
     private lateinit var settlements: FakeSettlementRepository
+    private val deletions = InMemoryGroupDeletionRepository()
 
     @BeforeTest
     fun setUp() {
@@ -938,32 +954,408 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping Sair do grupo THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN this person owes someone WHEN tapping Sair do grupo THEN says to settle first with Acertar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // Then
+            val dialog = viewModel.uiState.value.exit.dialog
+            assertIs<GroupExitDialog.LeaveBlocked>(dialog)
+            assertTrue(dialog.canSettle)
+            assertEquals(listOf(DebtKind.YOU_OWE), dialog.debts.map { it.kind })
+            assertEquals(listOf(6_000L), dialog.debts.map { it.amountMinor })
+        }
+
+    @Test
+    fun `GIVEN this person is only owed WHEN tapping Sair do grupo THEN says to settle first with Ver saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                        payers = listOf(ExpensePayer(PIERRE, 12_000)),
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // Then
+            val dialog = viewModel.uiState.value.exit.dialog
+            assertIs<GroupExitDialog.LeaveBlocked>(dialog)
+            assertFalse(dialog.canSettle)
+            assertEquals(listOf(DebtKind.OWES_YOU), dialog.debts.map { it.kind })
+        }
+
+    @Test
+    fun `GIVEN a settled balance WHEN tapping Sair do grupo THEN asks first counting the others`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // Then
+            assertEquals(
+                GroupExitDialog.ConfirmLeave(
+                    groupName = "Viagem de Floripa",
+                    otherMemberCount = 3,
+                    deletesGroup = false,
+                ),
+                viewModel.uiState.value.exit.dialog,
+            )
+        }
+
+    @Test
+    fun `GIVEN nobody else joined WHEN tapping Sair do grupo THEN says the group goes for good`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(members = listOf(pierre, bruno, carla)))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // Then
+            assertEquals(
+                GroupExitDialog.ConfirmLeave(
+                    groupName = "Viagem de Floripa",
+                    otherMemberCount = 2,
+                    deletesGroup = true,
+                ),
+                viewModel.uiState.value.exit.dialog,
+            )
+        }
+
+    @Test
+    fun `GIVEN the device offline WHEN tapping Sair do grupo THEN nothing opens`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
-        val event = GroupDetailUiEvent.OnLeaveGroupClicked
+        prepareScenario(isOnline = false)
 
         // When
-        viewModel.onEvent(event)
+        viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
 
         // Then
-        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
+        assertFalse(viewModel.uiState.value.exit.isOnline)
+        assertNull(viewModel.uiState.value.exit.dialog)
+    }
+
+    @Test
+    fun `GIVEN Sair do grupo asked WHEN confirming THEN leaves and goes back to Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+        // Then
+        assertEquals(listOf(GROUP_ID), groups.leftGroupIds)
+        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the server unreachable WHEN confirming Sair THEN says so and stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(exitError = IllegalStateException("offline"))
+        viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+        // Then
+        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowLeaveError), actions)
+        assertNull(viewModel.uiState.value.exit.dialog)
+        assertFalse(viewModel.uiState.value.exit.isRunning)
         assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping Apagar grupo THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN the server knows of a balance WHEN confirming Sair THEN says to settle first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(exitOutcome = GroupExitOutcome.HAS_BALANCE)
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertIs<GroupExitDialog.LeaveBlocked>(viewModel.uiState.value.exit.dialog)
+            assertFalse(viewModel.uiState.value.exit.isRunning)
+            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Acerte antes de sair open WHEN the sync brings the bill THEN lists it and offers Acertar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(exitOutcome = GroupExitOutcome.HAS_BALANCE)
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // When
+            expenses.expenses.value = listOf(
+                expense(
+                    id = "bill-1",
+                    spentAt = nowMillis,
+                ),
+            )
+
+            // Then
+            val dialog = assertIs<GroupExitDialog.LeaveBlocked>(viewModel.uiState.value.exit.dialog)
+            assertEquals(listOf(PIERRE to ANA), dialog.debts.map { it.fromMemberId to it.toMemberId })
+            assertTrue(dialog.canSettle)
+        }
+
+    @Test
+    fun `GIVEN the server still answering WHEN dismissing the dialog THEN it stays open`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
-        val event = GroupDetailUiEvent.OnDeleteGroupClicked
+        prepareScenario(exitGate = CompletableDeferred())
+        viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
         // When
-        viewModel.onEvent(event)
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
 
         // Then
-        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
+        assertIs<GroupExitDialog.ConfirmLeave>(viewModel.uiState.value.exit.dialog)
+        assertTrue(viewModel.uiState.value.exit.isRunning)
+    }
+
+    @Test
+    fun `GIVEN Sair do grupo asked WHEN dismissing THEN the dialog closes and nobody leaves`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.exit.dialog)
+            assertTrue(groups.leftGroupIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Acerte antes de sair open WHEN tapping Acertar THEN opens Registrar pagamento to the creditor`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertNull(viewModel.uiState.value.exit.dialog)
+            assertEquals(
+                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN someone still owes WHEN tapping Apagar grupo THEN lists every pair still open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                        shares = listOf(share(BRUNO, 6_000), share(CARLA, 6_000)),
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+            // Then
+            val dialog = viewModel.uiState.value.exit.dialog
+            assertIs<GroupExitDialog.DeleteBlocked>(dialog)
+            assertEquals(listOf(DebtKind.BETWEEN_OTHERS, DebtKind.BETWEEN_OTHERS), dialog.debts.map { it.kind })
+        }
+
+    @Test
+    fun `GIVEN the open balances dialog WHEN tapping Ver saldos THEN opens the Saldos tab in its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
+            assertTrue(groups.deletedGroupIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN everyone settled WHEN tapping Apagar grupo THEN asks first counting bills and members`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "bill-1",
+                        spentAt = thisMorning,
+                        shares = listOf(share(ANA, 12_000)),
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+            // Then
+            assertEquals(
+                GroupExitDialog.ConfirmDelete(
+                    groupName = "Viagem de Floripa",
+                    billCount = 1,
+                    memberCount = 4,
+                ),
+                viewModel.uiState.value.exit.dialog,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar grupo asked WHEN confirming THEN deletes it and goes back to Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+        // Then
+        assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
+        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the server unreachable WHEN confirming Apagar THEN says so`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(exitError = IllegalStateException("offline"))
+        viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+        // Then
+        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowDeleteError), actions)
         assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN someone else deleted the group WHEN a sync takes it off THEN says so and stays until asked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = GROUP_ID,
+                    groupName = "Viagem de Floripa",
+                    deletedByName = "Ana",
+                ),
+            )
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertEquals(
+                GroupDeletedNotice(
+                    groupName = "Viagem de Floripa",
+                    deletedByName = "Ana",
+                ),
+                viewModel.uiState.value.exit.deletedNotice,
+            )
+            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertTrue(deletions.observeDeletions().first().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Grupo apagado shown WHEN tapping Voltar para Grupos THEN goes back to Grupos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = GROUP_ID,
+                    groupName = "Viagem de Floripa",
+                    deletedByName = "Ana",
+                ),
+            )
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.exit.deletedNotice)
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill open over a group someone else deleted WHEN the bill closes THEN Grupo apagado shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.BillDetail(GROUP_ID, "bill-1"))
+            deletions.post(
+                GroupDeletion(
+                    groupId = GROUP_ID,
+                    groupName = "Viagem de Floripa",
+                    deletedByName = null,
+                ),
+            )
+            groups.groups.value = emptyList()
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                GroupDeletedNotice(
+                    groupName = "Viagem de Floripa",
+                    deletedByName = null,
+                ),
+                viewModel.uiState.value.exit.deletedNotice,
+            )
+        }
 
     private fun ExpenseDay.ids(): List<String> = entries.map { it.id }
 
@@ -1061,8 +1453,16 @@ class GroupDetailViewModelTest {
         storedExpenses: List<Expense> = emptyList(),
         isRoomRead: Boolean = true,
         timeZone: TimeZone = TimeZone.UTC,
+        isOnline: Boolean = true,
+        exitOutcome: GroupExitOutcome = GroupExitOutcome.DONE,
+        exitError: Throwable? = null,
+        exitGate: CompletableDeferred<Unit>? = null,
     ) {
-        groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
+        groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
+            it.exitOutcome = exitOutcome
+            it.exitError = exitError
+            it.exitGate = exitGate
+        }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
@@ -1070,21 +1470,28 @@ class GroupDetailViewModelTest {
         val expensesNeverAnswer = MutableSharedFlow<List<Expense>>()
         viewModel = GroupDetailViewModel(
             route = route,
-            navigator = navigator,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
-            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
-            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
-            observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
-            observeExpenses = if (isRoomRead) {
-                ObserveExpensesUseCase(expenses)
-            } else {
-                ObserveExpenses { expensesNeverAnswer }
-            },
-            observeSettlements = ObserveSettlementsUseCase(settlements),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
-            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+            useCases = GroupScreenUseCases(
+                navigator = navigator,
+                observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
+                observeExpenses = if (isRoomRead) {
+                    ObserveExpensesUseCase(expenses)
+                } else {
+                    ObserveExpenses { expensesNeverAnswer }
+                },
+                observeSettlements = ObserveSettlementsUseCase(settlements),
+                observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+                consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+                deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
+                observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
+                consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
+                connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(isOnline) },
+                leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
+                deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+            ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

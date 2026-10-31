@@ -2,41 +2,26 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
-import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class BalancesViewModel(
     private val route: Route.Balances,
-    navigator: Navigator,
-    consumeRecordedPayment: ConsumeRecordedPayment,
-    deleteSettlement: DeleteSettlement,
-    observeGroup: ObserveGroup,
-    observeExpenses: ObserveExpenses,
-    observeSettlements: ObserveSettlements,
-    observeRecordedPayment: ObserveRecordedPayment,
+    useCases: GroupScreenUseCases,
 ) : ViewModel() {
     val uiState: StateFlow<BalancesUiState>
         field = MutableStateFlow(
@@ -46,6 +31,7 @@ class BalancesViewModel(
                 otherDebts = emptyList(),
                 hasBills = false,
                 recordedPayment = null,
+                exit = idleGroupExit,
                 isLoaded = false,
             ),
         )
@@ -59,13 +45,7 @@ class BalancesViewModel(
     private val screen = GroupScreen(
         route = route,
         groupId = route.groupId,
-        navigator = navigator,
-        observeGroup = observeGroup,
-        observeExpenses = observeExpenses,
-        observeSettlements = observeSettlements,
-        observeRecordedPayment = observeRecordedPayment,
-        consumeRecordedPayment = consumeRecordedPayment,
-        deleteSettlement = deleteSettlement,
+        useCases = useCases,
     )
 
     init {
@@ -75,6 +55,9 @@ class BalancesViewModel(
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
+        screen.exitState
+            .onEach { exit -> uiState.update { it.copy(exit = exit) } }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: BalancesUiEvent) {
@@ -91,9 +74,17 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            BalancesUiEvent.OnLeaveGroupClicked,
-            BalancesUiEvent.OnDeleteGroupClicked,
-            -> viewModelScope.launch { uiAction.emit(BalancesUiAction.ShowComingSoon) }
+            BalancesUiEvent.OnLeaveGroupClicked -> screen.askToLeave()
+
+            BalancesUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
+
+            BalancesUiEvent.OnGroupExitConfirmed -> screen.confirmExit(viewModelScope) { isDelete ->
+                uiAction.emit(if (isDelete) BalancesUiAction.ShowDeleteError else BalancesUiAction.ShowLeaveError)
+            }
+
+            BalancesUiEvent.OnGroupExitDismissed -> screen.dismissExit()
+
+            BalancesUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
 
             BalancesUiEvent.OnSettleClicked -> screen.openSettle()
 
@@ -125,35 +116,12 @@ class BalancesViewModel(
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine
                     .sortedBy { debt -> debt.fromMemberId != meId }
-                    .map { debt -> toRow(debt, group, meId) },
-                otherDebts = others.map { debt -> toRow(debt, group, meId) },
+                    .map { debt -> debtRowOf(debt, group, meId) },
+                otherDebts = others.map { debt -> debtRowOf(debt, group, meId) },
                 hasBills = balances.hasBills,
                 isLoaded = true,
             )
         }
-    }
-
-    private fun toRow(
-        debt: Debt,
-        group: Group,
-        meId: String?,
-    ): DebtRow {
-        val from = group.members.firstOrNull { it.id == debt.fromMemberId }
-        val to = group.members.firstOrNull { it.id == debt.toMemberId }
-        return DebtRow(
-            fromMemberId = debt.fromMemberId,
-            toMemberId = debt.toMemberId,
-            fromName = from?.name,
-            fromFace = from?.let(::faceOf),
-            toName = to?.name,
-            toFace = to?.let(::faceOf),
-            amountMinor = debt.amountMinor,
-            kind = when (meId) {
-                debt.fromMemberId -> DebtKind.YOU_OWE
-                debt.toMemberId -> DebtKind.OWES_YOU
-                else -> DebtKind.BETWEEN_OTHERS
-            },
-        )
     }
 
     private fun undoRecordedPayment() {

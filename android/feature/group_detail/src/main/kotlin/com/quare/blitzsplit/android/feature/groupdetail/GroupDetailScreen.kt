@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -25,7 +26,8 @@ fun GroupDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val comingSoon = stringResource(R.string.group_detail_coming_soon)
+    val leaveError = stringResource(R.string.group_detail_leave_error)
+    val deleteError = stringResource(R.string.group_detail_delete_error)
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val scope = rememberCoroutineScope()
@@ -33,7 +35,8 @@ fun GroupDetailScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                GroupDetailUiAction.ShowComingSoon -> showSnackbar(comingSoon)
+                GroupDetailUiAction.ShowLeaveError -> showSnackbar(leaveError)
+                GroupDetailUiAction.ShowDeleteError -> showSnackbar(deleteError)
                 GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
             }
         }
@@ -60,4 +63,11 @@ fun GroupDetailScreen(
     if (state.paymentToDelete != null) {
         DeletePaymentDialog(onEvent = viewModel::onEvent)
     }
+    GroupExitAlertDialog(
+        exit = state.exit,
+        money = rememberMoneyFormatter(state.header.currency),
+        onConfirm = { viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed) },
+        onDismiss = { viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed) },
+        onBackToGroups = { viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked) },
+    )
 }
