@@ -2822,6 +2822,191 @@ class GroupRepositoryImplTest {
             assertEquals("Xy7kQ2", local.member("m-1")?.inviteCode)
         }
 
+    @Test
+    fun `GIVEN a member someone joined as WHEN releasing them THEN asks the server to release that member`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(pierreMember, carlaJoined),
+            profileOwnerUserId = "user-1",
+            releasedMember = carlaReleased,
+        )
+
+        // When
+        val result = repository.requestMemberRelease("m-2")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("m-2"), remote.releasedMemberIds)
+    }
+
+    @Test
+    fun `GIVEN the server releases the member WHEN releasing them THEN stores the member as the server answered`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(pierreMember, carlaJoined),
+                profileOwnerUserId = "user-1",
+                releasedMember = carlaReleased,
+            )
+
+            // When
+            repository.requestMemberRelease("m-2")
+
+            // Then
+            assertEquals(
+                member(
+                    id = "m-2",
+                    groupId = "group-1",
+                    name = "Carla",
+                    userId = null,
+                    isMe = false,
+                    updatedAt = 9L,
+                    pendingSync = false,
+                    inviteCode = "NewCode9",
+                ),
+                local.member("m-2"),
+            )
+            assertEquals(pierreMember, local.member("m-1"))
+        }
+
+    @Test
+    fun `GIVEN the server releases the member WHEN observing the groups THEN they show not joined with the new code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(pierreMember, carlaJoined),
+                profileOwnerUserId = "user-1",
+                releasedMember = carlaReleased,
+            )
+            repository.requestMemberRelease("m-2")
+
+            // When
+            val carla = repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+                .single { it.id == "m-2" }
+
+            // Then
+            assertFalse(carla.isMe)
+            assertFalse(carla.hasJoined)
+            assertEquals("NewCode9", carla.inviteCode)
+            assertFalse(repository.observeHasPendingChanges().first())
+        }
+
+    @Test
+    fun `GIVEN the member is no longer on the server WHEN releasing them THEN succeeds and changes nothing here`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(pierreMember, carlaJoined),
+                profileOwnerUserId = "user-1",
+                releasedMember = null,
+            )
+
+            // When
+            val result = repository.requestMemberRelease("m-2")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("m-2"), remote.releasedMemberIds)
+            assertEquals(listOf(pierreMember, carlaJoined), local.members.value)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN releasing a member THEN returns the error and changes nothing here`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(pierreMember, carlaJoined),
+            profileOwnerUserId = "user-1",
+            releaseError = IllegalStateException("offline"),
+        )
+
+        // When
+        val result = repository.requestMemberRelease("m-2")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(pierreMember, carlaJoined), local.members.value)
+    }
+
+    @Test
+    fun `GIVEN the server refuses to release this device user WHEN releasing THEN fails and they stay me`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(pierreMember, carlaJoined),
+            profileOwnerUserId = "user-1",
+            releaseError = IllegalStateException("cannot release yourself"),
+        )
+
+        // When
+        val result = repository.requestMemberRelease("m-1")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(pierreMember, local.member("m-1"))
+    }
+
+    @Test
+    fun `GIVEN no account on the device WHEN releasing a member THEN returns the error and changes nothing here`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        createdBy = null,
+                        ownerUserId = null,
+                        pendingSync = true,
+                    ),
+                ),
+                storedMembers = listOf(carlaJoined),
+                profileOwnerUserId = null,
+                releasedMember = carlaReleased,
+            )
+
+            // When
+            val result = repository.requestMemberRelease("m-2")
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(listOf(carlaJoined), local.members.value)
+        }
+
+    private val pierreMember = member(
+        id = "m-1",
+        groupId = "group-1",
+        name = "Pierre",
+        userId = "user-1",
+        isMe = true,
+        updatedAt = 5L,
+    )
+
+    private val carlaJoined = member(
+        id = "m-2",
+        groupId = "group-1",
+        name = "Carla",
+        userId = "user-2",
+        updatedAt = 5L,
+        inviteCode = "OldCode1",
+    )
+
+    private val carlaReleased = memberDto(
+        id = "m-2",
+        groupId = "group-1",
+        name = "Carla",
+        userId = null,
+        updatedAt = 9L,
+        inviteCode = "NewCode9",
+    )
+
     private val bruno = GroupMember(
         id = "m-new",
         name = "Bruno",
@@ -2968,6 +3153,8 @@ class GroupRepositoryImplTest {
         groupWriteError: Throwable? = null,
         deleteMembersError: Throwable? = null,
         serverMemberInviteCodes: Map<String, String> = emptyMap(),
+        releasedMember: GroupMemberDto? = null,
+        releaseError: Throwable? = null,
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
@@ -2984,6 +3171,8 @@ class GroupRepositoryImplTest {
             it.inviteCodes = serverInviteCodes
             it.memberInviteCodes = serverMemberInviteCodes
             it.deleteMembersError = deleteMembersError
+            it.releasedMember = releasedMember
+            it.releaseError = releaseError
         }
         repository = GroupRepositoryImpl(
             local = local,

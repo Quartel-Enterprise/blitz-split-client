@@ -290,7 +290,7 @@ interface GroupDao {
      * Why: the groups that went up and the server no longer gives this user were removed there, or the user was
      * released from them ("Liberar nome"), with all their members, even with changes made here the server would refuse
      * now. So were the synced members missing from a group the server still has. A group created here and not up yet
-     * stays, and a group edited here keeps its members.
+     * stays, and so does a member added or edited here in a group the server still has.
      */
     @Transaction
     suspend fun deleteGoneFromServer(
