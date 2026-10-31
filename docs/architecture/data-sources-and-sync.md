@@ -192,8 +192,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     that member right from the invite screen.
   - **Leaving and deleting a group** ("Sair do grupo", "Apagar grupo") are online only, never queued: whether a
     balance is still open depends on every device's bills and payments. `LeaveGroup` and `DeleteGroup` (in
-    `:core:sync`) run `syncNow()` first, so the server sees what this device has, then ask the `leave_group` or
-    `delete_group` function, which checks the balances under a lock on the group. On `left`, `deleted` or
+    `:core:sync`) sync first, so the server sees what this device has, then ask the `leave_group` or
+    `delete_group` function, which checks the balances under a lock on the group. Both run under the coordinator's
+    sync lock (`SyncCoordinator.syncThen`), so no other sync, whose download read the server before the request,
+    brings the group back. On `left`, `deleted` or
     `not_member` (another device of this user already left) the group leaves the device with its members, bills and
     payments (`GroupDao.deleteGroupsWithMembers`); `has_balance` changes nothing but one more sync, which brings the
     bill or payment the server knew of. Both run `NonCancellable`, so a screen closed mid request still drops the

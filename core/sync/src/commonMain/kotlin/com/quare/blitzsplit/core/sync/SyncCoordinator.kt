@@ -77,51 +77,65 @@ class SyncCoordinator(
         scope.launch { syncUntilSettled() }
     }
 
-    suspend fun syncNow(): Result<Unit> {
+    suspend fun syncNow(): Result<Unit> = underSyncLock { syncLocked() }
+
+    /*
+     * Why: a request the server judges with every change made here ("Sair do grupo", "Apagar grupo"). Under the same
+     * lock as the sync before it, so no other sync runs between the two or alongside the request: one whose download
+     * read the server before it would bring back what the request just took off the device.
+     */
+    suspend fun <T> syncThen(request: suspend () -> Result<T>): Result<T> = underSyncLock {
+        syncLocked().fold(
+            onSuccess = { suspendRunCatching { request().getOrThrow() } },
+            onFailure = { Result.failure(it) },
+        )
+    }
+
+    private suspend fun <T> underSyncLock(block: suspend () -> Result<T>): Result<T> {
         requestedSyncs.update { it + 1 }
         return try {
-            syncLock.withLock {
-                suspendRunCatching {
-                    profileRepository.observeProfile().first() ?: return@suspendRunCatching
-                    val userId = accountRepository.ensureRegistered().getOrThrow()
-                    profileRepository.downloadProfile(userId).getOrThrow()
-                    profileRepository.uploadPendingProfile(userId).getOrThrow()
-                    /*
-                     * Why: after the profile, whose download decides whose copy this device holds. A key, a
-                     * preference or a group that fails still fails the sync, but not before the steps that only
-                     * need the profile, nor each other.
-                     */
-                    val keysSynced = suspendRunCatching {
-                        paymentKeyRepository.downloadKeys(userId).getOrThrow()
-                        paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
-                    }
-                    val preferencesSynced = suspendRunCatching {
-                        notificationPreferencesRepository.downloadPreferences(userId).getOrThrow()
-                        notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
-                    }
-                    /*
-                     * Why: the bills and the payments after their groups, which they need on the device to come
-                     * down and on the server to go up.
-                     */
-                    val groupsSynced = suspendRunCatching {
-                        groupRepository.downloadGroups(userId).getOrThrow()
-                        groupRepository.uploadPendingGroups(userId).getOrThrow()
-                        expenseRepository.downloadExpenses(userId).getOrThrow()
-                        expenseRepository.uploadPendingExpenses(userId).getOrThrow()
-                        settlementRepository.downloadSettlements(userId).getOrThrow()
-                        settlementRepository.uploadPendingSettlements(userId).getOrThrow()
-                    }
-                    offerRecoveryCodeIfDue()
-                    signOutIfScheduledAndSynced()
-                    keysSynced.getOrThrow()
-                    preferencesSynced.getOrThrow()
-                    groupsSynced.getOrThrow()
-                }.also { result -> lastSyncFailed.value = result.isFailure }
-            }
+            syncLock.withLock { block() }
         } finally {
             requestedSyncs.update { it - 1 }
         }
     }
+
+    private suspend fun syncLocked(): Result<Unit> = suspendRunCatching {
+        profileRepository.observeProfile().first() ?: return@suspendRunCatching
+        val userId = accountRepository.ensureRegistered().getOrThrow()
+        profileRepository.downloadProfile(userId).getOrThrow()
+        profileRepository.uploadPendingProfile(userId).getOrThrow()
+        /*
+         * Why: after the profile, whose download decides whose copy this device holds. A key, a
+         * preference or a group that fails still fails the sync, but not before the steps that only
+         * need the profile, nor each other.
+         */
+        val keysSynced = suspendRunCatching {
+            paymentKeyRepository.downloadKeys(userId).getOrThrow()
+            paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
+        }
+        val preferencesSynced = suspendRunCatching {
+            notificationPreferencesRepository.downloadPreferences(userId).getOrThrow()
+            notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
+        }
+        /*
+         * Why: the bills and the payments after their groups, which they need on the device to come
+         * down and on the server to go up.
+         */
+        val groupsSynced = suspendRunCatching {
+            groupRepository.downloadGroups(userId).getOrThrow()
+            groupRepository.uploadPendingGroups(userId).getOrThrow()
+            expenseRepository.downloadExpenses(userId).getOrThrow()
+            expenseRepository.uploadPendingExpenses(userId).getOrThrow()
+            settlementRepository.downloadSettlements(userId).getOrThrow()
+            settlementRepository.uploadPendingSettlements(userId).getOrThrow()
+        }
+        offerRecoveryCodeIfDue()
+        signOutIfScheduledAndSynced()
+        keysSynced.getOrThrow()
+        preferencesSynced.getOrThrow()
+        groupsSynced.getOrThrow()
+    }.also { result -> lastSyncFailed.value = result.isFailure }
 
     /*
      * Why: under the sync lock, so a push in flight ends before the copy it reads is gone. In the app's

@@ -1099,6 +1099,23 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Acerte antes de sair open WHEN the sync brings the bill THEN lists it and offers Acertar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(exitOutcome = GroupExitOutcome.HAS_BALANCE)
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // When
+            expenses.expenses.value = listOf(expense(id = "bill-1", spentAt = nowMillis))
+
+            // Then
+            val dialog = assertIs<GroupExitDialog.LeaveBlocked>(viewModel.uiState.value.exit.dialog)
+            assertEquals(listOf(PIERRE to ANA), dialog.debts.map { it.fromMemberId to it.toMemberId })
+            assertTrue(dialog.canSettle)
+        }
+
+    @Test
     fun `GIVEN the server still answering WHEN dismissing the dialog THEN it stays open`() = runTest(testDispatcher) {
         // Given
         prepareScenario(exitGate = CompletableDeferred())

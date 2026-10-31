@@ -112,6 +112,7 @@ internal class GroupScreen(
                 } else {
                     balances = GroupBalances.of(expenses, settlements)
                     billCount = expenses.size
+                    refreshBlockedDialog()
                     show(group, expenses, settlements, balances)
                 }
             }.launchIn(scope)
@@ -313,6 +314,21 @@ internal class GroupScreen(
                     }
                     onFailure(isDelete)
                 }
+        }
+    }
+
+    /*
+     * Why: a blocked dialog lists what is still open, which a sync may change while it shows. The one that follows
+     * has_balance brings the bill or payment the device didn't have yet, usually after the dialog was built.
+     */
+    private fun refreshBlockedDialog() {
+        exitState.update { state ->
+            val isDelete = when (state.dialog) {
+                is GroupExitDialog.LeaveBlocked -> false
+                is GroupExitDialog.DeleteBlocked -> true
+                else -> return@update state
+            }
+            state.copy(dialog = blockedDialogOrNull(isDelete) ?: state.dialog)
         }
     }
 
