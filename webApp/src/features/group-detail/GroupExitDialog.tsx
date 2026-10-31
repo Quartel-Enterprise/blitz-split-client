@@ -23,17 +23,23 @@ export function toastGroupAction(action: string) {
   if (action === 'change-error') toast(t('groupDetail_changeError'))
 }
 
-/** What the dialogs of "Sair do grupo" and "Apagar grupo" ask of the ViewModel. */
-export interface GroupExitEvents {
-  leaveGroup(): void
-  deleteGroup(): void
+/** What the dialogs of "Sair do grupo" and "Apagar grupo" ask of the ViewModel; the home never shows "Grupo apagado". */
+export interface GroupExitDialogEvents {
   confirmGroupExit(): void
   dismissGroupExit(): void
+  backToGroups?(): void
+}
+
+/** What a group's tab asks of the ViewModel: its ⋯ menu's Sair and Apagar, and the dialogs they open. */
+export interface GroupExitEvents extends GroupExitDialogEvents {
+  leaveGroup(): void
+  deleteGroup(): void
   backToGroups(): void
 }
 
 /**
- * What "Sair do grupo" and "Apagar grupo" open (5.3c to 5.3f), and "Grupo apagado" (6.1k), over Despesas or Saldos.
+ * What "Sair do grupo" and "Apagar grupo" open (5.3c to 5.3f), and "Grupo apagado" (6.1k), over Despesas or Saldos,
+ * and over the home from a row.
  * Closing one any way (the button, Escape) is `dismissGroupExit`; the main button waits while the server answers.
  */
 export function GroupExitDialog({
@@ -45,7 +51,7 @@ export function GroupExitDialog({
   exit: JsGroupExit
   currency: string
   fractionDigits: number
-  events: GroupExitEvents
+  events: GroupExitDialogEvents
 }) {
   if (exit.deletedNotice) {
     const notice = exit.deletedNotice
@@ -53,7 +59,7 @@ export function GroupExitDialog({
       <AlertDialog
         open
         onOpenChange={(open) => {
-          if (!open) events.backToGroups()
+          if (!open) events.backToGroups?.()
         }}
       >
         <AlertDialogContent className="sm:max-w-md">
@@ -67,7 +73,7 @@ export function GroupExitDialog({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Button onClick={() => events.backToGroups()}>{t('groupExit_backToGroups')}</Button>
+            <Button onClick={() => events.backToGroups?.()}>{t('groupExit_backToGroups')}</Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

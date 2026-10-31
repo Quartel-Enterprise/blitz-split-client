@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
@@ -38,7 +39,11 @@ const accountLabels: Record<AccountProvider, MessageKey> = {
 export function GroupsScreen() {
   const presenter = usePresenter(() => new GroupsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsGroupsState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onShow: (show: boolean) => void) => p.observeComingSoon(onShow), () => toast(t('groups_comingSoon')))
+  useActions(
+    presenter,
+    (p, onAction: (action: string) => void) => p.observeActions(onAction),
+    (action) => (action === 'coming-soon' ? toast(t('groups_comingSoon')) : toastGroupAction(action)),
+  )
   // Why: state, not an action, so it waits until the home is on top; the next deleted group follows once this shows.
   const deletedGroupId = state?.deletedGroupId ?? null
   const deletedGroupName = state?.deletedGroupName ?? null
