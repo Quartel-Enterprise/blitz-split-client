@@ -5,6 +5,47 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "all %lld members" : {
+      "comment" : "Who a deleted group is gone for, in “gone for all 5 members”",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "its %lld member"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "all %lld members"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "o %lld membro"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "os %lld membros"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%@ among %lld people." : {
       "comment" : "The total and how many people split it",
       "localizations" : {
@@ -99,6 +140,17 @@
         }
       }
     },
+    "Back to Groups" : {
+      "comment" : "The only button of “Group deleted”",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltar para Grupos"
+          }
+        }
+      }
+    },
     "Change color" : {
       "comment" : "The edit group button under the avatar, which changes its color",
       "localizations" : {
@@ -106,6 +158,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trocar cor"
+          }
+        }
+      }
+    },
+    "Couldn't delete the group. Check your connection and try again." : {
+      "comment" : "Deleting the group failed: no sync or no answer from the server",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para apagar o grupo. Confira a conexão e tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't leave the group. Check your connection and try again." : {
+      "comment" : "Leaving the group failed: no sync or no answer from the server",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para sair do grupo. Confira a conexão e tente de novo."
           }
         }
       }
@@ -120,8 +194,19 @@
         }
       }
     },
+    "Delete for everyone" : {
+      "comment" : "Confirms deleting the group for all its members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar para todos"
+          }
+        }
+      }
+    },
     "Delete group" : {
-      "comment" : "The group menu's item to delete the group, not built yet",
+      "comment" : "The group menu's item to delete the group",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
@@ -138,6 +223,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ mudou esta conta %@."
+          }
+        }
+      }
+    },
+    "Delete group…" : {
+      "comment" : "The Mac group menu's item to delete the group, which opens a dialog",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar grupo…"
+          }
+        }
+      }
+    },
+    "Delete “%@”?" : {
+      "comment" : "The title of the dialog that confirms deleting a group for everyone; %@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar “%@”?"
+          }
+        }
+      }
+    },
+    "%@ deleted the group “%@”." : {
+      "comment" : "A toast on the groups: someone else deleted a group; the first %@ is who, the second the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou o grupo “%2$@”."
+          }
+        }
+      }
+    },
+    "%@ deleted “%@” after everyone settled up. Nothing was left open, and the group leaves your list." : {
+      "comment" : "Someone else deleted the group while it was open; the first %@ is who, the second the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou “%2$@” depois que todo mundo acertou. Nada ficou pendente, e o grupo sai da sua lista."
           }
         }
       }
@@ -175,6 +304,17 @@
         }
       }
     },
+    "Everyone has settled up. The group, %@ and the history are gone for %@. This can't be undone." : {
+      "comment" : "What deleting a group does; the first %@ is “its 14 expenses”, the second “all 5 members”",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos já acertaram. O grupo, %1$@ e o histórico somem para %2$@. Não dá para desfazer."
+          }
+        }
+      }
+    },
     "Everyone in the group sees the new name." : {
       "comment" : "The help under the edit group's name",
       "localizations" : {
@@ -193,6 +333,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dê um nome ao grupo, com até 40 caracteres."
+          }
+        }
+      }
+    },
+    "Group deleted" : {
+      "comment" : "The title of the notice of a group someone else deleted while it was open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupo apagado"
           }
         }
       }
@@ -226,6 +377,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ estão sem valor"
+          }
+        }
+      }
+    },
+    "If it was you, talk to %@." : {
+      "comment" : "The group's creator, who can sort out a member taken by someone else",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se era você, fale com %@."
           }
         }
       }
@@ -285,6 +447,47 @@
         }
       }
     },
+    "its %lld expenses" : {
+      "comment" : "What goes with a deleted group, in “The group, its 14 expenses and the history”",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "its %lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "its %lld expenses"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "a %lld despesa"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "as %lld despesas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%@ just joined from another device" : {
       "comment" : "Someone else joined as the member just picked",
       "localizations" : {
@@ -296,13 +499,46 @@
         }
       }
     },
+    "Leave" : {
+      "comment" : "Confirms leaving the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair"
+          }
+        }
+      }
+    },
     "Leave group" : {
-      "comment" : "The group menu's item to leave the group, not built yet",
+      "comment" : "The group menu's item to leave the group",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sair do grupo"
+          }
+        }
+      }
+    },
+    "Leave group…" : {
+      "comment" : "The Mac group menu's item to leave the group, which opens a dialog",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair do grupo…"
+          }
+        }
+      }
+    },
+    "Leave “%@”?" : {
+      "comment" : "The title of the dialog that confirms leaving a group; %@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair de “%@”?"
           }
         }
       }
@@ -336,6 +572,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mais opções do grupo"
+          }
+        }
+      }
+    },
+    "Needs internet" : {
+      "comment" : "Under Leave group and Delete group in the group's menu while offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Precisa de internet"
           }
         }
       }
@@ -413,6 +660,165 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ pagou"
+          }
+        }
+      }
+    },
+    "%lld payments left:" : {
+      "comment" : "After why a group can't be deleted yet: how many pairs still owe, listed under it",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld payment left:"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld payments left:"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Falta %lld acerto:"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Faltam %lld acertos:"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "See balances" : {
+      "comment" : "A button that opens the group's Balances tab",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver saldos"
+          }
+        }
+      }
+    },
+    "Settle up before leaving" : {
+      "comment" : "The title of the dialog when someone with an open balance tries to leave a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerte antes de sair"
+          }
+        }
+      }
+    },
+    "The group is gone for %@. This can't be undone." : {
+      "comment" : "Deleting a group with no bills; %@ is “all 5 members”",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O grupo some para %@. Não dá para desfazer."
+          }
+        }
+      }
+    },
+    "The group “%@” was deleted." : {
+      "comment" : "A toast on the groups: a group was deleted by someone whose account is gone",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O grupo “%@” foi apagado."
+          }
+        }
+      }
+    },
+    "There are still open balances" : {
+      "comment" : "The title of the dialog when someone tries to delete a group where someone still owes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda há saldo em aberto"
+          }
+        }
+      }
+    },
+    "You still have an open balance in “%@”. Leaving now would leave it unsettled for the others." : {
+      "comment" : "Why someone can't leave the group yet; %@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você ainda tem saldo em aberto em “%@”. Sair agora deixaria a conta sem fechar para os outros."
+          }
+        }
+      }
+    },
+    "Your balance is settled. Nobody else in the group has joined, so it's deleted for good." : {
+      "comment" : "Leaving a group nobody else with an account is in, which deletes it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez."
+          }
+        }
+      }
+    },
+    "Your balance is settled. The group leaves this device and your expenses keep your name for the other %lld members. To come back, someone has to invite you again." : {
+      "comment" : "What leaving a group does; %lld is how many other members it has",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your balance is settled. The group leaves this device and your expenses keep your name for the other member. To come back, someone has to invite you again."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your balance is settled. The group leaves this device and your expenses keep your name for the other %lld members. To come back, someone has to invite you again."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para o outro membro. Para voltar, alguém precisa te convidar de novo."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para os outros %lld membros. Para voltar, alguém precisa te convidar de novo."
+                }
+              }
+            }
           }
         }
       }
@@ -5835,6 +6241,17 @@
         }
       }
     },
+    "“%@” can only be deleted once everyone has settled up." : {
+      "comment" : "Why the group can't be deleted yet; %@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” só pode ser apagado quando todo mundo tiver acertado."
+          }
+        }
+      }
+    },
     "“%@” leaves the group and everyone's share of it stops counting." : {
       "comment" : "Body of the confirmation before deleting a bill; %@ is its description",
       "localizations" : {
@@ -6551,6 +6968,17 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "“%@” was deleted after everyone settled up. Nothing was left open, and the group leaves your list." : {
+      "comment" : "The group was deleted by someone whose account is gone; %@ is the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” foi apagado depois que todo mundo acertou. Nada ficou pendente, e o grupo sai da sua lista."
           }
         }
       }

@@ -28,6 +28,7 @@ fun GroupDetailContent(
             hasBills = state.days.isNotEmpty(),
             isLoaded = state.isLoaded,
             showsSplitBillButton = state.showsSplitBillButton,
+            isOnline = state.exit.isOnline,
             money = money,
         ),
         snackbarHostState = snackbarHostState,

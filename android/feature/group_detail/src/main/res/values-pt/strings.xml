@@ -30,7 +30,6 @@
     <string name="group_detail_empty_title">Nenhuma despesa ainda</string>
     <string name="group_detail_empty_message">Lance a primeira despesa ou chame quem vai dividir com você. Quem ainda não tem o app também entra na conta.</string>
     <string name="group_detail_split_bill">Rachar conta</string>
-    <string name="group_detail_coming_soon">Em breve</string>
     <string name="group_detail_change_error">Não deu para salvar a mudança. Tente de novo.</string>
     <string name="group_detail_bill_deleted">Esta conta foi apagada</string>
     <string name="group_detail_former_member">Ex-membro</string>
@@ -62,4 +61,40 @@
     <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
     <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
     <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
+    <string name="group_detail_needs_internet">Precisa de internet</string>
+    <string name="group_detail_leave_error">Não deu para sair do grupo. Confira a conexão e tente de novo.</string>
+    <string name="group_detail_delete_error">Não deu para apagar o grupo. Confira a conexão e tente de novo.</string>
+    <string name="group_detail_not_now">Agora não</string>
+    <string name="group_detail_see_balances">Ver saldos</string>
+    <string name="group_detail_leave_blocked_title">Acerte antes de sair</string>
+    <string name="group_detail_leave_blocked_message">Você ainda tem saldo em aberto em “%s”. Sair agora deixaria a conta sem fechar para os outros.</string>
+    <string name="group_detail_leave_title">Sair de “%s”?</string>
+    <plurals name="group_detail_leave_message">
+        <item quantity="one">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para o outro membro. Para voltar, alguém precisa te convidar de novo.</item>
+        <item quantity="other">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para os outros %d membros. Para voltar, alguém precisa te convidar de novo.</item>
+    </plurals>
+    <string name="group_detail_leave_message_alone">Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez.</string>
+    <string name="group_detail_leave_confirm">Sair</string>
+    <string name="group_detail_delete_blocked_title">Ainda há saldo em aberto</string>
+    <plurals name="group_detail_delete_blocked_message">
+        <item quantity="one">“%1$s” só pode ser apagado quando todo mundo tiver acertado. Falta %2$d acerto:</item>
+        <item quantity="other">“%1$s” só pode ser apagado quando todo mundo tiver acertado. Faltam %2$d acertos:</item>
+    </plurals>
+    <string name="group_detail_delete_blocked_message_short">“%s” só pode ser apagado quando todo mundo tiver acertado.</string>
+    <string name="group_detail_delete_title">Apagar “%s”?</string>
+    <string name="group_detail_delete_message">Todos já acertaram. O grupo, %1$s e o histórico somem para %2$s. Não dá para desfazer.</string>
+    <string name="group_detail_delete_message_no_bills">O grupo some para %s. Não dá para desfazer.</string>
+    <plurals name="group_detail_delete_bills">
+        <item quantity="one">a %d despesa</item>
+        <item quantity="other">as %d despesas</item>
+    </plurals>
+    <plurals name="group_detail_delete_members">
+        <item quantity="one">o %d membro</item>
+        <item quantity="other">os %d membros</item>
+    </plurals>
+    <string name="group_detail_delete_confirm">Apagar para todos</string>
+    <string name="group_detail_deleted_title">Grupo apagado</string>
+    <string name="group_detail_deleted_message">%1$s apagou “%2$s” depois que todo mundo acertou. Nada ficou pendente, e o grupo sai da sua lista.</string>
+    <string name="group_detail_deleted_message_nobody">“%s” foi apagado depois que todo mundo acertou. Nada ficou pendente, e o grupo sai da sua lista.</string>
+    <string name="group_detail_back_to_groups">Voltar para Grupos</string>
 </resources>

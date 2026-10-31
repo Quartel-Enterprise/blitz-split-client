@@ -13,6 +13,8 @@ data class BalancesUiState(
     val hasBills: Boolean,
     // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento closed over this screen.
     val recordedPayment: PaymentNotice?,
+    // Why: "Sair do grupo" and "Apagar grupo", and "Grupo apagado".
+    val exit: GroupExitUiState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {

@@ -16,6 +16,11 @@ data class GroupsUiState(
     // Why: the most recently changed first. The empty home ("Crie seu primeiro grupo") only once they were read.
     val groups: List<GroupRow>,
     val hasLoadedGroups: Boolean,
+    /*
+     * Why: the snackbar of a group someone else deleted, which a sync took off this device. State rather than an
+     * action, so it waits until the home is drawn and on top.
+     */
+    val deletedGroupNotice: DeletedGroupNotice?,
 ) {
     val showsEmptyState: Boolean
         get() = hasLoadedGroups && groups.isEmpty()
