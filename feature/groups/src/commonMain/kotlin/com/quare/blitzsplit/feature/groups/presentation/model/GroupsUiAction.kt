@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 sealed interface GroupsUiAction {
-    // Why: joining a group (flow 3) and the other tabs are not built yet.
+    /*
+     * Why: the other tabs, the global Saldos that "A receber" and "A pagar" open (flow 8), and "Rachar conta" picking
+     * a group (7.1i) are not built yet.
+     */
     data object ShowComingSoon : GroupsUiAction
 }
