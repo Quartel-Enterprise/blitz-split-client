@@ -285,24 +285,26 @@ private fun InviteColumn(
 
 @Composable
 private fun InviteHeader(state: InviteUiState) {
-    AssistChip(
-        onClick = {},
-        label = { Text(stringResource(R.string.invite_group_created)) },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Check,
-                contentDescription = null,
-                modifier = Modifier.size(AssistChipDefaults.IconSize),
-            )
-        },
-        enabled = false,
-        colors = AssistChipDefaults.assistChipColors(
-            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        ),
-        border = null,
-    )
+    if (state.isNewGroup) {
+        AssistChip(
+            onClick = {},
+            label = { Text(stringResource(R.string.invite_group_created)) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Check,
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize),
+                )
+            },
+            enabled = false,
+            colors = AssistChipDefaults.assistChipColors(
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+            border = null,
+        )
+    }
     Text(
         text = stringResource(R.string.invite_title, state.groupName),
         modifier = Modifier.padding(

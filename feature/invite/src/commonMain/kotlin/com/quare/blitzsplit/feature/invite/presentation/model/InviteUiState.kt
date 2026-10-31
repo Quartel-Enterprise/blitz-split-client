@@ -20,7 +20,7 @@ data class InviteUiState(
     val isLoaded: Boolean,
     // Why: only the group's creator may change its link.
     val isCreatedByMe: Boolean,
-    // Why: right after "Novo grupo"; "Trocar link" is only offered from the group.
+    // Why: right after "Novo grupo", which "Grupo criado" says; "Trocar link" is only offered from the group.
     val isNewGroup: Boolean,
     // Why: "Trocar o link do convite?" is open.
     val isConfirmingLinkChange: Boolean,

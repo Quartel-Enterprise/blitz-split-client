@@ -60,8 +60,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
     grupo") and "Ana 2".
-  - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`). The
-    server makes each group's invite code, and only the group's creator may change it ("Trocar link",
+  - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
+    only time it shows the "Grupo criado" badge. The server makes each group's invite code, and only the group's creator may change it ("Trocar link",
     `InviteUiState.showsChangeLink`): only on Convidar opened from the group and online, at the top on Android and
     iOS, "Trocar link…" in the ⋯ menu on macOS, and "Alguém que não devia tem o link? Trocar link" below the link on
     the web. It asks "Trocar o link do convite?" first, then shows the new link and QR code right away; the old link

@@ -1,11 +1,6 @@
 package com.quare.blitzsplit.android.feature.paymentkey
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
 import com.quare.blitzsplit.android.platform.ClipboardReader
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiEvent
@@ -75,21 +71,12 @@ fun PaymentKeyScreen(
 
 @Composable
 private fun DeleteKeyDialog(onEvent: (PaymentKeyUiEvent) -> Unit) {
-    AlertDialog(
-        onDismissRequest = { onEvent(PaymentKeyUiEvent.OnDeleteDismissed) },
-        title = { Text(stringResource(R.string.payment_key_delete_title)) },
-        text = { Text(stringResource(R.string.payment_key_delete_body)) },
-        confirmButton = {
-            TextButton(
-                onClick = { onEvent(PaymentKeyUiEvent.OnDeleteConfirmed) },
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) { Text(stringResource(R.string.payment_key_delete_confirm)) }
-        },
-        dismissButton = {
-            TextButton(onClick = { onEvent(PaymentKeyUiEvent.OnDeleteDismissed) }) {
-                Text(stringResource(R.string.payment_key_delete_cancel))
-            }
-        },
+    ConfirmDialog(
+        title = stringResource(R.string.payment_key_delete_title),
+        message = stringResource(R.string.payment_key_delete_body),
+        confirmLabel = stringResource(R.string.payment_key_delete_confirm),
+        onConfirm = { onEvent(PaymentKeyUiEvent.OnDeleteConfirmed) },
+        onDismiss = { onEvent(PaymentKeyUiEvent.OnDeleteDismissed) },
     )
 }
 

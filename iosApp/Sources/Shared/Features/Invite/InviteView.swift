@@ -126,12 +126,14 @@ private struct InviteContent: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Group created", systemImage: "checkmark")
-                        .font(.footnote.weight(.semibold))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(Palette.accent)
-                        .background(Palette.accent.opacity(0.14), in: .capsule)
+                    if state.isNewGroup {
+                        Label("Group created", systemImage: "checkmark")
+                            .font(.footnote.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .foregroundStyle(Palette.accent)
+                            .background(Palette.accent.opacity(0.14), in: .capsule)
+                    }
                     Text("Invite everyone to \(state.groupName)")
                         .font(.title2.bold())
                 }

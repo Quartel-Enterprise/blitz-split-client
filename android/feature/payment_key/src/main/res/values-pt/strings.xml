@@ -82,5 +82,4 @@
     <string name="payment_key_delete_title">Excluir esta chave?</string>
     <string name="payment_key_delete_body">Quem te deve deixa de ver esta chave no acerto.</string>
     <string name="payment_key_delete_confirm">Excluir</string>
-    <string name="payment_key_delete_cancel">Cancelar</string>
 </resources>
