@@ -3316,7 +3316,11 @@ class MembersViewModelTest {
             viewModel.onEvent(MembersUiEvent.OnReleaseClicked("member-4"))
 
             // Then
-            assertEquals("member-3", viewModel.uiState.value.memberToRelease?.id)
+            assertEquals(
+                "member-3",
+                viewModel.uiState.value.memberToRelease
+                    ?.id,
+            )
             assertTrue(viewModel.uiState.value.isReleasing)
         }
 

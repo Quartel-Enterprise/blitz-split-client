@@ -106,6 +106,11 @@ interface GroupDao {
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
         )
+        updateMemberAccount(
+            id = entity.id,
+            userId = entity.userId,
+            isMe = entity.isMe,
+        )
         entity.inviteCode?.let {
             updateMemberInviteCode(
                 id = entity.id,
@@ -208,6 +213,20 @@ interface GroupDao {
     suspend fun updateMemberInviteCode(
         id: String,
         inviteCode: String,
+    )
+
+    /*
+     * Why: like the code, the account a member is belongs to the server: someone joins as them there, or the creator
+     * releases them ("Liberar nome"), so it is taken even when this device holds a newer edit of the member.
+     */
+    @Query(
+        "UPDATE group_member SET userId = :userId, isMe = :isMe " +
+            "WHERE id = :id AND (userId IS NOT :userId OR isMe != :isMe)",
+    )
+    suspend fun updateMemberAccount(
+        id: String,
+        userId: String?,
+        isMe: Boolean,
     )
 
     @Query("UPDATE group_member SET pendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")

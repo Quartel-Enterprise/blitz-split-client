@@ -345,6 +345,50 @@ class GroupDaoTest {
         }
 
     @Test
+    fun `GIVEN a joined member renamed here WHEN an older row released it THEN drops only the account`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(updatedAt = 1L),
+            members = listOf(
+                member(
+                    id = "carla",
+                    name = "Carla S.",
+                    userId = "user-2",
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "Ab3dE5",
+                ),
+            ),
+        )
+
+        // When
+        dao.applyRemoteMember(
+            member(
+                id = "carla",
+                userId = null,
+                updatedAt = 5L,
+                inviteCode = "Zz9yX8",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            member(
+                id = "carla",
+                name = "Carla S.",
+                userId = null,
+                updatedAt = 9L,
+                pendingSync = true,
+                inviteCode = "Zz9yX8",
+            ),
+            dao
+                .observeMembers()
+                .first()
+                .single(),
+        )
+    }
+
+    @Test
     fun `GIVEN a member with its code WHEN a server row without a code comes THEN keeps the code`() = runTest {
         // Given
         prepareScenario(
