@@ -7,7 +7,9 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
+import kotlin.math.abs
 
 private const val PART_SEPARATOR = " · "
 
@@ -17,6 +19,26 @@ internal fun personNameOf(person: BillPerson): String =
 
 @Composable
 internal fun namesOf(people: List<BillPerson>): String = nameListOf(people.map { personNameOf(it) })
+
+// Why: "Você e Ana" for two, "3 pessoas" for more: whoever paid several parts, "Ex-membro" for who left the group.
+@Composable
+internal fun payerNamesOf(amounts: PayerAmounts): List<String> = amounts.paying.map { row ->
+    row.person?.let { personNameOf(it) } ?: stringResource(R.string.split_bill_former_member)
+}
+
+// Why: "Faltam R$ 112,00" or "Passou R$ 12,00": how far what several people paid is from the total.
+@Composable
+internal fun payersMismatchOf(
+    amounts: PayerAmounts,
+    money: MoneyFormatter,
+): String {
+    val amount = money.toText(abs(amounts.remainingMinor))
+    return if (amounts.remainingMinor > 0) {
+        stringResource(R.string.split_bill_status_amount_left, amount)
+    } else {
+        stringResource(R.string.split_bill_status_amount_over, amount)
+    }
+}
 
 @Composable
 internal fun sentenceOf(text: String): String = stringResource(R.string.split_bill_sentence, text)

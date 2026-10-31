@@ -23,10 +23,16 @@ enum BillCopy {
         return row.name ?? formerMember
     }
 
-    /// "Bruno paid", "You paid" or "A former member paid".
-    static func paid(_ payer: BillPayer?) -> String {
-        guard let payer else { return String(localized: "A former member paid") }
-        return payer.isMe ? String(localized: "You paid") : String(localized: "\(payer.name) paid")
+    /// "Bruno paid", "You paid", "A former member paid", "You and Ana paid" or "3 people paid".
+    static func paid(_ payers: [BillPayer]) -> String {
+        if payers.count > 1 {
+            let names = payers.map { $0.isMe ? String(localized: "You") : $0.name ?? formerMember }
+            return ExpenseFormat.paidBySeveral(names)
+        }
+        guard let payer = payers.first else { return String(localized: "A former member paid") }
+        if payer.isMe { return String(localized: "You paid") }
+        guard let name = payer.name else { return String(localized: "A former member paid") }
+        return String(localized: "\(name) paid")
     }
 
     /// Above the people: "Split equally among 5", "By amount among 6", "By % among 4" or "By shares among 3".
@@ -75,8 +81,10 @@ enum BillCopy {
     /// Under "Your share": who settles it with whom.
     static func myPartNote(_ note: (any MyPartNote)?, currency: GroupCurrency) -> String? {
         switch note {
-        case let owes as MyPartNoteOwesPayer:
-            return String(localized: "Counts toward what you owe \(owes.payerName) in Balances.")
+        case let owes as MyPartNoteOwesPayers:
+            // Kotlin hands a list of nullable names over as NSNull for each null
+            let names = ExpenseFormat.names(owes.names.map { ($0 as? String) ?? formerMember })
+            return String(localized: "Counts toward what you owe \(names) in Balances.")
         case let owed as MyPartNoteOwedBy:
             // Kotlin hands a list of nullable names over as NSNull for each null
             let names = owed.names.map { ($0 as? String) ?? formerMember }

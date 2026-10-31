@@ -7,6 +7,9 @@ final class SplitBillModel {
     private(set) var state: SplitBillUiState
     /// The split being edited, kept after "Done" or "Back" so "Split" still draws while it slides away.
     private(set) var shownEditor: SplitEditor?
+    /// "Several people paid" as last open, kept after "Done" or "Close" so it still draws while the sheet slides
+    /// away; "Who paid" opening again forgets it.
+    private(set) var shownPayerAmounts: PayerAmounts?
     private(set) var saveErrorCount = 0
     private(set) var deleteErrorCount = 0
 
@@ -20,6 +23,11 @@ final class SplitBillModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
             if let editor = state.splitEditor { self?.shownEditor = editor }
+            if let amounts = state.payerAmounts {
+                self?.shownPayerAmounts = amounts
+            } else if state.payerSelection != nil {
+                self?.shownPayerAmounts = nil
+            }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
@@ -76,6 +84,20 @@ final class SplitBillModel {
         Binding(
             get: { self.current.splitEditor?.rows.first { $0.person.id == memberId }?.valueText ?? "" },
             set: { self.send(SplitBillUiEventOnPersonValueChanged(memberId: memberId, text: $0)) },
+        )
+    }
+
+    /// "Several people paid", from "Who paid" in one go: the pop-up and the Mac's button open it straight away.
+    func openSeveralPayers() {
+        send(SplitBillUiEventOnPayerClicked.shared)
+        send(SplitBillUiEventOnSeveralPayersClicked.shared)
+    }
+
+    /// What one person paid, in "Several people paid".
+    func payerAmount(of memberId: String) -> Binding<String> {
+        Binding(
+            get: { self.current.payerAmounts?.rows.first { $0.memberId == memberId }?.amountText ?? "" },
+            set: { self.send(SplitBillUiEventOnPayerAmountChanged(memberId: memberId, text: $0)) },
         )
     }
 
@@ -250,7 +272,12 @@ private struct PhoneSplitBill: View {
             PhoneSplitEditor(model: model)
         }
         .sheet(isPresented: payerShown) {
-            PayerSheet(model: model)
+            // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
+            if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
+                SeveralPayersSheet(model: model)
+            } else {
+                PayerSheet(model: model)
+            }
         }
         .onAppear {
             if state.amountText.isEmpty { focusedField = .amount }
@@ -302,10 +329,22 @@ private struct PhoneSplitBill: View {
                 model.send(SplitBillUiEventOnPayerClicked.shared)
             } label: {
                 HStack(spacing: 8) {
-                    Text("Who paid")
-                        .foregroundStyle(.primary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Who paid")
+                            .foregroundStyle(.primary)
+                        if let several = state.severalPayers, several.showsMismatch {
+                            Text(verbatim: SplitBillCopy.payersMismatch(several))
+                                .font(.footnote)
+                                .foregroundStyle(Palette.negative)
+                        }
+                    }
                     Spacer()
-                    if let payer = state.payer {
+                    if let several = state.severalPayers {
+                        SplitFaces(people: several.paying.compactMap(\.person))
+                        Text(verbatim: ExpenseFormat.payerNames(SplitBillCopy.payerNames(several)))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    } else if let payer = state.payer {
                         AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: 24)
                         Text(verbatim: SplitBillCopy.name(payer))
                             .foregroundStyle(.secondary)
@@ -385,12 +424,14 @@ private struct PhoneSplitBill: View {
         )
     }
 
-    /// Dismissing the sheet (a swipe down) keeps whoever paid before.
+    /// Dismissing the sheet (a swipe down), on "Who paid" or "Several people paid", keeps whoever paid before.
     private var payerShown: Binding<Bool> {
         Binding(
-            get: { model.state.payerSelection != nil },
+            get: { model.state.payerSelection != nil || model.state.payerAmounts != nil },
             set: { shown in
-                if !shown, model.current.payerSelection != nil { model.send(SplitBillUiEventOnPayerDismissed.shared) }
+                guard !shown else { return }
+                if model.current.payerSelection != nil { model.send(SplitBillUiEventOnPayerDismissed.shared) }
+                if model.current.payerAmounts != nil { model.send(SplitBillUiEventOnSeveralPayersDismissed.shared) }
             },
         )
     }
@@ -405,7 +446,7 @@ private struct DisclosureIndicator: View {
     }
 }
 
-/// "Who paid": one row per person, the one marked until "Done".
+/// "Who paid": one row per person, the one marked until "Done", and "Several people", which opens their amounts.
 private struct PayerSheet: View {
     let model: SplitBillModel
 
@@ -417,7 +458,7 @@ private struct PayerSheet: View {
         NavigationStack {
             List {
                 ForEach(state.people, id: \.id) { person in
-                    let isSelected = state.payerSelection == person.id
+                    let isSelected = state.payerSelection?.memberId == person.id
                     Button {
                         model.send(SplitBillUiEventOnPayerPicked(memberId: person.id))
                     } label: {
@@ -443,6 +484,37 @@ private struct PayerSheet: View {
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
+                // Marked while the bill has several payers and nobody else was picked
+                let isSeveralSelected = state.payerSelection != nil && state.payerSelection?.memberId == nil
+                Button {
+                    model.send(SplitBillUiEventOnSeveralPayersClicked.shared)
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "plus")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 32, height: 32)
+                            .background(.fill.tertiary, in: .circle)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Several people")
+                            Text("Each one says how much they paid")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if isSeveralSelected {
+                            Image(systemName: "checkmark")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(Palette.accent)
+                        } else {
+                            DisclosureIndicator()
+                        }
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(isSeveralSelected ? .isSelected : [])
             }
             .navigationTitle("Who paid")
             .navigationSubtitle(SplitBillCopy.payerSubtitle(state))
@@ -464,7 +536,104 @@ private struct PayerSheet: View {
         .presentationDetents([.medium, .large])
     }
 }
+
+/// "Several people paid": what each one paid, and whether it adds up to the total; "Done" waits until it does.
+private struct SeveralPayersSheet: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        if let amounts = model.state.payerAmounts ?? model.shownPayerAmounts {
+            NavigationStack {
+                List {
+                    Section {
+                        ForEach(amounts.rows, id: \.memberId) { row in
+                            HStack(spacing: 12) {
+                                PayerAmountFace(row: row, size: 32)
+                                Text(verbatim: SplitBillCopy.payerName(row))
+                                    .lineLimit(1)
+                                Spacer(minLength: 8)
+                                PayerAmountField(model: model, row: row, currency: amounts.currency)
+                            }
+                        }
+                    } footer: {
+                        if let status = SplitBillCopy.payersStatus(amounts) {
+                            Text(verbatim: status)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(amounts.addsUp ? Palette.accent : Palette.negative)
+                        }
+                    }
+                }
+                .navigationTitle("Several people paid")
+                .navigationSubtitle(SplitBillCopy.payersLead(amounts))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close", systemImage: "xmark", role: .cancel) {
+                            model.send(SplitBillUiEventOnSeveralPayersDismissed.shared)
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done", systemImage: "checkmark") {
+                            model.send(SplitBillUiEventOnSeveralPayersDone.shared)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .disabled(!amounts.addsUp)
+                    }
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+    }
+}
 #endif
+
+/// A face in "Several people paid", blank for someone who left the group.
+private struct PayerAmountFace: View {
+    let row: PayerAmountRow
+    let size: CGFloat
+
+    var body: some View {
+        if let person = row.person {
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+        } else {
+            Circle()
+                .fill(.fill.tertiary)
+                .frame(width: size, height: size)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+/// How much one person paid: what is typed goes to the ViewModel, which filters it and hands it back.
+private struct PayerAmountField: View {
+    let model: SplitBillModel
+    let row: PayerAmountRow
+    let currency: GroupCurrency
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(verbatim: currency.symbol)
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            // "How much Pierre paid" reads better to VoiceOver than "How much You paid"
+            TextField(text: model.payerAmount(of: row.memberId), prompt: Text(verbatim: currency.zeroPlaceholder)) {
+                Text("How much \(row.person?.name ?? String(localized: "Former member")) paid")
+            }
+            .multilineTextAlignment(.trailing)
+            .monospacedDigit()
+            #if os(iOS)
+            .keyboardType(.decimalPad)
+            #endif
+        }
+        #if os(iOS)
+        .padding(.horizontal, 10)
+        .frame(width: 128, height: 36)
+        .background(.fill.tertiary, in: .rect(cornerRadius: 10))
+        #else
+        .frame(width: 128)
+        #endif
+    }
+}
 
 #if os(macOS)
 /// The sheet on the window: a form with its labels on the left, "Who paid" as a pop-up button and "When" as a
@@ -553,8 +722,30 @@ private struct MacBillForm: View {
                     ForEach(state.people, id: \.id) { person in
                         Text(verbatim: SplitBillCopy.name(person)).tag(person.id)
                     }
+                    Divider()
+                    // Why: the empty id stands for several payers, the payer id a bill several people paid has.
+                    if let several = state.severalPayers {
+                        Text(verbatim: ExpenseFormat.payerNames(SplitBillCopy.payerNames(several))).tag("")
+                    } else {
+                        Text("Several People…").tag("")
+                    }
                 }
                 .fixedSize()
+                if let several = state.severalPayers {
+                    LabeledContent {
+                        HStack(spacing: 8) {
+                            Button("Change Amounts…") {
+                                model.openSeveralPayers()
+                            }
+                            if several.showsMismatch {
+                                Text(verbatim: SplitBillCopy.payersMismatch(several))
+                                    .foregroundStyle(Palette.negative)
+                            }
+                        }
+                    } label: {
+                        Text(verbatim: "")
+                    }
+                }
                 MacWhenField(
                     millis: state.spentAt,
                     relativeDay: state.spentDay,
@@ -613,18 +804,90 @@ private struct MacBillForm: View {
         }
         .padding(20)
         .onAppear { isAmountFocused = true }
+        .sheet(isPresented: severalPayersShown) {
+            MacSeveralPayers(model: model)
+        }
     }
 
-    /// The pop-up picks whoever paid in one go: the ViewModel's selection opens, marks and closes at once.
+    /// The pop-up picks whoever paid in one go: the ViewModel's selection opens, marks and closes at once. "Several
+    /// People…" opens their amounts instead.
     private var payer: Binding<String> {
         Binding(
             get: { model.state.payerId },
             set: { memberId in
+                if memberId.isEmpty {
+                    model.openSeveralPayers()
+                    return
+                }
                 model.send(SplitBillUiEventOnPayerClicked.shared)
                 model.send(SplitBillUiEventOnPayerPicked(memberId: memberId))
                 model.send(SplitBillUiEventOnPayerDone.shared)
             },
         )
+    }
+
+    /// Closing the sheet any way but "Done" keeps whoever paid before.
+    private var severalPayersShown: Binding<Bool> {
+        Binding(
+            get: { model.state.payerAmounts != nil },
+            set: { shown in
+                if !shown, model.current.payerAmounts != nil {
+                    model.send(SplitBillUiEventOnSeveralPayersDismissed.shared)
+                }
+            },
+        )
+    }
+}
+
+/// "Several People Paid", a sheet on the bill's sheet: one field per person, and whether they add up to the total.
+private struct MacSeveralPayers: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        if let amounts = model.state.payerAmounts ?? model.shownPayerAmounts {
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Several People Paid")
+                        .font(.title2.bold())
+                    Text(verbatim: SplitBillCopy.payersLead(amounts))
+                        .foregroundStyle(.secondary)
+                }
+                Form {
+                    ForEach(amounts.rows, id: \.memberId) { row in
+                        LabeledContent {
+                            PayerAmountField(model: model, row: row, currency: amounts.currency)
+                        } label: {
+                            HStack(spacing: 6) {
+                                PayerAmountFace(row: row, size: 18)
+                                Text(verbatim: SplitBillCopy.payerName(row))
+                            }
+                        }
+                    }
+                }
+                .formStyle(.columns)
+                if let status = SplitBillCopy.payersStatus(amounts) {
+                    Text(verbatim: status)
+                        .font(.callout.weight(.semibold))
+                        .foregroundStyle(amounts.addsUp ? Palette.accent : Palette.negative)
+                }
+                HStack(spacing: 8) {
+                    Spacer()
+                    Button("Cancel") {
+                        model.send(SplitBillUiEventOnSeveralPayersDismissed.shared)
+                    }
+                    .keyboardShortcut(.cancelAction)
+                    Button("Done") {
+                        model.send(SplitBillUiEventOnSeveralPayersDone.shared)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(!amounts.addsUp)
+                }
+                .controlSize(.large)
+            }
+            .padding(20)
+            .frame(width: 420)
+        }
     }
 }
 #endif

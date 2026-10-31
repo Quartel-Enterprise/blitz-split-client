@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
+import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
@@ -28,10 +29,22 @@ internal fun spentAtTextOf(
 }
 
 @Composable
-internal fun payerTextOf(payer: BillPayer?): String = when {
-    payer == null -> stringResource(R.string.bill_detail_former_member_paid)
-    payer.isMe -> stringResource(R.string.bill_detail_you_paid)
-    else -> stringResource(R.string.bill_detail_someone_paid, payer.name)
+internal fun payerTextOf(payers: List<BillPayer>): String {
+    if (payers.size > 1) return paidBySeveralOf(payers.map { payerNameOf(it) })
+    val payer = payers.firstOrNull()
+    val name = payer?.name
+    return when {
+        payer?.isMe == true -> stringResource(R.string.bill_detail_you_paid)
+        name == null -> stringResource(R.string.bill_detail_former_member_paid)
+        else -> stringResource(R.string.bill_detail_someone_paid, name)
+    }
+}
+
+@Composable
+private fun payerNameOf(payer: BillPayer): String = if (payer.isMe) {
+    stringResource(R.string.bill_detail_you)
+} else {
+    payer.name ?: stringResource(R.string.bill_detail_former_member)
 }
 
 @Composable
@@ -73,7 +86,10 @@ internal fun myPartNoteTextOf(
     note: MyPartNote,
     money: MoneyFormatter,
 ): String = when (note) {
-    is MyPartNote.OwesPayer -> stringResource(R.string.bill_detail_owes_payer, note.payerName)
+    is MyPartNote.OwesPayers -> {
+        val formerMember = stringResource(R.string.bill_detail_former_member)
+        stringResource(R.string.bill_detail_owes_payer, nameListOf(note.names.map { it ?: formerMember }))
+    }
 
     is MyPartNote.OwedBy -> {
         val formerMember = stringResource(R.string.bill_detail_former_member)

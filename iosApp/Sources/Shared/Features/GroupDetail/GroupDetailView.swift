@@ -163,23 +163,25 @@ struct GroupDetailView: View {
     }
 }
 
-/// The bill's line on the list: "21:30 · Bruno paid", "17:40 · queued · You paid", or just the time once whoever
-/// paid left the group.
+/// The bill's line on the list: "21:30 · Bruno paid", "17:40 · queued · You paid", "21:30 · You and Ana paid", or
+/// just the time once whoever paid alone left the group.
 private func expenseMeta(_ row: ExpenseRow) -> String {
     let time = ExpenseFormat.time(row.spentAt)
     let when = row.isPending ? String(localized: "\(time) · queued") : time
-    if row.payerIsMe {
-        return "\(when) · \(String(localized: "You paid"))"
-    } else if let payerName = row.payerName {
-        return "\(when) · \(String(localized: "\(payerName) paid"))"
-    }
-    return when
+    guard let paid = payerText(row) else { return when }
+    return "\(when) · \(paid)"
 }
 
-private func payerText(_ row: ExpenseRow) -> String {
-    if row.payerIsMe { return String(localized: "You paid") }
-    if let payerName = row.payerName { return String(localized: "\(payerName) paid") }
-    return ""
+private func payerText(_ row: ExpenseRow) -> String? {
+    if row.payers.count > 1 {
+        let formerMember = String(localized: "Former member")
+        let names = row.payers.map { $0.isMe ? String(localized: "You") : $0.name ?? formerMember }
+        return ExpenseFormat.paidBySeveral(names)
+    }
+    guard let payer = row.payers.first else { return nil }
+    if payer.isMe { return String(localized: "You paid") }
+    guard let name = payer.name else { return nil }
+    return String(localized: "\(name) paid")
 }
 
 /// No categories yet: every bill gets the same receipt, and a payment the banknote.

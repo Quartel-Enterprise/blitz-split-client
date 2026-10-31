@@ -119,4 +119,11 @@
     <string name="split_bill_conflict_just_now">agora há pouco</string>
     <string name="split_bill_delete">Apagar conta</string>
     <string name="split_bill_delete_error">Não deu para apagar a conta. Tente de novo.</string>
+    <string name="split_bill_several_payers">Várias pessoas</string>
+    <string name="split_bill_several_payers_hint">Cada uma diz quanto pagou</string>
+    <string name="split_bill_several_payers_title">Várias pessoas pagaram</string>
+    <string name="split_bill_several_payers_lead">Diga quanto cada uma pagou de %s</string>
+    <string name="split_bill_several_payers_lead_no_total">Diga quanto cada uma pagou</string>
+    <string name="split_bill_payers_add_up">%1$s de %2$s. Fechou.</string>
+    <string name="split_bill_payer_amount">Quanto %s pagou</string>
 </resources>

@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
-import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
@@ -18,7 +18,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -29,12 +28,11 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
-import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -122,13 +120,24 @@ class SplitBillViewModel(
                 )
             }
 
-            SplitBillUiEvent.OnPayerClicked -> uiState.update { it.copy(payerSelection = it.payerId) }
+            SplitBillUiEvent.OnPayerClicked -> uiState.update {
+                it.copy(payerSelection = PayerSelection(memberId = it.payerId.ifEmpty { null }))
+            }
 
             is SplitBillUiEvent.OnPayerPicked -> pickPayer(event.memberId)
 
-            SplitBillUiEvent.OnPayerDone -> confirmPayer()
+            SplitBillUiEvent.OnPayerDone -> uiState.update { it.withPayerConfirmed() }
 
             SplitBillUiEvent.OnPayerDismissed -> uiState.update { it.copy(payerSelection = null) }
+
+            SplitBillUiEvent.OnSeveralPayersClicked -> uiState.update { it.withSeveralPayersOpened(separator) }
+
+            is SplitBillUiEvent.OnPayerAmountChanged -> changePayerAmount(event.memberId, event.text)
+
+            // Why: only once the amounts add up.
+            SplitBillUiEvent.OnSeveralPayersDone -> uiState.update { it.withSeveralPayersConfirmed() }
+
+            SplitBillUiEvent.OnSeveralPayersDismissed -> uiState.update { it.copy(payerAmounts = null) }
 
             SplitBillUiEvent.OnSpentAtOpened -> refreshSpentAtLimit()
 
@@ -190,7 +199,9 @@ class SplitBillViewModel(
             hasEditedAmount = false,
             hasEditedDescription = false,
             payerId = "",
+            severalPayers = null,
             payerSelection = null,
+            payerAmounts = null,
             spentAt = now,
             spentDay = relativeDayOf(now),
             latestSpentAt = now,
@@ -198,7 +209,7 @@ class SplitBillViewModel(
                 mode = SplitMode.EQUAL,
                 rows = emptyList(),
                 totalMinor = 0L,
-                payerId = "",
+                payerIds = emptyList(),
                 currency = currency,
             ),
             splitEditor = null,
@@ -257,11 +268,19 @@ class SplitBillViewModel(
         group: Group,
         expense: Expense,
     ) {
-        val people = group.members.map(::toBillPerson)
+        val people = group.members.map { it.toBillPerson() }
         val payerId = expense.payers
-            .firstOrNull()
+            .singleOrNull()
             ?.memberId
             .orEmpty()
+        val severalPayers = expense.payers.takeIf { it.size > 1 }?.let {
+            payerAmountsOf(
+                expense = expense,
+                people = people,
+                currency = group.currency,
+                decimalSeparator = separator,
+            )
+        }
         val split = splitEditorOf(
             expense = expense,
             people = people,
@@ -279,6 +298,7 @@ class SplitBillViewModel(
                 ),
                 description = expense.description,
                 payerId = payerId,
+                severalPayers = severalPayers,
                 spentAt = expense.spentAt,
                 spentDay = relativeDayOf(expense.spentAt),
                 split = split,
@@ -306,7 +326,7 @@ class SplitBillViewModel(
     }
 
     private fun show(group: Group) {
-        val people = group.members.map(::toBillPerson)
+        val people = group.members.map { it.toBillPerson() }
         // Why: a member who left takes their part of "Valores" along, so a new total rescales only the ones who stay.
         amountAnchor = amountAnchor?.let { (total, entries) ->
             total to entries.filter { entry -> people.any { it.id == entry.memberId } }
@@ -315,11 +335,17 @@ class SplitBillViewModel(
             /*
              * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the
              * group. A bill being edited keeps its payer even after they left it, so saving never moves who paid.
+             * Several payers keep theirs in severalPayers.
              */
-            val payerId =
+            val severalPayers = state.severalPayers?.withPeople(people, group.currency, keepsFormer = state.isEditing)
+            val payerId = if (severalPayers != null) {
+                ""
+            } else {
                 state.payerId.takeIf { id -> people.any { it.id == id } || (state.isEditing && id.isNotEmpty()) }
                     ?: people.firstOrNull { it.isMe }?.id
                     ?: people.firstOrNull()?.id.orEmpty()
+            }
+            val payerIds = severalPayers?.payers?.map { it.memberId } ?: listOf(payerId).filter { it.isNotEmpty() }
             val shown = state.copy(
                 groupName = group.name,
                 groupInitials = Initials.of(group.name),
@@ -327,49 +353,23 @@ class SplitBillViewModel(
                 currency = group.currency,
                 people = people,
                 payerId = payerId,
-                payerSelection = state.payerSelection?.takeIf { id -> people.any { it.id == id } },
-                split = state.split.withPeople(people, group.currency, payerId),
-                splitEditor = state.splitEditor?.withPeople(people, group.currency, payerId),
+                severalPayers = severalPayers,
+                payerSelection = state.payerSelection?.takeIf { selection ->
+                    selection.memberId == null || people.any { it.id == selection.memberId }
+                },
+                payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
+                split = state.split.withPeople(people, group.currency, payerIds, includesNewcomers = !state.isEditing),
+                splitEditor = state.splitEditor?.withPeople(
+                    people = people,
+                    currency = group.currency,
+                    payerIds = payerIds,
+                    includesNewcomers = !state.isEditing,
+                ),
                 isLoaded = true,
             )
             // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
-            shown.withSplitTotal()
+            shown.withBillTotal()
         }
-    }
-
-    private fun toBillPerson(member: GroupMember): BillPerson = BillPerson(
-        id = member.id,
-        name = member.name,
-        initials = Initials.ofMember(member.name, member.isMe),
-        avatarColor = member.avatarColor,
-        isMe = member.isMe,
-        hasJoined = member.hasJoined,
-    )
-
-    /*
-     * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes.
-     * A bill being edited keeps its split, so saving it never adds whoever joined meanwhile.
-     */
-    private fun SplitEditor.withPeople(
-        people: List<BillPerson>,
-        currency: GroupCurrency,
-        payerId: String,
-    ): SplitEditor {
-        val byId = rows.associateBy { it.person.id }
-        val rows = people.map { person ->
-            byId[person.id]?.copy(person = person) ?: SplitRow(
-                person = person,
-                isIncluded = route.expenseId == null,
-                valueText = "",
-                parts = 0L,
-                shareMinor = null,
-            )
-        }
-        return copy(
-            rows = rows,
-            currency = currency,
-            payerId = payerId,
-        ).withShares()
     }
 
     // Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day.
@@ -403,52 +403,35 @@ class SplitBillViewModel(
                 .copy(
                     amountText = capped,
                     hasEditedAmount = true,
-                ).withSplitTotal()
+                ).withBillTotal()
         }
     }
 
-    // Why: the split adds up to the bill's amount, 0 while the field holds no valid amount.
-    private fun SplitBillUiState.withSplitTotal(): SplitBillUiState {
+    /*
+     * Why: the split and the several payers add up to the bill's amount, 0 while the field holds no valid amount.
+     * What several people paid stays as typed, so Salvar waits until someone makes it add up again.
+     */
+    private fun SplitBillUiState.withBillTotal(): SplitBillUiState {
         val total = amountMinor?.takeIf { isAmountValid } ?: 0L
-        return copy(split = split.withTotal(total))
-    }
-
-    // Why: "Mudar o total refaz a divisão por valor proporcionalmente", from the parts last set in "Dividir".
-    private fun SplitEditor.withTotal(totalMinor: Long): SplitEditor {
-        if (totalMinor == this.totalMinor) return this
-        val anchor = amountAnchor
-        if (mode != SplitMode.AMOUNT || anchor == null || totalMinor == 0L) {
-            return copy(totalMinor = totalMinor).withShares()
-        }
-        val (anchorTotal, anchorEntries) = anchor
-        val scaled = BillSplit
-            .calculateRescaledAmounts(
-                entries = anchorEntries,
-                oldTotalMinor = anchorTotal,
-                newTotalMinor = totalMinor,
-                payerId = payerId,
-            ).associate { it.memberId to it.value }
-        return copy(totalMinor = totalMinor)
-            .withRows { row ->
-                val value = scaled[row.person.id] ?: 0L
-                row.copy(valueText = if (value > 0) formatAmount(value, separator) else "")
-            }.withShares()
+        return copy(
+            split = split.withTotal(total, amountAnchor, separator),
+            severalPayers = severalPayers?.copy(totalMinor = total),
+            payerAmounts = payerAmounts?.copy(totalMinor = total),
+        )
     }
 
     private fun pickPayer(memberId: String) {
         if (uiState.value.people.none { it.id == memberId }) return
-        uiState.update { it.copy(payerSelection = memberId) }
+        uiState.update { it.copy(payerSelection = PayerSelection(memberId = memberId)) }
     }
 
-    private fun confirmPayer() {
-        val payerId = uiState.value.payerSelection ?: return
+    private fun changePayerAmount(
+        memberId: String,
+        text: String,
+    ) {
+        val amountText = toAmountText(text)
         uiState.update { state ->
-            state.copy(
-                payerId = payerId,
-                payerSelection = null,
-                split = state.split.copy(payerId = payerId).withShares(),
-                splitEditor = state.splitEditor?.copy(payerId = payerId)?.withShares(),
-            )
+            state.copy(payerAmounts = state.payerAmounts?.withAmountText(memberId, amountText))
         }
     }
 
@@ -485,6 +468,12 @@ class SplitBillViewModel(
         if (!state.canSave) return
         val amountMinor = state.amountMinor ?: return
         val shares = state.split.shares ?: return
+        val payers = state.severalPayers?.payers ?: listOf(
+            ExpensePayer(
+                memberId = state.payerId,
+                amountMinor = amountMinor,
+            ),
+        )
         uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             val expenseId = route.expenseId
@@ -493,7 +482,7 @@ class SplitBillViewModel(
                     groupId = route.groupId,
                     description = state.description,
                     amountMinor = amountMinor,
-                    payerId = state.payerId,
+                    payers = payers,
                     splitMode = state.split.mode,
                     shares = shares,
                     spentAt = state.spentAt,
@@ -504,7 +493,7 @@ class SplitBillViewModel(
                     groupId = route.groupId,
                     description = state.description,
                     amountMinor = amountMinor,
-                    payerId = state.payerId,
+                    payers = payers,
                     splitMode = state.split.mode,
                     shares = shares,
                     spentAt = state.spentAt,

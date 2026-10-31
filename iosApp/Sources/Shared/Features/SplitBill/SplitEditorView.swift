@@ -208,10 +208,6 @@ private struct SplitListHeader: View {
     }
 }
 
-private func payer(of editor: SplitEditor, in state: SplitBillUiState) -> BillPerson? {
-    state.people.first { $0.id == editor.payerId }
-}
-
 #if os(iOS)
 /// Pushed inside the bill's sheet. Lying down and on iPad: the summary, the modes and the status on the left, the
 /// people on the right.
@@ -262,10 +258,7 @@ struct PhoneSplitEditor: View {
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 13))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: SplitBillCopy.paidBy(
-                        model.state.description_,
-                        payer: payer(of: editor, in: model.state),
-                    ))
+                    Text(verbatim: SplitBillCopy.paidBy(model.state.description_, state: model.state))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -324,10 +317,7 @@ struct MacSplitEditor: View {
                     }
                     .font(.title2.bold())
                     .lineLimit(1)
-                    Text(verbatim: SplitBillCopy.paidBy(
-                        editor.currency.format(editor.totalMinor),
-                        payer: payer(of: editor, in: model.state),
-                    ))
+                    Text(verbatim: SplitBillCopy.paidBy(editor.currency.format(editor.totalMinor), state: model.state))
                     .foregroundStyle(.secondary)
                 }
                 SplitModePicker(mode: editor.mode) { model.send($0) }

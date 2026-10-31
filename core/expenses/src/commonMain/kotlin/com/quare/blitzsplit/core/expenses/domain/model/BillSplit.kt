@@ -1,8 +1,12 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
+import kotlin.math.abs
+import kotlin.math.sign
+
 /*
  * Why: the split math of "Rachar conta", the same on every platform. When a split isn't exact, the cents left over go
- * to whoever paid, while they are in the split; otherwise one each to the first members in it.
+ * to whoever paid, while they are in the split: one each to the payers in it, in the group's order, around again
+ * while some are left, so one payer keeps them all. Otherwise one each to the first members in it.
  */
 object BillSplit {
     const val FULL_PERCENT = 100L
@@ -12,7 +16,7 @@ object BillSplit {
         totalMinor: Long,
         mode: SplitMode,
         entries: List<SplitEntry>,
-        payerId: String,
+        payerIds: List<String>,
     ): List<ExpenseShare>? {
         val included = entries.filter { it.value > 0 }
         if (totalMinor <= 0 || included.isEmpty() || entries.any { it.value < 0 }) return null
@@ -20,7 +24,7 @@ object BillSplit {
             SplitMode.EQUAL -> splitByWeight(
                 totalMinor = totalMinor,
                 entries = included.map { it.copy(value = 1) },
-                payerId = payerId,
+                payerIds = payerIds,
             )
 
             SplitMode.AMOUNT ->
@@ -41,14 +45,14 @@ object BillSplit {
                         splitByWeight(
                             totalMinor = totalMinor,
                             entries = it,
-                            payerId = payerId,
+                            payerIds = payerIds,
                         )
                     }
 
             SplitMode.SHARES -> splitByWeight(
                 totalMinor = totalMinor,
                 entries = included,
-                payerId = payerId,
+                payerIds = payerIds,
             )
         }
     }
@@ -62,7 +66,7 @@ object BillSplit {
         entries: List<SplitEntry>,
         oldTotalMinor: Long,
         newTotalMinor: Long,
-        payerId: String,
+        payerIds: List<String>,
     ): List<SplitEntry> {
         if (oldTotalMinor <= 0 || newTotalMinor <= 0 || oldTotalMinor == newTotalMinor) return entries
         val included = entries.filter { it.value > 0 }
@@ -71,7 +75,7 @@ object BillSplit {
             splitByWeight(
                 totalMinor = newTotalMinor,
                 entries = included,
-                payerId = payerId,
+                payerIds = payerIds,
             ).associate { it.memberId to it.amountMinor }
         } else {
             included.associate { it.memberId to proportionOf(newTotalMinor, it.value, oldTotalMinor) }
@@ -83,13 +87,19 @@ object BillSplit {
     private fun splitByWeight(
         totalMinor: Long,
         entries: List<SplitEntry>,
-        payerId: String,
+        payerIds: List<String>,
     ): List<ExpenseShare> {
         val totalWeight = entries.sumOf { it.value }
         val parts = entries.associate { it.memberId to proportionOf(totalMinor, it.value, totalWeight) }.toMutableMap()
         var leftover = totalMinor - parts.values.sum()
-        if (payerId in parts) {
-            parts[payerId] = parts.getValue(payerId) + leftover
+        val payersInSplit = entries.map { it.memberId }.filter { it in payerIds }
+        if (payersInSplit.isNotEmpty()) {
+            val each = leftover / payersInSplit.size
+            val rest = leftover % payersInSplit.size
+            payersInSplit.forEachIndexed { index, memberId ->
+                val extra = if (index < abs(rest)) rest.sign else 0
+                parts[memberId] = parts.getValue(memberId) + each + extra
+            }
             leftover = 0
         }
         // Why: the Double past a Long's reach may round a part up; the largest parts give that back.

@@ -178,13 +178,15 @@ class BillDetailViewModelTest {
 
         // Then
         assertEquals(
-            BillPayer(
-                name = "Ana",
-                initials = "AN",
-                avatarColor = AvatarColor.PEACH,
-                isMe = false,
+            listOf(
+                BillPayer(
+                    name = "Ana",
+                    initials = "AN",
+                    avatarColor = AvatarColor.PEACH,
+                    isMe = false,
+                ),
             ),
-            state.payer,
+            state.payers,
         )
     }
 
@@ -198,18 +200,20 @@ class BillDetailViewModelTest {
 
         // Then
         assertEquals(
-            BillPayer(
-                name = "Pierre",
-                initials = "P",
-                avatarColor = AvatarColor.BLUE,
-                isMe = true,
+            listOf(
+                BillPayer(
+                    name = "Pierre",
+                    initials = "P",
+                    avatarColor = AvatarColor.BLUE,
+                    isMe = true,
+                ),
             ),
-            state.payer,
+            state.payers,
         )
     }
 
     @Test
-    fun `GIVEN whoever paid left the group WHEN it opens THEN there is no payer to show`() = runTest(testDispatcher) {
+    fun `GIVEN whoever paid left the group WHEN it opens THEN the payer has no name`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpense = expense(payerId = FORMER))
 
@@ -217,7 +221,7 @@ class BillDetailViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertNull(state.payer)
+        assertEquals(listOf(null), state.payers.map { it.name })
     }
 
     @Test
@@ -232,7 +236,7 @@ class BillDetailViewModelTest {
             // Then
             assertTrue(state.showsMyPart)
             assertEquals(-16_000, state.myBalanceMinor)
-            assertEquals(MyPartNote.OwesPayer(payerName = "Ana"), state.myPartNote)
+            assertEquals(MyPartNote.OwesPayers(names = listOf("Ana")), state.myPartNote)
         }
 
     @Test

@@ -27,7 +27,12 @@ class CreateExpenseUseCaseTest {
             groupId = GROUP_ID,
             description = "Mercado",
             amountMinor = 1_000L,
-            payerId = PIERRE,
+            payers = listOf(
+                ExpensePayer(
+                    memberId = PIERRE,
+                    amountMinor = 1_000L,
+                ),
+            ),
             splitMode = SplitMode.PERCENT,
             shares = shares,
             spentAt = 5_000L,
@@ -39,6 +44,15 @@ class CreateExpenseUseCaseTest {
         assertEquals("Mercado", created.description)
         assertEquals(1_000L, created.amountMinor)
         assertEquals(SplitMode.PERCENT, created.splitMode)
+        assertEquals(
+            listOf(
+                ExpensePayer(
+                    memberId = PIERRE,
+                    amountMinor = 1_000L,
+                ),
+            ),
+            created.payers,
+        )
         assertEquals(shares, created.shares)
         assertEquals(5_000L, created.spentAt)
         assertTrue(created.isPending)
@@ -163,7 +177,12 @@ class CreateExpenseUseCaseTest {
         groupId = GROUP_ID,
         description = description,
         amountMinor = amountMinor,
-        payerId = PIERRE,
+        payers = listOf(
+            ExpensePayer(
+                memberId = PIERRE,
+                amountMinor = amountMinor,
+            ),
+        ),
         splitMode = SplitMode.EQUAL,
         shares = shares,
         spentAt = 5_000L,

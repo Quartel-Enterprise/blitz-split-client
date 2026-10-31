@@ -119,4 +119,11 @@
     <string name="split_bill_conflict_just_now">just now</string>
     <string name="split_bill_delete">Delete bill</string>
     <string name="split_bill_delete_error">Couldn\'t delete the bill. Try again.</string>
+    <string name="split_bill_several_payers">Several people</string>
+    <string name="split_bill_several_payers_hint">Each one says how much they paid</string>
+    <string name="split_bill_several_payers_title">Several people paid</string>
+    <string name="split_bill_several_payers_lead">Say how much each one paid of %s</string>
+    <string name="split_bill_several_payers_lead_no_total">Say how much each one paid</string>
+    <string name="split_bill_payers_add_up">%1$s of %2$s. Adds up.</string>
+    <string name="split_bill_payer_amount">How much %s paid</string>
 </resources>

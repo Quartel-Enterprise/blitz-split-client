@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
+import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { personName, splitStatus, type Money } from './splitText'
@@ -38,7 +39,14 @@ const maxParts = 99
  * ViewModel keeps until "Pronto", which only works once it adds up; "Voltar" leaves the bill's split as it was.
  */
 export function splitPane(presenter: SplitBillPresenter, state: JsSplitBillState, editor: JsSplitEditor, money: Money): PaneParts {
-  const paid = state.payer == null ? null : state.payer.isMe ? t('split_youPaid') : t('split_paid', { name: state.payer.name })
+  const several = state.severalPayers
+  const paid = several
+    ? t('split_paidSeveral', { names: payerNamesText(several.paying.map((row) => (row.person ? personName(row.person) : t('splitBill_formerMember')))) })
+    : state.payer == null
+      ? null
+      : state.payer.isMe
+        ? t('split_youPaid')
+        : t('split_paid', { name: state.payer.name })
   const lead = [state.description.trim(), paid, money(editor.totalMinor)].filter(Boolean).join(' · ')
   return {
     title: t('split_title'),
@@ -109,7 +117,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
               mode={editor.mode}
               currency={state.currency}
               fractionDigits={state.fractionDigits}
-              isPayer={row.person.id === state.payer?.id}
+              isPayer={state.payerIds.includes(row.person.id)}
               isOut={excludedIds.has(row.person.id)}
               isMissing={missingIds.has(row.person.id)}
               money={money}

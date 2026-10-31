@@ -38,11 +38,13 @@ internal fun createPreviewBillDetailState(
         totalMinor = PREVIEW_TOTAL_MINOR,
         spentAt = PREVIEW_SPENT_AT,
         spentDay = RelativeDay.YESTERDAY,
-        payer = BillPayer(
-            name = if (isMePayer) "Pierre" else "Bruno",
-            initials = if (isMePayer) "P" else "BR",
-            avatarColor = if (isMePayer) AvatarColor.PEACH else AvatarColor.GREEN,
-            isMe = isMePayer,
+        payers = listOf(
+            BillPayer(
+                name = if (isMePayer) "Pierre" else "Bruno",
+                initials = if (isMePayer) "P" else "BR",
+                avatarColor = if (isMePayer) AvatarColor.PEACH else AvatarColor.GREEN,
+                isMe = isMePayer,
+            ),
         ),
         isPending = isPending,
         myBalanceMinor = if (isMePayer) PREVIEW_TOTAL_MINOR - PREVIEW_SHARE_MINOR else -PREVIEW_SHARE_MINOR,
@@ -53,7 +55,7 @@ internal fun createPreviewBillDetailState(
                 totalMinor = PREVIEW_SHARE_MINOR * 4,
             )
         } else {
-            MyPartNote.OwesPayer("Bruno")
+            MyPartNote.OwesPayers(listOf("Bruno"))
         },
         splitMode = SplitMode.EQUAL,
         people = people,

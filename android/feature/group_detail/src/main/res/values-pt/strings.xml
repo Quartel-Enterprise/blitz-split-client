@@ -62,4 +62,5 @@
     <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
     <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
     <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
+    <string name="group_detail_you">Você</string>
 </resources>

@@ -34,7 +34,9 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.payerNamesTextOf
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
@@ -52,22 +54,29 @@ internal fun BillDetailsSection(
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        val several = state.severalPayers
+        val payer = state.payer
         BillOptionRow(
             label = stringResource(R.string.split_bill_payer),
             // Why: an edited bill keeps whoever paid it after they left the group.
-            value = state.payer?.let { personNameOf(it) }
-                ?: stringResource(R.string.split_bill_former_member)
-                    .takeIf { state.isPayerFormerMember }
-                    .orEmpty(),
-            subtitle = null,
+            value = when {
+                several != null -> payerNamesTextOf(payerNamesOf(several))
+                payer != null -> personNameOf(payer)
+                state.isPayerFormerMember -> stringResource(R.string.split_bill_former_member)
+                else -> ""
+            },
+            subtitle = several?.takeIf { it.showsMismatch }?.let { payersMismatchOf(it, money) },
             shape = rowShapeOf(index = 0),
             onClick = { onEvent(SplitBillUiEvent.OnPayerClicked) },
+            isSubtitleError = true,
         ) {
-            val payer = state.payer
-            if (payer == null) {
-                LeadingIcon { Icon(Icons.Outlined.Person, contentDescription = null) }
-            } else {
-                AvatarBadge(
+            val faces = several?.paying?.mapNotNull { it.person }.orEmpty()
+            when {
+                faces.isNotEmpty() -> StackedFacesRow(faces)
+
+                payer == null -> LeadingIcon { Icon(Icons.Outlined.Person, contentDescription = null) }
+
+                else -> AvatarBadge(
                     initial = payer.initials,
                     color = payer.avatarColor,
                 )
@@ -96,28 +105,34 @@ internal fun BillDetailsSection(
             shape = rowShapeOf(index = 2),
             onClick = { onEvent(SplitBillUiEvent.OnSplitClicked) },
         ) {
-            Row(
-                modifier = Modifier.width(40.dp),
-                horizontalArrangement = Arrangement.spacedBy((-14).dp),
-            ) {
-                state.split.included.take(SPLIT_FACE_COUNT).forEach { person ->
-                    Box(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surfaceContainerLowest, CircleShape)
-                            .padding(2.dp),
-                    ) {
-                        AvatarBadge(
-                            initial = person.initials,
-                            color = person.avatarColor,
-                            size = splitFaceSize,
-                        )
-                    }
-                }
-            }
+            StackedFacesRow(state.split.included)
         }
     }
     if (state.showsOfflineNotice) {
         OfflineNoteRow()
+    }
+}
+
+// Why: the first faces of whoever paid several parts, or of who is in the split.
+@Composable
+private fun StackedFacesRow(people: List<BillPerson>) {
+    Row(
+        modifier = Modifier.width(40.dp),
+        horizontalArrangement = Arrangement.spacedBy((-14).dp),
+    ) {
+        people.take(SPLIT_FACE_COUNT).forEach { person ->
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest, CircleShape)
+                    .padding(2.dp),
+            ) {
+                AvatarBadge(
+                    initial = person.initials,
+                    color = person.avatarColor,
+                    size = splitFaceSize,
+                )
+            }
+        }
     }
 }
 
@@ -134,6 +149,7 @@ private fun BillOptionRow(
     subtitle: String?,
     shape: Shape,
     onClick: () -> Unit,
+    isSubtitleError: Boolean = false,
     leading: @Composable () -> Unit,
 ) {
     Surface(
@@ -172,7 +188,11 @@ private fun BillOptionRow(
                         text = it,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (isSubtitleError) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     )
                 }
             }

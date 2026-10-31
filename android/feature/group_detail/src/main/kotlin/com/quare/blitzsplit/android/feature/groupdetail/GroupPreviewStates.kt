@@ -10,6 +10,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -74,8 +75,12 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 id = "1",
                 description = "Mercado",
                 spentAt = PREVIEW_TODAY_MILLIS + 9 * PREVIEW_HOUR_MILLIS,
-                payerName = "Pierre",
-                payerIsMe = true,
+                payers = listOf(
+                    ExpenseRowPayer(
+                        name = "Pierre",
+                        isMe = true,
+                    ),
+                ),
                 totalMinor = 31_200L,
                 myBalanceMinor = 24_960L,
                 isPending = false,
@@ -90,8 +95,16 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 id = "3",
                 description = "Jantar no Ostradamus",
                 spentAt = PREVIEW_TODAY_MILLIS - 4 * PREVIEW_DAY_MILLIS + 21 * PREVIEW_HOUR_MILLIS,
-                payerName = "Bruno",
-                payerIsMe = false,
+                payers = listOf(
+                    ExpenseRowPayer(
+                        name = "Bruno",
+                        isMe = false,
+                    ),
+                    ExpenseRowPayer(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                ),
                 totalMinor = 64_200L,
                 myBalanceMinor = -11_800L,
                 isPending = false,
@@ -100,8 +113,12 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 id = "4",
                 description = "Passeio de barco",
                 spentAt = PREVIEW_TODAY_MILLIS - 4 * PREVIEW_DAY_MILLIS + 15 * PREVIEW_HOUR_MILLIS,
-                payerName = null,
-                payerIsMe = false,
+                payers = listOf(
+                    ExpenseRowPayer(
+                        name = null,
+                        isMe = false,
+                    ),
+                ),
                 totalMinor = 72_000L,
                 myBalanceMinor = null,
                 isPending = false,

@@ -12,7 +12,7 @@ sealed interface SplitBillUiEvent : UiEvent {
         val text: String,
     ) : SplitBillUiEvent
 
-    // Why: "Quem pagou", which opens the sheet.
+    // Why: "Quem pagou", which opens the sheet with whoever paid marked, or "Várias pessoas".
     data object OnPayerClicked : SplitBillUiEvent
 
     data class OnPayerPicked(
@@ -23,6 +23,21 @@ sealed interface SplitBillUiEvent : UiEvent {
     data object OnPayerDone : SplitBillUiEvent
 
     data object OnPayerDismissed : SplitBillUiEvent
+
+    // Why: "Várias pessoas" on "Quem pagou", which opens "Várias pessoas pagaram" in its place.
+    data object OnSeveralPayersClicked : SplitBillUiEvent
+
+    // Why: how much one person paid, typed on "Várias pessoas pagaram".
+    data class OnPayerAmountChanged(
+        val memberId: String,
+        val text: String,
+    ) : SplitBillUiEvent
+
+    // Why: "Pronto" on "Várias pessoas pagaram".
+    data object OnSeveralPayersDone : SplitBillUiEvent
+
+    // Why: "Várias pessoas pagaram" closed without "Pronto", which leaves who paid as it was.
+    data object OnSeveralPayersDismissed : SplitBillUiEvent
 
     // Why: "Quando" opening its picker, which then stops at the day it is now, also once midnight passed meanwhile.
     data object OnSpentAtOpened : SplitBillUiEvent

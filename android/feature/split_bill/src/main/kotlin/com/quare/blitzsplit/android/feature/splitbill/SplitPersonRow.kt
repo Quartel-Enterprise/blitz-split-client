@@ -55,7 +55,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 
 private const val DIMMED_ALPHA = 0.5f
 private const val PERCENT_SUFFIX = "%"
-private val amountFieldWidth = 128.dp
+internal val amountFieldWidth = 128.dp
 private val percentFieldWidth = 88.dp
 
 // Why: one person in Dividir; who is out of the split stays listed, dimmed, so they can be put back.
@@ -222,7 +222,7 @@ private fun rowSubtitleOf(
 
 // Why: the canvas's 44dp field, shorter than a text field's 56dp, so six people fit a phone without scrolling.
 @Composable
-private fun CompactNumberField(
+internal fun CompactNumberField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,

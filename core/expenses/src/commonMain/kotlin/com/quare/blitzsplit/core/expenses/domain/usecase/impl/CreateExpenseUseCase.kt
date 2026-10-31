@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
@@ -16,7 +17,7 @@ class CreateExpenseUseCase(
         groupId: String,
         description: String,
         amountMinor: Long,
-        payerId: String,
+        payers: List<ExpensePayer>,
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
         spentAt: Long,
@@ -30,7 +31,7 @@ class CreateExpenseUseCase(
                     groupId = groupId,
                     description = description,
                     amountMinor = amountMinor,
-                    payerId = payerId,
+                    payers = payers,
                     splitMode = splitMode,
                     shares = shares,
                     spentAt = spentAt,

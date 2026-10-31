@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -139,8 +140,12 @@ class GroupDetailUiStateTest {
                 id = "dinner",
                 description = "Jantar",
                 spentAt = 0L,
-                payerName = "Ana",
-                payerIsMe = false,
+                payers = listOf(
+                    ExpenseRowPayer(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                ),
                 totalMinor = 12_000,
                 myBalanceMinor = -6_000,
                 isPending = false,

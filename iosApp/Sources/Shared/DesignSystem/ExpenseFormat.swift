@@ -97,4 +97,19 @@ enum ExpenseFormat {
     static func names(_ people: [String]) -> String {
         people.formatted(.list(type: .and))
     }
+
+    /// Who paid a bill several people paid: "You and Ana" for two, "3 people" for three or more, in the order the
+    /// shared code gives them.
+    static func payerNames(_ names: [String]) -> String {
+        names.count <= 2 ? self.names(names) : String(localized: "\(names.count) people")
+    }
+
+    /// "You and Ana paid", "3 people paid".
+    static func paidBySeveral(_ names: [String]) -> String {
+        String(
+            localized: "Several people paid a bill",
+            defaultValue: "\(payerNames(names)) paid",
+            comment: "Who paid a bill several people paid; %@ is their names, or how many they are",
+        )
+    }
 }

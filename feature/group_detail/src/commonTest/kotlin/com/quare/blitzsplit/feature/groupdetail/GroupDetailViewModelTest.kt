@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
@@ -349,8 +350,12 @@ class GroupDetailViewModelTest {
                     id = "dinner",
                     description = "Jantar no Ostradamus",
                     spentAt = thisMorning,
-                    payerName = "Bruno",
-                    payerIsMe = false,
+                    payers = listOf(
+                        ExpenseRowPayer(
+                            name = "Bruno",
+                            isMe = false,
+                        ),
+                    ),
                     totalMinor = 64_200,
                     myBalanceMinor = -16_050,
                     isPending = true,
@@ -388,8 +393,15 @@ class GroupDetailViewModelTest {
                 .single()
 
             // Then
-            assertEquals("Pierre", row.payerName)
-            assertTrue(row.payerIsMe)
+            assertEquals(
+                listOf(
+                    ExpenseRowPayer(
+                        name = "Pierre",
+                        isMe = true,
+                    ),
+                ),
+                row.payers,
+            )
             assertEquals(60_000L, row.myBalanceMinor)
             assertFalse(row.isPending)
         }
@@ -418,7 +430,7 @@ class GroupDetailViewModelTest {
                 .single()
 
             // Then
-            assertTrue(row.payerIsMe)
+            assertTrue(row.payers.single().isMe)
             assertEquals(10_000L, row.myBalanceMinor)
         }
 
@@ -450,7 +462,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN a bill two people paid with this device user second WHEN the screen opens THEN names the first payer`() =
+    fun `GIVEN a bill two people paid with this device user second WHEN the screen opens THEN lists them before Ana`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -478,8 +490,19 @@ class GroupDetailViewModelTest {
                 .single()
 
             // Then
-            assertEquals("Ana", row.payerName)
-            assertFalse(row.payerIsMe)
+            assertEquals(
+                listOf(
+                    ExpenseRowPayer(
+                        name = "Pierre",
+                        isMe = true,
+                    ),
+                    ExpenseRowPayer(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                ),
+                row.payers,
+            )
             assertEquals(15_000L, row.myBalanceMinor)
         }
 
@@ -507,8 +530,15 @@ class GroupDetailViewModelTest {
                 .single()
 
             // Then
-            assertEquals("Ana", row.payerName)
-            assertFalse(row.payerIsMe)
+            assertEquals(
+                listOf(
+                    ExpenseRowPayer(
+                        name = "Ana",
+                        isMe = false,
+                    ),
+                ),
+                row.payers,
+            )
             assertNull(row.myBalanceMinor)
         }
 
@@ -536,8 +566,15 @@ class GroupDetailViewModelTest {
                 .single()
 
             // Then
-            assertNull(row.payerName)
-            assertFalse(row.payerIsMe)
+            assertEquals(
+                listOf(
+                    ExpenseRowPayer(
+                        name = null,
+                        isMe = false,
+                    ),
+                ),
+                row.payers,
+            )
             assertEquals(-3_000L, row.myBalanceMinor)
         }
 
@@ -566,7 +603,7 @@ class GroupDetailViewModelTest {
                 .single()
 
             // Then
-            assertFalse(row.payerIsMe)
+            assertFalse(row.payers.single().isMe)
             assertNull(row.myBalanceMinor)
         }
 

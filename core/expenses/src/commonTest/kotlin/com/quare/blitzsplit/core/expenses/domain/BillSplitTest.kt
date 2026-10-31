@@ -21,7 +21,7 @@ class BillSplitTest {
             totalMinor = 900,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -38,7 +38,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -55,7 +55,7 @@ class BillSplitTest {
             totalMinor = 1_001,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -72,7 +72,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -89,7 +89,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -106,7 +106,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.AMOUNT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -123,7 +123,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.AMOUNT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -140,7 +140,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.AMOUNT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -157,7 +157,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.PERCENT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -174,7 +174,7 @@ class BillSplitTest {
             totalMinor = 1_001,
             mode = SplitMode.PERCENT,
             entries = entries,
-            payerId = BRUNO,
+            payerIds = listOf(BRUNO),
         )
 
         // Then
@@ -191,7 +191,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.PERCENT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -208,7 +208,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.PERCENT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -225,7 +225,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.SHARES,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -242,7 +242,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.SHARES,
             entries = entries,
-            payerId = ANA,
+            payerIds = listOf(ANA),
         )
 
         // Then
@@ -259,7 +259,7 @@ class BillSplitTest {
             totalMinor = 0,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -276,7 +276,7 @@ class BillSplitTest {
             totalMinor = -1_000,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -293,7 +293,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.EQUAL,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -310,7 +310,7 @@ class BillSplitTest {
             totalMinor = 1_000,
             mode = SplitMode.SHARES,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -327,7 +327,7 @@ class BillSplitTest {
             totalMinor = 1_100,
             mode = SplitMode.AMOUNT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -350,7 +350,7 @@ class BillSplitTest {
             totalMinor = total,
             mode = SplitMode.SHARES,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -370,7 +370,7 @@ class BillSplitTest {
             totalMinor = 10_000_000_000,
             mode = SplitMode.AMOUNT,
             entries = entries,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -387,7 +387,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 1_500,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -404,7 +404,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 1_001,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -421,7 +421,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 1_001,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -438,7 +438,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 2_000,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -455,7 +455,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 1_000,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -472,7 +472,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 0,
             newTotalMinor = 1_000,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -489,7 +489,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 0,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -506,7 +506,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 1_000,
             newTotalMinor = 2_000,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then
@@ -523,7 +523,7 @@ class BillSplitTest {
             entries = entries,
             oldTotalMinor = 10_000_000_000,
             newTotalMinor = 9_999_999_999,
-            payerId = PIERRE,
+            payerIds = listOf(PIERRE),
         )
 
         // Then

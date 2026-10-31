@@ -28,7 +28,12 @@ class UpdateExpenseUseCaseTest {
             groupId = GROUP_ID,
             description = "Feira",
             amountMinor = 1_500L,
-            payerId = "ana",
+            payers = listOf(
+                ExpensePayer(
+                    memberId = "ana",
+                    amountMinor = 1_500L,
+                ),
+            ),
             splitMode = SplitMode.AMOUNT,
             shares = editedShares,
             spentAt = 6_000L,
@@ -63,26 +68,28 @@ class UpdateExpenseUseCaseTest {
         }
 
     @Test
-    fun `GIVEN a new total and payer WHEN saving the edit THEN that payer alone paid the whole new total`() = runTest {
+    fun `GIVEN several payers WHEN saving the edit THEN stores what each one paid`() = runTest {
         // Given
         prepareScenario()
+        val payers = listOf(
+            ExpensePayer(
+                memberId = "pierre",
+                amountMinor = 4_000L,
+            ),
+            ExpensePayer(
+                memberId = "ana",
+                amountMinor = 2_240L,
+            ),
+        )
 
         // When
         updateExpense(
             amountMinor = 6_240L,
-            payerId = "ana",
+            payers = payers,
         )
 
         // Then
-        assertEquals(
-            listOf(
-                ExpensePayer(
-                    memberId = "ana",
-                    amountMinor = 6_240L,
-                ),
-            ),
-            repository.updatedExpenses.single().payers,
-        )
+        assertEquals(payers, repository.updatedExpenses.single().payers)
     }
 
     @Test
@@ -140,13 +147,18 @@ class UpdateExpenseUseCaseTest {
     private suspend fun updateExpense(
         description: String = "Mercado",
         amountMinor: Long = 1_000L,
-        payerId: String = "pierre",
+        payers: List<ExpensePayer> = listOf(
+            ExpensePayer(
+                memberId = "pierre",
+                amountMinor = amountMinor,
+            ),
+        ),
     ): Result<Unit> = useCase(
         expenseId = BILL_ID,
         groupId = GROUP_ID,
         description = description,
         amountMinor = amountMinor,
-        payerId = payerId,
+        payers = payers,
         splitMode = SplitMode.EQUAL,
         shares = mercado.shares,
         spentAt = 5_000L,

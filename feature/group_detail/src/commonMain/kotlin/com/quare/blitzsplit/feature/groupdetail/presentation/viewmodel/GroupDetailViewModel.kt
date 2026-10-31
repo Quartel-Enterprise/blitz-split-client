@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
@@ -178,13 +179,26 @@ class GroupDetailViewModel(
         namesById: Map<String, String>,
         meId: String?,
     ): DayEntry {
-        val payerId = expense.payers.firstOrNull()?.memberId
+        val payerIds = expense.payers.map { it.memberId }.distinct()
+        val members = namesById
+            .filterKeys { it in payerIds }
+            .map { (id, name) ->
+                ExpenseRowPayer(
+                    name = name,
+                    isMe = id == meId,
+                )
+            }.sortedByDescending { it.isMe }
+        val former = payerIds.filterNot { it in namesById }.map {
+            ExpenseRowPayer(
+                name = null,
+                isMe = false,
+            )
+        }
         return ExpenseRow(
             id = expense.id,
             description = expense.description,
             spentAt = expense.spentAt,
-            payerName = payerId?.let(namesById::get),
-            payerIsMe = payerId != null && payerId == meId,
+            payers = members + former,
             totalMinor = expense.amountMinor,
             myBalanceMinor = meId?.let(expense::balanceOf),
             isPending = expense.isPending,

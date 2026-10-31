@@ -62,4 +62,5 @@
     <string name="group_detail_balances_empty_message">Balances show up once the first expense is added.</string>
     <string name="group_detail_balances_settled_title">Everyone\'s settled up</string>
     <string name="group_detail_balances_settled_message">Nobody owes anything in this group. If the trip is over, you can delete the group for everyone.</string>
+    <string name="group_detail_you">You</string>
 </resources>

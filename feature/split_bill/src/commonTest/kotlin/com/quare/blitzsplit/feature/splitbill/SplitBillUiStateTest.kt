@@ -319,7 +319,9 @@ class SplitBillUiStateTest {
         hasEditedAmount = true,
         hasEditedDescription = true,
         payerId = payerId,
+        severalPayers = null,
         payerSelection = null,
+        payerAmounts = null,
         spentAt = 0L,
         spentDay = RelativeDay.TODAY,
         latestSpentAt = 0L,
@@ -335,7 +337,7 @@ class SplitBillUiStateTest {
                 )
             },
             totalMinor = 10_000L,
-            payerId = payerId,
+            payerIds = listOf(payerId),
             currency = GroupCurrency.BRL,
         ),
         splitEditor = null,

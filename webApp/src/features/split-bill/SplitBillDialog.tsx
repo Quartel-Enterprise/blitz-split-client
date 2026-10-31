@@ -1,6 +1,14 @@
-import { ChevronsUpDown, Info, Loader2 } from 'lucide-react'
-import { SplitBillPresenter, type JsBillConflict, type JsBillPerson, type JsRoute, type JsSplitBillState, type JsSplitEditor } from 'blitzsplit-shared'
-import { useEffect, useState } from 'react'
+import { ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
+import {
+  SplitBillPresenter,
+  type JsBillConflict,
+  type JsPayerAmountRow,
+  type JsPayerAmounts,
+  type JsRoute,
+  type JsSplitBillState,
+  type JsSplitEditor,
+} from 'blitzsplit-shared'
+import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -15,7 +23,8 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatTimeAgo } from '@/lib/dates'
-import { formatMoney } from '@/lib/money'
+import { amountPlaceholder, currencySymbol, formatMoney } from '@/lib/money'
+import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import { splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
@@ -27,6 +36,7 @@ const amountEditHelpId = 'split-bill-amount-edit-help'
 const descriptionId = 'split-bill-description'
 const descriptionHelpId = 'split-bill-description-help'
 const payerId = 'split-bill-payer'
+const payerHelpId = 'split-bill-payer-help'
 const whenId = 'split-bill-when'
 
 // Why: the Divisão row names the split's mode with how many are in it.
@@ -39,9 +49,10 @@ const splitTitles: Record<string, MessageKey> = {
 
 /**
  * "Rachar conta", over the group's page: a dialog on desktop and tablet, a drawer on the phone, like "Entrar com
- * link ou QR". "Dividir" takes the dialog's place while it is open, as the canvas draws it; "Quem pagou" opens over
- * it on desktop and in its place on the phone. Closing it any way is the ViewModel's: Dividir's back, Quem pagou's
- * dismissal or the bill's close. With a bill to edit it is "Editar conta", over Conta, and can delete the bill.
+ * link ou QR". "Dividir" takes the dialog's place while it is open, as the canvas draws it; "Quem pagou" and "Várias
+ * pessoas pagaram" open over it on desktop and in its place on the phone. Closing it any way is the ViewModel's:
+ * Dividir's back, the payer sheets' dismissal or the bill's close. With a bill to edit it is "Editar conta", over
+ * Conta, and can delete the bill.
  */
 export function SplitBillDialog({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new SplitBillPresenter(route))
@@ -55,17 +66,20 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
   const editor = state.splitEditor
-  const isPayerOpen = state.payerSelection != null
+  const isPayerOpen = state.isPayerOpen
+  const payerAmounts = state.payerAmounts
   const onOpenChange = (open: boolean) => {
     if (open) return
     if (editor) presenter.dismissSplit()
     else if (isPayerOpen) presenter.dismissPayer()
+    else if (payerAmounts) presenter.dismissSeveralPayers()
     else presenter.close()
   }
 
   let pane: PaneParts
   if (editor) pane = splitPane(presenter, state, editor, money)
   else if (isPayerOpen && !isDesktop) pane = payerPane(presenter, state, money)
+  else if (payerAmounts && !isDesktop) pane = severalPayersPane(presenter, state, payerAmounts, money)
   else pane = billPane(presenter, state, money)
   const deletion = state.deletion && (
     <BillDeleteDialog
@@ -86,6 +100,7 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
         className={cn('gap-5', editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
       />
       {isDesktop && !editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
+      {isDesktop && !editor && payerAmounts && <SeveralPayersDialog presenter={presenter} state={state} amounts={payerAmounts} money={money} />}
       {deletion}
     </>
   )
@@ -209,17 +224,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         </div>
 
         <div className="flex min-w-0 flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={payerId}>{t('splitBill_payer')}</Label>
-            <button id={payerId} type="button" aria-haspopup="dialog" onClick={() => presenter.openPayer()} className={controlClass}>
-              {state.payer && <Avatar initial={state.payer.initials} color={state.payer.color} className="size-5 text-[10px]" />}
-              {/* Why: an edited bill keeps whoever paid it after they left the group. */}
-              <span className="flex-1 truncate">
-                {state.payer ? personName(state.payer) : state.isPayerFormerMember ? t('splitBill_formerMember') : ''}
-              </span>
-              <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
-            </button>
-          </div>
+          <PayerField presenter={presenter} state={state} money={money} />
           <WhenField
             id={whenId}
             label={t('splitBill_when')}
@@ -245,6 +250,63 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       {state.showsAnyoneCanEditHint && <p className="text-[13px] leading-[18px] text-muted-foreground">{t('splitBill_anyoneCanEdit')}</p>}
     </form>
   )
+}
+
+/** "Quem pagou": whoever paid, or several people with what is missing while their amounts don't add up. */
+function PayerField({ presenter, state, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; money: Money }) {
+  const several = state.severalPayers
+  const faces = several ? several.paying.flatMap((row) => (row.person ? [row.person] : [])).slice(0, 3) : state.payer ? [state.payer] : []
+  // Why: an edited bill keeps whoever paid it after they left the group.
+  const name = several
+    ? payerNamesText(several.paying.map(payerRowName))
+    : state.payer
+      ? personName(state.payer)
+      : state.isPayerFormerMember
+        ? t('splitBill_formerMember')
+        : ''
+  const mismatch = several?.showsMismatch ? payersMismatch(several, money) : null
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={payerId} className={cn(mismatch && 'text-destructive')}>
+        {t('splitBill_payer')}
+      </Label>
+      <button
+        id={payerId}
+        type="button"
+        aria-haspopup="dialog"
+        aria-invalid={mismatch != null}
+        aria-describedby={mismatch ? payerHelpId : undefined}
+        onClick={() => presenter.openPayer()}
+        className={cn(controlClass, mismatch && 'border-destructive')}
+      >
+        {faces.length > 0 && (
+          <span aria-hidden className="flex shrink-0">
+            {faces.map((person, index) => (
+              <Avatar key={person.id} initial={person.initials} color={person.color} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
+            ))}
+          </span>
+        )}
+        <span className="flex-1 truncate">{name}</span>
+        <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
+      </button>
+      {mismatch && (
+        <p id={payerHelpId} className="text-[13px] text-destructive">
+          {mismatch}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/** "Você", a name, or "Ex-membro" for someone who left the group. */
+function payerRowName(row: JsPayerAmountRow): string {
+  return row.person ? personName(row.person) : t('splitBill_formerMember')
+}
+
+/** "Faltam R$ 112,00" or "Passou R$ 12,00": how far what several people paid is from the total. */
+function payersMismatch(amounts: JsPayerAmounts, money: Money): string {
+  const amount = money(Math.abs(amounts.remainingMinor))
+  return t(amounts.remainingMinor > 0 ? 'split_amountLeft' : 'split_amountOver', { amount })
 }
 
 /**
@@ -345,17 +407,33 @@ function PayerDialog({ presenter, state, money }: { presenter: SplitBillPresente
   )
 }
 
+// Why: "Várias pessoas" is marked while the bill has several payers and nobody else was picked; it opens their amounts.
 function PayerList({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
   return (
     <div role="radiogroup" aria-label={t('splitBill_payer')} className="flex flex-col divide-y overflow-hidden rounded-lg border">
       {state.people.map((person) => (
-        <PayerRow key={person.id} person={person} isSelected={person.id === state.payerSelection} onPick={() => presenter.pickPayer(person.id)} />
+        <PayerRow key={person.id} isSelected={person.id === state.payerSelection} onPick={() => presenter.pickPayer(person.id)}>
+          <Avatar initial={person.initials} color={person.color} className="size-8 text-xs" />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate font-medium">{personName(person)}</span>
+            {!person.hasJoined && <span className="text-xs text-muted-foreground">{t('splitBill_notJoined')}</span>}
+          </span>
+        </PayerRow>
       ))}
+      <PayerRow isSelected={state.payerSelection == null} onPick={() => presenter.openSeveralPayers()}>
+        <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <Plus className="size-4" />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate font-medium">{t('splitBill_severalPayers')}</span>
+          <span className="text-xs text-muted-foreground">{t('splitBill_severalPayersHint')}</span>
+        </span>
+      </PayerRow>
     </div>
   )
 }
 
-function PayerRow({ person, isSelected, onPick }: { person: JsBillPerson; isSelected: boolean; onPick: () => void }) {
+function PayerRow({ isSelected, onPick, children }: { isSelected: boolean; onPick: () => void; children: ReactNode }) {
   return (
     <button
       type="button"
@@ -364,11 +442,7 @@ function PayerRow({ person, isSelected, onPick }: { person: JsBillPerson; isSele
       onClick={onPick}
       className="flex min-h-12 items-center gap-3 px-3 py-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset"
     >
-      <Avatar initial={person.initials} color={person.color} className="size-8 text-xs" />
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate font-medium">{personName(person)}</span>
-        {!person.hasJoined && <span className="text-xs text-muted-foreground">{t('splitBill_notJoined')}</span>}
-      </span>
+      {children}
       <span
         aria-hidden
         className={cn('flex size-4 shrink-0 items-center justify-center rounded-full border', isSelected ? 'border-primary' : 'border-muted-foreground/50')}
@@ -376,5 +450,95 @@ function PayerRow({ person, isSelected, onPick }: { person: JsBillPerson; isSele
         {isSelected && <span className="size-2 rounded-full bg-primary" />}
       </span>
     </button>
+  )
+}
+
+function severalPayersPane(presenter: SplitBillPresenter, state: JsSplitBillState, amounts: JsPayerAmounts, money: Money): PaneParts {
+  return {
+    title: t('splitBill_severalPayersTitle'),
+    description:
+      amounts.totalMinor > 0 ? t('splitBill_severalPayersLead', { total: money(amounts.totalMinor) }) : t('splitBill_severalPayersLeadNoTotal'),
+    body: <SeveralPayersBody presenter={presenter} state={state} amounts={amounts} money={money} />,
+    footer: (
+      <>
+        <Button key="payers-back" variant="outline" onClick={() => presenter.dismissSeveralPayers()}>
+          {t('common_back')}
+        </Button>
+        <Button key="payers-done" disabled={!amounts.addsUp} onClick={() => presenter.confirmSeveralPayers()}>
+          {t('splitBill_done')}
+        </Button>
+      </>
+    ),
+  }
+}
+
+/** "Várias pessoas pagaram" over the bill on desktop and tablet; its own dismissal leaves who paid as it was. */
+function SeveralPayersDialog({ presenter, state, amounts, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; amounts: JsPayerAmounts; money: Money }) {
+  return (
+    <ResponsiveDialog
+      isDesktop
+      pane={severalPayersPane(presenter, state, amounts, money)}
+      onOpenChange={(open) => {
+        if (!open) presenter.dismissSeveralPayers()
+      }}
+      className="sm:max-w-[420px]"
+    />
+  )
+}
+
+/** One field per person, and whether what they paid adds up to the total: "R$ 312,00 de R$ 312,00. Fechou." */
+function SeveralPayersBody({ presenter, state, amounts, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; amounts: JsPayerAmounts; money: Money }) {
+  const status = amounts.addsUp
+    ? t('splitBill_payersAddUp', { paid: money(amounts.paidMinor), total: money(amounts.totalMinor) })
+    : amounts.showsMismatch
+      ? payersMismatch(amounts, money)
+      : null
+  return (
+    <div className="flex flex-col gap-3">
+      <ul role="group" aria-label={t('splitBill_severalPayersTitle')} className="flex flex-col divide-y overflow-hidden rounded-lg border">
+        {amounts.rows.map((row) => (
+          <li key={row.memberId} className="flex min-h-12 items-center gap-3 px-3 py-1.5">
+            {row.person ? (
+              <Avatar initial={row.person.initials} color={row.person.color} className="size-8 text-xs" />
+            ) : (
+              <span aria-hidden className="size-8 shrink-0 rounded-full bg-muted" />
+            )}
+            <span className="min-w-0 flex-1 truncate font-medium">{payerRowName(row)}</span>
+            <PayerAmountField presenter={presenter} row={row} currency={state.currency} fractionDigits={state.fractionDigits} />
+          </li>
+        ))}
+      </ul>
+      {status && (
+        <p role="status" className={cn('text-sm font-semibold', amounts.addsUp ? 'text-primary' : 'text-destructive')}>
+          {status}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/** How much one person paid: what is typed goes to the ViewModel, which filters it and hands it back. */
+function PayerAmountField({ presenter, row, currency, fractionDigits }: { presenter: SplitBillPresenter; row: JsPayerAmountRow; currency: string; fractionDigits: number }) {
+  const [value, setValue] = useDraft(row.amountText, (next) => {
+    presenter.changePayerAmount(row.memberId, next)
+    return presenter.getPayerAmount(row.memberId)
+  })
+  // Why: "Quanto Pierre pagou" reads better to a screen reader than "Quanto Você pagou".
+  const name = row.person?.name ?? t('splitBill_formerMember')
+  return (
+    <span className="flex h-8 w-28 shrink-0 items-center gap-1 rounded-md border bg-card px-2 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 dark:bg-input/30">
+      <span aria-hidden className="text-xs text-muted-foreground">
+        {currencySymbol(currency)}
+      </span>
+      <input
+        inputMode="decimal"
+        autoComplete="off"
+        value={value}
+        placeholder={amountPlaceholder(fractionDigits)}
+        aria-label={t('splitBill_payerAmountLabel', { name })}
+        onChange={(event) => setValue(event.target.value)}
+        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground/60"
+      />
+    </span>
   )
 }
