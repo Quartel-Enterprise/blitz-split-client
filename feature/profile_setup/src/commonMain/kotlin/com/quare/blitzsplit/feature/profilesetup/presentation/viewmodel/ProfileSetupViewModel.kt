@@ -64,7 +64,7 @@ class ProfileSetupViewModel(
             is ProfileSetupUiEvent.OnNameChanged -> updateName(event.name)
             is ProfileSetupUiEvent.OnAvatarColorSelected -> uiState.update { it.copy(avatarColor = event.color) }
             is ProfileSetupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
-            ProfileSetupUiEvent.OnPhotoUnreadable -> uiState.update { it.copy(showsPhotoError = true) }
+            ProfileSetupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             ProfileSetupUiEvent.OnContinueClicked -> save()
             ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBack()
         }
