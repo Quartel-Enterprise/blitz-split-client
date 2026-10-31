@@ -73,13 +73,14 @@
         <item quantity="one">Your balance is settled. The group leaves this device and your expenses keep your name for the other member. To come back, someone has to invite you again.</item>
         <item quantity="other">Your balance is settled. The group leaves this device and your expenses keep your name for the other %d members. To come back, someone has to invite you again.</item>
     </plurals>
-    <string name="group_detail_leave_message_alone">Your balance is settled. You\'re the only one in the group, so it\'s gone for good.</string>
+    <string name="group_detail_leave_message_alone">Your balance is settled. Nobody else in the group has joined, so it\'s deleted for good.</string>
     <string name="group_detail_leave_confirm">Leave</string>
     <string name="group_detail_delete_blocked_title">There are still open balances</string>
     <plurals name="group_detail_delete_blocked_message">
         <item quantity="one">“%1$s” can only be deleted once everyone has settled up. %2$d payment left:</item>
         <item quantity="other">“%1$s” can only be deleted once everyone has settled up. %2$d payments left:</item>
     </plurals>
+    <string name="group_detail_delete_blocked_message_short">“%s” can only be deleted once everyone has settled up.</string>
     <string name="group_detail_delete_title">Delete “%s”?</string>
     <string name="group_detail_delete_message">Everyone has settled up. The group, %1$s and the history are gone for %2$s. This can\'t be undone.</string>
     <string name="group_detail_delete_message_no_bills">The group is gone for %s. This can\'t be undone.</string>

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiSta
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.idleGroupExit
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -170,6 +171,7 @@ class BalancesUiStateTest {
         otherDebts = otherDebts,
         hasBills = hasBills,
         recordedPayment = null,
+        exit = idleGroupExit,
         isLoaded = isLoaded,
     )
 }

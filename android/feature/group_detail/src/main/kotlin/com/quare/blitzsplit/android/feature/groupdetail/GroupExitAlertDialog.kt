@@ -73,7 +73,7 @@ internal fun GroupExitAlertDialog(
         is GroupExitDialog.ConfirmLeave -> ExitDialog(
             icon = Icons.AutoMirrored.Outlined.Logout,
             title = stringResource(R.string.group_detail_leave_title, dialog.groupName),
-            message = if (dialog.otherMemberCount == 0) {
+            message = if (dialog.deletesGroup) {
                 stringResource(R.string.group_detail_leave_message_alone)
             } else {
                 pluralStringResource(
@@ -95,12 +95,16 @@ internal fun GroupExitAlertDialog(
         is GroupExitDialog.DeleteBlocked -> ExitDialog(
             icon = Icons.Outlined.WarningAmber,
             title = stringResource(R.string.group_detail_delete_blocked_title),
-            message = pluralStringResource(
-                R.plurals.group_detail_delete_blocked_message,
-                dialog.debts.size,
-                dialog.groupName,
-                dialog.debts.size,
-            ),
+            message = if (dialog.debts.isEmpty()) {
+                stringResource(R.string.group_detail_delete_blocked_message_short, dialog.groupName)
+            } else {
+                pluralStringResource(
+                    R.plurals.group_detail_delete_blocked_message,
+                    dialog.debts.size,
+                    dialog.groupName,
+                    dialog.debts.size,
+                )
+            },
             debts = dialog.debts,
             money = money,
             confirm = stringResource(R.string.group_detail_see_balances),

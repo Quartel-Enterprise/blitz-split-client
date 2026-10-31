@@ -43,6 +43,7 @@ class JsGroupsState(
     val hasLoadedGroups: Boolean,
     val showsEmptyState: Boolean,
     // Why: "Carla apagou o grupo Aniversário da Ana.", a snackbar; deletedByName is null once that account is gone.
+    val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
 )
@@ -65,6 +66,7 @@ class GroupsPresenter {
                 groups = state.groups.map(::toJsGroupRow).toTypedArray(),
                 hasLoadedGroups = state.hasLoadedGroups,
                 showsEmptyState = state.showsEmptyState,
+                deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
             )

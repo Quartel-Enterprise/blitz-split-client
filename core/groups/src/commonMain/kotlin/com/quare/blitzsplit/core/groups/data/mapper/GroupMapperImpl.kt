@@ -108,10 +108,14 @@ class GroupMapperImpl : GroupMapper {
         inviteCode = null,
     )
 
+    /*
+     * Why: only this device's own member carries its account. Who else joined is the server's to say: a stale
+     * account on someone who left since would fail the push, or link them back.
+     */
     override fun toDto(entity: GroupMemberEntity): GroupMemberDto = GroupMemberDto(
         id = entity.id,
         groupId = entity.groupId,
-        userId = entity.userId,
+        userId = entity.userId.takeIf { entity.isMe },
         name = entity.name,
         avatarColor = entity.avatarColor,
         addedAt = entity.addedAt,

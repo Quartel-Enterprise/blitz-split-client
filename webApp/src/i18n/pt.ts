@@ -272,9 +272,10 @@ export const pt: Record<MessageKey, string> = {
     'Seu saldo está quitado. O grupo some deste navegador e suas despesas continuam com o seu nome para o outro membro. Para voltar, alguém precisa te convidar de novo.',
   groupExit_leaveBodyOther:
     'Seu saldo está quitado. O grupo some deste navegador e suas despesas continuam com o seu nome para os outros {count} membros. Para voltar, alguém precisa te convidar de novo.',
-  groupExit_leaveBodyAlone: 'Seu saldo está quitado. Só você está no grupo, então ele some de vez.',
+  groupExit_leaveBodyAlone: 'Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez.',
   groupExit_leaveConfirm: 'Sair',
   groupExit_deleteBlockedTitle: 'Ainda há saldo em aberto',
+  groupExit_deleteBlockedBodyShort: '“{group}” só pode ser apagado quando todo mundo tiver acertado.',
   groupExit_deleteBlockedBodyOne: '“{group}” só pode ser apagado quando todo mundo tiver acertado. Falta {count} acerto:',
   groupExit_deleteBlockedBodyOther: '“{group}” só pode ser apagado quando todo mundo tiver acertado. Faltam {count} acertos:',
   groupExit_deleteTitle: 'Apagar “{group}”?',

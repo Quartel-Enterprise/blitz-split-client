@@ -141,7 +141,7 @@ class RoomGroupLocalDataSource(
         )
     }
 
-    override suspend fun getGroupIds(ownerUserId: String): List<String> = dao.getGroupIds(ownerUserId)
+    override suspend fun getUploadedGroupIds(ownerUserId: String): List<String> = dao.getUploadedGroupIds(ownerUserId)
 
     override suspend fun deleteGroups(ids: List<String>) {
         dao.deleteGroupsWithMembers(ids)

@@ -175,6 +175,7 @@ class GroupsViewModelTest {
         // Then
         assertEquals(
             DeletedGroupNotice(
+                groupId = "group-1",
                 groupName = "Aniversário da Ana",
                 deletedByName = "Carla",
             ),
@@ -238,6 +239,39 @@ class GroupsViewModelTest {
                 "Futebol de quinta",
                 viewModel.uiState.value.deletedGroupNotice
                     ?.groupName,
+            )
+        }
+
+    @Test
+    fun `GIVEN two deleted groups of the same name WHEN the first notice is shown THEN the second is another notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-1",
+                    groupName = "Churrasco",
+                    deletedByName = "Carla",
+                ),
+            )
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-2",
+                    groupName = "Churrasco",
+                    deletedByName = "Carla",
+                ),
+            )
+            val first = viewModel.uiState.value.deletedGroupNotice
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
+
+            // Then
+            assertEquals("group-1", first?.groupId)
+            assertEquals(
+                "group-2",
+                viewModel.uiState.value.deletedGroupNotice
+                    ?.groupId,
             )
         }
 

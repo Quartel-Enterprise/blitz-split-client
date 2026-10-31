@@ -15,8 +15,9 @@ class JsGroupExitDialog(
     val debts: Array<JsDebtRow>,
     // Why: "Acertar" rather than "Ver saldos", for leave-blocked.
     val canSettle: Boolean,
-    // Why: confirm-leave's "para os outros 8 membros".
+    // Why: confirm-leave's "para os outros 8 membros", and whether nobody else joined, so the group goes for good.
     val otherMemberCount: Int,
+    val deletesGroup: Boolean,
     // Why: confirm-delete's "as 14 despesas" and "para os 5 membros".
     val billCount: Int,
     val memberCount: Int,
@@ -54,6 +55,7 @@ private fun toJsGroupExitDialog(dialog: GroupExitDialog): JsGroupExitDialog = wh
         debts = dialog.debts.map(::toJsDebtRow).toTypedArray(),
         canSettle = dialog.canSettle,
         otherMemberCount = 0,
+        deletesGroup = false,
         billCount = 0,
         memberCount = 0,
     )
@@ -64,6 +66,7 @@ private fun toJsGroupExitDialog(dialog: GroupExitDialog): JsGroupExitDialog = wh
         debts = emptyArray(),
         canSettle = false,
         otherMemberCount = dialog.otherMemberCount,
+        deletesGroup = dialog.deletesGroup,
         billCount = 0,
         memberCount = 0,
     )
@@ -74,6 +77,7 @@ private fun toJsGroupExitDialog(dialog: GroupExitDialog): JsGroupExitDialog = wh
         debts = dialog.debts.map(::toJsDebtRow).toTypedArray(),
         canSettle = false,
         otherMemberCount = 0,
+        deletesGroup = false,
         billCount = 0,
         memberCount = 0,
     )
@@ -84,6 +88,7 @@ private fun toJsGroupExitDialog(dialog: GroupExitDialog): JsGroupExitDialog = wh
         debts = emptyArray(),
         canSettle = false,
         otherMemberCount = 0,
+        deletesGroup = false,
         billCount = dialog.billCount,
         memberCount = dialog.memberCount,
     )

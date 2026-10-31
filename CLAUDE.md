@@ -120,12 +120,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
     own balance settled ("Acerte antes de sair" lists what is still open, with "Acertar" while you owe, "Ver saldos"
     otherwise); you go back to Grupos, and your member stays as a name in the bills and payments, not joined, so the
-    invite link can bring you back. A group nobody with an account is left in goes. Any member may delete the group
+    invite link can bring you back. A group nobody else with an account is in goes, which "Sair" says
+    (`ConfirmLeave.deletesGroup`). Any member may delete the group
     once nobody owes anything ("Ainda há saldo em aberto" lists the pairs, with "Ver saldos"), for everyone, with its
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
-    even with a change not pushed yet (the server's `removed_groups`): a group screen open on it says "Grupo apagado"
-    with who deleted it and "Voltar para Grupos" (`GroupExitUiState.deletedNotice`), and otherwise the home says
-    "Carla apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
+    even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
+    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitUiState.deletedNotice`), once on top again if
+    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and the home says "Carla
+    apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): one person paid the whole bill (several payers aren't built yet), "Quando"
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the

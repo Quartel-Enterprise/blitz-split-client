@@ -54,18 +54,19 @@ class GroupExitUseCaseTest {
     }
 
     @Test
-    fun `GIVEN someone still owes on the server WHEN deleting THEN answers it after syncing`() = runTest {
-        // Given
-        prepareScenario(exitOutcome = GroupExitOutcome.HAS_BALANCE)
+    fun `GIVEN someone still owes on the server WHEN deleting THEN answers it and syncs again to bring the bill`() =
+        runTest {
+            // Given
+            prepareScenario(exitOutcome = GroupExitOutcome.HAS_BALANCE)
 
-        // When
-        val result = deleteGroup("group-1")
+            // When
+            val result = deleteGroup("group-1")
 
-        // Then
-        assertEquals(Result.success(GroupExitOutcome.HAS_BALANCE), result)
-        assertEquals(listOf(FakeAccountRepository.RESTORED_USER_ID), groups.uploadedUserIds)
-        assertEquals(listOf("group-1"), groups.deletedGroupIds)
-    }
+            // Then
+            assertEquals(Result.success(GroupExitOutcome.HAS_BALANCE), result)
+            assertEquals(List(2) { FakeAccountRepository.RESTORED_USER_ID }, groups.downloadedUserIds)
+            assertEquals(listOf("group-1"), groups.deletedGroupIds)
+        }
 
     @Test
     fun `GIVEN the sync fails WHEN deleting THEN fails without asking the server`() = runTest {

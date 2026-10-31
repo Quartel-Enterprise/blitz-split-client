@@ -129,7 +129,7 @@ function copyOf(dialog: JsGroupExitDialog) {
         icon: LogOut,
         title: t('groupExit_leaveTitle', { group }),
         body:
-          dialog.otherMemberCount === 0
+          dialog.deletesGroup
             ? t('groupExit_leaveBodyAlone')
             : t(dialog.otherMemberCount === 1 ? 'groupExit_leaveBodyOne' : 'groupExit_leaveBodyOther', { count: dialog.otherMemberCount }),
         confirm: t('groupExit_leaveConfirm'),
@@ -140,10 +140,13 @@ function copyOf(dialog: JsGroupExitDialog) {
       return {
         icon: TriangleAlert,
         title: t('groupExit_deleteBlockedTitle'),
-        body: t(dialog.debts.length === 1 ? 'groupExit_deleteBlockedBodyOne' : 'groupExit_deleteBlockedBodyOther', {
-          group,
-          count: dialog.debts.length,
-        }),
+        body:
+          dialog.debts.length === 0
+            ? t('groupExit_deleteBlockedBodyShort', { group })
+            : t(dialog.debts.length === 1 ? 'groupExit_deleteBlockedBodyOne' : 'groupExit_deleteBlockedBodyOther', {
+                group,
+                count: dialog.debts.length,
+              }),
         confirm: t('groupExit_seeBalances'),
         dismiss: t('groupExit_notNow'),
         isDestructive: false,

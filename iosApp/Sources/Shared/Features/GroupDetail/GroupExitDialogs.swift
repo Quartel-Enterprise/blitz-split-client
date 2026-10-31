@@ -41,8 +41,8 @@ enum GroupExitCopy {
             )
             return withDebts(message, blocked.debts, currency: currency)
         case let leave as GroupExitDialogConfirmLeave:
-            if leave.otherMemberCount == 0 {
-                return String(localized: "Your balance is settled. You're the only one in the group, so it's gone for good.")
+            if leave.deletesGroup {
+                return String(localized: "Your balance is settled. Nobody else in the group has joined, so it's deleted for good.")
             }
             return String(
                 localized: "Your balance is settled. The group leaves this device and your expenses keep your name for the other \(Int(leave.otherMemberCount)) members. To come back, someone has to invite you again.",

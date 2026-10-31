@@ -750,13 +750,13 @@
         }
       }
     },
-    "Your balance is settled. You're the only one in the group, so it's gone for good." : {
-      "comment" : "Leaving a group nobody else is in",
+    "Your balance is settled. Nobody else in the group has joined, so it's deleted for good." : {
+      "comment" : "Leaving a group nobody else with an account is in, which deletes it",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seu saldo está quitado. Só você está no grupo, então ele some de vez."
+            "value" : "Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez."
           }
         }
       }

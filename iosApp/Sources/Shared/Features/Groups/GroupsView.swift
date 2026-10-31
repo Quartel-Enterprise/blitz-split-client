@@ -9,6 +9,8 @@ final class GroupsModel {
     private(set) var deletedGroupCount = 0
     /// "Carla deleted the group “Ana's birthday”.", kept while the toast shows.
     private(set) var deletedGroupText: LocalizedStringKey = ""
+    /// The toast's own duration on the groups.
+    static let deletedGroupToastDuration: Duration = .seconds(4)
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createGroupsViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -19,21 +21,31 @@ final class GroupsModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
             // State, not an action, so it waits until the home is on top; the next deleted group follows
-            if let notice = state.deletedGroupNotice { self?.showDeletedGroup(notice) }
+            if let notice = state.deletedGroupNotice, notice.groupId != self?.shownDeletedGroupId {
+                self?.showDeletedGroup(notice)
+            }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             if action is GroupsUiActionShowComingSoon { self?.comingSoonCount += 1 }
         })
     }
 
+    /// The notice on screen, so a state update meanwhile doesn't show it twice.
+    @ObservationIgnored private var shownDeletedGroupId: String?
+
     private func showDeletedGroup(_ notice: DeletedGroupNotice) {
+        shownDeletedGroupId = notice.groupId
         if let name = notice.deletedByName {
             deletedGroupText = "\(name) deleted the group “\(notice.groupName)”."
         } else {
             deletedGroupText = "The group “\(notice.groupName)” was deleted."
         }
         deletedGroupCount += 1
-        send(GroupsUiEventOnDeletedGroupNoticeShown.shared)
+        // Shown once the toast is gone, as Android's snackbar does, so the next deleted group doesn't replace it
+        Task { [weak self] in
+            try? await Task.sleep(for: Self.deletedGroupToastDuration)
+            self?.send(GroupsUiEventOnDeletedGroupNoticeShown.shared)
+        }
     }
 
     func send(_ event: any GroupsUiEvent) {
@@ -91,7 +103,7 @@ struct MainTabView: View {
         .glassToast([
             GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
             GlassToastMessage(text: model.deletedGroupText, trigger: model.deletedGroupCount),
-        ], duration: .seconds(4))
+        ], duration: GroupsModel.deletedGroupToastDuration)
         // Shown once the first sync issued a code; the sheet settles the prompt itself ("I've saved it",
         // "Remind me later" or a swipe down), which hides it here too.
         .onChange(of: model.state.showsRecoveryCodePrompt, initial: true) { _, isDue in

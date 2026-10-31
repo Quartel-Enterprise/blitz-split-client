@@ -47,17 +47,18 @@ export function GroupsScreen() {
   const state = useWatch(presenter, (p, onChange: (state: JsGroupsState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onShow: (show: boolean) => void) => p.observeComingSoon(onShow), () => toast(t('groups_comingSoon')))
   // Why: state, not an action, so it waits until the home is on top; the next deleted group follows once this shows.
+  const deletedGroupId = state?.deletedGroupId ?? null
   const deletedGroupName = state?.deletedGroupName ?? null
   const deletedGroupByName = state?.deletedGroupByName ?? null
   useEffect(() => {
-    if (!deletedGroupName) return
+    if (!deletedGroupId || !deletedGroupName) return
     toast(
       deletedGroupByName
         ? t('groups_deletedBy', { name: deletedGroupByName, group: deletedGroupName })
         : t('groups_deleted', { group: deletedGroupName }),
     )
     presenter?.deletedGroupNoticeShown()
-  }, [presenter, deletedGroupName, deletedGroupByName])
+  }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
   if (!presenter || !state) return null
 
   const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null

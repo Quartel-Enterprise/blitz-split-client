@@ -73,13 +73,14 @@
         <item quantity="one">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para o outro membro. Para voltar, alguém precisa te convidar de novo.</item>
         <item quantity="other">Seu saldo está quitado. O grupo some deste aparelho e suas despesas continuam com o seu nome para os outros %d membros. Para voltar, alguém precisa te convidar de novo.</item>
     </plurals>
-    <string name="group_detail_leave_message_alone">Seu saldo está quitado. Só você está no grupo, então ele some de vez.</string>
+    <string name="group_detail_leave_message_alone">Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez.</string>
     <string name="group_detail_leave_confirm">Sair</string>
     <string name="group_detail_delete_blocked_title">Ainda há saldo em aberto</string>
     <plurals name="group_detail_delete_blocked_message">
         <item quantity="one">“%1$s” só pode ser apagado quando todo mundo tiver acertado. Falta %2$d acerto:</item>
         <item quantity="other">“%1$s” só pode ser apagado quando todo mundo tiver acertado. Faltam %2$d acertos:</item>
     </plurals>
+    <string name="group_detail_delete_blocked_message_short">“%s” só pode ser apagado quando todo mundo tiver acertado.</string>
     <string name="group_detail_delete_title">Apagar “%s”?</string>
     <string name="group_detail_delete_message">Todos já acertaram. O grupo, %1$s e o histórico somem para %2$s. Não dá para desfazer.</string>
     <string name="group_detail_delete_message_no_bills">O grupo some para %s. Não dá para desfazer.</string>

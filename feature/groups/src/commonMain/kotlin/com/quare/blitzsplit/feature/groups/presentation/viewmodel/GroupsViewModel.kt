@@ -158,6 +158,7 @@ class GroupsViewModel(
         uiState.update {
             it.copy(
                 deletedGroupNotice = DeletedGroupNotice(
+                    groupId = deletion.groupId,
                     groupName = deletion.groupName,
                     deletedByName = deletion.deletedByName,
                 ),

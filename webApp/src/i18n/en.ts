@@ -271,9 +271,10 @@ export const en = {
     'Your balance is settled. The group leaves this browser and your expenses keep your name for the other member. To come back, someone has to invite you again.',
   groupExit_leaveBodyOther:
     'Your balance is settled. The group leaves this browser and your expenses keep your name for the other {count} members. To come back, someone has to invite you again.',
-  groupExit_leaveBodyAlone: "Your balance is settled. You're the only one in the group, so it's gone for good.",
+  groupExit_leaveBodyAlone: "Your balance is settled. Nobody else in the group has joined, so it's deleted for good.",
   groupExit_leaveConfirm: 'Leave',
   groupExit_deleteBlockedTitle: 'There are still open balances',
+  groupExit_deleteBlockedBodyShort: '“{group}” can only be deleted once everyone has settled up.',
   groupExit_deleteBlockedBodyOne: '“{group}” can only be deleted once everyone has settled up. {count} payment left:',
   groupExit_deleteBlockedBodyOther: '“{group}” can only be deleted once everyone has settled up. {count} payments left:',
   groupExit_deleteTitle: 'Delete “{group}”?',

@@ -1012,6 +1012,27 @@ class GroupDetailViewModelTest {
                 GroupExitDialog.ConfirmLeave(
                     groupName = "Viagem de Floripa",
                     otherMemberCount = 3,
+                    deletesGroup = false,
+                ),
+                viewModel.uiState.value.exit.dialog,
+            )
+        }
+
+    @Test
+    fun `GIVEN nobody else joined WHEN tapping Sair do grupo THEN says the group goes for good`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(members = listOf(pierre, bruno, carla)))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // Then
+            assertEquals(
+                GroupExitDialog.ConfirmLeave(
+                    groupName = "Viagem de Floripa",
+                    otherMemberCount = 2,
+                    deletesGroup = true,
                 ),
                 viewModel.uiState.value.exit.dialog,
             )

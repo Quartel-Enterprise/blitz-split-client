@@ -486,13 +486,14 @@ class GroupMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a stored member WHEN mapping it to a DTO THEN carries its fields`() {
+    fun `GIVEN the member of this device WHEN mapping it to a DTO THEN carries its fields and account`() {
         // Given
         val entity = memberEntity(
             id = "m-1",
             name = "Ana",
             avatarColor = "green",
             userId = "user-2",
+            isMe = true,
             addedAt = 3L,
         )
 
@@ -513,6 +514,21 @@ class GroupMapperImplTest {
             ),
             dto,
         )
+    }
+
+    @Test
+    fun `GIVEN someone else who joined WHEN mapping their member to a DTO THEN sends no account`() {
+        // Given
+        val entity = memberEntity(
+            id = "m-2",
+            userId = "user-3",
+        )
+
+        // When
+        val dto = mapper.toDto(entity)
+
+        // Then
+        assertNull(dto.userId)
     }
 
     @Test

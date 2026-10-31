@@ -187,11 +187,15 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     `:core:sync`) run `syncNow()` first, so the server sees what this device has, then ask the `leave_group` or
     `delete_group` function, which checks the balances under a lock on the group. On `left`, `deleted` or
     `not_member` (another device of this user already left) the group leaves the device with its members, bills and
-    payments (`GroupDao.deleteGroupsWithMembers`); `has_balance` changes nothing. Leaving unlinks this user's member
-    on the server, so the others download it as not joined, and its name stays in the bills.
+    payments (`GroupDao.deleteGroupsWithMembers`); `has_balance` changes nothing but one more sync, which brings the
+    bill or payment the server knew of. Both run `NonCancellable`, so a screen closed mid request still drops the
+    group. Leaving unlinks this user's member on the server, so the others download it as not joined, and its name
+    stays in the bills. A push only sends the account of this device's own member (`GroupMapper.toDto`), so a stale
+    copy of someone who left never links them back nor fails the push.
   - **Groups the server took away**: each user a group is left by or deleted for gets a row in `removed_groups`.
-    The download asks it about every group of the user that the server no longer gives (`fetchRemovedGroups`),
-    pending ones included, and drops those it names even with a change not pushed yet, whose push the server would
+    The download asks it about every group of the user that the server no longer gives and once had (synced, or
+    with the invite code the server made: `GroupDao.getUploadedGroupIds`), and drops those it names even with a
+    change not pushed yet, whose push the server would
     refuse. One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
     group's screen open on it shows "Grupo apagado" instead of just closing, or the home says so when no group screen
     is on top.

@@ -1131,6 +1131,7 @@ class GroupRepositoryImplTest {
                     group(
                         id = "group-deleted",
                         pendingSync = true,
+                        inviteCode = "7Hk2pQxZ",
                     ),
                 ),
                 storedMembers = listOf(
@@ -1178,6 +1179,7 @@ class GroupRepositoryImplTest {
                     group(
                         id = "group-left",
                         pendingSync = true,
+                        inviteCode = "7Hk2pQxZ",
                     ),
                     group(id = "group-deleted-by-me"),
                 ),
@@ -1223,26 +1225,25 @@ class GroupRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a group created offline and not pushed yet WHEN downloading THEN asks about it and keeps it`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedGroups = listOf(
-                    group(
-                        id = "group-new",
-                        pendingSync = true,
-                    ),
+    fun `GIVEN a group created offline and not pushed yet WHEN downloading THEN asks nothing and keeps it`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-new",
+                    pendingSync = true,
                 ),
-            )
+            ),
+        )
 
-            // When
-            val result = repository.downloadGroups("user-1")
+        // When
+        val result = repository.downloadGroups("user-1")
 
-            // Then
-            assertTrue(result.isSuccess)
-            assertEquals(listOf(listOf("group-new")), remote.askedRemovedGroupIds)
-            assertEquals(listOf("group-new"), local.groups.value.map { it.id })
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.askedRemovedGroupIds.isEmpty())
+        assertEquals(listOf("group-new"), local.groups.value.map { it.id })
+    }
 
     @Test
     fun `GIVEN the server lets this person leave WHEN leaving THEN the group leaves the device with its members`() =
@@ -3502,8 +3503,9 @@ private class FakeGroupLocalDataSource(
         groups.value = groups.value.filterNot { it.id in goneGroups }
     }
 
-    override suspend fun getGroupIds(ownerUserId: String): List<String> =
-        groups.value.filter { it.ownerUserId == ownerUserId }.map { it.id }
+    override suspend fun getUploadedGroupIds(ownerUserId: String): List<String> = groups.value
+        .filter { it.ownerUserId == ownerUserId && (!it.pendingSync || it.inviteCode != null) }
+        .map { it.id }
 
     override suspend fun deleteGroups(ids: List<String>) {
         members.value = members.value.filterNot { it.groupId in ids }

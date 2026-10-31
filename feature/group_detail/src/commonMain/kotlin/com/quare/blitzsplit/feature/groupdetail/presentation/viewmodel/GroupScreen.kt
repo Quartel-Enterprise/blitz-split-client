@@ -210,6 +210,7 @@ internal class GroupScreen(
             GroupExitDialog.ConfirmLeave(
                 groupName = group.name,
                 otherMemberCount = group.members.size - 1,
+                deletesGroup = group.members.none { !it.isMe && it.hasJoined },
             )
         } else {
             leaveBlockedOf(group, meId)

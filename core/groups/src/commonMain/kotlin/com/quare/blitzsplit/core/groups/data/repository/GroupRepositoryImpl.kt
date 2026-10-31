@@ -128,8 +128,9 @@ class GroupRepositoryImpl(
     ): GroupExitOutcome = when (result.status) {
         STATUS_HAS_BALANCE -> GroupExitOutcome.HAS_BALANCE
 
+        // Why: the server already agreed, so a local delete that fails is no failure: the next sync drops the group.
         STATUS_LEFT, STATUS_DELETED, STATUS_NOT_MEMBER -> {
-            local.deleteGroups(listOf(groupId))
+            suspendRunCatching { local.deleteGroups(listOf(groupId)) }
             GroupExitOutcome.DONE
         }
 
@@ -206,7 +207,7 @@ class GroupRepositoryImpl(
             .forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
         dropRemovedGroups(
             userId = userId,
-            goneGroupIds = local.getGroupIds(userId).filterNot { it in remoteGroupIds },
+            goneGroupIds = local.getUploadedGroupIds(userId).filterNot { it in remoteGroupIds },
         )
         local.deleteGoneFromServer(
             ownerUserId = userId,

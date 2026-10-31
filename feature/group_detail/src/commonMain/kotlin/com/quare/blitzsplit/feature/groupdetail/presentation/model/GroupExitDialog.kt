@@ -18,6 +18,11 @@ sealed interface GroupExitDialog {
         val groupName: String,
         // Why: "para os outros 8 membros".
         val otherMemberCount: Int,
+        /*
+         * Why: nobody else with an account is in the group, so the server deletes it once this person leaves:
+         * "ele some de vez" rather than "suas despesas continuam com o seu nome".
+         */
+        val deletesGroup: Boolean,
     ) : GroupExitDialog
 
     // Why: "Ainda há saldo em aberto", with every pair still owing ("Faltam 2 acertos") and "Ver saldos".
