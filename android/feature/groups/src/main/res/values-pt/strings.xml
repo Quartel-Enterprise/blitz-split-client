@@ -69,4 +69,12 @@
     <string name="groups_action_delete">Apagar grupo</string>
     <string name="groups_action_delete_hint">Só quando todos tiverem acertado</string>
     <string name="groups_actions_offline">Sair e apagar precisam de internet, para conferir os saldos de todo mundo antes.</string>
+    <string name="groups_display_list_description">Exibição: lista</string>
+    <string name="groups_display_grid_description">Exibição: grade</string>
+    <string name="groups_display_list">Lista</string>
+    <string name="groups_display_grid">Grade</string>
+    <string name="groups_grid_size">Tamanho da grade</string>
+    <string name="groups_grid_size_compact">Compacto</string>
+    <string name="groups_grid_size_standard">Padrão</string>
+    <string name="groups_grid_size_large">Grande</string>
 </resources>

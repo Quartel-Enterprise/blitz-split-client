@@ -69,4 +69,12 @@
     <string name="groups_action_delete">Delete group</string>
     <string name="groups_action_delete_hint">Only once everyone has settled up</string>
     <string name="groups_actions_offline">Leaving and deleting need the internet, to check everyone\'s balances first.</string>
+    <string name="groups_display_list_description">View: list</string>
+    <string name="groups_display_grid_description">View: grid</string>
+    <string name="groups_display_list">List</string>
+    <string name="groups_display_grid">Grid</string>
+    <string name="groups_grid_size">Grid size</string>
+    <string name="groups_grid_size_compact">Compact</string>
+    <string name="groups_grid_size_standard">Standard</string>
+    <string name="groups_grid_size_large">Large</string>
 </resources>

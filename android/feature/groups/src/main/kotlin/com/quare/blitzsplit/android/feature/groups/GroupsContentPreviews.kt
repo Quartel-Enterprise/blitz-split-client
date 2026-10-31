@@ -6,6 +6,9 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupsDisplay
+import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
@@ -39,6 +42,7 @@ private fun GroupsOfflinePreview() {
                 deletedGroupNotice = null,
                 exit = GroupExitUiState.idle,
                 exitGroupId = null,
+                layout = GroupsLayout.initial,
             ),
             onEvent = {},
         )
@@ -48,6 +52,37 @@ private fun GroupsOfflinePreview() {
 @DevicePreviews
 @Composable
 private fun GroupsListPreview() {
+    BlitzSplitTheme {
+        GroupsContent(
+            state = buildPreviewState(GroupsLayout.initial),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupsGridPreview() {
+    BlitzSplitTheme {
+        GroupsContent(
+            state = buildPreviewState(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD)),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupsCompactGridPreview() {
+    BlitzSplitTheme {
+        GroupsContent(
+            state = buildPreviewState(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.COMPACT)),
+            onEvent = {},
+        )
+    }
+}
+
+private fun buildPreviewState(layout: GroupsLayout): GroupsUiState {
     val rows = listOf(
         buildPreviewRow(
             id = "1",
@@ -74,41 +109,37 @@ private fun GroupsListPreview() {
             owesMinor = 0L,
         ),
     )
-    BlitzSplitTheme {
-        GroupsContent(
-            state = GroupsUiState(
-                displayName = "Pierre",
-                avatarInitial = "P",
-                avatarColor = AvatarColor.BLUE,
-                photoUrl = null,
-                accountProvider = null,
-                syncBadge = SyncBadge.OFFLINE,
-                pendingChangeCount = 1,
-                showsRecoveryCodePrompt = false,
-                groups = rows,
-                hasLoadedGroups = true,
-                summary = GroupsSummary(
-                    totals = listOf(
-                        BalanceTotal(
-                            currency = GroupCurrency.BRL,
-                            netMinor = 11_690L,
-                            toReceiveMinor = 21_490L,
-                            toPayMinor = 9_800L,
-                            toReceiveGroupCount = 1,
-                            toPayGroupCount = 1,
-                        ),
-                    ),
+    return GroupsUiState(
+        displayName = "Pierre",
+        avatarInitial = "P",
+        avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
+        accountProvider = null,
+        syncBadge = SyncBadge.OFFLINE,
+        pendingChangeCount = 1,
+        showsRecoveryCodePrompt = false,
+        groups = rows,
+        hasLoadedGroups = true,
+        summary = GroupsSummary(
+            totals = listOf(
+                BalanceTotal(
+                    currency = GroupCurrency.BRL,
+                    netMinor = 11_690L,
+                    toReceiveMinor = 21_490L,
+                    toPayMinor = 9_800L,
+                    toReceiveGroupCount = 1,
+                    toPayGroupCount = 1,
                 ),
-                showsSettledGroups = true,
-                filterQuery = "",
-                isRefreshing = false,
-                deletedGroupNotice = null,
-                exit = GroupExitUiState.idle,
-                exitGroupId = null,
             ),
-            onEvent = {},
-        )
-    }
+        ),
+        showsSettledGroups = true,
+        filterQuery = "",
+        isRefreshing = false,
+        deletedGroupNotice = null,
+        exit = GroupExitUiState.idle,
+        exitGroupId = null,
+        layout = layout,
+    )
 }
 
 private fun buildPreviewRow(
