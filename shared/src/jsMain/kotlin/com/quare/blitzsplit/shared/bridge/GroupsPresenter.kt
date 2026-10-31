@@ -42,6 +42,9 @@ class JsGroupsState(
     val groups: Array<JsGroupRow>,
     val hasLoadedGroups: Boolean,
     val showsEmptyState: Boolean,
+    // Why: "Carla apagou o grupo Aniversário da Ana.", a snackbar; deletedByName is null once that account is gone.
+    val deletedGroupName: String?,
+    val deletedGroupByName: String?,
 )
 
 class GroupsPresenter {
@@ -62,6 +65,8 @@ class GroupsPresenter {
                 groups = state.groups.map(::toJsGroupRow).toTypedArray(),
                 hasLoadedGroups = state.hasLoadedGroups,
                 showsEmptyState = state.showsEmptyState,
+                deletedGroupName = state.deletedGroupNotice?.groupName,
+                deletedGroupByName = state.deletedGroupNotice?.deletedByName,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -103,6 +108,10 @@ class GroupsPresenter {
 
     fun retrySync() {
         viewModel.onEvent(GroupsUiEvent.OnRetrySyncClicked)
+    }
+
+    fun deletedGroupNoticeShown() {
+        viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
     }
 
     fun dispose() {

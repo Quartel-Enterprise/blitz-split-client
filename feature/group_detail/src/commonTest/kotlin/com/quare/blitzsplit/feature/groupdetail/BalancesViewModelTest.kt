@@ -17,9 +17,12 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -27,12 +30,15 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -44,6 +50,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -64,6 +71,7 @@ class BalancesViewModelTest {
     private val actions = mutableListOf<BalancesUiAction>()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
     private val isRoomRead = MutableStateFlow(true)
+    private val deletions = InMemoryGroupDeletionRepository()
 
     @BeforeTest
     fun setUp() {
@@ -838,30 +846,56 @@ class BalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN Saldos open WHEN tapping Sair do grupo THEN says coming soon`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnLeaveGroupClicked
+    fun `GIVEN an open balance dialog on Saldos WHEN tapping Ver saldos THEN the dialog closes over Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    bill(
+                        id = "bill-1",
+                        paidBy = ANA,
+                        amountMinor = 10_000,
+                        sharedWith = BRUNO,
+                    ),
+                ),
+            )
+            viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
 
-        // When
-        viewModel.onEvent(event)
+            // When
+            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
 
-        // Then
-        assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
-    }
+            // Then
+            assertNull(viewModel.uiState.value.exit.dialog)
+            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertTrue(groups.deletedGroupIds.isEmpty())
+        }
 
     @Test
-    fun `GIVEN Saldos open WHEN tapping Apagar grupo THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN everyone settled on Saldos WHEN confirming Apagar grupo THEN deletes it and goes back to Grupos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
+
+            // When
+            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the server unreachable WHEN confirming Sair on Saldos THEN says so`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
-        val event = BalancesUiEvent.OnDeleteGroupClicked
+        prepareScenario(exitError = IllegalStateException("offline"))
+        viewModel.onEvent(BalancesUiEvent.OnLeaveGroupClicked)
 
         // When
-        viewModel.onEvent(event)
+        viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
 
         // Then
-        assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowComingSoon), actions)
+        assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowLeaveError), actions)
         assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
     }
 
@@ -1263,8 +1297,9 @@ class BalancesViewModelTest {
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
         isRoomReadAtStart: Boolean = true,
+        exitError: Throwable? = null,
     ) {
-        groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
+        groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also { it.exitError = exitError }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
@@ -1273,15 +1308,22 @@ class BalancesViewModelTest {
         val observeStoredGroup = ObserveGroupUseCase(groups)
         viewModel = BalancesViewModel(
             route = route,
-            navigator = navigator,
-            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
-            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
-            observeGroup = ObserveGroup { groupId ->
-                isRoomRead.flatMapLatest { isRead -> if (isRead) observeStoredGroup(groupId) else emptyFlow() }
-            },
-            observeExpenses = ObserveExpensesUseCase(expenses),
-            observeSettlements = ObserveSettlementsUseCase(settlements),
-            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+            useCases = GroupScreenUseCases(
+                navigator = navigator,
+                observeGroup = ObserveGroup { groupId ->
+                    isRoomRead.flatMapLatest { isRead -> if (isRead) observeStoredGroup(groupId) else emptyFlow() }
+                },
+                observeExpenses = ObserveExpensesUseCase(expenses),
+                observeSettlements = ObserveSettlementsUseCase(settlements),
+                observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+                consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+                deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
+                observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
+                consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
+                connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
+                leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
+                deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+            ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

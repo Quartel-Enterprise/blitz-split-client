@@ -83,5 +83,11 @@ interface GroupLocalDataSource {
         serverMemberIds: Set<String>,
     )
 
+    // Why: every group of the user's on the device, pending ones included.
+    suspend fun getGroupIds(ownerUserId: String): List<String>
+
+    // Why: with their members, bills and payments, even what is still to push: the server no longer has them here.
+    suspend fun deleteGroups(ids: List<String>)
+
     suspend fun clear()
 }

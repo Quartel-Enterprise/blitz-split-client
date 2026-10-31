@@ -20,11 +20,20 @@ sealed interface BalancesUiEvent : UiEvent {
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : BalancesUiEvent
 
-    // Why: "Sair do grupo" in the ⋮ menu, which isn't built yet.
+    // Why: "Sair do grupo" in the ⋮ menu.
     data object OnLeaveGroupClicked : BalancesUiEvent
 
-    // Why: "Apagar grupo" in the ⋮ menu and on "Todo mundo acertou", which isn't built yet.
+    // Why: "Apagar grupo" in the ⋮ menu and on "Todo mundo acertou".
     data object OnDeleteGroupClicked : BalancesUiEvent
+
+    // Why: the main button of the dialog they open: "Sair", "Apagar para todos", "Acertar" or "Ver saldos".
+    data object OnGroupExitConfirmed : BalancesUiEvent
+
+    // Why: "Cancelar" or "Agora não", or the dialog dismissed.
+    data object OnGroupExitDismissed : BalancesUiEvent
+
+    // Why: "Voltar para Grupos" on "Grupo apagado".
+    data object OnBackToGroupsClicked : BalancesUiEvent
 
     // Why: "Acertar" on the balance card, which opens Registrar pagamento with whoever this person owes the most.
     data object OnSettleClicked : BalancesUiEvent

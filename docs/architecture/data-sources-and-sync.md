@@ -42,7 +42,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
-| `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link |
+| `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link; the `leave_group` and `delete_group` functions and the `removed_groups` table |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
@@ -182,6 +182,19 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     outcome, not an error, and the pick screen reloads the list. A personal link asks `get_invite` with the member's
     code and the sharer's too, which answer `personal_member_id` and `inviter_name`, and joins with `join_group` as
     that member right from the invite screen.
+  - **Leaving and deleting a group** ("Sair do grupo", "Apagar grupo") are online only, never queued: whether a
+    balance is still open depends on every device's bills and payments. `LeaveGroup` and `DeleteGroup` (in
+    `:core:sync`) run `syncNow()` first, so the server sees what this device has, then ask the `leave_group` or
+    `delete_group` function, which checks the balances under a lock on the group. On `left`, `deleted` or
+    `not_member` (another device of this user already left) the group leaves the device with its members, bills and
+    payments (`GroupDao.deleteGroupsWithMembers`); `has_balance` changes nothing. Leaving unlinks this user's member
+    on the server, so the others download it as not joined, and its name stays in the bills.
+  - **Groups the server took away**: each user a group is left by or deleted for gets a row in `removed_groups`.
+    The download asks it about every group of the user that the server no longer gives (`fetchRemovedGroups`),
+    pending ones included, and drops those it names even with a change not pushed yet, whose push the server would
+    refuse. One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
+    group's screen open on it shows "Grupo apagado" instead of just closing, or the home says so when no group screen
+    is on top.
 - **Bills** (`:core:expenses`): a bill (`expense`) is one Last-Write-Wins row, its payers and shares inside it as
   JSON (jsonb on the server), so an edit never mixes two versions of a split. It belongs to its group through a
   foreign key with `ON DELETE CASCADE`: whatever deletes a group on the device (a sign out, an account switch, the

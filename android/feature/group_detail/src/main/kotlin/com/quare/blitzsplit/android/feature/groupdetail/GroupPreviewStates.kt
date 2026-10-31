@@ -11,6 +11,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
@@ -45,12 +46,20 @@ internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupH
     isEveryoneSettled = false,
 )
 
+internal val previewGroupExit = GroupExitUiState(
+    isOnline = true,
+    dialog = null,
+    isRunning = false,
+    deletedNotice = null,
+)
+
 internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailUiState = GroupDetailUiState(
     header = createPreviewHeader(hasBills = days.isNotEmpty()),
     days = days,
     paymentToDelete = null,
     recordedPayment = null,
     showsBillDeletedNotice = false,
+    exit = previewGroupExit,
     isLoaded = true,
 )
 
@@ -148,5 +157,6 @@ internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
     ),
     hasBills = true,
     recordedPayment = null,
+    exit = previewGroupExit,
     isLoaded = true,
 )

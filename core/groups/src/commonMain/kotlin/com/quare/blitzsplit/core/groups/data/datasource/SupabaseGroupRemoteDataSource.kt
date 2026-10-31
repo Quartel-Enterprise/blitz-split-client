@@ -1,12 +1,15 @@
 package com.quare.blitzsplit.core.groups.data.datasource
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupIdParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteCodeParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
@@ -55,6 +58,29 @@ class SupabaseGroupRemoteDataSource(
             parameters = params,
         ).decodeAs<JoinGroupResultDto>()
 
+    override suspend fun requestLeaveGroup(groupId: String): GroupExitResultDto = postgrest
+        .rpc(
+            function = LEAVE_GROUP,
+            parameters = GroupIdParamsDto(groupId),
+        ).decodeAs<GroupExitResultDto>()
+
+    override suspend fun deleteGroup(groupId: String): GroupExitResultDto = postgrest
+        .rpc(
+            function = DELETE_GROUP,
+            parameters = GroupIdParamsDto(groupId),
+        ).decodeAs<GroupExitResultDto>()
+
+    // Why: a few ids per request, so the filter in the URL stays short; row level security keeps it to this user's.
+    override suspend fun fetchRemovedGroups(groupIds: List<String>): List<RemovedGroupDto> = groupIds
+        .chunked(IDS_PER_DELETE)
+        .flatMap { chunk ->
+            postgrest
+                .from(REMOVED_GROUPS)
+                .select {
+                    filter { isIn("group_id", chunk) }
+                }.decodeList<RemovedGroupDto>()
+        }
+
     /*
      * Why: page by page, since the server answers at most max_rows per request, until a page comes back empty: a
      * short page proves nothing if max_rows is below the page asked for. A row missing from the answer would read as
@@ -86,6 +112,9 @@ class SupabaseGroupRemoteDataSource(
         const val MEMBERS = "group_members"
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
+        const val LEAVE_GROUP = "leave_group"
+        const val DELETE_GROUP = "delete_group"
+        const val REMOVED_GROUPS = "removed_groups"
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L

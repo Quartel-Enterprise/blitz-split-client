@@ -24,4 +24,6 @@
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>
     </plurals>
+    <string name="groups_deleted_by">%1$s deleted the group “%2$s”.</string>
+    <string name="groups_deleted">The group “%s” was deleted.</string>
 </resources>

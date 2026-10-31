@@ -6,6 +6,9 @@ import SwiftUI
 final class GroupsModel {
     private(set) var state: GroupsUiState
     private(set) var comingSoonCount = 0
+    private(set) var deletedGroupCount = 0
+    /// "Carla deleted the group “Ana's birthday”.", kept while the toast shows.
+    private(set) var deletedGroupText: LocalizedStringKey = ""
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createGroupsViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -15,10 +18,22 @@ final class GroupsModel {
         state = viewModel.uiState.value as! GroupsUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+            // State, not an action, so it waits until the home is on top; the next deleted group follows
+            if let notice = state.deletedGroupNotice { self?.showDeletedGroup(notice) }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             if action is GroupsUiActionShowComingSoon { self?.comingSoonCount += 1 }
         })
+    }
+
+    private func showDeletedGroup(_ notice: DeletedGroupNotice) {
+        if let name = notice.deletedByName {
+            deletedGroupText = "\(name) deleted the group “\(notice.groupName)”."
+        } else {
+            deletedGroupText = "The group “\(notice.groupName)” was deleted."
+        }
+        deletedGroupCount += 1
+        send(GroupsUiEventOnDeletedGroupNoticeShown.shared)
     }
 
     func send(_ event: any GroupsUiEvent) {
@@ -73,7 +88,10 @@ struct MainTabView: View {
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
         }
         .tabViewStyle(.sidebarAdaptable)
-        .glassToast("Coming soon", trigger: model.comingSoonCount)
+        .glassToast([
+            GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
+            GlassToastMessage(text: model.deletedGroupText, trigger: model.deletedGroupCount),
+        ], duration: .seconds(4))
         // Shown once the first sync issued a code; the sheet settles the prompt itself ("I've saved it",
         // "Remind me later" or a swipe down), which hides it here too.
         .onChange(of: model.state.showsRecoveryCodePrompt, initial: true) { _, isDue in

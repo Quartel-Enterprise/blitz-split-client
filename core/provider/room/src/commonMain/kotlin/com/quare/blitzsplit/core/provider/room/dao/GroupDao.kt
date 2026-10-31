@@ -304,6 +304,18 @@ interface GroupDao {
         goneMembers.chunked(MAX_IDS_PER_QUERY).forEach { deleteMembers(it) }
     }
 
+    @Query("SELECT id FROM split_group WHERE ownerUserId = :ownerUserId")
+    suspend fun getGroupIds(ownerUserId: String): List<String>
+
+    // Why: a group left or deleted, pending or not; its bills and payments go with it (ON DELETE CASCADE).
+    @Transaction
+    suspend fun deleteGroupsWithMembers(ids: List<String>) {
+        ids.chunked(MAX_IDS_PER_QUERY).forEach {
+            deleteMembersOfGroups(it)
+            deleteGroups(it)
+        }
+    }
+
     @Query("DELETE FROM group_member WHERE groupId IN (:groupIds)")
     suspend fun deleteMembersOfGroups(groupIds: List<String>)
 

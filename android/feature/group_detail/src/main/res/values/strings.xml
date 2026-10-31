@@ -30,7 +30,6 @@
     <string name="group_detail_empty_title">No expenses yet</string>
     <string name="group_detail_empty_message">Add the first expense or invite who\'s splitting with you. People without the app count too.</string>
     <string name="group_detail_split_bill">Split a bill</string>
-    <string name="group_detail_coming_soon">Coming soon</string>
     <string name="group_detail_change_error">Couldn\'t save the change. Try again.</string>
     <string name="group_detail_bill_deleted">This bill was deleted</string>
     <string name="group_detail_former_member">Former member</string>
@@ -62,4 +61,39 @@
     <string name="group_detail_balances_empty_message">Balances show up once the first expense is added.</string>
     <string name="group_detail_balances_settled_title">Everyone\'s settled up</string>
     <string name="group_detail_balances_settled_message">Nobody owes anything in this group. If the trip is over, you can delete the group for everyone.</string>
+    <string name="group_detail_needs_internet">Needs internet</string>
+    <string name="group_detail_leave_error">Couldn\'t leave the group. Check your connection and try again.</string>
+    <string name="group_detail_delete_error">Couldn\'t delete the group. Check your connection and try again.</string>
+    <string name="group_detail_not_now">Not now</string>
+    <string name="group_detail_see_balances">See balances</string>
+    <string name="group_detail_leave_blocked_title">Settle up before leaving</string>
+    <string name="group_detail_leave_blocked_message">You still have an open balance in “%s”. Leaving now would leave it unsettled for the others.</string>
+    <string name="group_detail_leave_title">Leave “%s”?</string>
+    <plurals name="group_detail_leave_message">
+        <item quantity="one">Your balance is settled. The group leaves this device and your expenses keep your name for the other member. To come back, someone has to invite you again.</item>
+        <item quantity="other">Your balance is settled. The group leaves this device and your expenses keep your name for the other %d members. To come back, someone has to invite you again.</item>
+    </plurals>
+    <string name="group_detail_leave_message_alone">Your balance is settled. You\'re the only one in the group, so it\'s gone for good.</string>
+    <string name="group_detail_leave_confirm">Leave</string>
+    <string name="group_detail_delete_blocked_title">There are still open balances</string>
+    <plurals name="group_detail_delete_blocked_message">
+        <item quantity="one">“%1$s” can only be deleted once everyone has settled up. %2$d payment left:</item>
+        <item quantity="other">“%1$s” can only be deleted once everyone has settled up. %2$d payments left:</item>
+    </plurals>
+    <string name="group_detail_delete_title">Delete “%s”?</string>
+    <string name="group_detail_delete_message">Everyone has settled up. The group, %1$s and the history are gone for %2$s. This can\'t be undone.</string>
+    <string name="group_detail_delete_message_no_bills">The group is gone for %s. This can\'t be undone.</string>
+    <plurals name="group_detail_delete_bills">
+        <item quantity="one">its %d expense</item>
+        <item quantity="other">its %d expenses</item>
+    </plurals>
+    <plurals name="group_detail_delete_members">
+        <item quantity="one">its %d member</item>
+        <item quantity="other">all %d members</item>
+    </plurals>
+    <string name="group_detail_delete_confirm">Delete for everyone</string>
+    <string name="group_detail_deleted_title">Group deleted</string>
+    <string name="group_detail_deleted_message">%1$s deleted “%2$s” after everyone settled up. Nothing was left open, and the group leaves your list.</string>
+    <string name="group_detail_deleted_message_nobody">“%s” was deleted after everyone settled up. Nothing was left open, and the group leaves your list.</string>
+    <string name="group_detail_back_to_groups">Back to Groups</string>
 </resources>

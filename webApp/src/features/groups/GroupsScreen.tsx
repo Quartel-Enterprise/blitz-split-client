@@ -1,6 +1,6 @@
 import { CloudOff, Plus, ReceiptText, RefreshCw, RotateCw, UserRound, Users, Wallet } from 'lucide-react'
 import { GroupsPresenter, type JsGroupRow, type JsGroupsState } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, BrandMark } from '@/components/common'
@@ -46,6 +46,18 @@ export function GroupsScreen() {
   const presenter = usePresenter(() => new GroupsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsGroupsState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onShow: (show: boolean) => void) => p.observeComingSoon(onShow), () => toast(t('groups_comingSoon')))
+  // Why: state, not an action, so it waits until the home is on top; the next deleted group follows once this shows.
+  const deletedGroupName = state?.deletedGroupName ?? null
+  const deletedGroupByName = state?.deletedGroupByName ?? null
+  useEffect(() => {
+    if (!deletedGroupName) return
+    toast(
+      deletedGroupByName
+        ? t('groups_deletedBy', { name: deletedGroupByName, group: deletedGroupName })
+        : t('groups_deleted', { group: deletedGroupName }),
+    )
+    presenter?.deletedGroupNoticeShown()
+  }, [presenter, deletedGroupName, deletedGroupByName])
   if (!presenter || !state) return null
 
   const sync = state.syncBadge ? (syncLabels[state.syncBadge] ?? syncLabels.SYNCING) : null

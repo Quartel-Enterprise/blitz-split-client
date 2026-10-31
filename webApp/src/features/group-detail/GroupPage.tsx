@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronRight, Ellipsis, LogOut, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
-import type { JsGroupHeader } from 'blitzsplit-shared'
+import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, GroupTabs, type GroupTab } from '@/components/common'
 import { Button } from '@/components/ui/button'
@@ -15,9 +15,10 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { GroupExitDialog, type GroupExitEvents } from './GroupExitDialog'
 
 /** What the group's page asks of its ViewModel, the same on Despesas and Saldos. */
-export interface GroupPageEvents {
+export interface GroupPageEvents extends GroupExitEvents {
   back(): void
   invite(): void
   members(): void
@@ -37,6 +38,7 @@ export function GroupPage({
   tab,
   hasExpenses,
   showsSplitBillButton,
+  exit,
   events,
   onSelectTab,
   children,
@@ -45,6 +47,8 @@ export function GroupPage({
   tab: GroupTab
   hasExpenses: boolean
   showsSplitBillButton: boolean
+  // Why: "Sair do grupo" and "Apagar grupo", which need the internet, their dialogs and "Grupo apagado".
+  exit: JsGroupExit
   events: GroupPageEvents
   onSelectTab: (tab: GroupTab) => void
   children: ReactNode
@@ -78,7 +82,7 @@ export function GroupPage({
         <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => events.invite()} className="md:hidden">
           <UserPlus />
         </Button>
-        <GroupMenu events={events} />
+        <GroupMenu isOnline={exit.isOnline} events={events} />
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
@@ -143,12 +147,14 @@ export function GroupPage({
           </Button>
         </div>
       )}
+      <GroupExitDialog exit={exit} currency={header.currency} fractionDigits={header.fractionDigits} events={events} />
     </div>
   )
 }
 
-/** The ⋯ menu keeps only what changes the group itself (6.1i). */
-function GroupMenu({ events }: { events: GroupPageEvents }) {
+/** The ⋯ menu keeps only what changes the group itself (6.1i); offline, Sair and Apagar need the internet (6.1j). */
+function GroupMenu({ isOnline, events }: { isOnline: boolean; events: GroupPageEvents }) {
+  const needsInternet = !isOnline && <span className="ml-auto text-xs text-muted-foreground">{t('groupExit_needsInternet')}</span>
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -156,19 +162,21 @@ function GroupMenu({ events }: { events: GroupPageEvents }) {
           <Ellipsis />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52">
+      <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuItem onSelect={() => events.editGroup()}>
           <Pencil />
           {t('groupDetail_editGroup')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => events.leaveGroup()}>
+        <DropdownMenuItem disabled={!isOnline} onSelect={() => events.leaveGroup()}>
           <LogOut />
           {t('groupDetail_leaveGroup')}
+          {needsInternet}
         </DropdownMenuItem>
-        <DropdownMenuItem variant="destructive" onSelect={() => events.deleteGroup()}>
+        <DropdownMenuItem variant="destructive" disabled={!isOnline} onSelect={() => events.deleteGroup()}>
           <Trash2 />
           {t('groupDetail_deleteGroup')}
+          {needsInternet}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

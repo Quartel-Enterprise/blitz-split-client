@@ -2,9 +2,13 @@ package com.quare.blitzsplit.core.groups.data.repository
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
+import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
+import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -22,6 +26,7 @@ class GroupRepositoryImpl(
     private val remote: GroupRemoteDataSource,
     private val profileLocal: ProfileLocalDataSource,
     private val mapper: GroupMapper,
+    private val deletions: GroupDeletionRepository,
 ) : GroupRepository {
     override fun observeGroups(): Flow<List<Group>> = combine(
         local.observeGroups(),
@@ -108,6 +113,29 @@ class GroupRepositoryImpl(
         )
     }
 
+    override suspend fun requestLeaveGroup(groupId: String): Result<GroupExitOutcome> = suspendRunCatching {
+        exitOutcomeOf(groupId, remote.requestLeaveGroup(groupId))
+    }
+
+    override suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome> = suspendRunCatching {
+        exitOutcomeOf(groupId, remote.deleteGroup(groupId))
+    }
+
+    // Why: not_member means another device already took this person out, so the group leaves this one too.
+    private suspend fun exitOutcomeOf(
+        groupId: String,
+        result: GroupExitResultDto,
+    ): GroupExitOutcome = when (result.status) {
+        STATUS_HAS_BALANCE -> GroupExitOutcome.HAS_BALANCE
+
+        STATUS_LEFT, STATUS_DELETED, STATUS_NOT_MEMBER -> {
+            local.deleteGroups(listOf(groupId))
+            GroupExitOutcome.DONE
+        }
+
+        else -> error("Unknown group exit status ${result.status}")
+    }
+
     /*
      * Why: the groups before their members, which the server only accepts in a group it already has. The members
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)
@@ -176,6 +204,10 @@ class GroupRepositoryImpl(
         remoteMembers
             .filter { it.groupId in remoteGroupIds }
             .forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
+        dropRemovedGroups(
+            userId = userId,
+            goneGroupIds = local.getGroupIds(userId).filterNot { it in remoteGroupIds },
+        )
         local.deleteGoneFromServer(
             ownerUserId = userId,
             serverGroupIds = remoteGroupIds,
@@ -183,7 +215,41 @@ class GroupRepositoryImpl(
         )
     }
 
+    /*
+     * Why: a group the server took off this user's list, left from another device or deleted by a member, would
+     * otherwise stay with a change not pushed yet, whose push the server refuses. Someone else's deletion is posted
+     * before the group goes, so the screen showing it says "Grupo apagado" instead of just closing.
+     */
+    private suspend fun dropRemovedGroups(
+        userId: String,
+        goneGroupIds: List<String>,
+    ) {
+        if (goneGroupIds.isEmpty()) return
+        val removed = remote.fetchRemovedGroups(goneGroupIds)
+        if (removed.isEmpty()) return
+        removed
+            .filter { it.reason == REASON_DELETED && it.removedBy != userId }
+            .forEach { dto ->
+                deletions.post(
+                    GroupDeletion(
+                        groupId = dto.groupId,
+                        groupName = dto.groupName,
+                        deletedByName = dto.removedByName,
+                    ),
+                )
+            }
+        local.deleteGroups(removed.map { it.groupId })
+    }
+
     override suspend fun clear() {
         local.clear()
+    }
+
+    private companion object {
+        const val STATUS_LEFT = "left"
+        const val STATUS_DELETED = "deleted"
+        const val STATUS_HAS_BALANCE = "has_balance"
+        const val STATUS_NOT_MEMBER = "not_member"
+        const val REASON_DELETED = "deleted"
     }
 }
