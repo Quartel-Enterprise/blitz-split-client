@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.data.repository
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
@@ -135,6 +136,17 @@ class GroupRepositoryImpl(
         }
 
         else -> error("Unknown group exit status ${result.status}")
+    }
+
+    /*
+     * Why: a release only reaches a group the server has, so the device already holds its owner. The server answers a
+     * member nobody joined as, which is never this device's user. The account is checked before the call, so a release
+     * the server made never reads as failed.
+     */
+    override suspend fun requestMemberRelease(memberId: String): Result<Unit> = suspendRunCatching {
+        val userId = checkNotNull(profileLocal.get()?.ownerUserId) { "No account to release a member with" }
+        val released = remote.requestMemberRelease(ReleaseMemberParamsDto(memberId)) ?: return@suspendRunCatching
+        local.applyRemoteMember(mapper.toEntity(released, userId = userId))
     }
 
     /*

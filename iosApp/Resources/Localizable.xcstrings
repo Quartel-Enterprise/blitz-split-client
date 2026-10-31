@@ -184,6 +184,16 @@
         }
       }
     },
+    "Couldn't release the name. Check your connection and try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para liberar o nome. Confira a internet e tente de novo."
+          }
+        }
+      }
+    },
     "Delete for everyone" : {
       "comment" : "Confirms deleting the group for all its members",
       "localizations" : {
@@ -367,6 +377,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ estão sem valor"
+          }
+        }
+      }
+    },
+    "If it was you, talk to %@." : {
+      "comment" : "The group's creator, who can sort out a member taken by someone else",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se era você, fale com %@."
           }
         }
       }
@@ -709,6 +730,17 @@
         }
       }
     },
+    "Your balance is settled. Nobody else in the group has joined, so it's deleted for good." : {
+      "comment" : "Leaving a group nobody else with an account is in, which deletes it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez."
+          }
+        }
+      }
+    },
     "Your balance is settled. The group leaves this device and your expenses keep your name for the other %lld members. To come back, someone has to invite you again." : {
       "comment" : "What leaving a group does; %lld is how many other members it has",
       "localizations" : {
@@ -750,20 +782,51 @@
         }
       }
     },
-    "Your balance is settled. Nobody else in the group has joined, so it's deleted for good." : {
-      "comment" : "Leaving a group nobody else with an account is in, which deletes it",
+    "%@ · %@" : {
+      "comment" : "The group's name and how many of its members joined, in the Members subtitle",
+      "shouldTranslate" : false
+    },
+    "Release" : {
+      "comment" : "Confirms releasing the name of a member someone joined as",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seu saldo está quitado. Ninguém mais entrou no grupo, então ele some de vez."
+            "value" : "Liberar"
           }
         }
       }
     },
-    "%@ · %@" : {
-      "comment" : "The group's name and how many of its members joined, in the Members subtitle",
-      "shouldTranslate" : false
+    "Release %@'s name?" : {
+      "comment" : "A member's name, which someone joined as",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liberar o nome %@?"
+          }
+        }
+      }
+    },
+    "Release name" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liberar nome"
+          }
+        }
+      }
+    },
+    "Release name…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liberar nome…"
+          }
+        }
+      }
     },
     "The currency doesn’t change after the first expense." : {
       "comment" : "Under the edit group's currency",
@@ -3110,13 +3173,13 @@
         }
       }
     },
-    "If it was you, talk to %@." : {
-      "comment" : "The group's creator, who can sort out a member taken by someone else",
+    "If it was you, ask %@ to release the name in Members." : {
+      "comment" : "The group's creator, who can release a member taken by someone else on the Members screen",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se era você, fale com %@."
+            "value" : "Se era você, peça para %@ liberar o nome em Membros."
           }
         }
       }
@@ -5579,6 +5642,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quem fica com %@ sai da conta."
+          }
+        }
+      }
+    },
+    "Whoever joined as %@ leaves the group. %@'s name, color and bills stay, and %@ can be picked again through the group's link." : {
+      "comment" : "The same member's name, three times",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem entrou como %1$@ sai do grupo. O nome, a cor e as contas de %2$@ ficam, e dá para escolher %3$@ de novo pelo link do grupo."
           }
         }
       }

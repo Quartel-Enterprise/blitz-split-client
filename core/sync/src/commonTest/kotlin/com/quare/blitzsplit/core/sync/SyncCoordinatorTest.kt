@@ -4334,6 +4334,7 @@ class SyncCoordinatorTest {
         ),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = true,
     )
 
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {

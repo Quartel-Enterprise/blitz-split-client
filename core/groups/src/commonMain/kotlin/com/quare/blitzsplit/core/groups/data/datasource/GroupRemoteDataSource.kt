@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 
 interface GroupRemoteDataSource {
@@ -31,6 +32,9 @@ interface GroupRemoteDataSource {
     suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto?
 
     suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto
+
+    // Why: the member as the server keeps it once released; null for a member no longer on the server.
+    suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto?
 
     // Why: "Sair do grupo", which the server only lets through while this person's balance is settled.
     suspend fun requestLeaveGroup(groupId: String): GroupExitResultDto

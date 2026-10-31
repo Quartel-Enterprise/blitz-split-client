@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Order
@@ -57,6 +58,12 @@ class SupabaseGroupRemoteDataSource(
             function = JOIN_GROUP,
             parameters = params,
         ).decodeAs<JoinGroupResultDto>()
+
+    override suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto? = postgrest
+        .rpc(
+            function = RELEASE_MEMBER,
+            parameters = params,
+        ).decodeAs<GroupMemberDto?>()
 
     override suspend fun requestLeaveGroup(groupId: String): GroupExitResultDto = postgrest
         .rpc(
@@ -112,6 +119,8 @@ class SupabaseGroupRemoteDataSource(
         const val MEMBERS = "group_members"
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
+        const val RELEASE_MEMBER = "release_member"
+
         const val LEAVE_GROUP = "leave_group"
         const val DELETE_GROUP = "delete_group"
         const val REMOVED_GROUPS = "removed_groups"

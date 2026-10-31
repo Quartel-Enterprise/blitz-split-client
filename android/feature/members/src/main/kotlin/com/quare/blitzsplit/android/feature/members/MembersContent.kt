@@ -444,6 +444,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 22_350L,
                 owesMinor = 0L,
             ),
+            canBeReleased = false,
         ),
         MembersMember(
             id = "2",
@@ -457,6 +458,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 0L,
                 owesMinor = 11_800L,
             ),
+            canBeReleased = true,
         ),
         MembersMember(
             id = "3",
@@ -470,6 +472,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 0L,
                 owesMinor = 0L,
             ),
+            canBeReleased = false,
         ),
         MembersMember(
             id = "4",
@@ -483,10 +486,13 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 0L,
                 owesMinor = 10_550L,
             ),
+            canBeReleased = false,
         ),
     ),
     editor = null,
     memberToRemove = null,
+    memberToRelease = null,
+    isReleasing = false,
     personalInvite = null,
     myBalance = MemberBalance(
         receivesMinor = 22_350L,

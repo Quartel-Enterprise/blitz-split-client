@@ -3,8 +3,10 @@ package com.quare.blitzsplit.core.provider.room.dao
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
+import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
@@ -343,6 +345,50 @@ class GroupDaoTest {
         }
 
     @Test
+    fun `GIVEN a joined member renamed here WHEN an older row released it THEN drops only the account`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(updatedAt = 1L),
+            members = listOf(
+                member(
+                    id = "carla",
+                    name = "Carla S.",
+                    userId = "user-2",
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "Ab3dE5",
+                ),
+            ),
+        )
+
+        // When
+        dao.applyRemoteMember(
+            member(
+                id = "carla",
+                userId = null,
+                updatedAt = 5L,
+                inviteCode = "Zz9yX8",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            member(
+                id = "carla",
+                name = "Carla S.",
+                userId = null,
+                updatedAt = 9L,
+                pendingSync = true,
+                inviteCode = "Zz9yX8",
+            ),
+            dao
+                .observeMembers()
+                .first()
+                .single(),
+        )
+    }
+
+    @Test
     fun `GIVEN a member with its code WHEN a server row without a code comes THEN keeps the code`() = runTest {
         // Given
         prepareScenario(
@@ -532,13 +578,254 @@ class GroupDaoTest {
         )
     }
 
+    @Test
+    fun `GIVEN a group edited here that went up WHEN the server no longer gives it THEN it goes with its members`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "7Hk2pQxa",
+                ),
+                members = listOf(
+                    member(
+                        id = "me",
+                        isMe = true,
+                        userId = "user-1",
+                    ),
+                    member(
+                        id = "ana",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            dao.deleteGoneFromServer(
+                ownerUserId = "user-1",
+                serverGroupIds = emptySet(),
+                serverMemberIds = emptySet(),
+            )
+
+            // Then
+            assertTrue(dao.observeGroups().first().isEmpty())
+            assertTrue(dao.observeMembers().first().isEmpty())
+            assertFalse(dao.observeHasPending().first())
+        }
+
+    @Test
+    fun `GIVEN a released group with pending bills and payments WHEN the server no longer gives it THEN they go too`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "7Hk2pQxa",
+                ),
+                expenses = listOf(
+                    expense(id = "bill-synced"),
+                    expense(
+                        id = "bill-pending",
+                        pendingSync = true,
+                    ),
+                ),
+                settlements = listOf(
+                    settlement(id = "payment-synced"),
+                    settlement(
+                        id = "payment-pending",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            dao.deleteGoneFromServer(
+                ownerUserId = "user-1",
+                serverGroupIds = emptySet(),
+                serverMemberIds = emptySet(),
+            )
+
+            // Then
+            assertTrue(
+                database
+                    .expenseDao()
+                    .observeExpenses("group-1")
+                    .first()
+                    .isEmpty(),
+            )
+            assertTrue(
+                database
+                    .settlementDao()
+                    .observeSettlements("group-1")
+                    .first()
+                    .isEmpty(),
+            )
+            assertFalse(database.expenseDao().observeHasPending().first())
+            assertFalse(database.settlementDao().observeHasPending().first())
+        }
+
+    @Test
+    fun `GIVEN a group created here and not up yet WHEN the server does not give it THEN it stays with its members`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    updatedAt = 9L,
+                    pendingSync = true,
+                ),
+                members = listOf(
+                    member(
+                        id = "me",
+                        isMe = true,
+                        pendingSync = true,
+                    ),
+                    member(
+                        id = "ana",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            dao.deleteGoneFromServer(
+                ownerUserId = "user-1",
+                serverGroupIds = emptySet(),
+                serverMemberIds = emptySet(),
+            )
+
+            // Then
+            assertEquals(listOf("group-1"), dao.observeGroups().first().map { it.id })
+            assertEquals(listOf("ana", "me"), dao.observeMembers().first().map { it.id })
+        }
+
+    @Test
+    fun `GIVEN a synced group WHEN the server no longer gives it THEN it goes with its members`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                updatedAt = 1L,
+                inviteCode = "7Hk2pQxa",
+            ),
+            members = listOf(member(id = "ana")),
+        )
+
+        // When
+        dao.deleteGoneFromServer(
+            ownerUserId = "user-1",
+            serverGroupIds = emptySet(),
+            serverMemberIds = emptySet(),
+        )
+
+        // Then
+        assertTrue(dao.observeGroups().first().isEmpty())
+        assertTrue(dao.observeMembers().first().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a synced group and one edited here WHEN the server still gives both THEN both stay`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                updatedAt = 1L,
+                inviteCode = "7Hk2pQxa",
+            ),
+            otherGroups = listOf(
+                entity(
+                    id = "group-2",
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "Qp4mZt8w",
+                ),
+            ),
+            members = listOf(
+                member(id = "ana"),
+                member(
+                    id = "bruno",
+                    groupId = "group-2",
+                ),
+            ),
+        )
+
+        // When
+        dao.deleteGoneFromServer(
+            ownerUserId = "user-1",
+            serverGroupIds = setOf("group-1", "group-2"),
+            serverMemberIds = setOf("ana", "bruno"),
+        )
+
+        // Then
+        assertEquals(listOf("group-2", "group-1"), dao.observeGroups().first().map { it.id })
+        assertEquals(listOf("ana", "bruno"), dao.observeMembers().first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN synced and pending members WHEN the server group has neither THEN only the pending one stays`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    updatedAt = 1L,
+                    inviteCode = "7Hk2pQxa",
+                ),
+                members = listOf(
+                    member(id = "ana"),
+                    member(
+                        id = "bruno",
+                        pendingSync = true,
+                    ),
+                    member(id = "carla"),
+                ),
+            )
+
+            // When
+            dao.deleteGoneFromServer(
+                ownerUserId = "user-1",
+                serverGroupIds = setOf("group-1"),
+                serverMemberIds = setOf("carla"),
+            )
+
+            // Then
+            assertEquals(listOf("group-1"), dao.observeGroups().first().map { it.id })
+            assertEquals(listOf("bruno", "carla"), dao.observeMembers().first().map { it.id })
+        }
+
+    @Test
+    fun `GIVEN another users synced group WHEN the server groups of this user lack it THEN it stays`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                updatedAt = 1L,
+                inviteCode = "7Hk2pQxa",
+                ownerUserId = "user-2",
+            ),
+            members = listOf(member(id = "ana")),
+        )
+
+        // When
+        dao.deleteGoneFromServer(
+            ownerUserId = "user-1",
+            serverGroupIds = emptySet(),
+            serverMemberIds = emptySet(),
+        )
+
+        // Then
+        assertEquals(listOf("group-1"), dao.observeGroups().first().map { it.id })
+        assertEquals(listOf("ana"), dao.observeMembers().first().map { it.id })
+    }
+
     private fun entity(
+        id: String = "group-1",
         name: String = "Viagem Floripa",
         updatedAt: Long,
         pendingSync: Boolean = false,
         inviteCode: String? = null,
+        ownerUserId: String = "user-1",
     ): GroupEntity = GroupEntity(
-        id = "group-1",
+        id = id,
         name = name,
         type = "trip",
         color = "blue",
@@ -547,12 +834,13 @@ class GroupDaoTest {
         addedAt = 1L,
         updatedAt = updatedAt,
         pendingSync = pendingSync,
-        ownerUserId = "user-1",
+        ownerUserId = ownerUserId,
         inviteCode = inviteCode,
     )
 
     private fun member(
         id: String,
+        groupId: String = "group-1",
         name: String = id.replaceFirstChar { it.uppercase() },
         userId: String? = null,
         isMe: Boolean = false,
@@ -561,7 +849,7 @@ class GroupDaoTest {
         inviteCode: String? = null,
     ): GroupMemberEntity = GroupMemberEntity(
         id = id,
-        groupId = "group-1",
+        groupId = groupId,
         name = name,
         avatarColor = "green",
         userId = userId,
@@ -573,13 +861,57 @@ class GroupDaoTest {
         inviteCode = inviteCode,
     )
 
+    private fun expense(
+        id: String,
+        pendingSync: Boolean = false,
+    ): ExpenseEntity = ExpenseEntity(
+        id = id,
+        groupId = "group-1",
+        createdBy = "user-1",
+        description = "Mercado",
+        amountMinor = 1_000L,
+        splitMode = "equal",
+        payersJson = "[]",
+        sharesJson = "[]",
+        spentAt = 1_000L,
+        isDeleted = false,
+        addedAt = 1L,
+        updatedAt = 1L,
+        updatedBy = null,
+        pendingSync = pendingSync,
+    )
+
+    private fun settlement(
+        id: String,
+        pendingSync: Boolean = false,
+    ): SettlementEntity = SettlementEntity(
+        id = id,
+        groupId = "group-1",
+        createdBy = "user-1",
+        fromMemberId = "ana",
+        toMemberId = "me",
+        amountMinor = 500L,
+        method = "pix",
+        paidAt = 1_000L,
+        isDeleted = false,
+        addedAt = 1L,
+        updatedAt = 1L,
+        pendingSync = pendingSync,
+    )
+
     private suspend fun prepareScenario(
         stored: GroupEntity,
+        otherGroups: List<GroupEntity> = emptyList(),
         members: List<GroupMemberEntity> = emptyList(),
+        expenses: List<ExpenseEntity> = emptyList(),
+        settlements: List<SettlementEntity> = emptyList(),
     ) {
         database = Room.inMemoryDatabaseBuilder<AppDatabase>().setDriver(BundledSQLiteDriver()).build()
         dao = database.groupDao()
         dao.upsertGroup(stored)
+        otherGroups.forEach { dao.upsertGroup(it) }
         dao.upsertMembers(members)
+        expenses.forEach { database.expenseDao().insertExpenseIntoGroup(it) }
+        settlements.forEach { database.settlementDao().insertSettlementIntoGroup(it) }
     }
 }

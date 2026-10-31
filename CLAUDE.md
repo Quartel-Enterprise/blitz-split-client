@@ -87,7 +87,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
     someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite
     pessoal" answers "Em breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open
-    balance can't be removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`).
+    balance can't be removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's
+    creator sees "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances
+    included: after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla
+    leaves the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
+    link. The released person gets no notice: the group just leaves their devices on the next sync.
   - "Saldos" (`Route.Balances`) is the group's tab: each pair once, already netted (no simplifying debts across the
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
@@ -138,8 +142,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
-    color joined as. A member someone else already joined as says "Se era você, fale com <criador>": "Liberar nome"
-    isn't built yet.
+    color joined as. A member someone else already joined as says "Se era você, peça para <criador> liberar o nome em
+    Membros" ("Se era você, fale com quem te chamou" once the creator's account is gone).
   - The home's "Entrar com link ou QR" opens the reader (`Route.JoinWithLink`) on every platform: the camera reads
     an invite's QR and keeps reading after a wrong one ("Esse QR não é um convite do Bora Rachar" for a few
     seconds), and "Tem o link?" under it takes a pasted or typed link. Only links on blitzsplit.com and

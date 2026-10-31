@@ -31,10 +31,13 @@ fun MembersScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val changeError = stringResource(R.string.members_change_error)
+    val releaseError = stringResource(R.string.members_release_error)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 MembersUiAction.ShowChangeError -> showReplacingSnackbar(snackbarHostState, changeError)
+
+                MembersUiAction.ShowReleaseError -> showReplacingSnackbar(snackbarHostState, releaseError)
 
                 is MembersUiAction.CopyLink -> context.copyLink(action.link)
 
@@ -70,6 +73,13 @@ fun MembersScreen(
     state.memberToRemove?.let { member ->
         RemoveMemberDialog(
             name = member.name,
+            onEvent = viewModel::onEvent,
+        )
+    }
+    state.memberToRelease?.let { member ->
+        ReleaseMemberDialog(
+            name = member.name,
+            isReleasing = state.isReleasing,
             onEvent = viewModel::onEvent,
         )
     }
