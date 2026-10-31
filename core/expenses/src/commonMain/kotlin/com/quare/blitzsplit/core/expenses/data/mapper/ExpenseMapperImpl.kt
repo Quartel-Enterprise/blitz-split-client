@@ -99,14 +99,17 @@ class ExpenseMapperImpl : ExpenseMapper {
         pendingSync = false,
     )
 
-    // Why: a bill created before any account goes up as created by the user the sync runs under.
+    /*
+     * Why: an upsert is checked against the server's insert policy as sent, also for a bill that exists, so it
+     * always goes up as created by whoever pushes; the server keeps who really created it.
+     */
     override fun toDto(
         entity: ExpenseEntity,
         userId: String,
     ): ExpenseDto = ExpenseDto(
         id = entity.id,
         groupId = entity.groupId,
-        createdBy = entity.createdBy ?: userId,
+        createdBy = userId,
         description = entity.description,
         amountMinor = entity.amountMinor,
         splitMode = entity.splitMode,

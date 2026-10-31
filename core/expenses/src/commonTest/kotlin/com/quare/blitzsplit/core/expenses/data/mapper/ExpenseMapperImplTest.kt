@@ -175,7 +175,7 @@ class ExpenseMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a server row WHEN stored and pushed back THEN the server gets the same row saved by who pushes it`() {
+    fun `GIVEN a server row WHEN stored and pushed back THEN the server gets the same row sent by who pushes it`() {
         // Given
         val entity = mapper.toEntity(dto(createdBy = "user-2"))
 
@@ -183,7 +183,7 @@ class ExpenseMapperImplTest {
         val pushed = mapper.toDto(entity, userId = "user-1")
 
         // Then
-        assertEquals(dto(createdBy = "user-2").copy(updatedBy = "user-1"), pushed)
+        assertEquals(dto(createdBy = "user-1").copy(updatedBy = "user-1"), pushed)
     }
 
     @Test
@@ -199,7 +199,7 @@ class ExpenseMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a bill another member created WHEN pushing it THEN keeps its creator`() {
+    fun `GIVEN a bill another member created WHEN pushing it THEN goes up as created by who pushes it`() {
         // Given
         val entity = entity(createdBy = "user-2")
 
@@ -207,7 +207,7 @@ class ExpenseMapperImplTest {
         val pushed = mapper.toDto(entity, userId = "user-1")
 
         // Then
-        assertEquals("user-2", pushed.createdBy)
+        assertEquals("user-1", pushed.createdBy)
     }
 
     @Test
