@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -18,6 +19,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
 fun GroupDetailScreen(
@@ -26,8 +28,8 @@ fun GroupDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val leaveError = stringResource(R.string.group_detail_leave_error)
-    val deleteError = stringResource(R.string.group_detail_delete_error)
+    val leaveError = stringResource(DesignR.string.designsystem_group_exit_leave_error)
+    val deleteError = stringResource(DesignR.string.designsystem_group_exit_delete_error)
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val scope = rememberCoroutineScope()

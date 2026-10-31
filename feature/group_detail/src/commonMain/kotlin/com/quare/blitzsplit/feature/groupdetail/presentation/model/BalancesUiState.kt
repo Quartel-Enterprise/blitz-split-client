@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 
 // Why: "Saldos", the group's tab with who owes whom, each pair once and already netted.

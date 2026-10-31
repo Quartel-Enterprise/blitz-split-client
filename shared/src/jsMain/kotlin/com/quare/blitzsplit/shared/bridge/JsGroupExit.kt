@@ -2,9 +2,9 @@
 
 package com.quare.blitzsplit.shared.bridge
 
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDeletedNotice
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitDialog
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 
 // Why: the dialog of "Sair do grupo" or "Apagar grupo", flat; kind says which and which fields it fills.
 class JsGroupExitDialog(

@@ -2,9 +2,9 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
 class JsGroupFace(

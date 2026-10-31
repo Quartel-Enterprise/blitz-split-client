@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.feature.groupdetail.presentation.model
+package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 

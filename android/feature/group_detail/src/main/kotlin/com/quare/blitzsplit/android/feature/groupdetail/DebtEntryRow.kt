@@ -26,9 +26,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
+import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
+import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 
 private val debtFaceSize = 32.dp
 
@@ -140,18 +141,5 @@ private fun DebtFaceBadge(face: GroupFace?) {
                 size = debtFaceSize,
             )
         }
-    }
-}
-
-// Why: "Você deve a Bruno", "Ana te deve" or "Diego deve a Bruno"; "Ex-membro" for a name gone.
-@Composable
-internal fun debtSentenceOf(debt: DebtRow): String {
-    val formerMember = stringResource(R.string.group_detail_former_member)
-    val from = debt.fromName ?: formerMember
-    val to = debt.toName ?: formerMember
-    return when (debt.kind) {
-        DebtKind.YOU_OWE -> stringResource(R.string.group_detail_balances_you_owe, to)
-        DebtKind.OWES_YOU -> stringResource(R.string.group_detail_balances_owes_you, from)
-        DebtKind.BETWEEN_OTHERS -> stringResource(R.string.group_detail_balances_owes, from, to)
     }
 }

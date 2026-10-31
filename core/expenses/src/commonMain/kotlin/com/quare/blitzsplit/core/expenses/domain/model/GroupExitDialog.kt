@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.feature.groupdetail.presentation.model
+package com.quare.blitzsplit.core.expenses.domain.model
 
 // Why: what "Sair do grupo" and "Apagar grupo" open, from the ⋮ menu or "Todo mundo acertou".
 sealed interface GroupExitDialog {
