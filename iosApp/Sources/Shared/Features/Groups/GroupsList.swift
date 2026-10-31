@@ -4,7 +4,7 @@ import SwiftUI
 
 /// The home's list on iPhone and iPad: the sync status while it asks for attention, "Overall balance", the open
 /// groups by their latest activity and, collapsed, the settled ones. Pulling down syncs. A row opens the group; its
-/// ⋯ menu, the grid and the search come with their own flows.
+/// ⋯ menu and its long press hold the group's actions. The grid and the search come with their own flows.
 struct GroupsList: View {
     let model: GroupsModel
 
@@ -74,12 +74,19 @@ struct GroupsList: View {
     }
 
     private func row(_ group: GroupRow) -> some View {
-        Button {
-            model.send(GroupsUiEventOnGroupClicked(groupId: group.id))
-        } label: {
-            GroupListRow(group: group)
+        let isOnline = model.state.exit.isOnline
+        return HStack(spacing: 0) {
+            Button {
+                model.send(GroupsUiEventOnGroupClicked(groupId: group.id))
+            } label: {
+                GroupListRow(group: group)
+            }
+            .buttonStyle(.plain)
+            GroupRowMenuButton(group: group, isOnline: isOnline, send: { model.send($0) })
         }
-        .buttonStyle(.plain)
+        .contextMenu {
+            GroupRowActions(group: group, isOnline: isOnline, send: { model.send($0) })
+        }
     }
 }
 

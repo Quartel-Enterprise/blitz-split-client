@@ -6,6 +6,8 @@ import SwiftUI
 final class GroupsModel {
     private(set) var state: GroupsUiState
     private(set) var comingSoonCount = 0
+    private(set) var leaveErrorCount = 0
+    private(set) var deleteErrorCount = 0
     private(set) var deletedGroupCount = 0
     /// "Carla deleted the group “Ana's birthday”.", kept while the toast shows.
     private(set) var deletedGroupText: LocalizedStringKey = ""
@@ -27,7 +29,12 @@ final class GroupsModel {
             }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            if action is GroupsUiActionShowComingSoon { self?.comingSoonCount += 1 }
+            switch action {
+            case is GroupsUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is GroupsUiActionShowLeaveError: self?.leaveErrorCount += 1
+            case is GroupsUiActionShowDeleteError: self?.deleteErrorCount += 1
+            default: break
+            }
         })
     }
 
@@ -121,7 +128,10 @@ struct MainTabView: View {
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
         }
         .tabViewStyle(.sidebarAdaptable)
-        .glassToast("Coming soon", trigger: model.comingSoonCount)
+        .glassToast(
+            [GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount)]
+                + GroupExitCopy.errorToasts(leave: model.leaveErrorCount, delete: model.deleteErrorCount, change: 0),
+        )
         // Its own toast, for its longer duration; the two seldom show at once
         .glassToast(
             model.deletedGroupText,
@@ -186,6 +196,13 @@ struct GroupsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
+        // What Leave and Delete open from a row, the same alerts as inside the group (a sheet on the Mac's window)
+        .groupExitDialogs(
+            exit: state.exit,
+            currency: state.exitGroup?.currency,
+            onConfirm: { model.send(GroupsUiEventOnGroupExitConfirmed.shared) },
+            onDismiss: { model.send(GroupsUiEventOnGroupExitDismissed.shared) },
+        )
         .navigationTitle("Groups")
         // Why: on iPhone and iPad the selected Groups tab already names the screen, so the bar shows no title. The
         // title still names the screen in the back stack, and VoiceOver still reads it as the header.

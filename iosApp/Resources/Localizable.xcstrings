@@ -661,6 +661,17 @@
         }
       }
     },
+    "Group link or QR code" : {
+      "comment" : "Under Invite people in a home row's actions",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link ou QR do grupo"
+          }
+        }
+      }
+    },
     "If it was you, talk to %@." : {
       "comment" : "The group's creator, who can sort out a member taken by someone else",
       "localizations" : {
@@ -908,6 +919,17 @@
         }
       }
     },
+    "More actions: %@" : {
+      "comment" : "The ⋯ at the end of a home row, with the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais ações: %@"
+          }
+        }
+      }
+    },
     "More group options" : {
       "comment" : "The group's ⋯ menu",
       "localizations" : {
@@ -1088,6 +1110,17 @@
         }
       }
     },
+    "Only once everyone has settled up" : {
+      "comment" : "Under Delete group in a home row's actions while anybody in the group still owes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só quando todos tiverem acertado"
+          }
+        }
+      }
+    },
     "Open · %lld" : {
       "comment" : "Header of the home's open groups, with how many",
       "localizations" : {
@@ -1159,6 +1192,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ver para quem você deve"
+          }
+        }
+      }
+    },
+    "Settle the %@ first" : {
+      "comment" : "Under Leave group in a home row's actions while this person still owes or is owed that amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerte os %@ antes"
           }
         }
       }
