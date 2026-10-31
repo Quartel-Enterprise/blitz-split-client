@@ -1,9 +1,6 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
 sealed interface MembersUiAction {
-    // Why: the group's balances are not built yet.
-    data object ShowComingSoon : MembersUiAction
-
     data class CopyLink(
         val link: String,
     ) : MembersUiAction

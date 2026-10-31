@@ -18,6 +18,10 @@ enum AppRoute: Hashable, Identifiable {
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case groupDetail(RouteGroupDetail)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
+    case balances(RouteBalances)
+    /// Holds the Kotlin route itself, which its ViewModel reads the group and the pair from.
+    case registerPayment(RouteRegisterPayment)
+    /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case splitBill(RouteSplitBill)
     /// Holds the Kotlin route itself, which its ViewModel reads the group and the bill from.
     case billDetail(RouteBillDetail)
@@ -45,6 +49,8 @@ enum AppRoute: Hashable, Identifiable {
         case let invite as RouteInvite: self = .invite(invite)
         case let members as RouteMembers: self = .members(members)
         case let groupDetail as RouteGroupDetail: self = .groupDetail(groupDetail)
+        case let balances as RouteBalances: self = .balances(balances)
+        case let registerPayment as RouteRegisterPayment: self = .registerPayment(registerPayment)
         case let splitBill as RouteSplitBill: self = .splitBill(splitBill)
         case let billDetail as RouteBillDetail: self = .billDetail(billDetail)
         case let editGroup as RouteEditGroup: self = .editGroup(editGroup)
@@ -63,12 +69,12 @@ enum AppRoute: Hashable, Identifiable {
     var id: Self { self }
 
     /// iPad opens a key and a bill as a form sheet and the Mac as a sheet on its window, as the canvas draws
-    /// them; the iPhone pushes them. Deleting the account, a new group, its invite, editing a group and a new or
-    /// edited bill are sheets everywhere.
+    /// them; the iPhone pushes them. Deleting the account, a new group, its invite, editing a group, a new or
+    /// edited bill and recording a payment are sheets everywhere.
     /// The invite reader is a sheet on the Mac, and covers the whole screen on iPhone and iPad.
     var presentsAsSheet: Bool {
         switch self {
-        case .deleteAccount, .createGroup, .invite, .splitBill, .editGroup:
+        case .deleteAccount, .createGroup, .invite, .splitBill, .editGroup, .registerPayment:
             return true
         case .joinWithLink:
             #if os(macOS)

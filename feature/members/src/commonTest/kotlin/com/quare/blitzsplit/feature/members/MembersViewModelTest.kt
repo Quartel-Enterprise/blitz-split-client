@@ -2,6 +2,22 @@ package com.quare.blitzsplit.feature.members
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
+import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
+import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -25,7 +41,10 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -47,6 +66,11 @@ class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var account: FakeAccountRepository
+    private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
+    private val recordedPayments = InMemoryRecordedPaymentRepository()
+    private val isRoomRead = MutableStateFlow(true)
+    private lateinit var recordSettlement: RecordSettlementUseCase
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: MembersViewModel
     private val actions = mutableListOf<MembersUiAction>()
@@ -64,7 +88,7 @@ class MembersViewModelTest {
     @Test
     fun `GIVEN Room not read yet WHEN the screen opens THEN nothing is loaded`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(isRoomRead = false)
+        prepareScenario(isRoomReadAtStart = false)
 
         // When
         val state = viewModel.uiState.value
@@ -100,6 +124,7 @@ class MembersViewModelTest {
                         isMe = true,
                         hasJoined = true,
                         personalLink = null,
+                        balance = null,
                     ),
                     MembersMember(
                         "member-2",
@@ -109,6 +134,7 @@ class MembersViewModelTest {
                         isMe = false,
                         hasJoined = false,
                         personalLink = null,
+                        balance = null,
                     ),
                     MembersMember(
                         "member-3",
@@ -118,6 +144,7 @@ class MembersViewModelTest {
                         isMe = false,
                         hasJoined = true,
                         personalLink = null,
+                        balance = null,
                     ),
                     MembersMember(
                         "member-4",
@@ -127,6 +154,7 @@ class MembersViewModelTest {
                         isMe = false,
                         hasJoined = false,
                         personalLink = null,
+                        balance = null,
                     ),
                 ),
                 state.members,
@@ -321,7 +349,7 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping the balances tab THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN the screen open WHEN tapping the balances tab THEN Saldos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         val event = MembersUiEvent.OnBalancesTabClicked
@@ -330,7 +358,7 @@ class MembersViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
+        assertEquals(listOf(Route.Groups, Route.Balances("group-1")), navigator.backStack.value)
     }
 
     @Test
@@ -1912,6 +1940,980 @@ class MembersViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a group without bills WHEN the screen opens THEN there is no balance card and nobody is settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.myBalance)
+            assertFalse(state.isEveryoneSettled)
+            assertEquals(listOf<MemberBalance?>(null, null, null, null), state.members.map { it.balance })
+        }
+
+    @Test
+    fun `GIVEN a bill this device user paid with Carla WHEN the screen opens THEN each member shows their balance`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                listOf(
+                    MemberBalance(
+                        receivesMinor = 5_000,
+                        owesMinor = 0,
+                    ),
+                    MemberBalance(
+                        receivesMinor = 0,
+                        owesMinor = 0,
+                    ),
+                    MemberBalance(
+                        receivesMinor = 0,
+                        owesMinor = 0,
+                    ),
+                    MemberBalance(
+                        receivesMinor = 0,
+                        owesMinor = 5_000,
+                    ),
+                ),
+                state.members.map { it.balance },
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 0,
+                ),
+                state.myBalance,
+            )
+            assertFalse(state.isEveryoneSettled)
+        }
+
+    @Test
+    fun `GIVEN this device user owes Ana and is owed by Carla WHEN the screen opens THEN the card holds both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-2",
+                        splitWith = listOf("member-2", "member-1"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                        amountMinor = 6_000,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 3_000,
+                    owesMinor = 5_000,
+                ),
+                state.myBalance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 3_000,
+                    owesMinor = 5_000,
+                ),
+                state.members[0].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill and a payment that settles it WHEN the screen opens THEN everyone is settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    settlement(
+                        "pay-1",
+                        from = "member-4",
+                        to = "member-1",
+                        amountMinor = 5_000,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isEveryoneSettled)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                state.myBalance,
+            )
+            assertTrue(state.members.none { it.hasOpenBalance })
+        }
+
+    @Test
+    fun `GIVEN a group in dollars WHEN the screen opens THEN uses the currency of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.USD))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.USD, state.currency)
+        }
+
+    @Test
+    fun `GIVEN a group without this device user WHEN a bill is in it THEN there is no balance card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre.copy(isMe = false), ana, bruno, carla)),
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.myBalance)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 5_000,
+                ),
+                state.members[3].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open without bills WHEN a sync brings a bill THEN the balances follow`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val bill = expense(
+                "bill-1",
+                paidBy = "member-1",
+                splitWith = listOf("member-1", "member-4"),
+            )
+
+            // When
+            expenses.expenses.value = listOf(bill)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 0,
+                ),
+                state.myBalance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 5_000,
+                ),
+                state.members[3].balance,
+            )
+            assertTrue(state.members[3].hasOpenBalance)
+        }
+
+    @Test
+    fun `GIVEN Carla owes this device user WHEN a sync brings her payment THEN everyone is settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+            )
+            val payment = settlement(
+                "pay-1",
+                from = "member-4",
+                to = "member-1",
+                amountMinor = 5_000,
+            )
+
+            // When
+            settlements.settlements.value = listOf(payment)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isEveryoneSettled)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                state.myBalance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                state.members[3].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla owes this device user WHEN tapping remove on her THEN asks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                expense(
+                    "bill-1",
+                    paidBy = "member-1",
+                    splitWith = listOf("member-1", "member-4"),
+                ),
+            ),
+        )
+        val event = MembersUiEvent.OnRemoveClicked("member-4")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertNull(viewModel.uiState.value.memberToRemove)
+        assertTrue(groups.removedMemberIds.isEmpty())
+        assertTrue(
+            viewModel.uiState.value.members[3]
+                .hasOpenBalance,
+        )
+        assertFalse(
+            viewModel.uiState.value.members[3]
+                .canBeRemoved,
+        )
+    }
+
+    @Test
+    fun `GIVEN this device user owes Carla WHEN tapping remove on her THEN asks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                expense(
+                    "bill-1",
+                    paidBy = "member-4",
+                    splitWith = listOf("member-4", "member-1"),
+                ),
+            ),
+        )
+        val event = MembersUiEvent.OnRemoveClicked("member-4")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertNull(viewModel.uiState.value.memberToRemove)
+        assertTrue(groups.removedMemberIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Carla owes Ana as much as this device user owes her WHEN tapping remove on her THEN asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-4",
+                        splitWith = listOf("member-4", "member-1"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-2",
+                        splitWith = listOf("member-2", "member-4"),
+                    ),
+                ),
+            )
+            val event = MembersUiEvent.OnRemoveClicked("member-4")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRemove)
+            assertTrue(groups.removedMemberIds.isEmpty())
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 5_000,
+                ),
+                viewModel.uiState.value.members[3]
+                    .balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla out of every bill WHEN tapping remove on her THEN asks first`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                expense(
+                    "bill-1",
+                    paidBy = "member-1",
+                    splitWith = listOf("member-1", "member-2"),
+                ),
+            ),
+        )
+        val event = MembersUiEvent.OnRemoveClicked("member-4")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(
+            carlaOnScreen.copy(
+                balance = MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+            ),
+            viewModel.uiState.value.memberToRemove,
+        )
+    }
+
+    @Test
+    fun `GIVEN a payment settled the debt of Carla WHEN removing her THEN she leaves the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    settlement(
+                        "pay-1",
+                        from = "member-4",
+                        to = "member-1",
+                        amountMinor = 5_000,
+                    ),
+                ),
+            )
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveConfirmed)
+
+            // Then
+            assertEquals(listOf("member-4"), groups.removedMemberIds)
+        }
+
+    @Test
+    fun `GIVEN the removal of Carla asked WHEN a sync brings a bill with her THEN closes the question`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+            val bill = expense(
+                "bill-1",
+                paidBy = "member-1",
+                splitWith = listOf("member-1", "member-4"),
+            )
+
+            // When
+            expenses.expenses.value = listOf(bill)
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRemove)
+        }
+
+    @Test
+    fun `GIVEN the removal of Carla asked and a bill with her synced WHEN confirming THEN nothing is removed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+            expenses.expenses.value =
+                listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveConfirmed)
+
+            // Then
+            assertTrue(groups.removedMemberIds.isEmpty())
+            assertEquals(4, viewModel.uiState.value.memberCount)
+        }
+
+    @Test
+    fun `GIVEN the removal of Carla asked WHEN a sync brings a bill without her THEN still asks about Carla`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+            val bill = expense(
+                "bill-1",
+                paidBy = "member-1",
+                splitWith = listOf("member-1", "member-2"),
+            )
+
+            // When
+            expenses.expenses.value = listOf(bill)
+
+            // Then
+            assertEquals(
+                carlaOnScreen.copy(
+                    balance = MemberBalance(
+                        receivesMinor = 0,
+                        owesMinor = 0,
+                    ),
+                ),
+                viewModel.uiState.value.memberToRemove,
+            )
+        }
+
+    @Test
+    fun `GIVEN this device user owes Ana and more to Bruno WHEN tapping Acertar THEN opens the payment to Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-2",
+                        splitWith = listOf("member-2", "member-1"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-3",
+                        splitWith = listOf("member-3", "member-1"),
+                        amountMinor = 16_000,
+                    ),
+                ),
+            )
+            val event = MembersUiEvent.OnSettleClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.Members("group-1", joinedAs = null),
+                    Route.RegisterPayment("group-1", "member-1", "member-3"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the debt to Bruno paid since WHEN tapping Acertar THEN opens the payment to Ana`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-2",
+                        splitWith = listOf("member-2", "member-1"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-3",
+                        splitWith = listOf("member-3", "member-1"),
+                        amountMinor = 16_000,
+                    ),
+                ),
+            )
+            settlements.settlements.value =
+                listOf(
+                    settlement(
+                        "pay-1",
+                        from = "member-1",
+                        to = "member-3",
+                        amountMinor = 8_000,
+                    ),
+                )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnSettleClicked)
+
+            // Then
+            assertEquals(
+                Route.RegisterPayment("group-1", "member-1", "member-2"),
+                navigator.backStack.value.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN this device user is only owed WHEN tapping Acertar THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+            )
+            val event = MembersUiEvent.OnSettleClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group without bills WHEN tapping Acertar THEN the back stack stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = MembersUiEvent.OnSettleClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Members("group-1", joinedAs = null)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group without this device user WHEN tapping Acertar THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(members = listOf(pierre.copy(isMe = false), ana, bruno, carla)),
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-2",
+                        splitWith = listOf("member-2", "member-1"),
+                    ),
+                ),
+            )
+            val event = MembersUiEvent.OnSettleClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping Acertar THEN the back stack stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                expense(
+                    "bill-1",
+                    paidBy = "member-2",
+                    splitWith = listOf("member-2", "member-1"),
+                ),
+            ),
+        )
+        navigator.navigate(Route.Invite("group-1"))
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnSettleClicked)
+
+        // Then
+        assertEquals(
+            listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping the balances tab THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Invite("group-1"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnBalancesTabClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Registrar pagamento over the screen WHEN it closes after recording THEN shows the notice once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.RegisterPayment("group-1", "member-2", "member-1"))
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                PaymentNotice(
+                    settlementId = settlementId,
+                    fromName = "Ana",
+                    fromIsMe = false,
+                    toName = "Pierre",
+                ),
+                viewModel.uiState.value.recordedPayment,
+            )
+            assertNull(recordedPayments.observeRecorded().first())
+        }
+
+    @Test
+    fun `GIVEN this device user paid Bruno WHEN Registrar pagamento closes THEN the notice is from me`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.RegisterPayment("group-1", "member-1", "member-3"))
+            val settlementId = record(
+                from = "member-1",
+                to = "member-3",
+            )
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                PaymentNotice(
+                    settlementId = settlementId,
+                    fromName = "Pierre",
+                    fromIsMe = true,
+                    toName = "Bruno",
+                ),
+                viewModel.uiState.value.recordedPayment,
+            )
+        }
+
+    @Test
+    fun `GIVEN a payment from someone no longer in the group WHEN Registrar pagamento closes THEN no payer name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.RegisterPayment("group-1", "member-9", "member-1"))
+            val settlementId = record(
+                from = "member-9",
+                to = "member-1",
+            )
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                PaymentNotice(
+                    settlementId = settlementId,
+                    fromName = null,
+                    fromIsMe = false,
+                    toName = "Pierre",
+                ),
+                viewModel.uiState.value.recordedPayment,
+            )
+        }
+
+    @Test
+    fun `GIVEN Registrar pagamento still on top WHEN a payment is recorded THEN the notice waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.RegisterPayment("group-1", "member-2", "member-1"))
+
+            // When
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.recordedPayment)
+            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN a payment is recorded THEN the notice waits for the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isRoomReadAtStart = false)
+
+            // When
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.recordedPayment)
+            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+        }
+
+    @Test
+    fun `GIVEN a payment recorded before Room was read WHEN the group loads THEN shows the notice with names`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isRoomReadAtStart = false)
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // When
+            isRoomRead.value = true
+
+            // Then
+            assertEquals(
+                PaymentNotice(
+                    settlementId = settlementId,
+                    fromName = "Ana",
+                    fromIsMe = false,
+                    toName = "Pierre",
+                ),
+                viewModel.uiState.value.recordedPayment,
+            )
+            assertNull(recordedPayments.observeRecorded().first())
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN another group records a payment THEN shows no notice and leaves it waiting`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+                groupId = "group-2",
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.recordedPayment)
+            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+        }
+
+    @Test
+    fun `GIVEN a debt of Ana WHEN a payment is recorded with the screen on top THEN shows the notice and settles it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-2"),
+                    ),
+                ),
+            )
+
+            // When
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(settlementId, state.recordedPayment?.settlementId)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                state.myBalance,
+            )
+            assertTrue(state.isEveryoneSettled)
+        }
+
+    @Test
+    fun `GIVEN the payment notice on screen WHEN it was shown THEN it hides without deleting the payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRecordedPaymentNoticeShown)
+
+            // Then
+            assertNull(viewModel.uiState.value.recordedPayment)
+            assertTrue(settlements.deletedIds.isEmpty())
+            assertEquals(listOf(settlementId), settlements.settlements.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the device fails to delete WHEN tapping Desfazer THEN says so and the payment still counts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-2"),
+                    ),
+                ),
+            )
+            record(
+                from = "member-2",
+                to = "member-1",
+            )
+            settlements.deleteError = IllegalStateException("disk full")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowChangeError), actions)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                viewModel.uiState.value.myBalance,
+            )
+        }
+
+    @Test
+    fun `GIVEN the payment notice on screen WHEN tapping Desfazer THEN deletes that payment and the debt comes back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-2"),
+                    ),
+                ),
+            )
+            val settlementId = record(
+                from = "member-2",
+                to = "member-1",
+            )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf(settlementId), settlements.deletedIds)
+            assertEquals(listOf(1_000L), settlements.deletedAts)
+            assertNull(viewModel.uiState.value.recordedPayment)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 0,
+                ),
+                viewModel.uiState.value.myBalance,
+            )
+        }
+
+    @Test
+    fun `GIVEN no payment notice WHEN tapping Desfazer THEN deletes nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedSettlements = listOf(
+                settlement(
+                    "pay-1",
+                    from = "member-2",
+                    to = "member-1",
+                    amountMinor = 5_000,
+                ),
+            ),
+        )
+        val event = MembersUiEvent.OnUndoPaymentClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(settlements.deletedIds.isEmpty())
+        assertEquals(listOf("pay-1"), settlements.settlements.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN the notice already shown WHEN tapping Desfazer THEN deletes nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val settlementId = record(
+            from = "member-2",
+            to = "member-1",
+        )
+        viewModel.onEvent(MembersUiEvent.OnRecordedPaymentNoticeShown)
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked)
+
+        // Then
+        assertTrue(settlements.deletedIds.isEmpty())
+        assertEquals(listOf(settlementId), settlements.settlements.value.map { it.id })
+    }
+
     private val withGoogle = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val withApple = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
 
@@ -1972,6 +2974,7 @@ class MembersViewModelTest {
         isMe = false,
         hasJoined = false,
         personalLink = null,
+        balance = null,
     )
 
     private val trip = Group(
@@ -1997,14 +3000,71 @@ class MembersViewModelTest {
     private val carlaLink = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=p1Er2e"
     private val carlaWithLink = carlaOnScreen.copy(personalLink = carlaLink)
 
+    // Why: one person paid the whole bill, split evenly between the members in it.
+    private fun expense(
+        id: String,
+        paidBy: String,
+        splitWith: List<String>,
+        amountMinor: Long = 10_000,
+    ): Expense = Expense(
+        id = id,
+        groupId = "group-1",
+        description = "Conta $id",
+        amountMinor = amountMinor,
+        splitMode = SplitMode.EQUAL,
+        payers = listOf(ExpensePayer(paidBy, amountMinor)),
+        shares = splitWith.map { ExpenseShare(it, amountMinor / splitWith.size, weight = 1) },
+        spentAt = 1_000L,
+        isPending = false,
+        updatedAt = 1_000L,
+        updatedByMemberId = null,
+    )
+
+    private fun settlement(
+        id: String,
+        from: String,
+        to: String,
+        amountMinor: Long,
+    ): Settlement = Settlement(
+        id = id,
+        groupId = "group-1",
+        fromMemberId = from,
+        toMemberId = to,
+        amountMinor = amountMinor,
+        method = SettlementMethod.PIX,
+        paidAt = 1_000L,
+        isPending = false,
+    )
+
+    // Why: what Registrar pagamento does on Salvar, so the notice reaches this screen the way it does in the app.
+    private suspend fun record(
+        from: String,
+        to: String,
+        amountMinor: Long = 5_000,
+        groupId: String = "group-1",
+    ): String = recordSettlement(
+        groupId = groupId,
+        fromMemberId = from,
+        toMemberId = to,
+        amountMinor = amountMinor,
+        method = SettlementMethod.PIX,
+        paidAt = 1_000L,
+    ).getOrThrow()
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
-        isRoomRead: Boolean = true,
+        isRoomReadAtStart: Boolean = true,
         memberChangeError: Throwable? = null,
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
+        storedExpenses: List<Expense> = emptyList(),
+        storedSettlements: List<Settlement> = emptyList(),
     ) {
         account = FakeAccountRepository(initialStatus = accountStatus)
+        expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
+        isRoomRead.value = isRoomReadAtStart
+        recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { 1_000L }
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.memberChangeError = memberChangeError
         }
@@ -2013,7 +3073,6 @@ class MembersViewModelTest {
                 startRoute = Route.Groups,
             ).also { it.navigate(Route.Members("group-1", joinedAs)) }
         val observeGroup = ObserveGroupUseCase(groups)
-        val roomNeverAnswers = MutableSharedFlow<Group?>()
         viewModel = MembersViewModel(
             route = Route.Members("group-1", joinedAs),
             navigator = navigator,
@@ -2021,7 +3080,13 @@ class MembersViewModelTest {
             addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
             renameMember = RenameMemberUseCase(groups) { 1_000L },
             removeMember = RemoveMemberUseCase(groups) { 1_000L },
-            observeGroup = if (isRoomRead) observeGroup else ObserveGroup { roomNeverAnswers },
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
+            observeGroup = ObserveGroup { groupId ->
+                isRoomRead.flatMapLatest { isRead -> if (isRead) observeGroup(groupId) else emptyFlow() }
+            },
+            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
+            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             observeAccount = ObserveAccountUseCase(account),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

@@ -3,6 +3,12 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
@@ -15,6 +21,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
@@ -32,7 +39,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,18 +53,26 @@ class MembersViewModel(
     private val addMember: AddMember,
     private val renameMember: RenameMember,
     private val removeMember: RemoveMember,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     observeGroup: ObserveGroup,
+    observeGroupBalances: ObserveGroupBalances,
+    observeRecordedPayment: ObserveRecordedPayment,
     observeAccount: ObserveAccount,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
             MembersUiState(
                 groupName = "",
+                currency = GroupCurrency.BRL,
                 displayLink = null,
                 members = emptyList(),
                 editor = null,
                 memberToRemove = null,
                 personalInvite = null,
+                myBalance = null,
+                isEveryoneSettled = false,
+                recordedPayment = null,
                 isLoaded = false,
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
@@ -73,13 +90,36 @@ class MembersViewModel(
 
     private var copiedReset: Job? = null
 
-    // Why: a sync may bring other members' changes while the screen is open, a removal of the whole group included.
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
+    private var group: Group? = null
+    private var balances = GroupBalances(
+        debts = emptyList(),
+        hasBills = false,
+    )
+
+    /*
+     * Why: a sync may bring other members' changes, bills and payments while the screen is open, a removal of the
+     * whole group included.
+     */
     init {
-        observeGroup(route.groupId)
-            .onEach { group ->
+        combine(observeGroup(route.groupId), observeGroupBalances(route.groupId), ::Pair)
+            .onEach { (group, balances) ->
+                this.group = group
+                this.balances = balances
                 isGroupGone = group == null
                 if (group == null) leave() else show(group)
             }.launchIn(viewModelScope)
+        notices.watch(
+            scope = viewModelScope,
+            recorded = observeRecordedPayment(route.groupId),
+            backStack = navigator.backStack,
+            isLoaded = uiState.map { it.isLoaded },
+            isOnTop = ::isOnTop,
+            meId = { group?.members?.firstOrNull { it.isMe }?.id },
+            nameOf = { id -> group?.members?.firstOrNull { it.id == id }?.name },
+            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+        )
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
@@ -102,7 +142,10 @@ class MembersViewModel(
                 tab = Route.GroupDetail(route.groupId),
             )
 
-            MembersUiEvent.OnBalancesTabClicked -> send(MembersUiAction.ShowComingSoon)
+            MembersUiEvent.OnBalancesTabClicked -> navigator.openGroupTab(
+                from = route,
+                tab = Route.Balances(route.groupId),
+            )
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,
@@ -133,6 +176,12 @@ class MembersViewModel(
 
             MembersUiEvent.OnEditorDismissed -> uiState.update { it.copy(editor = null) }
 
+            MembersUiEvent.OnSettleClicked -> openSettle()
+
+            MembersUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
+
+            MembersUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
+
             MembersUiEvent.OnProtectAccessClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
         }
     }
@@ -140,9 +189,13 @@ class MembersViewModel(
     private fun show(group: Group) {
         val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
         val members = group.members.map { toMembersMember(it, group.inviteCode, inviterCode) }
+        val meId = group.members.firstOrNull { it.isMe }?.id
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
+                currency = group.currency,
+                myBalance = balances.balanceOrNull(meId),
+                isEveryoneSettled = balances.isEveryoneSettled,
                 displayLink = group.inviteCode?.let(InviteLink::of)?.let(InviteLink::displayOf),
                 members = members,
                 // Why: the member about to be removed may be gone, or have joined, by now.
@@ -187,7 +240,21 @@ class MembersViewModel(
                 )
             }
         },
+        balance = balances.balanceOrNull(member.id),
     )
+
+    // Why: "Acertar" on the balance card: this person pays whoever they owe the most.
+    private fun openSettle() {
+        val meId = group?.members?.firstOrNull { it.isMe }?.id ?: return
+        val creditorId = balances.findLargestCreditorOrNull(meId) ?: return
+        if (isOnTop()) navigator.navigate(Route.RegisterPayment(route.groupId, meId, creditorId))
+    }
+
+    private fun undoRecordedPayment() {
+        val notice = uiState.value.recordedPayment ?: return
+        uiState.update { it.copy(recordedPayment = null) }
+        notices.delete(viewModelScope, notice.settlementId) { uiAction.emit(MembersUiAction.ShowChangeError) }
+    }
 
     private fun personalInviteOf(
         member: MembersMember,

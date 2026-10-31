@@ -31,7 +31,7 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | --- | --- | --- |
 | `navigate(route)` | Pushes `route` | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
 | `navigateBack()` | Pops the top entry, never the last one | `OnBackClicked -> navigator.navigateBack()` |
-| `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo", and the group's tabs (Despesas, Membros), go through `openGroupTab`, which treats the two tabs as one group screen: it goes back to the tab asked for when it is right below, puts it in the other tab's place, or replaces the top |
+| `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo", and the group's tabs (Despesas, Saldos, Membros), go through `openGroupTab`, which treats the three tabs as one group screen: it goes back to the tab asked for when it is right below, puts it in the other tab's place, or replaces the top |
 | `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Groups)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
 
@@ -141,7 +141,10 @@ The tabs Saldos, Contatos and Atividade are drawn on every platform but not buil
 ### Adding a route
 
 1. Add a `data object` (or `data class`) to `Route`.
-2. Android: an `entry<Route.X> { XScreen() }` in `AppNavDisplay`.
+2. Android: an `entry<Route.X> { XScreen() }` in `AppNavDisplay`. A route drawn over the screen below it passes
+   metadata: `DialogSceneStrategy.dialog(...)` for a dialog (Conta and Registrar pagamento on a tablet), or
+   `BottomSheetSceneStrategy.bottomSheet` for a modal bottom sheet (Registrar pagamento on a phone), whose dismissal
+   pops the back stack.
 3. Apple: a case in `AppRoute`, its mapping in `AppRoute.init` (an unknown route falls back to `.welcome`, so a
    missing case fails silently) and in `RootView.screen(for:)`. A route pushed over the groups also needs its case
    in `MainTabView`'s `navigationDestination`, whose `default` is the profile.

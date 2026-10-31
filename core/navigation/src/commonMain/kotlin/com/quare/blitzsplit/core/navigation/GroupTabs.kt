@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.core.navigation
 
 /*
- * Why: Despesas and Membros are tabs of one group screen. Opening one from the other, or from a screen over either
+ * Why: Despesas, Saldos and Membros are tabs of one group screen. Opening one from the other, or from a screen over either
  * ("Convidar"), lands on the tab in that screen's place, so the group never stacks over itself and back goes to
  * whatever was under it. Only while from is still on top: a native back may have closed it.
  */
@@ -28,6 +28,7 @@ fun Navigator.openGroupTab(
 
 private fun tabGroupIdOrNull(route: Route): String? = when (route) {
     is Route.GroupDetail -> route.groupId
+    is Route.Balances -> route.groupId
     is Route.Members -> route.groupId
     else -> null
 }

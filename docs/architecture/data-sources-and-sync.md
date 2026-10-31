@@ -25,10 +25,11 @@ changes included. Once a schema has shipped, change it with a migration instead.
 - DAOs expose `Flow<T>` for what the UI observes and `suspend` functions for one-shot reads and writes.
 - The single-row tables (`profile`, `account`) are keyed by `SINGLE_ROW_ID` (`"me"`): the row exists before the
   server knows the user, so it can't be keyed by the user id.
-- The list tables (`payment_key`, `split_group`, `group_member`, `expense`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
+- The list tables (`payment_key`, `split_group`, `group_member`, `expense`, `settlement`) are keyed by an id the device makes (`Uuid.random()`), so a row created offline
   keeps its id on the server.
 - A local data source wraps each DAO (`RoomProfileLocalDataSource`, `RoomAccountLocalDataSource`,
-  `RoomPaymentKeyLocalDataSource`, `RoomGroupLocalDataSource`, `RoomExpenseLocalDataSource`); the repository maps entities to domain models.
+  `RoomPaymentKeyLocalDataSource`, `RoomGroupLocalDataSource`, `RoomExpenseLocalDataSource`,
+  `RoomSettlementLocalDataSource`); the repository maps entities to domain models.
 
 ### Supabase: the remote
 
@@ -43,6 +44,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
+| `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
@@ -102,6 +104,8 @@ suspend fun syncNow(): Result<Unit> {
                     // A bill needs its group and members on both sides first
                     expenseRepository.downloadExpenses(userId).getOrThrow()
                     expenseRepository.uploadPendingExpenses(userId).getOrThrow()
+                    settlementRepository.downloadSettlements(userId).getOrThrow()
+                    settlementRepository.uploadPendingSettlements(userId).getOrThrow()
                 }
                 offerRecoveryCodeIfDue()
                 signOutIfScheduledAndSynced()
@@ -195,6 +199,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   `auth.uid()` and never bump `updated_at`). Room clears `updatedBy` on any local write, since the edit is nobody
   else's until it syncs, and `markSynced` sets it to whoever pushed; `ExpenseWithEditor` resolves it to the
   member's name for the "someone changed this bill" banner.
+- **Payments** (`:core:expenses`): a payment recorded in "Registrar pagamento" (`settlement`) is one
+  Last-Write-Wins row naming two members, like a bill's payers, and belongs to its group with the same
+  `ON DELETE CASCADE`. It syncs right after the bills, down then up, with the same paging and
+  `deleteGoneFromServer`. It is never edited: undoing it is a tombstone (`isDeleted`, `updatedAt` stamped with
+  `MAX(now, updatedAt + 1)`), and the server's trigger keeps a deleted payment deleted whatever another device
+  pushes. The server checks an upsert against its insert policy with the row as sent, where `created_by` must be the
+  user pushing, so the client always sends itself as `created_by` and the trigger keeps who recorded it. Balances
+  (`GroupBalances`) are worked out on the device from the bills and payments in Room, never stored.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 

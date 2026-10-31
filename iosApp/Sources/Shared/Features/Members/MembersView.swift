@@ -5,7 +5,6 @@ import SwiftUI
 @Observable
 final class MembersModel {
     private(set) var state: MembersUiState
-    private(set) var comingSoonCount = 0
     private(set) var changeErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<MembersViewModel>
@@ -20,7 +19,6 @@ final class MembersModel {
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
-            case is MembersUiActionShowComingSoon: self?.comingSoonCount += 1
             case is MembersUiActionShowChangeError: self?.changeErrorCount += 1
             case let copy as MembersUiActionCopyLink: Pasteboard.copy(copy.link)
             // The personal invite's ShareLink shares the link itself: a share sheet can't be opened from code.
@@ -39,7 +37,7 @@ final class MembersModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// Members is this screen: Expenses takes its place and Balances answers "Coming soon".
+    /// Members is this screen: Expenses and Balances take its place.
     func select(_ tab: GroupTab) {
         switch tab {
         case .expenses: send(MembersUiEventOnExpensesTabClicked.shared)
@@ -55,7 +53,8 @@ final class MembersModel {
 
 /// "Members": who is in the group and who joined, the group's tab next to Expenses, with the same tabs on top (in
 /// the toolbar on the Mac). A tap on a person opens their options: rename, a personal invite, which joins straight
-/// in as someone nobody joined as yet, and removal, which only someone who hasn't joined allows.
+/// in as someone nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing
+/// allows. "Your balance in this group" heads the list and each person shows theirs.
 struct MembersView: View {
     let route: RouteMembers
 
@@ -113,11 +112,13 @@ struct MembersView: View {
         } message: { member in
             Text("\(member.name) hasn't joined yet. You can add them again later.")
         }
-        // The counts only grow on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
-        .glassToast([
-            GlassToastMessage(text: "Coming soon", trigger: model?.comingSoonCount ?? 0),
-            GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0),
-        ])
+        // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
+        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
+        .recordedPaymentNotice(
+            model?.state.recordedPayment,
+            onUndo: { model?.send(MembersUiEventOnUndoPaymentClicked.shared) },
+            onShown: { model?.send(MembersUiEventOnRecordedPaymentNoticeShown.shared) },
+        )
         .onAppear {
             if model == nil { model = MembersModel(route: route) }
         }
@@ -175,6 +176,19 @@ private struct MembersList: View {
 
     var body: some View {
         List {
+            if let balance = state.myBalance {
+                Section {
+                    BalanceCard(
+                        balance: balance,
+                        currency: state.currency,
+                        isEveryoneSettled: state.isEveryoneSettled,
+                    ) {
+                        model.send(MembersUiEventOnSettleClicked.shared)
+                    }
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+            }
             #if os(iOS)
             Section {
                 GroupTabsPicker(selected: .members) { model.select($0) }
@@ -213,7 +227,7 @@ private struct MembersList: View {
             }
             Section("People") {
                 ForEach(state.members, id: \.id) { member in
-                    MemberRow(member: member) { model.send($0) }
+                    MemberRow(member: member, currency: state.currency) { model.send($0) }
                 }
             }
         }
@@ -272,6 +286,7 @@ private struct JoinedSection: View {
 
 private struct MemberRow: View {
     let member: MembersMember
+    let currency: GroupCurrency
     let send: (any MembersUiEvent) -> Void
 
     var body: some View {
@@ -299,8 +314,11 @@ private struct MemberRow: View {
                 } label: {
                     Label {
                         Text("Remove from group")
+                        // Why it is disabled
                         if member.hasJoined {
                             Text("\(member.name) already joined the group")
+                        } else if member.hasOpenBalance {
+                            Text("\(member.name) has an open balance")
                         }
                     } icon: {
                         Image(systemName: "trash")
@@ -330,6 +348,10 @@ private struct MemberRow: View {
                     .foregroundStyle(.secondary)
                 }
                 Spacer()
+                if let balance = member.balance {
+                    MemberBalanceText(balance: balance, currency: currency)
+                        .font(.footnote.weight(.semibold))
+                }
                 if member.hasJoined {
                     Image(systemName: "checkmark")
                         .font(.footnote.weight(.semibold))
@@ -343,6 +365,33 @@ private struct MemberRow: View {
         .menuIndicator(.hidden)
         .buttonStyle(.plain)
         .accessibilityLabel(Text("Options for \(member.name)"))
+    }
+}
+
+/// "+$223.50 to get back" in the accent, "−$118.00 owes" in the negative color, "$0.00" when what they get back and
+/// owe cancel out, or a muted "Settled up".
+private struct MemberBalanceText: View {
+    let balance: MemberBalance
+    let currency: GroupCurrency
+
+    var body: some View {
+        let amount = currency.formatSigned(balance.netMinor)
+        if balance.isSettled {
+            Text("Settled up")
+                .foregroundStyle(.secondary)
+        } else if balance.netMinor > 0 {
+            Text("\(amount) to get back")
+                .monospacedDigit()
+                .foregroundStyle(Palette.accent)
+        } else if balance.netMinor < 0 {
+            Text("\(amount) owes")
+                .monospacedDigit()
+                .foregroundStyle(Palette.negative)
+        } else {
+            Text(verbatim: amount)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+        }
     }
 }
 

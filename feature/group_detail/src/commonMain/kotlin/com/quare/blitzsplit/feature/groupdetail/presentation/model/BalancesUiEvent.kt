@@ -1,0 +1,43 @@
+package com.quare.blitzsplit.feature.groupdetail.presentation.model
+
+import com.quare.blitzsplit.core.presentation.UiEvent
+
+sealed interface BalancesUiEvent : UiEvent {
+    data object OnBackClicked : BalancesUiEvent
+
+    // Why: "Rachar conta", the same as on Despesas.
+    data object OnSplitBillClicked : BalancesUiEvent
+
+    // Why: "Convidar pessoas" in the top bar.
+    data object OnInviteClicked : BalancesUiEvent
+
+    // Why: the "Despesas" tab.
+    data object OnExpensesTabClicked : BalancesUiEvent
+
+    // Why: the "Membros" tab and the faces under the name.
+    data object OnMembersClicked : BalancesUiEvent
+
+    // Why: "Editar grupo" in the ⋮ menu.
+    data object OnEditGroupClicked : BalancesUiEvent
+
+    // Why: "Sair do grupo" in the ⋮ menu, which isn't built yet.
+    data object OnLeaveGroupClicked : BalancesUiEvent
+
+    // Why: "Apagar grupo" in the ⋮ menu and on "Todo mundo acertou", which isn't built yet.
+    data object OnDeleteGroupClicked : BalancesUiEvent
+
+    // Why: "Acertar" on the balance card, which opens Registrar pagamento with whoever this person owes the most.
+    data object OnSettleClicked : BalancesUiEvent
+
+    // Why: "Acertar", "Recebi" or "Já pagou" on a pair, which opens Registrar pagamento for it.
+    data class OnDebtClicked(
+        val fromMemberId: String,
+        val toMemberId: String,
+    ) : BalancesUiEvent
+
+    // Why: "Desfazer" on "Pagamento de Ana registrado.".
+    data object OnUndoPaymentClicked : BalancesUiEvent
+
+    // Why: the notice went away without Desfazer.
+    data object OnRecordedPaymentNoticeShown : BalancesUiEvent
+}

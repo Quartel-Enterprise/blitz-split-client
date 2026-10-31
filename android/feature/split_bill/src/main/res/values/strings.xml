@@ -5,7 +5,6 @@
     <string name="split_bill_save">Save</string>
     <string name="split_bill_cancel">Cancel</string>
     <string name="split_bill_done">Done</string>
-    <string name="split_bill_next">Next</string>
     <string name="split_bill_back">Back</string>
     <string name="split_bill_amount">Amount</string>
     <string name="split_bill_description">Description</string>
@@ -17,9 +16,6 @@
     <string name="split_bill_payer">Who paid</string>
     <string name="split_bill_you">You</string>
     <string name="split_bill_when">When</string>
-    <string name="split_bill_when_today">Today, %1$s · %2$s</string>
-    <string name="split_bill_when_yesterday">Yesterday, %1$s · %2$s</string>
-    <string name="split_bill_when_other">%1$s · %2$s</string>
     <string name="split_bill_split">Split</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">Equally among %d</item>

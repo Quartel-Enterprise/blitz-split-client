@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="register_payment_title_received">Did %s pay you?</string>
+    <string name="register_payment_title_paid">Did you pay %s?</string>
+    <string name="register_payment_title_between">Did %1$s pay %2$s?</string>
+    <string name="register_payment_debt_received">%1$s owes you %2$s</string>
+    <string name="register_payment_debt_paid">You owe %1$s %2$s</string>
+    <string name="register_payment_debt_between">%1$s owes %2$s %3$s</string>
+    <string name="register_payment_over_debt">%s. Use up to that amount.</string>
+    <string name="register_payment_remaining_received">%1$s will still owe you %2$s</string>
+    <string name="register_payment_remaining_paid">You\'ll still owe %1$s %2$s</string>
+    <string name="register_payment_remaining_between">%1$s will still owe %2$s %3$s</string>
+    <string name="register_payment_amount">Amount paid</string>
+    <string name="register_payment_full_debt">The whole debt</string>
+    <string name="register_payment_method">How it was paid</string>
+    <string name="register_payment_info">It becomes a payment in the group: it shows in Expenses and can be undone.</string>
+    <string name="register_payment_for_others">You\'re recording this for %1$s and %2$s.</string>
+    <string name="register_payment_offline_title">No internet:</string>
+    <string name="register_payment_offline_message">it\'s saved on this device and syncs when you reconnect.</string>
+    <string name="register_payment_confirm_received">Confirm received</string>
+    <string name="register_payment_confirm_paid">Confirm payment</string>
+    <string name="register_payment_confirm_between">Record payment</string>
+    <string name="register_payment_cancel">Cancel</string>
+    <string name="register_payment_close">Close</string>
+    <string name="register_payment_save_error">Couldn\'t record the payment. Try again.</string>
+    <string name="register_payment_former_member">Former member</string>
+</resources>

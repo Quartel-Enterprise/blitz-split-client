@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -35,10 +37,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 
-private const val META_SEPARATOR = " · "
+internal const val META_SEPARATOR = " · "
 
-// Why: each day under "Hoje", "Ontem" or its date, its bills read as one card.
+// Why: each day under "Hoje", "Ontem" or its date, its bills and payments read as one card.
 internal fun LazyListScope.expenseDayItems(
     days: List<ExpenseDay>,
     money: MoneyFormatter,
@@ -65,24 +68,37 @@ internal fun LazyListScope.expenseDayItems(
             )
         }
         itemsIndexed(
-            items = day.expenses,
-            key = { _, expense -> expense.id },
-        ) { index, expense ->
-            ExpenseEntryRow(
-                expense = expense,
-                shape = groupedRowShapeOf(
-                    index = index,
-                    count = day.expenses.size,
-                ),
-                money = money,
-                dates = dates,
-                onEvent = onEvent,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 2.dp,
-                ),
+            items = day.entries,
+            key = { _, entry -> entry.id },
+        ) { index, entry ->
+            val shape = groupedRowShapeOf(
+                index = index,
+                count = day.entries.size,
             )
+            val rowModifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 2.dp,
+            )
+            when (entry) {
+                is ExpenseRow -> ExpenseEntryRow(
+                    expense = entry,
+                    shape = shape,
+                    money = money,
+                    dates = dates,
+                    onEvent = onEvent,
+                    modifier = rowModifier,
+                )
+
+                is PaymentRow -> PaymentEntryRow(
+                    payment = entry,
+                    shape = shape,
+                    money = money,
+                    dates = dates,
+                    onEvent = onEvent,
+                    modifier = rowModifier,
+                )
+            }
         }
     }
 }
@@ -96,8 +112,52 @@ private fun ExpenseEntryRow(
     onEvent: (GroupDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
+    EntryFrameRow(
+        icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+        title = expense.description,
+        shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnExpenseClicked(expense.id)) },
+        modifier = modifier,
+        meta = {
+            ExpenseMetaLine(
+                expense = expense,
+                dates = dates,
+            )
+        },
+    ) {
+        Text(
+            text = money.toText(expense.totalMinor),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
+        expense.myBalanceMinor?.let { balance ->
+            Text(
+                text = money.toSignedText(balance),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = when {
+                    balance > 0 -> MaterialTheme.colorScheme.primary
+                    balance < 0 -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                },
+            )
+        }
+    }
+}
+
+// Why: a bill and a payment share the line: the icon, what it was, the meta under it and the amounts at the end.
+@Composable
+internal fun EntryFrameRow(
+    icon: ImageVector,
+    title: String,
+    shape: Shape,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    meta: @Composable () -> Unit,
+    trailing: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -110,56 +170,25 @@ private fun ExpenseEntryRow(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(14.dp)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ReceiptLong,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            EntryIconTile(icon)
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
-                    text = expense.description,
+                    text = title,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                ExpenseMetaLine(
-                    expense = expense,
-                    dates = dates,
-                )
+                meta()
             }
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    text = money.toText(expense.totalMinor),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                expense.myBalanceMinor?.let { balance ->
-                    Text(
-                        text = money.toSignedText(balance),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = when {
-                            balance > 0 -> MaterialTheme.colorScheme.primary
-                            balance < 0 -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    )
-                }
-            }
+                content = trailing,
+            )
         }
     }
 }
@@ -170,20 +199,53 @@ private fun ExpenseMetaLine(
     expense: ExpenseRow,
     dates: DateTimeTextFormatter,
 ) {
-    val parts = listOfNotNull(
-        dates.toTimeText(expense.spentAt),
-        stringResource(R.string.group_detail_queued).takeIf { expense.isPending },
-        when {
-            expense.payerIsMe -> stringResource(R.string.group_detail_you_paid)
-            expense.payerName != null -> stringResource(R.string.group_detail_someone_paid, expense.payerName.orEmpty())
-            else -> null
-        },
+    EntryMetaLine(
+        isPending = expense.isPending,
+        parts = listOfNotNull(
+            dates.toTimeText(expense.spentAt),
+            stringResource(R.string.group_detail_queued).takeIf { expense.isPending },
+            when {
+                expense.payerIsMe -> stringResource(R.string.group_detail_you_paid)
+
+                expense.payerName != null -> stringResource(
+                    R.string.group_detail_someone_paid,
+                    expense.payerName.orEmpty(),
+                )
+
+                else -> null
+            },
+        ),
     )
+}
+
+// Why: a bill's or a payment's icon, in the same tile.
+@Composable
+private fun EntryIconTile(icon: ImageVector) {
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(14.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+// Why: the meta line of a bill or a payment, with the home's pending dot while it waits for the server.
+@Composable
+internal fun EntryMetaLine(
+    isPending: Boolean,
+    parts: List<String>,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (expense.isPending) {
+        if (isPending) {
             Box(
                 modifier = Modifier
                     .size(8.dp)

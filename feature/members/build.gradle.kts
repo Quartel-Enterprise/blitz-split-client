@@ -8,6 +8,7 @@ kotlin {
             api(projects.core.presentation)
             api(projects.core.model)
             api(projects.core.navigation)
+            api(projects.core.expenses)
             implementation(projects.core.groups)
             implementation(projects.core.account)
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -19,6 +20,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.groups.testing)
             implementation(projects.core.account.testing)
+            implementation(projects.core.expenses.testing)
         }
     }
 }

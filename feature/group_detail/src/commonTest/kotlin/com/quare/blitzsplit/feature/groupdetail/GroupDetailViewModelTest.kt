@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -8,9 +9,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -56,6 +62,8 @@ class GroupDetailViewModelTest {
     private lateinit var viewModel: GroupDetailViewModel
     private val actions = mutableListOf<GroupDetailUiAction>()
     private val deletedBills = InMemoryDeletedBillRepository()
+    private val recordedPayments = InMemoryRecordedPaymentRepository()
+    private lateinit var settlements: FakeSettlementRepository
 
     @BeforeTest
     fun setUp() {
@@ -92,10 +100,10 @@ class GroupDetailViewModelTest {
 
             // Then
             assertTrue(state.isLoaded)
-            assertEquals("Viagem de Floripa", state.groupName)
-            assertEquals("VF", state.groupInitials)
-            assertEquals(AvatarColor.LILAC, state.groupColor)
-            assertEquals(GroupCurrency.USD, state.currency)
+            assertEquals("Viagem de Floripa", state.header.groupName)
+            assertEquals("VF", state.header.groupInitials)
+            assertEquals(AvatarColor.LILAC, state.header.groupColor)
+            assertEquals(GroupCurrency.USD, state.header.currency)
         }
 
     @Test
@@ -108,8 +116,8 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(4, state.memberCount)
-            assertEquals(2, state.notJoinedCount)
+            assertEquals(4, state.header.memberCount)
+            assertEquals(2, state.header.notJoinedCount)
         }
 
     @Test
@@ -129,9 +137,9 @@ class GroupDetailViewModelTest {
                     GroupFace("B", AvatarColor.GREEN),
                     GroupFace("C", AvatarColor.LILAC),
                 ),
-                state.faces,
+                state.header.faces,
             )
-            assertEquals(0, state.extraMemberCount)
+            assertEquals(0, state.header.extraMemberCount)
         }
 
     @Test
@@ -144,10 +152,10 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf("A", "P", "B", "C"), state.faces.map { it.initials })
-            assertEquals(2, state.extraMemberCount)
-            assertEquals(6, state.memberCount)
-            assertEquals(4, state.notJoinedCount)
+            assertEquals(listOf("A", "P", "B", "C"), state.header.faces.map { it.initials })
+            assertEquals(2, state.header.extraMemberCount)
+            assertEquals(6, state.header.memberCount)
+            assertEquals(4, state.header.notJoinedCount)
         }
 
     @Test
@@ -161,7 +169,7 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf(GroupFace("E", AvatarColor.SAND)), state.faces)
+            assertEquals(listOf(GroupFace("E", AvatarColor.SAND)), state.header.faces)
         }
 
     @Test
@@ -178,7 +186,7 @@ class GroupDetailViewModelTest {
             assertTrue(state.isEmpty)
             assertFalse(state.showsSplitBillButton)
             assertTrue(state.days.isEmpty())
-            assertEquals(0L, state.totalSpentMinor)
+            assertEquals(0L, state.header.totalSpentMinor)
         }
 
     @Test
@@ -224,8 +232,8 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(76_545L, state.totalSpentMinor)
-            assertEquals(listOf("expense-1", "expense-2"), state.days.flatMap { day -> day.expenses.map { it.id } })
+            assertEquals(76_545L, state.header.totalSpentMinor)
+            assertEquals(listOf("expense-1", "expense-2"), state.days.flatMap { day -> day.entries.map { it.id } })
         }
 
     @Test
@@ -331,7 +339,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -374,7 +383,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -403,7 +413,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -430,7 +441,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -461,7 +473,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -489,7 +502,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -517,7 +531,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -546,7 +561,8 @@ class GroupDetailViewModelTest {
             // When
             val row = viewModel.uiState.value.days
                 .single()
-                .expenses
+                .entries
+                .filterIsInstance<ExpenseRow>()
                 .single()
 
             // Then
@@ -579,7 +595,7 @@ class GroupDetailViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(listOf("lunch", "breakfast"), state.days.single().ids())
-            assertEquals(8_000L, state.totalSpentMinor)
+            assertEquals(8_000L, state.header.totalSpentMinor)
             assertTrue(state.showsSplitBillButton)
         }
 
@@ -613,11 +629,11 @@ class GroupDetailViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals("Praia do Rosa", state.groupName)
-            assertEquals("PR", state.groupInitials)
-            assertEquals(5, state.memberCount)
-            assertEquals(3, state.notJoinedCount)
-            assertEquals(1, state.extraMemberCount)
+            assertEquals("Praia do Rosa", state.header.groupName)
+            assertEquals("PR", state.header.groupInitials)
+            assertEquals(5, state.header.memberCount)
+            assertEquals(3, state.header.notJoinedCount)
+            assertEquals(1, state.header.extraMemberCount)
         }
 
     @Test
@@ -818,7 +834,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping the balances tab THEN says coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN the screen open WHEN tapping the balances tab THEN Saldos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         val event = GroupDetailUiEvent.OnBalancesTabClicked
@@ -827,8 +843,7 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -947,7 +962,7 @@ class GroupDetailViewModelTest {
         assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
     }
 
-    private fun ExpenseDay.ids(): List<String> = expenses.map { it.id }
+    private fun ExpenseDay.ids(): List<String> = entries.map { it.id }
 
     private val route = Route.GroupDetail(GROUP_ID)
 
@@ -1045,6 +1060,7 @@ class GroupDetailViewModelTest {
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        settlements = FakeSettlementRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expensesNeverAnswer = MutableSharedFlow<List<Expense>>()
@@ -1054,13 +1070,17 @@ class GroupDetailViewModelTest {
             currentTimeMillis = { nowMillis },
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { nowMillis },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeExpenses = if (isRoomRead) {
                 ObserveExpensesUseCase(expenses)
             } else {
                 ObserveExpenses { expensesNeverAnswer }
             },
+            observeSettlements = ObserveSettlementsUseCase(settlements),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

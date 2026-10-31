@@ -52,6 +52,21 @@ class GroupTabsTest {
     }
 
     @Test
+    fun `GIVEN Convidar over Saldos WHEN opening Membros THEN puts Membros in place of the group`() {
+        // Given
+        prepareScenario(Route.Groups, Route.Balances(GROUP_ID), Route.Invite(GROUP_ID))
+
+        // When
+        navigator.openGroupTab(
+            from = Route.Invite(GROUP_ID),
+            tab = Route.Members(GROUP_ID, joinedAs = null),
+        )
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN Convidar over Membros just joined WHEN opening Membros THEN goes back to it`() {
         // Given
         prepareScenario(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno"), Route.Invite(GROUP_ID))

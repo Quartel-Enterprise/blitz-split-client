@@ -6,7 +6,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
 import { cn } from '@/lib/utils'
-import type { PaneParts } from './SplitBillDialog'
+import type { PaneParts } from '@/components/ResponsiveDialog'
 import { personName, splitStatus, type Money } from './splitText'
 
 // Why: Itens isn't built yet, so the four modes of the shared SplitMode.

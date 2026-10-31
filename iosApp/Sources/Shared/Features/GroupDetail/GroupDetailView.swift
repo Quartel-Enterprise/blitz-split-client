@@ -6,6 +6,7 @@ import SwiftUI
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
     private(set) var comingSoonCount = 0
+    private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
@@ -23,9 +24,16 @@ final class GroupDetailModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is GroupDetailUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
         })
+    }
+
+    /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: "Delete" has
+    /// already closed the confirmation by the time the alert reports itself closed.
+    var current: GroupDetailUiState {
+        (holder.viewModel.uiState.value as? GroupDetailUiState) ?? state
     }
 
     private func showBillDeleted() {
@@ -37,7 +45,7 @@ final class GroupDetailModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// Expenses is this screen: Balances answers "Coming soon" and Members takes its place.
+    /// Expenses is this screen: Balances and Members take its place.
     func select(_ tab: GroupTab) {
         switch tab {
         case .balances: send(GroupDetailUiEventOnBalancesTabClicked.shared)
@@ -46,15 +54,39 @@ final class GroupDetailModel {
         }
     }
 
+    var actions: GroupScreenActions {
+        GroupScreenActions(
+            select: { [weak self] in self?.select($0) },
+            invite: { [weak self] in self?.send(GroupDetailUiEventOnInviteClicked.shared) },
+            members: { [weak self] in self?.send(GroupDetailUiEventOnMembersClicked.shared) },
+            editGroup: { [weak self] in self?.send(GroupDetailUiEventOnEditGroupClicked.shared) },
+            leaveGroup: { [weak self] in self?.send(GroupDetailUiEventOnLeaveGroupClicked.shared) },
+            deleteGroup: { [weak self] in self?.send(GroupDetailUiEventOnDeleteGroupClicked.shared) },
+            splitBill: { [weak self] in self?.send(GroupDetailUiEventOnSplitBillClicked.shared) },
+            settle: { [weak self] in self?.send(GroupDetailUiEventOnSettleClicked.shared) },
+        )
+    }
+
+    /// "Delete this payment?" closed without "Delete" (Cancel, Esc, a tap outside on iPad).
+    func dismissPaymentDeletion() {
+        if current.paymentToDelete != nil { send(GroupDetailUiEventOnPaymentDeleteDismissed.shared) }
+    }
+
+    func open(_ entry: any DayEntry) {
+        if entry is PaymentRow {
+            send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
+        } else {
+            send(GroupDetailUiEventOnExpenseClicked(expenseId: entry.id))
+        }
+    }
+
     isolated deinit {
         holder.clear()
     }
 }
 
-/// "Expenses" of a group, pushed over the groups: the group's header, its tabs and the bills by day. On iPhone
-/// "Split a bill" is the bottom toolbar's prominent glass item (iOS has no FAB), with the glass buttons at the top
-/// on iPad and lying down; on the Mac it is the window toolbar's primary button, with the tabs in the toolbar and
-/// the bills in a table.
+/// "Expenses" of a group, pushed over the groups: the group's header, its balance card, its tabs and the bills and
+/// payments by day. On the Mac the bills are in a table, with the tabs in the toolbar.
 struct GroupDetailView: View {
     let route: RouteGroupDetail
 
@@ -63,7 +95,6 @@ struct GroupDetailView: View {
     @State private var showsInlineTitle = false
 
     #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     #endif
 
@@ -73,174 +104,62 @@ struct GroupDetailView: View {
                 #if os(macOS)
                 MacGroupExpenses(model: model)
                 #else
-                PhoneGroupExpenses(
-                    model: model,
+                PhoneGroupScaffold(
+                    header: model.state.header,
+                    hasExpenses: !model.state.isEmpty,
+                    tab: .expenses,
                     usesTwoColumns: verticalSizeClass == .compact,
                     showsInlineTitle: $showsInlineTitle,
-                )
+                    actions: model.actions,
+                ) {
+                    PhoneExpenseSections(model: model)
+                }
                 #endif
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
             }
         }
-        .navigationTitle(Text(verbatim: model?.state.groupName ?? ""))
-        #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
-        // On iPhone the group's own bar replaces the app's tabs, as the canvas draws it
-        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
-        #else
-        .navigationSubtitle(model.map { groupMeta($0.state) } ?? "")
-        #endif
-        .toolbar { toolbar }
+        .groupScreenBars(
+            tab: .expenses,
+            header: model?.state.isLoaded == true ? model?.state.header : nil,
+            hasExpenses: model?.state.isEmpty != true,
+            showsSplitBill: model?.state.showsSplitBillButton == true,
+            showsInlineTitle: showsInlineTitle,
+            actions: model?.actions ?? .disabled,
+        )
+        .alert("Delete this payment?", isPresented: paymentDeletionShown) {
+            Button(role: .destructive) {
+                model?.send(GroupDetailUiEventOnPaymentDeleteConfirmed.shared)
+            } label: {
+                Text(BillCopy.delete)
+            }
+            Button("Cancel", role: .cancel) {
+                model?.dismissPaymentDeletion()
+            }
+        } message: {
+            Text("The payment leaves the group and the debt is back in the balances.")
+        }
         .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
+        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
         .glassToast("This bill was deleted", trigger: model?.billDeletedCount ?? 0)
+        .recordedPaymentNotice(
+            model?.state.recordedPayment,
+            onUndo: { model?.send(GroupDetailUiEventOnUndoPaymentClicked.shared) },
+            onShown: { model?.send(GroupDetailUiEventOnRecordedPaymentNoticeShown.shared) },
+        )
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
         }
     }
 
-    @ToolbarContentBuilder
-    private var toolbar: some ToolbarContent {
-        #if os(iOS)
-        // The large title shows the name; the bar only names the group once it scrolls away
-        ToolbarItem(placement: .principal) {
-            Text(verbatim: model?.state.groupName ?? "")
-                .font(.headline)
-                .lineLimit(1)
-                .opacity(showsInlineTitle ? 1 : 0)
-                .accessibilityAddTraits(.isHeader)
-        }
-        #else
-        ToolbarItem(placement: .principal) {
-            GroupTabsPicker(selected: .expenses) { model?.select($0) }
-                .disabled(model?.state.isLoaded != true)
-        }
-        #endif
-        ToolbarItem(placement: .primaryAction) {
-            Button("Invite people", systemImage: "person.badge.plus") {
-                model?.send(GroupDetailUiEventOnInviteClicked.shared)
-            }
-            .disabled(model?.state.isLoaded != true)
-        }
-        ToolbarItem(placement: .primaryAction) { groupMenu }
-        if model?.state.showsSplitBillButton == true {
-            #if os(iOS)
-            if usesBottomBar {
-                ToolbarSpacer(.flexible, placement: .bottomBar)
-                ToolbarItem(placement: .bottomBar) { splitBillButton }
-            } else {
-                ToolbarItem(placement: .primaryAction) { splitBillButton }
-            }
-            #else
-            ToolbarItem(placement: .primaryAction) { splitBillButton }
-            #endif
-        }
-    }
-
-    /// "⋯": only what changes the group itself (6.1i); Leave and Delete wait for the balances. The Mac's items
-    /// that open a dialog end in "…".
-    private var groupMenu: some View {
-        Menu("More group options", systemImage: "ellipsis") {
-            Button(editGroupTitle, systemImage: "pencil") {
-                model?.send(GroupDetailUiEventOnEditGroupClicked.shared)
-            }
-            Divider()
-            Button("Leave group", systemImage: "rectangle.portrait.and.arrow.right") {
-                model?.send(GroupDetailUiEventOnLeaveGroupClicked.shared)
-            }
-            Button("Delete group", systemImage: "trash", role: .destructive) {
-                model?.send(GroupDetailUiEventOnDeleteGroupClicked.shared)
-            }
-        }
-        .disabled(model?.state.isLoaded != true)
-    }
-
-    private var editGroupTitle: LocalizedStringKey {
-        #if os(macOS)
-        "Edit group…"
-        #else
-        "Edit group"
-        #endif
-    }
-
-    private var splitBillButton: some View {
-        Button {
-            model?.send(GroupDetailUiEventOnSplitBillClicked.shared)
-        } label: {
-            // A toolbar draws a Label as its icon only: the canvas spells "Split a bill" out
-            HStack(spacing: 6) {
-                Image(systemName: "plus")
-                Text("Split a bill")
-            }
-            .fontWeight(.semibold)
-        }
-        #if os(iOS)
-        .buttonStyle(.glassProminent)
-        #else
-        .buttonStyle(.borderedProminent)
-        #endif
-    }
-
-    #if os(iOS)
-    /// The upright iPhone: "Split a bill" goes to the bottom toolbar, under the thumb.
-    private var usesBottomBar: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular
-    }
-    #endif
-}
-
-/// "6 members · $2,418.60 in total" or "6 members · no expenses yet".
-private func groupMeta(_ state: GroupDetailUiState) -> String {
-    let members = String(localized: "\(Int(state.memberCount)) members")
-    let spent = state.isEmpty
-        ? String(localized: "no expenses yet")
-        : String(localized: "\(state.currency.format(state.totalSpentMinor)) in total")
-    return "\(members) · \(spent)"
-}
-
-/// The faces of the group, "+N" for the rest, and "1 hasn't joined yet": a tap opens Members.
-private struct GroupFaces: View {
-    let state: GroupDetailUiState
-    let size: CGFloat
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                HStack(spacing: -size * 0.25) {
-                    ForEach(Array(state.faces.enumerated()), id: \.offset) { _, face in
-                        AvatarPhoto(initial: face.initials, color: face.color, photoUrl: nil, size: size)
-                            .overlay(Circle().strokeBorder(Palette.groupedBackground, lineWidth: 2))
-                    }
-                    if state.extraMemberCount > 0 {
-                        Text(verbatim: "+\(state.extraMemberCount)")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(minWidth: size, minHeight: size)
-                            .padding(.horizontal, 4)
-                            .background(.fill.tertiary, in: .capsule)
-                    }
-                }
-                if state.notJoinedCount > 0 {
-                    Text("\(Int(state.notJoinedCount)) hasn't joined yet")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("See members"))
-        .accessibilityValue(facesValue)
-        .accessibilityAddTraits(.isButton)
-    }
-
-    /// "6 members, 1 hasn't joined yet".
-    private var facesValue: Text {
-        let members = String(localized: "\(Int(state.memberCount)) members")
-        guard state.notJoinedCount > 0 else { return Text(verbatim: members) }
-        return Text(verbatim: "\(members), \(String(localized: "\(Int(state.notJoinedCount)) hasn't joined yet"))")
+    /// Dismissing the alert any other way than "Delete" closes the confirmation in the ViewModel too.
+    private var paymentDeletionShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.paymentToDelete != nil },
+            set: { shown in
+                if !shown { model?.dismissPaymentDeletion() }
+            },
+        )
     }
 }
 
@@ -263,17 +182,30 @@ private func payerText(_ row: ExpenseRow) -> String {
     return ""
 }
 
-/// No categories yet: every bill gets the same receipt.
+/// No categories yet: every bill gets the same receipt, and a payment the banknote.
 struct ExpenseIcon: View {
     var size: CGFloat = 38
+    var systemName = "receipt"
 
     var body: some View {
-        Image(systemName: "receipt")
+        Image(systemName: systemName)
             .font(.system(size: size * 0.45, weight: .medium))
             .foregroundStyle(Palette.accent)
             .frame(width: size, height: size)
             .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: size * 0.3))
             .accessibilityHidden(true)
+    }
+}
+
+/// The small "payment" tag next to a payment's amount.
+private struct PaymentTag: View {
+    var body: some View {
+        Text("payment")
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(Palette.accent)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Palette.accent.opacity(0.12), in: .capsule)
     }
 }
 
@@ -288,6 +220,18 @@ private struct MyBalanceText: View {
                 .monospacedDigit()
                 .foregroundStyle(minor >= 0 ? Palette.accent : Palette.negative)
         }
+    }
+}
+
+/// The orange dot of what is saved here and not on the server yet.
+private struct PendingDot: View {
+    var size: CGFloat = 8
+
+    var body: some View {
+        Circle()
+            .fill(.orange)
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
     }
 }
 
@@ -315,100 +259,69 @@ private struct EmptyExpenses: View {
 }
 
 #if os(iOS)
-/// iPhone upright and iPad: one column (640 wide at most on iPad). iPhone lying down: the header on the left, the
-/// tabs and the bills on the right.
-private struct PhoneGroupExpenses: View {
+/// The empty state, or the bills and payments under their day.
+private struct PhoneExpenseSections: View {
     let model: GroupDetailModel
-    let usesTwoColumns: Bool
-    @Binding var showsInlineTitle: Bool
 
     private var state: GroupDetailUiState {
         model.state
     }
 
     var body: some View {
-        Group {
-            if usesTwoColumns {
-                HStack(alignment: .top, spacing: 8) {
-                    ScrollView {
-                        header
-                            .padding(.horizontal, 20)
-                            .padding(.top, 12)
-                    }
-                    .frame(width: 328)
-                    list(withHeader: false)
-                }
-            } else {
-                list(withHeader: true)
-                    .frame(maxWidth: 640)
-                    .frame(maxWidth: .infinity)
-            }
-        }
-        .background(Palette.groupedBackground)
-    }
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 14) {
-                GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 56)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: state.groupName)
-                        .font(.title.bold())
-                        .lineLimit(2)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(verbatim: groupMeta(state))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            GroupFaces(state: state, size: 28) {
-                model.send(GroupDetailUiEventOnMembersClicked.shared)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func list(withHeader: Bool) -> some View {
-        List {
-            if withHeader {
-                Section {
-                    header
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
-            }
+        if state.isEmpty {
             Section {
-                GroupTabsPicker(selected: .expenses) { model.select($0) }
+                EmptyExpenses { model.send($0) }
             }
             .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-            if state.isEmpty {
-                Section {
-                    EmptyExpenses { model.send($0) }
-                }
-                .listRowBackground(Color.clear)
-            }
-            ForEach(state.days, id: \.dayStartMillis) { day in
-                Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
-                    ForEach(day.expenses, id: \.id) { row in
-                        Button {
-                            model.send(GroupDetailUiEventOnExpenseClicked(expenseId: row.id))
-                        } label: {
-                            PhoneExpenseRow(row: row, currency: state.currency)
+        }
+        ForEach(state.days, id: \.dayStartMillis) { day in
+            Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
+                ForEach(day.entries, id: \.id) { entry in
+                    Button {
+                        model.open(entry)
+                    } label: {
+                        if let payment = entry as? PaymentRow {
+                            PhonePaymentRow(row: payment, currency: state.header.currency)
+                        } else if let expense = entry as? ExpenseRow {
+                            PhoneExpenseRow(row: expense, currency: state.header.currency)
                         }
-                        .buttonStyle(.plain)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
-        .listStyle(.insetGrouped)
-        .listSectionSpacing(.compact)
-        .scrollContentBackground(.hidden)
-        .onScrollGeometryChange(for: Bool.self) { geometry in
-            withHeader && geometry.contentOffset.y + geometry.contentInsets.top > 64
-        } action: { _, isPastHeader in
-            withAnimation(.easeOut(duration: 0.15)) { showsInlineTitle = isPastHeader }
+    }
+}
+
+/// An entry of the day: its icon, a title and a meta line (with the orange dot while queued), and its amounts.
+private struct PhoneDayRow<Amounts: View>: View {
+    let systemImage: String
+    let title: String
+    let meta: String
+    let isPending: Bool
+    @ViewBuilder let amounts: Amounts
+
+    var body: some View {
+        HStack(spacing: 12) {
+            ExpenseIcon(systemName: systemImage)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: title)
+                    .lineLimit(1)
+                HStack(spacing: 6) {
+                    if isPending { PendingDot() }
+                    Text(verbatim: meta)
+                        .lineLimit(1)
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            VStack(alignment: .trailing, spacing: 2) {
+                amounts
+            }
         }
+        .contentShape(.rect)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -417,42 +330,62 @@ private struct PhoneExpenseRow: View {
     let currency: GroupCurrency
 
     var body: some View {
-        HStack(spacing: 12) {
-            ExpenseIcon()
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: row.description_)
-                    .lineLimit(1)
-                HStack(spacing: 6) {
-                    if row.isPending {
-                        Circle()
-                            .fill(.orange)
-                            .frame(width: 8, height: 8)
-                            .accessibilityHidden(true)
-                    }
-                    Text(verbatim: expenseMeta(row))
-                        .lineLimit(1)
-                }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 8)
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(verbatim: currency.format(row.totalMinor))
-                    .monospacedDigit()
-                MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: currency)
-                    .font(.footnote.weight(.semibold))
-            }
+        PhoneDayRow(systemImage: "receipt", title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
+            Text(verbatim: currency.format(row.totalMinor))
+                .monospacedDigit()
+            MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: currency)
+                .font(.footnote.weight(.semibold))
         }
-        .contentShape(.rect)
-        .accessibilityElement(children: .combine)
+    }
+}
+
+/// "Ana paid you · 12:10 PM · Payment · Pix · $50.00 · payment"; a tap asks to delete it.
+private struct PhonePaymentRow: View {
+    let row: PaymentRow
+    let currency: GroupCurrency
+
+    var body: some View {
+        PhoneDayRow(
+            systemImage: "banknote",
+            title: PaymentCopy.title(row),
+            meta: PaymentCopy.meta(row),
+            isPending: row.isPending,
+        ) {
+            Text(verbatim: currency.format(row.amountMinor))
+                .monospacedDigit()
+            PaymentTag()
+        }
     }
 }
 #endif
 
 #if os(macOS)
-extension ExpenseRow: @retroactive Identifiable {}
+/// A table row holds one type: a bill or a payment of the day.
+private struct DayEntryItem: Identifiable {
+    let entry: any DayEntry
 
-/// The Mac window: the group's strip (icon, faces, who hasn't joined) over a table of the bills by day.
+    var id: String {
+        entry.id
+    }
+
+    var expense: ExpenseRow? {
+        entry as? ExpenseRow
+    }
+
+    var payment: PaymentRow? {
+        entry as? PaymentRow
+    }
+
+    var time: Int64 {
+        expense?.spentAt ?? payment?.paidAt ?? 0
+    }
+
+    var isPending: Bool {
+        expense?.isPending ?? payment?.isPending ?? false
+    }
+}
+
+/// The Mac window: the group's strip and its balance card over a table of the bills and payments by day.
 private struct MacGroupExpenses: View {
     let model: GroupDetailModel
 
@@ -464,16 +397,7 @@ private struct MacGroupExpenses: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 12) {
-                GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 36)
-                    .accessibilityHidden(true)
-                GroupFaces(state: state, size: 24) {
-                    model.send(GroupDetailUiEventOnMembersClicked.shared)
-                }
-                Spacer()
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
+            MacGroupTop(header: state.header, actions: model.actions)
             if state.isEmpty {
                 EmptyExpenses { model.send($0) }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -484,18 +408,23 @@ private struct MacGroupExpenses: View {
         .background(Palette.groupedBackground)
     }
 
+    private var currency: GroupCurrency {
+        state.header.currency
+    }
+
     private var table: some View {
-        Table(of: ExpenseRow.self, selection: $selection) {
-            TableColumn("Expense") { row in
+        Table(of: DayEntryItem.self, selection: $selection) {
+            TableColumn("Expense") { item in
                 HStack(spacing: 8) {
-                    ExpenseIcon(size: 24)
-                    Text(verbatim: row.description_)
+                    ExpenseIcon(size: 24, systemName: item.payment == nil ? "receipt" : "banknote")
+                    Text(verbatim: item.expense?.description_ ?? item.payment.map(PaymentCopy.title) ?? "")
                         .lineLimit(1)
-                    if row.isPending {
+                    if item.payment != nil {
+                        PaymentTag()
+                    }
+                    if item.isPending {
                         HStack(spacing: 4) {
-                            Circle()
-                                .fill(.orange)
-                                .frame(width: 6, height: 6)
+                            PendingDot(size: 6)
                             Text("queued")
                         }
                         .font(.caption)
@@ -503,24 +432,24 @@ private struct MacGroupExpenses: View {
                     }
                 }
             }
-            TableColumn("Time") { row in
-                Text(verbatim: ExpenseFormat.time(row.spentAt))
+            TableColumn("Time") { item in
+                Text(verbatim: ExpenseFormat.time(item.time))
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
             }
             .width(min: 50, ideal: 60, max: 80)
-            TableColumn("Who paid") { row in
-                Text(verbatim: payerText(row))
+            TableColumn("Who paid") { item in
+                Text(verbatim: item.expense.map(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
                     .foregroundStyle(.secondary)
             }
-            TableColumn("Total") { row in
-                Text(verbatim: state.currency.format(row.totalMinor))
+            TableColumn("Total") { item in
+                Text(verbatim: currency.format(item.expense?.totalMinor ?? item.payment?.amountMinor ?? 0))
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 90, ideal: 110)
-            TableColumn("Your share") { row in
-                MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: state.currency)
+            TableColumn("Your share") { item in
+                MyBalanceText(minor: item.expense?.myBalanceMinor?.int64Value, currency: currency)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -528,8 +457,8 @@ private struct MacGroupExpenses: View {
         } rows: {
             ForEach(state.days, id: \.dayStartMillis) { day in
                 Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
-                    ForEach(day.expenses, id: \.id) { row in
-                        TableRow(row)
+                    ForEach(day.entries.map(DayEntryItem.init)) { item in
+                        TableRow(item)
                     }
                 }
             }
@@ -537,8 +466,9 @@ private struct MacGroupExpenses: View {
         .contextMenu(forSelectionType: String.self) { _ in
             EmptyView()
         } primaryAction: { ids in
-            if let id = ids.first {
-                model.send(GroupDetailUiEventOnExpenseClicked(expenseId: id))
+            let entries = state.days.flatMap(\.entries)
+            if let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
+                model.open(entry)
             }
         }
     }

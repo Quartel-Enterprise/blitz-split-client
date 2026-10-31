@@ -2,7 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 // Why: "Jantar no Ostradamus · 21:30 · Bruno pagou · R$ 642,00 · −R$ 118,00".
 data class ExpenseRow(
-    val id: String,
+    override val id: String,
     val description: String,
     // Why: each UI writes the time of day.
     val spentAt: Long,
@@ -15,4 +15,4 @@ data class ExpenseRow(
     val myBalanceMinor: Long?,
     // Why: "na fila" and the orange dot: saved here and not on the server yet.
     val isPending: Boolean,
-)
+) : DayEntry

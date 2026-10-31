@@ -26,6 +26,7 @@ import com.quare.blitzsplit.feature.notificationsettings.di.notificationSettings
 import com.quare.blitzsplit.feature.paymentkey.di.paymentKeyModule
 import com.quare.blitzsplit.feature.profilesetup.di.profileSetupModule
 import com.quare.blitzsplit.feature.recoverycode.di.recoveryCodeModule
+import com.quare.blitzsplit.feature.registerpayment.di.registerPaymentModule
 import com.quare.blitzsplit.feature.restore.di.restoreModule
 import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
@@ -77,6 +78,7 @@ val sharedModules: List<Module> = listOf(
     billDetailModule,
     splitBillModule,
     editGroupModule,
+    registerPaymentModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
@@ -25,6 +26,7 @@ fun GroupDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val comingSoon = stringResource(R.string.group_detail_coming_soon)
+    val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
@@ -32,6 +34,7 @@ fun GroupDetailScreen(
         viewModel.uiAction.collect { action ->
             when (action) {
                 GroupDetailUiAction.ShowComingSoon -> showSnackbar(comingSoon)
+                GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
             }
         }
     }
@@ -42,10 +45,19 @@ fun GroupDetailScreen(
             viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
         }
     }
+    RecordedPaymentNoticeEffect(
+        notice = state.recordedPayment,
+        snackbarHostState = snackbarHostState,
+        onUndo = { viewModel.onEvent(GroupDetailUiEvent.OnUndoPaymentClicked) },
+        onShown = { viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown) },
+    )
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
     GroupDetailContent(
         state = state,
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
+    if (state.paymentToDelete != null) {
+        DeletePaymentDialog(onEvent = viewModel::onEvent)
+    }
 }

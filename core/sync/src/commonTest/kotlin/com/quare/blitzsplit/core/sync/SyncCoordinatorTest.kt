@@ -3,7 +3,9 @@ package com.quare.blitzsplit.core.sync
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -27,8 +29,11 @@ import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepo
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -49,6 +54,8 @@ class SyncCoordinatorTest {
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
+    private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
@@ -3310,7 +3317,7 @@ class SyncCoordinatorTest {
                 "bills download $userId",
                 "bills upload $userId",
             ),
-            calls.filterNot { it.startsWith("keys ") || it.startsWith("preferences ") },
+            calls.filterNot { it.startsWith("keys ") || it.startsWith("preferences ") || it.startsWith("payments ") },
         )
         assertFalse(expenses.hasPendingChanges.value)
     }
@@ -3738,6 +3745,544 @@ class SyncCoordinatorTest {
         assertTrue(account.signOutWhenSynced)
     }
 
+    @Test
+    fun `GIVEN a pending payment WHEN syncing THEN pulls and pushes the payments right after the bills`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingGroups = true,
+            pendingBills = true,
+            pendingPayments = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+        assertEquals(
+            listOf(
+                "profile download $userId",
+                "profile upload $userId",
+                "groups download $userId",
+                "groups upload $userId",
+                "bills download $userId",
+                "bills upload $userId",
+                "payments download $userId",
+                "payments upload $userId",
+            ),
+            calls.filterNot { it.startsWith("keys ") || it.startsWith("preferences ") },
+        )
+        assertFalse(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN syncing THEN pulls and pushes the payments under its user id`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            pendingPayments = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), settlements.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), settlements.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN no profile and a pending payment WHEN syncing THEN neither pulls nor pushes the payments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            pendingPayments = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the profile fails to come down WHEN syncing THEN does not touch the payments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPayments = true,
+        )
+        profile.pullError = IllegalStateException("server down")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+        assertTrue(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN neither pulls nor pushes the payments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPayments = true,
+        )
+        groups.pullError = IllegalStateException("relation groups does not exist")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+        assertTrue(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the bills fail to come down WHEN syncing THEN neither pulls nor pushes the payments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPayments = true,
+        )
+        expenses.pullError = IllegalStateException("relation expenses does not exist")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+        assertTrue(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the bills push fails WHEN syncing THEN neither pulls nor pushes the payments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+            pendingPayments = true,
+        )
+        expenses.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+        assertTrue(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN the payments fail to come down WHEN syncing THEN fails pushes none and the state is failed`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingPayments = true,
+        )
+        settlements.pullError = IllegalStateException("relation settlements does not exist")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), settlements.downloadedUserIds)
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+        assertTrue(settlements.hasPendingChanges.value)
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a pending payment and its push fails WHEN syncing THEN fails keeps it pending and is failed`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPayments = true,
+            )
+            settlements.pushError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), settlements.uploadedUserIds)
+            assertTrue(settlements.hasPendingChanges.value)
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN the payments fail to come down WHEN syncing THEN still syncs the keys and the preferences`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedKeys = listOf(pixKey),
+            pendingKeys = true,
+            pendingPreferences = true,
+        )
+        settlements.pullError = IllegalStateException("relation settlements does not exist")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+        assertEquals(listOf(userId), paymentKeys.uploadedUserIds)
+        assertFalse(paymentKeys.hasPendingChanges.value)
+        assertEquals(listOf(userId), notificationPreferences.uploadedUserIds)
+        assertFalse(notificationPreferences.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN an anonymous user whose payments fail to come down WHEN syncing THEN still issues the recovery code`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            settlements.pullError = IllegalStateException("relation settlements does not exist")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(1, account.recoveryCodeCreations)
+        }
+
+    @Test
+    fun `GIVEN a sync that failed on the payments WHEN a retry succeeds THEN pushes them and the state is synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPayments = true,
+            )
+            settlements.pushError = IllegalStateException("server down")
+            coordinator.syncNow()
+            settlements.pushError = null
+
+            // When
+            coordinator.retry()
+            runCurrent()
+
+            // Then
+            assertFalse(settlements.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN switching to another Google user THEN syncs the payments under it`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.status = AccountStatus.Connected(OTHER_USER_ID, AccountProvider.GOOGLE)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(OTHER_USER_ID), settlements.downloadedUserIds)
+        assertEquals(listOf(OTHER_USER_ID), settlements.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN nothing else pending and a payment recorded offline WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+            settlements.hasPendingChanges.value = true
+            runCurrent()
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN only a pending payment online before any sync WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingPayments = true,
+            )
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN a pending bill and a pending payment WHEN the sync pushes both THEN the sync state is synced`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingBills = true,
+                pendingPayments = true,
+            )
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertFalse(expenses.hasPendingChanges.value)
+            assertFalse(settlements.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN the bills went up and the payments push failed WHEN going offline THEN the state is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingBills = true,
+                pendingPayments = true,
+            )
+            settlements.pushError = IllegalStateException("no answer")
+            coordinator.syncNow()
+
+            // When
+            isOnline.value = false
+
+            // Then
+            assertFalse(expenses.hasPendingChanges.value)
+            assertEquals(SyncState.PENDING, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN only a payment becomes pending THEN pushes the payments`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            val uploadsBefore = settlements.uploadedUserIds.size
+
+            // When
+            settlements.hasPendingChanges.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, settlements.uploadedUserIds.size)
+            assertFalse(settlements.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a payments push that failed online WHEN another payment is recorded THEN pushes the payments again`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            settlements.pushError = IllegalStateException("no answer")
+            settlements.hasPendingChanges.value = true
+            settlements.pendingVersions.value = listOf(1_000L)
+            runCurrent()
+            settlements.pushError = null
+            val uploadsBefore = settlements.uploadedUserIds.size
+
+            // When
+            settlements.pendingVersions.value = listOf(1_000L, 2_000L)
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, settlements.uploadedUserIds.size)
+            assertFalse(settlements.hasPendingChanges.value)
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a bills push that failed online WHEN a payment is recorded THEN syncs again and pushes both`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            expenses.pushError = IllegalStateException("no answer")
+            expenses.hasPendingChanges.value = true
+            expenses.pendingVersions.value = listOf(1_000L)
+            runCurrent()
+            expenses.pushError = null
+            val billUploadsBefore = expenses.uploadedUserIds.size
+            val paymentUploadsBefore = settlements.uploadedUserIds.size
+
+            // When
+            settlements.hasPendingChanges.value = true
+            settlements.pendingVersions.value = listOf(2_000L)
+            runCurrent()
+
+            // Then
+            assertEquals(billUploadsBefore + 1, expenses.uploadedUserIds.size)
+            assertEquals(paymentUploadsBefore + 1, settlements.uploadedUserIds.size)
+            assertFalse(expenses.hasPendingChanges.value)
+            assertFalse(settlements.hasPendingChanges.value)
+        }
+
+    @Test
+    fun `GIVEN a payments push that failed online WHEN the same payment versions come again THEN does not push`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            settlements.pushError = IllegalStateException("no answer")
+            settlements.hasPendingChanges.value = true
+            settlements.pendingVersions.value = listOf(1_000L)
+            runCurrent()
+            settlements.pushError = null
+            val uploadsBefore = settlements.uploadedUserIds.size
+            val sameVersions = listOf(1_000L)
+
+            // When
+            paymentVersionsAgain.tryEmit(sameVersions)
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore, settlements.uploadedUserIds.size)
+            assertTrue(settlements.hasPendingChanges.value)
+        }
+
+    @Test
+    fun `GIVEN a payment recorded offline WHEN the device comes online THEN pushes the payments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        settlements.hasPendingChanges.value = true
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), settlements.uploadedUserIds)
+        assertFalse(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN a profile offline WHEN a payment is recorded THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        settlements.hasPendingChanges.value = true
+        settlements.pendingVersions.value = listOf(1_000L)
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+        assertTrue(settlements.hasPendingChanges.value)
+    }
+
+    @Test
+    fun `GIVEN no profile online WHEN a payment is recorded THEN does not sync`() = runTest {
+        // Given
+        prepareScenario(storedProfile = null)
+        coordinator.start()
+        runCurrent()
+
+        // When
+        settlements.hasPendingChanges.value = true
+        settlements.pendingVersions.value = listOf(1_000L)
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.registrationCount)
+        assertTrue(settlements.downloadedUserIds.isEmpty())
+        assertTrue(settlements.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN only a payment queued online WHEN signing out once synced THEN pushes it before ending the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                pendingPayments = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals(listOf(userId), settlements.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(calls.indexOf("account sign out") > calls.lastIndexOf("payments upload $userId"))
+        }
+
+    @Test
+    fun `GIVEN the payments push fails WHEN signing out once synced THEN keeps the session and the schedule`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedGroups = listOf(trip),
+                pendingPayments = true,
+            )
+            settlements.pushError = IllegalStateException("server down")
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(0, account.signOutCount)
+            assertEquals(google, account.status)
+            assertEquals(0, groups.clearCount)
+            assertEquals(pierre, profile.profile.value)
+            assertTrue(settlements.hasPendingChanges.value)
+            assertTrue(account.signOutWhenSynced)
+        }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -3792,15 +4337,16 @@ class SyncCoordinatorTest {
     )
 
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {
-        it.startsWith("preferences ") || it.startsWith("groups ") || it.startsWith("bills ")
+        it.startsWith("preferences ") || it.startsWith("groups ") || it.startsWith("bills ") ||
+            it.startsWith("payments ")
     }
 
     private fun callsWithoutKeysAndGroups(): List<String> = calls.filterNot {
-        it.startsWith("keys ") || it.startsWith("groups ") || it.startsWith("bills ")
+        it.startsWith("keys ") || it.startsWith("groups ") || it.startsWith("bills ") || it.startsWith("payments ")
     }
 
     private fun callsWithoutKeysAndPreferences(): List<String> = calls.filterNot {
-        it.startsWith("keys ") || it.startsWith("preferences ") || it.startsWith("bills ")
+        it.startsWith("keys ") || it.startsWith("preferences ") || it.startsWith("bills ") || it.startsWith("payments ")
     }
 
     private fun TestScope.prepareScenario(
@@ -3822,6 +4368,7 @@ class SyncCoordinatorTest {
         pendingGroups: Boolean = false,
         groupQueuedDuringFirstPush: Boolean = false,
         pendingBills: Boolean = false,
+        pendingPayments: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
@@ -3836,6 +4383,8 @@ class SyncCoordinatorTest {
         }
         groups = FakeGroupRepository(initialGroups = storedGroups).also { it.hasPendingChanges.value = pendingGroups }
         expenses = FakeExpenseRepository().also { it.hasPendingChanges.value = pendingBills }
+        settlements = FakeSettlementRepository().also { it.hasPendingChanges.value = pendingPayments }
+        paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
         isOnline = MutableStateFlow(online)
         pullGate = CompletableDeferred()
         coordinator = SyncCoordinator(
@@ -3871,6 +4420,7 @@ class SyncCoordinatorTest {
                 calls = calls,
             ),
             expenseRepository = RecordingExpenseRepository(expenses, calls),
+            settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
@@ -3915,8 +4465,8 @@ private class KeyDuringFirstPushPaymentKeyRepository(
     }
 }
 
-// Why: one log across the account, the profile, the keys, the preferences, the groups and the bills, so a test can
-// assert the order of their calls.
+// Why: one log across the account, the profile, the keys, the preferences, the groups, the bills and the payments, so
+// a test can assert the order of their calls.
 private class RecordingAccountRepository(
     private val delegate: AccountRepository,
     private val calls: MutableList<String>,
@@ -4055,5 +4605,27 @@ private class RecordingExpenseRepository(
     override suspend fun uploadPendingExpenses(userId: String): Result<Unit> {
         calls += "bills upload $userId"
         return delegate.uploadPendingExpenses(userId)
+    }
+}
+
+/*
+ * Why: also lets a test hand the coordinator the pending payments' versions again, as Room does whenever their table
+ * changes, without them being new.
+ */
+private class RecordingSettlementRepository(
+    private val delegate: FakeSettlementRepository,
+    private val calls: MutableList<String>,
+    private val versionsAgain: Flow<List<Long>>,
+) : SettlementRepository by delegate {
+    override fun observePendingVersions(): Flow<List<Long>> = merge(delegate.observePendingVersions(), versionsAgain)
+
+    override suspend fun downloadSettlements(userId: String): Result<Unit> {
+        calls += "payments download $userId"
+        return delegate.downloadSettlements(userId)
+    }
+
+    override suspend fun uploadPendingSettlements(userId: String): Result<Unit> {
+        calls += "payments upload $userId"
+        return delegate.uploadPendingSettlements(userId)
     }
 }

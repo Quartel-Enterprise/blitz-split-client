@@ -19,15 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AmountTextField
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -119,37 +116,14 @@ private fun AmountField(
         // Why: editing a bill split by amount, a new total rescales everyone's part.
         stringResource(R.string.split_bill_amount_proportional).takeIf { state.showsProportionalAmountHint },
     ).joinToString("\n").ifEmpty { null }
-    OutlinedTextField(
+    AmountTextField(
         value = state.amountText,
         onValueChange = { onEvent(SplitBillUiEvent.OnAmountChanged(it)) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester),
-        textStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-        label = { Text(stringResource(R.string.split_bill_amount)) },
-        prefix = {
-            Text(
-                text = money.symbol,
-                modifier = Modifier.padding(end = 8.dp),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        },
-        supportingText = help?.let { text ->
-            {
-                Text(
-                    text = text,
-                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
-        },
+        label = stringResource(R.string.split_bill_amount),
+        symbol = money.symbol,
+        help = help,
         isError = state.showsAmountError,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Decimal,
-            imeAction = ImeAction.Next,
-        ),
+        modifier = Modifier.focusRequester(focusRequester),
     )
 }
 

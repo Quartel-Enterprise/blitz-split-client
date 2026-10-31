@@ -24,9 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
+private const val EXPENSES_TAB_INDEX = 0
 private const val BALANCES_TAB_INDEX = 1
 private const val MEMBERS_TAB_INDEX = 2
 private val faceSize = 32.dp
@@ -35,8 +35,8 @@ private val faceOverlap = (-8).dp
 // Why: the members' faces under the name, "+2" for the rest, and who hasn't joined; tapping them opens Membros.
 @Composable
 internal fun GroupFacesRow(
-    state: GroupDetailUiState,
-    onEvent: (GroupDetailUiEvent) -> Unit,
+    header: GroupHeader,
+    onAction: (GroupAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -45,7 +45,7 @@ internal fun GroupFacesRow(
             .clickable(
                 onClickLabel = stringResource(R.string.group_detail_see_members),
                 role = Role.Button,
-                onClick = { onEvent(GroupDetailUiEvent.OnMembersClicked) },
+                onClick = { onAction(GroupAction.MEMBERS) },
             ).heightIn(min = 48.dp)
             .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -56,7 +56,7 @@ internal fun GroupFacesRow(
             horizontalArrangement = Arrangement.spacedBy(faceOverlap),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            state.faces.forEach { face ->
+            header.faces.forEach { face ->
                 RingedBox {
                     AvatarBadge(
                         initial = face.initials,
@@ -65,7 +65,7 @@ internal fun GroupFacesRow(
                     )
                 }
             }
-            if (state.extraMemberCount > 0) {
+            if (header.extraMemberCount > 0) {
                 RingedBox {
                     Box(
                         modifier = Modifier
@@ -74,7 +74,7 @@ internal fun GroupFacesRow(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = stringResource(R.string.group_detail_extra_members, state.extraMemberCount),
+                            text = stringResource(R.string.group_detail_extra_members, header.extraMemberCount),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -83,12 +83,12 @@ internal fun GroupFacesRow(
                 }
             }
         }
-        if (state.notJoinedCount > 0) {
+        if (header.notJoinedCount > 0) {
             Text(
                 text = pluralStringResource(
                     R.plurals.group_detail_not_joined,
-                    state.notJoinedCount,
-                    state.notJoinedCount,
+                    header.notJoinedCount,
+                    header.notJoinedCount,
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -109,7 +109,8 @@ private fun RingedBox(content: @Composable () -> Unit) {
 
 @Composable
 internal fun GroupTabsRow(
-    onEvent: (GroupDetailUiEvent) -> Unit,
+    selectedTab: GroupTab,
+    onAction: (GroupAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ConnectedButtonRow(
@@ -118,12 +119,16 @@ internal fun GroupTabsRow(
             stringResource(R.string.group_detail_tab_balances),
             stringResource(R.string.group_detail_tab_members),
         ),
-        selectedIndex = 0,
+        selectedIndex = when (selectedTab) {
+            GroupTab.EXPENSES -> EXPENSES_TAB_INDEX
+            GroupTab.BALANCES -> BALANCES_TAB_INDEX
+        },
         groupLabel = stringResource(R.string.group_detail_tabs),
         onClick = { index ->
             when (index) {
-                BALANCES_TAB_INDEX -> onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
-                MEMBERS_TAB_INDEX -> onEvent(GroupDetailUiEvent.OnMembersClicked)
+                EXPENSES_TAB_INDEX -> onAction(GroupAction.EXPENSES_TAB)
+                BALANCES_TAB_INDEX -> onAction(GroupAction.BALANCES_TAB)
+                MEMBERS_TAB_INDEX -> onAction(GroupAction.MEMBERS)
             }
         },
         modifier = modifier,

@@ -32,23 +32,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
 // Why: the canvas's medium flexible bar: the group's shape, name and totals, collapsing to one line as the list scrolls.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun GroupDetailTopBar(
-    state: GroupDetailUiState,
+internal fun GroupTopBar(
+    header: GroupHeader,
+    // Why: "nenhuma despesa ainda" instead of the total before the first bill.
+    hasBills: Boolean,
     money: MoneyFormatter,
     scrollBehavior: TopAppBarScrollBehavior,
-    onEvent: (GroupDetailUiEvent) -> Unit,
+    onAction: (GroupAction) -> Unit,
 ) {
-    val members = pluralStringResource(R.plurals.group_detail_member_count, state.memberCount, state.memberCount)
-    val meta = if (state.days.isEmpty()) {
-        stringResource(R.string.group_detail_meta_empty, members)
+    val members = pluralStringResource(R.plurals.group_detail_member_count, header.memberCount, header.memberCount)
+    val meta = if (hasBills) {
+        stringResource(R.string.group_detail_meta_total, members, money.toText(header.totalSpentMinor))
     } else {
-        stringResource(R.string.group_detail_meta_total, members, money.toText(state.totalSpentMinor))
+        stringResource(R.string.group_detail_meta_empty, members)
     }
     MediumFlexibleTopAppBar(
         title = {
@@ -57,12 +58,12 @@ internal fun GroupDetailTopBar(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 GroupBadge(
-                    initials = state.groupInitials,
-                    color = state.groupColor,
+                    initials = header.groupInitials,
+                    color = header.groupColor,
                     size = 40.dp,
                 )
                 Text(
-                    text = state.groupName,
+                    text = header.groupName,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -76,7 +77,7 @@ internal fun GroupDetailTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onEvent(GroupDetailUiEvent.OnBackClicked) }) {
+            IconButton(onClick = { onAction(GroupAction.BACK) }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.group_detail_back),
@@ -84,16 +85,13 @@ internal fun GroupDetailTopBar(
             }
         },
         actions = {
-            IconButton(onClick = { onEvent(GroupDetailUiEvent.OnInviteClicked) }) {
+            IconButton(onClick = { onAction(GroupAction.INVITE) }) {
                 Icon(
                     imageVector = Icons.Outlined.PersonAdd,
                     contentDescription = stringResource(R.string.group_detail_invite),
                 )
             }
-            GroupMenu(
-                isEnabled = state.isLoaded,
-                onEvent = onEvent,
-            )
+            GroupMenu(onAction = onAction)
         },
         scrollBehavior = scrollBehavior,
     )
@@ -101,17 +99,10 @@ internal fun GroupDetailTopBar(
 
 // Why: the ⋮ menu keeps only what changes the group itself (6.1i).
 @Composable
-private fun GroupMenu(
-    // Why: the group's own fields are only there to edit once Room is read.
-    isEnabled: Boolean,
-    onEvent: (GroupDetailUiEvent) -> Unit,
-) {
+private fun GroupMenu(onAction: (GroupAction) -> Unit) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
     Box {
-        IconButton(
-            onClick = { isOpen = true },
-            enabled = isEnabled,
-        ) {
+        IconButton(onClick = { isOpen = true }) {
             Icon(
                 imageVector = Icons.Outlined.MoreVert,
                 contentDescription = stringResource(R.string.group_detail_more),
@@ -125,7 +116,7 @@ private fun GroupMenu(
                 text = { Text(stringResource(R.string.group_detail_edit_group)) },
                 onClick = {
                     isOpen = false
-                    onEvent(GroupDetailUiEvent.OnEditGroupClicked)
+                    onAction(GroupAction.EDIT_GROUP)
                 },
                 leadingIcon = {
                     Icon(
@@ -139,7 +130,7 @@ private fun GroupMenu(
                 text = { Text(stringResource(R.string.group_detail_leave_group)) },
                 onClick = {
                     isOpen = false
-                    onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+                    onAction(GroupAction.LEAVE_GROUP)
                 },
                 leadingIcon = {
                     Icon(
@@ -157,7 +148,7 @@ private fun GroupMenu(
                 },
                 onClick = {
                     isOpen = false
-                    onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+                    onAction(GroupAction.DELETE_GROUP)
                 },
                 leadingIcon = {
                     Icon(

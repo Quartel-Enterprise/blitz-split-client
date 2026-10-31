@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -35,6 +36,7 @@ class SyncCoordinator(
     private val notificationPreferencesRepository: NotificationPreferencesRepository,
     private val groupRepository: GroupRepository,
     private val expenseRepository: ExpenseRepository,
+    private val settlementRepository: SettlementRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -98,14 +100,16 @@ class SyncCoordinator(
                         notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
                     }
                     /*
-                     * Why: the bills after their groups, which they need on the device to come down and on the
-                     * server to go up.
+                     * Why: the bills and the payments after their groups, which they need on the device to come
+                     * down and on the server to go up.
                      */
                     val groupsSynced = suspendRunCatching {
                         groupRepository.downloadGroups(userId).getOrThrow()
                         groupRepository.uploadPendingGroups(userId).getOrThrow()
                         expenseRepository.downloadExpenses(userId).getOrThrow()
                         expenseRepository.uploadPendingExpenses(userId).getOrThrow()
+                        settlementRepository.downloadSettlements(userId).getOrThrow()
+                        settlementRepository.uploadPendingSettlements(userId).getOrThrow()
                     }
                     offerRecoveryCodeIfDue()
                     signOutIfScheduledAndSynced()
@@ -172,7 +176,7 @@ class SyncCoordinator(
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
-     * on the profile, the keys, the preferences, the groups and the pending bills' versions makes each new change
+     * on the profile, the keys, the preferences, the groups and the pending bills' and payments' versions makes each new change
      * count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
@@ -181,8 +185,8 @@ class SyncCoordinator(
             paymentKeyRepository.observeKeys(),
             notificationPreferencesRepository.observePreferences(),
             groupRepository.observeGroups(),
-            expenseRepository.observePendingVersions(),
-        ) { keys, preferences, groups, pendingBills -> listOf(keys, preferences, groups, pendingBills) }
+            observePendingMoneyVersions(),
+        ) { keys, preferences, groups, pendingMoney -> listOf(keys, preferences, groups, pendingMoney) }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
@@ -234,10 +238,23 @@ class SyncCoordinator(
         paymentKeyRepository.observeHasPendingChanges(),
         notificationPreferencesRepository.observeHasPendingChanges(),
         groupRepository.observeHasPendingChanges(),
-        expenseRepository.observeHasPendingChanges(),
-    ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingExpenses ->
-        hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingExpenses
+        combine(
+            expenseRepository.observeHasPendingChanges(),
+            settlementRepository.observeHasPendingChanges(),
+        ) { hasPendingExpenses, hasPendingSettlements -> hasPendingExpenses || hasPendingSettlements },
+    ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingMoney ->
+        hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney
     }.distinctUntilChanged()
+
+    /*
+     * Why: the versions of the bills and the payments waiting to go up, which change with each one saved. Kept apart,
+     * so a bill going up while a payment of the same version is saved still counts as a change.
+     */
+    private fun observePendingMoneyVersions(): Flow<Pair<List<Long>, List<Long>>> = combine(
+        expenseRepository.observePendingVersions(),
+        settlementRepository.observePendingVersions(),
+        ::Pair,
+    )
 
     private suspend fun offerRecoveryCodeIfDue() {
         val account = accountRepository.observeAccount().first()

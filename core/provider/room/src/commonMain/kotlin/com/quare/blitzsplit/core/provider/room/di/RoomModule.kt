@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
+import com.quare.blitzsplit.core.provider.room.dao.SettlementDao
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.utils.ioDispatcher
 import org.koin.core.module.Module
@@ -29,4 +30,5 @@ val roomModule: Module = module {
     single<NotificationPreferencesDao> { get<AppDatabase>().notificationPreferencesDao() }
     single<GroupDao> { get<AppDatabase>().groupDao() }
     single<ExpenseDao> { get<AppDatabase>().expenseDao() }
+    single<SettlementDao> { get<AppDatabase>().settlementDao() }
 }
