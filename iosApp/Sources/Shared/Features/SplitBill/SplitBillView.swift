@@ -619,6 +619,8 @@ private struct PayerAmountField: View {
             TextField(text: model.payerAmount(of: row.memberId), prompt: Text(verbatim: currency.zeroPlaceholder)) {
                 Text("How much \(row.person?.name ?? String(localized: "Former member")) paid")
             }
+            // A form in columns would draw that label beside the field on macOS
+            .labelsHidden()
             .multilineTextAlignment(.trailing)
             .monospacedDigit()
             #if os(iOS)
