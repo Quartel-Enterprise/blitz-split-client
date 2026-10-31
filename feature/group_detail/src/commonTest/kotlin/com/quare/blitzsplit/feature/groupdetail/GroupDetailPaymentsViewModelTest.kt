@@ -1123,6 +1123,7 @@ class GroupDetailPaymentsViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     // Why: this device's user owes Ana 6.000 and Bruno 9.000.

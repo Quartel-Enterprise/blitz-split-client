@@ -34,6 +34,7 @@ class GroupMapperImpl : GroupMapper {
                 inviteCode = group.inviteCode,
                 // Why: both are null for a group made here before any account, which the first sync gives this one.
                 isCreatedByMe = group.createdBy == group.ownerUserId,
+                updatedAt = group.updatedAt,
             )
         }
     }
