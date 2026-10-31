@@ -41,6 +41,11 @@ class FakeExpenseRepository(
         list.filter { it.groupId == groupId }.sortedByDescending { it.spentAt }
     }
 
+    // Why: like Room, each group's bills together, the most recent first.
+    override fun observeAllExpenses(): Flow<List<Expense>> = expenses.map { list ->
+        list.sortedWith(compareBy<Expense> { it.groupId }.thenByDescending { it.spentAt })
+    }
+
     override fun observeExpense(id: String): Flow<Expense?> = expenses.map { list -> list.firstOrNull { it.id == id } }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges

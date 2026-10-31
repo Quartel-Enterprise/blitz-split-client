@@ -35,6 +35,11 @@ class FakeSettlementRepository(
         list.filter { it.groupId == groupId }.sortedByDescending { it.paidAt }
     }
 
+    // Why: like Room, each group's payments together, the most recent first.
+    override fun observeAllSettlements(): Flow<List<Settlement>> = settlements.map { list ->
+        list.sortedWith(compareBy<Settlement> { it.groupId }.thenByDescending { it.paidAt })
+    }
+
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
     override fun observePendingVersions(): Flow<List<Long>> = pendingVersions

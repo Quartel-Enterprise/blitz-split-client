@@ -17,6 +17,10 @@ interface SettlementDao {
     @Query("SELECT * FROM settlement WHERE groupId = :groupId AND isDeleted = 0 ORDER BY paidAt DESC, addedAt DESC, id")
     fun observeSettlements(groupId: String): Flow<List<SettlementEntity>>
 
+    // Why: every group's payments in one query, each group's in the order of its own list, for the home's balances.
+    @Query("SELECT * FROM settlement WHERE isDeleted = 0 ORDER BY groupId, paidAt DESC, addedAt DESC, id")
+    fun observeAllSettlements(): Flow<List<SettlementEntity>>
+
     @Query("SELECT EXISTS(SELECT 1 FROM settlement WHERE pendingSync = 1)")
     fun observeHasPending(): Flow<Boolean>
 

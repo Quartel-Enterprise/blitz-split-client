@@ -7,6 +7,9 @@ interface SettlementRepository {
     // Why: the group's payments, the most recent first; an undone one is gone.
     fun observeSettlements(groupId: String): Flow<List<Settlement>>
 
+    // Why: every group's payments at once, each group's in the order of its own list; an undone one is gone.
+    fun observeAllSettlements(): Flow<List<Settlement>>
+
     fun observeHasPendingChanges(): Flow<Boolean>
 
     // Why: when each payment waiting to go up was last changed, so a new one triggers a sync after a failed push.

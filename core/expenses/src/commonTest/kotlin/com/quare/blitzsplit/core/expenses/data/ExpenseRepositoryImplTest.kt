@@ -76,6 +76,28 @@ class ExpenseRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN bills of two groups and one this version cannot read WHEN observing every group THEN shows the rest`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(id = "bill-1"),
+                    entity(id = "bill-2").copy(groupId = "group-2"),
+                    entity(
+                        id = "bill-new-mode",
+                        splitMode = "itemized",
+                    ),
+                ),
+            )
+
+            // When
+            val expenses = repository.observeAllExpenses().first()
+
+            // Then
+            assertEquals(listOf("bill-1" to GROUP_ID, "bill-2" to "group-2"), expenses.map { it.id to it.groupId })
+        }
+
+    @Test
     fun `GIVEN a pending bill WHEN observing pending changes THEN reports them`() = runTest {
         // Given
         prepareScenario(
@@ -632,6 +654,10 @@ private class FakeExpenseLocalDataSource(
 
     override fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>> = entities.map { list ->
         list.filter { it.groupId == groupId && !it.isDeleted }.map { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
+    override fun observeAllExpenses(): Flow<List<ExpenseWithEditor>> = entities.map { list ->
+        list.filter { !it.isDeleted }.map { ExpenseWithEditor(it, editors[it.id]) }
     }
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->

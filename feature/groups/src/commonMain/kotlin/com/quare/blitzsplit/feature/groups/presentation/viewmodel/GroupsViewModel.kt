@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
-import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
@@ -35,14 +34,11 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -54,14 +50,13 @@ class GroupsViewModel(
     private val syncNow: SyncNow,
     private val navigator: Navigator,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
-    private val observeExpenses: ObserveExpenses,
-    private val observeSettlements: ObserveSettlements,
     currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
     observeGroups: ObserveGroups,
+    observeGroupsMoney: ObserveGroupsMoney,
     connectivityObserver: NetworkConnectivityObserver,
     observeGroupDeletions: ObserveGroupDeletions,
 ) : ViewModel() {
@@ -125,25 +120,33 @@ class GroupsViewModel(
             update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
-        observeGroups()
-            .flatMapLatest(::withMoney)
-            .onEach { groups ->
-                val rows = rowsOf(
-                    groups = groups,
-                    clock = ActivityClock(
-                        nowMillis = currentTimeMillis(),
-                        timeZone = currentTimeZone(),
-                    ),
+        // Why: each group's bills and payments, again whenever any of them changes here or through a sync.
+        combine(observeGroups(), observeGroupsMoney()) { groups, money ->
+            groups.map { group ->
+                val ofGroup = money[group.id] ?: GroupMoney.NONE
+                GroupWithMoney(
+                    group = group,
+                    expenses = ofGroup.expenses,
+                    settlements = ofGroup.settlements,
                 )
-                uiState.update {
-                    it.copy(
-                        groups = rows,
-                        hasLoadedGroups = true,
-                        summary = summaryOf(rows),
-                        pendingChangeCount = pendingChangeCountOf(groups),
-                    )
-                }
-            }.launchIn(viewModelScope)
+            }
+        }.onEach { groups ->
+            val rows = rowsOf(
+                groups = groups,
+                clock = ActivityClock(
+                    nowMillis = currentTimeMillis(),
+                    timeZone = currentTimeZone(),
+                ),
+            )
+            uiState.update {
+                it.copy(
+                    groups = rows,
+                    hasLoadedGroups = true,
+                    summary = summaryOf(rows),
+                    pendingChangeCount = pendingChangeCountOf(groups),
+                )
+            }
+        }.launchIn(viewModelScope)
         // Why: only while the home is on top; a deleted group still open shows its own "Grupo apagado".
         combine(observeGroupDeletions(), navigator.backStack, ::Pair)
             .onEach { (deletions, _) ->
@@ -216,19 +219,6 @@ class GroupsViewModel(
             syncNow()
             uiState.update { it.copy(isRefreshing = false) }
         }
-    }
-
-    // Why: each group's bills and payments, again whenever any of them changes here or through a sync.
-    private fun withMoney(groups: List<Group>): Flow<List<GroupWithMoney>> {
-        if (groups.isEmpty()) return flowOf(emptyList())
-        return combine(
-            groups.map { group ->
-                combine(
-                    observeExpenses(group.id),
-                    observeSettlements(group.id),
-                ) { expenses, settlements -> GroupWithMoney(group, expenses, settlements) }
-            },
-        ) { it.toList() }
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Groups

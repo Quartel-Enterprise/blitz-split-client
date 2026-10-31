@@ -9,8 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -2180,8 +2179,7 @@ class GroupsViewModelTest {
                 syncGate?.await()
                 Result.success(Unit)
             },
-            observeExpenses = ObserveExpensesUseCase(expenses),
-            observeSettlements = ObserveSettlementsUseCase(settlements),
+            observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
             currentTimeMillis = CurrentTimeMillis { now },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },
             navigator = navigator,

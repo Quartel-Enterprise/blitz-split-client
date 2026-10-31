@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseLocalDataSource {
     fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>>
 
+    fun observeAllExpenses(): Flow<List<ExpenseWithEditor>>
+
     // Why: null once the bill is deleted, here or by a sync.
     fun observeExpense(id: String): Flow<ExpenseWithEditor?>
 

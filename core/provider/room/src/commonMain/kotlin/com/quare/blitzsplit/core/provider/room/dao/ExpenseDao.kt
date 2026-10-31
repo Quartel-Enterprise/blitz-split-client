@@ -26,6 +26,13 @@ interface ExpenseDao {
     )
     fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>>
 
+    // Why: every group's bills in one query, each group's in the order of its own list, for the home's balances.
+    @Query(
+        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE isDeleted = 0 " +
+            "ORDER BY groupId, spentAt DESC, addedAt DESC, id",
+    )
+    fun observeAllExpenses(): Flow<List<ExpenseWithEditor>>
+
     // Why: "Conta" and "Editar conta", which close once the bill is deleted, here or on another device.
     @Query(
         "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE id = :id AND isDeleted = 0",

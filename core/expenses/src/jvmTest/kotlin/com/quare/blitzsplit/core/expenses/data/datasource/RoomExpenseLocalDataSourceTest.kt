@@ -349,6 +349,40 @@ class RoomExpenseLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN bills of two groups and a deleted one WHEN observing all THEN shows each group newest first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(
+                        id = "other-group",
+                        groupId = OTHER_USER_GROUP,
+                        addedAt = 2L,
+                    ),
+                    expense(
+                        id = "older",
+                        addedAt = 1L,
+                    ),
+                    expense(
+                        id = "deleted",
+                        addedAt = 4L,
+                        isDeleted = true,
+                    ),
+                    expense(
+                        id = "newer",
+                        addedAt = 3L,
+                    ),
+                ),
+            )
+
+            // When
+            val expenses = dataSource.observeAllExpenses().first()
+
+            // Then
+            assertEquals(listOf("newer", "older", "other-group"), expenses.map { it.expense.id })
+        }
+
+    @Test
     fun `GIVEN a deleted bill WHEN deleting it again THEN fails`() = runTest {
         // Given
         prepareScenario(

@@ -97,6 +97,40 @@ class RoomSettlementLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN payments of two groups and one undone WHEN observing all THEN shows each group newest first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    settlement(
+                        id = "other-group",
+                        groupId = OTHER_USER_GROUP,
+                        paidAt = 2_000L,
+                    ),
+                    settlement(
+                        id = "older",
+                        paidAt = 1_000L,
+                    ),
+                    settlement(
+                        id = "undone",
+                        paidAt = 4_000L,
+                        isDeleted = true,
+                    ),
+                    settlement(
+                        id = "newer",
+                        paidAt = 3_000L,
+                    ),
+                ),
+            )
+
+            // When
+            val settlements = dataSource.observeAllSettlements().first()
+
+            // Then
+            assertEquals(listOf("newer", "older", "other-group"), settlements.map { it.id })
+        }
+
+    @Test
     fun `GIVEN pending payments WHEN observing their versions THEN gets when each was last changed`() = runTest {
         // Given
         prepareScenario(
