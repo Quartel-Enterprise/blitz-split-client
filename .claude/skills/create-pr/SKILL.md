@@ -180,45 +180,62 @@ If every file the branch changes is Markdown (`.md`), commits ahead of `main` an
 changes alike, skip this step. Nothing builds those files, and the checks take minutes.
 
 Otherwise, sort the changed files into the areas below and run the checks of every area that has at
-least one. Pass `--continue` to Gradle so one failure doesn't hide the next.
+least one. Put the Gradle tasks of every area into one `./gradlew` call, so they share one
+configuration and run in parallel, and pass `--continue` so one failure doesn't hide the next.
 
 | Area | The branch changes | Checks |
 |---|---|---|
-| Shared Kotlin | `core/`, `feature/`, `shared/` | Tests and coverage first, then the full build |
+| Shared Kotlin | `core/`, `feature/`, `shared/` | Tests and coverage, every target compiled, the debug APK |
+| Platform code | `appleMain` or `jsMain` of a module in `core/`, `feature/`, `shared/` | That module's `commonTest` on the platform it changed |
 | Build | `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | The full build and the module graph |
 | Android UI | `android/`, `androidApp/` | The debug APK and Android lint, unless the full build already ran |
 | Apple UI | `iosApp/`, or the API Swift sees: `shared/`, `core/{model,presentation,navigation}`, `feature/*/src/commonMain/**/presentation`, `version.properties` | Regenerate the Xcode project, build both schemes |
 | Web UI | `webApp/`, or the API TypeScript sees: `shared/src/jsMain`, `feature/*/src/commonMain/**/presentation` | The production build of the web app |
 | Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd*`, `scripts/jscpd/` | The duplication check |
 
-**Shared Kotlin**, tests and coverage:
+**Shared Kotlin**:
 
 ```bash
-./gradlew jvmTest koverVerify --continue
+./gradlew jvmTest :koverVerifyCi \
+  compileKotlinIosSimulatorArm64 compileKotlinMacosArm64 compileKotlinJs \
+  :androidApp:assembleDebug --continue
 ```
 
-`jvmTest` runs every module's `commonTest` on the JVM target, and `koverVerify` holds the merged
+`jvmTest` runs every module's `commonTest` on the JVM target, and `:koverVerifyCi` holds the merged
 line coverage of `core/*` and `feature/*` at 80% (the `kover` block of the root `build.gradle.kts`
 says what is left out: `*.di`, `*.bridge`, generated code, the `:testing` fakes and
-`:core:provider:*`). If a test or the coverage rule fails, stop and report it: write the missing
-tests rather than pushing a red branch, through the `write-tests` skill when the "Who writes the
-unit tests" section of [docs/ai_agents.md](../../../docs/ai_agents.md) says so.
+`:core:provider:*`), the same rule CI checks. If a test or the coverage rule fails, stop and report
+it: write the missing tests rather than pushing a red branch, through the `write-tests` skill when
+the "Who writes the unit tests" section of [docs/ai_agents.md](../../../docs/ai_agents.md) says so.
 
-**Shared Kotlin and Build**, the full build:
+The `compileKotlin*` tasks compile the main code of every module for iOS, macOS and JS, which
+catches an `appleMain` or `jsMain` the change broke, and `:androidApp:assembleDebug` compiles the
+Android target and the Compose UI that draws the ViewModels. They neither link test binaries nor run
+the suites again on each platform: `commonTest` already ran on the JVM, and linking the Kotlin/Native
+test binaries is what makes `./gradlew build` take minutes. The Apple UI and Web UI checks below link
+the `Shared` framework and the JS library when the API they see changes.
 
-```bash
-./gradlew build --continue
-```
-
-It compiles every target of every module (Android, iOS, macOS, JS, JVM), links the `Shared`
-framework and the JS library, runs every test suite (the JS ones in a headless browser, the Apple
-ones on the simulator runtime), runs Android lint on `:androidApp` and the `:android:*` modules, and
-the root `check` runs `koverVerify` again. For a **Build** change, also run the module graph rules
-of the root `build.gradle.kts`, which `build` doesn't:
+**Platform code**, for each module whose `appleMain` or `jsMain` the branch changes, its
+`commonTest` against that platform's code:
 
 ```bash
-./gradlew assertModuleGraph
+./gradlew :<module>:iosSimulatorArm64Test :<module>:jsTest --continue
 ```
+
+with `iosSimulatorArm64Test` for `appleMain` and `jsTest` (a headless browser) for `jsMain`.
+
+**Build**, the full build:
+
+```bash
+./gradlew build assertModuleGraph --continue
+```
+
+A build change can break any target, so it runs everything: it compiles every target of every
+module, links the `Shared` framework and the JS library, runs every test suite (the JS ones in a
+headless browser, the Apple ones on the simulator runtime), builds the release APK with R8, runs
+Android lint on `:androidApp` and the `:android:*` modules, and `assertModuleGraph` checks the module
+graph rules of the root `build.gradle.kts`. It covers the Shared Kotlin, Platform code and Android UI
+checks, so skip those. Expect several minutes in a fresh worktree.
 
 **Android UI**, when the full build didn't run:
 
