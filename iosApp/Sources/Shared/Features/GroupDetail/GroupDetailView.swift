@@ -441,7 +441,7 @@ private struct MacGroupExpenses: View {
             }
             .width(min: 50, ideal: 60, max: 80)
             TableColumn("Who paid") { item in
-                Text(verbatim: item.expense.map(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
+                Text(verbatim: item.expense.flatMap(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
                     .foregroundStyle(.secondary)
             }
             TableColumn("Total") { item in

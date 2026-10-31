@@ -38,7 +38,7 @@ data class PayerAmounts(
     val remainingMinor: Long = totalMinor - paidMinor
 
     // Why: "Fechou": the amounts add up to the total, which "Pronto" and Salvar wait for.
-    val addsUp: Boolean = totalMinor > 0 && payers.isNotEmpty() && remainingMinor == 0L
+    val addsUp: Boolean = totalMinor > 0 && remainingMinor == 0L
 
     // Why: what is missing or over, only while there is a total to compare with.
     val showsMismatch: Boolean = totalMinor > 0 && remainingMinor != 0L

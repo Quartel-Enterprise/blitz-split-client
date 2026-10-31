@@ -201,7 +201,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
     payers.length > 1
       ? t('groupDetail_metaPaidBySeveral', {
           time,
-          names: payerNamesText(payers.map((it) => (it.isMe ? t('splitBill_you') : (it.name ?? t('splitBill_formerMember'))))),
+          names: payerNamesText(payers.map((it) => (it.isMe ? t('splitBill_you') : nameOrFormer(it.name)))),
         })
       : payer?.isMe
         ? t('groupDetail_metaPaidByMe', { time })

@@ -155,7 +155,7 @@ class BillDetailViewModel(
                 totalMinor = expense.amountMinor,
                 spentAt = expense.spentAt,
                 spentDay = relativeDayOf(expense.spentAt),
-                payers = payersOf(group, expense),
+                payers = payersOf(group, expense, membersById),
                 isPending = expense.isPending,
                 myBalanceMinor = me?.id?.let(expense::balanceOf),
                 myPartNote = me?.let { myPartNoteOf(expense, it, membersById) },
@@ -172,17 +172,15 @@ class BillDetailViewModel(
     private fun payersOf(
         group: Group,
         expense: Expense,
-    ): List<BillPayer> {
-        val membersById = group.members.associateBy { it.id }
-        return PayerOrder(group.members).sort(expense.payers.map { it.memberId }).map { id ->
-            val member = membersById[id]
-            BillPayer(
-                name = member?.name,
-                initials = member?.let { Initials.ofMember(it.name, it.isMe) }.orEmpty(),
-                avatarColor = member?.avatarColor ?: AvatarColor.entries.first(),
-                isMe = member?.isMe == true,
-            )
-        }
+        membersById: Map<String, GroupMember>,
+    ): List<BillPayer> = PayerOrder(group.members).sort(expense.payers.map { it.memberId }).map { id ->
+        val member = membersById[id]
+        BillPayer(
+            name = member?.name,
+            initials = member?.let { Initials.ofMember(it.name, it.isMe) }.orEmpty(),
+            avatarColor = member?.avatarColor ?: AvatarColor.entries.first(),
+            isMe = member?.isMe == true,
+        )
     }
 
     private fun rowsOf(

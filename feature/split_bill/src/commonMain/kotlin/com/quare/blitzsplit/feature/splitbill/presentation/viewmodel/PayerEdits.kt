@@ -92,8 +92,9 @@ internal fun PayerAmounts.withPeople(
         )
     }
     val memberIds = people.map { it.id }.toSet()
+    // Why: an "Ex-membro" row stays while its field is cleared, so it can be typed again; whoever leaves blank goes.
     val formerRows = rows
-        .filter { keepsFormer && it.memberId !in memberIds && it.amountText.isNotBlank() }
+        .filter { keepsFormer && it.memberId !in memberIds && (it.person == null || it.amountText.isNotBlank()) }
         .map { it.copy(person = null) }
     return copy(
         rows = memberRows + formerRows,
