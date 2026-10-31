@@ -69,6 +69,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download
     progress (5.1d) yet: the sync can't tell how many groups are still to come.
+  - The home's group actions (5.3, 5.4): every row of Grupos and Quitados ends in a ⋮ (⋯ on iOS, macOS and the web)
+    with "Convidar pessoas", "Sair do grupo" and "Apagar grupo", the same as its long press (a bottom sheet with the
+    group and your balance on Android, the context menu on iOS) and its right click (the Mac's and the web's table);
+    the web's menu starts with "Abrir grupo". Convidar opens that group's `Route.Invite`, not as a new group. Sair and
+    Apagar open the group's own dialogs, rules and errors (`GroupExitController`), and stay on the home: "Acertar"
+    opens Registrar pagamento and "Ver saldos" the group's Saldos over it. Offline both show disabled with "Precisa de
+    internet" (Android's sheet adds "Sair e apagar precisam de internet…"); online, "Acerte os R$ 98,00 antes" (what
+    you owe, else what you're owed, `GroupRow.settleBeforeLeavingMinor`) and "Só quando todos tiverem acertado"
+    (`GroupRow.hasOpenDebts`) say what blocks them before the tap, which still opens the dialog listing what is open.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
