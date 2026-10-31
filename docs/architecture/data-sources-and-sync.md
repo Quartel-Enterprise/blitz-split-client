@@ -185,7 +185,9 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   groups and members, down then up, since the server checks the bill's group (`can_access_group`) and the device
   needs the group to store a bill (`applyRemote` skips a bill whose group isn't there yet). The server checks that
   the shares and payers add up to the amount (`expense_adds_up`) and keeps the newer row with the same kind of
-  trigger, the creator included. The download pages through every bill and deletes the synced ones the server no
+  trigger, the creator included. Every bill goes up with whoever pushes it as `created_by`, even one another member
+  created: the upsert checks the insert policy, which wants the session's user as creator, and the trigger then puts
+  the stored creator back. The download pages through every bill and deletes the synced ones the server no
   longer has (`ExpenseDao.deleteGoneFromServer`); pending ones stay. A bill with a split mode this version doesn't
   know stays in Room but out of the lists. The split math (`BillSplit`) is shared by every UI: the cents a split
   can't share evenly go to whoever paid while they are in the split, otherwise one each to the first members.
