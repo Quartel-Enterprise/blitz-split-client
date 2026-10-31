@@ -14,6 +14,8 @@ class RoomExpenseLocalDataSource(
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = dao.observeExpense(id)
 
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = dao.observePendingDeletionGroupIds()
+
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()
 
     override fun observePendingVersions(): Flow<List<Long>> = dao.observePendingUpdatedAts()

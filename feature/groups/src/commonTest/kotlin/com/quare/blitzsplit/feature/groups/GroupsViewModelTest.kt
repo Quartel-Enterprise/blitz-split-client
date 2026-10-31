@@ -1946,6 +1946,89 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN offline WHEN a synced bill is deleted here THEN the row stays queued and the badge counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                syncState = SyncState.PENDING,
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            expenses.deleteExpense("dinner", deletedAt = now)
+
+            // Then
+            val state = viewModel.uiState.value
+            val row = state.groups.single()
+            assertTrue(row.isPending)
+            assertNull(row.pendingBillDescription)
+            assertEquals(GroupRowDetail.QUEUED, row.detail)
+            assertEquals(1, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN offline WHEN a synced payment is undone here THEN the row stays queued and the badge counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                syncState = SyncState.PENDING,
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 100L,
+                    ),
+                ),
+            )
+
+            // When
+            settlements.deleteSettlement("paid", deletedAt = now)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.groups.single().isPending)
+            assertEquals(1, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN a deletion waiting to go up WHEN the sync takes it up THEN the row is no longer queued`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 100L,
+                    ),
+                ),
+            )
+            settlements.deleteSettlement("paid", deletedAt = now)
+
+            // When
+            settlements.uploadPendingSettlements("user-1")
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.groups.single().isPending)
+            assertEquals(0, state.pendingChangeCount)
+        }
+
+    @Test
     fun `GIVEN Quitados collapsed WHEN expanding it THEN shows the settled groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(trio()))

@@ -12,6 +12,8 @@ interface ExpenseLocalDataSource {
     // Why: null once the bill is deleted, here or by a sync.
     fun observeExpense(id: String): Flow<ExpenseWithEditor?>
 
+    fun observePendingDeletionGroupIds(): Flow<List<String>>
+
     fun observeHasPending(): Flow<Boolean>
 
     fun observePendingVersions(): Flow<List<Long>>

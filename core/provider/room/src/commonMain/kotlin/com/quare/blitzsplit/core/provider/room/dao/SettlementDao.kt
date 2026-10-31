@@ -21,6 +21,10 @@ interface SettlementDao {
     @Query("SELECT * FROM settlement WHERE isDeleted = 0 ORDER BY groupId, paidAt DESC, addedAt DESC, id")
     fun observeAllSettlements(): Flow<List<SettlementEntity>>
 
+    // Why: the group of each payment undone here whose tombstone is not on the server yet, once per payment.
+    @Query("SELECT groupId FROM settlement WHERE pendingSync = 1 AND isDeleted = 1")
+    fun observePendingDeletionGroupIds(): Flow<List<String>>
+
     @Query("SELECT EXISTS(SELECT 1 FROM settlement WHERE pendingSync = 1)")
     fun observeHasPending(): Flow<Boolean>
 

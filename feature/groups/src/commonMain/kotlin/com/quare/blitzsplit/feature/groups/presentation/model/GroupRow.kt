@@ -18,7 +18,7 @@ data class GroupRow(
     val memberNames: List<String>,
     // Why: the orange dot and "na fila": the group, a bill or a payment changed here and not on the server yet.
     val isPending: Boolean,
-    // Why: "na fila · Mercado", the latest bill waiting to go up; null when only the group or a payment waits.
+    // Why: "na fila · Mercado", the latest bill waiting to go up; null when only the group, a payment or a deletion waits.
     val pendingBillDescription: String?,
     val currency: GroupCurrency,
     val balanceKind: GroupBalanceKind,

@@ -14,13 +14,17 @@ class ObserveGroupsMoneyUseCase(
     override fun invoke(): Flow<Map<String, GroupMoney>> = combine(
         expenses.observeAllExpenses(),
         settlements.observeAllSettlements(),
-    ) { allExpenses, allSettlements ->
+        expenses.observePendingDeletionGroupIds(),
+        settlements.observePendingDeletionGroupIds(),
+    ) { allExpenses, allSettlements, deletedBillGroupIds, undonePaymentGroupIds ->
         val expensesByGroup = allExpenses.groupBy { it.groupId }
         val settlementsByGroup = allSettlements.groupBy { it.groupId }
-        (expensesByGroup.keys + settlementsByGroup.keys).associateWith { groupId ->
+        val deletionCounts = (deletedBillGroupIds + undonePaymentGroupIds).groupingBy { it }.eachCount()
+        (expensesByGroup.keys + settlementsByGroup.keys + deletionCounts.keys).associateWith { groupId ->
             GroupMoney(
                 expenses = expensesByGroup[groupId].orEmpty(),
                 settlements = settlementsByGroup[groupId].orEmpty(),
+                pendingDeletionCount = deletionCounts[groupId] ?: 0,
             )
         }
     }

@@ -9,4 +9,6 @@ internal data class GroupWithMoney(
     val group: Group,
     val expenses: List<Expense>,
     val settlements: List<Settlement>,
+    // Why: bills and payments deleted here and not on the server yet, which no list shows but still wait.
+    val pendingDeletionCount: Int,
 )

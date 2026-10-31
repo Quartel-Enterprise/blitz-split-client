@@ -383,6 +383,37 @@ class RoomExpenseLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN bills deleted here and on the server WHEN observing pending deletions THEN gives the group of each`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(id = "bill-1"),
+                    expense(
+                        id = "bill-2",
+                        groupId = OTHER_USER_GROUP,
+                    ),
+                    expense(
+                        id = "deleted-on-server",
+                        isDeleted = true,
+                    ),
+                    expense(
+                        id = "edited-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+            dataSource.markDeleted("bill-1", now = 9_000L)
+            dataSource.markDeleted("bill-2", now = 9_000L)
+
+            // When
+            val groupIds = dataSource.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(MY_GROUP, OTHER_USER_GROUP), groupIds.sorted())
+        }
+
+    @Test
     fun `GIVEN a deleted bill WHEN deleting it again THEN fails`() = runTest {
         // Given
         prepareScenario(

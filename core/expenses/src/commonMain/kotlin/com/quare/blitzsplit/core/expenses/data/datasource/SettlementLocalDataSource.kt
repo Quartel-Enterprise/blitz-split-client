@@ -8,6 +8,8 @@ interface SettlementLocalDataSource {
 
     fun observeAllSettlements(): Flow<List<SettlementEntity>>
 
+    fun observePendingDeletionGroupIds(): Flow<List<String>>
+
     fun observeHasPending(): Flow<Boolean>
 
     fun observePendingVersions(): Flow<List<Long>>

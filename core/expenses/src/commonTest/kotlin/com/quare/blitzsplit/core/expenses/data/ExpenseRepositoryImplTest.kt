@@ -98,6 +98,35 @@ class ExpenseRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN bills deleted here and elsewhere WHEN observing pending deletions THEN gives the first group`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "deleted-here",
+                        isDeleted = true,
+                        pendingSync = true,
+                    ),
+                    entity(
+                        id = "deleted-elsewhere",
+                        isDeleted = true,
+                    ),
+                    entity(
+                        id = "edited-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            val groupIds = repository.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groupIds)
+        }
+
+    @Test
     fun `GIVEN a pending bill WHEN observing pending changes THEN reports them`() = runTest {
         // Given
         prepareScenario(
@@ -662,6 +691,10 @@ private class FakeExpenseLocalDataSource(
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
         list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = entities.map { list ->
+        list.filter { it.pendingSync && it.isDeleted }.map { it.groupId }
     }
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }

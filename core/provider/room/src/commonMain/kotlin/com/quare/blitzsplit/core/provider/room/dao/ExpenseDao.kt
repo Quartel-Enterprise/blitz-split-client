@@ -39,6 +39,10 @@ interface ExpenseDao {
     )
     fun observeExpense(id: String): Flow<ExpenseWithEditor?>
 
+    // Why: the group of each bill deleted here whose tombstone is not on the server yet, once per bill.
+    @Query("SELECT groupId FROM expense WHERE pendingSync = 1 AND isDeleted = 1")
+    fun observePendingDeletionGroupIds(): Flow<List<String>>
+
     @Query("SELECT EXISTS(SELECT 1 FROM expense WHERE pendingSync = 1)")
     fun observeHasPending(): Flow<Boolean>
 

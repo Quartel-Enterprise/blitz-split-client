@@ -128,6 +128,7 @@ class GroupsViewModel(
                     group = group,
                     expenses = ofGroup.expenses,
                     settlements = ofGroup.settlements,
+                    pendingDeletionCount = ofGroup.pendingDeletionCount,
                 )
             }
         }.onEach { groups ->

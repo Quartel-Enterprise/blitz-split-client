@@ -16,6 +16,9 @@ class FakeSettlementRepository(
     val settlements = MutableStateFlow(initialSettlements)
     val hasPendingChanges = MutableStateFlow(false)
     val pendingVersions = MutableStateFlow(emptyList<Long>())
+
+    // Why: like Room's tombstones, the group of each payment undone here until an upload takes them up.
+    val pendingDeletionGroupIds = MutableStateFlow(emptyList<String>())
     val recordedSettlements = mutableListOf<Settlement>()
     val recordedAts = mutableListOf<Long>()
     val deletedIds = mutableListOf<String>()
@@ -40,6 +43,8 @@ class FakeSettlementRepository(
         list.sortedWith(compareBy<Settlement> { it.groupId }.thenByDescending { it.paidAt })
     }
 
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = pendingDeletionGroupIds
+
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
     override fun observePendingVersions(): Flow<List<Long>> = pendingVersions
@@ -62,7 +67,8 @@ class FakeSettlementRepository(
     ): Result<Unit> {
         deleteError?.let { return Result.failure(it) }
         // Why: like Room, a payment already gone is what was asked.
-        if (settlements.value.none { it.id == id }) return Result.success(Unit)
+        val undone = settlements.value.firstOrNull { it.id == id } ?: return Result.success(Unit)
+        pendingDeletionGroupIds.update { it + undone.groupId }
         deletedIds += id
         deletedAts += deletedAt
         settlements.update { list -> list.filterNot { it.id == id } }
@@ -74,6 +80,7 @@ class FakeSettlementRepository(
         pushError?.let { return Result.failure(it) }
         hasPendingChanges.value = false
         pendingVersions.value = emptyList()
+        pendingDeletionGroupIds.value = emptyList()
         return Result.success(Unit)
     }
 

@@ -75,6 +75,35 @@ class SettlementRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN payments undone here and elsewhere WHEN observing pending deletions THEN gives the first group`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "undone-here",
+                        isDeleted = true,
+                        pendingSync = true,
+                    ),
+                    entity(
+                        id = "undone-elsewhere",
+                        isDeleted = true,
+                    ),
+                    entity(
+                        id = "recorded-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            val groupIds = repository.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groupIds)
+        }
+
+    @Test
     fun `GIVEN a pending payment WHEN observing pending changes THEN reports them with its version`() = runTest {
         // Given
         prepareScenario(
@@ -396,6 +425,10 @@ private class FakeSettlementLocalDataSource(
 
     override fun observeAllSettlements(): Flow<List<SettlementEntity>> = entities.map { list ->
         list.filter { !it.isDeleted }
+    }
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = entities.map { list ->
+        list.filter { it.pendingSync && it.isDeleted }.map { it.groupId }
     }
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }

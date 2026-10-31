@@ -63,8 +63,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     disabled at zero and answer "Em breve" until the global Saldos (flow 8). "Rachar conta" (Android's FAB, iOS's +,
     the main button on the web and the Mac) opens Novo grupo while there's no group and answers "Em breve" until it
     picks a group (7.1i). The sync status shows only when it asks for attention, "Offline · 1 alteração na fila"
-    counting the groups, bills and payments waiting. Pulling down syncs on Android and iOS. There is no first-download
-    progress (5.1d) yet: the sync can't tell how many groups are still to come.
+    counting the groups, bills and payments waiting, a deleted bill or an undone payment included (which also keep
+    their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download progress (5.1d) yet:
+    the sync can't tell how many groups are still to come.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

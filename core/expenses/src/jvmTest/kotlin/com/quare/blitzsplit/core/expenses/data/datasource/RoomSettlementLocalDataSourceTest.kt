@@ -131,6 +131,32 @@ class RoomSettlementLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN payments undone here and on the server WHEN observing pending deletions THEN gives its group`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    settlement(id = "payment-1"),
+                    settlement(
+                        id = "undone-on-server",
+                        isDeleted = true,
+                    ),
+                    settlement(
+                        id = "recorded-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+            dataSource.markDeleted("payment-1", now = 9_000L)
+
+            // When
+            val groupIds = dataSource.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(MY_GROUP), groupIds)
+        }
+
+    @Test
     fun `GIVEN pending payments WHEN observing their versions THEN gets when each was last changed`() = runTest {
         // Given
         prepareScenario(

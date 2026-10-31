@@ -74,11 +74,56 @@ class ObserveGroupsMoneyUseCaseTest {
                 "group-1" to GroupMoney(
                     expenses = emptyList(),
                     settlements = listOf(payment(id = "paid")),
+                    pendingDeletionCount = 0,
                 ),
             ),
             money,
         )
     }
+
+    @Test
+    fun `GIVEN a bill deleted and a payment undone here WHEN observing before the sync THEN counts both as waiting`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "dinner",
+                        groupId = "group-1",
+                        spentAt = 1_000L,
+                    ),
+                    expense(
+                        id = "taxi",
+                        groupId = "group-2",
+                        spentAt = 1_000L,
+                    ),
+                ),
+                storedSettlements = listOf(payment(id = "paid")),
+            )
+            expenses.deleteExpense("dinner", deletedAt = 9_000L)
+            expenses.deleteExpense("taxi", deletedAt = 9_000L)
+            settlements.deleteSettlement("paid", deletedAt = 9_000L)
+
+            // When
+            val money = useCase().first()
+
+            // Then
+            assertEquals(
+                mapOf(
+                    "group-1" to GroupMoney(
+                        expenses = emptyList(),
+                        settlements = emptyList(),
+                        pendingDeletionCount = 2,
+                    ),
+                    "group-2" to GroupMoney(
+                        expenses = emptyList(),
+                        settlements = emptyList(),
+                        pendingDeletionCount = 1,
+                    ),
+                ),
+                money,
+            )
+        }
 
     @Test
     fun `GIVEN nothing spent WHEN a bill is added THEN its group shows it`() = runTest {

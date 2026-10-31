@@ -62,7 +62,10 @@ internal fun rowOf(
         extraMemberCount = (group.members.size - MAX_FACES).coerceAtLeast(0),
         memberCount = group.members.size,
         memberNames = group.members.take(MAX_FACES).map { it.name },
-        isPending = group.isPending || pendingBill != null || item.settlements.any { it.isPending },
+        isPending = group.isPending ||
+            pendingBill != null ||
+            item.settlements.any { it.isPending } ||
+            item.pendingDeletionCount > 0,
         pendingBillDescription = pendingBill?.description,
         currency = group.currency,
         balanceKind = balanceKindOf(balances, receives - owes),
@@ -132,9 +135,10 @@ internal fun summaryOf(rows: List<GroupRow>): GroupsSummary = GroupsSummary(
         },
 )
 
-// Why: "na fila" counts each group, bill and payment waiting to go up as one change.
+// Why: "na fila" counts each group, bill and payment waiting to go up as one change, a deleted one included.
 internal fun pendingChangeCountOf(groups: List<GroupWithMoney>): Int = groups.sumOf { item ->
     (if (item.group.isPending) 1 else 0) +
         item.expenses.count { it.isPending } +
-        item.settlements.count { it.isPending }
+        item.settlements.count { it.isPending } +
+        item.pendingDeletionCount
 }

@@ -13,6 +13,12 @@ interface ExpenseRepository {
     // Why: one bill, null once it is deleted, here or on another device.
     fun observeExpense(id: String): Flow<Expense?>
 
+    /*
+     * Why: the group of each bill deleted here whose tombstone waits to go up, once per bill: gone from the lists,
+     * still a change in the queue.
+     */
+    fun observePendingDeletionGroupIds(): Flow<List<String>>
+
     fun observeHasPendingChanges(): Flow<Boolean>
 
     /*
