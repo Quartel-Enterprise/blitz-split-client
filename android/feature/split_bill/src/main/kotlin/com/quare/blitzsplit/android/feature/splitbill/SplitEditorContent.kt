@@ -100,6 +100,7 @@ internal fun SplitEditorContent(
         second = {
             SplitPeopleList(
                 editor = editor,
+                hasSeveralPayers = state.severalPayers != null,
                 rowMinHeight = rowMinHeight,
                 money = money,
                 onEvent = onEvent,
@@ -176,6 +177,7 @@ private fun SplitSummaryRow(
 @Composable
 private fun SplitPeopleList(
     editor: SplitEditor,
+    hasSeveralPayers: Boolean,
     rowMinHeight: Dp,
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
@@ -226,7 +228,7 @@ private fun SplitPeopleList(
                 isIn = row.person.id in includedIds,
                 paidLabel = when {
                     row.person.id !in editor.payerIds -> null
-                    state.severalPayers != null -> R.string.split_bill_row_paid_part
+                    hasSeveralPayers -> R.string.split_bill_row_paid_part
                     else -> R.string.split_bill_row_paid
                 },
                 isWithoutValue = row.person.id in withoutValueIds,
