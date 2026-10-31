@@ -2110,6 +2110,79 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN every group settled WHEN the groups open THEN says there is no open group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "gas",
+                    paidBy = "Ana",
+                    amountMinor = 6000L,
+                    splitOver = listOf("Ana", "Pierre"),
+                ),
+            ),
+            storedSettlements = listOf(
+                payment(
+                    "paid",
+                    from = "Pierre",
+                    to = "Ana",
+                    amountMinor = 3000L,
+                ),
+            ),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsNoOpenGroups)
+        assertFalse(state.showsNoSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN only open groups WHEN the groups open THEN says there is no settled group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsNoOpenGroups)
+        assertTrue(state.showsNoSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN a filter no group matches WHEN filtering THEN says neither tab is empty`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnFilterChanged(query = "praia"))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertFalse(state.showsNoOpenGroups)
+        assertFalse(state.showsNoSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN no group yet WHEN the groups open THEN shows the empty home rather than empty tabs`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsEmptyState)
+            assertFalse(state.showsNoOpenGroups)
+            assertFalse(state.showsNoSettledGroups)
+        }
+
+    @Test
     fun `GIVEN online WHEN pulling to refresh THEN syncs once and waits for it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

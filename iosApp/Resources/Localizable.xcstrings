@@ -4425,6 +4425,17 @@
         }
       }
     },
+    "No open groups" : {
+      "comment" : "Where the open groups go when every group is settled up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum grupo em aberto"
+          }
+        }
+      }
+    },
     "No response from the server" : {
       "localizations" : {
         "pt-BR" : {
@@ -4441,6 +4452,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sem resposta do servidor · tentar de novo"
+          }
+        }
+      }
+    },
+    "No settled groups" : {
+      "comment" : "The Mac's Settled up segment with no group settled up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum grupo quitado"
           }
         }
       }

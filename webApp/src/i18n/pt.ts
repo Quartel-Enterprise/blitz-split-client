@@ -119,6 +119,8 @@ export const pt: Record<MessageKey, string> = {
   groups_columnBalance: 'Seu saldo',
   groups_queued: 'na fila',
   groups_noMatch: 'Nenhum grupo com “{query}”.',
+  groups_noOpen: 'Nenhum grupo em aberto',
+  groups_noSettled: 'Nenhum grupo quitado',
   groups_summaryTitle: 'Saldo geral',
   groups_summaryToReceiveHint: 'a receber, somando os grupos',
   groups_summaryToPayHint: 'a pagar, somando os grupos',

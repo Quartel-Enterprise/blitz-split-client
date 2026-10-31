@@ -92,6 +92,9 @@ class JsGroupsState(
     val openGroups: Array<JsGroupRow>,
     val settledGroups: Array<JsGroupRow>,
     val showsSettledGroups: Boolean,
+    // Why: "Nenhum grupo em aberto" or "Nenhum grupo quitado" on a tab with no group and no filter.
+    val showsNoOpenGroups: Boolean,
+    val showsNoSettledGroups: Boolean,
     val filterQuery: String,
     // Why: "Carla apagou o grupo Aniversário da Ana.", a snackbar; deletedByName is null once that account is gone.
     val deletedGroupId: String?,
@@ -123,6 +126,8 @@ class GroupsPresenter {
                 openGroups = state.openGroups.map(::toJsGroupRow).toTypedArray(),
                 settledGroups = state.settledGroups.map(::toJsGroupRow).toTypedArray(),
                 showsSettledGroups = state.showsSettledGroups,
+                showsNoOpenGroups = state.showsNoOpenGroups,
+                showsNoSettledGroups = state.showsNoSettledGroups,
                 filterQuery = state.filterQuery,
                 deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,

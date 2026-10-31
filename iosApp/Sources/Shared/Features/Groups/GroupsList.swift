@@ -24,6 +24,12 @@ struct GroupsList: View {
                     .listRowBackground(Color.clear)
             }
             Section {
+                // Every group is settled up: the section says so rather than standing empty
+                if state.showsNoOpenGroups {
+                    Text("No open groups")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                }
                 ForEach(state.openGroups, id: \.id) { group in
                     row(group)
                 }

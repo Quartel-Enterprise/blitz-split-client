@@ -31,6 +31,7 @@
     </plurals>
     <string name="groups_open_count">Em aberto · %d</string>
     <string name="groups_settled_count">Quitados · %d</string>
+    <string name="groups_no_open">Nenhum grupo em aberto</string>
     <string name="groups_summary_title">Saldo geral</string>
     <string name="groups_summary_to_receive_hint">a receber, somando os grupos</string>
     <string name="groups_summary_to_pay_hint">a pagar, somando os grupos</string>

@@ -55,6 +55,16 @@ struct GroupsTable: View {
                 .width(min: 110, ideal: 130)
             }
             .alternatingRowBackgrounds(.enabled)
+            // The selected segment with no group, once every group is on the other one
+            .overlay {
+                if state.showsSettledGroups, state.showsNoSettledGroups {
+                    Text("No settled groups")
+                        .foregroundStyle(.secondary)
+                } else if !state.showsSettledGroups, state.showsNoOpenGroups {
+                    Text("No open groups")
+                        .foregroundStyle(.secondary)
+                }
+            }
             .onChange(of: selection) { _, groupId in
                 guard let groupId else { return }
                 model.send(GroupsUiEventOnGroupClicked(groupId: groupId))

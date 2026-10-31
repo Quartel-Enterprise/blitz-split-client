@@ -55,6 +55,17 @@ data class GroupsUiState(
     val settledGroups: List<GroupRow>
         get() = filteredGroups.filter { it.isSettled }
 
+    /*
+     * Why: "Nenhum grupo em aberto" where the open groups go, once there is a group; a filter that matches none says
+     * so instead.
+     */
+    val showsNoOpenGroups: Boolean
+        get() = groups.isNotEmpty() && filterQuery.isBlank() && openGroups.isEmpty()
+
+    // Why: "Nenhum grupo quitado" on the web's and the Mac's Quitados; a phone hides the empty section instead.
+    val showsNoSettledGroups: Boolean
+        get() = groups.isNotEmpty() && filterQuery.isBlank() && settledGroups.isEmpty()
+
     // Why: the query is folded once, not once per row.
     private val filteredGroups: List<GroupRow>
         get() {

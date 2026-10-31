@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
@@ -80,6 +81,22 @@ internal fun LazyListScope.groupsListItems(
             count = open.size,
             onEvent = onEvent,
         )
+    }
+    if (state.showsNoOpenGroups) {
+        item(
+            key = "no-open",
+            contentType = "empty",
+        ) {
+            Text(
+                text = stringResource(R.string.groups_no_open),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
     itemsIndexed(
         open,

@@ -118,6 +118,8 @@ export const en = {
   groups_columnBalance: 'Your balance',
   groups_queued: 'queued',
   groups_noMatch: 'No group named “{query}”.',
+  groups_noOpen: 'No open groups',
+  groups_noSettled: 'No settled groups',
   groups_summaryTitle: 'Overall balance',
   groups_summaryToReceiveHint: 'to get back, across your groups',
   groups_summaryToPayHint: 'to pay, across your groups',

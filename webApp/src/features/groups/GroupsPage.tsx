@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils'
  */
 export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
   const groups = state.showsSettledGroups ? state.settledGroups : state.openGroups
+  const showsNoGroups = state.showsSettledGroups ? state.showsNoSettledGroups : state.showsNoOpenGroups
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -58,7 +59,11 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
       </div>
 
       {groups.length === 0 ? (
-        state.filterQuery.trim() && <p className="py-6 text-center text-sm text-muted-foreground">{t('groups_noMatch', { query: state.filterQuery.trim() })}</p>
+        showsNoGroups ? (
+          <p className="py-6 text-center text-sm text-muted-foreground">{t(state.showsSettledGroups ? 'groups_noSettled' : 'groups_noOpen')}</p>
+        ) : (
+          state.filterQuery.trim() && <p className="py-6 text-center text-sm text-muted-foreground">{t('groups_noMatch', { query: state.filterQuery.trim() })}</p>
+        )
       ) : (
         <>
           <GroupsTable presenter={presenter} groups={groups} />
