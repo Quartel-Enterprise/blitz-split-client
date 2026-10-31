@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Fails the build on a localized key with a %d, %i or %u specifier, which only a 32-bit integer interpolation makes.
+"""Fails the build on a localized key with a %d or %f specifier, which an Int32 or a Float interpolation makes (Swift's
+Int and Double make %lld and %lf).
 
 Swift sees a Kotlin Int as Int32, and "\\(count) members" then gets the key "%d members". Localizable.xcstrings holds
 the %lld key a Swift Int makes, so the lookup misses: no pt-BR and no plural variants, only the English literal.
-Interpolate Int(count) instead.
+Interpolate Int(count) instead. A Kotlin Float is the same: a Swift Float makes %f where a Double makes %lf.
 
 Xcode runs it after Compile Sources, on the .stringsdata the compiler extracts the keys into (SWIFT_EMIT_LOC_STRINGS):
   check-localized-keys.py <OBJECT_FILE_DIR_normal>
@@ -15,8 +16,9 @@ import re
 import sys
 from pathlib import Path
 
-# %d, %5$d, %hd, %ld... but not %lld. A literal %% is dropped before the search.
-INT32_SPECIFIER = re.compile(r"%(\d+\$)?(hh|h|l)?[diu]")
+# %d, %5$d, %hd, %ld... but not %lld; a bare %f, not %lf nor the %.2f of an explicit specifier. A literal %% is
+# dropped before the search.
+NARROW_SPECIFIER = re.compile(r"%(\d+\$)?((hh|h|l)?[diu]|f)")
 
 
 def main(objects_dir: str) -> int:
@@ -34,11 +36,12 @@ def main(objects_dir: str) -> int:
         for entries in data.get("tables", {}).values():
             for entry in entries:
                 key = entry["key"]
-                if INT32_SPECIFIER.search(key.replace("%%", "")):
+                if NARROW_SPECIFIER.search(key.replace("%%", "")):
                     line = entry.get("location", {}).get("startingLine", 1)
                     print(
-                        f'{source}:{line}: error: the localized key "{key}" has a %d-style specifier, so it misses '
-                        "its %lld entry in Localizable.xcstrings: interpolate Int(...) for a Kotlin Int"
+                        f'{source}:{line}: error: the localized key "{key}" has a %d or %f specifier, so it '
+                        "misses its %lld or %lf entry in Localizable.xcstrings: interpolate Int(...) for a Kotlin "
+                        "Int, Double(...) for a Kotlin Float"
                     )
                     failures += 1
     return 1 if failures else 0
