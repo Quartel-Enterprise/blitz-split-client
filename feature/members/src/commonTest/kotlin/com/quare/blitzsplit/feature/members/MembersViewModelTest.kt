@@ -3434,6 +3434,7 @@ class MembersViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")

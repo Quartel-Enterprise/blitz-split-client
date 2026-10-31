@@ -3510,6 +3510,7 @@ class GroupRepositoryImplTest {
         isPending = true,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private fun group(

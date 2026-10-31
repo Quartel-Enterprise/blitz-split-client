@@ -21,4 +21,6 @@ data class Group(
      * invite link ("Trocar link").
      */
     val isCreatedByMe: Boolean,
+    // Why: when the group itself last changed, in epoch millis: its last activity on the home until it has a bill.
+    val updatedAt: Long,
 )

@@ -174,6 +174,7 @@ class UpdateGroupUseCaseTest {
         isPending = false,
         inviteCode = "Xy7kQ2",
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private fun prepareScenario(

@@ -1358,6 +1358,7 @@ class BillDetailViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private fun member(

@@ -25,6 +25,7 @@ class CreateGroupUseCase(
         members: List<NewGroupMember>,
     ): Result<String> {
         val id = Uuid.random().toString()
+        val createdAt = currentTimeMillis()
         return repository
             .createGroup(
                 group = Group(
@@ -46,8 +47,9 @@ class CreateGroupUseCase(
                     isPending = true,
                     inviteCode = null,
                     isCreatedByMe = true,
+                    updatedAt = createdAt,
                 ),
-                createdAt = currentTimeMillis(),
+                createdAt = createdAt,
             ).map { id }
     }
 }
