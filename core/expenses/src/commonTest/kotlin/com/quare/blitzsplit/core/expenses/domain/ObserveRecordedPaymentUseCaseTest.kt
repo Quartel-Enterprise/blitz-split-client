@@ -90,6 +90,7 @@ class ObserveRecordedPaymentUseCaseTest {
         method = SettlementMethod.CASH,
         paidAt = 1_000L,
         isPending = true,
+        updatedAt = 0L,
     )
 
     private companion object {

@@ -38,7 +38,15 @@ class MoneyFormatter(
         "0" + DecimalFormatSymbols.getInstance(locale).decimalSeparator + "0".repeat(currency.fractionDigits)
     }
 
+    private val plainFormat: NumberFormat = NumberFormat.getNumberInstance(locale).apply {
+        minimumFractionDigits = currency.fractionDigits
+        maximumFractionDigits = currency.fractionDigits
+    }
+
     fun toText(amountMinor: Long): String = format.format(BigDecimal.valueOf(amountMinor, fractionDigits))
+
+    // Why: "120,00" with no symbol, where the currency is already on the same line ("você recebe 120,00 e deve 218,00").
+    fun toAmountText(amountMinor: Long): String = plainFormat.format(BigDecimal.valueOf(amountMinor, fractionDigits))
 
     // Why: "+R$ 600,00" and "−R$ 118,00", with the typographic minus of the design.
     fun toSignedText(amountMinor: Long): String = when {

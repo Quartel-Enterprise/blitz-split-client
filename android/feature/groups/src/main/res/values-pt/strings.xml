@@ -14,10 +14,8 @@
     <string name="groups_tab_contacts">Contatos</string>
     <string name="groups_tab_activity">Atividade</string>
     <string name="groups_coming_soon">Em breve</string>
-    <string name="groups_open_title">Em aberto</string>
     <string name="groups_new_group">Novo grupo</string>
     <string name="groups_only_you">Só você</string>
-    <string name="groups_meta_pending">%s · na fila</string>
     <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">sem despesas</string>
     <plurals name="groups_member_count">
@@ -26,4 +24,40 @@
     </plurals>
     <string name="groups_deleted_by">%1$s apagou o grupo “%2$s”.</string>
     <string name="groups_deleted">O grupo “%s” foi apagado.</string>
+    <string name="groups_split_bill">Rachar conta</string>
+    <plurals name="groups_sync_offline_queued">
+        <item quantity="one">Offline · %d alteração na fila</item>
+        <item quantity="other">Offline · %d alterações na fila</item>
+    </plurals>
+    <string name="groups_open_count">Em aberto · %d</string>
+    <string name="groups_settled_count">Quitados · %d</string>
+    <string name="groups_no_open">Nenhum grupo em aberto</string>
+    <string name="groups_summary_title">Saldo geral</string>
+    <string name="groups_summary_to_receive_hint">a receber, somando os grupos</string>
+    <string name="groups_summary_to_pay_hint">a pagar, somando os grupos</string>
+    <string name="groups_summary_settled_hint">você está quitado</string>
+    <string name="groups_summary_to_receive">A receber</string>
+    <string name="groups_summary_to_pay">A pagar</string>
+    <string name="groups_summary_to_receive_description">A receber %s. Ver quem te deve</string>
+    <string name="groups_summary_to_pay_description">A pagar %s. Ver para quem você deve</string>
+    <string name="groups_balance_to_receive">a receber</string>
+    <string name="groups_balance_you_owe">você deve</string>
+    <string name="groups_balance_you_are_settled">você está quitado</string>
+    <string name="groups_balance_everyone_settled">Quitado</string>
+    <string name="groups_meta_queued">na fila</string>
+    <string name="groups_meta_queued_bill">na fila · %s</string>
+    <string name="groups_meta_mixed">você recebe %1$s e deve %2$s</string>
+    <string name="groups_meta_others_settling">outros ainda acertam</string>
+    <string name="groups_meta_invite">convide alguém</string>
+    <string name="groups_meta_everyone_settled">%1$s · todos acertaram em %2$s</string>
+    <string name="groups_activity_today">hoje</string>
+    <string name="groups_activity_yesterday">ontem</string>
+    <plurals name="groups_activity_days">
+        <item quantity="one">%d dia</item>
+        <item quantity="other">%d dias</item>
+    </plurals>
+    <plurals name="groups_activity_weeks">
+        <item quantity="one">%d semana</item>
+        <item quantity="other">%d semanas</item>
+    </plurals>
 </resources>

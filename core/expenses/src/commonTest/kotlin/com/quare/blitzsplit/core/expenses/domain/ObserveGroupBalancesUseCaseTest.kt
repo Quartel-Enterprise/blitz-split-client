@@ -225,6 +225,7 @@ class ObserveGroupBalancesUseCaseTest {
         method = SettlementMethod.PIX,
         paidAt = 2_000L,
         isPending = true,
+        updatedAt = 0L,
     )
 
     private fun TestScope.watchBalances() {

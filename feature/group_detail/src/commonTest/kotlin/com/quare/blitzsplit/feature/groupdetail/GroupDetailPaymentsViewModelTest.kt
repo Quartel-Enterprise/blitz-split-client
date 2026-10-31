@@ -1123,6 +1123,7 @@ class GroupDetailPaymentsViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     // Why: this device's user owes Ana 6.000 and Bruno 9.000.
@@ -1205,6 +1206,7 @@ class GroupDetailPaymentsViewModelTest {
         method = method,
         paidAt = paidAt,
         isPending = isPending,
+        updatedAt = 0L,
     )
 
     private fun prepareScenario(

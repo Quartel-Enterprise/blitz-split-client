@@ -10,7 +10,11 @@ class RoomExpenseLocalDataSource(
 ) : ExpenseLocalDataSource {
     override fun observeExpenses(groupId: String): Flow<List<ExpenseWithEditor>> = dao.observeExpenses(groupId)
 
+    override fun observeAllExpenses(): Flow<List<ExpenseWithEditor>> = dao.observeAllExpenses()
+
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = dao.observeExpense(id)
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = dao.observePendingDeletionGroupIds()
 
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()
 

@@ -2,6 +2,16 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
+import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
@@ -26,23 +36,34 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
+import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.utils.MinuteTicks
+import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
+import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.TimeZone
 import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -51,6 +72,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 class GroupsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -64,6 +87,14 @@ class GroupsViewModelTest {
     private var syncRequests = 0
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupsViewModel
+    private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
+    private var syncGate: CompletableDeferred<Unit>? = null
+    private var syncNowCount = 0
+
+    // Why: the device's clock, which a test moves on and then ticks a minute for.
+    private var clockMillis = 0L
+    private lateinit var minutes: MutableStateFlow<Int>
 
     @BeforeTest
     fun setUp() {
@@ -832,7 +863,19 @@ class GroupsViewModelTest {
                 ),
                 extraMemberCount = 0,
                 memberCount = 3,
+                memberNames = listOf("Pierre", "Ana", "Bia"),
                 isPending = false,
+                pendingBillDescription = null,
+                currency = GroupCurrency.BRL,
+                balanceKind = GroupBalanceKind.NO_EXPENSES,
+                netMinor = 0L,
+                receivesMinor = 0L,
+                owesMinor = 0L,
+                lastActivity = LastActivity(
+                    epochMillis = 0L,
+                    age = ActivityAge.DATE,
+                    count = 0,
+                ),
             ),
             row,
         )
@@ -1206,6 +1249,974 @@ class GroupsViewModelTest {
             assertEquals(1, viewModel.uiState.value.groups.size)
         }
 
+    @Test
+    fun `GIVEN a bill you paid for three WHEN the groups open THEN the row says what you get back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Pierre",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupBalanceKind.TO_RECEIVE, row.balanceKind)
+            assertEquals(6000L, row.netMinor)
+            assertEquals(GroupRowDetail.ACTIVITY, row.detail)
+        }
+
+    @Test
+    fun `GIVEN a bill someone else paid WHEN the groups open THEN the row says you owe`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "dinner",
+                    paidBy = "Ana",
+                    amountMinor = 9000L,
+                    splitOver = everyone,
+                ),
+            ),
+        )
+
+        // When
+        val row = viewModel.uiState.value.groups
+            .single()
+
+        // Then
+        assertEquals(GroupBalanceKind.YOU_OWE, row.balanceKind)
+        assertEquals(-3000L, row.netMinor)
+    }
+
+    @Test
+    fun `GIVEN you get from one and owe another WHEN the groups open THEN the row shows the net and both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "taxi",
+                        paidBy = "Pierre",
+                        amountMinor = 3000L,
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                    bill(
+                        "market",
+                        paidBy = "Bruno",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Pierre", "Bruno"),
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupBalanceKind.YOU_OWE, row.balanceKind)
+            assertEquals(-1500L, row.netMinor)
+            assertEquals(1500L, row.receivesMinor)
+            assertEquals(3000L, row.owesMinor)
+            assertEquals(GroupRowDetail.MIXED, row.detail)
+        }
+
+    @Test
+    fun `GIVEN you are out of the only bill WHEN the groups open THEN the group stays open while others settle`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "gas",
+                        paidBy = "Ana",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Ana", "Bruno"),
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            val row = state.openGroups.single()
+            assertEquals(GroupBalanceKind.YOU_ARE_SETTLED, row.balanceKind)
+            assertEquals(0L, row.netMinor)
+            assertEquals(GroupRowDetail.OTHERS_STILL_SETTLING, row.detail)
+            assertTrue(state.settledGroups.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN everybody paid what they owed WHEN the groups open THEN the group goes to Quitados`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "gas",
+                        paidBy = "Ana",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Ana", "Pierre"),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 3000L,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.openGroups.isEmpty())
+            val row = state.settledGroups.single()
+            assertEquals(GroupBalanceKind.EVERYONE_SETTLED, row.balanceKind)
+            assertEquals(GroupRowDetail.EVERYONE_SETTLED, row.detail)
+        }
+
+    @Test
+    fun `GIVEN only a payment left once its bill was deleted WHEN the groups open THEN the group stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.openGroups
+                .single()
+
+            // Then
+            assertEquals(GroupBalanceKind.TO_RECEIVE, row.balanceKind)
+            assertEquals(1000L, row.netMinor)
+        }
+
+    @Test
+    fun `GIVEN a group of only you and no bill WHEN the groups open THEN asks to invite someone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        members = listOf(
+                            member(
+                                name = "Pierre",
+                                isMe = true,
+                            ),
+                        ),
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.openGroups
+                .single()
+
+            // Then
+            assertEquals(GroupBalanceKind.NO_EXPENSES, row.balanceKind)
+            assertEquals(GroupRowDetail.INVITE_SOMEONE, row.detail)
+        }
+
+    @Test
+    fun `GIVEN a group with others and no bill WHEN the groups open THEN shows its last activity`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupBalanceKind.NO_EXPENSES, row.balanceKind)
+            assertEquals(GroupRowDetail.ACTIVITY, row.detail)
+        }
+
+    @Test
+    fun `GIVEN an older group with a newer bill WHEN the groups open THEN it comes first`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "renamed",
+                    updatedAt = daysAgo(1),
+                ),
+                trio(updatedAt = daysAgo(5)),
+            ),
+            storedExpenses = listOf(
+                bill(
+                    "dinner",
+                    paidBy = "Ana",
+                    amountMinor = 9000L,
+                    splitOver = everyone,
+                    updatedAt = daysAgo(0),
+                ),
+            ),
+        )
+
+        // When
+        val ids = viewModel.uiState.value.groups
+            .map(GroupRow::id)
+
+        // Then
+        assertEquals(listOf("trio", "renamed"), ids)
+    }
+
+    @Test
+    fun `GIVEN a payment newer than every bill WHEN the groups open THEN the payment is the last activity`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(updatedAt = daysAgo(9))),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                        updatedAt = daysAgo(8),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                        paidAt = daysAgo(1),
+                    ),
+                ),
+            )
+
+            // When
+            val activity = viewModel.uiState.value.groups
+                .single()
+                .lastActivity
+
+            // Then
+            assertEquals(LastActivity(daysAgo(1), ActivityAge.YESTERDAY, 0), activity)
+        }
+
+    @Test
+    fun `GIVEN a payment dated last week recorded today WHEN the groups open THEN it counts as today and is first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "renamed",
+                        updatedAt = daysAgo(1),
+                    ),
+                    trio(updatedAt = daysAgo(9)),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                        paidAt = daysAgo(7),
+                        updatedAt = daysAgo(0),
+                    ),
+                ),
+            )
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(listOf("trio", "renamed"), groups.map(GroupRow::id))
+            assertEquals(LastActivity(daysAgo(0), ActivityAge.TODAY, 0), groups.first().lastActivity)
+        }
+
+    @Test
+    fun `GIVEN groups changed at different times WHEN the groups open THEN says how long ago in days and weeks`() =
+        runTest(testDispatcher) {
+            // Given
+            val ages = listOf(0, 3, 8, 27, 28)
+            prepareScenario(
+                storedGroups = ages.map {
+                    group(
+                        id = "g$it",
+                        updatedAt = daysAgo(it),
+                    )
+                },
+            )
+
+            // When
+            val activities = viewModel.uiState.value.groups
+                .map { it.lastActivity.age to it.lastActivity.count }
+
+            // Then
+            assertEquals(
+                listOf(
+                    ActivityAge.TODAY to 0,
+                    ActivityAge.DAYS to 3,
+                    ActivityAge.WEEKS to 1,
+                    ActivityAge.WEEKS to 3,
+                    ActivityAge.DATE to 0,
+                ),
+                activities,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group changed this afternoon on an open home WHEN midnight passes THEN its row says yesterday`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(group(updatedAt = now)))
+
+            // When
+            clockMillis = Instant.parse("2026-11-01T00:00:00Z").toEpochMilliseconds()
+            minutes.value += 1
+
+            // Then
+            assertEquals(
+                LastActivity(now, ActivityAge.YESTERDAY, 0),
+                viewModel.uiState.value.groups
+                    .single()
+                    .lastActivity,
+            )
+        }
+
+    @Test
+    fun `GIVEN groups on an open home WHEN a minute passes on the same day THEN keeps their order and ages`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "today",
+                        updatedAt = now,
+                    ),
+                    group(
+                        id = "last-week",
+                        updatedAt = daysAgo(7),
+                    ),
+                ),
+            )
+            val before = viewModel.uiState.value
+
+            // When
+            clockMillis = now + 60_000L
+            minutes.value += 1
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `GIVEN a change dated after now WHEN the groups open THEN counts it as today`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(group(updatedAt = now + 3.days.inWholeMilliseconds)))
+
+        // When
+        val age = viewModel.uiState.value.groups
+            .single()
+            .lastActivity.age
+
+        // Then
+        assertEquals(ActivityAge.TODAY, age)
+    }
+
+    @Test
+    fun `GIVEN groups in two currencies WHEN the groups open THEN sums the balances per currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(id = "get"),
+                    trio(id = "owe"),
+                    trio(id = "mixed"),
+                    trio(
+                        id = "trip",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "a",
+                        groupId = "get",
+                        paidBy = "Pierre",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                    bill(
+                        "b",
+                        groupId = "owe",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                    bill(
+                        "c",
+                        groupId = "mixed",
+                        paidBy = "Pierre",
+                        amountMinor = 3000L,
+                        splitOver = listOf("Pierre", "Ana"),
+                    ),
+                    bill(
+                        "d",
+                        groupId = "mixed",
+                        paidBy = "Bruno",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Pierre", "Bruno"),
+                    ),
+                    bill(
+                        "e",
+                        groupId = "trip",
+                        paidBy = "Pierre",
+                        amountMinor = 600L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val summary = viewModel.uiState.value.summary
+
+            // Then
+            assertEquals(
+                listOf(
+                    BalanceTotal(
+                        currency = GroupCurrency.BRL,
+                        netMinor = 1500L,
+                        toReceiveMinor = 6000L,
+                        toPayMinor = 4500L,
+                        toReceiveGroupCount = 1,
+                        toPayGroupCount = 2,
+                    ),
+                    BalanceTotal(
+                        currency = GroupCurrency.USD,
+                        netMinor = 400L,
+                        toReceiveMinor = 400L,
+                        toPayMinor = 0L,
+                        toReceiveGroupCount = 1,
+                        toPayGroupCount = 0,
+                    ),
+                ),
+                summary.totals,
+            )
+            assertEquals(GroupBalanceKind.TO_RECEIVE, summary.kind)
+            assertEquals(2, summary.toReceiveGroupCount)
+            assertEquals(2, summary.toPayGroupCount)
+        }
+
+    @Test
+    fun `GIVEN only debts WHEN the groups open THEN the summary is to pay and nothing is to receive`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val summary = viewModel.uiState.value.summary
+
+            // Then
+            assertEquals(GroupBalanceKind.YOU_OWE, summary.kind)
+            assertFalse(summary.canOpenToReceive)
+            assertTrue(summary.canOpenToPay)
+        }
+
+    @Test
+    fun `GIVEN groups without bills WHEN the groups open THEN the summary is settled with both buttons disabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsSummary)
+            assertEquals(GroupBalanceKind.YOU_ARE_SETTLED, state.summary.kind)
+            assertFalse(state.summary.canOpenToReceive)
+            assertFalse(state.summary.canOpenToPay)
+        }
+
+    @Test
+    fun `GIVEN only the second currency has a net WHEN the groups open THEN the summary is to receive`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(id = "home"),
+                    trio(id = "work"),
+                    trio(
+                        id = "trip",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "e",
+                        groupId = "trip",
+                        paidBy = "Pierre",
+                        amountMinor = 600L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val summary = viewModel.uiState.value.summary
+
+            // Then
+            assertEquals(GroupCurrency.BRL, summary.totals.first().currency)
+            assertEquals(GroupBalanceKind.TO_RECEIVE, summary.kind)
+        }
+
+    @Test
+    fun `GIVEN nothing to receive WHEN tapping A receber THEN does nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "dinner",
+                    paidBy = "Ana",
+                    amountMinor = 9000L,
+                    splitOver = everyone,
+                ),
+            ),
+        )
+        val actions = mutableListOf<GroupsUiAction>()
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN something to pay WHEN tapping A pagar THEN says the balances are coming soon`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+            val actions = mutableListOf<GroupsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnToPayClicked)
+
+            // Then
+            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
+        }
+
+    @Test
+    fun `GIVEN something to receive WHEN tapping A receber THEN says the balances are coming soon`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Pierre",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+            val actions = mutableListOf<GroupsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+
+            // Then
+            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
+        }
+
+    @Test
+    fun `GIVEN no group yet WHEN tapping Rachar conta THEN opens Novo grupo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(Route.CreateGroup, navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN a group WHEN tapping Rachar conta THEN says picking a group is coming soon`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        val actions = mutableListOf<GroupsUiAction>()
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
+        assertEquals(Route.Groups, navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN another screen over the home WHEN tapping Rachar conta THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.Profile)
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(Route.Profile, navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN a bill and a payment waiting to go up WHEN the groups open THEN the row is queued with the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(),
+                    group(
+                        id = "new",
+                        isPending = true,
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "old",
+                        paidBy = "Ana",
+                        amountMinor = 900L,
+                        splitOver = everyone,
+                        updatedAt = 1L,
+                        isPending = true,
+                    ),
+                    bill(
+                        id = "market",
+                        paidBy = "Ana",
+                        amountMinor = 900L,
+                        splitOver = everyone,
+                        updatedAt = 2L,
+                        isPending = true,
+                        description = "Mercado",
+                    ),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 100L,
+                        isPending = true,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            val row = state.groups.first { it.id == "trio" }
+            assertTrue(row.isPending)
+            assertEquals("Mercado", row.pendingBillDescription)
+            assertEquals(GroupRowDetail.QUEUED, row.detail)
+            assertEquals(4, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN only a payment waiting to go up WHEN the groups open THEN the row is queued without a bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 100L,
+                        isPending = true,
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertTrue(row.isPending)
+            assertNull(row.pendingBillDescription)
+        }
+
+    @Test
+    fun `GIVEN offline WHEN a synced bill is deleted here THEN the row stays queued and the badge counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                syncState = SyncState.PENDING,
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            expenses.deleteExpense("dinner", deletedAt = now)
+
+            // Then
+            val state = viewModel.uiState.value
+            val row = state.groups.single()
+            assertTrue(row.isPending)
+            assertNull(row.pendingBillDescription)
+            assertEquals(GroupRowDetail.QUEUED, row.detail)
+            assertEquals(1, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN offline WHEN a synced payment is undone here THEN the row stays queued and the badge counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                syncState = SyncState.PENDING,
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 100L,
+                    ),
+                ),
+            )
+
+            // When
+            settlements.deleteSettlement("paid", deletedAt = now)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.groups.single().isPending)
+            assertEquals(1, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN a deletion waiting to go up WHEN the sync takes it up THEN the row is no longer queued`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 100L,
+                    ),
+                ),
+            )
+            settlements.deleteSettlement("paid", deletedAt = now)
+
+            // When
+            settlements.uploadPendingSettlements("user-1")
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.groups.single().isPending)
+            assertEquals(0, state.pendingChangeCount)
+        }
+
+    @Test
+    fun `GIVEN Quitados collapsed WHEN expanding it THEN shows the settled groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnShowSettledChanged(isShown = true))
+
+        // Then
+        assertTrue(viewModel.uiState.value.showsSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN groups WHEN filtering without accents THEN keeps the groups whose name matches`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio(name = "Apê 302"), floripa))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnFilterChanged(query = " APE "))
+
+            // Then
+            assertEquals(
+                listOf("trio"),
+                viewModel.uiState.value.openGroups
+                    .map(GroupRow::id),
+            )
+            assertEquals(2, viewModel.uiState.value.groups.size)
+        }
+
+    @Test
+    fun `GIVEN every group settled WHEN the groups open THEN says there is no open group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "gas",
+                    paidBy = "Ana",
+                    amountMinor = 6000L,
+                    splitOver = listOf("Ana", "Pierre"),
+                ),
+            ),
+            storedSettlements = listOf(
+                payment(
+                    "paid",
+                    from = "Pierre",
+                    to = "Ana",
+                    amountMinor = 3000L,
+                ),
+            ),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsNoOpenGroups)
+        assertFalse(state.showsNoSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN only open groups WHEN the groups open THEN says there is no settled group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsNoOpenGroups)
+        assertTrue(state.showsNoSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN a filter no group matches WHEN filtering THEN says neither tab is empty`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnFilterChanged(query = "praia"))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertFalse(state.showsNoOpenGroups)
+        assertFalse(state.showsNoSettledGroups)
+    }
+
+    @Test
+    fun `GIVEN no group yet WHEN the groups open THEN shows the empty home rather than empty tabs`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsEmptyState)
+            assertFalse(state.showsNoOpenGroups)
+            assertFalse(state.showsNoSettledGroups)
+        }
+
+    @Test
+    fun `GIVEN online WHEN pulling to refresh THEN syncs once and waits for it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        syncGate = CompletableDeferred()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnRefresh)
+        viewModel.onEvent(GroupsUiEvent.OnRefresh)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isRefreshing)
+        assertEquals(1, syncNowCount)
+        syncGate?.complete(Unit)
+        assertFalse(viewModel.uiState.value.isRefreshing)
+    }
+
+    @Test
+    fun `GIVEN offline WHEN pulling to refresh THEN ends at once without a sync`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = false)
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnRefresh)
+
+        // Then
+        assertFalse(viewModel.uiState.value.isRefreshing)
+        assertEquals(0, syncNowCount)
+    }
+
+    private val everyone = listOf("Pierre", "Ana", "Bruno")
+
+    // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
+    private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
+
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
@@ -1233,6 +2244,7 @@ class GroupsViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private fun group(
@@ -1240,26 +2252,99 @@ class GroupsViewModelTest {
         name: String = "Grupo",
         members: List<GroupMember> = listOf(member(name = "Pierre")),
         isPending: Boolean = false,
+        currency: GroupCurrency = GroupCurrency.BRL,
+        updatedAt: Long = 0L,
     ): Group = Group(
         id = id,
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.BLUE,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         members = members,
         isPending = isPending,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = updatedAt,
     )
+
+    // Why: Pierre is this device's user, in a group with Ana and Bruno.
+    private fun trio(
+        id: String = "trio",
+        name: String = "Apê 302",
+        currency: GroupCurrency = GroupCurrency.BRL,
+        updatedAt: Long = 0L,
+    ): Group = group(
+        id = id,
+        name = name,
+        members = listOf(
+            member(
+                name = "Pierre",
+                isMe = true,
+            ),
+            member(name = "Ana"),
+            member(name = "Bruno"),
+        ),
+        currency = currency,
+        updatedAt = updatedAt,
+    )
+
+    // Why: one payer for the whole bill, split over the members given.
+    private fun bill(
+        id: String,
+        groupId: String = "trio",
+        paidBy: String,
+        amountMinor: Long,
+        splitOver: List<String>,
+        updatedAt: Long = 0L,
+        isPending: Boolean = false,
+        description: String = "Mercado",
+    ): Expense = Expense(
+        id = id,
+        groupId = groupId,
+        description = description,
+        amountMinor = amountMinor,
+        splitMode = SplitMode.EQUAL,
+        payers = listOf(ExpensePayer("member-$paidBy", amountMinor)),
+        shares = splitOver.map { ExpenseShare("member-$it", amountMinor / splitOver.size, 1L) },
+        spentAt = updatedAt,
+        isPending = isPending,
+        updatedAt = updatedAt,
+        updatedByMemberId = null,
+    )
+
+    private fun payment(
+        id: String,
+        groupId: String = "trio",
+        from: String,
+        to: String,
+        amountMinor: Long,
+        paidAt: Long = 0L,
+        isPending: Boolean = false,
+        // Why: recorded when it was paid, unless a test says otherwise.
+        updatedAt: Long = paidAt,
+    ): Settlement = Settlement(
+        id = id,
+        groupId = groupId,
+        fromMemberId = "member-$from",
+        toMemberId = "member-$to",
+        amountMinor = amountMinor,
+        method = SettlementMethod.PIX,
+        paidAt = paidAt,
+        isPending = isPending,
+        updatedAt = updatedAt,
+    )
+
+    private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
 
     private fun member(
         name: String,
         color: AvatarColor = AvatarColor.BLUE,
+        isMe: Boolean = false,
     ): GroupMember = GroupMember(
         id = "member-$name",
         name = name,
         avatarColor = color,
-        isMe = false,
+        isMe = isMe,
         hasJoined = false,
         inviteCode = null,
     )
@@ -1272,7 +2357,15 @@ class GroupsViewModelTest {
         profile: UserProfile? = pierre,
         storedGroups: List<Group> = emptyList(),
         groupsRead: Boolean = true,
+        storedExpenses: List<Expense> = emptyList(),
+        storedSettlements: List<Settlement> = emptyList(),
     ) {
+        expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
+        syncGate = null
+        syncNowCount = 0
+        clockMillis = now
+        minutes = MutableStateFlow(0)
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -1290,6 +2383,15 @@ class GroupsViewModelTest {
             observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { roomRead },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },
+            syncNow = SyncNow {
+                syncNowCount++
+                syncGate?.await()
+                Result.success(Unit)
+            },
+            observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
+            currentTimeMillis = CurrentTimeMillis { clockMillis },
+            currentTimeZone = CurrentTimeZone { TimeZone.UTC },
+            minuteTicks = MinuteTicks { minutes.map { } },
             navigator = navigator,
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),

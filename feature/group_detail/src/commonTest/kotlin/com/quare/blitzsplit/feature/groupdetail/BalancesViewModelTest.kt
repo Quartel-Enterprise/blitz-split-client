@@ -1232,6 +1232,7 @@ class BalancesViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private fun member(
@@ -1294,6 +1295,7 @@ class BalancesViewModelTest {
         method = SettlementMethod.PIX,
         paidAt = paidAt,
         isPending = false,
+        updatedAt = 0L,
     )
 
     private fun TestScope.prepareScenario(

@@ -21,6 +21,15 @@ class ExpenseRepositoryImpl(
         .map { entities -> entities.mapNotNull(mapper::toDomain) }
         .distinctUntilChanged()
 
+    override fun observeAllExpenses(): Flow<List<Expense>> = local
+        .observeAllExpenses()
+        .map { entities -> entities.mapNotNull(mapper::toDomain) }
+        .distinctUntilChanged()
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = local
+        .observePendingDeletionGroupIds()
+        .distinctUntilChanged()
+
     /*
      * Why: null only for a bill that is gone. One this version can't read (a newer split mode) still exists, so it
      * emits nothing rather than having an open Conta take it for a deletion.

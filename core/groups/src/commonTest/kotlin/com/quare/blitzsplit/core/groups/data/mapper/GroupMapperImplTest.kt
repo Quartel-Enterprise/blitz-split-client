@@ -1076,6 +1076,7 @@ class GroupMapperImplTest {
         isPending = true,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private fun groupEntity(

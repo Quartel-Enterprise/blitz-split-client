@@ -476,6 +476,7 @@ class InviteChangeLinkViewModelTest {
         isPending = false,
         inviteCode = OLD_CODE,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     // Why: a QR code that differs per text, so a case can tell which link was encoded.

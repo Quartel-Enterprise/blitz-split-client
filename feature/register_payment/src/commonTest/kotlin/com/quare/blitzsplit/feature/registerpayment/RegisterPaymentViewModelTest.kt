@@ -1240,6 +1240,7 @@ class RegisterPaymentViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     // Why: Ana owes Pierre 162,30, Pierre owes Bruno 50,00 and Diego owes Bruno 80,00; Ana and Bruno owe nothing.
@@ -1311,6 +1312,7 @@ class RegisterPaymentViewModelTest {
         method = SettlementMethod.CASH,
         paidAt = nowMillis - HOUR,
         isPending = false,
+        updatedAt = 0L,
     )
 
     private fun TestScope.prepareScenario(

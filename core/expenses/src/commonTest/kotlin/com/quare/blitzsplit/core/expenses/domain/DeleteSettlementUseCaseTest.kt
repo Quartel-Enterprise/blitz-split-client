@@ -102,6 +102,7 @@ class DeleteSettlementUseCaseTest {
         method = SettlementMethod.PIX,
         paidAt = 1_000L,
         isPending = true,
+        updatedAt = 0L,
     )
 
     private fun prepareScenario(

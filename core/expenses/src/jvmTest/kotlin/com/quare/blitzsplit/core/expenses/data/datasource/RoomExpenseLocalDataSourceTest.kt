@@ -349,6 +349,71 @@ class RoomExpenseLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN bills of two groups and a deleted one WHEN observing all THEN shows each group newest first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(
+                        id = "other-group",
+                        groupId = OTHER_USER_GROUP,
+                        addedAt = 2L,
+                    ),
+                    expense(
+                        id = "older",
+                        addedAt = 1L,
+                    ),
+                    expense(
+                        id = "deleted",
+                        addedAt = 4L,
+                        isDeleted = true,
+                    ),
+                    expense(
+                        id = "newer",
+                        addedAt = 3L,
+                    ),
+                ),
+            )
+
+            // When
+            val expenses = dataSource.observeAllExpenses().first()
+
+            // Then
+            assertEquals(listOf("newer", "older", "other-group"), expenses.map { it.expense.id })
+        }
+
+    @Test
+    fun `GIVEN bills deleted here and on the server WHEN observing pending deletions THEN gives the group of each`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(id = "bill-1"),
+                    expense(
+                        id = "bill-2",
+                        groupId = OTHER_USER_GROUP,
+                    ),
+                    expense(
+                        id = "deleted-on-server",
+                        isDeleted = true,
+                    ),
+                    expense(
+                        id = "edited-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+            dataSource.markDeleted("bill-1", now = 9_000L)
+            dataSource.markDeleted("bill-2", now = 9_000L)
+
+            // When
+            val groupIds = dataSource.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(MY_GROUP, OTHER_USER_GROUP), groupIds.sorted())
+        }
+
+    @Test
     fun `GIVEN a deleted bill WHEN deleting it again THEN fails`() = runTest {
         // Given
         prepareScenario(

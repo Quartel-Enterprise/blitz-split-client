@@ -14,10 +14,8 @@
     <string name="groups_tab_contacts">Contacts</string>
     <string name="groups_tab_activity">Activity</string>
     <string name="groups_coming_soon">Coming soon</string>
-    <string name="groups_open_title">Open</string>
     <string name="groups_new_group">New group</string>
     <string name="groups_only_you">Just you</string>
-    <string name="groups_meta_pending">%s · queued</string>
     <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">no expenses</string>
     <plurals name="groups_member_count">
@@ -26,4 +24,40 @@
     </plurals>
     <string name="groups_deleted_by">%1$s deleted the group “%2$s”.</string>
     <string name="groups_deleted">The group “%s” was deleted.</string>
+    <string name="groups_split_bill">Split a bill</string>
+    <plurals name="groups_sync_offline_queued">
+        <item quantity="one">Offline · %d change queued</item>
+        <item quantity="other">Offline · %d changes queued</item>
+    </plurals>
+    <string name="groups_open_count">Open · %d</string>
+    <string name="groups_settled_count">Settled up · %d</string>
+    <string name="groups_no_open">No open groups</string>
+    <string name="groups_summary_title">Overall balance</string>
+    <string name="groups_summary_to_receive_hint">to get back, across your groups</string>
+    <string name="groups_summary_to_pay_hint">to pay, across your groups</string>
+    <string name="groups_summary_settled_hint">you\'re settled up</string>
+    <string name="groups_summary_to_receive">To get back</string>
+    <string name="groups_summary_to_pay">To pay</string>
+    <string name="groups_summary_to_receive_description">To get back %s. See who owes you</string>
+    <string name="groups_summary_to_pay_description">To pay %s. See whom you owe</string>
+    <string name="groups_balance_to_receive">to get back</string>
+    <string name="groups_balance_you_owe">you owe</string>
+    <string name="groups_balance_you_are_settled">you\'re settled up</string>
+    <string name="groups_balance_everyone_settled">Settled up</string>
+    <string name="groups_meta_queued">queued</string>
+    <string name="groups_meta_queued_bill">queued · %s</string>
+    <string name="groups_meta_mixed">you get %1$s and owe %2$s</string>
+    <string name="groups_meta_others_settling">others still settling up</string>
+    <string name="groups_meta_invite">invite someone</string>
+    <string name="groups_meta_everyone_settled">%1$s · everyone settled up on %2$s</string>
+    <string name="groups_activity_today">today</string>
+    <string name="groups_activity_yesterday">yesterday</string>
+    <plurals name="groups_activity_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="groups_activity_weeks">
+        <item quantity="one">%d week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
 </resources>

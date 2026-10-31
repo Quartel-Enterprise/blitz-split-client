@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.Flow
 interface SettlementLocalDataSource {
     fun observeSettlements(groupId: String): Flow<List<SettlementEntity>>
 
+    fun observeAllSettlements(): Flow<List<SettlementEntity>>
+
+    fun observePendingDeletionGroupIds(): Flow<List<String>>
+
     fun observeHasPending(): Flow<Boolean>
 
     fun observePendingVersions(): Flow<List<Long>>

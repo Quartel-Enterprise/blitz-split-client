@@ -16,6 +16,9 @@ class FakeExpenseRepository(
     val expenses = MutableStateFlow(initialExpenses)
     val hasPendingChanges = MutableStateFlow(false)
     val pendingVersions = MutableStateFlow(emptyList<Long>())
+
+    // Why: like Room's tombstones, the group of each bill deleted here until an upload takes them up.
+    val pendingDeletionGroupIds = MutableStateFlow(emptyList<String>())
     val createdExpenses = mutableListOf<Expense>()
     val createdAts = mutableListOf<Long>()
     val updatedExpenses = mutableListOf<Expense>()
@@ -41,7 +44,14 @@ class FakeExpenseRepository(
         list.filter { it.groupId == groupId }.sortedByDescending { it.spentAt }
     }
 
+    // Why: like Room, each group's bills together, the most recent first.
+    override fun observeAllExpenses(): Flow<List<Expense>> = expenses.map { list ->
+        list.sortedWith(compareBy<Expense> { it.groupId }.thenByDescending { it.spentAt })
+    }
+
     override fun observeExpense(id: String): Flow<Expense?> = expenses.map { list -> list.firstOrNull { it.id == id } }
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = pendingDeletionGroupIds
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
@@ -85,7 +95,9 @@ class FakeExpenseRepository(
     ): Result<Unit> {
         deleteGate?.await()
         deleteError?.let { return Result.failure(it) }
-        if (expenses.value.none { it.id == id }) return Result.failure(IllegalStateException("No bill $id"))
+        val deleted = expenses.value.firstOrNull { it.id == id }
+            ?: return Result.failure(IllegalStateException("No bill $id"))
+        pendingDeletionGroupIds.update { it + deleted.groupId }
         deletedIds += id
         deletedAts += deletedAt
         expenses.update { list -> list.filterNot { it.id == id } }
@@ -97,6 +109,7 @@ class FakeExpenseRepository(
         pushError?.let { return Result.failure(it) }
         hasPendingChanges.value = false
         pendingVersions.value = emptyList()
+        pendingDeletionGroupIds.value = emptyList()
         return Result.success(Unit)
     }
 

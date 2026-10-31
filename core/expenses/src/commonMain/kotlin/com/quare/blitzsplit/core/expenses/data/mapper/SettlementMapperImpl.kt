@@ -15,6 +15,7 @@ class SettlementMapperImpl : SettlementMapper {
         method = SettlementMethod.fromCode(entity.method),
         paidAt = entity.paidAt,
         isPending = entity.pendingSync,
+        updatedAt = entity.updatedAt,
     )
 
     override fun toEntity(

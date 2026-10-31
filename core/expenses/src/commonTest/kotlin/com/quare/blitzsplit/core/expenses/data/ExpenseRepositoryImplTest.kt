@@ -76,6 +76,57 @@ class ExpenseRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN bills of two groups and one this version cannot read WHEN observing every group THEN shows the rest`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(id = "bill-1"),
+                    entity(id = "bill-2").copy(groupId = "group-2"),
+                    entity(
+                        id = "bill-new-mode",
+                        splitMode = "itemized",
+                    ),
+                ),
+            )
+
+            // When
+            val expenses = repository.observeAllExpenses().first()
+
+            // Then
+            assertEquals(listOf("bill-1" to GROUP_ID, "bill-2" to "group-2"), expenses.map { it.id to it.groupId })
+        }
+
+    @Test
+    fun `GIVEN bills deleted here and elsewhere WHEN observing pending deletions THEN gives the first group`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "deleted-here",
+                        isDeleted = true,
+                        pendingSync = true,
+                    ),
+                    entity(
+                        id = "deleted-elsewhere",
+                        isDeleted = true,
+                    ),
+                    entity(
+                        id = "edited-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            val groupIds = repository.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groupIds)
+        }
+
+    @Test
     fun `GIVEN a pending bill WHEN observing pending changes THEN reports them`() = runTest {
         // Given
         prepareScenario(
@@ -634,8 +685,16 @@ private class FakeExpenseLocalDataSource(
         list.filter { it.groupId == groupId && !it.isDeleted }.map { ExpenseWithEditor(it, editors[it.id]) }
     }
 
+    override fun observeAllExpenses(): Flow<List<ExpenseWithEditor>> = entities.map { list ->
+        list.filter { !it.isDeleted }.map { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
         list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = entities.map { list ->
+        list.filter { it.pendingSync && it.isDeleted }.map { it.groupId }
     }
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }

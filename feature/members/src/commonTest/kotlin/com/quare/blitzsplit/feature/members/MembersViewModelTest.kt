@@ -3434,6 +3434,7 @@ class MembersViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        updatedAt = 0L,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")
@@ -3482,6 +3483,7 @@ class MembersViewModelTest {
         method = SettlementMethod.PIX,
         paidAt = 1_000L,
         isPending = false,
+        updatedAt = 0L,
     )
 
     // Why: what Registrar pagamento does on Salvar, so the notice reaches this screen the way it does in the app.

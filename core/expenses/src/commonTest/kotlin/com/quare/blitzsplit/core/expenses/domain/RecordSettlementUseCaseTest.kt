@@ -44,6 +44,7 @@ class RecordSettlementUseCaseTest {
                     method = SettlementMethod.PIX,
                     paidAt = 3_000L,
                     isPending = true,
+                    updatedAt = 9_000L,
                 ),
                 saved,
             )

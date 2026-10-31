@@ -20,6 +20,15 @@ class SettlementRepositoryImpl(
         .map { entities -> entities.map(mapper::toDomain) }
         .distinctUntilChanged()
 
+    override fun observeAllSettlements(): Flow<List<Settlement>> = local
+        .observeAllSettlements()
+        .map { entities -> entities.map(mapper::toDomain) }
+        .distinctUntilChanged()
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = local
+        .observePendingDeletionGroupIds()
+        .distinctUntilChanged()
+
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
     override fun observePendingVersions(): Flow<List<Long>> = local.observePendingVersions().distinctUntilChanged()

@@ -16,6 +16,12 @@ extension GroupCurrency {
         return minor < 0 ? "−\(amount)" : "+\(amount)"
     }
 
+    /// "120,00" or "120.00", with no symbol: where the currency is already on the same line ("you get 120.00 and
+    /// owe 218.00").
+    func formatPlain(_ minor: Int64) -> String {
+        decimal(of: minor).formatted(.number.precision(.fractionLength(Int(fractionDigits))))
+    }
+
     /// "0,00" or "0.00": the placeholder of an amount field, with the currency's digits.
     var zeroPlaceholder: String {
         Decimal(0).formatted(.number.precision(.fractionLength(Int(fractionDigits))))

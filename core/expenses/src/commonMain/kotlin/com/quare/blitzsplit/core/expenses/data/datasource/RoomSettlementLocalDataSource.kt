@@ -9,6 +9,10 @@ class RoomSettlementLocalDataSource(
 ) : SettlementLocalDataSource {
     override fun observeSettlements(groupId: String): Flow<List<SettlementEntity>> = dao.observeSettlements(groupId)
 
+    override fun observeAllSettlements(): Flow<List<SettlementEntity>> = dao.observeAllSettlements()
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = dao.observePendingDeletionGroupIds()
+
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()
 
     override fun observePendingVersions(): Flow<List<Long>> = dao.observePendingUpdatedAts()

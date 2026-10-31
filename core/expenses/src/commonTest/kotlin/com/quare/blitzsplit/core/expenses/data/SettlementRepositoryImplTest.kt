@@ -49,6 +49,61 @@ class SettlementRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN payments of two groups WHEN observing every group THEN shows both with when each was saved`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(
+                    id = "payment-1",
+                    updatedAt = 5L,
+                ),
+                entity(
+                    id = "payment-2",
+                    updatedAt = 8L,
+                ).copy(groupId = "group-2"),
+            ),
+        )
+
+        // When
+        val settlements = repository.observeAllSettlements().first()
+
+        // Then
+        assertEquals(
+            listOf(Triple("payment-1", GROUP_ID, 5L), Triple("payment-2", "group-2", 8L)),
+            settlements.map { Triple(it.id, it.groupId, it.updatedAt) },
+        )
+    }
+
+    @Test
+    fun `GIVEN payments undone here and elsewhere WHEN observing pending deletions THEN gives the first group`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        id = "undone-here",
+                        isDeleted = true,
+                        pendingSync = true,
+                    ),
+                    entity(
+                        id = "undone-elsewhere",
+                        isDeleted = true,
+                    ),
+                    entity(
+                        id = "recorded-here",
+                        pendingSync = true,
+                    ),
+                ),
+            )
+
+            // When
+            val groupIds = repository.observePendingDeletionGroupIds().first()
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groupIds)
+        }
+
+    @Test
     fun `GIVEN a pending payment WHEN observing pending changes THEN reports them with its version`() = runTest {
         // Given
         prepareScenario(
@@ -291,6 +346,7 @@ class SettlementRepositoryImplTest {
         method = SettlementMethod.PIX,
         paidAt = 3_000L,
         isPending = true,
+        updatedAt = 7_000L,
     )
 
     private fun entity(
@@ -365,6 +421,14 @@ private class FakeSettlementLocalDataSource(
 
     override fun observeSettlements(groupId: String): Flow<List<SettlementEntity>> = entities.map { list ->
         list.filter { it.groupId == groupId && !it.isDeleted }
+    }
+
+    override fun observeAllSettlements(): Flow<List<SettlementEntity>> = entities.map { list ->
+        list.filter { !it.isDeleted }
+    }
+
+    override fun observePendingDeletionGroupIds(): Flow<List<String>> = entities.map { list ->
+        list.filter { it.pendingSync && it.isDeleted }.map { it.groupId }
     }
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }
