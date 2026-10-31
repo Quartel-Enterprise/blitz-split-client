@@ -21,17 +21,23 @@ import { cn } from '@/lib/utils'
 export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
   const groups = state.showsSettledGroups ? state.settledGroups : state.openGroups
   const showsNoGroups = state.showsSettledGroups ? state.showsNoSettledGroups : state.showsNoOpenGroups
-  // Why: one row's menu at a time, which its ⋯ or a right click on the row opens.
-  const [menuGroupId, setMenuGroupId] = useState<string | null>(null)
-  const menuOf = (group: JsGroupRow) => (
-    <GroupRowMenu
-      presenter={presenter}
-      group={group}
-      isOnline={state.exit.isOnline}
-      open={menuGroupId === group.id}
-      onOpenChange={(open) => setMenuGroupId(open ? group.id : null)}
-    />
-  )
+  /*
+   * Why: one row's menu at a time, which its ⋯ or a right click on the table's row opens. The table and the phone's
+   * list are both rendered (CSS hides one), so the key says which, or the hidden twin's menu would open too.
+   */
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const menuOf = (group: JsGroupRow, surface: 'table' | 'cards') => {
+    const key = `${surface}:${group.id}`
+    return (
+      <GroupRowMenu
+        presenter={presenter}
+        group={group}
+        isOnline={state.exit.isOnline}
+        open={openMenu === key}
+        onOpenChange={(open) => setOpenMenu(open ? key : null)}
+      />
+    )
+  }
   const exitGroup = state.exitGroup
   return (
     <>
@@ -80,8 +86,13 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
         )
       ) : (
         <>
-          <GroupsTable presenter={presenter} groups={groups} menuOf={menuOf} onContextMenu={setMenuGroupId} />
-          <GroupsCardList presenter={presenter} groups={groups} menuOf={menuOf} />
+          <GroupsTable
+            presenter={presenter}
+            groups={groups}
+            menuOf={(group) => menuOf(group, 'table')}
+            onContextMenu={(groupId) => setOpenMenu(`table:${groupId}`)}
+          />
+          <GroupsCardList presenter={presenter} groups={groups} menuOf={(group) => menuOf(group, 'cards')} />
         </>
       )}
 

@@ -179,7 +179,8 @@ class GroupsViewModel(
             }
         }.onEach { groups ->
             groupsWithMoney = groups
-            exit.update(exitTargetOrNull(uiState.value.exitGroupId))
+            // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
+            if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
         }.map { groups ->
             GroupsOnHome(
                 rows = rowsOf(
