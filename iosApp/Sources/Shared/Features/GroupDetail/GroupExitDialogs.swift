@@ -39,7 +39,9 @@ enum GroupExitCopy {
             let message = String(
                 localized: "“\(blocked.groupName)” can only be deleted once everyone has settled up.",
             )
-            return withDebts(message, blocked.debts, currency: currency)
+            // "Faltam 2 acertos:", as Android and the web count them, once there are pairs to list
+            let count = blocked.debts.isEmpty ? "" : " " + String(localized: "\(blocked.debts.count) payments left:")
+            return withDebts(message + count, blocked.debts, currency: currency)
         case let leave as GroupExitDialogConfirmLeave:
             if leave.deletesGroup {
                 return String(localized: "Your balance is settled. Nobody else in the group has joined, so it's deleted for good.")

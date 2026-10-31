@@ -1107,7 +1107,12 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // When
-            expenses.expenses.value = listOf(expense(id = "bill-1", spentAt = nowMillis))
+            expenses.expenses.value = listOf(
+                expense(
+                    id = "bill-1",
+                    spentAt = nowMillis,
+                ),
+            )
 
             // Then
             val dialog = assertIs<GroupExitDialog.LeaveBlocked>(viewModel.uiState.value.exit.dialog)

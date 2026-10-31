@@ -100,10 +100,13 @@ struct MainTabView: View {
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
         }
         .tabViewStyle(.sidebarAdaptable)
-        .glassToast([
-            GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
-            GlassToastMessage(text: model.deletedGroupText, trigger: model.deletedGroupCount),
-        ], duration: GroupsModel.deletedGroupToastDuration)
+        .glassToast("Coming soon", trigger: model.comingSoonCount)
+        // Its own toast, for its longer duration; the two seldom show at once
+        .glassToast(
+            model.deletedGroupText,
+            trigger: model.deletedGroupCount,
+            duration: GroupsModel.deletedGroupToastDuration,
+        )
         // Shown once the first sync issued a code; the sheet settles the prompt itself ("I've saved it",
         // "Remind me later" or a swipe down), which hides it here too.
         .onChange(of: model.state.showsRecoveryCodePrompt, initial: true) { _, isDue in

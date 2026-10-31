@@ -66,21 +66,11 @@ internal val idleGroupExit = GroupExitUiState(
 internal class GroupScreen(
     private val route: Route,
     private val groupId: String,
-    useCases: GroupScreenUseCases,
+    private val useCases: GroupScreenUseCases,
 ) {
     val exitState: StateFlow<GroupExitUiState>
         field = MutableStateFlow(idleGroupExit)
 
-    private val navigator = useCases.navigator
-    private val observeGroup = useCases.observeGroup
-    private val observeExpenses = useCases.observeExpenses
-    private val observeSettlements = useCases.observeSettlements
-    private val observeRecordedPayment = useCases.observeRecordedPayment
-    private val observeGroupDeletions = useCases.observeGroupDeletions
-    private val consumeGroupDeletion = useCases.consumeGroupDeletion
-    private val connectivityObserver = useCases.connectivityObserver
-    private val leaveGroup = useCases.leaveGroup
-    private val deleteGroup = useCases.deleteGroup
     private val notices = RecordedPaymentNotices(useCases.consumeRecordedPayment, useCases.deleteSettlement)
 
     private var group: Group? = null
@@ -103,30 +93,34 @@ internal class GroupScreen(
         isLoaded: Flow<Boolean>,
         showNotice: (PaymentNotice) -> Unit,
     ) {
-        combine(observeGroup(groupId), observeExpenses(groupId), observeSettlements(groupId), ::Triple)
-            .onEach { (group, expenses, settlements) ->
-                this.group = group
-                isGroupGone = group == null
-                if (group == null) {
-                    closeGone()
-                } else {
-                    balances = GroupBalances.of(expenses, settlements)
-                    billCount = expenses.size
-                    refreshBlockedDialog()
-                    show(group, expenses, settlements, balances)
-                }
-            }.launchIn(scope)
-        navigator.backStack
+        combine(
+            useCases.observeGroup(groupId),
+            useCases.observeExpenses(groupId),
+            useCases.observeSettlements(groupId),
+            ::Triple,
+        ).onEach { (group, expenses, settlements) ->
+            this.group = group
+            isGroupGone = group == null
+            if (group == null) {
+                closeGone()
+            } else {
+                balances = GroupBalances.of(expenses, settlements)
+                billCount = expenses.size
+                refreshBlockedDialog()
+                show(group, expenses, settlements, balances)
+            }
+        }.launchIn(scope)
+        useCases.navigator.backStack
             .onEach { if (isGroupGone) closeGone() }
             .launchIn(scope)
-        connectivityObserver
+        useCases.connectivityObserver
             .observe()
             .onEach { isOnline -> exitState.update { it.copy(isOnline = isOnline) } }
             .launchIn(scope)
         notices.watch(
             scope = scope,
-            recorded = observeRecordedPayment(groupId),
-            backStack = navigator.backStack,
+            recorded = useCases.observeRecordedPayment(groupId),
+            backStack = useCases.navigator.backStack,
             isLoaded = isLoaded,
             isOnTop = ::isOnTop,
             meId = { meIdOrNull() },
@@ -153,18 +147,19 @@ internal class GroupScreen(
         )
     }
 
-    fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
+    fun isOnTop(): Boolean = useCases.navigator.backStack.value
+        .lastOrNull() == route
 
     fun leave() {
-        if (isOnTop()) navigator.navigateBack()
+        if (isOnTop()) useCases.navigator.navigateBack()
     }
 
     fun open(next: Route) {
-        if (isOnTop()) navigator.navigate(next)
+        if (isOnTop()) useCases.navigator.navigate(next)
     }
 
     fun openTab(tab: Route) {
-        navigator.openGroupTab(
+        useCases.navigator.openGroupTab(
             from = route,
             tab = tab,
         )
@@ -290,7 +285,7 @@ internal class GroupScreen(
     ) {
         exitState.update { it.copy(isRunning = true) }
         scope.launch {
-            val result = if (isDelete) deleteGroup(groupId) else leaveGroup(groupId)
+            val result = if (isDelete) useCases.deleteGroup(groupId) else useCases.leaveGroup(groupId)
             result
                 .onSuccess { outcome ->
                     when (outcome) {
@@ -380,11 +375,11 @@ internal class GroupScreen(
             state.deletedNotice != null || !isOnTop() -> Unit
 
             else -> {
-                val deletion = observeGroupDeletions().first().firstOrNull { it.groupId == groupId }
+                val deletion = useCases.observeGroupDeletions().first().firstOrNull { it.groupId == groupId }
                 if (deletion == null) {
                     leave()
                 } else {
-                    consumeGroupDeletion(groupId)
+                    useCases.consumeGroupDeletion(groupId)
                     exitState.update {
                         it.copy(
                             dialog = null,
@@ -400,8 +395,9 @@ internal class GroupScreen(
     }
 
     private fun backToGroups() {
-        val home = navigator.backStack.value.indexOf(Route.Groups)
-        if (home >= 0) navigator.popTo(home + 1) else navigator.replaceAll(Route.Groups)
+        val home = useCases.navigator.backStack.value
+            .indexOf(Route.Groups)
+        if (home >= 0) useCases.navigator.popTo(home + 1) else useCases.navigator.replaceAll(Route.Groups)
     }
 }
 

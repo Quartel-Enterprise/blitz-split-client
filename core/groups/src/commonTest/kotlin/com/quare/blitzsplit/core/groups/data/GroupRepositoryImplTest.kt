@@ -1210,6 +1210,29 @@ class GroupRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN removed groups that fail to load WHEN downloading THEN the download still succeeds`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(id = "group-gone"),
+                group(
+                    id = "group-pending",
+                    pendingSync = true,
+                    inviteCode = "7Hk2pQxZ",
+                ),
+            ),
+            removedGroupsError = IllegalStateException("no removed_groups yet"),
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("group-pending"), local.groups.value.map { it.id })
+    }
+
+    @Test
     fun `GIVEN every stored group still on the server WHEN downloading THEN asks for no removed group`() = runTest {
         // Given
         prepareScenario(
@@ -3412,6 +3435,7 @@ class GroupRepositoryImplTest {
         exitStatus: String = "left",
         exitError: Throwable? = null,
         removedGroups: List<RemovedGroupDto> = emptyList(),
+        removedGroupsError: Throwable? = null,
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
@@ -3433,6 +3457,7 @@ class GroupRepositoryImplTest {
             it.exitStatus = exitStatus
             it.exitError = exitError
             it.removedGroups = removedGroups
+            it.removedGroupsError = removedGroupsError
         }
         deletions = InMemoryGroupDeletionRepository()
         repository = GroupRepositoryImpl(
@@ -3775,6 +3800,7 @@ private class FakeGroupRemoteDataSource(
     val deletedGroupIds = mutableListOf<String>()
     var removedGroups: List<RemovedGroupDto> = emptyList()
     val askedRemovedGroupIds = mutableListOf<List<String>>()
+    var removedGroupsError: Throwable? = null
 
     override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> {
         calls += "groups"
@@ -3833,7 +3859,7 @@ private class FakeGroupRemoteDataSource(
     }
 
     override suspend fun fetchRemovedGroups(groupIds: List<String>): List<RemovedGroupDto> {
-        fetchError?.let { throw it }
+        removedGroupsError?.let { throw it }
         askedRemovedGroupIds += groupIds
         return removedGroups.filter { it.groupId in groupIds }
     }

@@ -664,6 +664,47 @@
         }
       }
     },
+    "%lld payments left:" : {
+      "comment" : "After why a group can't be deleted yet: how many pairs still owe, listed under it",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld payment left:"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld payments left:"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Falta %lld acerto:"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Faltam %lld acertos:"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "See balances" : {
       "comment" : "A button that opens the group's Balances tab",
       "localizations" : {

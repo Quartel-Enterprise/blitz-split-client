@@ -77,21 +77,21 @@ class SyncCoordinator(
         scope.launch { syncUntilSettled() }
     }
 
-    suspend fun syncNow(): Result<Unit> = underSyncLock { syncLocked() }
+    suspend fun syncNow(): Result<Unit> = runUnderSyncLock { syncLocked() }
 
     /*
      * Why: a request the server judges with every change made here ("Sair do grupo", "Apagar grupo"). Under the same
      * lock as the sync before it, so no other sync runs between the two or alongside the request: one whose download
      * read the server before it would bring back what the request just took off the device.
      */
-    suspend fun <T> syncThen(request: suspend () -> Result<T>): Result<T> = underSyncLock {
+    suspend fun <T> syncThen(request: suspend () -> Result<T>): Result<T> = runUnderSyncLock {
         syncLocked().fold(
             onSuccess = { suspendRunCatching { request().getOrThrow() } },
             onFailure = { Result.failure(it) },
         )
     }
 
-    private suspend fun <T> underSyncLock(block: suspend () -> Result<T>): Result<T> {
+    private suspend fun <T> runUnderSyncLock(block: suspend () -> Result<T>): Result<T> {
         requestedSyncs.update { it + 1 }
         return try {
             syncLock.withLock { block() }

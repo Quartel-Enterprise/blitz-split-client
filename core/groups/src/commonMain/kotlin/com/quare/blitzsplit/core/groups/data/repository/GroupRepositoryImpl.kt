@@ -238,7 +238,8 @@ class GroupRepositoryImpl(
         goneGroupIds: List<String>,
     ) {
         if (goneGroupIds.isEmpty()) return
-        val removed = remote.fetchRemovedGroups(goneGroupIds)
+        // Why: only a nicety over deleteGoneFromServer, so a failed read keeps the groups and lets the sync go on.
+        val removed = suspendRunCatching { remote.fetchRemovedGroups(goneGroupIds) }.getOrElse { return }
         if (removed.isEmpty()) return
         removed
             .filter { it.reason == REASON_DELETED && it.removedBy != userId }
