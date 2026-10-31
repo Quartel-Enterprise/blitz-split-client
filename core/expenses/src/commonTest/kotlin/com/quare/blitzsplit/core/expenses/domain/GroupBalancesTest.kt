@@ -788,6 +788,7 @@ class GroupBalancesTest {
         method = SettlementMethod.PIX,
         paidAt = 2_000L,
         isPending = false,
+        updatedAt = 0L,
     )
 
     private companion object {

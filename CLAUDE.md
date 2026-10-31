@@ -52,6 +52,19 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     symbol of the device's region, `$` when there is none.
   - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the three not built yet
     answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00
+    você deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve
+    218,00" when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest
+    save of the group itself, of its bills and of its payments, not the "Quando" they are dated ("hoje", "ontem", "3
+    dias", "1 semana" up to four weeks, then the date). Open groups go by that activity; a group where nobody owes
+    anybody once there were bills goes to "Quitados" (`GroupRow.isSettled`), collapsed under the open ones on Android
+    and iOS, a tab (a segment in the Mac's toolbar) on the web and the Mac. "Saldo geral" sums the nets per currency,
+    never across two, the currency with the most groups first (`GroupsSummary`); "A receber" and "A pagar" sum the positive and the negative nets, are
+    disabled at zero and answer "Em breve" until the global Saldos (flow 8). "Rachar conta" (Android's FAB, iOS's +,
+    the main button on the web and the Mac) opens Novo grupo while there's no group and answers "Em breve" until it
+    picks a group (7.1i). The sync status shows only when it asks for attention, "Offline · 1 alteração na fila"
+    counting the groups, bills and payments waiting. Pulling down syncs on Android and iOS. There is no first-download
+    progress (5.1d) yet: the sync can't tell how many groups are still to come.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

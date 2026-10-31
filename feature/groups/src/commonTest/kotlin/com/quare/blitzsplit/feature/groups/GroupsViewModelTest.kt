@@ -1521,6 +1521,38 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN a payment dated last week recorded today WHEN the groups open THEN it counts as today and is first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "renamed",
+                        updatedAt = daysAgo(1),
+                    ),
+                    trio(updatedAt = daysAgo(9)),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "paid",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                        paidAt = daysAgo(7),
+                        updatedAt = daysAgo(0),
+                    ),
+                ),
+            )
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(listOf("trio", "renamed"), groups.map(GroupRow::id))
+            assertEquals(LastActivity(daysAgo(0), ActivityAge.TODAY, 0), groups.first().lastActivity)
+        }
+
+    @Test
     fun `GIVEN groups changed at different times WHEN the groups open THEN says how long ago in days and weeks`() =
         runTest(testDispatcher) {
             // Given
@@ -2082,6 +2114,8 @@ class GroupsViewModelTest {
         amountMinor: Long,
         paidAt: Long = 0L,
         isPending: Boolean = false,
+        // Why: recorded when it was paid, unless a test says otherwise.
+        updatedAt: Long = paidAt,
     ): Settlement = Settlement(
         id = id,
         groupId = groupId,
@@ -2091,6 +2125,7 @@ class GroupsViewModelTest {
         method = SettlementMethod.PIX,
         paidAt = paidAt,
         isPending = isPending,
+        updatedAt = updatedAt,
     )
 
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds

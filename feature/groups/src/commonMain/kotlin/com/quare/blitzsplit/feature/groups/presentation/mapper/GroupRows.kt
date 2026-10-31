@@ -42,10 +42,11 @@ internal fun rowOf(
     val receives = myBalance?.receivesMinor ?: 0L
     val owes = myBalance?.owesMinor ?: 0L
     val pendingBill = item.expenses.filter { it.isPending }.maxByOrNull { it.updatedAt }
+    // Why: when each one was saved, not its "Quando": a payment recorded today and dated last week is today's.
     val activityAt = maxOf(
         group.updatedAt,
         item.expenses.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
-        item.settlements.maxOfOrNull { it.paidAt } ?: Long.MIN_VALUE,
+        item.settlements.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
     )
     return GroupRow(
         id = group.id,

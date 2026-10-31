@@ -1206,6 +1206,7 @@ class GroupDetailPaymentsViewModelTest {
         method = method,
         paidAt = paidAt,
         isPending = isPending,
+        updatedAt = 0L,
     )
 
     private fun prepareScenario(

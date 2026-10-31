@@ -1312,6 +1312,7 @@ class RegisterPaymentViewModelTest {
         method = SettlementMethod.CASH,
         paidAt = nowMillis - HOUR,
         isPending = false,
+        updatedAt = 0L,
     )
 
     private fun TestScope.prepareScenario(

@@ -291,6 +291,7 @@ class SettlementRepositoryImplTest {
         method = SettlementMethod.PIX,
         paidAt = 3_000L,
         isPending = true,
+        updatedAt = 7_000L,
     )
 
     private fun entity(

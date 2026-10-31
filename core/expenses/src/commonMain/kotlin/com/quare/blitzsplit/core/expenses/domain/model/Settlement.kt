@@ -14,4 +14,6 @@ data class Settlement(
     val paidAt: Long,
     // Why: recorded or undone on this device and not up on the server yet ("na fila").
     val isPending: Boolean,
+    // Why: when it was recorded or last changed, here or on another device: the group's last activity on the home.
+    val updatedAt: Long,
 )

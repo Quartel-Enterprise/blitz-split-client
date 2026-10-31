@@ -3483,6 +3483,7 @@ class MembersViewModelTest {
         method = SettlementMethod.PIX,
         paidAt = 1_000L,
         isPending = false,
+        updatedAt = 0L,
     )
 
     // Why: what Registrar pagamento does on Salvar, so the notice reaches this screen the way it does in the app.

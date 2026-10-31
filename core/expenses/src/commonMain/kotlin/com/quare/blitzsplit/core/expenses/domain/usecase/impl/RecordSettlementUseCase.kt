@@ -25,6 +25,7 @@ class RecordSettlementUseCase(
         method: SettlementMethod,
         paidAt: Long,
     ): Result<String> {
+        val recordedAt = currentTimeMillis()
         val settlement = Settlement(
             id = Uuid.random().toString(),
             groupId = groupId,
@@ -34,11 +35,12 @@ class RecordSettlementUseCase(
             method = method,
             paidAt = paidAt,
             isPending = true,
+            updatedAt = recordedAt,
         )
         return repository
             .createSettlement(
                 settlement = settlement,
-                recordedAt = currentTimeMillis(),
+                recordedAt = recordedAt,
             ).onSuccess { recordedPayments.post(settlement) }
             .map { settlement.id }
     }

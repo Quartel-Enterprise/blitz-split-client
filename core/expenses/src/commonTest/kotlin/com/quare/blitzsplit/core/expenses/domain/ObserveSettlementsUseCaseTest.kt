@@ -76,6 +76,7 @@ class ObserveSettlementsUseCaseTest {
         method = SettlementMethod.PIX,
         paidAt = paidAt,
         isPending = false,
+        updatedAt = 0L,
     )
 
     private fun prepareScenario(stored: List<Settlement> = emptyList()) {

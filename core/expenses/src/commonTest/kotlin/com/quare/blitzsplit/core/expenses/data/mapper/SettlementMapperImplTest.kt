@@ -13,7 +13,7 @@ class SettlementMapperImplTest {
     private val mapper = SettlementMapperImpl()
 
     @Test
-    fun `GIVEN a stored payment waiting to go up WHEN mapping to the domain THEN reads it pending`() {
+    fun `GIVEN a stored payment waiting to go up WHEN mapping to the domain THEN reads it pending with its version`() {
         // Given
         val entity = entity(
             method = "transfer",
@@ -34,6 +34,7 @@ class SettlementMapperImplTest {
                 method = SettlementMethod.TRANSFER,
                 paidAt = 3_000L,
                 isPending = true,
+                updatedAt = 4_000L,
             ),
             settlement,
         )
@@ -63,6 +64,7 @@ class SettlementMapperImplTest {
             method = SettlementMethod.CASH,
             paidAt = 3_000L,
             isPending = true,
+            updatedAt = 0L,
         )
 
         // When
