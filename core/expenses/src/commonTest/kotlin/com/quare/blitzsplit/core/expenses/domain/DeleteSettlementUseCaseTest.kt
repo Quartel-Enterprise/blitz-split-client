@@ -61,7 +61,7 @@ class DeleteSettlementUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a payment already gone WHEN undoing it THEN fails and its notice keeps waiting`() = runTest {
+    fun `GIVEN a payment already gone WHEN undoing it THEN succeeds and its notice is dropped`() = runTest {
         // Given
         prepareScenario(
             stored = emptyList(),
@@ -72,8 +72,8 @@ class DeleteSettlementUseCaseTest {
         val result = useCase(PAYMENT_ID)
 
         // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
-        assertEquals(PAYMENT_ID, recordedPayments.observeRecorded().first()?.id)
+        assertTrue(result.isSuccess)
+        assertNull(recordedPayments.observeRecorded().first())
     }
 
     @Test

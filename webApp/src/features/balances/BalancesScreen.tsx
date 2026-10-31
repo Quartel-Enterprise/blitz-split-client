@@ -34,6 +34,7 @@ export function BalancesScreen({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsBalancesState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'coming-soon') toast(t('groups_comingSoon'))
+    if (action === 'change-error') toast(t('groupDetail_changeError'))
   })
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   if (!presenter || !state?.isLoaded) return null

@@ -1,13 +1,19 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -18,7 +24,6 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -48,7 +53,15 @@ internal class GroupScreen(
     private val route: Route,
     private val groupId: String,
     private val navigator: Navigator,
+    private val observeGroup: ObserveGroup,
+    private val observeExpenses: ObserveExpenses,
+    private val observeSettlements: ObserveSettlements,
+    private val observeRecordedPayment: ObserveRecordedPayment,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
 ) {
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
     private var group: Group? = null
     private var balances = GroupBalances(
         debts = emptyList(),
@@ -60,16 +73,15 @@ internal class GroupScreen(
 
     /*
      * Why: a sync may bring other members' bills and payments while the screen is open, or remove the whole group.
-     * show gets the balances too, already worked out.
+     * show gets the balances too, already worked out, and showNotice the payment Registrar pagamento just recorded.
      */
     fun watch(
         scope: CoroutineScope,
-        group: Flow<Group?>,
-        expenses: Flow<List<Expense>>,
-        settlements: Flow<List<Settlement>>,
         show: (Group, List<Expense>, List<Settlement>, GroupBalances) -> Unit,
+        isLoaded: Flow<Boolean>,
+        showNotice: (PaymentNotice) -> Unit,
     ) {
-        combine(group, expenses, settlements, ::Triple)
+        combine(observeGroup(groupId), observeExpenses(groupId), observeSettlements(groupId), ::Triple)
             .onEach { (group, expenses, settlements) ->
                 this.group = group
                 isGroupGone = group == null
@@ -83,29 +95,39 @@ internal class GroupScreen(
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(scope)
+        notices.watch(
+            scope = scope,
+            recorded = observeRecordedPayment(groupId),
+            backStack = navigator.backStack,
+            isLoaded = isLoaded,
+            isOnTop = ::isOnTop,
+            meId = {
+                this.group
+                    ?.members
+                    ?.firstOrNull { it.isMe }
+                    ?.id
+            },
+            nameOf = { id ->
+                this.group
+                    ?.members
+                    ?.firstOrNull { it.id == id }
+                    ?.name
+            },
+            show = showNotice,
+        )
     }
 
-    // Why: the notice waits until this screen is on top again, under Registrar pagamento, and for the group's names.
-    fun watchRecordedPayment(
+    // Why: "Desfazer" and "Apagar este acerto?".
+    fun deletePayment(
         scope: CoroutineScope,
-        recorded: Flow<Settlement?>,
-        isLoaded: Flow<Boolean>,
-        consume: ConsumeRecordedPayment,
-        show: (PaymentNotice) -> Unit,
+        settlementId: String,
+        onFailure: suspend () -> Unit,
     ) {
-        combine(recorded, navigator.backStack, isLoaded.distinctUntilChanged(), ::Triple)
-            .onEach { (settlement, _, isLoaded) ->
-                if (settlement == null || !isLoaded || !isOnTop()) return@onEach
-                consume(settlement.id)
-                val members = group?.members.orEmpty()
-                show(
-                    PaymentNotice.of(
-                        settlement = settlement,
-                        meId = members.firstOrNull { it.isMe }?.id,
-                        nameOf = { id -> members.firstOrNull { it.id == id }?.name },
-                    ),
-                )
-            }.launchIn(scope)
+        notices.delete(
+            scope = scope,
+            settlementId = settlementId,
+            onFailure = onFailure,
+        )
     }
 
     fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

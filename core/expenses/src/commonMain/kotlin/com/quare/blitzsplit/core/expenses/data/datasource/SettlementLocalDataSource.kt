@@ -15,7 +15,7 @@ interface SettlementLocalDataSource {
     // Why: fails when the group is no longer on the device, which a sync may have removed meanwhile.
     suspend fun insertSettlement(entity: SettlementEntity)
 
-    // Why: fails when the payment is already gone.
+    // Why: a payment already gone, which a sync deleted meanwhile, is what was asked, so only a disk error fails.
     suspend fun markDeleted(
         id: String,
         now: Long,

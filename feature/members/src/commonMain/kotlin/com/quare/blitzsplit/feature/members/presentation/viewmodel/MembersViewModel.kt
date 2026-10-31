@@ -3,9 +3,8 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
-import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
-import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -55,8 +53,8 @@ class MembersViewModel(
     private val addMember: AddMember,
     private val renameMember: RenameMember,
     private val removeMember: RemoveMember,
-    private val consumeRecordedPayment: ConsumeRecordedPayment,
-    private val deleteSettlement: DeleteSettlement,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
     observeRecordedPayment: ObserveRecordedPayment,
@@ -92,6 +90,8 @@ class MembersViewModel(
 
     private var copiedReset: Job? = null
 
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
     private var group: Group? = null
     private var balances = GroupBalances(
         debts = emptyList(),
@@ -110,12 +110,16 @@ class MembersViewModel(
                 isGroupGone = group == null
                 if (group == null) leave() else show(group)
             }.launchIn(viewModelScope)
-        // Why: the notice waits until this screen is on top again, under Registrar pagamento.
-        val isLoaded = uiState.map { it.isLoaded }.distinctUntilChanged()
-        combine(observeRecordedPayment(route.groupId), navigator.backStack, isLoaded, ::Triple)
-            .onEach { (settlement, _, isLoaded) ->
-                if (settlement != null && isLoaded && isOnTop()) showRecordedPayment(settlement)
-            }.launchIn(viewModelScope)
+        notices.watch(
+            scope = viewModelScope,
+            recorded = observeRecordedPayment(route.groupId),
+            backStack = navigator.backStack,
+            isLoaded = uiState.map { it.isLoaded },
+            isOnTop = ::isOnTop,
+            meId = { group?.members?.firstOrNull { it.isMe }?.id },
+            nameOf = { id -> group?.members?.firstOrNull { it.id == id }?.name },
+            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+        )
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
@@ -246,21 +250,10 @@ class MembersViewModel(
         if (isOnTop()) navigator.navigate(Route.RegisterPayment(route.groupId, meId, creditorId))
     }
 
-    private fun showRecordedPayment(settlement: Settlement) {
-        consumeRecordedPayment(settlement.id)
-        val members = group?.members.orEmpty()
-        val notice = PaymentNotice.of(
-            settlement = settlement,
-            meId = members.firstOrNull { it.isMe }?.id,
-            nameOf = { id -> members.firstOrNull { it.id == id }?.name },
-        )
-        uiState.update { it.copy(recordedPayment = notice) }
-    }
-
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        viewModelScope.launch { deleteSettlement(notice.settlementId) }
+        notices.delete(viewModelScope, notice.settlementId) { uiAction.emit(MembersUiAction.ShowChangeError) }
     }
 
     private fun personalInviteOf(

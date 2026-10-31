@@ -114,7 +114,7 @@ class SettlementRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a payment already gone WHEN deleting it THEN fails`() = runTest {
+    fun `GIVEN a payment already gone WHEN deleting it THEN succeeds without a tombstone`() = runTest {
         // Given
         prepareScenario()
 
@@ -122,7 +122,8 @@ class SettlementRepositoryImplTest {
         val result = repository.deleteSettlement("payment-1", deletedAt = 9_000L)
 
         // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(result.isSuccess)
+        assertTrue(local.deletions.isEmpty())
     }
 
     @Test
@@ -386,7 +387,7 @@ private class FakeSettlementLocalDataSource(
         id: String,
         now: Long,
     ) {
-        val current = checkNotNull(entities.value.firstOrNull { it.id == id && !it.isDeleted })
+        val current = entities.value.firstOrNull { it.id == id && !it.isDeleted } ?: return
         deletions += id to now
         val deleted = current.copy(
             isDeleted = true,

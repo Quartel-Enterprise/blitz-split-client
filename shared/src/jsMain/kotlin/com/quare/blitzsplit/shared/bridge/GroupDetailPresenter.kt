@@ -96,11 +96,12 @@ class GroupDetailPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon", a toast in the page's words.
+    // Why: "coming-soon" and "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupDetailUiAction.ShowComingSoon -> "coming-soon"
+                GroupDetailUiAction.ShowChangeError -> "change-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)

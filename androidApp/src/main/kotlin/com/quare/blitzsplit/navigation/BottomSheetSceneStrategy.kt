@@ -2,8 +2,12 @@ package com.quare.blitzsplit.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavMetadataKey
 import androidx.navigation3.runtime.get
@@ -12,10 +16,12 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import com.quare.blitzsplit.android.designsystem.layout.LocalSheetDismissLock
 
 /*
  * Why: Registrar pagamento opens as a bottom sheet over the group on a phone, which stays drawn under it. Dismissing
- * the sheet (dragging it down, tapping the scrim) pops the shared back stack like the back gesture.
+ * the sheet (dragging it down, tapping the scrim) pops the shared back stack like the back gesture, unless the screen
+ * in it holds it open (`SheetDismissLockEffect`).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 private class BottomSheetScene<T : Any>(
@@ -28,11 +34,17 @@ private class BottomSheetScene<T : Any>(
     override val entries: List<NavEntry<T>> = listOf(entry)
 
     override val content: @Composable () -> Unit = {
+        val lock = remember { mutableStateOf(false) }
         ModalBottomSheet(
             onDismissRequest = onBack,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
+                confirmValueChange = { value -> value != SheetValue.Hidden || !lock.value },
+            ),
         ) {
-            entry.Content()
+            CompositionLocalProvider(LocalSheetDismissLock provides lock) {
+                entry.Content()
+            }
         }
     }
 }

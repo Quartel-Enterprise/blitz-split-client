@@ -6,6 +6,7 @@ import SwiftUI
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
     private(set) var comingSoonCount = 0
+    private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
@@ -23,6 +24,7 @@ final class GroupDetailModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is GroupDetailUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
         })
@@ -138,6 +140,7 @@ struct GroupDetailView: View {
             Text("The payment leaves the group and the debt is back in the balances.")
         }
         .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
+        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
         .glassToast("This bill was deleted", trigger: model?.billDeletedCount ?? 0)
         .recordedPaymentNotice(
             model?.state.recordedPayment,

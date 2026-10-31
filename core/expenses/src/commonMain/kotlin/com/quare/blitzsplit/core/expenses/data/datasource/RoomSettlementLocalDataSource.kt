@@ -24,11 +24,10 @@ class RoomSettlementLocalDataSource(
         id: String,
         now: Long,
     ) {
-        val changed = dao.markDeleted(
+        dao.markDeleted(
             id = id,
             now = now,
         )
-        check(changed == 1) { "No payment $id" }
     }
 
     override suspend fun applyRemote(entities: List<SettlementEntity>) {

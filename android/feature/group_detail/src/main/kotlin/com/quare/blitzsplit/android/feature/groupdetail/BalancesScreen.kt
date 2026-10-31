@@ -23,6 +23,7 @@ fun BalancesScreen(
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             BalancesUiAction.ShowComingSoon -> R.string.group_detail_coming_soon
+            BalancesUiAction.ShowChangeError -> R.string.group_detail_change_error
         }
     }
     RecordedPaymentNoticeEffect(

@@ -224,6 +224,7 @@ export const en = {
   groupDetail_emptyTitle: 'No expenses yet',
   groupDetail_emptyBody: "Add the first expense or invite who's splitting with you. People without the app count too.",
   groupDetail_billDeleted: 'This bill was deleted',
+  groupDetail_changeError: "Couldn't save the change. Try again.",
 
   billDetail_edit: 'Edit',
   billDetail_delete: 'Delete',

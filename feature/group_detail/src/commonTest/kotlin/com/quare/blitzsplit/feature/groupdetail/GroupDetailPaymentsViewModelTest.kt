@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -992,6 +994,45 @@ class GroupDetailPaymentsViewModelTest {
             assertEquals(listOf(nowMillis), settlements.deletedAts)
             assertNull(viewModel.uiState.value.recordedPayment)
             assertTrue(paymentRows().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the device fails to delete WHEN tapping Desfazer THEN says so and the payment stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val actions = mutableListOf<GroupDetailUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            val settlementId = record(
+                from = ANA,
+                to = PIERRE,
+            )
+            settlements.deleteError = IllegalStateException("disk full")
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowChangeError), actions)
+            assertEquals(listOf(settlementId), paymentRows().map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the device fails to delete WHEN confirming the delete question THEN says so and the payment stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            val actions = mutableListOf<GroupDetailUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            settlements.deleteError = IllegalStateException("disk full")
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowChangeError), actions)
+            assertEquals(listOf("pay-1"), paymentRows().map { it.id })
         }
 
     @Test

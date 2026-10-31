@@ -106,7 +106,8 @@ class RegisterPaymentViewModel(
 
             RegisterPaymentUiEvent.OnConfirmClicked -> confirm()
 
-            RegisterPaymentUiEvent.OnCloseClicked -> leave()
+            // Why: a payment being saved finishes first, on every platform, so it is never left half done.
+            RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
         }
     }
 
@@ -200,7 +201,8 @@ class RegisterPaymentViewModel(
             }.onFailure {
                 uiState.update { it.copy(isSaving = false) }
                 latest?.let { (group, balances) -> handle(group, balances) }
-                uiAction.emit(RegisterPaymentUiAction.ShowSaveError)
+                // Why: a debt settled or a group removed meanwhile closed the form, which leaves nothing to retry.
+                if (isOnTop()) uiAction.emit(RegisterPaymentUiAction.ShowSaveError)
             }
         }
     }
@@ -231,8 +233,10 @@ class RegisterPaymentViewModel(
 
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     private fun leave() {
-        if (navigator.backStack.value.lastOrNull() == route) navigator.navigateBack()
+        if (isOnTop()) navigator.navigateBack()
     }
+
+    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 
     private companion object {
         // Why: "100.000.000,00" with room for the separators someone types.

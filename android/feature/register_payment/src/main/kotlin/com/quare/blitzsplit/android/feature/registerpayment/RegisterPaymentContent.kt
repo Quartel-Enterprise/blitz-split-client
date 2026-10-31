@@ -77,6 +77,7 @@ fun RegisterPaymentContent(
                 IconButton(
                     onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) },
                     modifier = Modifier.align(Alignment.TopEnd),
+                    enabled = !state.isSaving,
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
@@ -95,7 +96,10 @@ fun RegisterPaymentContent(
                 modifier = Modifier.align(Alignment.End),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                TextButton(onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) }) {
+                TextButton(
+                    onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) },
+                    enabled = !state.isSaving,
+                ) {
                     Text(stringResource(R.string.register_payment_cancel))
                 }
                 ConfirmButton(
@@ -125,6 +129,7 @@ fun RegisterPaymentContent(
                         modifier = Modifier
                             .weight(1f)
                             .heightIn(min = 48.dp),
+                        enabled = !state.isSaving,
                     ) { Text(stringResource(R.string.register_payment_cancel)) }
                     ConfirmButton(
                         state = state,

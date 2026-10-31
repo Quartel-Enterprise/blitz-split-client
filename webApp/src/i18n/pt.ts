@@ -225,6 +225,7 @@ export const pt: Record<MessageKey, string> = {
   groupDetail_emptyTitle: 'Nenhuma despesa ainda',
   groupDetail_emptyBody: 'Lance a primeira despesa ou chame quem vai dividir com você. Quem ainda não tem o app também entra na conta.',
   groupDetail_billDeleted: 'Esta conta foi apagada',
+  groupDetail_changeError: 'Não deu para salvar a mudança. Tente de novo.',
 
   billDetail_edit: 'Editar',
   billDetail_delete: 'Apagar',

@@ -161,7 +161,7 @@ class RoomSettlementLocalDataSourceTest {
         }
 
     @Test
-    fun `GIVEN no such payment WHEN undoing it THEN fails`() = runTest {
+    fun `GIVEN no such payment WHEN undoing it THEN succeeds and nothing waits for the sync`() = runTest {
         // Given
         prepareScenario()
 
@@ -169,11 +169,12 @@ class RoomSettlementLocalDataSourceTest {
         val result = runCatching { dataSource.markDeleted("payment-1", now = 9_000L) }
 
         // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(result.isSuccess)
+        assertFalse(dataSource.observeHasPending().first())
     }
 
     @Test
-    fun `GIVEN an undone payment WHEN undoing it again THEN fails and nothing waits for the sync`() = runTest {
+    fun `GIVEN an undone payment WHEN undoing it again THEN succeeds and nothing waits for the sync`() = runTest {
         // Given
         prepareScenario(
             stored = listOf(
@@ -188,7 +189,7 @@ class RoomSettlementLocalDataSourceTest {
         val result = runCatching { dataSource.markDeleted("payment-1", now = 9_000L) }
 
         // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(result.isSuccess)
         assertFalse(dataSource.observeHasPending().first())
     }
 

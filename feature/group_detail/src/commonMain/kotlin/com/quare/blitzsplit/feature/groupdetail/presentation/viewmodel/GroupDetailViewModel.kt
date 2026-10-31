@@ -43,9 +43,9 @@ class GroupDetailViewModel(
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
-    private val deleteSettlement: DeleteSettlement,
     navigator: Navigator,
     consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
@@ -74,27 +74,25 @@ class GroupDetailViewModel(
         route = route,
         groupId = route.groupId,
         navigator = navigator,
+        observeGroup = observeGroup,
+        observeExpenses = observeExpenses,
+        observeSettlements = observeSettlements,
+        observeRecordedPayment = observeRecordedPayment,
+        consumeRecordedPayment = consumeRecordedPayment,
+        deleteSettlement = deleteSettlement,
     )
 
     init {
         screen.watch(
             scope = viewModelScope,
-            group = observeGroup(route.groupId),
-            expenses = observeExpenses(route.groupId),
-            settlements = observeSettlements(route.groupId),
             show = ::show,
+            isLoaded = uiState.map { it.isLoaded },
+            showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
         combine(observeDeletedBillNotice(route.groupId), navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
             .launchIn(viewModelScope)
-        screen.watchRecordedPayment(
-            scope = viewModelScope,
-            recorded = observeRecordedPayment(route.groupId),
-            isLoaded = uiState.map { it.isLoaded },
-            consume = consumeRecordedPayment,
-            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
-        )
     }
 
     fun onEvent(event: GroupDetailUiEvent) {
@@ -223,11 +221,10 @@ class GroupDetailViewModel(
         .filterIsInstance<PaymentRow>()
         .firstOrNull { it.id == paymentId }
 
-    // Why: a delete that fails found the payment already gone, which is what was asked.
     private fun deletePayment() {
         val payment = uiState.value.paymentToDelete ?: return
         uiState.update { it.copy(paymentToDelete = null) }
-        viewModelScope.launch { deleteSettlement(payment.id) }
+        screen.deletePayment(viewModelScope, payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 
     private fun showBillDeleted() {
@@ -238,6 +235,6 @@ class GroupDetailViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        viewModelScope.launch { deleteSettlement(notice.settlementId) }
+        screen.deletePayment(viewModelScope, notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 }

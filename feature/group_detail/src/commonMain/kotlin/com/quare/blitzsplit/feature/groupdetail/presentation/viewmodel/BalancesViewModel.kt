@@ -30,9 +30,9 @@ import kotlinx.coroutines.launch
 
 class BalancesViewModel(
     private val route: Route.Balances,
-    private val deleteSettlement: DeleteSettlement,
     navigator: Navigator,
     consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
@@ -60,22 +60,20 @@ class BalancesViewModel(
         route = route,
         groupId = route.groupId,
         navigator = navigator,
+        observeGroup = observeGroup,
+        observeExpenses = observeExpenses,
+        observeSettlements = observeSettlements,
+        observeRecordedPayment = observeRecordedPayment,
+        consumeRecordedPayment = consumeRecordedPayment,
+        deleteSettlement = deleteSettlement,
     )
 
     init {
         screen.watch(
             scope = viewModelScope,
-            group = observeGroup(route.groupId),
-            expenses = observeExpenses(route.groupId),
-            settlements = observeSettlements(route.groupId),
             show = { group, expenses, _, balances -> show(group, expenses, balances) },
-        )
-        screen.watchRecordedPayment(
-            scope = viewModelScope,
-            recorded = observeRecordedPayment(route.groupId),
             isLoaded = uiState.map { it.isLoaded },
-            consume = consumeRecordedPayment,
-            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+            showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
     }
 
@@ -161,6 +159,6 @@ class BalancesViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        viewModelScope.launch { deleteSettlement(notice.settlementId) }
+        screen.deletePayment(viewModelScope, notice.settlementId) { uiAction.emit(BalancesUiAction.ShowChangeError) }
     }
 }

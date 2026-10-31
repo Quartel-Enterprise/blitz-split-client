@@ -956,7 +956,7 @@ class RegisterPaymentViewModelTest {
         }
 
     @Test
-    fun `GIVEN a sync settling the whole debt while saving WHEN the save fails THEN closes it`() =
+    fun `GIVEN a sync settling the whole debt while saving WHEN the save fails THEN closes it without an error`() =
         runTest(testDispatcher) {
             // Given
             val gate = CompletableDeferred<Unit>()
@@ -978,6 +978,7 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
         }
 
     @Test
@@ -1171,6 +1172,23 @@ class RegisterPaymentViewModelTest {
         // Then
         assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
         assertTrue(settlements.recordedSettlements.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a payment being saved WHEN tapping close THEN stays open until it is saved`() = runTest(testDispatcher) {
+        // Given
+        val gate = CompletableDeferred<Unit>()
+        prepareScenario(recordGate = gate)
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        gate.complete(Unit)
+        assertEquals(1, settlements.recordedSettlements.size)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test

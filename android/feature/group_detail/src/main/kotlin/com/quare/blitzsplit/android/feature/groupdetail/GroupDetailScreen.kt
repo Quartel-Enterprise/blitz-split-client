@@ -26,6 +26,7 @@ fun GroupDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val comingSoon = stringResource(R.string.group_detail_coming_soon)
+    val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
@@ -33,6 +34,7 @@ fun GroupDetailScreen(
         viewModel.uiAction.collect { action ->
             when (action) {
                 GroupDetailUiAction.ShowComingSoon -> showSnackbar(comingSoon)
+                GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
             }
         }
     }

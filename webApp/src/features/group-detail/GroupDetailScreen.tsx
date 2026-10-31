@@ -32,6 +32,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'coming-soon') toast(t('groups_comingSoon'))
+    if (action === 'change-error') toast(t('groupDetail_changeError'))
   })
   // Why: state, not an action, so it waits for this screen while the bill's panel still covers it.
   const showsBillDeletedNotice = state?.showsBillDeletedNotice === true

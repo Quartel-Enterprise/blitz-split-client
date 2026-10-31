@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
+import com.quare.blitzsplit.android.designsystem.layout.SheetDismissLockEffect
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
@@ -32,6 +33,7 @@ fun RegisterPaymentScreen(
     }
     var isPickingPaidAt by rememberSaveable { mutableStateOf(false) }
     BackHandler { viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked) }
+    SheetDismissLockEffect(isLocked = state.isSaving)
     RegisterPaymentContent(
         state = state,
         isDialog = isDialog,

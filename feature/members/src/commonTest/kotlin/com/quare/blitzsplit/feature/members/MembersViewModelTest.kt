@@ -2807,6 +2807,39 @@ class MembersViewModelTest {
         }
 
     @Test
+    fun `GIVEN the device fails to delete WHEN tapping Desfazer THEN says so and the payment still counts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-2"),
+                    ),
+                ),
+            )
+            record(
+                from = "member-2",
+                to = "member-1",
+            )
+            settlements.deleteError = IllegalStateException("disk full")
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowChangeError), actions)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                viewModel.uiState.value.myBalance,
+            )
+        }
+
+    @Test
     fun `GIVEN the payment notice on screen WHEN tapping Desfazer THEN deletes that payment and the debt comes back`() =
         runTest(testDispatcher) {
             // Given

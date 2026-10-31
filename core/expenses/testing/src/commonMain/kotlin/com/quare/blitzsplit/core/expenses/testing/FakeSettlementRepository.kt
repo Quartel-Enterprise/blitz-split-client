@@ -56,7 +56,8 @@ class FakeSettlementRepository(
         deletedAt: Long,
     ): Result<Unit> {
         deleteError?.let { return Result.failure(it) }
-        if (settlements.value.none { it.id == id }) return Result.failure(IllegalStateException("No payment $id"))
+        // Why: like Room, a payment already gone is what was asked.
+        if (settlements.value.none { it.id == id }) return Result.success(Unit)
         deletedIds += id
         deletedAts += deletedAt
         settlements.update { list -> list.filterNot { it.id == id } }

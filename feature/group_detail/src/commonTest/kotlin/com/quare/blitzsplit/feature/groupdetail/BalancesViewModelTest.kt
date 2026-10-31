@@ -1067,6 +1067,38 @@ class BalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN the device fails to delete WHEN tapping Desfazer on Saldos THEN says so and the payment still counts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    bill(
+                        "hotel",
+                        paidBy = BRUNO,
+                        amountMinor = 6_000,
+                        PIERRE,
+                    ),
+                ),
+            )
+            record(
+                from = PIERRE,
+                to = BRUNO,
+                amountMinor = 3_000,
+            )
+            settlements.deleteError = IllegalStateException("disk full")
+
+            // When
+            viewModel.onEvent(BalancesUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowChangeError), actions)
+            assertTrue(
+                viewModel.uiState.value.myDebts
+                    .isEmpty(),
+            )
+        }
+
+    @Test
     fun `GIVEN the payment notice on Saldos WHEN tapping Desfazer THEN deletes that payment and the debt is back`() =
         runTest(testDispatcher) {
             // Given

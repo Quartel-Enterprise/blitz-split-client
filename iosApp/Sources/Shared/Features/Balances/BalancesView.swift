@@ -6,6 +6,7 @@ import SwiftUI
 final class BalancesModel {
     private(set) var state: BalancesUiState
     private(set) var comingSoonCount = 0
+    private(set) var changeErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<BalancesViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -18,7 +19,11 @@ final class BalancesModel {
             self?.state = state
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            if action is BalancesUiActionShowComingSoon { self?.comingSoonCount += 1 }
+            switch action {
+            case is BalancesUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is BalancesUiActionShowChangeError: self?.changeErrorCount += 1
+            default: break
+            }
         })
     }
 
@@ -103,6 +108,7 @@ struct BalancesView: View {
             actions: model?.actions ?? .disabled,
         )
         .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
+        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
         .recordedPaymentNotice(
             model?.state.recordedPayment,
             onUndo: { model?.send(BalancesUiEventOnUndoPaymentClicked.shared) },
