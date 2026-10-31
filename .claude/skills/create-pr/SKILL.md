@@ -169,9 +169,15 @@ go on to step 8.
 
 ### 8. Run the checks of each area the branch touches
 
-If every file the branch changes is Markdown (`.md`), as gathered in step 1 (commits ahead of
-`main` and uncommitted changes alike), skip this step. Nothing builds those files, and the checks
-take minutes.
+Gather the changed files again, since the fixes of step 7 may reach areas step 1 didn't list:
+
+```bash
+git diff --name-only main...HEAD
+git status -s
+```
+
+If every file the branch changes is Markdown (`.md`), commits ahead of `main` and uncommitted
+changes alike, skip this step. Nothing builds those files, and the checks take minutes.
 
 Otherwise, sort the changed files into the areas below and run the checks of every area that has at
 least one. Pass `--continue` to Gradle so one failure doesn't hide the next.
@@ -318,8 +324,9 @@ drop the `--label` flag for it. The repository is new, so the label may not exis
 repositório. Quer que eu crie?" and, on a yes, create it with `gh label create <label>` before
 creating the pull request. On a no, create the pull request without `--label`.
 
-If `gh` is not installed, ask the user before installing it (`brew install gh`, then
-`gh auth status || gh auth login`).
+If `gh` is not installed, make the same calls through the GitHub MCP tools when the session has
+them (a Claude Code cloud session); otherwise ask the user before installing it (`brew install gh`,
+then `gh auth status || gh auth login`).
 
 **Title:** Same format as the commit message: type prefix + short imperative description.
 
@@ -350,8 +357,8 @@ checks, review threads and conflicts with `main` as they show up. The label merg
 "mergeia agora"): then merge directly, as below. Skip this step only when the user's request said not
 to merge (e.g. "só abre o PR"), and stop after step 11.
 
-In a session without `gh` (a Claude Code cloud session), make the same calls through the GitHub MCP
-tools. The label needs the `MERGE_WHEN_GREEN_TOKEN` repository secret, so check for it first:
+In a session without `gh`, make the same calls through the GitHub MCP tools, as in step 11. The
+label needs the `MERGE_WHEN_GREEN_TOKEN` repository secret, so check for it first:
 
 ```bash
 gh secret list | grep -qw MERGE_WHEN_GREEN_TOKEN
@@ -360,7 +367,8 @@ gh secret list | grep -qw MERGE_WHEN_GREEN_TOKEN
 If the command prints no error and finds nothing, the secret isn't set and the label would only fail
 the workflow: merge directly and tell the user the secret is missing. Listing secrets needs admin
 rights on the repository, so on a 403 add the label anyway: a missing token then shows up as the
-failed `merge-when-green` check of exit 2 below.
+failed `merge-when-green` check of exit 2 below. The GitHub MCP tools can't list secrets, so
+without `gh` do the same as on a 403.
 
 ```bash
 gh pr edit --add-label merge-when-green
@@ -373,7 +381,11 @@ every review conversation is resolved, including the checks of the fix commit th
 - **With the `subscribe_pr_activity` tool** (a Claude Code cloud session), call it for the pull
   request and end the turn: check results, reviews and comments wake the session as PR events, and
   the rules that arrive with the subscription govern them. Handle each event as the outcomes below
-  say, then call `unsubscribe_pr_activity` once the pull request merges or closes.
+  say, with the loop's filter: a failed `review-gate` check is the hold for the review's open
+  threads, not a failure, and a cancelled `merge-when-green` run was only replaced by a newer one.
+  Once an outcome says to stop, later events don't start the fixes of that blocker again: stay
+  quiet until the user answers or something new shows up (another check failing, a new thread).
+  Call `unsubscribe_pr_activity` once the pull request merges or closes, or the user says to stop.
 - **Without it**, run this with the Bash tool's `run_in_background`, which calls you back when it
   exits.
 
@@ -401,12 +413,12 @@ exit 4
 ```
 
 Tell the user the label and auto fix are on, and that the task gets cleaned up once the merge
-happens. Every fix below goes the same way, without asking: pull first (the opening `claude-review`
-may have pushed its fix commit), fix, run step 2 again if a Kotlin file changed and the step 8
-checks of the areas the fix touches, commit it with step 9's message rules, push (step 10), and
-wait again as above. Never amend, rebase or force push what is already on `origin`, and never skip,
-disable or loosen a test or a check to get it green. When the command exits, or a PR event says the
-same:
+happens. Every fix below goes the same way, without asking: pull first, before any local commit
+(`git pull --ff-only`: the opening `claude-review` may have pushed its fix commit), fix, run step 2
+again if a Kotlin file changed and the step 8 checks of the areas the fix touches, commit it with
+step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
+what is already on `origin`, and never skip, disable or loosen a test or a check to get it green.
+When the command exits, or a PR event says the same:
 
 - **0, merged:** run the `finish-task` skill right away, as after a direct merge below.
 - **2, a check failed or was cancelled:** see which one (`gh pr checks <pr>`).
@@ -440,7 +452,8 @@ same:
 
     For each one, without asking, fix it as above (checking it against the code first, as in step
     7) or reply with why the code stays as it is, then resolve it on GitHub and add the label
-    again. Show the user what was fixed and what was answered.
+    again. Show the user what was fixed and what was answered, then wait again as above, even when
+    no fix was pushed.
   - **A conflict with `main`**: merge `origin/main` into the branch (a merge commit, never a
     rebase), resolve the conflicts keeping what both sides meant, then push as above and add the
     label again. Ask the user only when a conflict needs a product choice nobody wrote down yet.
@@ -469,7 +482,8 @@ gh pr checks
   gh pr merge --squash
   ```
 
-  If a check fails, fix it as in the auto fix above, then watch again. A failed `review-gate` check (its `Hold for the open
+  If a check fails, fix it as in the auto fix above (pull, fix, checks, commit, push), then watch
+  again here instead of the label's wait. A failed `review-gate` check (its `Hold for the open
   threads` step) means the Claude review left threads open, and the ruleset refuses the merge while
   any conversation is unresolved: fix or answer each one and resolve it. A fix pushed runs the checks
   again; with no push, add the `run-checks` label, which re-runs the held checks (see
@@ -490,9 +504,9 @@ a ruleset, a conflict with `main`), notify the user with the reason and stop. Do
 
 Once the squash merge succeeds, immediately run the `finish-task` skill in the same turn; don't
 wait for the user to ask for it. Opening the pull request through this skill is also the request to
-merge it and clean up the task. `finish-task` handles both worktree and in-place tasks and checks the merge before removing
-the branch (and the worktree, the emulator and the simulator, if there are any), so don't duplicate
-its logic here.
+merge it and clean up the task, unless the user said not to merge (step 12). `finish-task` handles
+both worktree and in-place tasks and checks the merge before removing the branch (and the
+worktree, the emulator and the simulator, if there are any), so don't duplicate its logic here.
 
 ## Edge cases
 
@@ -500,7 +514,8 @@ its logic here.
   errors are ones ktlint cannot autocorrect (e.g. custom `quare:*` rules such as
   `quare:comments-say-why` or the test structure rules), so they must be fixed by hand
 - If there is nothing to commit and the branch is already pushed, still write the description and
-  run the reviews (steps 6 and 7), then go directly to PR creation
+  run the reviews (steps 6 and 7); if step 7 changed any file, go on with steps 8 to 10 as usual,
+  otherwise go directly to PR creation
 - If the branch already has an open PR, notify the user instead of creating a duplicate
 - Always target `main` as the base branch for the PR
 - Never force push, and never rewrite commits that are already on `origin`
