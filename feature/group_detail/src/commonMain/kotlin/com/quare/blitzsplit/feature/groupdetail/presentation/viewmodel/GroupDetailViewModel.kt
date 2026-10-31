@@ -169,12 +169,7 @@ class GroupDetailViewModel(
                 ),
                 days = days,
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
-                paymentToDelete = it.paymentToDelete?.let { asked ->
-                    days.flatMap { day -> day.entries }.filterIsInstance<PaymentRow>().firstOrNull { row ->
-                        row.id ==
-                            asked.id
-                    }
-                },
+                paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
                 isLoaded = true,
             )
         }
@@ -215,12 +210,18 @@ class GroupDetailViewModel(
     )
 
     private fun askToDeletePayment(paymentId: String) {
-        val payment = uiState.value.days
-            .flatMap { it.entries }
-            .filterIsInstance<PaymentRow>()
-            .firstOrNull { it.id == paymentId } ?: return
+        val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return
         uiState.update { it.copy(paymentToDelete = payment) }
     }
+
+    private fun paymentRowOrNull(
+        days: List<ExpenseDay>,
+        paymentId: String,
+    ): PaymentRow? = days
+        .asSequence()
+        .flatMap { it.entries }
+        .filterIsInstance<PaymentRow>()
+        .firstOrNull { it.id == paymentId }
 
     // Why: a delete that fails found the payment already gone, which is what was asked.
     private fun deletePayment() {

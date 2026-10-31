@@ -235,8 +235,6 @@ private struct PaymentAmountHelp: View {
 private struct PhoneRegisterPayment: View {
     let model: RegisterPaymentModel
 
-    @FocusState private var isAmountFocused: Bool
-
     private var state: RegisterPaymentUiState {
         model.state
     }
@@ -260,7 +258,6 @@ private struct PhoneRegisterPayment: View {
             .listRowBackground(Color.clear)
             Section {
                 AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
-                    .focused($isAmountFocused)
                 Button {
                     model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
                 } label: {
