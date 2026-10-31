@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.android.feature.groupdetail
+package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,17 +28,21 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDeletedNotice
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitDialog
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupExitUiState
-import com.quare.blitzsplit.android.designsystem.R as DesignR
+import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
+import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 
-// Why: what "Sair do grupo" and "Apagar grupo" open (5.3c to 5.3f), and "Grupo apagado" (6.1k), over either tab.
+/*
+ * Why: what "Sair do grupo" and "Apagar grupo" open (5.3c to 5.3f), and "Grupo apagado" (6.1k), over either tab of the
+ * group or over the home, from a row.
+ */
 @Composable
-internal fun GroupExitAlertDialog(
+fun GroupExitAlertDialog(
     exit: GroupExitUiState,
     money: MoneyFormatter,
     onConfirm: () -> Unit,
@@ -57,14 +61,16 @@ internal fun GroupExitAlertDialog(
 
         is GroupExitDialog.LeaveBlocked -> ExitDialog(
             icon = Icons.Outlined.WarningAmber,
-            title = stringResource(R.string.group_detail_leave_blocked_title),
-            message = stringResource(R.string.group_detail_leave_blocked_message, dialog.groupName),
+            title = stringResource(R.string.designsystem_group_exit_leave_blocked_title),
+            message = stringResource(R.string.designsystem_group_exit_leave_blocked_message, dialog.groupName),
             debts = dialog.debts,
             money = money,
-            confirm = stringResource(
-                if (dialog.canSettle) R.string.group_detail_balances_settle else R.string.group_detail_see_balances,
-            ),
-            dismiss = stringResource(R.string.group_detail_not_now),
+            confirm = if (dialog.canSettle) {
+                stringResource(R.string.designsystem_balance_settle)
+            } else {
+                stringResource(R.string.designsystem_group_exit_see_balances)
+            },
+            dismiss = stringResource(R.string.designsystem_group_exit_not_now),
             isDestructive = false,
             isRunning = false,
             onConfirm = onConfirm,
@@ -73,20 +79,20 @@ internal fun GroupExitAlertDialog(
 
         is GroupExitDialog.ConfirmLeave -> ExitDialog(
             icon = Icons.AutoMirrored.Outlined.Logout,
-            title = stringResource(R.string.group_detail_leave_title, dialog.groupName),
+            title = stringResource(R.string.designsystem_group_exit_leave_title, dialog.groupName),
             message = if (dialog.deletesGroup) {
-                stringResource(R.string.group_detail_leave_message_alone)
+                stringResource(R.string.designsystem_group_exit_leave_message_alone)
             } else {
                 pluralStringResource(
-                    R.plurals.group_detail_leave_message,
+                    R.plurals.designsystem_group_exit_leave_message,
                     dialog.otherMemberCount,
                     dialog.otherMemberCount,
                 )
             },
             debts = emptyList(),
             money = money,
-            confirm = stringResource(R.string.group_detail_leave_confirm),
-            dismiss = stringResource(DesignR.string.designsystem_confirm_cancel),
+            confirm = stringResource(R.string.designsystem_group_exit_leave_confirm),
+            dismiss = stringResource(R.string.designsystem_confirm_cancel),
             isDestructive = true,
             isRunning = exit.isRunning,
             onConfirm = onConfirm,
@@ -95,12 +101,12 @@ internal fun GroupExitAlertDialog(
 
         is GroupExitDialog.DeleteBlocked -> ExitDialog(
             icon = Icons.Outlined.WarningAmber,
-            title = stringResource(R.string.group_detail_delete_blocked_title),
+            title = stringResource(R.string.designsystem_group_exit_delete_blocked_title),
             message = if (dialog.debts.isEmpty()) {
-                stringResource(R.string.group_detail_delete_blocked_message_short, dialog.groupName)
+                stringResource(R.string.designsystem_group_exit_delete_blocked_message_short, dialog.groupName)
             } else {
                 pluralStringResource(
-                    R.plurals.group_detail_delete_blocked_message,
+                    R.plurals.designsystem_group_exit_delete_blocked_message,
                     dialog.debts.size,
                     dialog.groupName,
                     dialog.debts.size,
@@ -108,8 +114,8 @@ internal fun GroupExitAlertDialog(
             },
             debts = dialog.debts,
             money = money,
-            confirm = stringResource(R.string.group_detail_see_balances),
-            dismiss = stringResource(R.string.group_detail_not_now),
+            confirm = stringResource(R.string.designsystem_group_exit_see_balances),
+            dismiss = stringResource(R.string.designsystem_group_exit_not_now),
             isDestructive = false,
             isRunning = false,
             onConfirm = onConfirm,
@@ -118,12 +124,12 @@ internal fun GroupExitAlertDialog(
 
         is GroupExitDialog.ConfirmDelete -> ExitDialog(
             icon = Icons.Outlined.Delete,
-            title = stringResource(R.string.group_detail_delete_title, dialog.groupName),
+            title = stringResource(R.string.designsystem_group_exit_delete_title, dialog.groupName),
             message = deleteMessageOf(dialog),
             debts = emptyList(),
             money = money,
-            confirm = stringResource(R.string.group_detail_delete_confirm),
-            dismiss = stringResource(DesignR.string.designsystem_confirm_cancel),
+            confirm = stringResource(R.string.designsystem_group_exit_delete_confirm),
+            dismiss = stringResource(R.string.designsystem_confirm_cancel),
             isDestructive = true,
             isRunning = exit.isRunning,
             onConfirm = onConfirm,
@@ -135,13 +141,14 @@ internal fun GroupExitAlertDialog(
 // Why: "O grupo, as 14 despesas e o histórico somem para os 5 membros.", without the bills when there were none.
 @Composable
 private fun deleteMessageOf(dialog: GroupExitDialog.ConfirmDelete): String {
-    val members = pluralStringResource(R.plurals.group_detail_delete_members, dialog.memberCount, dialog.memberCount)
+    val members =
+        pluralStringResource(R.plurals.designsystem_group_exit_delete_members, dialog.memberCount, dialog.memberCount)
     return if (dialog.billCount == 0) {
-        stringResource(R.string.group_detail_delete_message_no_bills, members)
+        stringResource(R.string.designsystem_group_exit_delete_message_no_bills, members)
     } else {
         stringResource(
-            R.string.group_detail_delete_message,
-            pluralStringResource(R.plurals.group_detail_delete_bills, dialog.billCount, dialog.billCount),
+            R.string.designsystem_group_exit_delete_message,
+            pluralStringResource(R.plurals.designsystem_group_exit_delete_bills, dialog.billCount, dialog.billCount),
             members,
         )
     }
@@ -281,16 +288,18 @@ private fun GroupDeletedDialog(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
-        title = { Text(stringResource(R.string.group_detail_deleted_title)) },
+        title = { Text(stringResource(R.string.designsystem_group_exit_deleted_title)) },
         text = {
             Text(
                 text = notice.deletedByName?.let {
-                    stringResource(R.string.group_detail_deleted_message, it, notice.groupName)
-                } ?: stringResource(R.string.group_detail_deleted_message_nobody, notice.groupName),
+                    stringResource(R.string.designsystem_group_exit_deleted_message, it, notice.groupName)
+                } ?: stringResource(R.string.designsystem_group_exit_deleted_message_nobody, notice.groupName),
             )
         },
         confirmButton = {
-            TextButton(onClick = onBackToGroups) { Text(stringResource(R.string.group_detail_back_to_groups)) }
+            TextButton(
+                onClick = onBackToGroups,
+            ) { Text(stringResource(R.string.designsystem_group_exit_back_to_groups)) }
         },
     )
 }

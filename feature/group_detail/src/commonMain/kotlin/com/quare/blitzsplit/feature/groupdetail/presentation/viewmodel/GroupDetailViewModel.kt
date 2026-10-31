@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
@@ -48,7 +49,7 @@ class GroupDetailViewModel(
                 paymentToDelete = null,
                 recordedPayment = null,
                 showsBillDeletedNotice = false,
-                exit = idleGroupExit,
+                exit = GroupExitUiState.idle,
                 isLoaded = false,
             ),
         )
@@ -63,11 +64,14 @@ class GroupDetailViewModel(
         route = route,
         groupId = route.groupId,
         useCases = useCases,
+        scope = viewModelScope,
+        showExitError = { isDelete ->
+            uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
+        },
     )
 
     init {
         screen.watch(
-            scope = viewModelScope,
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
@@ -106,9 +110,7 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
 
-            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.confirmExit(viewModelScope) { isDelete ->
-                uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
-            }
+            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.confirmExit()
 
             GroupDetailUiEvent.OnGroupExitDismissed -> screen.dismissExit()
 
@@ -224,7 +226,7 @@ class GroupDetailViewModel(
     private fun deletePayment() {
         val payment = uiState.value.paymentToDelete ?: return
         uiState.update { it.copy(paymentToDelete = null) }
-        screen.deletePayment(viewModelScope, payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
+        screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 
     private fun showBillDeleted() {
@@ -235,6 +237,6 @@ class GroupDetailViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        screen.deletePayment(viewModelScope, notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
+        screen.deletePayment(notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 }

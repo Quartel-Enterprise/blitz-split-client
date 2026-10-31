@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.sync.exit.debtRowOf
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
@@ -31,7 +33,7 @@ class BalancesViewModel(
                 otherDebts = emptyList(),
                 hasBills = false,
                 recordedPayment = null,
-                exit = idleGroupExit,
+                exit = GroupExitUiState.idle,
                 isLoaded = false,
             ),
         )
@@ -46,11 +48,14 @@ class BalancesViewModel(
         route = route,
         groupId = route.groupId,
         useCases = useCases,
+        scope = viewModelScope,
+        showExitError = { isDelete ->
+            uiAction.emit(if (isDelete) BalancesUiAction.ShowDeleteError else BalancesUiAction.ShowLeaveError)
+        },
     )
 
     init {
         screen.watch(
-            scope = viewModelScope,
             show = { group, expenses, _, balances -> show(group, expenses, balances) },
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
@@ -78,9 +83,7 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
 
-            BalancesUiEvent.OnGroupExitConfirmed -> screen.confirmExit(viewModelScope) { isDelete ->
-                uiAction.emit(if (isDelete) BalancesUiAction.ShowDeleteError else BalancesUiAction.ShowLeaveError)
-            }
+            BalancesUiEvent.OnGroupExitConfirmed -> screen.confirmExit()
 
             BalancesUiEvent.OnGroupExitDismissed -> screen.dismissExit()
 
@@ -127,6 +130,6 @@ class BalancesViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        screen.deletePayment(viewModelScope, notice.settlementId) { uiAction.emit(BalancesUiAction.ShowChangeError) }
+        screen.deletePayment(notice.settlementId) { uiAction.emit(BalancesUiAction.ShowChangeError) }
     }
 }

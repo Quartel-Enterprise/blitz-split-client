@@ -1,6 +1,6 @@
-package com.quare.blitzsplit.feature.groupdetail.presentation.model
+package com.quare.blitzsplit.core.expenses.domain.model
 
-// Why: "Sair do grupo" and "Apagar grupo", the same over Despesas and Saldos.
+// Why: "Sair do grupo" and "Apagar grupo", the same over Despesas and Saldos and on a row of the home.
 data class GroupExitUiState(
     // Why: both need the server, so offline the ⋮ menu shows them disabled with "Precisa de internet".
     val isOnline: Boolean,
@@ -13,4 +13,14 @@ data class GroupExitUiState(
 ) {
     val canLeaveOrDelete: Boolean
         get() = isOnline && !isRunning
+
+    companion object {
+        // Why: online and with no dialog open, until the device says otherwise.
+        val idle = GroupExitUiState(
+            isOnline = true,
+            dialog = null,
+            isRunning = false,
+            deletedNotice = null,
+        )
+    }
 }

@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.feature.groupdetail.presentation.model
+package com.quare.blitzsplit.core.expenses.domain.model
 
 enum class DebtKind {
     // Why: "Você deve a Bruno · −R$ 118,00", with "Acertar".

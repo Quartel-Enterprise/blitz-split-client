@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.feature.groupdetail.presentation.model
+package com.quare.blitzsplit.core.expenses.domain.model
 
 // Why: a pair in Saldos, already netted: "Você deve a Bruno", "Ana te deve" or "Diego deve a Bruno".
 data class DebtRow(

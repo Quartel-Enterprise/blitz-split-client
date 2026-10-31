@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -13,6 +14,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEve
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: "Saldos", the group's tab with who owes whom.
 @Composable
@@ -23,8 +25,8 @@ fun BalancesScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
-            BalancesUiAction.ShowLeaveError -> R.string.group_detail_leave_error
-            BalancesUiAction.ShowDeleteError -> R.string.group_detail_delete_error
+            BalancesUiAction.ShowLeaveError -> DesignR.string.designsystem_group_exit_leave_error
+            BalancesUiAction.ShowDeleteError -> DesignR.string.designsystem_group_exit_delete_error
             BalancesUiAction.ShowChangeError -> R.string.group_detail_change_error
         }
     }

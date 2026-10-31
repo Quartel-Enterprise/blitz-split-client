@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -7,9 +9,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.idleGroupExit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -130,7 +130,7 @@ class GroupDetailUiStateTest {
         paymentToDelete = null,
         recordedPayment = null,
         showsBillDeletedNotice = false,
-        exit = idleGroupExit,
+        exit = GroupExitUiState.idle,
         isLoaded = isLoaded,
     )
 
