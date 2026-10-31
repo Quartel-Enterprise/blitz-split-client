@@ -20,6 +20,7 @@ final class GroupsModel {
         state = viewModel.uiState.value as! GroupsUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+            if !state.isRefreshing { self?.endRefreshes() }
             // State, not an action, so it waits until the home is on top; the next deleted group follows
             if let notice = state.deletedGroupNotice, notice.groupId != self?.shownDeletedGroupId {
                 self?.showDeletedGroup(notice)
@@ -52,21 +53,27 @@ final class GroupsModel {
         holder.viewModel.onEvent(event: event)
     }
 
-    /// Pulled down: asks for a sync and waits until the shared code says it ended (at once offline).
+    /// The pulls waiting for the sync they asked for, resumed by the state that says it ended.
+    @ObservationIgnored private var pendingRefreshes: [CheckedContinuation<Void, Never>] = []
+
+    /// Pulled down: asks for a sync and returns once the shared code says it ended (at once offline).
     func refresh() async {
         send(GroupsUiEventOnRefresh.shared)
-        // The view model's own state, which the event already set, rather than the watcher's copy that follows it.
-        // A cancelled pull stops waiting: Task.sleep then throws at once, which would otherwise spin here.
-        while (holder.viewModel.uiState.value as! GroupsUiState).isRefreshing {
-            do {
-                try await Task.sleep(for: .milliseconds(100))
-            } catch {
-                return
-            }
+        // The event marks the sync as started before it returns, and starts none offline
+        guard (holder.viewModel.uiState.value as! GroupsUiState).isRefreshing else { return }
+        await withCheckedContinuation { continuation in
+            pendingRefreshes.append(continuation)
         }
     }
 
+    private func endRefreshes() {
+        let ended = pendingRefreshes
+        pendingRefreshes = []
+        ended.forEach { $0.resume() }
+    }
+
     isolated deinit {
+        endRefreshes()
         holder.clear()
     }
 }
