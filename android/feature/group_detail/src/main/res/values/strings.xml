@@ -32,4 +32,33 @@
     <string name="group_detail_split_bill">Split a bill</string>
     <string name="group_detail_coming_soon">Coming soon</string>
     <string name="group_detail_bill_deleted">This bill was deleted</string>
+    <string name="group_detail_former_member">Former member</string>
+    <string name="group_detail_payment_paid_you">%s paid you</string>
+    <string name="group_detail_payment_you_paid">You paid %s</string>
+    <string name="group_detail_payment_paid">%1$s paid %2$s</string>
+    <string name="group_detail_payment_meta">Payment</string>
+    <string name="group_detail_payment_tag">payment</string>
+    <string name="group_detail_delete_payment_title">Delete this payment?</string>
+    <string name="group_detail_delete_payment_message">The payment leaves the group and the debt is back in the balances.</string>
+    <string name="group_detail_delete_payment_confirm">Delete</string>
+    <string name="group_detail_delete_payment_cancel">Cancel</string>
+    <string name="group_detail_balances_with_you">With you</string>
+    <string name="group_detail_balances_between_others">Between the others</string>
+    <string name="group_detail_balances_hint_get">get %s</string>
+    <string name="group_detail_balances_hint_owe">owe %s</string>
+    <plurals name="group_detail_balances_settle_count">
+        <item quantity="one">%d to settle</item>
+        <item quantity="other">%d to settle</item>
+    </plurals>
+    <string name="group_detail_balances_you_owe">You owe %s</string>
+    <string name="group_detail_balances_owes_you">%s owes you</string>
+    <string name="group_detail_balances_owes">%1$s owes %2$s</string>
+    <string name="group_detail_balances_settle">Settle up</string>
+    <string name="group_detail_balances_got_paid">Got paid</string>
+    <string name="group_detail_balances_already_paid">Already paid</string>
+    <string name="group_detail_balances_note">Each pair\'s debts are already netted: if Ana owes you and you owe her, only the difference shows. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).</string>
+    <string name="group_detail_balances_empty_title">Nobody owes anything yet</string>
+    <string name="group_detail_balances_empty_message">Balances show up once the first expense is added.</string>
+    <string name="group_detail_balances_settled_title">Everyone\'s settled up</string>
+    <string name="group_detail_balances_settled_message">Nobody owes anything in this group. If the trip is over, you can delete the group for everyone.</string>
 </resources>

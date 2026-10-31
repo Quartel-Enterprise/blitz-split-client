@@ -8,15 +8,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
-import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -26,9 +21,6 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEven
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private val tabletSmallestWidth = 600.dp
-private val formDialogLongestSide = 960.dp
 
 @Composable
 fun SplitBillScreen(
@@ -96,33 +88,14 @@ fun SplitBillScreen(
         )
     }
     if (isPickingSpentAt) {
-        SpentAtPickerDialog(
-            spentAt = state.spentAt,
-            latestSpentAt = state.latestSpentAt,
+        DateTimePickerDialog(
+            epochMillis = state.spentAt,
+            latestMillis = state.latestSpentAt,
             onPicked = { millis ->
                 isPickingSpentAt = false
                 viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(millis))
             },
             onDismiss = { isPickingSpentAt = false },
         )
-    }
-}
-
-/*
- * Why: the canvas draws Rachar conta as a dialog over the group on a tablet and on the upright foldable, and full
- * screen on a phone, lying down and on the tabletop (a foldable lying down, under 960dp wide), unlike the other
- * forms, which open full screen on any foldable.
- */
-@Composable
-fun rememberSplitBillUsesDialog(): Boolean {
-    val size = LocalWindowInfo.current.containerSize
-    val density = LocalDensity.current
-    return remember(size, density) {
-        with(density) {
-            val width = size.width.toDp()
-            val height = size.height.toDp()
-            val isTablet = min(width, height) >= tabletSmallestWidth
-            isTablet && (height > width || max(width, height) >= formDialogLongestSide)
-        }
     }
 }

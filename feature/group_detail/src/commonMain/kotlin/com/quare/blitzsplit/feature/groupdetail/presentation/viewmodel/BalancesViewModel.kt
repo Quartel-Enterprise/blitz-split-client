@@ -126,7 +126,7 @@ class BalancesViewModel(
                 ),
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine
-                    .sortedBy { debt -> debt.toMemberId != meId }
+                    .sortedBy { debt -> debt.fromMemberId != meId }
                     .map { debt -> toRow(debt, group, meId) },
                 otherDebts = others.map { debt -> toRow(debt, group, meId) },
                 hasBills = balances.hasBills,

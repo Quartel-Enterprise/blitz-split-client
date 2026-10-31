@@ -197,7 +197,6 @@ private struct PhoneSplitBill: View {
     let model: SplitBillModel
 
     @State private var layout = ScreenLayout()
-    @State private var showsWhenPicker = false
     @FocusState private var focusedField: Field?
 
     private enum Field {
@@ -268,19 +267,8 @@ private struct PhoneSplitBill: View {
             .listRowBackground(Palette.accent.opacity(0.12))
         }
         Section {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(verbatim: state.currency.symbol)
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-                TextField(text: model.amount, prompt: Text(verbatim: state.currency.zeroPlaceholder)) {
-                    Text("Amount")
-                }
-                .font(.system(size: 34, weight: .bold))
-                .monospacedDigit()
-                .keyboardType(.decimalPad)
+            AmountField(currency: state.currency, text: model.amount, label: "Amount")
                 .focused($focusedField, equals: .amount)
-            }
         } header: {
             Text("Amount")
         } footer: {
@@ -331,30 +319,13 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            Button {
-                if !showsWhenPicker { model.send(SplitBillUiEventOnSpentAtOpened.shared) }
-                withAnimation { showsWhenPicker.toggle() }
-            } label: {
-                HStack {
-                    Text("When")
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Text(verbatim: ExpenseFormat.when(state.spentAt, relativeDay: state.spentDay))
-                        .foregroundStyle(showsWhenPicker ? Palette.accent : .secondary)
-                }
-                .contentShape(.rect)
-            }
-            .buttonStyle(.plain)
-            if showsWhenPicker {
-                DatePicker(
-                    "When",
-                    selection: model.spentAt,
-                    in: ...model.latestSpentAt,
-                    displayedComponents: [.date, .hourAndMinute],
-                )
-                .datePickerStyle(.graphical)
-                .labelsHidden()
-            }
+            WhenPickerRows(
+                millis: state.spentAt,
+                relativeDay: state.spentDay,
+                selection: model.spentAt,
+                latest: model.latestSpentAt,
+                onOpen: { model.send(SplitBillUiEventOnSpentAtOpened.shared) },
+            )
             Button {
                 model.send(SplitBillUiEventOnSplitClicked.shared)
             } label: {
@@ -516,7 +487,6 @@ private struct MacSplitBill: View {
 private struct MacBillForm: View {
     let model: SplitBillModel
 
-    @State private var showsWhenPicker = false
     @FocusState private var isAmountFocused: Bool
 
     private var state: SplitBillUiState {
@@ -560,16 +530,8 @@ private struct MacBillForm: View {
                 }
                 LabeledContent("Amount:") {
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 6) {
-                            Text(verbatim: state.currency.symbol)
-                                .foregroundStyle(.secondary)
-                            TextField(text: model.amount, prompt: Text(verbatim: state.currency.zeroPlaceholder)) {
-                                Text("Amount")
-                            }
-                            .monospacedDigit()
-                            .frame(width: 160)
+                        AmountField(currency: state.currency, text: model.amount, label: "Amount")
                             .focused($isAmountFocused)
-                        }
                         AmountHelp(state: state)
                             .font(.callout)
                             .foregroundStyle(.secondary)
@@ -593,32 +555,13 @@ private struct MacBillForm: View {
                     }
                 }
                 .fixedSize()
-                LabeledContent("When:") {
-                    Button(ExpenseFormat.when(state.spentAt, relativeDay: state.spentDay)) {
-                        model.send(SplitBillUiEventOnSpentAtOpened.shared)
-                        showsWhenPicker = true
-                    }
-                    .popover(isPresented: $showsWhenPicker, arrowEdge: .bottom) {
-                        VStack(spacing: 8) {
-                            DatePicker(
-                                "When",
-                                selection: model.spentAt,
-                                in: ...model.latestSpentAt,
-                                displayedComponents: [.date],
-                            )
-                            .datePickerStyle(.graphical)
-                            .labelsHidden()
-                            DatePicker(
-                                "Time",
-                                selection: model.spentAt,
-                                in: ...model.latestSpentAt,
-                                displayedComponents: [.hourAndMinute],
-                            )
-                            .datePickerStyle(.stepperField)
-                        }
-                        .padding()
-                    }
-                }
+                MacWhenField(
+                    millis: state.spentAt,
+                    relativeDay: state.spentDay,
+                    selection: model.spentAt,
+                    latest: model.latestSpentAt,
+                    onOpen: { model.send(SplitBillUiEventOnSpentAtOpened.shared) },
+                )
                 LabeledContent("Split:") {
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
                         VStack(alignment: .leading, spacing: 2) {

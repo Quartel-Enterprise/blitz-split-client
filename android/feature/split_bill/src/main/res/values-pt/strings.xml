@@ -5,7 +5,6 @@
     <string name="split_bill_save">Salvar</string>
     <string name="split_bill_cancel">Cancelar</string>
     <string name="split_bill_done">Pronto</string>
-    <string name="split_bill_next">Próximo</string>
     <string name="split_bill_back">Voltar</string>
     <string name="split_bill_amount">Valor</string>
     <string name="split_bill_description">Descrição</string>
@@ -17,9 +16,6 @@
     <string name="split_bill_payer">Quem pagou</string>
     <string name="split_bill_you">Você</string>
     <string name="split_bill_when">Quando</string>
-    <string name="split_bill_when_today">Hoje, %1$s · %2$s</string>
-    <string name="split_bill_when_yesterday">Ontem, %1$s · %2$s</string>
-    <string name="split_bill_when_other">%1$s · %2$s</string>
     <string name="split_bill_split">Divisão</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">Igual entre %d</item>

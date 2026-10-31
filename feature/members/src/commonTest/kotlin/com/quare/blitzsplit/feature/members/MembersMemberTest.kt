@@ -137,6 +137,142 @@ class MembersMemberTest {
         assertFalse(isReady)
     }
 
+    @Test
+    fun `GIVEN someone not joined who owes WHEN reading the member THEN has an open balance and cannot be removed`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            balance = MemberBalance(
+                receivesMinor = 0,
+                owesMinor = 11_800,
+            ),
+        )
+
+        // When
+        val openAndRemovable = member.hasOpenBalance to member.canBeRemoved
+
+        // Then
+        assertTrue(openAndRemovable.first)
+        assertFalse(openAndRemovable.second)
+    }
+
+    @Test
+    fun `GIVEN someone not joined who is owed WHEN reading the member THEN has an open balance and stays`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            balance = MemberBalance(
+                receivesMinor = 22_350,
+                owesMinor = 0,
+            ),
+        )
+
+        // When
+        val openAndRemovable = member.hasOpenBalance to member.canBeRemoved
+
+        // Then
+        assertTrue(openAndRemovable.first)
+        assertFalse(openAndRemovable.second)
+    }
+
+    @Test
+    fun `GIVEN someone not joined who owes as much as is owed WHEN reading the member THEN cannot be removed`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            balance = MemberBalance(
+                receivesMinor = 5_000,
+                owesMinor = 5_000,
+            ),
+        )
+
+        // When
+        val openAndRemovable = member.hasOpenBalance to member.canBeRemoved
+
+        // Then
+        assertTrue(openAndRemovable.first)
+        assertFalse(openAndRemovable.second)
+    }
+
+    @Test
+    fun `GIVEN someone not joined and settled WHEN reading the member THEN has no open balance and can be removed`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            balance = MemberBalance(
+                receivesMinor = 0,
+                owesMinor = 0,
+            ),
+        )
+
+        // When
+        val openAndRemovable = member.hasOpenBalance to member.canBeRemoved
+
+        // Then
+        assertFalse(openAndRemovable.first)
+        assertTrue(openAndRemovable.second)
+    }
+
+    @Test
+    fun `GIVEN a group without bills WHEN reading the member THEN has no open balance`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            balance = null,
+        )
+
+        // When
+        val hasOpenBalance = member.hasOpenBalance
+
+        // Then
+        assertFalse(hasOpenBalance)
+    }
+
+    @Test
+    fun `GIVEN someone who joined and owes WHEN reading the member THEN cannot be removed`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = true,
+            balance = MemberBalance(
+                receivesMinor = 0,
+                owesMinor = 11_800,
+            ),
+        )
+
+        // When
+        val canBeRemoved = member.canBeRemoved
+
+        // Then
+        assertFalse(canBeRemoved)
+    }
+
+    @Test
+    fun `GIVEN someone not joined who owes WHEN reading the member THEN can still be invited`() {
+        // Given
+        val member = member(
+            isMe = false,
+            hasJoined = false,
+            personalLink = CARLA_LINK,
+            balance = MemberBalance(
+                receivesMinor = 0,
+                owesMinor = 11_800,
+            ),
+        )
+
+        // When
+        val canBeInvited = member.canBeInvited to member.isPersonalInviteReady
+
+        // Then
+        assertTrue(canBeInvited.first)
+        assertTrue(canBeInvited.second)
+    }
+
     private fun member(
         isMe: Boolean,
         hasJoined: Boolean,

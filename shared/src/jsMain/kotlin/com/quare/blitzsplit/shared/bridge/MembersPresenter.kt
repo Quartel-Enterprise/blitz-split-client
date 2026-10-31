@@ -26,6 +26,10 @@ class JsMembersMember(
     val canBeInvited: Boolean,
     // Why: "Convite pessoal para Carla" stays disabled until the member's link exists.
     val isPersonalInviteReady: Boolean,
+    // Why: "+R$ 223,50 a receber", "−R$ 118,00 deve" or "Quitado", null while the group has no bill.
+    val balance: JsMemberBalance?,
+    // Why: "Carla tem saldo em aberto" under the disabled "Remover do grupo".
+    val hasOpenBalance: Boolean,
 )
 
 class JsPersonalInvite(
@@ -36,7 +40,7 @@ class JsPersonalInvite(
     val isLinkCopied: Boolean,
 )
 
-// Why: "coming-soon" and "change-error", each a toast in the page's words; "copy" and "share-personal" with the link.
+// Why: "change-error", a toast in the page's words; "copy" and "share-personal" with the link.
 class JsMembersAction(
     val type: String,
     val link: String?,
@@ -54,6 +58,9 @@ class JsMemberNameEditor(
 
 class JsMembersState(
     val groupName: String,
+    // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
+    val currency: String,
+    val fractionDigits: Int,
     val displayLink: String?,
     val members: Array<JsMembersMember>,
     val memberCount: Int,
@@ -67,6 +74,10 @@ class JsMembersState(
     // Why: "Você entrou como Bruno", null unless the group was just joined through its link.
     val joinedAs: String?,
     val showsProtectAccess: Boolean,
+    // Why: "Seu saldo neste grupo" over the tabs, null while the group has no bill.
+    val myBalance: JsMemberBalance?,
+    val isEveryoneSettled: Boolean,
+    val recordedPayment: JsPaymentNotice?,
 )
 
 class MembersPresenter(
@@ -82,6 +93,8 @@ class MembersPresenter(
         val states = viewModel.uiState.map { state ->
             JsMembersState(
                 groupName = state.groupName,
+                currency = state.currency.code,
+                fractionDigits = state.currency.fractionDigits,
                 displayLink = state.displayLink,
                 members = state.members.map(::toJsMembersMember).toTypedArray(),
                 memberCount = state.memberCount,
@@ -92,6 +105,9 @@ class MembersPresenter(
                 isLoaded = state.isLoaded,
                 joinedAs = state.joinedAs,
                 showsProtectAccess = state.showsProtectAccess,
+                myBalance = state.myBalance?.let(::toJsMemberBalance),
+                isEveryoneSettled = state.isEveryoneSettled,
+                recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -101,8 +117,6 @@ class MembersPresenter(
     fun observeActions(onAction: (JsMembersAction) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                MembersUiAction.ShowComingSoon -> JsMembersAction("coming-soon", null, null, null)
-
                 MembersUiAction.ShowChangeError -> JsMembersAction("change-error", null, null, null)
 
                 is MembersUiAction.CopyLink -> JsMembersAction("copy", action.link, null, null)
@@ -197,6 +211,19 @@ class MembersPresenter(
         viewModel.onEvent(MembersUiEvent.OnBalancesTabClicked)
     }
 
+    // Why: "Acertar" on "Seu saldo neste grupo".
+    fun settle() {
+        viewModel.onEvent(MembersUiEvent.OnSettleClicked)
+    }
+
+    fun undoPayment() {
+        viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked)
+    }
+
+    fun recordedPaymentNoticeShown() {
+        viewModel.onEvent(MembersUiEvent.OnRecordedPaymentNoticeShown)
+    }
+
     fun dispose() {
         holder.clear()
     }
@@ -212,6 +239,8 @@ private fun toJsMembersMember(member: MembersMember): JsMembersMember = JsMember
     canBeRemoved = member.canBeRemoved,
     canBeInvited = member.canBeInvited,
     isPersonalInviteReady = member.isPersonalInviteReady,
+    balance = member.balance?.let(::toJsMemberBalance),
+    hasOpenBalance = member.hasOpenBalance,
 )
 
 private fun toJsPersonalInvite(invite: PersonalInvite): JsPersonalInvite = JsPersonalInvite(

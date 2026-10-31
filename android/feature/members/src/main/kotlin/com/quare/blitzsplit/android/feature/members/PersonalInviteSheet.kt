@@ -206,6 +206,7 @@ private fun createPreviewInvite(isLinkCopied: Boolean): PersonalInvite = Persona
         isMe = false,
         hasJoined = false,
         personalLink = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=a1B2c3",
+        balance = null,
     ),
     link = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=a1B2c3",
     displayLink = "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",

@@ -1,13 +1,12 @@
-import { CalendarDays, ChevronsUpDown, Info, Loader2 } from 'lucide-react'
+import { ChevronsUpDown, Info, Loader2 } from 'lucide-react'
 import { SplitBillPresenter, type JsBillConflict, type JsBillPerson, type JsRoute, type JsSplitBillState, type JsSplitEditor } from 'blitzsplit-shared'
-import { Popover } from 'radix-ui'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { AmountInput, controlClass, WhenField } from '@/components/fields'
+import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
@@ -15,8 +14,8 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { formatTimeAgo, formatWhen, fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/dates'
-import { amountPlaceholder, currencySymbol, formatMoney } from '@/lib/money'
+import { formatTimeAgo } from '@/lib/dates'
+import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
@@ -37,9 +36,6 @@ const splitTitles: Record<string, MessageKey> = {
   percent: 'splitBill_splitPercent',
   shares: 'splitBill_splitShares',
 }
-
-const controlClass =
-  'flex h-9 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30'
 
 /**
  * "Rachar conta", over the group's page: a dialog on desktop and tablet, a drawer on the phone, like "Entrar com
@@ -81,45 +77,18 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
     />
   )
 
-  return isDesktop ? (
+  return (
     <>
-      <Dialog open onOpenChange={onOpenChange}>
-        <DialogContent className={cn('max-h-[calc(100dvh-2rem)] gap-5 overflow-y-auto', editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}>
-          <DialogHeader className="pr-8">
-            <DialogTitle>{pane.title}</DialogTitle>
-            <DialogDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DialogDescription>
-          </DialogHeader>
-          {pane.body}
-          <DialogFooter>{pane.footer}</DialogFooter>
-        </DialogContent>
-      </Dialog>
-      {!editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
-      {deletion}
-    </>
-  ) : (
-    <>
-      <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
-        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
-            <DrawerTitle>{pane.title}</DrawerTitle>
-            <DrawerDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DrawerDescription>
-          </DrawerHeader>
-          <div className="overflow-y-auto px-4">{pane.body}</div>
-          {/* Why: the phone puts the main action first, under the thumb. */}
-          <DrawerFooter className="flex-col-reverse">{pane.footer}</DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <ResponsiveDialog
+        isDesktop={isDesktop}
+        pane={pane}
+        onOpenChange={onOpenChange}
+        className={cn('gap-5', editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
+      />
+      {isDesktop && !editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
       {deletion}
     </>
   )
-}
-
-/** What the dialog or the drawer draws: its title, an optional lead, the body and the buttons. */
-export interface PaneParts {
-  title: string
-  description?: string
-  body: ReactNode
-  footer: ReactNode
 }
 
 function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money: Money): PaneParts {
@@ -197,28 +166,16 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             <Label htmlFor={amountId} className={cn(state.showsAmountError && 'text-destructive')}>
               {t('splitBill_amount')}
             </Label>
-            <div
-              className={cn(
-                'flex h-14 items-center gap-2 rounded-md border bg-card px-3 focus-within:ring-[3px] dark:bg-input/30',
-                state.showsAmountError ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
-              )}
-            >
-              <span aria-hidden className="text-xl font-medium text-muted-foreground">
-                {currencySymbol(state.currency)}
-              </span>
-              <input
-                id={amountId}
-                inputMode="decimal"
-                autoComplete="off"
-                autoFocus
-                value={amount}
-                placeholder={amountPlaceholder(state.fractionDigits)}
-                aria-invalid={state.showsAmountError}
-                aria-describedby={amountDescribedBy}
-                onChange={(event) => setAmount(event.target.value)}
-                className="min-w-0 flex-1 bg-transparent text-[28px] font-semibold tabular-nums outline-none placeholder:text-muted-foreground/60"
-              />
-            </div>
+            <AmountInput
+              id={amountId}
+              currency={state.currency}
+              fractionDigits={state.fractionDigits}
+              value={amount}
+              onChange={setAmount}
+              isInvalid={state.showsAmountError}
+              describedBy={amountDescribedBy}
+              autoFocus
+            />
             {amountHelp && (
               <p id={amountHelpId} className={cn('text-[13px]', state.showsAmountError ? 'text-destructive' : 'text-muted-foreground')}>
                 {amountHelp}
@@ -263,7 +220,15 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
             </button>
           </div>
-          <WhenField presenter={presenter} state={state} />
+          <WhenField
+            id={whenId}
+            label={t('splitBill_when')}
+            millis={state.spentAt}
+            relativeDay={state.spentDay}
+            latestMillis={state.latestSpentAt}
+            onOpen={() => presenter.openSpentAt()}
+            onChange={(millis) => presenter.changeSpentAt(millis)}
+          />
           <div className="flex flex-col gap-1.5">
             <span className="text-sm font-medium">{t('splitBill_split')}</span>
             <SplitSummary presenter={presenter} split={state.split} money={money} />
@@ -313,65 +278,6 @@ function useNow(intervalMs: number): number {
     return () => window.clearInterval(id)
   }, [intervalMs])
   return now
-}
-
-/**
- * "Quando", date and time: the button says it in words ("Hoje, 28 de out. · 21:30") and opens the browser's own
- * date and time inputs. Each complete change goes to the ViewModel as epoch millis.
- */
-function WhenField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
-  const [isOpen, setOpen] = useState(false)
-  const [date, setDate] = useState(() => toDateInputValue(state.spentAt))
-  const [time, setTime] = useState(() => toTimeInputValue(state.spentAt))
-  const change = (nextDate: string, nextTime: string) => {
-    setDate(nextDate)
-    setTime(nextTime)
-    const millis = fromDateTimeInputs(nextDate, nextTime)
-    if (millis != null) presenter.changeSpentAt(millis)
-  }
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={whenId}>{t('splitBill_when')}</Label>
-      <Popover.Root
-        open={isOpen}
-        onOpenChange={(open) => {
-          // Why: the inputs open on what the bill says now, not on a half-typed date left from before.
-          if (open) {
-            presenter.openSpentAt()
-            setDate(toDateInputValue(state.spentAt))
-            setTime(toTimeInputValue(state.spentAt))
-          }
-          setOpen(open)
-        }}
-      >
-        <Popover.Trigger asChild>
-          <button id={whenId} type="button" className={controlClass}>
-            <CalendarDays aria-hidden className="size-4 text-muted-foreground" />
-            <span className="flex-1 truncate">{formatWhen(state.spentAt, state.spentDay)}</span>
-          </button>
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Content
-            align="start"
-            sideOffset={6}
-            className="z-50 flex w-72 flex-col gap-3 rounded-lg border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
-          >
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor={`${whenId}-date`}>{t('splitBill_date')}</Label>
-              <Input id={`${whenId}-date`} type="date" value={date} max={toDateInputValue(state.latestSpentAt)} required onChange={(event) => change(event.target.value, time)} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor={`${whenId}-time`}>{t('splitBill_time')}</Label>
-              <Input id={`${whenId}-time`} type="time" value={time} required onChange={(event) => change(date, event.target.value)} />
-            </div>
-            <Button type="button" size="sm" className="self-end" onClick={() => setOpen(false)}>
-              {t('splitBill_done')}
-            </Button>
-          </Popover.Content>
-        </Popover.Portal>
-      </Popover.Root>
-    </div>
-  )
 }
 
 /** "Divisão": the faces of who is in, "Igual entre 5" and "R$ 62,40 cada · Diego não participa"; opens "Dividir". */
@@ -428,21 +334,14 @@ function payerPane(presenter: SplitBillPresenter, state: JsSplitBillState, money
 function PayerDialog({ presenter, state, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; money: Money }) {
   const pane = payerPane(presenter, state, money)
   return (
-    <Dialog
-      open
+    <ResponsiveDialog
+      isDesktop
+      pane={pane}
       onOpenChange={(open) => {
         if (!open) presenter.dismissPayer()
       }}
-    >
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[420px]">
-        <DialogHeader className="pr-8">
-          <DialogTitle>{pane.title}</DialogTitle>
-          <DialogDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DialogDescription>
-        </DialogHeader>
-        {pane.body}
-        <DialogFooter>{pane.footer}</DialogFooter>
-      </DialogContent>
-    </Dialog>
+      className="sm:max-w-[420px]"
+    />
   )
 }
 

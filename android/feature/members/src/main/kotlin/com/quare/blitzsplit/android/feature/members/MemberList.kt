@@ -38,15 +38,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 
 @Composable
 internal fun MemberList(
     members: List<MembersMember>,
+    money: MoneyFormatter,
     onEvent: (MembersUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -57,6 +61,7 @@ internal fun MemberList(
         members.forEachIndexed { index, member ->
             MemberRow(
                 member = member,
+                money = money,
                 shape = rowShapeOf(
                     index = index,
                     count = members.size,
@@ -85,6 +90,7 @@ private fun rowShapeOf(
 @Composable
 private fun MemberRow(
     member: MembersMember,
+    money: MoneyFormatter,
     shape: Shape,
     onEvent: (MembersUiEvent) -> Unit,
 ) {
@@ -122,12 +128,44 @@ private fun MemberRow(
                 )
                 MemberStatusLine(member)
             }
+            member.balance?.let { balance ->
+                MemberBalanceText(
+                    balance = balance,
+                    money = money,
+                )
+            }
             MemberMenu(
                 member = member,
                 onEvent = onEvent,
             )
         }
     }
+}
+
+// Why: "+R$ 223,50 a receber", "−R$ 118,00 deve" or "Quitado"; "R$ 0,00" when what they get and owe cancel out.
+@Composable
+private fun MemberBalanceText(
+    balance: MemberBalance,
+    money: MoneyFormatter,
+) {
+    val net = balance.netMinor
+    Text(
+        text = when {
+            balance.isSettled -> stringResource(R.string.members_balance_settled)
+            net > 0 -> stringResource(R.string.members_balance_to_get_back, money.toSignedText(net))
+            net < 0 -> stringResource(R.string.members_balance_owes, money.toSignedText(net))
+            else -> money.toText(0L)
+        },
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.SemiBold,
+        color = when {
+            balance.isSettled -> MaterialTheme.colorScheme.outline
+            net > 0 -> MaterialTheme.colorScheme.primary
+            net < 0 -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        textAlign = TextAlign.End,
+    )
 }
 
 @Composable
@@ -201,9 +239,14 @@ private fun MemberMenu(
                     text = {
                         Column {
                             Text(stringResource(R.string.members_remove))
-                            if (member.hasJoined) {
+                            val reason = when {
+                                member.hasJoined -> R.string.members_remove_joined
+                                member.hasOpenBalance -> R.string.members_remove_open_balance
+                                else -> null
+                            }
+                            if (reason != null) {
                                 Text(
-                                    text = stringResource(R.string.members_remove_joined, member.name),
+                                    text = stringResource(reason, member.name),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )

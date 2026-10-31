@@ -159,7 +159,7 @@ const groupTabs: { tab: GroupTab; label: MessageKey }[] = [
 
 /**
  * A group's sections, Despesas, Saldos and Membros, on the group's page and on Membros. Each tab is the ViewModel's
- * event: Membros and Despesas take each other's place, Saldos answers "Coming soon" and the selection stays.
+ * event: each takes the other's place, so the group never stacks over itself.
  */
 export function GroupTabs({ selected, onSelect, className }: { selected: GroupTab; onSelect: (tab: GroupTab) => void; className?: string }) {
   return (

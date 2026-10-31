@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
@@ -29,13 +30,10 @@ fun MembersScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val resources = LocalResources.current
-    val comingSoon = stringResource(R.string.members_coming_soon)
     val changeError = stringResource(R.string.members_change_error)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                MembersUiAction.ShowComingSoon -> showReplacingSnackbar(snackbarHostState, comingSoon)
-
                 MembersUiAction.ShowChangeError -> showReplacingSnackbar(snackbarHostState, changeError)
 
                 is MembersUiAction.CopyLink -> context.copyLink(action.link)
@@ -51,6 +49,12 @@ fun MembersScreen(
             }
         }
     }
+    RecordedPaymentNoticeEffect(
+        notice = state.recordedPayment,
+        snackbarHostState = snackbarHostState,
+        onUndo = { viewModel.onEvent(MembersUiEvent.OnUndoPaymentClicked) },
+        onShown = { viewModel.onEvent(MembersUiEvent.OnRecordedPaymentNoticeShown) },
+    )
     BackHandler { viewModel.onEvent(MembersUiEvent.OnBackClicked) }
     MembersContent(
         state = state,

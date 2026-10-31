@@ -40,8 +40,8 @@ enum MainTab: Hashable {
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable).
 struct MainTabView: View {
-    /// The shared back stack above the groups: a group's expenses or members, an invite opened from its link, the
-    /// profile, its editor and, on iPhone, a key.
+    /// The shared back stack above the groups: a group's expenses, balances or members, an invite opened from its
+    /// link, the profile, its editor and, on iPhone, a key.
     @Binding var path: [AppRoute]
 
     @State private var model = GroupsModel()
@@ -59,6 +59,7 @@ struct MainTabView: View {
                             case let .paymentKey(route): PaymentKeyView(route: route)
                             case let .members(route): MembersView(route: route)
                             case let .groupDetail(route): GroupDetailView(route: route)
+                            case let .balances(route): BalancesView(route: route)
                             case let .billDetail(route): BillDetailView(route: route)
                             case let .joinInvite(route): JoinInviteView(route: route)
                             case let .joinPick(route): JoinPickView(route: route)

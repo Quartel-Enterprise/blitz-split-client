@@ -1,6 +1,7 @@
 import { ArrowLeft, Check, ChevronRight, CircleCheck, Copy, EllipsisVertical, Link2, Pencil, Share2, ShieldCheck, Trash2, UserPlus } from 'lucide-react'
 import {
   MembersPresenter,
+  type JsMemberBalance,
   type JsMemberNameEditor,
   type JsMembersAction,
   type JsMembersMember,
@@ -11,24 +12,18 @@ import {
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, GroupTabs } from '@/components/common'
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { BalanceCard, balanceTone, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
+import { formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
 const nameId = 'member-name'
@@ -48,10 +43,9 @@ export function MembersScreen({ route }: { route: JsRoute }) {
       sharePersonalLink(action.link, action.memberName ?? '', action.groupName ?? '')
     } else if (action.type === 'change-error') {
       toast(t('members_changeError'))
-    } else if (action.type === 'coming-soon') {
-      toast(t('members_comingSoon'))
     }
   })
+  useRecordedPaymentNotice(presenter, state?.recordedPayment)
   if (!presenter || !state?.isLoaded) return null
 
   const count = t(state.memberCount === 1 ? 'members_countOne' : 'members_countOther', { count: state.memberCount })
@@ -75,6 +69,15 @@ export function MembersScreen({ route }: { route: JsRoute }) {
             {count} · {joined}
           </p>
         </div>
+        {state.myBalance && (
+          <BalanceCard
+            balance={state.myBalance}
+            isEveryoneSettled={state.isEveryoneSettled}
+            currency={state.currency}
+            fractionDigits={state.fractionDigits}
+            onSettle={() => presenter.settle()}
+          />
+        )}
         <GroupTabs
           selected="members"
           onSelect={(tab) => {
@@ -95,7 +98,7 @@ export function MembersScreen({ route }: { route: JsRoute }) {
         </section>
         <ul className="flex flex-col divide-y rounded-xl border bg-card" aria-label={t('members_peopleLabel')}>
           {state.members.map((member) => (
-            <MemberRow key={member.id} presenter={presenter} member={member} />
+            <MemberRow key={member.id} presenter={presenter} member={member} money={(minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)} />
           ))}
         </ul>
       </main>
@@ -131,7 +134,21 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Memb
   )
 }
 
-function MemberRow({ presenter, member }: { presenter: MembersPresenter; member: JsMembersMember }) {
+/** "+R$ 223,50 a receber", "−R$ 118,00 deve", "R$ 0,00" while what they get and owe cancel out, or "Quitado". */
+function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money: (minor: number) => string }) {
+  const net = balance.netMinor
+  const text = balance.isSettled
+    ? t('members_balanceSettled')
+    : net > 0
+      ? t('members_balanceGetBack', { amount: money(net) })
+      : net < 0
+        ? t('members_balanceOwes', { amount: money(net) })
+        : money(0)
+  const tone = balance.isSettled ? 'text-muted-foreground' : net === 0 ? 'text-foreground' : balanceTone(net)
+  return <span className={cn('text-sm font-medium whitespace-nowrap tabular-nums', tone)}>{text}</span>
+}
+
+function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; member: JsMembersMember; money: (minor: number) => string }) {
   return (
     <li className="flex items-center gap-3 py-2.5 pr-2 pl-4">
       <Avatar initial={member.initials} color={member.color} className="size-10 text-sm" />
@@ -145,6 +162,7 @@ function MemberRow({ presenter, member }: { presenter: MembersPresenter; member:
           {member.isMe ? t('members_statusThisBrowser') : member.hasJoined ? t('members_statusJoined') : t('members_statusNotJoined')}
         </p>
       </div>
+      {member.balance && <MemberBalanceText balance={member.balance} money={money} />}
       {member.hasJoined && <Check aria-hidden className="size-4 text-primary" />}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -170,7 +188,11 @@ function MemberRow({ presenter, member }: { presenter: MembersPresenter; member:
                 <Trash2 className="mt-0.5" />
                 <span className="flex flex-col">
                   {t('members_remove')}
-                  {member.hasJoined && <span className="text-xs text-muted-foreground">{t('members_removeJoined', { name: member.name })}</span>}
+                  {member.hasJoined ? (
+                    <span className="text-xs text-muted-foreground">{t('members_removeJoined', { name: member.name })}</span>
+                  ) : (
+                    member.hasOpenBalance && <span className="text-xs text-muted-foreground">{t('members_removeOpenBalance', { name: member.name })}</span>
+                  )}
                 </span>
               </DropdownMenuItem>
             </>
@@ -259,26 +281,13 @@ function PersonalInviteDialog({ presenter, invite, groupName }: { presenter: Mem
 /** "Remover do grupo" asks first, since a removal reaches every device on the next sync. */
 function RemoveMemberDialog({ presenter, name }: { presenter: MembersPresenter; name: string }) {
   return (
-    <AlertDialog
-      open
-      onOpenChange={(open) => {
-        if (!open) presenter.dismissRemove()
-      }}
-    >
-      <AlertDialogContent className="sm:max-w-md">
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t('members_removeTitle', { name })}</AlertDialogTitle>
-          <AlertDialogDescription>{t('members_removeMessage', { name })}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t('members_cancel')}</AlertDialogCancel>
-          {/* Not an AlertDialogAction, which would close it through onOpenChange as a dismissal */}
-          <Button variant="destructive" onClick={() => presenter.confirmRemove()}>
-            {t('members_removeConfirm')}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDialog
+      title={t('members_removeTitle', { name })}
+      description={t('members_removeMessage', { name })}
+      confirmLabel={t('members_removeConfirm')}
+      onConfirm={() => presenter.confirmRemove()}
+      onDismiss={() => presenter.dismissRemove()}
+    />
   )
 }
 

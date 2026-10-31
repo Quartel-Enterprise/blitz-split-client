@@ -43,11 +43,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
@@ -74,6 +78,7 @@ fun MembersContent(
 ) {
     val layout = rememberDeviceLayout()
     val usesFab = layout == DeviceLayout.PhonePortrait
+    val money = rememberMoneyFormatter(state.currency)
     Scaffold(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -115,6 +120,7 @@ fun MembersContent(
                     )
                     MemberList(
                         members = state.members,
+                        money = money,
                         onEvent = onEvent,
                         modifier = Modifier.padding(
                             start = 16.dp,
@@ -163,6 +169,7 @@ private fun TwoColumnsLayout(
         }
         MemberList(
             members = state.members,
+            money = rememberMoneyFormatter(state.currency),
             onEvent = onEvent,
             modifier = Modifier
                 .weight(1f)
@@ -215,12 +222,25 @@ private fun MembersHeader(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+    state.myBalance?.let { balance ->
+        MyBalanceCard(
+            balance = balance,
+            isEveryoneSettled = state.isEveryoneSettled,
+            money = rememberMoneyFormatter(state.currency),
+            onSettleClick = { onEvent(MembersUiEvent.OnSettleClicked) },
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+            ),
+        )
+    }
     GroupTabsRow(
         onEvent = onEvent,
         modifier = Modifier.padding(
             start = 16.dp,
             end = 16.dp,
-            top = 20.dp,
+            top = if (state.myBalance == null) 20.dp else 12.dp,
         ),
     )
     state.joinedAs?.let { name ->
@@ -319,7 +339,7 @@ private fun JoinedBanner(
     }
 }
 
-// Why: the group's sections, the same tabs as Despesas; "Saldos" isn't built yet and answers "Em breve".
+// Why: the group's sections, the same tabs as Despesas and Saldos.
 @Composable
 private fun GroupTabsRow(
     onEvent: (MembersUiEvent) -> Unit,
@@ -409,6 +429,7 @@ private fun AddButton(
 
 private fun createPreviewState(): MembersUiState = MembersUiState(
     groupName = "Viagem Floripa",
+    currency = GroupCurrency.BRL,
     displayLink = "blitzsplit.com/g/7Hk2pQxa",
     members = listOf(
         MembersMember(
@@ -419,6 +440,10 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             isMe = true,
             hasJoined = true,
             personalLink = null,
+            balance = MemberBalance(
+                receivesMinor = 22_350L,
+                owesMinor = 0L,
+            ),
         ),
         MembersMember(
             id = "2",
@@ -428,6 +453,10 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             isMe = false,
             hasJoined = true,
             personalLink = null,
+            balance = MemberBalance(
+                receivesMinor = 0L,
+                owesMinor = 11_800L,
+            ),
         ),
         MembersMember(
             id = "3",
@@ -437,6 +466,10 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             isMe = false,
             hasJoined = false,
             personalLink = "https://blitzsplit.com/g/7Hk2pQxa/b7Xp2q?from=p1R2s3",
+            balance = MemberBalance(
+                receivesMinor = 0L,
+                owesMinor = 0L,
+            ),
         ),
         MembersMember(
             id = "4",
@@ -446,11 +479,21 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
             isMe = false,
             hasJoined = false,
             personalLink = null,
+            balance = MemberBalance(
+                receivesMinor = 0L,
+                owesMinor = 10_550L,
+            ),
         ),
     ),
     editor = null,
     memberToRemove = null,
     personalInvite = null,
+    myBalance = MemberBalance(
+        receivesMinor = 22_350L,
+        owesMinor = 0L,
+    ),
+    isEveryoneSettled = false,
+    recordedPayment = null,
     isLoaded = true,
     joinedAs = null,
     isAccountUnprotected = false,

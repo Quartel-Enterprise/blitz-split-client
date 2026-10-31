@@ -3,10 +3,8 @@ package com.quare.blitzsplit.android.feature.splitbill
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
-import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -22,21 +20,6 @@ internal fun namesOf(people: List<BillPerson>): String = nameListOf(people.map {
 
 @Composable
 internal fun sentenceOf(text: String): String = stringResource(R.string.split_bill_sentence, text)
-
-// Why: "Hoje, 28 de out. · 21:30", "Ontem, 27 de out. · 21:30" or "Sex., 24 de out. · 21:30".
-@Composable
-internal fun spentAtTextOf(
-    spentAt: Long,
-    spentDay: RelativeDay,
-    dates: DateTimeTextFormatter,
-): String {
-    val time = dates.toTimeText(spentAt)
-    return when (spentDay) {
-        RelativeDay.TODAY -> stringResource(R.string.split_bill_when_today, dates.toDateText(spentAt), time)
-        RelativeDay.YESTERDAY -> stringResource(R.string.split_bill_when_yesterday, dates.toDateText(spentAt), time)
-        RelativeDay.OTHER -> stringResource(R.string.split_bill_when_other, dates.toWeekdayDateText(spentAt), time)
-    }
-}
 
 // Why: "Igual entre 5", the title of Rachar conta's "Divisão".
 @Composable

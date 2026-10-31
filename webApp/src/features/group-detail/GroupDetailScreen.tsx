@@ -1,30 +1,31 @@
-import { ArrowLeft, ChevronRight, Ellipsis, LogOut, Pencil, Plus, ReceiptText, Trash2, UserPlus } from 'lucide-react'
-import { GroupDetailPresenter, type JsExpenseDay, type JsExpenseRow, type JsGroupDetailState, type JsRoute } from 'blitzsplit-shared'
-import { useEffect } from 'react'
+import { HandCoins, ReceiptText } from 'lucide-react'
+import {
+  GroupDetailPresenter,
+  type JsExpenseDay,
+  type JsExpenseRow,
+  type JsGroupDetailState,
+  type JsPaymentRow,
+  type JsRoute,
+} from 'blitzsplit-shared'
+import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, GroupTabs } from '@/components/common'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { GroupPage } from './GroupPage'
 
 // Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
 const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px_150px] lg:grid-cols-[minmax(0,1fr)_160px_180px]'
 
 /**
- * "Despesas do grupo": the group's bills by day, newest first, with "Rachar conta" a primary button beside the
- * group's name (at the bottom on the phone), and the group's tabs, Despesas selected. A bill opens "Conta" over it,
- * and a bill someone else deleted while it was open says so here.
+ * "Despesas do grupo": the group's bills and the payments that settled its debts by day, newest first, under the
+ * group's page (header, balance card, tabs). A bill opens "Conta" over it; a payment asks "Apagar este acerto?". A bill
+ * someone else deleted while it was open, and a payment just recorded, say so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))
@@ -39,134 +40,48 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
     toast(t('groupDetail_billDeleted'))
     presenter?.billDeletedNoticeShown()
   }, [presenter, showsBillDeletedNotice])
+  useRecordedPaymentNotice(presenter, state?.recordedPayment)
   if (!presenter || !state?.isLoaded) return null
 
-  const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)
-  const members = t(state.memberCount === 1 ? 'members_countOne' : 'members_countOther', { count: state.memberCount })
-  const meta = state.isEmpty ? t('groupDetail_metaEmpty', { members }) : t('groupDetail_metaTotal', { members, total: money(state.totalSpentMinor) })
-  const notJoined =
-    state.notJoinedCount > 0 ? t(state.notJoinedCount === 1 ? 'groupDetail_notJoinedOne' : 'groupDetail_notJoinedOther', { count: state.notJoinedCount }) : null
-
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-10 flex h-14 items-center gap-1 border-b bg-background/95 px-2 backdrop-blur sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
-          <ArrowLeft />
-        </Button>
-        {/* Why: the page names the group in its heading from the tablet up; the phone's bar names it instead. */}
-        <span className="mr-auto truncate font-semibold md:hidden">{state.groupName}</span>
-        <nav aria-label={t('groupDetail_breadcrumb')} className="mr-auto hidden items-center gap-1.5 text-sm md:flex">
-          <button type="button" onClick={() => presenter.back()} className="rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring">
-            {t('groups_title')}
-          </button>
-          <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
-          <span aria-current="page" className="truncate font-medium">
-            {state.groupName}
+    <GroupPage
+      header={state.header}
+      tab="expenses"
+      hasExpenses={!state.isEmpty}
+      showsSplitBillButton={state.showsSplitBillButton}
+      events={presenter}
+      onSelectTab={(tab) => {
+        if (tab === 'balances') presenter.balances()
+        else if (tab === 'members') presenter.members()
+      }}
+    >
+      {state.isEmpty ? (
+        <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
+          <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <ReceiptText className="size-5" />
           </span>
-        </nav>
-        <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => presenter.invite()} className="md:hidden">
-          <UserPlus />
-        </Button>
-        {/* Why: the ⋯ menu keeps only what changes the group itself (6.1i). */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label={t('groupDetail_moreOptions')}>
-              <Ellipsis />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuItem onSelect={() => presenter.editGroup()}>
-              <Pencil />
-              {t('groupDetail_editGroup')}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => presenter.leaveGroup()}>
-              <LogOut />
-              {t('groupDetail_leaveGroup')}
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onSelect={() => presenter.deleteGroup()}>
-              <Trash2 />
-              {t('groupDetail_deleteGroup')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </header>
-
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
-        <div className="flex items-start gap-4">
-          <GroupAvatar initials={state.groupInitials} color={state.groupColor} className="size-12 rounded-xl text-base md:size-14 md:text-lg" />
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <h1 className="sr-only text-2xl leading-[30px] font-semibold tracking-tight md:not-sr-only md:truncate">{state.groupName}</h1>
-            <span className="text-sm text-muted-foreground">{meta}</span>
-            <button
-              type="button"
-              onClick={() => presenter.members()}
-              aria-label={[members, notJoined, t('groupDetail_seeMembers')].filter(Boolean).join(' · ')}
-              className="flex items-center gap-2 self-start rounded-md text-[13px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
-            >
-              <span aria-hidden className="flex">
-                {state.faces.map((face, index) => (
-                  <Avatar key={index} initial={face.initials} color={face.color} className={cn('size-7 border-2 border-background text-[11px]', index > 0 && '-ml-1.5')} />
-                ))}
-                {state.extraMemberCount > 0 && (
-                  <span className="-ml-1.5 flex h-7 min-w-7 items-center justify-center rounded-full border-2 border-background bg-muted px-1.5 text-[11px] font-semibold">
-                    +{state.extraMemberCount}
-                  </span>
-                )}
-              </span>
-              {notJoined}
-            </button>
-          </div>
-          <div className="hidden items-center gap-2 md:flex">
+          <h2 className="text-base font-semibold">{t('groupDetail_emptyTitle')}</h2>
+          <p className="max-w-[420px] text-sm text-muted-foreground">{t('groupDetail_emptyBody')}</p>
+          <div className="mt-2 flex flex-wrap justify-center gap-2">
+            <Button onClick={() => presenter.splitBill()}>{t('groupDetail_splitBill')}</Button>
             <Button variant="outline" onClick={() => presenter.invite()}>
-              <UserPlus />
-              {t('groupDetail_invite')}
+              {t('groupDetail_invitePeople')}
             </Button>
-            {state.showsSplitBillButton && (
-              <Button onClick={() => presenter.splitBill()}>
-                <Plus />
-                {t('groupDetail_splitBill')}
-              </Button>
-            )}
           </div>
-        </div>
-
-        <GroupTabs
-          selected="expenses"
-          onSelect={(tab) => {
-            if (tab === 'balances') presenter.balances()
-            else if (tab === 'members') presenter.members()
-          }}
-        />
-
-        {state.isEmpty ? (
-          <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
-            <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
-              <ReceiptText className="size-5" />
-            </span>
-            <h2 className="text-base font-semibold">{t('groupDetail_emptyTitle')}</h2>
-            <p className="max-w-[420px] text-sm text-muted-foreground">{t('groupDetail_emptyBody')}</p>
-            <div className="mt-2 flex flex-wrap justify-center gap-2">
-              <Button onClick={() => presenter.splitBill()}>{t('groupDetail_splitBill')}</Button>
-              <Button variant="outline" onClick={() => presenter.invite()}>
-                {t('groupDetail_invitePeople')}
-              </Button>
-            </div>
-          </section>
-        ) : (
-          <ExpensesTable presenter={presenter} state={state} />
-        )}
-      </main>
-
-      {state.showsSplitBillButton && (
-        <div className="sticky bottom-0 border-t bg-card px-4 py-3 md:hidden">
-          <Button onClick={() => presenter.splitBill()} className="h-11 w-full text-[15px]">
-            <Plus />
-            {t('groupDetail_splitBill')}
-          </Button>
-        </div>
+        </section>
+      ) : (
+        <ExpensesTable presenter={presenter} state={state} />
       )}
-    </div>
+      {state.paymentToDelete && (
+        <ConfirmDialog
+          title={t('payment_deleteTitle')}
+          description={t('payment_deleteBody')}
+          confirmLabel={t('payment_deleteConfirm')}
+          onConfirm={() => presenter.confirmPaymentDelete()}
+          onDismiss={() => presenter.dismissPaymentDelete()}
+        />
+      )}
+    </GroupPage>
   )
 }
 
@@ -197,31 +112,47 @@ function ExpenseDayRows({ presenter, day, state }: { presenter: GroupDetailPrese
       <div role="row" className="flex h-8 items-center border-b bg-sidebar px-4 text-xs font-medium text-muted-foreground">
         <span role="rowheader">{formatDayLabel(day.dayStartMillis, day.relativeDay)}</span>
       </div>
-      {day.expenses.map((expense) => (
-        <ExpenseRowItem key={expense.id} presenter={presenter} expense={expense} state={state} />
-      ))}
+      {day.entries.map((entry) =>
+        entry.expense ? (
+          <ExpenseRowItem key={entry.id} presenter={presenter} expense={entry.expense} state={state} />
+        ) : entry.payment ? (
+          <PaymentRowItem key={entry.id} presenter={presenter} payment={entry.payment} state={state} />
+        ) : null,
+      )}
     </div>
   )
 }
 
-function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailPresenter; expense: JsExpenseRow; state: JsGroupDetailState }) {
-  const total = formatMoney(expense.totalMinor, state.currency, state.fractionDigits)
-  const time = formatTime(expense.spentAt)
-  const paid = expense.payerIsMe
-    ? t('groupDetail_metaPaidByMe', { time })
-    : expense.payerName != null
-      ? t('groupDetail_metaPaidBy', { time, name: expense.payerName })
-      : time
-  const balance = expense.myBalanceMinor
+/**
+ * A line of the day, a bill or a payment: its icon, title and meta (with "na fila" while it waits for the server), the
+ * amount beside it from the tablet up (in the meta on the phone), and the last column.
+ */
+function DayRow({
+  icon,
+  title,
+  meta,
+  amount,
+  isPending,
+  trailing,
+  onOpen,
+}: {
+  icon: ReactNode
+  title: string
+  meta: string
+  amount: string
+  isPending: boolean
+  trailing: ReactNode
+  onOpen: () => void
+}) {
   return (
     <div
       role="row"
       tabIndex={0}
-      onClick={() => presenter.openExpense(expense.id)}
+      onClick={onOpen}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          presenter.openExpense(expense.id)
+          onOpen()
         }
       }}
       className={cn(
@@ -231,39 +162,78 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
     >
       <span role="cell" className="flex min-w-0 items-center gap-3 px-4 py-2">
         <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
-          <ReceiptText className="size-4" />
+          {icon}
         </span>
         <span className="flex min-w-0 flex-col">
-          <span className="truncate font-medium">{expense.description}</span>
+          <span className="truncate font-medium">{title}</span>
           <span className="flex min-w-0 items-center gap-1.5 text-xs whitespace-nowrap text-muted-foreground">
-            {expense.isPending && (
+            {isPending && (
               <span className="inline-flex h-[18px] shrink-0 items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-1.5 text-[11px] font-medium text-amber-800 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-300">
                 <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />
                 {t('groupDetail_pending')}
               </span>
             )}
             <span className="truncate">
-              {paid}
-              <span className="md:hidden"> · {total}</span>
+              {meta}
+              <span className="md:hidden"> · {amount}</span>
             </span>
           </span>
         </span>
       </span>
       <span role="cell" className="hidden px-4 text-right tabular-nums md:block">
-        {total}
+        {amount}
       </span>
       <span role="cell" className="px-4 text-right">
-        {balance != null && (
-          <span
-            className={cn(
-              'font-semibold whitespace-nowrap tabular-nums',
-              balance > 0 ? 'text-primary' : balance < 0 ? 'text-destructive' : 'text-muted-foreground',
-            )}
-          >
-            {formatSignedMoney(balance, state.currency, state.fractionDigits)}
-          </span>
-        )}
+        {trailing}
       </span>
     </div>
+  )
+}
+
+function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailPresenter; expense: JsExpenseRow; state: JsGroupDetailState }) {
+  const { currency, fractionDigits } = state.header
+  const time = formatTime(expense.spentAt)
+  const paid = expense.payerIsMe
+    ? t('groupDetail_metaPaidByMe', { time })
+    : expense.payerName != null
+      ? t('groupDetail_metaPaidBy', { time, name: expense.payerName })
+      : time
+  const balance = expense.myBalanceMinor
+  return (
+    <DayRow
+      icon={<ReceiptText className="size-4" />}
+      title={expense.description}
+      meta={paid}
+      amount={formatMoney(expense.totalMinor, currency, fractionDigits)}
+      isPending={expense.isPending}
+      onOpen={() => presenter.openExpense(expense.id)}
+      trailing={
+        balance != null && (
+          <span className={cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(balance))}>{formatSignedMoney(balance, currency, fractionDigits)}</span>
+        )
+      }
+    />
+  )
+}
+
+/** "Ana te pagou · 12:10 · Acerto · Pix", the amount and the "acerto" tag; tapping it asks to delete it. */
+function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailPresenter; payment: JsPaymentRow; state: JsGroupDetailState }) {
+  const title = payment.toIsMe
+    ? t('payment_paidYou', { name: nameOrFormer(payment.fromName) })
+    : payment.fromIsMe
+      ? t('payment_youPaid', { name: nameOrFormer(payment.toName) })
+      : t('payment_paid', { from: nameOrFormer(payment.fromName), to: nameOrFormer(payment.toName) })
+  return (
+    <DayRow
+      icon={<HandCoins className="size-4" />}
+      title={title}
+      meta={t('payment_meta', { time: formatTime(payment.paidAt), method: paymentMethodLabel(payment.method) })}
+      amount={formatMoney(payment.amountMinor, state.header.currency, state.header.fractionDigits)}
+      isPending={payment.isPending}
+      onOpen={() => presenter.openPayment(payment.id)}
+      trailing={
+        <span className="inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-medium text-muted-foreground">{t('payment_tag')}</span>
+      }
+    />
   )
 }

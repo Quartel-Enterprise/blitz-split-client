@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
@@ -42,10 +43,19 @@ fun GroupDetailScreen(
             viewModel.onEvent(GroupDetailUiEvent.OnBillDeletedNoticeShown)
         }
     }
+    RecordedPaymentNoticeEffect(
+        notice = state.recordedPayment,
+        snackbarHostState = snackbarHostState,
+        onUndo = { viewModel.onEvent(GroupDetailUiEvent.OnUndoPaymentClicked) },
+        onShown = { viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown) },
+    )
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
     GroupDetailContent(
         state = state,
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
+    if (state.paymentToDelete != null) {
+        DeletePaymentDialog(onEvent = viewModel::onEvent)
+    }
 }

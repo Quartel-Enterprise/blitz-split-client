@@ -5782,6 +5782,715 @@
           }
         }
       }
+    },
+    "%@ has an open balance" : {
+      "comment" : "Why a member who owes or is owed can't be removed; %@ is the member's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ tem saldo em aberto"
+          }
+        }
+      }
+    },
+    "%@ owes" : {
+      "comment" : "A member's balance in Members; %@ is the amount, like −$118.00",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ deve"
+          }
+        }
+      }
+    },
+    "%@ owes %@" : {
+      "comment" : "A pair in Balances between two other members: who owes, then to whom",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ deve a %2$@"
+          }
+        }
+      }
+    },
+    "%@ owes %@ %@" : {
+      "comment" : "Record payment's subtitle: who owes, to whom, then the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ deve %3$@ a %2$@"
+          }
+        }
+      }
+    },
+    "%@ owes you" : {
+      "comment" : "A pair in Balances; %@ is who owes this device's user",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ te deve"
+          }
+        }
+      }
+    },
+    "%@ owes you %@" : {
+      "comment" : "Record payment's subtitle: who owes this device's user, then the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te deve %2$@"
+          }
+        }
+      }
+    },
+    "%@ paid %@" : {
+      "comment" : "A payment between two other members in the group's expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ pagou %2$@"
+          }
+        }
+      }
+    },
+    "%@ paid you" : {
+      "comment" : "A payment to this device's user in the group's expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ te pagou"
+          }
+        }
+      }
+    },
+    "%@ to get back" : {
+      "comment" : "A member's balance in Members; %@ is the amount, like +$223.50",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a receber"
+          }
+        }
+      }
+    },
+    "%@ will still owe %@ %@" : {
+      "comment" : "Under a partial payment: who owes, to whom, then what is left",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ainda vai dever %3$@ a %2$@"
+          }
+        }
+      }
+    },
+    "%@ will still owe you %@" : {
+      "comment" : "Under a partial payment to this device's user: who owes, then what is left",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ainda vai te dever %2$@"
+          }
+        }
+      }
+    },
+    "%@ · you're settled up" : {
+      "comment" : "The balance card when this device's user neither owes nor gets back; %@ is zero in the group's currency",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · você está quitado"
+          }
+        }
+      }
+    },
+    "%@'s payment recorded." : {
+      "comment" : "The notice after recording a payment; %@ is who paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamento de %@ registrado."
+          }
+        }
+      }
+    },
+    "%@. Use up to that amount." : {
+      "comment" : "Under an amount past the debt; %@ is the debt, like “Ana owes you $162.30”",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@. Use até esse valor."
+          }
+        }
+      }
+    },
+    "Already paid" : {
+      "comment" : "Records a payment between two other members, in Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já pagou"
+          }
+        }
+      }
+    },
+    "Amount paid" : {
+      "comment" : "Record payment's amount field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor pago"
+          }
+        }
+      }
+    },
+    "Amount paid:" : {
+      "comment" : "Record payment's amount field on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor pago:"
+          }
+        }
+      }
+    },
+    "Balances show up once the first expense is added." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os saldos aparecem quando a primeira despesa for lançada."
+          }
+        }
+      }
+    },
+    "Between the others" : {
+      "comment" : "The section of Balances with the pairs this device's user isn't in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre os outros"
+          }
+        }
+      }
+    },
+    "Cash" : {
+      "comment" : "A payment method",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dinheiro"
+          }
+        }
+      }
+    },
+    "Confirm payment" : {
+      "comment" : "Records a payment this device's user made",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmar pagamento"
+          }
+        }
+      }
+    },
+    "Confirm received" : {
+      "comment" : "Records a payment this device's user received",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmar recebimento"
+          }
+        }
+      }
+    },
+    "Couldn't record the payment. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para registrar o pagamento. Tente de novo."
+          }
+        }
+      }
+    },
+    "Delete this payment?" : {
+      "comment" : "Asked before deleting a payment of the group's expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar este acerto?"
+          }
+        }
+      }
+    },
+    "Did %@ pay %@?" : {
+      "comment" : "Record payment's title for two other members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ pagou %2$@?"
+          }
+        }
+      }
+    },
+    "Did %@ pay you?" : {
+      "comment" : "Record payment's title when this device's user receives",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ te pagou?"
+          }
+        }
+      }
+    },
+    "Did you pay %@?" : {
+      "comment" : "Record payment's title when this device's user pays",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pagou %@?"
+          }
+        }
+      }
+    },
+    "Each pair's debts are already netted: if Ana owes you and you owe her, only the difference shows. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer)." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As dívidas de cada par já vêm compensadas: se Ana te deve e você deve a ela, aparece só a diferença. “Recebi” e “Já pagou” anotam um pagamento feito fora do app (Pix, dinheiro, transferência)."
+          }
+        }
+      }
+    },
+    "Everyone's settled up" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mundo acertou"
+          }
+        }
+      }
+    },
+    "Got paid" : {
+      "comment" : "Records a payment this device's user received, in Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recebi"
+          }
+        }
+      }
+    },
+    "How it was paid" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como foi pago"
+          }
+        }
+      }
+    },
+    "How it was paid:" : {
+      "comment" : "On the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como foi pago:"
+          }
+        }
+      }
+    },
+    "It becomes a payment in the group: it shows in Expenses and can be undone." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vira um acerto no grupo: aparece em Despesas e dá para desfazer."
+          }
+        }
+      }
+    },
+    "No internet: it's saved on this device and syncs when you reconnect." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: fica salvo no aparelho e sincroniza ao reconectar."
+          }
+        }
+      }
+    },
+    "Nobody owes anybody anything here." : {
+      "comment" : "The balance card when the whole group is settled up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém deve nada a ninguém aqui."
+          }
+        }
+      }
+    },
+    "Nobody owes anything in this group. If the trip is over, you can delete the group for everyone." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos."
+          }
+        }
+      }
+    },
+    "Nobody owes anything yet" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém deve nada ainda"
+          }
+        }
+      }
+    },
+    "Others still have to settle up." : {
+      "comment" : "The balance card when this device's user is settled up but others aren't",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outros ainda acertam entre si."
+          }
+        }
+      }
+    },
+    "Payment" : {
+      "comment" : "What a payment is, in its line of the group's expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerto"
+          }
+        }
+      }
+    },
+    "Payment recorded." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamento registrado."
+          }
+        }
+      }
+    },
+    "Payment to %@ recorded." : {
+      "comment" : "The notice after this device's user recorded paying; %@ is who received",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamento para %@ registrado."
+          }
+        }
+      }
+    },
+    "Pix" : {
+      "comment" : "A payment method, Brazil's instant payment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pix"
+          }
+        }
+      }
+    },
+    "Record payment" : {
+      "comment" : "Records a payment between two other members, and the sheet's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar pagamento"
+          }
+        }
+      }
+    },
+    "Settle up" : {
+      "comment" : "Opens Record payment for what this device's user owes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acertar"
+          }
+        }
+      }
+    },
+    "Settled up" : {
+      "comment" : "A member who neither owes nor gets back, in Members",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitado"
+          }
+        }
+      }
+    },
+    "The payment leaves the group and the debt is back in the balances." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O pagamento sai do grupo e a dívida volta aos saldos."
+          }
+        }
+      }
+    },
+    "The whole debt" : {
+      "comment" : "Fills in the whole debt as the amount paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toda a dívida"
+          }
+        }
+      }
+    },
+    "Transfer" : {
+      "comment" : "A payment method",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transferência"
+          }
+        }
+      }
+    },
+    "Undo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desfazer"
+          }
+        }
+      }
+    },
+    "With you" : {
+      "comment" : "The section of Balances with the pairs this device's user is in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Com você"
+          }
+        }
+      }
+    },
+    "You get %@" : {
+      "comment" : "The balance card's details; %@ is what this device's user gets back",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você recebe %@"
+          }
+        }
+      }
+    },
+    "You get %@ and owe %@" : {
+      "comment" : "The balance card's details",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você recebe %1$@ e deve %2$@"
+          }
+        }
+      }
+    },
+    "You owe %@" : {
+      "comment" : "The balance card's details; %@ is what this device's user owes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você deve %@"
+          }
+        }
+      }
+    },
+    "You owe %@ %@" : {
+      "comment" : "Record payment's subtitle: to whom this device's user owes, then the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você deve %2$@ a %1$@"
+          }
+        }
+      }
+    },
+    "You paid %@" : {
+      "comment" : "A payment this device's user made, in the group's expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você pagou %@"
+          }
+        }
+      }
+    },
+    "You'll still owe %@ %@" : {
+      "comment" : "Under a partial payment: to whom, then what is left",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você ainda vai dever %2$@ a %1$@"
+          }
+        }
+      }
+    },
+    "You're recording this for %@ and %@." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você está registrando por %1$@ e %2$@."
+          }
+        }
+      }
+    },
+    "Your balance in this group" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu saldo neste grupo"
+          }
+        }
+      }
+    },
+    "get %@" : {
+      "comment" : "Next to “With you” in Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "recebe %@"
+          }
+        }
+      }
+    },
+    "get %@ · owe %@" : {
+      "comment" : "Next to “With you” in Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "recebe %1$@ · deve %2$@"
+          }
+        }
+      }
+    },
+    "owe %@" : {
+      "comment" : "Next to “With you” in Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "deve %@"
+          }
+        }
+      }
+    },
+    "payment" : {
+      "comment" : "The tag of a payment in the group's expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "acerto"
+          }
+        }
+      }
+    },
+    "You owe %@ (a member)" : {
+      "comment" : "A pair in Balances; %@ is whom this device's user owes",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You owe %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você deve a %@"
+          }
+        }
+      }
+    },
+    "%lld to settle" : {
+      "comment" : "Next to “Between the others” in Balances: how many pairs still owe",
+      "localizations" : {
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld acerto"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld acertos"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

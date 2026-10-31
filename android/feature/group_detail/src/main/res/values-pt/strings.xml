@@ -32,4 +32,33 @@
     <string name="group_detail_split_bill">Rachar conta</string>
     <string name="group_detail_coming_soon">Em breve</string>
     <string name="group_detail_bill_deleted">Esta conta foi apagada</string>
+    <string name="group_detail_former_member">Ex-membro</string>
+    <string name="group_detail_payment_paid_you">%s te pagou</string>
+    <string name="group_detail_payment_you_paid">Você pagou %s</string>
+    <string name="group_detail_payment_paid">%1$s pagou %2$s</string>
+    <string name="group_detail_payment_meta">Acerto</string>
+    <string name="group_detail_payment_tag">acerto</string>
+    <string name="group_detail_delete_payment_title">Apagar este acerto?</string>
+    <string name="group_detail_delete_payment_message">O pagamento sai do grupo e a dívida volta aos saldos.</string>
+    <string name="group_detail_delete_payment_confirm">Apagar</string>
+    <string name="group_detail_delete_payment_cancel">Cancelar</string>
+    <string name="group_detail_balances_with_you">Com você</string>
+    <string name="group_detail_balances_between_others">Entre os outros</string>
+    <string name="group_detail_balances_hint_get">recebe %s</string>
+    <string name="group_detail_balances_hint_owe">deve %s</string>
+    <plurals name="group_detail_balances_settle_count">
+        <item quantity="one">%d acerto</item>
+        <item quantity="other">%d acertos</item>
+    </plurals>
+    <string name="group_detail_balances_you_owe">Você deve a %s</string>
+    <string name="group_detail_balances_owes_you">%s te deve</string>
+    <string name="group_detail_balances_owes">%1$s deve a %2$s</string>
+    <string name="group_detail_balances_settle">Acertar</string>
+    <string name="group_detail_balances_got_paid">Recebi</string>
+    <string name="group_detail_balances_already_paid">Já pagou</string>
+    <string name="group_detail_balances_note">As dívidas de cada par já vêm compensadas: se Ana te deve e você deve a ela, aparece só a diferença. “Recebi” e “Já pagou” anotam um pagamento feito fora do app (Pix, dinheiro, transferência).</string>
+    <string name="group_detail_balances_empty_title">Ninguém deve nada ainda</string>
+    <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
+    <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
+    <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
 </resources>

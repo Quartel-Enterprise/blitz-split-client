@@ -2,6 +2,7 @@ import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
+import { BalancesScreen } from '@/features/balances/BalancesScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
@@ -16,6 +17,7 @@ import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
+import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
@@ -41,7 +43,8 @@ export function App() {
   const top = backStack[backStack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
   // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
-  // bill and the group's editor open over the group's expenses the same way.
+  // bill and the group's editor open over the group's expenses the same way, and a payment over its balances,
+  // expenses or members.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
@@ -49,7 +52,8 @@ export function App() {
   const isJoinWithLink = top.name === 'join-with-link'
   const isSplitBill = top.name === 'split-bill'
   const isEditGroup = top.name === 'edit-group'
-  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isPaymentKey || isDeleteAccount
+  const isRegisterPayment = top.name === 'register-payment'
+  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isRegisterPayment || isPaymentKey || isDeleteAccount
   let pageIndex = backStack.length - (isDialog ? 2 : 1)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -68,6 +72,7 @@ export function App() {
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
       {isEditGroup && <EditGroupDialog key={top.groupId} route={top} />}
+      {isRegisterPayment && <RegisterPaymentDialog key={`${top.groupId}/${top.fromMemberId}/${top.toMemberId}`} route={top} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
@@ -85,6 +90,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <MembersScreen key={route.groupId} route={route} /> : null
     case 'group-detail':
       return route ? <GroupDetailScreen key={route.groupId} route={route} /> : null
+    case 'balances':
+      return route ? <BalancesScreen key={route.groupId} route={route} /> : null
     case 'join-invite':
       // Why: the group's link and each member's personal link of the same group are different invites.
       return route ? <JoinInviteScreen key={`${route.inviteCode}/${route.inviteMemberCode ?? ''}`} route={route} /> : null

@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.android.feature.splitbill
+package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -27,26 +28,26 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 /*
- * Why: "Quando" picks a date and then a time (Pierre's call), in the device's time zone. The date picker works in
- * UTC days, so the bill's local day goes in and out of it as midnight UTC. A bill is spent by now: no day after
- * latestSpentAt's, and the ViewModel makes a later time that day now.
+ * Why: "Quando" of a bill or a payment picks a date and then a time (Pierre's call), in the device's time zone. The
+ * date picker works in UTC days, so the local day goes in and out of it as midnight UTC. Both happened by now: no
+ * day after latestMillis's, and the ViewModel makes a later time that day now.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SpentAtPickerDialog(
-    spentAt: Long,
-    latestSpentAt: Long,
+fun DateTimePickerDialog(
+    epochMillis: Long,
+    latestMillis: Long,
     onPicked: (Long) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val zone = remember { ZoneId.systemDefault() }
-    val spentDateTime = remember(spentAt, zone) { Instant.ofEpochMilli(spentAt).atZone(zone) }
+    val pickedDateTime = remember(epochMillis, zone) { Instant.ofEpochMilli(epochMillis).atZone(zone) }
     var pickedDayUtcMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     val pickedDay = pickedDayUtcMillis
     if (pickedDay == null) {
-        val lastDay = remember(latestSpentAt, zone) { Instant.ofEpochMilli(latestSpentAt).atZone(zone).toLocalDate() }
+        val lastDay = remember(latestMillis, zone) { Instant.ofEpochMilli(latestMillis).atZone(zone).toLocalDate() }
         val dateState = rememberDatePickerState(
-            initialSelectedDateMillis = spentDateTime.toLocalDate().toUtcMillis(),
+            initialSelectedDateMillis = pickedDateTime.toLocalDate().toUtcMillis(),
             selectableDates = remember(lastDay) { UpToDaySelectableDates(lastDay) },
         )
         DatePickerDialog(
@@ -55,18 +56,18 @@ internal fun SpentAtPickerDialog(
                 TextButton(
                     onClick = { pickedDayUtcMillis = dateState.selectedDateMillis },
                     enabled = dateState.selectedDateMillis != null,
-                ) { Text(stringResource(R.string.split_bill_next)) }
+                ) { Text(stringResource(R.string.designsystem_picker_next)) }
             },
             dismissButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.split_bill_cancel)) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
             },
         ) {
             DatePicker(state = dateState)
         }
     } else {
         val timeState = rememberTimePickerState(
-            initialHour = spentDateTime.hour,
-            initialMinute = spentDateTime.minute,
+            initialHour = pickedDateTime.hour,
+            initialMinute = pickedDateTime.minute,
         )
         TimePickerDialog(
             onDismissRequest = onDismiss,
@@ -81,11 +82,11 @@ internal fun SpentAtPickerDialog(
                             .toEpochMilli()
                         onPicked(millis)
                     },
-                ) { Text(stringResource(R.string.split_bill_done)) }
+                ) { Text(stringResource(R.string.designsystem_picker_done)) }
             },
-            title = { Text(stringResource(R.string.split_bill_when)) },
+            title = { Text(stringResource(R.string.designsystem_when)) },
             dismissButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.split_bill_cancel)) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
             },
         ) {
             TimePicker(

@@ -34,6 +34,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
@@ -74,9 +75,9 @@ internal fun BillDetailsSection(
         }
         BillOptionRow(
             label = stringResource(R.string.split_bill_when),
-            value = spentAtTextOf(
-                spentAt = state.spentAt,
-                spentDay = state.spentDay,
+            value = relativeDateTimeTextOf(
+                epochMillis = state.spentAt,
+                day = state.spentDay,
                 dates = dates,
             ),
             subtitle = null,

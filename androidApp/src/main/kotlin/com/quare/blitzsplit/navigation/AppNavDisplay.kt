@@ -15,11 +15,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
+import com.quare.blitzsplit.android.feature.groupdetail.BalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
@@ -32,9 +34,9 @@ import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
+import com.quare.blitzsplit.android.feature.registerpayment.RegisterPaymentScreen
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
-import com.quare.blitzsplit.android.feature.splitbill.rememberSplitBillUsesDialog
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.shared.app.AppUiState
@@ -68,7 +70,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
-    val usesBillDialog = rememberSplitBillUsesDialog()
+    val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
         DialogSceneStrategy.dialog(
             DialogProperties(
@@ -86,7 +88,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
             rememberViewModelStoreNavEntryDecorator(),
         ),
-        sceneStrategies = listOf(DialogSceneStrategy()),
+        sceneStrategies = listOf(DialogSceneStrategy(), BottomSheetSceneStrategy()),
         entryProvider = entryProvider {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
@@ -135,6 +137,17 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: like Rachar conta, a tablet and the upright foldable keep the group behind the bill.
             entry<Route.BillDetail>(metadata = billDialogMetadata) { route ->
                 BillDetailScreen(
+                    route = route,
+                    isDialog = usesBillDialog,
+                )
+            }
+            // Why: a tab of the group, which takes Despesas' or Membros' place.
+            entry<Route.Balances> { route -> BalancesScreen(route) }
+            // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
+            entry<Route.RegisterPayment>(
+                metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
+            ) { route ->
+                RegisterPaymentScreen(
                     route = route,
                     isDialog = usesBillDialog,
                 )

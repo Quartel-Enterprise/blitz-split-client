@@ -92,6 +92,25 @@ fun rememberUsesFormDialog(): Boolean {
     }
 }
 
+/*
+ * Why: the canvas draws what opens over a group (Rachar conta, Conta, Registrar pagamento) as a dialog on a tablet
+ * and on the upright foldable, and full screen (or a sheet) on a phone, lying down and on the tabletop (a foldable
+ * lying down, under 960dp wide), unlike the other forms, which open full screen on any foldable.
+ */
+@Composable
+fun rememberUsesGroupDialog(): Boolean {
+    val size = LocalWindowInfo.current.containerSize
+    val density = LocalDensity.current
+    return remember(size, density) {
+        with(density) {
+            val width = size.width.toDp()
+            val height = size.height.toDp()
+            val isTablet = min(width, height) >= tabletSmallestWidth
+            isTablet && (height > width || max(width, height) >= formDialogLongestSide)
+        }
+    }
+}
+
 @Composable
 fun rememberDeviceLayout(): DeviceLayout {
     val size = LocalWindowInfo.current.containerSize
