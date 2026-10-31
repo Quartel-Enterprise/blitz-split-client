@@ -22,7 +22,7 @@ The Apple app isn't built here, since it needs a macOS runner: `create-pr` build
 Claude reviews a pull request at three points:
 
 - **Before it opens**, `create-pr` runs `/code-review high --max-findings all` and `review-conventions`, on the
-  author's machine.
+  author's machine, and fixes their findings before pushing.
 - **On GitHub, when it opens**, `claude-review` runs the same `/code-review high --max-findings all`, on Opus, with
   `--fix`: it applies the findings that are clear and contained, pushes them to the branch as a commit of
   `claude[bot]`, and posts one review. The fixed findings are listed in its body, under the fix commit; each one left

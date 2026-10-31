@@ -217,7 +217,7 @@ private struct JoinInviteContent: View {
 
     /// "4 members · created by Pierre".
     private func summary(_ state: JoinInviteUiState) -> Text {
-        let count = Text("\(state.memberCount) members")
+        let count = Text("\(Int(state.memberCount)) members")
         guard let creatorName = state.creatorName else { return count }
         return Text("\(count) · created by \(creatorName)")
     }

@@ -232,7 +232,7 @@ private struct GroupListRow: View {
     let group: GroupRow
 
     private var members: Text {
-        group.memberCount == 1 ? Text("Just you") : Text("\(group.memberCount) members")
+        group.memberCount == 1 ? Text("Just you") : Text("\(Int(group.memberCount)) members")
     }
 
     var body: some View {
