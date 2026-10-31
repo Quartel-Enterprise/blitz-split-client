@@ -91,6 +91,12 @@ private fun balanceKindOf(
     else -> GroupBalanceKind.YOU_ARE_SETTLED
 }
 
+// Why: how long ago each row last changed, counted again now; the order stays, since it goes by the time of the change.
+internal fun agedRowsOf(
+    rows: List<GroupRow>,
+    clock: ActivityClock,
+): List<GroupRow> = rows.map { it.copy(lastActivity = activityOf(it.lastActivity.epochMillis, clock)) }
+
 internal fun activityOf(
     epochMillis: Long,
     clock: ActivityClock,

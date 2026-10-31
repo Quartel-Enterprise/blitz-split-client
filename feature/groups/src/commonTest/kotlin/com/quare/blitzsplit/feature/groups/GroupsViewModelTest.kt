@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
@@ -56,6 +57,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -89,6 +91,10 @@ class GroupsViewModelTest {
     private lateinit var settlements: FakeSettlementRepository
     private var syncGate: CompletableDeferred<Unit>? = null
     private var syncNowCount = 0
+
+    // Why: the device's clock, which a test moves on and then ticks a minute for.
+    private var clockMillis = 0L
+    private lateinit var minutes: MutableStateFlow<Int>
 
     @BeforeTest
     fun setUp() {
@@ -1583,6 +1589,51 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN a group changed this afternoon on an open home WHEN midnight passes THEN its row says yesterday`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(group(updatedAt = now)))
+
+            // When
+            clockMillis = Instant.parse("2026-11-01T00:00:00Z").toEpochMilliseconds()
+            minutes.value += 1
+
+            // Then
+            assertEquals(
+                LastActivity(now, ActivityAge.YESTERDAY, 0),
+                viewModel.uiState.value.groups
+                    .single()
+                    .lastActivity,
+            )
+        }
+
+    @Test
+    fun `GIVEN groups on an open home WHEN a minute passes on the same day THEN keeps their order and ages`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "today",
+                        updatedAt = now,
+                    ),
+                    group(
+                        id = "last-week",
+                        updatedAt = daysAgo(7),
+                    ),
+                ),
+            )
+            val before = viewModel.uiState.value
+
+            // When
+            clockMillis = now + 60_000L
+            minutes.value += 1
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+        }
+
+    @Test
     fun `GIVEN a change dated after now WHEN the groups open THEN counts it as today`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(group(updatedAt = now + 3.days.inWholeMilliseconds)))
@@ -2240,6 +2291,8 @@ class GroupsViewModelTest {
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         syncGate = null
         syncNowCount = 0
+        clockMillis = now
+        minutes = MutableStateFlow(0)
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -2263,8 +2316,9 @@ class GroupsViewModelTest {
                 Result.success(Unit)
             },
             observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
-            currentTimeMillis = CurrentTimeMillis { now },
+            currentTimeMillis = CurrentTimeMillis { clockMillis },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },
+            minuteTicks = MinuteTicks { minutes.map { } },
             navigator = navigator,
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),

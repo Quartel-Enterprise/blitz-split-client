@@ -11,7 +11,9 @@ import com.quare.blitzsplit.core.provider.supabase.di.supabaseModule
 import com.quare.blitzsplit.core.settings.di.settingsModule
 import com.quare.blitzsplit.core.sync.di.syncModule
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
+import com.quare.blitzsplit.core.utils.SystemMinuteTicks
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
@@ -42,6 +44,7 @@ import com.quare.blitzsplit.feature.profile.di.profileModule as profileScreenMod
 
 private val appModule = module {
     single<CurrentTimeMillis> { SystemCurrentTimeMillis() }
+    single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
     viewModelOf(::AppViewModel)
 }

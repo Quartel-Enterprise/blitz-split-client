@@ -23,8 +23,11 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
+import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupsOnHome
+import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.summaryOf
@@ -40,6 +43,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -52,6 +56,7 @@ class GroupsViewModel(
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
+    minuteTicks: MinuteTicks,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
@@ -120,6 +125,12 @@ class GroupsViewModel(
             update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
+        val activityClock = {
+            ActivityClock(
+                nowMillis = currentTimeMillis(),
+                timeZone = currentTimeZone(),
+            )
+        }
         // Why: each group's bills and payments, again whenever any of them changes here or through a sync.
         combine(observeGroups(), observeGroupsMoney()) { groups, money ->
             groups.map { group ->
@@ -131,23 +142,27 @@ class GroupsViewModel(
                     pendingDeletionCount = ofGroup.pendingDeletionCount,
                 )
             }
-        }.onEach { groups ->
-            val rows = rowsOf(
-                groups = groups,
-                clock = ActivityClock(
-                    nowMillis = currentTimeMillis(),
-                    timeZone = currentTimeZone(),
+        }.map { groups ->
+            GroupsOnHome(
+                rows = rowsOf(
+                    groups = groups,
+                    clock = activityClock(),
                 ),
+                pendingChangeCount = pendingChangeCountOf(groups),
             )
-            uiState.update {
-                it.copy(
-                    groups = rows,
-                    hasLoadedGroups = true,
-                    summary = summaryOf(rows),
-                    pendingChangeCount = pendingChangeCountOf(groups),
-                )
-            }
-        }.launchIn(viewModelScope)
+        }
+            // Why: the ages again each minute, not the balances, so a home left open says "ontem" after midnight.
+            .combine(minuteTicks()) { home, _ -> home.copy(rows = agedRowsOf(home.rows, activityClock())) }
+            .onEach { home ->
+                uiState.update {
+                    it.copy(
+                        groups = home.rows,
+                        hasLoadedGroups = true,
+                        summary = summaryOf(home.rows),
+                        pendingChangeCount = home.pendingChangeCount,
+                    )
+                }
+            }.launchIn(viewModelScope)
         // Why: only while the home is on top; a deleted group still open shows its own "Grupo apagado".
         combine(observeGroupDeletions(), navigator.backStack, ::Pair)
             .onEach { (deletions, _) ->
