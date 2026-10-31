@@ -30,6 +30,27 @@ struct AppleIDButton: View {
     }
 }
 
+/// What the Apple button calls on a tap: UIKit and AppKit both send an @objc selector to a target.
+private final class AppleIDButtonTarget: NSObject {
+    var action: () -> Void
+
+    init(action: @escaping () -> Void) {
+        self.action = action
+    }
+
+    @objc func tapped() {
+        action()
+    }
+}
+
+private extension ASAuthorizationAppleIDButton {
+    static func rounded(type: ButtonType, style: Style) -> ASAuthorizationAppleIDButton {
+        let button = ASAuthorizationAppleIDButton(authorizationButtonType: type, authorizationButtonStyle: style)
+        button.cornerRadius = 25
+        return button
+    }
+}
+
 #if os(iOS)
 private struct AppleIDButtonRepresentable: UIViewRepresentable {
     let type: ASAuthorizationAppleIDButton.ButtonType
@@ -37,9 +58,8 @@ private struct AppleIDButtonRepresentable: UIViewRepresentable {
     let action: () -> Void
 
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
-        let button = ASAuthorizationAppleIDButton(authorizationButtonType: type, authorizationButtonStyle: style)
-        button.cornerRadius = 25
-        button.addTarget(context.coordinator, action: #selector(Coordinator.tapped), for: .touchUpInside)
+        let button = ASAuthorizationAppleIDButton.rounded(type: type, style: style)
+        button.addTarget(context.coordinator, action: #selector(AppleIDButtonTarget.tapped), for: .touchUpInside)
         return button
     }
 
@@ -52,20 +72,8 @@ private struct AppleIDButtonRepresentable: UIViewRepresentable {
         proposal.replacingUnspecifiedDimensions(by: CGSize(width: 280, height: 50))
     }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(action: action)
-    }
-
-    final class Coordinator: NSObject {
-        var action: () -> Void
-
-        init(action: @escaping () -> Void) {
-            self.action = action
-        }
-
-        @objc func tapped() {
-            action()
-        }
+    func makeCoordinator() -> AppleIDButtonTarget {
+        AppleIDButtonTarget(action: action)
     }
 }
 #else
@@ -75,10 +83,9 @@ private struct AppleIDButtonRepresentable: NSViewRepresentable {
     let action: () -> Void
 
     func makeNSView(context: Context) -> ASAuthorizationAppleIDButton {
-        let button = ASAuthorizationAppleIDButton(authorizationButtonType: type, authorizationButtonStyle: style)
-        button.cornerRadius = 25
+        let button = ASAuthorizationAppleIDButton.rounded(type: type, style: style)
         button.target = context.coordinator
-        button.action = #selector(Coordinator.tapped)
+        button.action = #selector(AppleIDButtonTarget.tapped)
         return button
     }
 
@@ -91,20 +98,8 @@ private struct AppleIDButtonRepresentable: NSViewRepresentable {
         proposal.replacingUnspecifiedDimensions(by: CGSize(width: 280, height: 50))
     }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(action: action)
-    }
-
-    final class Coordinator: NSObject {
-        var action: () -> Void
-
-        init(action: @escaping () -> Void) {
-            self.action = action
-        }
-
-        @objc func tapped() {
-            action()
-        }
+    func makeCoordinator() -> AppleIDButtonTarget {
+        AppleIDButtonTarget(action: action)
     }
 }
 #endif

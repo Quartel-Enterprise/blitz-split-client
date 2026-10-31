@@ -16,4 +16,9 @@
     <string name="designsystem_group_type_event">Evento</string>
     <string name="designsystem_group_type_other">Outro</string>
     <string name="designsystem_currency_value">%1$s (%2$s)</string>
+    <string name="designsystem_avatar_color_blue">Azul</string>
+    <string name="designsystem_avatar_color_peach">Pêssego</string>
+    <string name="designsystem_avatar_color_green">Verde</string>
+    <string name="designsystem_avatar_color_lilac">Lilás</string>
+    <string name="designsystem_avatar_color_sand">Areia</string>
 </resources>

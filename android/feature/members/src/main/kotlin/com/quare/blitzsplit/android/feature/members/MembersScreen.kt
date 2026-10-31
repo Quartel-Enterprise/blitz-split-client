@@ -10,14 +10,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiAction
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -35,9 +34,9 @@ fun MembersScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                MembersUiAction.ShowComingSoon -> showSnackbar(snackbarHostState, comingSoon)
+                MembersUiAction.ShowComingSoon -> showReplacingSnackbar(snackbarHostState, comingSoon)
 
-                MembersUiAction.ShowChangeError -> showSnackbar(snackbarHostState, changeError)
+                MembersUiAction.ShowChangeError -> showReplacingSnackbar(snackbarHostState, changeError)
 
                 is MembersUiAction.CopyLink -> context.copyLink(action.link)
 
@@ -77,13 +76,4 @@ fun MembersScreen(
             onEvent = viewModel::onEvent,
         )
     }
-}
-
-private fun CoroutineScope.showSnackbar(
-    snackbarHostState: SnackbarHostState,
-    message: String,
-) {
-    snackbarHostState.currentSnackbarData?.dismiss()
-    // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
-    launch { snackbarHostState.showSnackbar(message) }
 }

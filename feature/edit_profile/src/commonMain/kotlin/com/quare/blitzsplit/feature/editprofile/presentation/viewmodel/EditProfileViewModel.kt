@@ -16,11 +16,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
+import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -34,9 +33,9 @@ import kotlinx.coroutines.launch
 
 class EditProfileViewModel(
     private val validateDisplayName: ValidateDisplayName,
-    private val prepareProfilePhoto: PrepareProfilePhoto,
     private val saveProfile: SaveProfile,
     private val navigator: Navigator,
+    prepareProfilePhoto: PrepareProfilePhoto,
     observeProfile: ObserveProfile,
     getSessionUser: GetSessionUser,
     observeAccount: ObserveAccount,
@@ -60,7 +59,13 @@ class EditProfileViewModel(
 
     // Why: what the form compares against, kept up to date as sync replaces a pending photo with its upload.
     private var saved: UserProfile? = null
-    private var photoJob: Job? = null
+
+    private val photoPicker = ProfilePhotoPicker(
+        prepareProfilePhoto = prepareProfilePhoto,
+        scope = viewModelScope,
+        showStatus = ::showPhotoStatus,
+        onPrepared = ::showPhoto,
+    )
 
     val stateWatcher: FlowWatcher<EditProfileUiState> = FlowWatcher(uiState)
 
@@ -97,7 +102,7 @@ class EditProfileViewModel(
             is EditProfileUiEvent.OnNameChanged -> edit { it.withName(event.name) }
             is EditProfileUiEvent.OnAvatarColorSelected -> edit { it.copy(avatarColor = event.color) }
             is EditProfileUiEvent.OnPhotoPicked -> preparePhoto(event.source)
-            EditProfileUiEvent.OnPhotoUnreadable -> showPhotoUnreadable()
+            EditProfileUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             EditProfileUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
             EditProfileUiEvent.OnPhotoRemoved -> removePhoto()
             EditProfileUiEvent.OnSaveClicked -> save()
@@ -125,20 +130,9 @@ class EditProfileViewModel(
         }
     }
 
-    // Why: the picker's last answer wins, so a pick still being prepared stops instead of replacing the error.
-    private fun showPhotoUnreadable() {
-        photoJob?.cancel()
-        uiState.update {
-            it.copy(
-                isPreparingPhoto = false,
-                showsPhotoError = true,
-            )
-        }
-    }
-
     private fun discard() {
         val profile = saved ?: return
-        photoJob?.cancel()
+        photoPicker.cancel()
         uiState.update {
             it.withProfile(profile).copy(
                 isPreparingPhoto = false,
@@ -151,7 +145,7 @@ class EditProfileViewModel(
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
         if (uiState.value.isSaving) return
-        photoJob?.cancel()
+        photoPicker.cancel()
         edit {
             it.copy(
                 photo = ProfilePhoto.Remote(url),
@@ -163,7 +157,7 @@ class EditProfileViewModel(
 
     private fun removePhoto() {
         if (uiState.value.isSaving) return
-        photoJob?.cancel()
+        photoPicker.cancel()
         edit {
             it.copy(
                 photo = null,
@@ -173,38 +167,30 @@ class EditProfileViewModel(
         }
     }
 
-    /*
-     * Why: a newer pick replaces the one still being prepared, and a failed one keeps the photo shown.
-     * Once Save is waiting on a pick, a later one would cancel the photo being saved, so it is ignored.
-     */
+    // Why: Save sends the photo shown, so a pick while saving is ignored.
     private fun preparePhoto(source: ByteArray) {
         if (uiState.value.isSaving) return
-        photoJob?.cancel()
+        photoPicker.prepare(source)
+    }
+
+    private fun showPhotoStatus(
+        isPreparing: Boolean,
+        hasFailed: Boolean,
+    ) {
         uiState.update {
             it.copy(
-                isPreparingPhoto = true,
-                showsPhotoError = false,
+                isPreparingPhoto = isPreparing,
+                showsPhotoError = hasFailed,
             )
         }
-        photoJob = viewModelScope.launch {
-            val result = prepareProfilePhoto(source)
-            ensureActive()
-            result
-                .onSuccess { photo ->
-                    edit {
-                        it.copy(
-                            photo = photo,
-                            isPreparingPhoto = false,
-                        )
-                    }
-                }.onFailure {
-                    uiState.update {
-                        it.copy(
-                            isPreparingPhoto = false,
-                            showsPhotoError = true,
-                        )
-                    }
-                }
+    }
+
+    private fun showPhoto(photo: ProfilePhoto) {
+        edit {
+            it.copy(
+                photo = photo,
+                isPreparingPhoto = false,
+            )
         }
     }
 

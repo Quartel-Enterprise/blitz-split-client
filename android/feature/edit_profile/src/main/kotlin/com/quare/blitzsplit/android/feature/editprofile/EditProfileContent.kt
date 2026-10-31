@@ -1,8 +1,5 @@
 package com.quare.blitzsplit.android.feature.editprofile
 
-import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,33 +8,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PhotoLibrary
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -60,21 +48,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
+import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
-import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
-import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
@@ -235,36 +219,16 @@ private fun AvatarSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Box(modifier = Modifier.size(avatarSize)) {
-            AvatarBadge(
-                initial = state.avatarInitial,
-                color = state.avatarColor,
-                size = avatarSize,
-                photoUrl = state.photoUrl,
-            )
-            if (state.isPreparingPhoto) CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            FilledIconButton(
-                onClick = onPhotoClick,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(
-                        x = 4.dp,
-                        y = 4.dp,
-                    ).size(44.dp)
-                    .border(3.dp, MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                ),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(R.string.edit_profile_change_photo),
-                    modifier = Modifier.size(20.dp),
-                )
-            }
-        }
+        AvatarWithPhotoButton(
+            initial = state.avatarInitial,
+            color = state.avatarColor,
+            photoUrl = state.photoUrl,
+            isPreparingPhoto = state.isPreparingPhoto,
+            icon = Icons.Outlined.Edit,
+            contentDescription = stringResource(R.string.edit_profile_change_photo),
+            size = avatarSize,
+            onClick = onPhotoClick,
+        )
         if (state.showsPhotoError) {
             Text(
                 text = stringResource(R.string.edit_profile_photo_error),
@@ -288,10 +252,10 @@ private fun AvatarSection(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            AvatarColorRow(
+            AvatarColorPicker(
                 selected = state.avatarColor,
                 colors = state.avatarColors,
-                onEvent = onEvent,
+                onSelected = { color -> onEvent(EditProfileUiEvent.OnAvatarColorSelected(color)) },
             )
         }
     }
@@ -375,42 +339,6 @@ private fun AccountNoticeCard(provider: AccountProvider) {
     }
 }
 
-@Composable
-private fun AvatarColorRow(
-    selected: AvatarColor,
-    colors: List<AvatarColor>,
-    onEvent: (EditProfileUiEvent) -> Unit,
-) {
-    val isDark = LocalIsDarkTheme.current
-    Row(
-        modifier = Modifier.selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-    ) {
-        colors.forEach { color ->
-            val isSelected = color == selected
-            val label = stringResource(color.labelRes)
-            Surface(
-                modifier = Modifier
-                    .size(44.dp)
-                    .semantics { contentDescription = label }
-                    .selectable(
-                        selected = isSelected,
-                        role = Role.RadioButton,
-                        onClick = { onEvent(EditProfileUiEvent.OnAvatarColorSelected(color)) },
-                    ),
-                shape = CircleShape,
-                color = color.toContainerColor(isDark),
-                contentColor = color.toContentColor(isDark),
-                border = if (isSelected) BorderStroke(3.dp, MaterialTheme.colorScheme.primary) else null,
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    if (isSelected) Icon(Icons.Outlined.Check, contentDescription = null)
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PhotoMenuSheet(
@@ -479,16 +407,6 @@ private fun PhotoMenuItem(
         )
     }
 }
-
-@get:StringRes
-private val AvatarColor.labelRes: Int
-    get() = when (this) {
-        AvatarColor.BLUE -> R.string.edit_profile_color_blue
-        AvatarColor.PEACH -> R.string.edit_profile_color_peach
-        AvatarColor.GREEN -> R.string.edit_profile_color_green
-        AvatarColor.LILAC -> R.string.edit_profile_color_lilac
-        AvatarColor.SAND -> R.string.edit_profile_color_sand
-    }
 
 @DevicePreviews
 @Composable

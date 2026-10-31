@@ -1,14 +1,13 @@
-import { ArrowLeft, Camera, Check, Info, Loader2 } from 'lucide-react'
+import { ArrowLeft, Camera, Info, Loader2 } from 'lucide-react'
 import { useRef } from 'react'
 import { ProfileSetupPresenter, type JsProfileSetupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, AvatarColorPicker } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
-import { avatarColorLabel, avatarStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
 export function ProfileSetupScreen() {
@@ -88,28 +87,7 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
           <span id="avatar-color" className="text-sm font-medium">
             {t('profileSetup_avatarColor')}
           </span>
-          <div role="radiogroup" aria-labelledby="avatar-color" className="flex gap-3">
-            {state.avatarColors.map((code) => {
-              const isSelected = code === state.avatarColor
-              return (
-                <button
-                  key={code}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  aria-label={avatarColorLabel(code)}
-                  style={avatarStyle(code)}
-                  onClick={() => presenter.selectAvatarColor(code)}
-                  className={cn(
-                    'avatar flex size-10 items-center justify-center rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                    isSelected && 'ring-2 ring-primary ring-offset-2 ring-offset-card',
-                  )}
-                >
-                  {isSelected && <Check className="size-4" />}
-                </button>
-              )
-            })}
-          </div>
+          <AvatarColorPicker colors={state.avatarColors} selected={state.avatarColor} onSelect={(code) => presenter.selectAvatarColor(code)} labelledBy="avatar-color" />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="profile-name">{t('profileSetup_nameLabel')}</Label>

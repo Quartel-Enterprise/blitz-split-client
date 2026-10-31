@@ -61,8 +61,6 @@ struct MembersView: View {
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: MembersModel?
-    @State private var toast: LocalizedStringKey?
-    @State private var hidesToast: Task<Void, Never>?
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -115,20 +113,11 @@ struct MembersView: View {
         } message: { member in
             Text("\(member.name) hasn't joined yet. You can add them again later.")
         }
-        .overlay(alignment: .top) {
-            if let toast {
-                Text(toast)
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .glassEffect(.regular, in: .capsule)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
         // The counts only grow on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
-        .onChange(of: model?.comingSoonCount ?? 0) { show("Coming soon") }
-        .onChange(of: model?.changeErrorCount ?? 0) { show("Couldn't save the change. Try again.") }
+        .glassToast([
+            GlassToastMessage(text: "Coming soon", trigger: model?.comingSoonCount ?? 0),
+            GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0),
+        ])
         .onAppear {
             if model == nil { model = MembersModel(route: route) }
         }
@@ -174,17 +163,6 @@ struct MembersView: View {
                 if !shown { model?.send(MembersUiEventOnRemoveDismissed.shared) }
             },
         )
-    }
-
-    /// A second action keeps the toast for two seconds from that one.
-    private func show(_ text: LocalizedStringKey) {
-        withAnimation { toast = text }
-        hidesToast?.cancel()
-        hidesToast = Task {
-            try? await Task.sleep(for: .seconds(2))
-            guard !Task.isCancelled else { return }
-            withAnimation { toast = nil }
-        }
     }
 }
 

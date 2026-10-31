@@ -45,7 +45,6 @@ struct MainTabView: View {
     @Binding var path: [AppRoute]
 
     @State private var model = GroupsModel()
-    @State private var showsComingSoon = false
     @State private var showsRecoveryCode = false
 
     var body: some View {
@@ -73,24 +72,7 @@ struct MainTabView: View {
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
         }
         .tabViewStyle(.sidebarAdaptable)
-        .overlay(alignment: .top) {
-            if showsComingSoon {
-                Text("Coming soon")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 10)
-                    .glassEffect(.regular, in: .capsule)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .onChange(of: model.comingSoonCount) {
-            withAnimation { showsComingSoon = true }
-            Task {
-                try? await Task.sleep(for: .seconds(2))
-                withAnimation { showsComingSoon = false }
-            }
-        }
+        .glassToast("Coming soon", trigger: model.comingSoonCount)
         // Shown once the first sync issued a code; the sheet settles the prompt itself ("I've saved it",
         // "Remind me later" or a swipe down), which hides it here too.
         .onChange(of: model.state.showsRecoveryCodePrompt, initial: true) { _, isDue in

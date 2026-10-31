@@ -95,8 +95,8 @@ calls the `Navigator` (see [navigation.md](navigation.md)).
 
 ```kotlin
 class WelcomeViewModel(
-    private val providerSignIn: ProviderSignIn,
     private val navigator: Navigator,
+    providerSignIn: ProviderSignIn,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<WelcomeUiState>
@@ -114,24 +114,29 @@ class WelcomeViewModel(
     val stateWatcher: FlowWatcher<WelcomeUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<WelcomeUiAction> = FlowWatcher(uiAction)
 
+    private val signIn = ProviderSignInController(
+        providerSignIn = providerSignIn,
+        navigator = navigator,
+        scope = viewModelScope,
+        connectingProvider = { uiState.value.connectingProvider },
+        showConnecting = ::showConnecting,
+        launchNativeSignIn = { provider -> uiAction.emit(WelcomeUiAction.LaunchNativeSignIn(provider)) },
+    )
+
     init {
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        providerSignIn
-            .observeBrowserSignIn(
-                isShown = { navigator.backStack.value.lastOrNull() == Route.Welcome },
-                onStep = ::handleSignInStep,
-            ).launchIn(viewModelScope)
+        signIn.observeBrowserSignIn(isShown = { navigator.backStack.value.lastOrNull() == Route.Welcome })
     }
 
     fun onEvent(event: WelcomeUiEvent) {
         when (event) {
             is WelcomeUiEvent.OnProviderClicked -> handleProviderClicked(event.provider)
             is WelcomeUiEvent.OnIdTokenReceived -> handleIdToken(event)
-            WelcomeUiEvent.OnNativeSignInFailed -> finishConnecting(error = WelcomeError.SIGN_IN_FAILED)
-            WelcomeUiEvent.OnNativeSignInCancelled -> finishConnecting(error = null)
+            WelcomeUiEvent.OnNativeSignInFailed -> signIn.onNativeSignInFailed()
+            WelcomeUiEvent.OnNativeSignInCancelled -> signIn.onNativeSignInCancelled()
             WelcomeUiEvent.OnUseWithoutAccountClicked -> navigator.navigate(Route.ProfileSetup)
             WelcomeUiEvent.OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)
             WelcomeUiEvent.OnErrorDismissed -> uiState.update { it.copy(error = null) }
@@ -154,8 +159,8 @@ class WelcomeViewModel(
 - Guards live in the ViewModel too: `handleProviderClicked` returns early when `areAccountButtonsEnabled` is false,
   so a double tap on any platform does nothing. A screen whose link state comes from `ProviderConnector` still sets
   `connectingProvider` at the tap, since its copy of the connector's state lands a moment later; the connector also
-  refuses a second link while one is under way. A screen that signs in through `ProviderSignIn` sets it at the tap
-  too, since that state is only the screen's.
+  refuses a second link while one is under way. A screen that signs in through `ProviderSignInController` has it
+  set at the tap too, through `showConnecting`, since that state is only the screen's.
 
 ### How each UI observes it
 

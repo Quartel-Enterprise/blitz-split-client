@@ -1,9 +1,9 @@
-import { Loader2, WifiOff } from 'lucide-react'
+import { Check, Loader2, WifiOff } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { t, type MessageKey } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { avatarColorLabel, avatarStyle } from '@/lib/avatar'
 import { regionCurrencySymbol } from '@/lib/currency'
 import { accountProviders, type AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -118,6 +118,34 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
         />
       )}
     </span>
+  )
+}
+
+/** The avatar colors as a radio group, the one picked with a check. `labelledBy` is the id of its label. */
+export function AvatarColorPicker({ colors, selected, onSelect, labelledBy }: { colors: string[]; selected: string; onSelect: (code: string) => void; labelledBy: string }) {
+  return (
+    <div role="radiogroup" aria-labelledby={labelledBy} className="flex gap-3">
+      {colors.map((code) => {
+        const isSelected = code === selected
+        return (
+          <button
+            key={code}
+            type="button"
+            role="radio"
+            aria-checked={isSelected}
+            aria-label={avatarColorLabel(code)}
+            style={avatarStyle(code)}
+            onClick={() => onSelect(code)}
+            className={cn(
+              'avatar flex size-10 items-center justify-center rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+              isSelected && 'ring-2 ring-primary ring-offset-2 ring-offset-card',
+            )}
+          >
+            {isSelected && <Check className="size-4" />}
+          </button>
+        )
+      })}
+    </div>
   )
 }
 

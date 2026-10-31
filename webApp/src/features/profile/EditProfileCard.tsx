@@ -1,8 +1,8 @@
-import { Camera, Check, ImageIcon, Info, Loader2, Pencil, Trash2, UserRound } from 'lucide-react'
+import { Camera, ImageIcon, Info, Loader2, Pencil, Trash2, UserRound } from 'lucide-react'
 import { useRef, type ChangeEvent } from 'react'
 import { EditProfilePresenter, type JsEditProfileState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, providerLabel } from '@/components/common'
+import { Avatar, AvatarColorPicker, providerLabel } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -11,9 +11,7 @@ import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { avatarColorLabel, avatarStyle } from '@/lib/avatar'
 import type { AccountProvider } from '@/lib/platform'
-import { cn } from '@/lib/utils'
 
 async function onPhotoFile(presenter: EditProfilePresenter, event: ChangeEvent<HTMLInputElement>) {
   const file = event.target.files?.[0]
@@ -121,28 +119,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
               <span id="edit-avatar-color" className="text-sm font-medium">
                 {t('editProfile_avatarColor')}
               </span>
-              <div role="radiogroup" aria-labelledby="edit-avatar-color" className="flex gap-3">
-                {state.avatarColors.map((code) => {
-                  const isSelected = code === state.avatarColor
-                  return (
-                    <button
-                      key={code}
-                      type="button"
-                      role="radio"
-                      aria-checked={isSelected}
-                      aria-label={avatarColorLabel(code)}
-                      style={avatarStyle(code)}
-                      onClick={() => presenter.selectAvatarColor(code)}
-                      className={cn(
-                        'avatar flex size-10 items-center justify-center rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                        isSelected && 'ring-2 ring-primary ring-offset-2 ring-offset-card',
-                      )}
-                    >
-                      {isSelected && <Check className="size-4" />}
-                    </button>
-                  )
-                })}
-              </div>
+              <AvatarColorPicker colors={state.avatarColors} selected={state.avatarColor} onSelect={(code) => presenter.selectAvatarColor(code)} labelledBy="edit-avatar-color" />
               <span className="text-xs text-muted-foreground">{t('editProfile_avatarColorHint')}</span>
             </div>
           )}

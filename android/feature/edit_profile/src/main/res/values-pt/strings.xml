@@ -19,9 +19,4 @@
     <string name="edit_profile_name_too_long">Use até %d caracteres.</string>
     <string name="edit_profile_account_notice">Nome e foto vieram da sua conta %1$s. Mudar aqui vale só no Bora Rachar e não altera sua conta %1$s.</string>
     <string name="edit_profile_footer">Só quem está nos seus grupos vê seu nome e foto.</string>
-    <string name="edit_profile_color_blue">Azul</string>
-    <string name="edit_profile_color_peach">Pêssego</string>
-    <string name="edit_profile_color_green">Verde</string>
-    <string name="edit_profile_color_lilac">Lilás</string>
-    <string name="edit_profile_color_sand">Areia</string>
 </resources>

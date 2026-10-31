@@ -430,13 +430,6 @@ private fun ProblemContent(
     }
 }
 
-private fun createPreviewMembers(): List<JoinMember> = listOf(
-    JoinMember("1", "Pierre", "PI", AvatarColor.BLUE, hasJoined = true),
-    JoinMember("2", "Ana", "AN", AvatarColor.GREEN, hasJoined = true),
-    JoinMember("3", "Bruno", "BR", AvatarColor.PEACH, hasJoined = false),
-    JoinMember("4", "Carla", "CA", AvatarColor.LILAC, hasJoined = false),
-)
-
 private fun createPreviewState(status: JoinInviteStatus): JoinInviteUiState = JoinInviteUiState(
     status = status,
     groupName = "Viagem Floripa",

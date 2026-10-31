@@ -1,8 +1,5 @@
 package com.quare.blitzsplit.android.feature.profilesetup
 
-import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,24 +16,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -45,22 +34,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
+import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
-import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
-import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.ProfileSetupUiEvent
@@ -346,9 +331,14 @@ private fun AvatarSection(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             AvatarWithPhotoButton(
-                state = state,
-                avatarSize = avatarSize,
-                onAddPhotoClick = onAddPhotoClick,
+                initial = state.avatarInitial,
+                color = state.avatarColor,
+                photoUrl = state.photoUrl,
+                isPreparingPhoto = state.isPreparingPhoto,
+                icon = Icons.Outlined.PhotoCamera,
+                contentDescription = stringResource(R.string.profile_setup_add_photo),
+                size = avatarSize,
+                onClick = onAddPhotoClick,
             )
             if (state.showsPhotoError) {
                 Text(
@@ -369,52 +359,11 @@ private fun AvatarSection(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            AvatarColorRow(
+            AvatarColorPicker(
                 selected = state.avatarColor,
                 colors = state.avatarColors,
+                onSelected = { color -> onEvent(ProfileSetupUiEvent.OnAvatarColorSelected(color)) },
                 spacing = swatchSpacing,
-                onEvent = onEvent,
-            )
-        }
-    }
-}
-
-// Why: the camera sits on the avatar's corner, as in the design, and the photo shows in the avatar itself.
-@Composable
-private fun AvatarWithPhotoButton(
-    state: ProfileSetupUiState,
-    avatarSize: Dp,
-    onAddPhotoClick: () -> Unit,
-) {
-    Box(modifier = Modifier.size(avatarSize)) {
-        AvatarBadge(
-            initial = state.avatarInitial,
-            color = state.avatarColor,
-            size = avatarSize,
-            photoUrl = state.photoUrl,
-        )
-        if (state.isPreparingPhoto) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-        FilledIconButton(
-            onClick = onAddPhotoClick,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(
-                    x = 4.dp,
-                    y = 4.dp,
-                ).size(44.dp)
-                .border(3.dp, MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)),
-            shape = RoundedCornerShape(16.dp),
-            colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-            ),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.PhotoCamera,
-                contentDescription = stringResource(R.string.profile_setup_add_photo),
-                modifier = Modifier.size(20.dp),
             )
         }
     }
@@ -507,53 +456,6 @@ private fun ContinueButton(
         )
     }
 }
-
-@Composable
-private fun AvatarColorRow(
-    selected: AvatarColor,
-    colors: List<AvatarColor>,
-    spacing: Dp,
-    onEvent: (ProfileSetupUiEvent) -> Unit,
-) {
-    val isDark = LocalIsDarkTheme.current
-    Row(
-        modifier = Modifier.selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterHorizontally),
-    ) {
-        colors.forEach { color ->
-            val isSelected = color == selected
-            val label = stringResource(color.labelRes)
-            Surface(
-                modifier = Modifier
-                    .size(44.dp)
-                    .semantics { contentDescription = label }
-                    .selectable(
-                        selected = isSelected,
-                        role = Role.RadioButton,
-                        onClick = { onEvent(ProfileSetupUiEvent.OnAvatarColorSelected(color)) },
-                    ),
-                shape = CircleShape,
-                color = color.toContainerColor(isDark),
-                contentColor = color.toContentColor(isDark),
-                border = if (isSelected) BorderStroke(3.dp, MaterialTheme.colorScheme.primary) else null,
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    if (isSelected) Icon(Icons.Outlined.Check, contentDescription = null)
-                }
-            }
-        }
-    }
-}
-
-@get:StringRes
-private val AvatarColor.labelRes: Int
-    get() = when (this) {
-        AvatarColor.BLUE -> R.string.profile_setup_color_blue
-        AvatarColor.PEACH -> R.string.profile_setup_color_peach
-        AvatarColor.GREEN -> R.string.profile_setup_color_green
-        AvatarColor.LILAC -> R.string.profile_setup_color_lilac
-        AvatarColor.SAND -> R.string.profile_setup_color_sand
-    }
 
 @DevicePreviews
 @Composable

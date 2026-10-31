@@ -5,9 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,18 +13,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
+import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -41,21 +38,13 @@ fun SplitBillScreen(
     viewModel: SplitBillViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val saveError = stringResource(R.string.split_bill_save_error)
-    val deleteError = stringResource(R.string.split_bill_delete_error)
-    var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(viewModel) {
-        viewModel.uiAction.collect { action ->
-            val message = when (action) {
-                SplitBillUiAction.ShowSaveError -> saveError
-                SplitBillUiAction.ShowDeleteError -> deleteError
-            }
-            snackbarHostState.currentSnackbarData?.dismiss()
-            // Why: on its own, so the next action replaces this snackbar instead of waiting until it hides.
-            launch { snackbarHostState.showSnackbar(message) }
+    val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
+        when (action) {
+            SplitBillUiAction.ShowSaveError -> R.string.split_bill_save_error
+            SplitBillUiAction.ShowDeleteError -> R.string.split_bill_delete_error
         }
     }
+    var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
     BackHandler {
         viewModel.onEvent(
             if (state.splitEditor == null) SplitBillUiEvent.OnCloseClicked else SplitBillUiEvent.OnSplitDismissed,

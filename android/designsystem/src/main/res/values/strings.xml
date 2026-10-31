@@ -16,4 +16,9 @@
     <string name="designsystem_group_type_event">Event</string>
     <string name="designsystem_group_type_other">Other</string>
     <string name="designsystem_currency_value">%1$s (%2$s)</string>
+    <string name="designsystem_avatar_color_blue">Blue</string>
+    <string name="designsystem_avatar_color_peach">Peach</string>
+    <string name="designsystem_avatar_color_green">Green</string>
+    <string name="designsystem_avatar_color_lilac">Lilac</string>
+    <string name="designsystem_avatar_color_sand">Sand</string>
 </resources>
