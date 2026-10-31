@@ -8,7 +8,9 @@ import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RotateInviteCodeParamsDto
+import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
 
@@ -56,11 +58,16 @@ class SupabaseGroupRemoteDataSource(
             parameters = params,
         ).decodeAs<JoinGroupResultDto>()
 
-    override suspend fun rotateInviteCode(groupId: String): String = postgrest
-        .rpc(
-            function = ROTATE_INVITE_CODE,
-            parameters = RotateInviteCodeParamsDto(groupId),
-        ).decodeAs<String>()
+    override suspend fun rotateInviteCode(groupId: String): String = try {
+        postgrest
+            .rpc(
+                function = ROTATE_INVITE_CODE,
+                parameters = RotateInviteCodeParamsDto(groupId),
+            ).decodeAs<String>()
+    } catch (exception: PostgrestRestException) {
+        if (exception.code == INSUFFICIENT_PRIVILEGE) throw NotGroupCreatorException()
+        throw exception
+    }
 
     /*
      * Why: page by page, since the server answers at most max_rows per request, until a page comes back empty: a
@@ -94,6 +101,9 @@ class SupabaseGroupRemoteDataSource(
         const val GET_INVITE = "get_invite"
         const val JOIN_GROUP = "join_group"
         const val ROTATE_INVITE_CODE = "rotate_invite_code"
+
+        // Why: the Postgres code rotate_invite_code raises for anyone but the group's creator.
+        const val INSUFFICIENT_PRIVILEGE = "42501"
 
         // Why: the API's max_rows, Supabase's default.
         const val PAGE_SIZE = 1_000L

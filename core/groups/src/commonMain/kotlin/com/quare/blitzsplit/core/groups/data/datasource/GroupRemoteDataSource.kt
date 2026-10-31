@@ -30,6 +30,6 @@ interface GroupRemoteDataSource {
 
     suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto
 
-    // Why: the group's new invite code; the server refuses anyone but the group's creator.
+    // Why: the group's new invite code; anyone but the group's creator gets NotGroupCreatorException.
     suspend fun rotateInviteCode(groupId: String): String
 }

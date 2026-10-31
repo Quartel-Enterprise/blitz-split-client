@@ -85,14 +85,15 @@ fun InviteContent(
 ) {
     if (state.isConfirmingLinkChange) ChangeLinkDialog(onEvent)
     if (isDialog) {
-        Box(
+        Column(
             modifier = modifier.padding(vertical = 24.dp),
-            contentAlignment = Alignment.BottomCenter,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             InviteDialogCard(
                 state = state,
                 onEvent = onEvent,
             )
+            // Why: below the card, so the snackbar never covers its buttons.
             SnackbarHost(snackbarHostState)
         }
     } else {

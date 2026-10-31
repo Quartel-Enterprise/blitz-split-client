@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -1942,6 +1943,30 @@ class SyncCoordinatorTest {
             )
             assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.downloadedUserIds)
         }
+
+    @Test
+    fun `GIVEN someone not the creator WHEN changing the link THEN the refusal comes back without a sync`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+        )
+        groups.rotateInviteCodeError = NotGroupCreatorException()
+
+        // When
+        val result = coordinator.rotateInviteCode("dinner")
+        runCurrent()
+
+        // Then
+        assertTrue(result.exceptionOrNull() is NotGroupCreatorException)
+        assertEquals(
+            "oldCode1",
+            groups.groups.value
+                .single()
+                .inviteCode,
+        )
+        assertTrue(groups.downloadedUserIds.isEmpty())
+    }
 
     @Test
     fun `GIVEN the server changes the link WHEN changing it THEN succeeds without another sync`() = runTest {
