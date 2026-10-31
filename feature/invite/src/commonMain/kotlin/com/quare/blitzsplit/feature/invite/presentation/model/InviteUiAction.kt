@@ -10,4 +10,7 @@ sealed interface InviteUiAction {
         val link: String,
         val groupName: String,
     ) : InviteUiAction
+
+    // Why: the server didn't change the link, so the old one still works and stays on screen.
+    data object ShowChangeLinkFailed : InviteUiAction
 }

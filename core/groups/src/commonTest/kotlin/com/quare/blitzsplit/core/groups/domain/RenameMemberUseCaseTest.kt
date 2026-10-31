@@ -109,6 +109,7 @@ class RenameMemberUseCaseTest {
         ),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = false,
     )
 
     private fun prepareScenario(

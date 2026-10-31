@@ -802,13 +802,13 @@ class GroupDetailPaymentsViewModelTest {
     fun `GIVEN another screen on top WHEN tapping Acertar THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = owingAnaAndMoreToBruno)
-        navigator.navigate(Route.Invite(GROUP_ID))
+        navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
         // When
         viewModel.onEvent(GroupDetailUiEvent.OnSettleClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
     }
 
     @Test
@@ -816,13 +816,16 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.Invite(GROUP_ID))
+            navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -1111,6 +1114,7 @@ class GroupDetailPaymentsViewModelTest {
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = false,
     )
 
     // Why: this device's user owes Ana 6.000 and Bruno 9.000.

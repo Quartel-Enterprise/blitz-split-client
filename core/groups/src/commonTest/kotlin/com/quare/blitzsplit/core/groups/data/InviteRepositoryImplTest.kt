@@ -433,4 +433,6 @@ private class FakeInviteRemoteDataSource(
     override suspend fun fetchGroups(): List<GroupDto> = error("unused")
 
     override suspend fun fetchMembers(): List<GroupMemberDto> = error("unused")
+
+    override suspend fun rotateInviteCode(groupId: String): String = error("unused")
 }

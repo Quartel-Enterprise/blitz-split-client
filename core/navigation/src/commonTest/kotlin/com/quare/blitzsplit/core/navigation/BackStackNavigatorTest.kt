@@ -63,10 +63,24 @@ class BackStackNavigatorTest {
         navigator.navigate(Route.CreateGroup)
 
         // When
-        navigator.replaceTop(Route.Invite(groupId = "group-1"))
+        navigator.replaceTop(
+            Route.Invite(
+                groupId = "group-1",
+                isNewGroup = false,
+            ),
+        )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Invite(groupId = "group-1")), navigator.backStack.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.Invite(
+                    groupId = "group-1",
+                    isNewGroup = false,
+                ),
+            ),
+            navigator.backStack.value,
+        )
     }
 
     @Test

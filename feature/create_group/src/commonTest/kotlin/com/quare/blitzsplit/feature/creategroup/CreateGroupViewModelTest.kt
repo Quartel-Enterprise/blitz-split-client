@@ -755,7 +755,7 @@ class CreateGroupViewModelTest {
 
         // Then
         val groupId = groups.createdGroups.single().id
-        assertEquals(listOf(Route.Groups, Route.Invite(groupId)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Invite(groupId, isNewGroup = true)), navigator.backStack.value)
     }
 
     @Test

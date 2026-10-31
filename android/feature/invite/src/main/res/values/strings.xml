@@ -18,5 +18,10 @@
     <string name="invite_share">Share link</string>
     <string name="invite_see_who_joined">See who joined</string>
     <string name="invite_go_to_group">Go to the group</string>
+    <string name="invite_change_link">Change link</string>
+    <string name="invite_change_link_title">Change the invite link?</string>
+    <string name="invite_change_link_message">The current link and QR code stop working, unused personal invites included. Whoever already joined stays in the group.</string>
+    <string name="invite_change_link_failed">Couldn\'t change the link. The current one still works.</string>
+    <string name="invite_cancel">Cancel</string>
     <string name="invite_share_message">Let\'s split the bills of %1$s on Blitz Split. Join with this link: %2$s</string>
 </resources>

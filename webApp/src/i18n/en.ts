@@ -154,6 +154,12 @@ export const en = {
   invite_seeWhoJoined: 'See who joined',
   invite_goToGroup: 'Go to the group',
   invite_copyFailed: "Couldn't copy the link",
+  invite_changeLinkPrompt: "Someone who shouldn't have the link?",
+  invite_changeLink: 'Change link',
+  invite_changeLinkTitle: 'Change the invite link?',
+  invite_changeLinkMessage:
+    'The current link and QR code stop working, unused personal invites included. Whoever already joined stays in the group.',
+  invite_changeLinkFailed: "Couldn't change the link. The current one still works.",
   members_title: 'Members',
   members_countOne: '{count} member',
   members_countOther: '{count} members',

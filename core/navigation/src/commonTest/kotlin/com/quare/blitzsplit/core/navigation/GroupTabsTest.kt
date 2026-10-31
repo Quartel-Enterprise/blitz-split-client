@@ -24,11 +24,11 @@ class GroupTabsTest {
     @Test
     fun `GIVEN Convidar over Despesas WHEN opening Membros THEN puts Membros in place of the group`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID), Route.Invite(GROUP_ID))
+        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID), Route.Invite(GROUP_ID, isNewGroup = false))
 
         // When
         navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID),
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
             tab = Route.Members(GROUP_ID, joinedAs = null),
         )
 
@@ -39,11 +39,15 @@ class GroupTabsTest {
     @Test
     fun `GIVEN Convidar over Membros WHEN opening Despesas THEN puts Despesas in place of the group`() {
         // Given
-        prepareScenario(Route.Groups, Route.Members(GROUP_ID, joinedAs = null), Route.Invite(GROUP_ID))
+        prepareScenario(
+            Route.Groups,
+            Route.Members(GROUP_ID, joinedAs = null),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
 
         // When
         navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID),
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
             tab = Route.GroupDetail(GROUP_ID),
         )
 
@@ -54,11 +58,11 @@ class GroupTabsTest {
     @Test
     fun `GIVEN Convidar over Saldos WHEN opening Membros THEN puts Membros in place of the group`() {
         // Given
-        prepareScenario(Route.Groups, Route.Balances(GROUP_ID), Route.Invite(GROUP_ID))
+        prepareScenario(Route.Groups, Route.Balances(GROUP_ID), Route.Invite(GROUP_ID, isNewGroup = false))
 
         // When
         navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID),
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
             tab = Route.Members(GROUP_ID, joinedAs = null),
         )
 
@@ -69,11 +73,15 @@ class GroupTabsTest {
     @Test
     fun `GIVEN Convidar over Membros just joined WHEN opening Membros THEN goes back to it`() {
         // Given
-        prepareScenario(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno"), Route.Invite(GROUP_ID))
+        prepareScenario(
+            Route.Groups,
+            Route.Members(GROUP_ID, joinedAs = "Bruno"),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
 
         // When
         navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID),
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
             tab = Route.Members(GROUP_ID, joinedAs = null),
         )
 
@@ -99,11 +107,15 @@ class GroupTabsTest {
     @Test
     fun `GIVEN Convidar over a tab of another group WHEN opening Despesas THEN takes the place of Convidar`() {
         // Given
-        prepareScenario(Route.Groups, Route.Members(OTHER_GROUP_ID, joinedAs = null), Route.Invite(GROUP_ID))
+        prepareScenario(
+            Route.Groups,
+            Route.Members(OTHER_GROUP_ID, joinedAs = null),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
 
         // When
         navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID),
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
             tab = Route.GroupDetail(GROUP_ID),
         )
 
@@ -121,7 +133,7 @@ class GroupTabsTest {
 
         // When
         navigator.openGroupTab(
-            from = Route.Invite(GROUP_ID),
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
             tab = Route.Members(GROUP_ID, joinedAs = null),
         )
 

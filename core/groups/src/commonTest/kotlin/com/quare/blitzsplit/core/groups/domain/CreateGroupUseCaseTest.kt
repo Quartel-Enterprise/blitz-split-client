@@ -268,6 +268,18 @@ class CreateGroupUseCaseTest {
             assertNull(repository.createdGroups.single().inviteCode)
         }
 
+    @Test
+    fun `GIVEN a new group WHEN creating it on the device THEN it is created by me`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        createGroup()
+
+        // Then
+        assertTrue(repository.createdGroups.single().isCreatedByMe)
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),

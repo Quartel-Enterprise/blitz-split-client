@@ -29,4 +29,7 @@ interface GroupRemoteDataSource {
     suspend fun fetchPersonalInvite(params: PersonalInviteParamsDto): InviteDto?
 
     suspend fun joinGroup(params: JoinGroupParamsDto): JoinGroupResultDto
+
+    // Why: the group's new invite code; the server refuses anyone but the group's creator.
+    suspend fun rotateInviteCode(groupId: String): String
 }

@@ -648,7 +648,7 @@ class BalancesViewModelTest {
                 ),
             ),
         )
-        navigator.navigate(Route.Invite(GROUP_ID))
+        navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
         // When
         viewModel.onEvent(
@@ -659,7 +659,7 @@ class BalancesViewModelTest {
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
     }
 
     @Test
@@ -791,7 +791,7 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
     }
 
     @Test
@@ -834,7 +834,10 @@ class BalancesViewModelTest {
             viewModel.onEvent(BalancesUiEvent.OnSplitBillClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -882,13 +885,13 @@ class BalancesViewModelTest {
     fun `GIVEN another screen on top WHEN tapping back THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Invite(GROUP_ID))
+        navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
 
         // When
         viewModel.onEvent(BalancesUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
     }
 
     @Test
@@ -1194,6 +1197,7 @@ class BalancesViewModelTest {
         members = listOf(ana, pierre, bruno, carla),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = false,
     )
 
     private fun member(

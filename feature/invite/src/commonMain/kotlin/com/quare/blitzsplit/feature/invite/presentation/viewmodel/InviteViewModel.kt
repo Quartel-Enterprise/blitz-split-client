@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.groups.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.SyncState
@@ -37,6 +38,7 @@ class InviteViewModel(
     private val navigator: Navigator,
     private val encodeQrCode: EncodeQrCode,
     private val retrySync: RetrySync,
+    private val changeInviteLink: ChangeInviteLink,
     observeGroup: ObserveGroup,
     observeSyncState: ObserveSyncState,
     connectivityObserver: NetworkConnectivityObserver,
@@ -52,6 +54,10 @@ class InviteViewModel(
                 isSyncFailed = false,
                 isLinkCopied = false,
                 isLoaded = false,
+                isCreatedByMe = false,
+                isNewGroup = route.isNewGroup,
+                isConfirmingLinkChange = false,
+                isChangingLink = false,
             ),
         )
 
@@ -104,6 +110,12 @@ class InviteViewModel(
                 from = route,
                 tab = Route.GroupDetail(route.groupId),
             )
+
+            InviteUiEvent.OnChangeLinkClicked -> askToChangeLink()
+
+            InviteUiEvent.OnChangeLinkConfirmed -> changeLink()
+
+            InviteUiEvent.OnChangeLinkDismissed -> uiState.update { it.copy(isConfirmingLinkChange = false) }
         }
     }
 
@@ -114,16 +126,22 @@ class InviteViewModel(
     ) {
         val link = group.inviteCode?.let(InviteLink::of)
         uiState.update { state ->
-            state.copy(
+            val isSameLink = link == state.link
+            val shown = state.copy(
                 groupName = group.name,
                 link = link,
                 // Why: encoded again only when the link changes, not on every edit of the group.
-                qrCode = if (link == state.link) state.qrCode else link?.let { encodeQrCode(it) },
+                qrCode = if (isSameLink) state.qrCode else link?.let { encodeQrCode(it) },
                 members = group.members.map(::toInviteMember),
                 isOnline = isOnline,
                 isSyncFailed = isSyncFailed,
+                // Why: "Copiado" was about the old link, not the new one a change brought.
+                isLinkCopied = state.isLinkCopied && isSameLink,
                 isLoaded = true,
+                isCreatedByMe = group.isCreatedByMe,
             )
+            // Why: going offline, or losing the right to change it, closes the question with the button.
+            shown.copy(isConfirmingLinkChange = shown.isConfirmingLinkChange && shown.showsChangeLink)
         }
     }
 
@@ -157,6 +175,26 @@ class InviteViewModel(
                 groupName = state.groupName,
             ),
         )
+    }
+
+    private fun askToChangeLink() {
+        val state = uiState.value
+        if (state.showsChangeLink && !state.isChangingLink) uiState.update { it.copy(isConfirmingLinkChange = true) }
+    }
+
+    // Why: the new link shows once the use case wrote it to Room; a failure keeps the old one, which still works.
+    private fun changeLink() {
+        if (!uiState.value.isConfirmingLinkChange) return
+        uiState.update {
+            it.copy(
+                isConfirmingLinkChange = false,
+                isChangingLink = true,
+            )
+        }
+        viewModelScope.launch {
+            changeInviteLink(route.groupId).onFailure { uiAction.emit(InviteUiAction.ShowChangeLinkFailed) }
+            uiState.update { it.copy(isChangingLink = false) }
+        }
     }
 
     private fun send(action: InviteUiAction) {

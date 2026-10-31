@@ -653,6 +653,78 @@ class GroupMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a group the device user created WHEN mapping to the domain THEN it is created by me`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                createdBy = "user-1",
+                ownerUserId = "user-1",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, emptyList()).single()
+
+        // Then
+        assertTrue(mapped.isCreatedByMe)
+    }
+
+    @Test
+    fun `GIVEN a group another account created WHEN mapping to the domain THEN it is not created by me`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                createdBy = "user-2",
+                ownerUserId = "user-1",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, emptyList()).single()
+
+        // Then
+        assertFalse(mapped.isCreatedByMe)
+    }
+
+    @Test
+    fun `GIVEN a group whose creator deleted their account WHEN mapping to the domain THEN it is not created by me`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                createdBy = null,
+                ownerUserId = "user-1",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, emptyList()).single()
+
+        // Then
+        assertFalse(mapped.isCreatedByMe)
+    }
+
+    @Test
+    fun `GIVEN a group created before any account WHEN mapping to the domain THEN it is not created by me yet`() {
+        // Given
+        val groups = listOf(
+            groupEntity(
+                id = "group-1",
+                createdBy = null,
+                ownerUserId = null,
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, emptyList()).single()
+
+        // Then
+        assertFalse(mapped.isCreatedByMe)
+    }
+
+    @Test
     fun `GIVEN a group from the server with its invite code WHEN mapping it to an entity THEN keeps the code`() {
         // Given
         val dto = groupDto(
@@ -938,6 +1010,7 @@ class GroupMapperImplTest {
         ),
         isPending = true,
         inviteCode = null,
+        isCreatedByMe = false,
     )
 
     private fun groupEntity(
@@ -950,6 +1023,7 @@ class GroupMapperImplTest {
         updatedAt: Long = 1L,
         pendingSync: Boolean = false,
         inviteCode: String? = null,
+        ownerUserId: String? = "user-1",
     ): GroupEntity = GroupEntity(
         id = id,
         name = "Viagem Floripa",
@@ -960,7 +1034,7 @@ class GroupMapperImplTest {
         addedAt = addedAt,
         updatedAt = updatedAt,
         pendingSync = pendingSync,
-        ownerUserId = "user-1",
+        ownerUserId = ownerUserId,
         inviteCode = inviteCode,
     )
 

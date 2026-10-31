@@ -3,6 +3,7 @@ import { InvitePresenter, type JsInviteAction, type JsInviteState, type JsRoute 
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -21,8 +22,8 @@ const linkId = 'invite-link'
 const qrQuietZone = 2
 
 /**
- * "Convidar", over the home right after a group is created: a dialog on desktop and tablet, a drawer on the
- * phone. The link and the QR code sit in two tabs; closing it any way is the ViewModel's close.
+ * "Convidar", over the home right after a group is created, or over the group: a dialog on desktop and tablet, a
+ * drawer on the phone. The link and the QR code sit in two tabs; closing it any way is the ViewModel's close.
  */
 export function InviteDialog({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new InvitePresenter(route))
@@ -33,6 +34,8 @@ export function InviteDialog({ route }: { route: JsRoute }) {
       navigator.clipboard.writeText(action.link).catch(() => toast(t('invite_copyFailed')))
     } else if (action.type === 'share' && action.link) {
       shareLink(action.link, action.groupName ?? '')
+    } else if (action.type === 'change-link-failed') {
+      toast(t('invite_changeLinkFailed'))
     }
   })
   if (!presenter || !state?.isLoaded) return null
@@ -65,6 +68,16 @@ export function InviteDialog({ route }: { route: JsRoute }) {
     </Button>
   )
 
+  const changeLinkDialog = state.isConfirmingLinkChange && (
+    <ConfirmDialog
+      title={t('invite_changeLinkTitle')}
+      description={t('invite_changeLinkMessage')}
+      confirmLabel={t('invite_changeLink')}
+      onConfirm={() => presenter.confirmChangeLink()}
+      onDismiss={() => presenter.dismissChangeLink()}
+    />
+  )
+
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[480px]">
@@ -79,6 +92,7 @@ export function InviteDialog({ route }: { route: JsRoute }) {
           {share}
         </DialogFooter>
       </DialogContent>
+      {changeLinkDialog}
     </Dialog>
   ) : (
     <Drawer open onOpenChange={onOpenChange}>
@@ -94,6 +108,7 @@ export function InviteDialog({ route }: { route: JsRoute }) {
           {close}
         </DrawerFooter>
       </DrawerContent>
+      {changeLinkDialog}
     </Drawer>
   )
 }
@@ -129,6 +144,20 @@ function InviteBody({ presenter, state }: { presenter: InvitePresenter; state: J
             <QrCode size={state.qrSize} modules={state.qrModules} />
           </TabsContent>
         </Tabs>
+      )}
+      {/* Why: "Trocar link", for the group's creator only, from the group and online. */}
+      {state.showsChangeLink && (
+        <p className="-mt-3 text-sm text-muted-foreground">
+          {t('invite_changeLinkPrompt')}{' '}
+          <Button
+            variant="link"
+            disabled={state.isChangingLink}
+            onClick={() => presenter.changeLink()}
+            className="h-auto p-0 align-baseline"
+          >
+            {t('invite_changeLink')}
+          </Button>
+        </p>
       )}
       <ul className="flex flex-col divide-y rounded-lg border" aria-label={t('invite_membersLabel')}>
         {state.members.map((member) => (

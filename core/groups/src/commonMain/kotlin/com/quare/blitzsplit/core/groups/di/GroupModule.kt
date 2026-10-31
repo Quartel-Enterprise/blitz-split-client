@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.data.repository.InviteRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.repository.InviteRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.AddMember
+import com.quare.blitzsplit.core.groups.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
@@ -23,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ChangeInviteLinkUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
@@ -54,4 +56,5 @@ val groupModule = module {
     factoryOf(::RemoveMemberUseCase).bind<RemoveMember>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
     factoryOf(::GetInviteUseCase).bind<GetInvite>()
+    factoryOf(::ChangeInviteLinkUseCase).bind<ChangeInviteLink>()
 }

@@ -1156,6 +1156,7 @@ class EditGroupViewModelTest {
         ),
         isPending = false,
         inviteCode = "AB12CD",
+        isCreatedByMe = false,
     )
 
     private val dinner = Expense(

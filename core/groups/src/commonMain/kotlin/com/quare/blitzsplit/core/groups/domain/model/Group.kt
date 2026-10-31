@@ -16,4 +16,9 @@ data class Group(
     val isPending: Boolean,
     // Why: the code of the invite link, null until the group's first sync brings the one the server made.
     val inviteCode: String?,
+    /*
+     * Why: this device's user created the group, so only they may change its invite link. False for a group created
+     * before any account until its first sync, and for one whose creator deleted their account.
+     */
+    val isCreatedByMe: Boolean,
 )

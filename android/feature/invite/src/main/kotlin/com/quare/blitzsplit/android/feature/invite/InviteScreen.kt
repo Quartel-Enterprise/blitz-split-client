@@ -1,12 +1,16 @@
 package com.quare.blitzsplit.android.feature.invite
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
@@ -26,6 +30,8 @@ fun InviteScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val resources = LocalResources.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
@@ -34,6 +40,11 @@ fun InviteScreen(
                 is InviteUiAction.ShareLink -> context.shareText(
                     resources.getString(R.string.invite_share_message, action.groupName, action.link),
                 )
+
+                InviteUiAction.ShowChangeLinkFailed -> scope.showReplacingSnackbar(
+                    snackbarHostState,
+                    resources.getString(R.string.invite_change_link_failed),
+                )
             }
         }
     }
@@ -41,6 +52,7 @@ fun InviteScreen(
     InviteContent(
         state = state,
         isDialog = isDialog,
+        snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
 }

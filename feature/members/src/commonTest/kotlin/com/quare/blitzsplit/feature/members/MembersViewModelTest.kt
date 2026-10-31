@@ -266,7 +266,11 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+                listOf(
+                    Route.Groups,
+                    Route.Members("group-1", joinedAs = null),
+                    Route.Invite("group-1", isNewGroup = false),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -303,14 +307,18 @@ class MembersViewModelTest {
     fun `GIVEN another screen on top WHEN tapping back THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Invite("group-1"))
+        navigator.navigate(Route.Invite("group-1", isNewGroup = false))
 
         // When
         viewModel.onEvent(MembersUiEvent.OnBackClicked)
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+            listOf(
+                Route.Groups,
+                Route.Members("group-1", joinedAs = null),
+                Route.Invite("group-1", isNewGroup = false),
+            ),
             navigator.backStack.value,
         )
     }
@@ -327,7 +335,11 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+                listOf(
+                    Route.Groups,
+                    Route.Members("group-1", joinedAs = null),
+                    Route.Invite("group-1", isNewGroup = false),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -1928,14 +1940,18 @@ class MembersViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(joinedAs = "Bruno")
-            navigator.navigate(Route.Invite("group-1"))
+            navigator.navigate(Route.Invite("group-1", isNewGroup = false))
 
             // When
             viewModel.onEvent(MembersUiEvent.OnProtectAccessClicked)
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno"), Route.Invite("group-1")),
+                listOf(
+                    Route.Groups,
+                    Route.Members("group-1", joinedAs = "Bruno"),
+                    Route.Invite("group-1", isNewGroup = false),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -2567,14 +2583,18 @@ class MembersViewModelTest {
                 ),
             ),
         )
-        navigator.navigate(Route.Invite("group-1"))
+        navigator.navigate(Route.Invite("group-1", isNewGroup = false))
 
         // When
         viewModel.onEvent(MembersUiEvent.OnSettleClicked)
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+            listOf(
+                Route.Groups,
+                Route.Members("group-1", joinedAs = null),
+                Route.Invite("group-1", isNewGroup = false),
+            ),
             navigator.backStack.value,
         )
     }
@@ -2584,14 +2604,18 @@ class MembersViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.Invite("group-1"))
+            navigator.navigate(Route.Invite("group-1", isNewGroup = false))
 
             // When
             viewModel.onEvent(MembersUiEvent.OnBalancesTabClicked)
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Invite("group-1")),
+                listOf(
+                    Route.Groups,
+                    Route.Members("group-1", joinedAs = null),
+                    Route.Invite("group-1", isNewGroup = false),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -2986,6 +3010,7 @@ class MembersViewModelTest {
         members = listOf(pierre, ana, bruno, carla),
         isPending = false,
         inviteCode = null,
+        isCreatedByMe = false,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")

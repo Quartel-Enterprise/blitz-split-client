@@ -32,6 +32,7 @@ class GroupMapperImpl : GroupMapper {
                 members = ofGroup.filterNot { it.isRemoved }.map(::toDomain),
                 isPending = group.pendingSync || ofGroup.any { it.pendingSync },
                 inviteCode = group.inviteCode,
+                isCreatedByMe = group.createdBy != null && group.createdBy == group.ownerUserId,
             )
         }
     }

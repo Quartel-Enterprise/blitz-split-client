@@ -108,7 +108,7 @@ class GroupDetailViewModel(
                 ),
             )
 
-            GroupDetailUiEvent.OnInviteClicked -> screen.open(Route.Invite(route.groupId))
+            GroupDetailUiEvent.OnInviteClicked -> screen.open(Route.Invite(route.groupId, isNewGroup = false))
 
             GroupDetailUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId, joinedAs = null))
 

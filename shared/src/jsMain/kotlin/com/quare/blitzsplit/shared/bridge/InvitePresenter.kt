@@ -36,9 +36,12 @@ class JsInviteState(
     val isLoaded: Boolean,
     val isLinkPending: Boolean,
     val isLinkFailed: Boolean,
+    val showsChangeLink: Boolean,
+    val isConfirmingLinkChange: Boolean,
+    val isChangingLink: Boolean,
 )
 
-// Why: "copy" and "share" carry the link, and "share" the group's name for the message.
+// Why: "copy" and "share" carry the link, and "share" the group's name for the message; "change-link-failed" neither.
 class JsInviteAction(
     val type: String,
     val link: String?,
@@ -72,6 +75,9 @@ class InvitePresenter(
                 isLoaded = state.isLoaded,
                 isLinkPending = state.isLinkPending,
                 isLinkFailed = state.isLinkFailed,
+                showsChangeLink = state.showsChangeLink,
+                isConfirmingLinkChange = state.isConfirmingLinkChange,
+                isChangingLink = state.isChangingLink,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -83,6 +89,7 @@ class InvitePresenter(
             when (action) {
                 is InviteUiAction.CopyLink -> JsInviteAction("copy", action.link, null)
                 is InviteUiAction.ShareLink -> JsInviteAction("share", action.link, action.groupName)
+                InviteUiAction.ShowChangeLinkFailed -> JsInviteAction("change-link-failed", null, null)
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -111,6 +118,18 @@ class InvitePresenter(
 
     fun goToGroup() {
         viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
+    }
+
+    fun changeLink() {
+        viewModel.onEvent(InviteUiEvent.OnChangeLinkClicked)
+    }
+
+    fun confirmChangeLink() {
+        viewModel.onEvent(InviteUiEvent.OnChangeLinkConfirmed)
+    }
+
+    fun dismissChangeLink() {
+        viewModel.onEvent(InviteUiEvent.OnChangeLinkDismissed)
     }
 
     fun dispose() {

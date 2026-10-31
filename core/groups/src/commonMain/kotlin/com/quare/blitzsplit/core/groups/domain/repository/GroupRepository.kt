@@ -47,6 +47,12 @@ interface GroupRepository {
         removedAt: Long,
     ): Result<Unit>
 
+    /*
+     * Why: "Trocar link", online only. The server makes the new code, and the device shows it right away instead of
+     * waiting for the next sync.
+     */
+    suspend fun rotateInviteCode(groupId: String): Result<Unit>
+
     suspend fun uploadPendingGroups(userId: String): Result<Unit>
 
     /*

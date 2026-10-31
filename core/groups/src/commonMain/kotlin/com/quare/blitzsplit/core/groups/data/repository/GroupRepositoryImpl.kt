@@ -108,6 +108,13 @@ class GroupRepositoryImpl(
         )
     }
 
+    override suspend fun rotateInviteCode(groupId: String): Result<Unit> = suspendRunCatching {
+        local.updateInviteCode(
+            id = groupId,
+            inviteCode = remote.rotateInviteCode(groupId),
+        )
+    }
+
     /*
      * Why: the groups before their members, which the server only accepts in a group it already has. The members
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)

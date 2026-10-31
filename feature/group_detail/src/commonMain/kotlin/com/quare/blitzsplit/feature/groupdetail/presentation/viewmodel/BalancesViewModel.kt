@@ -83,7 +83,7 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnSplitBillClicked -> screen.openSplitBill()
 
-            BalancesUiEvent.OnInviteClicked -> screen.open(Route.Invite(route.groupId))
+            BalancesUiEvent.OnInviteClicked -> screen.open(Route.Invite(route.groupId, isNewGroup = false))
 
             BalancesUiEvent.OnExpensesTabClicked -> screen.openTab(Route.GroupDetail(route.groupId))
 

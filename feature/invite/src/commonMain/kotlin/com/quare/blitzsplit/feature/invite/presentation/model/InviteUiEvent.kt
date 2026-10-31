@@ -18,4 +18,11 @@ sealed interface InviteUiEvent : UiEvent {
 
     // Why: "Ir para o grupo", offered while the link is pending.
     data object OnGoToGroupClicked : InviteUiEvent
+
+    // Why: "Trocar link", which asks "Trocar o link do convite?" first.
+    data object OnChangeLinkClicked : InviteUiEvent
+
+    data object OnChangeLinkConfirmed : InviteUiEvent
+
+    data object OnChangeLinkDismissed : InviteUiEvent
 }

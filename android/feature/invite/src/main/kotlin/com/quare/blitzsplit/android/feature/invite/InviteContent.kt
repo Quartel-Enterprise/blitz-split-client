@@ -34,6 +34,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -63,12 +65,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
-import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.QrCode
-import com.quare.blitzsplit.feature.invite.presentation.model.InviteMember
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiEvent
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiState
 
@@ -81,111 +79,147 @@ fun InviteContent(
     state: InviteUiState,
     // Why: a tablet draws the invite as a 560dp dialog over the home.
     isDialog: Boolean,
+    snackbarHostState: SnackbarHostState,
     onEvent: (InviteUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (state.isConfirmingLinkChange) ChangeLinkDialog(onEvent)
     if (isDialog) {
-        Surface(
-            modifier = modifier
-                .widthIn(max = dialogWidth)
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        Box(
+            modifier = modifier.padding(vertical = 24.dp),
+            contentAlignment = Alignment.BottomCenter,
         ) {
-            Column {
-                InviteTopBar(
-                    onEvent = onEvent,
-                    isDialog = true,
-                )
-                Column(
+            InviteDialogCard(
+                state = state,
+                onEvent = onEvent,
+            )
+            SnackbarHost(snackbarHostState)
+        }
+    } else {
+        InviteFullScreen(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun InviteDialogCard(
+    state: InviteUiState,
+    onEvent: (InviteUiEvent) -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .widthIn(max = dialogWidth)
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ) {
+        Column {
+            InviteTopBar(
+                state = state,
+                onEvent = onEvent,
+                isDialog = true,
+            )
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 24.dp,
+                    ),
+            ) {
+                if (state.isLoaded) {
+                    InviteColumn(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InviteFullScreen(
+    state: InviteUiState,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (InviteUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val layout = rememberDeviceLayout()
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            InviteTopBar(
+                state = state,
+                onEvent = onEvent,
+                isDialog = false,
+            )
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            if (!state.isLoaded) return@Box
+            if (layout.usesTwoColumns) {
+                // Why: a phone lying down keeps the code on the left and what to do with it on the right.
+                Row(
                     modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(
-                            start = 24.dp,
-                            end = 24.dp,
-                            bottom = 24.dp,
-                        ),
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
-                    if (state.isLoaded) {
-                        InviteColumn(
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
+                    ) {
+                        InviteHeader(state)
+                        LinkCard(
+                            state = state,
+                            onEvent = onEvent,
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                            .padding(
+                                top = 8.dp,
+                                bottom = 24.dp,
+                            ),
+                    ) {
+                        WhoPicksText(state)
+                        InviteButtonsColumn(
                             state = state,
                             onEvent = onEvent,
                         )
                     }
                 }
-            }
-        }
-    } else {
-        val layout = rememberDeviceLayout()
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                InviteTopBar(
-                    onEvent = onEvent,
-                    isDialog = false,
-                )
-            },
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                if (!state.isLoaded) return@Box
-                if (layout.usesTwoColumns) {
-                    // Why: a phone lying down keeps the code on the left and what to do with it on the right.
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState()),
-                        ) {
-                            InviteHeader(state)
-                            LinkCard(
-                                state = state,
-                                onEvent = onEvent,
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState())
-                                .padding(
-                                    top = 8.dp,
-                                    bottom = 24.dp,
-                                ),
-                        ) {
-                            WhoPicksText(state)
-                            InviteButtonsColumn(
-                                state = state,
-                                onEvent = onEvent,
-                            )
-                        }
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .widthIn(max = singleColumnMaxWidth)
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                            .padding(
-                                start = 24.dp,
-                                end = 24.dp,
-                                bottom = 32.dp,
-                            ),
-                    ) {
-                        InviteColumn(
-                            state = state,
-                            onEvent = onEvent,
-                        )
-                    }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = singleColumnMaxWidth)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            start = 24.dp,
+                            end = 24.dp,
+                            bottom = 32.dp,
+                        ),
+                ) {
+                    InviteColumn(
+                        state = state,
+                        onEvent = onEvent,
+                    )
                 }
             }
         }
@@ -195,6 +229,7 @@ fun InviteContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun InviteTopBar(
+    state: InviteUiState,
     onEvent: (InviteUiEvent) -> Unit,
     isDialog: Boolean,
 ) {
@@ -206,6 +241,17 @@ private fun InviteTopBar(
                     imageVector = Icons.Outlined.Close,
                     contentDescription = stringResource(R.string.invite_close),
                 )
+            }
+        },
+        actions = {
+            // Why: "Trocar link", for the group's creator only, from the group and online.
+            if (state.showsChangeLink) {
+                TextButton(
+                    onClick = { onEvent(InviteUiEvent.OnChangeLinkClicked) },
+                    enabled = !state.isChangingLink,
+                ) {
+                    Text(stringResource(R.string.invite_change_link))
+                }
             }
         },
         windowInsets = if (isDialog) WindowInsets(0) else TopAppBarDefaults.windowInsets,
@@ -500,85 +546,5 @@ private fun InviteButtonsColumn(
                 ),
             )
         }
-    }
-}
-
-private fun createPreviewMembers(): List<InviteMember> = listOf(
-    InviteMember(
-        id = "1",
-        name = "Pierre",
-        initials = "P",
-        avatarColor = AvatarColor.BLUE,
-        isMe = true,
-        hasJoined = true,
-    ),
-    InviteMember(
-        id = "2",
-        name = "Ana",
-        initials = "AN",
-        avatarColor = AvatarColor.PEACH,
-        isMe = false,
-        hasJoined = false,
-    ),
-    InviteMember(
-        id = "3",
-        name = "Bruno",
-        initials = "BR",
-        avatarColor = AvatarColor.GREEN,
-        isMe = false,
-        hasJoined = false,
-    ),
-    InviteMember(
-        id = "4",
-        name = "Carla",
-        initials = "CA",
-        avatarColor = AvatarColor.LILAC,
-        isMe = false,
-        hasJoined = false,
-    ),
-)
-
-// Why: a stand-in pattern for the previews, which can't run the shared encoder.
-private fun createPreviewQrCode(): QrCode = QrCode(
-    size = 25,
-    modules = List(25 * 25) { index -> (index / 25 + index % 25 * 3) % 4 == 0 || index % 7 == 0 },
-)
-
-private fun createPreviewState(): InviteUiState = InviteUiState(
-    groupName = "Viagem Floripa",
-    link = "https://blitzsplit.com/g/7Hk2pQxa",
-    qrCode = createPreviewQrCode(),
-    members = createPreviewMembers(),
-    isOnline = true,
-    isSyncFailed = false,
-    isLinkCopied = false,
-    isLoaded = true,
-)
-
-@DevicePreviews
-@Composable
-private fun InviteContentPreview() {
-    BlitzSplitTheme {
-        InviteContent(
-            state = createPreviewState(),
-            isDialog = false,
-            onEvent = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun InviteContentPendingPreview() {
-    BlitzSplitTheme {
-        InviteContent(
-            state = createPreviewState().copy(
-                link = null,
-                qrCode = null,
-                isOnline = false,
-            ),
-            isDialog = false,
-            onEvent = {},
-        )
     }
 }

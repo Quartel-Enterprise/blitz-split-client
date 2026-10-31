@@ -18,9 +18,21 @@ data class InviteUiState(
     val isLinkCopied: Boolean,
     // Why: nothing is drawn until Room is read, so a link already there never flashes as pending.
     val isLoaded: Boolean,
+    // Why: only the group's creator may change its link.
+    val isCreatedByMe: Boolean,
+    // Why: right after "Novo grupo"; "Trocar link" is only offered from the group.
+    val isNewGroup: Boolean,
+    // Why: "Trocar o link do convite?" is open.
+    val isConfirmingLinkChange: Boolean,
+    // Why: the server is making the new link; the old one stays on screen until it comes.
+    val isChangingLink: Boolean,
 ) {
     val isLinkPending: Boolean
         get() = isLoaded && link == null
+
+    // Why: "Trocar link", for the creator, from the group and online, once there is a link to change.
+    val showsChangeLink: Boolean
+        get() = isLoaded && isCreatedByMe && !isNewGroup && isOnline && link != null
 
     // Why: "Não deu para criar o link", in place of the pending copy, with a retry.
     val isLinkFailed: Boolean
