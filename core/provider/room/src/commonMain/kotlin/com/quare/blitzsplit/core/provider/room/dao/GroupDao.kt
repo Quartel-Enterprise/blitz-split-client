@@ -325,13 +325,6 @@ interface GroupDao {
         goneMembers.chunked(MAX_IDS_PER_QUERY).forEach { deleteMembers(it) }
     }
 
-    // Why: a group never pushed yet can't have been taken away; the invite code only comes back from the server.
-    @Query(
-        "SELECT id FROM split_group WHERE ownerUserId = :ownerUserId " +
-            "AND (pendingSync = 0 OR inviteCode IS NOT NULL)",
-    )
-    suspend fun getUploadedGroupIds(ownerUserId: String): List<String>
-
     // Why: a group left or deleted, pending or not; its bills and payments go with it (ON DELETE CASCADE).
     @Transaction
     suspend fun deleteGroupsWithMembers(ids: List<String>) {

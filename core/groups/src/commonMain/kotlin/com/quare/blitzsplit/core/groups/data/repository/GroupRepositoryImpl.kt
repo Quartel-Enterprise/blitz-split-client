@@ -217,7 +217,7 @@ class GroupRepositoryImpl(
         remoteMembers
             .filter { it.groupId in remoteGroupIds }
             .forEach { dto -> local.applyRemoteMember(mapper.toEntity(dto, userId = userId)) }
-        dropRemovedGroups(
+        postDeletions(
             userId = userId,
             goneGroupIds = local.getUploadedGroupIds(userId).filterNot { it in remoteGroupIds },
         )
@@ -229,18 +229,16 @@ class GroupRepositoryImpl(
     }
 
     /*
-     * Why: a group the server took off this user's list, left from another device or deleted by a member, would
-     * otherwise stay with a change not pushed yet, whose push the server refuses. Someone else's deletion is posted
-     * before the group goes, so the screen showing it says "Grupo apagado" instead of just closing.
+     * Why: the gone groups leave with deleteGoneFromServer right after; one someone else deleted is posted first, so
+     * the screen showing it says "Grupo apagado" with who did it instead of just closing. Only a nicety, so a failed
+     * read posts nothing and lets the sync go on.
      */
-    private suspend fun dropRemovedGroups(
+    private suspend fun postDeletions(
         userId: String,
         goneGroupIds: List<String>,
     ) {
         if (goneGroupIds.isEmpty()) return
-        // Why: only a nicety over deleteGoneFromServer, so a failed read keeps the groups and lets the sync go on.
         val removed = suspendRunCatching { remote.fetchRemovedGroups(goneGroupIds) }.getOrElse { return }
-        if (removed.isEmpty()) return
         removed
             .filter { it.reason == REASON_DELETED && it.removedBy != userId }
             .forEach { dto ->
@@ -252,7 +250,6 @@ class GroupRepositoryImpl(
                     ),
                 )
             }
-        local.deleteGroups(removed.map { it.groupId })
     }
 
     override suspend fun clear() {

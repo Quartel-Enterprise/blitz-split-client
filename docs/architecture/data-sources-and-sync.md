@@ -203,12 +203,11 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     stays in the bills; as after "Liberar nome", a stale copy of that member on another device never sends the
     account back.
   - **Groups the server took away**: each user a group is left by or deleted for gets a row in `removed_groups`.
-    The download asks it about every group of the user that the server no longer gives and once had (synced, or
-    with the invite code the server made: `GroupDao.getUploadedGroupIds`), and drops those it names even with a
-    change not pushed yet, whose push the server would
-    refuse. One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
+    The download asks it about every group of the user that the server no longer gives and once had
+    (`GroupDao.getGroupIdsOnServer`), which `deleteGoneFromServer` then drops, even with a change not pushed yet.
+    One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
     group's screen open on it shows "Grupo apagado" instead of just closing, or the home says so when no group screen
-    is on top.
+    is on top. A failed read only skips the notices.
 - **Bills** (`:core:expenses`): a bill (`expense`) is one Last-Write-Wins row, its payers and shares inside it as
   JSON (jsonb on the server), so an edit never mixes two versions of a split. It belongs to its group through a
   foreign key with `ON DELETE CASCADE`: whatever deletes a group on the device (a sign out, an account switch, the

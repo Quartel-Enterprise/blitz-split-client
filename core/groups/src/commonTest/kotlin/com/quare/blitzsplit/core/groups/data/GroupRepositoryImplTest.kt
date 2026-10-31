@@ -1210,27 +1210,29 @@ class GroupRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN removed groups that fail to load WHEN downloading THEN the download still succeeds`() = runTest {
-        // Given
-        prepareScenario(
-            storedGroups = listOf(
-                group(id = "group-gone"),
-                group(
-                    id = "group-pending",
-                    pendingSync = true,
-                    inviteCode = "7Hk2pQxZ",
+    fun `GIVEN removed groups that fail to load WHEN downloading THEN it succeeds and the gone groups still leave`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(id = "group-gone"),
+                    group(
+                        id = "group-pending",
+                        pendingSync = true,
+                        inviteCode = "7Hk2pQxZ",
+                    ),
                 ),
-            ),
-            removedGroupsError = IllegalStateException("no removed_groups yet"),
-        )
+                removedGroupsError = IllegalStateException("no removed_groups yet"),
+            )
 
-        // When
-        val result = repository.downloadGroups("user-1")
+            // When
+            val result = repository.downloadGroups("user-1")
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(listOf("group-pending"), local.groups.value.map { it.id })
-    }
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(local.groups.value.isEmpty())
+            assertTrue(deletions.observeDeletions().first().isEmpty())
+        }
 
     @Test
     fun `GIVEN every stored group still on the server WHEN downloading THEN asks for no removed group`() = runTest {
