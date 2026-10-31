@@ -13,5 +13,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
         }
+        jvmTest.dependencies {
+            // Why: RoomDeviceSettingsLocalDataSourceTest runs over an in-memory Room on the jvm target.
+            implementation(libs.androidx.sqlite.bundled)
+        }
     }
 }

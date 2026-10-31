@@ -34,7 +34,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         ExpenseEntity::class,
         SettlementEntity::class,
     ],
-    version = 15,
+    version = 16,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -92,6 +92,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 14,
             to = 15,
+        ),
+        AutoMigration(
+            from = 15,
+            to = 16,
         ),
     ],
 )

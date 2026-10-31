@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface GroupsUiEvent : UiEvent {
@@ -39,6 +41,16 @@ sealed interface GroupsUiEvent : UiEvent {
 
     data class OnFilterChanged(
         val query: String,
+    ) : GroupsUiEvent
+
+    // Why: "Lista" or "Grade" in the view menu (Android and iOS), the toggle (web) or the toolbar's segments (Mac).
+    data class OnDisplayChanged(
+        val display: GroupsDisplay,
+    ) : GroupsUiEvent
+
+    // Why: "Compacto", "Padrão" or "Grande": the menu, the web's Select, the Mac's slider or its View menu.
+    data class OnGridSizeChanged(
+        val size: GroupGridSize,
     ) : GroupsUiEvent
 
     /*

@@ -3,6 +3,8 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupsDisplay
+import com.quare.blitzsplit.core.model.GroupsLayout
 
 data class GroupsUiState(
     val displayName: String,
@@ -44,7 +46,17 @@ data class GroupsUiState(
     val exit: GroupExitUiState,
     // Why: the group of the last of those asked for, whose currency the dialog's amounts are in.
     val exitGroupId: String?,
+    // Why: "Lista" or "Grade" and the grid's size, as picked on this device; the list until one is read.
+    val layout: GroupsLayout,
 ) {
+    // Why: only the open groups go in the grid; Quitados and the search stay a list.
+    val showsGrid: Boolean
+        get() = layout.display == GroupsDisplay.GRID
+
+    // Why: "Tamanho da grade" is disabled while the list is picked.
+    val canPickGridSize: Boolean
+        get() = layout.display == GroupsDisplay.GRID
+
     val exitGroup: GroupRow?
         get() = exitGroupId?.let { id -> groups.firstOrNull { it.id == id } }
 
