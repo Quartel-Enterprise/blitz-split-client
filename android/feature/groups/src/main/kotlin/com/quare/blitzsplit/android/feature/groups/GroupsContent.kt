@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,6 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,7 +37,10 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,13 +53,19 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -60,18 +73,14 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
-import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
-import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
-import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 
 private enum class GroupsTab(
@@ -86,9 +95,10 @@ private enum class GroupsTab(
 }
 
 /*
- * Why: the home, with the empty card before any group exists and a minimal list after (no search
- * here); the other tabs exist in the design but are not built yet.
+ * Why: the home. No visible title, since the selected Groups tab already names it: the top bar only holds the QR
+ * reader and the profile, and takes a color once the list scrolls under it, while "Rachar conta" shrinks to its icon.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsContent(
     state: GroupsUiState,
@@ -97,7 +107,8 @@ fun GroupsContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val title = stringResource(R.string.groups_title)
-    // Why: the selected Groups tab already names the screen, so the title is only announced, never drawn.
+    val listState = rememberLazyListState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
@@ -106,8 +117,27 @@ fun GroupsContent(
         Row(modifier = Modifier.fillMaxSize()) {
             if (layout.usesNavigationRail) GroupsNavigationRail(onEvent = onEvent)
             Scaffold(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                    GroupsTopBar(
+                        state = state,
+                        onEvent = onEvent,
+                        scrollBehavior = scrollBehavior,
+                    )
+                },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
+                floatingActionButton = {
+                    if (!layout.usesNavigationRail) {
+                        ExtendedFloatingActionButton(
+                            onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
+                            icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                            text = { Text(stringResource(R.string.groups_split_bill)) },
+                            expanded = !listState.canScrollBackward,
+                        )
+                    }
+                },
                 bottomBar = {
                     if (!layout.usesNavigationRail) GroupsNavigationBar(onEvent = onEvent)
                 },
@@ -118,61 +148,152 @@ fun GroupsContent(
                     WindowInsets.safeDrawing
                 },
             ) { padding ->
-                GroupsPane(
-                    state = state,
-                    onEvent = onEvent,
-                    layout = layout,
+                PullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = { onEvent(GroupsUiEvent.OnRefresh) },
                     modifier = Modifier
                         .padding(padding)
                         .consumeWindowInsets(padding),
-                )
+                ) {
+                    if (state.groups.isEmpty()) {
+                        EmptyGroupsPane(
+                            state = state,
+                            onEvent = onEvent,
+                            layout = layout,
+                        )
+                    } else {
+                        GroupsListPane(
+                            state = state,
+                            onEvent = onEvent,
+                            layout = layout,
+                            listState = listState,
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GroupsPane(
+private fun GroupsTopBar(
+    state: GroupsUiState,
+    onEvent: (GroupsUiEvent) -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
+) {
+    TopAppBar(
+        title = {},
+        actions = {
+            IconButton(onClick = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) }) {
+                Icon(
+                    imageVector = Icons.Outlined.QrCode2,
+                    contentDescription = stringResource(R.string.groups_join_with_link),
+                )
+            }
+            IconButton(
+                onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
+                modifier = Modifier.size(48.dp),
+            ) {
+                val profileLabel = stringResource(R.string.groups_profile)
+                AvatarBadge(
+                    initial = state.avatarInitial,
+                    color = state.avatarColor,
+                    modifier = Modifier.semantics { contentDescription = profileLabel },
+                    photoUrl = state.photoUrl,
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+// Why: a tablet keeps the list in one centered column, 560dp at most.
+@Composable
+private fun GroupsListPane(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
-    modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
-    val horizontalPadding = if (layout.isTablet) {
-        40.dp
-    } else if (layout.usesNavigationRail) {
-        32.dp
-    } else {
-        16.dp
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .then(if (layout.isTablet) Modifier.widthIn(max = 560.dp) else Modifier),
+            contentPadding = PaddingValues(
+                start = horizontalPaddingOf(layout),
+                end = horizontalPaddingOf(layout),
+                top = 4.dp,
+                // Why: room for the FAB over the last row.
+                bottom = 96.dp,
+            ),
+        ) {
+            if (state.syncBadge != null) {
+                item(
+                    key = "sync",
+                    contentType = "sync",
+                ) {
+                    Box(modifier = Modifier.padding(bottom = 12.dp)) {
+                        SyncBadgeChip(
+                            badge = state.syncBadge,
+                            pendingChangeCount = state.pendingChangeCount,
+                            canRetry = state.canRetrySync,
+                            onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+                        )
+                    }
+                }
+            }
+            groupsListItems(
+                state = state,
+                onEvent = onEvent,
+            )
+        }
     }
+}
+
+private fun horizontalPaddingOf(layout: DeviceLayout): Dp = if (layout.isTablet) {
+    40.dp
+} else if (layout.usesNavigationRail) {
+    32.dp
+} else {
+    16.dp
+}
+
+@Composable
+private fun EmptyGroupsPane(
+    state: GroupsUiState,
+    onEvent: (GroupsUiEvent) -> Unit,
+    layout: DeviceLayout,
+) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             // Why: a tablet centres the card in the space left, which needs a bounded height.
             .then(if (layout.isTablet) Modifier else Modifier.verticalScroll(rememberScrollState()))
             .padding(
-                horizontal = horizontalPadding,
-                vertical = if (layout.usesNavigationRail) 28.dp else 16.dp,
+                horizontal = horizontalPaddingOf(layout),
+                vertical = 4.dp,
             ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        GroupsHeader(
-            state = state,
-            onEvent = onEvent,
+        SyncBadgeChip(
+            badge = state.syncBadge,
+            pendingChangeCount = state.pendingChangeCount,
+            canRetry = state.canRetrySync,
+            onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
         )
         when {
             // Why: nothing until the groups are read, so the empty card never flashes before the list.
-            !state.hasLoadedGroups -> Unit
-
-            state.groups.isNotEmpty() -> GroupsList(
-                groups = state.groups,
-                onEvent = onEvent,
-                modifier = if (layout.isTablet) {
-                    Modifier.weight(1f).verticalScroll(rememberScrollState())
-                } else {
-                    Modifier
-                },
-            )
+            !state.showsEmptyState -> Unit
 
             layout.isTablet -> Box(
                 modifier = Modifier
@@ -205,44 +326,24 @@ private fun GroupsPane(
 }
 
 @Composable
-private fun GroupsHeader(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier.weight(1f)) {
-            SyncBadgeChip(
-                badge = state.syncBadge,
-                canRetry = state.canRetrySync,
-                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
-            )
-        }
-        IconButton(
-            onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
-            modifier = Modifier.size(48.dp),
-        ) {
-            val profileLabel = stringResource(R.string.groups_profile)
-            AvatarBadge(
-                initial = state.avatarInitial,
-                color = state.avatarColor,
-                modifier = Modifier.semantics { contentDescription = profileLabel },
-                photoUrl = state.photoUrl,
-            )
-        }
-    }
-}
-
-@Composable
 private fun SyncBadgeChip(
     badge: SyncBadge?,
+    pendingChangeCount: Int,
     canRetry: Boolean,
     onRetry: () -> Unit,
 ) {
     val (icon, label) = when (badge) {
         null -> return
-        SyncBadge.OFFLINE -> Icons.Outlined.CloudOff to R.string.groups_sync_offline
-        SyncBadge.SYNCING -> Icons.Outlined.CloudSync to R.string.groups_sync_syncing
-        SyncBadge.FAILED -> Icons.Outlined.Refresh to R.string.groups_sync_failed
+
+        SyncBadge.OFFLINE -> Icons.Outlined.CloudOff to if (pendingChangeCount > 0) {
+            pluralStringResource(R.plurals.groups_sync_offline_queued, pendingChangeCount, pendingChangeCount)
+        } else {
+            stringResource(R.string.groups_sync_offline)
+        }
+
+        SyncBadge.SYNCING -> Icons.Outlined.CloudSync to stringResource(R.string.groups_sync_syncing)
+
+        SyncBadge.FAILED -> Icons.Outlined.Refresh to stringResource(R.string.groups_sync_failed)
     }
     val shape = MaterialTheme.shapes.small
     // Why: only the failed badge is a button; the others stay plain text for TalkBack, not a disabled button.
@@ -261,7 +362,7 @@ private fun SyncBadgeChip(
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        // Why: the chip shares the header row with the profile button, so a long label may wrap to two lines.
+        // Why: a long label may wrap to two lines on a narrow phone.
         Row(
             modifier = Modifier.heightIn(min = 32.dp).padding(
                 start = 8.dp,
@@ -278,7 +379,7 @@ private fun SyncBadgeChip(
                 modifier = Modifier.size(18.dp),
             )
             Text(
-                text = stringResource(label),
+                text = label,
                 style = MaterialTheme.typography.labelLarge,
             )
         }
@@ -453,6 +554,17 @@ private fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
     NavigationRail(
         modifier = Modifier.fillMaxHeight(),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        header = {
+            FloatingActionButton(
+                onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
+                modifier = Modifier.padding(top = 16.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = stringResource(R.string.groups_split_bill),
+                )
+            }
+        },
     ) {
         Column(
             modifier = Modifier.padding(top = 32.dp),
@@ -472,74 +584,5 @@ private fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
                 )
             }
         }
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun GroupsOfflinePreview() {
-    BlitzSplitTheme {
-        GroupsContent(
-            state = GroupsUiState(
-                displayName = "Pierre",
-                avatarInitial = "P",
-                avatarColor = AvatarColor.BLUE,
-                photoUrl = null,
-                accountProvider = null,
-                syncBadge = SyncBadge.OFFLINE,
-                showsRecoveryCodePrompt = false,
-                groups = emptyList(),
-                hasLoadedGroups = true,
-                deletedGroupNotice = null,
-            ),
-            onEvent = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun GroupsListPreview() {
-    BlitzSplitTheme {
-        GroupsContent(
-            state = GroupsUiState(
-                displayName = "Pierre",
-                avatarInitial = "P",
-                avatarColor = AvatarColor.BLUE,
-                photoUrl = null,
-                accountProvider = null,
-                syncBadge = null,
-                showsRecoveryCodePrompt = false,
-                groups = listOf(
-                    GroupRow(
-                        id = "1",
-                        name = "Viagem Floripa",
-                        initials = "VF",
-                        color = AvatarColor.PEACH,
-                        faces = listOf(
-                            MemberFace("P", AvatarColor.BLUE),
-                            MemberFace("A", AvatarColor.GREEN),
-                            MemberFace("B", AvatarColor.PEACH),
-                        ),
-                        extraMemberCount = 3,
-                        memberCount = 6,
-                        isPending = true,
-                    ),
-                    GroupRow(
-                        id = "2",
-                        name = "Presente da Elisa",
-                        initials = "PE",
-                        color = AvatarColor.LILAC,
-                        faces = listOf(MemberFace("P", AvatarColor.BLUE)),
-                        extraMemberCount = 0,
-                        memberCount = 1,
-                        isPending = false,
-                    ),
-                ),
-                hasLoadedGroups = true,
-                deletedGroupNotice = null,
-            ),
-            onEvent = {},
-        )
     }
 }
