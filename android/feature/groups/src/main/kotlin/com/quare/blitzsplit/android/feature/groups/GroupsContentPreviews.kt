@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.groups
 import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
@@ -36,6 +37,8 @@ private fun GroupsOfflinePreview() {
                 filterQuery = "",
                 isRefreshing = false,
                 deletedGroupNotice = null,
+                exit = GroupExitUiState.idle,
+                exitGroupId = null,
             ),
             onEvent = {},
         )
@@ -100,6 +103,8 @@ private fun GroupsListPreview() {
                 filterQuery = "",
                 isRefreshing = false,
                 deletedGroupNotice = null,
+                exit = GroupExitUiState.idle,
+                exitGroupId = null,
             ),
             onEvent = {},
         )

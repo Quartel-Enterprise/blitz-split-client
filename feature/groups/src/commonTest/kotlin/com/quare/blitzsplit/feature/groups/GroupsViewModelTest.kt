@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
+import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
@@ -35,6 +36,8 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -2120,6 +2123,8 @@ class GroupsViewModelTest {
             navigator = navigator,
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
+            leaveGroup = LeaveGroup { Result.success(GroupExitOutcome.DONE) },
+            deleteGroup = DeleteGroup { Result.success(GroupExitOutcome.DONE) },
         )
     }
 }

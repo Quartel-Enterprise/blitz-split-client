@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,11 +56,13 @@ import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 
 /*
  * Why: the home's list: "Saldo geral", the open groups by their latest activity and, collapsed, the settled ones. A
- * row opens the group; its ⋮ menu, the grid and the search come with their own flows.
+ * row opens the group; its ⋮ menu and its long press hold the group's actions. The grid and the search come with their
+ * own flows.
  */
 internal fun LazyListScope.groupsListItems(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
+    onLongPress: (GroupRow) -> Unit,
 ) {
     item(
         key = "summary",
@@ -89,7 +92,9 @@ internal fun LazyListScope.groupsListItems(
         GroupListRow(
             group = group,
             shape = groupedRowShapeOf(index, open.size),
-            onClick = { onEvent(GroupsUiEvent.OnGroupClicked(group.id)) },
+            isOnline = state.exit.isOnline,
+            onEvent = onEvent,
+            onLongPress = { onLongPress(group) },
             modifier = Modifier.padding(bottom = 2.dp),
         )
     }
@@ -114,7 +119,9 @@ internal fun LazyListScope.groupsListItems(
         GroupListRow(
             group = group,
             shape = groupedRowShapeOf(index, settled.size),
-            onClick = { onEvent(GroupsUiEvent.OnGroupClicked(group.id)) },
+            isOnline = state.exit.isOnline,
+            onEvent = onEvent,
+            onLongPress = { onLongPress(group) },
             modifier = Modifier.padding(bottom = 2.dp),
         )
     }
@@ -192,24 +199,30 @@ private fun SettledToggle(
 private fun GroupListRow(
     group: GroupRow,
     shape: Shape,
-    onClick: () -> Unit,
+    isOnline: Boolean,
+    onEvent: (GroupsUiEvent) -> Unit,
+    onLongPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val money = rememberMoneyFormatter(group.currency)
     val dates = rememberDateTimeTextFormatter()
     Surface(
-        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Row(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 14.dp,
-                bottom = 14.dp,
-            ),
+            modifier = Modifier
+                .combinedClickable(
+                    onClick = { onEvent(GroupsUiEvent.OnGroupClicked(group.id)) },
+                    onLongClickLabel = stringResource(R.string.groups_actions_title, group.name),
+                    onLongClick = onLongPress,
+                ).padding(
+                    start = 16.dp,
+                    end = 4.dp,
+                    top = 14.dp,
+                    bottom = 14.dp,
+                ),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -255,6 +268,11 @@ private fun GroupListRow(
                     )
                 }
             }
+            GroupRowMenuButton(
+                group = group,
+                isOnline = isOnline,
+                onEvent = onEvent,
+            )
         }
     }
 }

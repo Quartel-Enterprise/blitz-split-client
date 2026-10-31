@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.groups
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,27 +25,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.CloudSync
-import androidx.compose.material.icons.outlined.Groups
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -59,11 +48,14 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -79,20 +71,10 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
-
-private enum class GroupsTab(
-    @StringRes val label: Int,
-    val icon: ImageVector,
-    val event: GroupsUiEvent?,
-) {
-    GROUPS(R.string.groups_tab_groups, Icons.Outlined.Groups, null),
-    BALANCES(R.string.groups_tab_balances, Icons.Outlined.AccountBalanceWallet, GroupsUiEvent.OnBalancesTabClicked),
-    CONTACTS(R.string.groups_tab_contacts, Icons.Outlined.Person, GroupsUiEvent.OnContactsTabClicked),
-    ACTIVITY(R.string.groups_tab_activity, Icons.AutoMirrored.Outlined.ReceiptLong, GroupsUiEvent.OnActivityTabClicked),
-}
 
 /*
  * Why: the home. No visible title, since the selected Groups tab already names it: the top bar only holds the QR
@@ -108,6 +90,8 @@ fun GroupsContent(
 ) {
     val title = stringResource(R.string.groups_title)
     val listState = rememberLazyListState()
+    // Why: the row whose long press opened the actions sheet; it closes once its group leaves the list.
+    var actionsGroupId by rememberSaveable { mutableStateOf<String?>(null) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
         /*
@@ -167,11 +151,20 @@ fun GroupsContent(
                             onEvent = onEvent,
                             layout = layout,
                             listState = listState,
+                            onLongPress = { actionsGroupId = it.id },
                         )
                     }
                 }
             }
         }
+    }
+    state.groups.firstOrNull { it.id == actionsGroupId }?.let { group ->
+        GroupActionsSheet(
+            group = group,
+            isOnline = state.exit.isOnline,
+            onEvent = onEvent,
+            onDismiss = { actionsGroupId = null },
+        )
     }
 }
 
@@ -219,6 +212,7 @@ private fun GroupsListPane(
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
     listState: LazyListState,
+    onLongPress: (GroupRow) -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -255,6 +249,7 @@ private fun GroupsListPane(
             groupsListItems(
                 state = state,
                 onEvent = onEvent,
+                onLongPress = onLongPress,
             )
         }
     }
@@ -527,62 +522,5 @@ private fun JoinWithLinkButton(
             text = stringResource(R.string.groups_join_with_link),
             modifier = Modifier.padding(start = 8.dp),
         )
-    }
-}
-
-@Composable
-private fun GroupsNavigationBar(onEvent: (GroupsUiEvent) -> Unit) {
-    NavigationBar {
-        GroupsTab.entries.forEach { tab ->
-            NavigationBarItem(
-                selected = tab == GroupsTab.GROUPS,
-                onClick = { tab.event?.let(onEvent) },
-                icon = {
-                    Icon(
-                        imageVector = tab.icon,
-                        contentDescription = null,
-                    )
-                },
-                label = { Text(stringResource(tab.label)) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
-    NavigationRail(
-        modifier = Modifier.fillMaxHeight(),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        header = {
-            FloatingActionButton(
-                onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
-                modifier = Modifier.padding(top = 16.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = stringResource(R.string.groups_split_bill),
-                )
-            }
-        },
-    ) {
-        Column(
-            modifier = Modifier.padding(top = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            GroupsTab.entries.forEach { tab ->
-                NavigationRailItem(
-                    selected = tab == GroupsTab.GROUPS,
-                    onClick = { tab.event?.let(onEvent) },
-                    icon = {
-                        Icon(
-                            imageVector = tab.icon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = { Text(stringResource(tab.label)) },
-                )
-            }
-        }
     }
 }

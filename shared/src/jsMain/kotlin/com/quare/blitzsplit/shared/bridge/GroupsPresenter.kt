@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.flow.map
@@ -46,6 +47,9 @@ class JsGroupRow(
     val activityCount: Int,
     val isSettled: Boolean,
     val usesTwoNameLines: Boolean,
+    // Why: the hints under "Sair do grupo" ("Acerte os R$ 98,00 antes", 0 once settled) and "Apagar grupo".
+    val settleBeforeLeavingMinor: Double,
+    val hasOpenDebts: Boolean,
 )
 
 // Why: "Saldo geral", "A receber" and "A pagar" in one currency.
@@ -97,6 +101,10 @@ class JsGroupsState(
     val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
+    // Why: "Sair do grupo" and "Apagar grupo" from a row, the group's dialogs; offline both need the internet.
+    val exit: JsGroupExit,
+    // Why: the group those dialogs are about, whose currency their amounts are in.
+    val exitGroup: JsGroupRow?,
 )
 
 class GroupsPresenter {
@@ -127,14 +135,24 @@ class GroupsPresenter {
                 deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
+                exit = toJsGroupExit(state.exit),
+                exitGroup = state.exitGroup?.let(::toJsGroupRow),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
-    fun observeComingSoon(onShow: (Boolean) -> Unit): JsWatch {
-        val watch = FlowWatcher(viewModel.uiAction.map { true }).observe(onShow)
+    // Why: "coming-soon", "leave-error" and "delete-error", a toast in the page's words.
+    fun observeActions(onAction: (String) -> Unit): JsWatch {
+        val actions = viewModel.uiAction.map { action ->
+            when (action) {
+                GroupsUiAction.ShowComingSoon -> "coming-soon"
+                GroupsUiAction.ShowLeaveError -> "leave-error"
+                GroupsUiAction.ShowDeleteError -> "delete-error"
+            }
+        }
+        val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
     }
 
@@ -191,6 +209,28 @@ class GroupsPresenter {
         viewModel.onEvent(GroupsUiEvent.OnFilterChanged(query))
     }
 
+    // Why: a row's ⋯ menu or its right click.
+    fun invite(groupId: String) {
+        viewModel.onEvent(GroupsUiEvent.OnInviteClicked(groupId))
+    }
+
+    fun leaveGroup(groupId: String) {
+        viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked(groupId))
+    }
+
+    fun deleteGroup(groupId: String) {
+        viewModel.onEvent(GroupsUiEvent.OnDeleteGroupClicked(groupId))
+    }
+
+    // Why: the main button of the dialog Sair or Apagar opened.
+    fun confirmGroupExit() {
+        viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+    }
+
+    fun dismissGroupExit() {
+        viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+    }
+
     fun deletedGroupNoticeShown() {
         viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
     }
@@ -222,6 +262,8 @@ private fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
     activityCount = row.lastActivity.count,
     isSettled = row.isSettled,
     usesTwoNameLines = row.usesTwoNameLines,
+    settleBeforeLeavingMinor = row.settleBeforeLeavingMinor.toDouble(),
+    hasOpenDebts = row.hasOpenDebts,
 )
 
 private fun toJsGroupsSummary(summary: GroupsSummary): JsGroupsSummary = JsGroupsSummary(

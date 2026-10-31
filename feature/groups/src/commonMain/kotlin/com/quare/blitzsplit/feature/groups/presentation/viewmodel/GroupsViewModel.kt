@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -20,9 +22,13 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.sync.exit.GroupExitController
+import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
@@ -56,6 +62,8 @@ class GroupsViewModel(
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     private val observeExpenses: ObserveExpenses,
     private val observeSettlements: ObserveSettlements,
+    leaveGroup: LeaveGroup,
+    deleteGroup: DeleteGroup,
     currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
     observeProfile: ObserveProfile,
@@ -83,6 +91,8 @@ class GroupsViewModel(
                 filterQuery = "",
                 isRefreshing = false,
                 deletedGroupNotice = null,
+                exit = GroupExitUiState.idle,
+                exitGroupId = null,
             ),
         )
 
@@ -98,6 +108,30 @@ class GroupsViewModel(
     // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
     private var isOnline = true
 
+    // Why: what the dialogs of "Sair do grupo" and "Apagar grupo" read of the group asked for, as Room has it now.
+    private var groupsWithMoney = emptyList<GroupWithMoney>()
+
+    // Why: leaving or deleting from a row stays on the home, which the group just leaves.
+    private val exit = GroupExitController(
+        leaveGroup = leaveGroup,
+        deleteGroup = deleteGroup,
+        scope = viewModelScope,
+        openRegisterPayment = { groupId, fromMemberId, toMemberId ->
+            open(
+                Route.RegisterPayment(
+                    groupId = groupId,
+                    fromMemberId = fromMemberId,
+                    toMemberId = toMemberId,
+                ),
+            )
+        },
+        openBalances = { groupId -> open(Route.Balances(groupId)) },
+        onExited = {},
+        showError = { isDelete ->
+            uiAction.emit(if (isDelete) GroupsUiAction.ShowDeleteError else GroupsUiAction.ShowLeaveError)
+        },
+    )
+
     init {
         combine(
             observeProfile(),
@@ -106,6 +140,7 @@ class GroupsViewModel(
             connectivityObserver.observe(),
         ) { profile, account, syncState, isOnline ->
             this.isOnline = isOnline
+            exit.setOnline(isOnline)
             val displayName = profile?.displayName?.trim().orEmpty()
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
             val update: (GroupsUiState) -> GroupsUiState = { state ->
@@ -128,6 +163,8 @@ class GroupsViewModel(
         observeGroups()
             .flatMapLatest(::withMoney)
             .onEach { groups ->
+                groupsWithMoney = groups
+                exit.update(exitTargetOrNull(uiState.value.exitGroupId))
                 val rows = rowsOf(
                     groups = groups,
                     clock = ActivityClock(
@@ -144,6 +181,9 @@ class GroupsViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+        exit.state
+            .onEach { exit -> uiState.update { it.copy(exit = exit) } }
+            .launchIn(viewModelScope)
         // Why: only while the home is on top; a deleted group still open shows its own "Grupo apagado".
         combine(observeGroupDeletions(), navigator.backStack, ::Pair)
             .onEach { (deletions, _) ->
@@ -171,6 +211,16 @@ class GroupsViewModel(
                     ),
                 )
             }
+
+            is GroupsUiEvent.OnInviteClicked -> open(Route.Invite(event.groupId, isNewGroup = false))
+
+            is GroupsUiEvent.OnLeaveGroupClicked -> askToExit(event.groupId, GroupExitController::askToLeave)
+
+            is GroupsUiEvent.OnDeleteGroupClicked -> askToExit(event.groupId, GroupExitController::askToDelete)
+
+            GroupsUiEvent.OnGroupExitConfirmed -> exit.confirm()
+
+            GroupsUiEvent.OnGroupExitDismissed -> exit.dismiss()
 
             GroupsUiEvent.OnDeletedGroupNoticeShown -> {
                 uiState.update { it.copy(deletedGroupNotice = null) }
@@ -232,6 +282,31 @@ class GroupsViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Groups
+
+    // Why: only from the groups on top, as a row's tap.
+    private fun open(route: Route) {
+        if (isOnTop()) navigator.navigate(route)
+    }
+
+    // Why: a request in flight keeps its group; offline the menu shows both disabled, so the controller does nothing.
+    private fun askToExit(
+        groupId: String,
+        ask: GroupExitController.() -> Unit,
+    ) {
+        if (!uiState.value.exit.canLeaveOrDelete || !isOnTop()) return
+        uiState.update { it.copy(exitGroupId = groupId) }
+        exit.update(exitTargetOrNull(groupId))
+        exit.ask()
+    }
+
+    private fun exitTargetOrNull(groupId: String?): GroupExitTarget? {
+        val item = groupsWithMoney.firstOrNull { it.group.id == groupId } ?: return null
+        return GroupExitTarget(
+            group = item.group,
+            balances = GroupBalances.of(item.expenses, item.settlements),
+            billCount = item.expenses.size,
+        )
+    }
 
     private fun showNextDeletion() {
         val deletion = pendingDeletions.firstOrNull() ?: return
