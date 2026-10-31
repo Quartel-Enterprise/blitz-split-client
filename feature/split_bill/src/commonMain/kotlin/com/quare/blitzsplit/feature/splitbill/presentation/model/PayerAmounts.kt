@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
+import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 /*
@@ -43,13 +44,12 @@ data class PayerAmounts(
     // Why: what is missing or over, only while there is a total to compare with.
     val showsMismatch: Boolean = totalMinor > 0 && remainingMinor != 0L
 
-    /*
-     * Why: the rows of whoever paid something, as "Quem pagou" and Dividir name them ("Você e Ana", "3 pessoas"): in
-     * PayerOrder's order, this device's user first, since the rows already come in the group's order, then who left.
-     */
-    val paying: List<PayerAmountRow> = payers
-        .map { it.memberId }
-        .toSet()
-        .let { paidIds -> rows.filter { it.memberId in paidIds } }
-        .sortedByDescending { it.person?.isMe == true }
+    // Why: the rows of whoever paid something, as "Quem pagou" and Dividir name them ("Você e Ana", "3 pessoas").
+    val paying: List<PayerAmountRow> = rows.associateBy { it.memberId }.let { rowsById ->
+        val members = rows.filter { it.person != null }
+        PayerOrder(
+            meId = members.firstOrNull { it.person?.isMe == true }?.memberId,
+            memberIds = members.map { it.memberId },
+        ).sort(payers.map { it.memberId }).mapNotNull(rowsById::get)
+    }
 }

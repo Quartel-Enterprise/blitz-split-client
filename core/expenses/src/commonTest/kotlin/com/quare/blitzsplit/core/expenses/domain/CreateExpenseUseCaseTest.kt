@@ -79,14 +79,14 @@ class CreateExpenseUseCaseTest {
         prepareScenario()
 
         // When
-        createExpense(amountMinor = 6_240L)
+        createExpense(amountMinor = 1_000L)
 
         // Then
         assertEquals(
             listOf(
                 ExpensePayer(
                     memberId = PIERRE,
-                    amountMinor = 6_240L,
+                    amountMinor = 1_000L,
                 ),
             ),
             repository.createdExpenses.single().payers,
@@ -100,11 +100,11 @@ class CreateExpenseUseCaseTest {
         val payers = listOf(
             ExpensePayer(
                 memberId = "ana",
-                amountMinor = 2_240L,
+                amountMinor = 400L,
             ),
             ExpensePayer(
                 memberId = PIERRE,
-                amountMinor = 4_000L,
+                amountMinor = 600L,
             ),
         )
 
@@ -112,7 +112,7 @@ class CreateExpenseUseCaseTest {
         useCase(
             groupId = GROUP_ID,
             description = "Mercado",
-            amountMinor = 6_240L,
+            amountMinor = 1_000L,
             payers = payers,
             splitMode = SplitMode.EQUAL,
             shares = shares,
@@ -206,20 +206,134 @@ class CreateExpenseUseCaseTest {
         assertTrue(repository.expenses.value.isEmpty())
     }
 
+    @Test
+    fun `GIVEN payers adding up to less than the bill WHEN creating it THEN refuses it and stores nothing`() = runTest {
+        // Given
+        prepareScenario()
+        val payers = listOf(
+            ExpensePayer(
+                memberId = PIERRE,
+                amountMinor = 900L,
+            ),
+        )
+
+        // When
+        val result = createExpense(payers = payers)
+
+        // Then
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        assertTrue(repository.createdExpenses.isEmpty())
+        assertTrue(repository.createdAts.isEmpty())
+        assertTrue(repository.expenses.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no payer WHEN creating the bill THEN refuses it and stores nothing`() = runTest {
+        // Given
+        prepareScenario()
+        val payers = emptyList<ExpensePayer>()
+
+        // When
+        val result = createExpense(payers = payers)
+
+        // Then
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        assertTrue(repository.createdExpenses.isEmpty())
+        assertTrue(repository.expenses.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN shares adding up to more than the bill WHEN creating it THEN refuses it and stores nothing`() = runTest {
+        // Given
+        prepareScenario()
+        val shares = listOf(
+            ExpenseShare(
+                memberId = PIERRE,
+                amountMinor = 600L,
+                weight = 1L,
+            ),
+            ExpenseShare(
+                memberId = "ana",
+                amountMinor = 500L,
+                weight = 1L,
+            ),
+        )
+
+        // When
+        val result = createExpense(shares = shares)
+
+        // Then
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        assertTrue(repository.createdExpenses.isEmpty())
+        assertTrue(repository.expenses.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN percentages adding up to 90 WHEN creating a percent bill THEN refuses it and stores nothing`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val shares = listOf(
+                ExpenseShare(
+                    memberId = PIERRE,
+                    amountMinor = 500L,
+                    weight = 40L,
+                ),
+                ExpenseShare(
+                    memberId = "ana",
+                    amountMinor = 500L,
+                    weight = 50L,
+                ),
+            )
+
+            // When
+            val result = createExpense(
+                splitMode = SplitMode.PERCENT,
+                shares = shares,
+            )
+
+            // Then
+            assertIs<IllegalArgumentException>(result.exceptionOrNull())
+            assertTrue(repository.createdExpenses.isEmpty())
+            assertTrue(repository.expenses.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a wrong split and a device failing to save WHEN creating the bill THEN refuses the split first`() =
+        runTest {
+            // Given
+            prepareScenario(createError = IllegalStateException("No group group-1"))
+            val payers = listOf(
+                ExpensePayer(
+                    memberId = PIERRE,
+                    amountMinor = 1_100L,
+                ),
+            )
+
+            // When
+            val result = createExpense(payers = payers)
+
+            // Then
+            assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        }
+
     private suspend fun createExpense(
         description: String = "Mercado",
         amountMinor: Long = 1_000L,
-    ): Result<String> = useCase(
-        groupId = GROUP_ID,
-        description = description,
-        amountMinor = amountMinor,
-        payers = listOf(
+        payers: List<ExpensePayer> = listOf(
             ExpensePayer(
                 memberId = PIERRE,
                 amountMinor = amountMinor,
             ),
         ),
-        splitMode = SplitMode.EQUAL,
+        splitMode: SplitMode = SplitMode.EQUAL,
+        shares: List<ExpenseShare> = this.shares,
+    ): Result<String> = useCase(
+        groupId = GROUP_ID,
+        description = description,
+        amountMinor = amountMinor,
+        payers = payers,
+        splitMode = splitMode,
         shares = shares,
         spentAt = 5_000L,
     )

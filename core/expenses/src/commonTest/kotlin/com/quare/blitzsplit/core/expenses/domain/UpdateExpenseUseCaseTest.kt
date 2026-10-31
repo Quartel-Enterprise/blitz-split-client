@@ -74,19 +74,16 @@ class UpdateExpenseUseCaseTest {
         val payers = listOf(
             ExpensePayer(
                 memberId = "pierre",
-                amountMinor = 4_000L,
+                amountMinor = 600L,
             ),
             ExpensePayer(
                 memberId = "ana",
-                amountMinor = 2_240L,
+                amountMinor = 400L,
             ),
         )
 
         // When
-        updateExpense(
-            amountMinor = 6_240L,
-            payers = payers,
-        )
+        updateExpense(payers = payers)
 
         // Then
         assertEquals(payers, repository.updatedExpenses.single().payers)
@@ -181,6 +178,121 @@ class UpdateExpenseUseCaseTest {
         assertEquals(listOf(mercado), repository.expenses.value)
     }
 
+    @Test
+    fun `GIVEN payers adding up to more than the bill WHEN saving the edit THEN refuses it and keeps the bill`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val payers = listOf(
+                ExpensePayer(
+                    memberId = "pierre",
+                    amountMinor = 600L,
+                ),
+                ExpensePayer(
+                    memberId = "ana",
+                    amountMinor = 500L,
+                ),
+            )
+
+            // When
+            val result = updateExpense(
+                description = "Feira",
+                payers = payers,
+            )
+
+            // Then
+            assertIs<IllegalArgumentException>(result.exceptionOrNull())
+            assertTrue(repository.updatedExpenses.isEmpty())
+            assertTrue(repository.updatedAts.isEmpty())
+            assertEquals(listOf(mercado), repository.expenses.value)
+        }
+
+    @Test
+    fun `GIVEN the same member twice among the payers WHEN saving the edit THEN refuses it and keeps the bill`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val payers = listOf(
+                ExpensePayer(
+                    memberId = "pierre",
+                    amountMinor = 500L,
+                ),
+                ExpensePayer(
+                    memberId = "pierre",
+                    amountMinor = 500L,
+                ),
+            )
+
+            // When
+            val result = updateExpense(payers = payers)
+
+            // Then
+            assertIs<IllegalArgumentException>(result.exceptionOrNull())
+            assertTrue(repository.updatedExpenses.isEmpty())
+            assertEquals(listOf(mercado), repository.expenses.value)
+        }
+
+    @Test
+    fun `GIVEN no share WHEN saving the edit THEN refuses it and keeps the bill`() = runTest {
+        // Given
+        prepareScenario()
+        val shares = emptyList<ExpenseShare>()
+
+        // When
+        val result = updateExpense(shares = shares)
+
+        // Then
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        assertTrue(repository.updatedExpenses.isEmpty())
+        assertEquals(listOf(mercado), repository.expenses.value)
+    }
+
+    @Test
+    fun `GIVEN a negative share adding up to the bill WHEN saving the edit THEN refuses it and keeps the bill`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val shares = listOf(
+                ExpenseShare(
+                    memberId = "pierre",
+                    amountMinor = 1_200L,
+                    weight = 1L,
+                ),
+                ExpenseShare(
+                    memberId = "ana",
+                    amountMinor = -200L,
+                    weight = 1L,
+                ),
+            )
+
+            // When
+            val result = updateExpense(shares = shares)
+
+            // Then
+            assertIs<IllegalArgumentException>(result.exceptionOrNull())
+            assertTrue(repository.updatedExpenses.isEmpty())
+            assertEquals(listOf(mercado), repository.expenses.value)
+        }
+
+    @Test
+    fun `GIVEN a wrong split on a bill deleted meanwhile WHEN saving the edit THEN refuses the split first`() =
+        runTest {
+            // Given
+            prepareScenario(stored = emptyList())
+            val payers = listOf(
+                ExpensePayer(
+                    memberId = "pierre",
+                    amountMinor = 900L,
+                ),
+            )
+
+            // When
+            val result = updateExpense(payers = payers)
+
+            // Then
+            assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        }
+
     private suspend fun updateExpense(
         description: String = "Mercado",
         amountMinor: Long = 1_000L,
@@ -190,6 +302,7 @@ class UpdateExpenseUseCaseTest {
                 amountMinor = amountMinor,
             ),
         ),
+        shares: List<ExpenseShare> = mercado.shares,
     ): Result<Unit> = useCase(
         expenseId = BILL_ID,
         groupId = GROUP_ID,
@@ -197,7 +310,7 @@ class UpdateExpenseUseCaseTest {
         amountMinor = amountMinor,
         payers = payers,
         splitMode = SplitMode.EQUAL,
-        shares = mercado.shares,
+        shares = shares,
         spentAt = 5_000L,
     )
 

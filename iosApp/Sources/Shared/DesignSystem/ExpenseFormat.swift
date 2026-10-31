@@ -104,9 +104,25 @@ enum ExpenseFormat {
         names.count <= 2 ? self.names(names) : String(localized: "\(names.count) people")
     }
 
-    /// "You and Ana paid", "3 people paid".
+    /// "Bruno paid", "You paid", "You and Ana paid" or "3 people paid", from whoever paid in the shared code's order
+    /// (a nil name is someone who left the group). Conta and Despesas differ only in what a lone payer who left gets:
+    /// `loneFormer`, also for a bill with no payer.
+    static func paid(_ payers: [(name: String?, isMe: Bool)], loneFormer: String?) -> String? {
+        if payers.count > 1 {
+            let formerMember = String(localized: "Former member")
+            return paidBySeveral(payers.map { $0.isMe ? String(localized: "You") : $0.name ?? formerMember })
+        }
+        guard let payer = payers.first else { return loneFormer }
+        if payer.isMe { return String(localized: "You paid") }
+        guard let name = payer.name else { return loneFormer }
+        return String(localized: "\(name) paid")
+    }
+
+    /// "You and Ana paid", "3 people paid", or "Ana paid" once the other payers of a new bill left the group and
+    /// only one is left paying part of it.
     static func paidBySeveral(_ names: [String]) -> String {
-        String(
+        if names.count == 1, let name = names.first { return String(localized: "\(name) paid") }
+        return String(
             localized: "Several people paid a bill",
             defaultValue: "\(payerNames(names)) paid",
             comment: "Who paid a bill several people paid; %@ is their names, or how many they are",

@@ -40,8 +40,12 @@ const maxParts = 99
  */
 export function splitPane(presenter: SplitBillPresenter, state: JsSplitBillState, editor: JsSplitEditor, money: Money): PaneParts {
   const several = state.severalPayers
+  const payerNames = several?.paying.map((row) => (row.person ? personName(row.person) : t('splitBill_formerMember'))) ?? []
+  // Why: "Ana pagou" once the other payers of a new bill left the group and only one is left paying part of it.
   const paid = several
-    ? t('split_paidSeveral', { names: payerNamesText(several.paying.map((row) => (row.person ? personName(row.person) : t('splitBill_formerMember')))) })
+    ? payerNames.length === 1
+      ? t('split_paid', { name: payerNames[0] })
+      : t('split_paidSeveral', { names: payerNamesText(payerNames) })
     : state.payer == null
       ? null
       : state.payer.isMe

@@ -173,15 +173,7 @@ private func expenseMeta(_ row: ExpenseRow) -> String {
 }
 
 private func payerText(_ row: ExpenseRow) -> String? {
-    if row.payers.count > 1 {
-        let formerMember = String(localized: "Former member")
-        let names = row.payers.map { $0.isMe ? String(localized: "You") : $0.name ?? formerMember }
-        return ExpenseFormat.paidBySeveral(names)
-    }
-    guard let payer = row.payers.first else { return nil }
-    if payer.isMe { return String(localized: "You paid") }
-    guard let name = payer.name else { return nil }
-    return String(localized: "\(name) paid")
+    ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
 }
 
 /// No categories yet: every bill gets the same receipt, and a payment the banknote.

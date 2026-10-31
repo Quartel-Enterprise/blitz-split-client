@@ -5,10 +5,16 @@ package com.quare.blitzsplit.core.groups.domain.model
  * then in the order they were added to the group, then whoever left it, in the bill's order.
  */
 class PayerOrder(
-    members: List<GroupMember>,
+    private val meId: String?,
+    // Why: the group's members in the order they were added.
+    memberIds: List<String>,
 ) {
-    private val meId = members.firstOrNull { it.isMe }?.id
-    private val positionById = members.withIndex().associate { (position, member) -> member.id to position }
+    constructor(members: List<GroupMember>) : this(
+        meId = members.firstOrNull { it.isMe }?.id,
+        memberIds = members.map { it.id },
+    )
+
+    private val positionById = memberIds.withIndex().associate { (position, id) -> id to position }
 
     fun sort(payerIds: List<String>): List<String> = payerIds
         .distinct()

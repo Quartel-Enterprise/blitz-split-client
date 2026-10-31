@@ -25,14 +25,8 @@ enum BillCopy {
 
     /// "Bruno paid", "You paid", "A former member paid", "You and Ana paid" or "3 people paid".
     static func paid(_ payers: [BillPayer]) -> String {
-        if payers.count > 1 {
-            let names = payers.map { $0.isMe ? String(localized: "You") : $0.name ?? formerMember }
-            return ExpenseFormat.paidBySeveral(names)
-        }
-        guard let payer = payers.first else { return String(localized: "A former member paid") }
-        if payer.isMe { return String(localized: "You paid") }
-        guard let name = payer.name else { return String(localized: "A former member paid") }
-        return String(localized: "\(name) paid")
+        let formerPaid = String(localized: "A former member paid")
+        return ExpenseFormat.paid(payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: formerPaid) ?? formerPaid
     }
 
     /// Above the people: "Split equally among 5", "By amount among 6", "By % among 4" or "By shares among 3".
