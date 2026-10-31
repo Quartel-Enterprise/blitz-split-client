@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -16,6 +19,7 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
+import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -36,11 +40,13 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GroupsViewModel(
     private val retrySync: RetrySync,
     private val navigator: Navigator,
+    private val consumeGroupDeletion: ConsumeGroupDeletion,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
     observeGroups: ObserveGroups,
     connectivityObserver: NetworkConnectivityObserver,
+    observeGroupDeletions: ObserveGroupDeletions,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -54,6 +60,7 @@ class GroupsViewModel(
                 showsRecoveryCodePrompt = false,
                 groups = emptyList(),
                 hasLoadedGroups = false,
+                deletedGroupNotice = null,
             ),
         )
 
@@ -62,6 +69,9 @@ class GroupsViewModel(
 
     val stateWatcher: FlowWatcher<GroupsUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<GroupsUiAction> = FlowWatcher(uiAction)
+
+    // Why: the deletions no screen showed yet, so the next one shows once the current snackbar goes.
+    private var pendingDeletions = emptyList<GroupDeletion>()
 
     init {
         combine(
@@ -98,6 +108,12 @@ class GroupsViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+        // Why: only while the home is on top; a deleted group still open shows its own "Grupo apagado".
+        combine(observeGroupDeletions(), navigator.backStack, ::Pair)
+            .onEach { (deletions, _) ->
+                pendingDeletions = deletions
+                showNextDeletion()
+            }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: GroupsUiEvent) {
@@ -120,6 +136,11 @@ class GroupsViewModel(
                 )
             }
 
+            GroupsUiEvent.OnDeletedGroupNoticeShown -> {
+                uiState.update { it.copy(deletedGroupNotice = null) }
+                showNextDeletion()
+            }
+
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
@@ -128,6 +149,22 @@ class GroupsViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Groups
+
+    private fun showNextDeletion() {
+        val deletion = pendingDeletions.firstOrNull() ?: return
+        if (!isOnTop() || uiState.value.deletedGroupNotice != null) return
+        consumeGroupDeletion(deletion.groupId)
+        pendingDeletions = pendingDeletions.drop(1)
+        uiState.update {
+            it.copy(
+                deletedGroupNotice = DeletedGroupNotice(
+                    groupId = deletion.groupId,
+                    groupName = deletion.groupName,
+                    deletedByName = deletion.deletedByName,
+                ),
+            )
+        }
+    }
 
     private fun toRow(group: Group): GroupRow = GroupRow(
         id = group.id,

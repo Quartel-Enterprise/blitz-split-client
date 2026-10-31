@@ -20,4 +20,7 @@ sealed interface GroupsUiEvent : UiEvent {
     data object OnActivityTabClicked : GroupsUiEvent
 
     data object OnRetrySyncClicked : GroupsUiEvent
+
+    // Why: the snackbar of a deleted group went away, so the next one, if any, can show.
+    data object OnDeletedGroupNoticeShown : GroupsUiEvent
 }

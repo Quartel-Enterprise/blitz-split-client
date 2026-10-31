@@ -2,9 +2,13 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -22,6 +26,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCa
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
+import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -32,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -51,6 +57,7 @@ class GroupsViewModelTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
     private lateinit var groups: FakeGroupRepository
+    private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var roomRead: MutableSharedFlow<List<Group>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState?>
@@ -149,6 +156,123 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(List<GroupsUiAction>(3) { GroupsUiAction.ShowComingSoon }, actions)
+        }
+
+    @Test
+    fun `GIVEN a group someone else deleted WHEN the home is on top THEN says so once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        deletions.post(
+            GroupDeletion(
+                groupId = "group-1",
+                groupName = "Aniversário da Ana",
+                deletedByName = "Carla",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            DeletedGroupNotice(
+                groupId = "group-1",
+                groupName = "Aniversário da Ana",
+                deletedByName = "Carla",
+            ),
+            viewModel.uiState.value.deletedGroupNotice,
+        )
+        assertTrue(deletions.observeDeletions().first().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN another screen over the home WHEN a group is deleted THEN waits until the home is back on top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-1",
+                    groupName = "Aniversário da Ana",
+                    deletedByName = null,
+                ),
+            )
+            val whileCovered = viewModel.uiState.value.deletedGroupNotice
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertNull(whileCovered)
+            assertEquals(
+                "Aniversário da Ana",
+                viewModel.uiState.value.deletedGroupNotice
+                    ?.groupName,
+            )
+        }
+
+    @Test
+    fun `GIVEN two deleted groups WHEN the first notice is shown THEN the second one follows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-1",
+                    groupName = "Aniversário da Ana",
+                    deletedByName = "Carla",
+                ),
+            )
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-2",
+                    groupName = "Futebol de quinta",
+                    deletedByName = "Bruno",
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
+
+            // Then
+            assertEquals(
+                "Futebol de quinta",
+                viewModel.uiState.value.deletedGroupNotice
+                    ?.groupName,
+            )
+        }
+
+    @Test
+    fun `GIVEN two deleted groups of the same name WHEN the first notice is shown THEN the second is another notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-1",
+                    groupName = "Churrasco",
+                    deletedByName = "Carla",
+                ),
+            )
+            deletions.post(
+                GroupDeletion(
+                    groupId = "group-2",
+                    groupName = "Churrasco",
+                    deletedByName = "Carla",
+                ),
+            )
+            val first = viewModel.uiState.value.deletedGroupNotice
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
+
+            // Then
+            assertEquals("group-1", first?.groupId)
+            assertEquals(
+                "group-2",
+                viewModel.uiState.value.deletedGroupNotice
+                    ?.groupId,
+            )
         }
 
     @Test
@@ -1152,6 +1276,7 @@ class GroupsViewModelTest {
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository(initialGroups = storedGroups)
+        deletions = InMemoryGroupDeletionRepository()
         roomRead = MutableSharedFlow()
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
@@ -1166,6 +1291,8 @@ class GroupsViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             retrySync = RetrySync { syncRequests++ },
             navigator = navigator,
+            observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
+            consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
         )
     }
 }

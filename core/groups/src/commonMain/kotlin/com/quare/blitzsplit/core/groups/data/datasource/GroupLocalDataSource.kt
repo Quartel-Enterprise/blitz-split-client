@@ -83,5 +83,11 @@ interface GroupLocalDataSource {
         serverMemberIds: Set<String>,
     )
 
+    // Why: the user's groups the server had at some point: synced, or pending with the invite code it made.
+    suspend fun getUploadedGroupIds(ownerUserId: String): List<String>
+
+    // Why: with their members, bills and payments, even what is still to push: the server no longer has them here.
+    suspend fun deleteGroups(ids: List<String>)
+
     suspend fun clear()
 }

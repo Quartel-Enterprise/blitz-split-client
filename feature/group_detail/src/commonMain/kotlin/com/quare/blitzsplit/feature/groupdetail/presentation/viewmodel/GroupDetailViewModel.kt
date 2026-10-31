@@ -8,16 +8,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
-import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -38,21 +31,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class GroupDetailViewModel(
     private val route: Route.GroupDetail,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
-    navigator: Navigator,
-    consumeRecordedPayment: ConsumeRecordedPayment,
-    deleteSettlement: DeleteSettlement,
-    observeGroup: ObserveGroup,
-    observeExpenses: ObserveExpenses,
-    observeSettlements: ObserveSettlements,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
-    observeRecordedPayment: ObserveRecordedPayment,
+    useCases: GroupScreenUseCases,
 ) : ViewModel() {
     val uiState: StateFlow<GroupDetailUiState>
         field = MutableStateFlow(
@@ -62,6 +48,7 @@ class GroupDetailViewModel(
                 paymentToDelete = null,
                 recordedPayment = null,
                 showsBillDeletedNotice = false,
+                exit = idleGroupExit,
                 isLoaded = false,
             ),
         )
@@ -75,13 +62,7 @@ class GroupDetailViewModel(
     private val screen = GroupScreen(
         route = route,
         groupId = route.groupId,
-        navigator = navigator,
-        observeGroup = observeGroup,
-        observeExpenses = observeExpenses,
-        observeSettlements = observeSettlements,
-        observeRecordedPayment = observeRecordedPayment,
-        consumeRecordedPayment = consumeRecordedPayment,
-        deleteSettlement = deleteSettlement,
+        useCases = useCases,
     )
 
     init {
@@ -91,8 +72,11 @@ class GroupDetailViewModel(
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
+        screen.exitState
+            .onEach { exit -> uiState.update { it.copy(exit = exit) } }
+            .launchIn(viewModelScope)
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
-        combine(observeDeletedBillNotice(route.groupId), navigator.backStack, ::Pair)
+        combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
             .launchIn(viewModelScope)
     }
@@ -118,9 +102,17 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnLeaveGroupClicked,
-            GroupDetailUiEvent.OnDeleteGroupClicked,
-            -> viewModelScope.launch { uiAction.emit(GroupDetailUiAction.ShowComingSoon) }
+            GroupDetailUiEvent.OnLeaveGroupClicked -> screen.askToLeave()
+
+            GroupDetailUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
+
+            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.confirmExit(viewModelScope) { isDelete ->
+                uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
+            }
+
+            GroupDetailUiEvent.OnGroupExitDismissed -> screen.dismissExit()
+
+            GroupDetailUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
 
             GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
 

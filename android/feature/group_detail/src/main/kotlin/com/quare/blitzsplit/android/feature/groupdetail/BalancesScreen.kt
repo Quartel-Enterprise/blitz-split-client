@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
@@ -22,7 +23,8 @@ fun BalancesScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
-            BalancesUiAction.ShowComingSoon -> R.string.group_detail_coming_soon
+            BalancesUiAction.ShowLeaveError -> R.string.group_detail_leave_error
+            BalancesUiAction.ShowDeleteError -> R.string.group_detail_delete_error
             BalancesUiAction.ShowChangeError -> R.string.group_detail_change_error
         }
     }
@@ -37,5 +39,12 @@ fun BalancesScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
+    )
+    GroupExitAlertDialog(
+        exit = state.exit,
+        money = rememberMoneyFormatter(state.header.currency),
+        onConfirm = { viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed) },
+        onDismiss = { viewModel.onEvent(BalancesUiEvent.OnGroupExitDismissed) },
+        onBackToGroups = { viewModel.onEvent(BalancesUiEvent.OnBackToGroupsClicked) },
     )
 }

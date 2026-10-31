@@ -35,6 +35,7 @@ class JsBalancesState(
     val otherDebts: Array<JsDebtRow>,
     val hasBills: Boolean,
     val recordedPayment: JsPaymentNotice?,
+    val exit: JsGroupExit,
     val isEmpty: Boolean,
     val showsDebtNote: Boolean,
     val showsSplitBillButton: Boolean,
@@ -58,6 +59,7 @@ class BalancesPresenter(
                 otherDebts = state.otherDebts.map(::toJsDebtRow).toTypedArray(),
                 hasBills = state.hasBills,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
+                exit = toJsGroupExit(state.exit),
                 isEmpty = state.isEmpty,
                 showsDebtNote = state.showsDebtNote,
                 showsSplitBillButton = state.showsSplitBillButton,
@@ -68,11 +70,12 @@ class BalancesPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" and "change-error", a toast in the page's words.
+    // Why: "leave-error", "delete-error" and "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                BalancesUiAction.ShowComingSoon -> "coming-soon"
+                BalancesUiAction.ShowLeaveError -> "leave-error"
+                BalancesUiAction.ShowDeleteError -> "delete-error"
                 BalancesUiAction.ShowChangeError -> "change-error"
             }
         }
@@ -113,6 +116,20 @@ class BalancesPresenter(
         viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
     }
 
+    // Why: the main button of the dialog Sair or Apagar opened.
+    fun confirmGroupExit() {
+        viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
+    }
+
+    fun dismissGroupExit() {
+        viewModel.onEvent(BalancesUiEvent.OnGroupExitDismissed)
+    }
+
+    // Why: "Voltar para Grupos" on "Grupo apagado".
+    fun backToGroups() {
+        viewModel.onEvent(BalancesUiEvent.OnBackToGroupsClicked)
+    }
+
     // Why: "Acertar" on "Seu saldo neste grupo".
     fun settle() {
         viewModel.onEvent(BalancesUiEvent.OnSettleClicked)
@@ -139,7 +156,7 @@ class BalancesPresenter(
     }
 }
 
-private fun toJsDebtRow(row: DebtRow): JsDebtRow = JsDebtRow(
+internal fun toJsDebtRow(row: DebtRow): JsDebtRow = JsDebtRow(
     fromMemberId = row.fromMemberId,
     toMemberId = row.toMemberId,
     fromName = row.fromName,

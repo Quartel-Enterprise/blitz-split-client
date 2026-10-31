@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -18,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -41,6 +43,7 @@ internal fun GroupTopBar(
     header: GroupHeader,
     // Why: "nenhuma despesa ainda" instead of the total before the first bill.
     hasBills: Boolean,
+    isOnline: Boolean,
     money: MoneyFormatter,
     scrollBehavior: TopAppBarScrollBehavior,
     onAction: (GroupAction) -> Unit,
@@ -91,15 +94,21 @@ internal fun GroupTopBar(
                     contentDescription = stringResource(R.string.group_detail_invite),
                 )
             }
-            GroupMenu(onAction = onAction)
+            GroupMenu(
+                isOnline = isOnline,
+                onAction = onAction,
+            )
         },
         scrollBehavior = scrollBehavior,
     )
 }
 
-// Why: the ⋮ menu keeps only what changes the group itself (6.1i).
+// Why: the ⋮ menu keeps only what changes the group itself (6.1i); offline, Sair and Apagar need the internet (6.1j).
 @Composable
-private fun GroupMenu(onAction: (GroupAction) -> Unit) {
+private fun GroupMenu(
+    isOnline: Boolean,
+    onAction: (GroupAction) -> Unit,
+) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
     Box {
         IconButton(onClick = { isOpen = true }) {
@@ -127,11 +136,17 @@ private fun GroupMenu(onAction: (GroupAction) -> Unit) {
             )
             HorizontalDivider()
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.group_detail_leave_group)) },
+                text = {
+                    MenuItemText(
+                        label = stringResource(R.string.group_detail_leave_group),
+                        isOnline = isOnline,
+                    )
+                },
                 onClick = {
                     isOpen = false
                     onAction(GroupAction.LEAVE_GROUP)
                 },
+                enabled = isOnline,
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Logout,
@@ -141,22 +156,43 @@ private fun GroupMenu(onAction: (GroupAction) -> Unit) {
             )
             DropdownMenuItem(
                 text = {
-                    Text(
-                        text = stringResource(R.string.group_detail_delete_group),
-                        color = MaterialTheme.colorScheme.error,
+                    MenuItemText(
+                        label = stringResource(R.string.group_detail_delete_group),
+                        isOnline = isOnline,
                     )
                 },
                 onClick = {
                     isOpen = false
                     onAction(GroupAction.DELETE_GROUP)
                 },
+                enabled = isOnline,
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
                     )
                 },
+                colors = MenuDefaults.itemColors(
+                    textColor = MaterialTheme.colorScheme.error,
+                    leadingIconColor = MaterialTheme.colorScheme.error,
+                ),
+            )
+        }
+    }
+}
+
+// Why: "Precisa de internet" under the label while offline.
+@Composable
+private fun MenuItemText(
+    label: String,
+    isOnline: Boolean,
+) {
+    Column {
+        Text(label)
+        if (!isOnline) {
+            Text(
+                text = stringResource(R.string.group_detail_needs_internet),
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }

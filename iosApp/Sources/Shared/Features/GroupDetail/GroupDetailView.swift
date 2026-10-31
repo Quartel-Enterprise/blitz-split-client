@@ -5,7 +5,8 @@ import SwiftUI
 @Observable
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
-    private(set) var comingSoonCount = 0
+    private(set) var leaveErrorCount = 0
+    private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
 
@@ -23,7 +24,8 @@ final class GroupDetailModel {
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
-            case is GroupDetailUiActionShowComingSoon: self?.comingSoonCount += 1
+            case is GroupDetailUiActionShowLeaveError: self?.leaveErrorCount += 1
+            case is GroupDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
@@ -64,6 +66,9 @@ final class GroupDetailModel {
             deleteGroup: { [weak self] in self?.send(GroupDetailUiEventOnDeleteGroupClicked.shared) },
             splitBill: { [weak self] in self?.send(GroupDetailUiEventOnSplitBillClicked.shared) },
             settle: { [weak self] in self?.send(GroupDetailUiEventOnSettleClicked.shared) },
+            confirmExit: { [weak self] in self?.send(GroupDetailUiEventOnGroupExitConfirmed.shared) },
+            dismissExit: { [weak self] in self?.send(GroupDetailUiEventOnGroupExitDismissed.shared) },
+            backToGroups: { [weak self] in self?.send(GroupDetailUiEventOnBackToGroupsClicked.shared) },
         )
     }
 
@@ -125,6 +130,7 @@ struct GroupDetailView: View {
             hasExpenses: model?.state.isEmpty != true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
             showsInlineTitle: showsInlineTitle,
+            exit: model?.state.exit,
             actions: model?.actions ?? .disabled,
         )
         .alert("Delete this payment?", isPresented: paymentDeletionShown) {
@@ -139,9 +145,13 @@ struct GroupDetailView: View {
         } message: {
             Text("The payment leaves the group and the debt is back in the balances.")
         }
-        .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
-        .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
-        .glassToast("This bill was deleted", trigger: model?.billDeletedCount ?? 0)
+        .glassToast([
+            GlassToastMessage(text: "This bill was deleted", trigger: model?.billDeletedCount ?? 0),
+        ] + GroupExitCopy.errorToasts(
+            leave: model?.leaveErrorCount ?? 0,
+            delete: model?.deleteErrorCount ?? 0,
+            change: model?.changeErrorCount ?? 0,
+        ))
         .recordedPaymentNotice(
             model?.state.recordedPayment,
             onUndo: { model?.send(GroupDetailUiEventOnUndoPaymentClicked.shared) },

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupFace
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.idleGroupExit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -129,6 +130,7 @@ class GroupDetailUiStateTest {
         paymentToDelete = null,
         recordedPayment = null,
         showsBillDeletedNotice = false,
+        exit = idleGroupExit,
         isLoaded = isLoaded,
     )
 

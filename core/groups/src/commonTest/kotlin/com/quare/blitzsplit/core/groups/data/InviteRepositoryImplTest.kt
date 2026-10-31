@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.groups.data
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteMemberDto
@@ -9,6 +10,7 @@ import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 import com.quare.blitzsplit.core.groups.data.mapper.InviteMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.InviteRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.model.Invite
@@ -436,4 +438,10 @@ private class FakeInviteRemoteDataSource(
     override suspend fun fetchMembers(): List<GroupMemberDto> = error("unused")
 
     override suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto? = error("unused")
+
+    override suspend fun requestLeaveGroup(groupId: String): GroupExitResultDto = error("unused")
+
+    override suspend fun deleteGroup(groupId: String): GroupExitResultDto = error("unused")
+
+    override suspend fun fetchRemovedGroups(groupIds: List<String>): List<RemovedGroupDto> = error("unused")
 }

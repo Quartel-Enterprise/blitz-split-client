@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.testing
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -47,6 +48,15 @@ class FakeGroupRepository(
     var pullError: Throwable? = null
     var clearError: Throwable? = null
     var clearCount = 0
+    val leftGroupIds = mutableListOf<String>()
+    val deletedGroupIds = mutableListOf<String>()
+
+    // Why: what the server answers "Sair do grupo" and "Apagar grupo" with; DONE takes the group off the device.
+    var exitOutcome = GroupExitOutcome.DONE
+    var exitError: Throwable? = null
+
+    // Why: while set, leaving or deleting waits for it, so a test can act while the server is asked.
+    var exitGate: CompletableDeferred<Unit>? = null
 
     override fun observeGroups(): Flow<List<Group>> = groups
 
@@ -164,6 +174,21 @@ class FakeGroupRepository(
         }
         hasPendingChanges.value = true
         return Result.success(Unit)
+    }
+
+    override suspend fun requestLeaveGroup(groupId: String): Result<GroupExitOutcome> = runExit(groupId, leftGroupIds)
+
+    override suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome> = runExit(groupId, deletedGroupIds)
+
+    private suspend fun runExit(
+        groupId: String,
+        calls: MutableList<String>,
+    ): Result<GroupExitOutcome> {
+        exitGate?.await()
+        exitError?.let { return Result.failure(it) }
+        calls += groupId
+        if (exitOutcome == GroupExitOutcome.DONE) groups.value = groups.value.filterNot { it.id == groupId }
+        return Result.success(exitOutcome)
     }
 
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> {

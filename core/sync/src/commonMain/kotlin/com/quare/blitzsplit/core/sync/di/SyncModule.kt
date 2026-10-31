@@ -8,8 +8,10 @@ import com.quare.blitzsplit.core.sync.data.mapper.UserDataExportMapperImpl
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteAccount
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -20,8 +22,10 @@ import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CancelSignOutWhenSyncedUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CompleteSignInUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteAccountUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ExportUserDataUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.JoinGroupUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.LeaveGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveSyncStateUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.RetrySyncUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutUseCase
@@ -68,4 +72,6 @@ val syncModule = module {
     factoryOf(::UserDataExportMapperImpl).bind<UserDataExportMapper>()
     factoryOf(::ExportUserDataUseCase).bind<ExportUserData>()
     factoryOf(::JoinGroupUseCase).bind<JoinGroup>()
+    factoryOf(::LeaveGroupUseCase).bind<LeaveGroup>()
+    factoryOf(::DeleteGroupUseCase).bind<DeleteGroup>()
 }

@@ -1,4 +1,4 @@
-import type { JsMemberBalance, JsPaymentNotice } from 'blitzsplit-shared'
+import type { JsDebtRow, JsMemberBalance, JsPaymentNotice } from 'blitzsplit-shared'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,13 @@ import { cn } from '@/lib/utils'
 /** "Ex-membro" for someone no longer in the group. */
 export function nameOrFormer(name: string | null | undefined): string {
   return name ?? t('balance_formerMember')
+}
+
+/** "Você deve a Bruno", "Ana te deve" or "Diego deve a Bruno", in Saldos and in "Sair do grupo" and "Apagar grupo". */
+export function debtSentence(debt: JsDebtRow): string {
+  if (debt.kind === 'you-owe') return t('balances_youOwe', { name: nameOrFormer(debt.toName) })
+  if (debt.kind === 'owes-you') return t('balances_owesYou', { name: nameOrFormer(debt.fromName) })
+  return t('balances_owes', { from: nameOrFormer(debt.fromName), to: nameOrFormer(debt.toName) })
 }
 
 // Why: "Como foi pago", by the SettlementMethod's code, in the order Registrar pagamento offers them.

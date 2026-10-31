@@ -20,11 +20,20 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : GroupDetailUiEvent
 
-    // Why: "Sair do grupo" in the ⋮ menu, which isn't built yet.
+    // Why: "Sair do grupo" in the ⋮ menu.
     data object OnLeaveGroupClicked : GroupDetailUiEvent
 
-    // Why: "Apagar grupo" in the ⋮ menu and on "Todo mundo acertou", which isn't built yet.
+    // Why: "Apagar grupo" in the ⋮ menu and on "Todo mundo acertou".
     data object OnDeleteGroupClicked : GroupDetailUiEvent
+
+    // Why: the main button of the dialog they open: "Sair", "Apagar para todos", "Acertar" or "Ver saldos".
+    data object OnGroupExitConfirmed : GroupDetailUiEvent
+
+    // Why: "Cancelar" or "Agora não", or the dialog dismissed.
+    data object OnGroupExitDismissed : GroupDetailUiEvent
+
+    // Why: "Voltar para Grupos" on "Grupo apagado".
+    data object OnBackToGroupsClicked : GroupDetailUiEvent
 
     // Why: a bill on the list, which opens "Conta".
     data class OnExpenseClicked(

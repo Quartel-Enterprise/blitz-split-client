@@ -1,12 +1,14 @@
 package com.quare.blitzsplit.core.groups.data.datasource
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
+import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 
 interface GroupRemoteDataSource {
     // Why: the rows as the server kept them, with the invite code it made for a new group.
@@ -33,4 +35,13 @@ interface GroupRemoteDataSource {
 
     // Why: the member as the server keeps it once released; null for a member no longer on the server.
     suspend fun requestMemberRelease(params: ReleaseMemberParamsDto): GroupMemberDto?
+
+    // Why: "Sair do grupo", which the server only lets through while this person's balance is settled.
+    suspend fun requestLeaveGroup(groupId: String): GroupExitResultDto
+
+    // Why: "Apagar grupo", for everyone, which the server only lets through once nobody owes anything.
+    suspend fun deleteGroup(groupId: String): GroupExitResultDto
+
+    // Why: which of these groups the server took off this user's list, and why; the others are just not there.
+    suspend fun fetchRemovedGroups(groupIds: List<String>): List<RemovedGroupDto>
 }

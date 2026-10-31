@@ -18,6 +18,7 @@ import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
+import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage } from './GroupPage'
 
 // Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
@@ -31,10 +32,7 @@ const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
-    if (action === 'coming-soon') toast(t('groups_comingSoon'))
-    if (action === 'change-error') toast(t('groupDetail_changeError'))
-  })
+  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   // Why: state, not an action, so it waits for this screen while the bill's panel still covers it.
   const showsBillDeletedNotice = state?.showsBillDeletedNotice === true
   useEffect(() => {
@@ -51,6 +49,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
       tab="expenses"
       hasExpenses={!state.isEmpty}
       showsSplitBillButton={state.showsSplitBillButton}
+      exit={state.exit}
       events={presenter}
       onSelectTab={(tab) => {
         if (tab === 'balances') presenter.balances()

@@ -145,7 +145,7 @@ private fun DebtFaceBadge(face: GroupFace?) {
 
 // Why: "Você deve a Bruno", "Ana te deve" or "Diego deve a Bruno"; "Ex-membro" for a name gone.
 @Composable
-private fun debtSentenceOf(debt: DebtRow): String {
+internal fun debtSentenceOf(debt: DebtRow): String {
     val formerMember = stringResource(R.string.group_detail_former_member)
     val from = debt.fromName ?: formerMember
     val to = debt.toName ?: formerMember

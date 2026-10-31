@@ -321,11 +321,17 @@ interface GroupDao {
         val goneMembers = getSyncedMembers(ownerUserId)
             .filter { it.groupId in serverGroupIds && it.id !in serverMemberIds }
             .map { it.id }
-        goneGroups.chunked(MAX_IDS_PER_QUERY).forEach {
+        deleteGroupsWithMembers(goneGroups)
+        goneMembers.chunked(MAX_IDS_PER_QUERY).forEach { deleteMembers(it) }
+    }
+
+    // Why: a group left or deleted, pending or not; its bills and payments go with it (ON DELETE CASCADE).
+    @Transaction
+    suspend fun deleteGroupsWithMembers(ids: List<String>) {
+        ids.chunked(MAX_IDS_PER_QUERY).forEach {
             deleteMembersOfGroups(it)
             deleteGroups(it)
         }
-        goneMembers.chunked(MAX_IDS_PER_QUERY).forEach { deleteMembers(it) }
     }
 
     @Query("DELETE FROM group_member WHERE groupId IN (:groupIds)")

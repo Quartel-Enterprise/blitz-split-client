@@ -43,6 +43,7 @@ fun BalancesContent(
             hasBills = state.hasBills,
             isLoaded = state.isLoaded,
             showsSplitBillButton = state.showsSplitBillButton,
+            isOnline = state.exit.isOnline,
             money = money,
         ),
         snackbarHostState = snackbarHostState,
@@ -51,7 +52,13 @@ fun BalancesContent(
     ) {
         when {
             state.isEmpty -> item(key = "empty") { EmptyBalancesCard() }
-            state.header.isEveryoneSettled -> item(key = "settled") { EveryoneSettledCard(onAction = onAction) }
+
+            state.header.isEveryoneSettled -> item(key = "settled") {
+                EveryoneSettledCard(
+                    canDelete = state.exit.canLeaveOrDelete,
+                    onAction = onAction,
+                )
+            }
         }
         debtSection(
             key = "with-you",
