@@ -4,10 +4,13 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.LayoutDirection
@@ -16,6 +19,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 private val halfPaneMargin = 16.dp
+private val alertDialogMinWidth = 280.dp
+private val alertDialogMaxWidth = 560.dp
 
 /*
  * Why: a dialog that keeps off the hinge. Centered it is a plain Dialog, as before; in a half its window covers the
@@ -47,6 +52,15 @@ fun FoldDialog(
         }
     }
 }
+
+/*
+ * Why: what Material's BasicAlertDialog gives its content, for a FoldDialog that replaces one: 280 to 560dp wide, and
+ * the pane title TalkBack says as the dialog opens, here the dialog's own title. A wider dialog (a bill's) skips it.
+ */
+fun Modifier.alertDialogPane(title: String): Modifier = sizeIn(
+    minWidth = alertDialogMinWidth,
+    maxWidth = alertDialogMaxWidth,
+).semantics { paneTitle = title }
 
 // Why: the window takes the whole screen, so "outside" is the scrim the pane draws, not the platform's.
 private fun halfPanePropertiesOf(properties: DialogProperties): DialogProperties = DialogProperties(
