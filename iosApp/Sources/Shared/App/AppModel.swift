@@ -66,7 +66,9 @@ final class AppModel {
         get {
             if isSheetStacked { return backStack[backStack.count - 2] }
             if sheetPushCount > 0 { return backStack[backStack.count - 1 - sheetPushCount] }
-            guard backStack.count > 1, let top = backStack.last, presentsAsSheet(top) else { return nil }
+            guard backStack.count > 1, let top = backStack.last, presentsAsSheet(top), invitePopover == nil else {
+                return nil
+            }
             return top
         }
         set {
@@ -119,7 +121,26 @@ final class AppModel {
     private var modalCount: Int {
         if isSheetStacked { return 2 }
         if sheetPushCount > 0 { return 1 + sheetPushCount }
-        return sheet == nil && cover == nil ? 0 : 1
+        return sheet == nil && cover == nil && invitePopover == nil ? 0 : 1
+    }
+
+    /// The Mac's invite over the group's tab that opened it (F2Mac): a popover on that tab's "Invite people" rather
+    /// than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
+    var invitePopover: InvitePopover? {
+        get {
+            #if os(macOS)
+            guard backStack.count > 2, case let .invite(route) = backStack[backStack.count - 1] else { return nil }
+            let host = backStack[backStack.count - 2]
+            guard host.isGroupTab else { return nil }
+            return InvitePopover(host: host, route: route)
+            #else
+            return nil
+            #endif
+        }
+        set {
+            guard newValue == nil, invitePopover != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
+        }
     }
 
     /// The top entry when it covers the whole screen (the invite reader on iPhone and iPad). Closing it pops it.

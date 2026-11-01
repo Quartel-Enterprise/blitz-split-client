@@ -79,14 +79,22 @@ enum AppRoute: Hashable, Identifiable {
 
     /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
     /// and a bill open as a form sheet and on the Mac as a sheet on its window, as the canvas draws them; an iPhone,
-    /// lying down too, pushes them. Deleting the account, a new group, its invite, editing a group, a new or edited bill and recording a
-    /// payment (settling up across groups included) are sheets everywhere. The invite reader is a sheet on the Mac,
-    /// and covers the whole screen on iPhone and iPad.
+    /// lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill and
+    /// recording a payment (settling up across groups included) are sheets everywhere. The invite is a sheet on an
+    /// iPhone and is pushed full screen with an iPad's room (decision 1); on the Mac it is a sheet, or the popover of
+    /// the group behind it (`AppModel.invitePopover`). The invite reader is a sheet on the Mac, and covers the whole
+    /// screen on iPhone and iPad. An invite opened from its link is one sheet on the Mac, "Who are you" pushed inside it.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
-        case .deleteAccount, .createGroup, .invite, .splitBill, .editGroup, .registerPayment, .settleUp:
+        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp:
             return true
-        case .joinWithLink:
+        case .invite:
+            #if os(macOS)
+            return true
+            #else
+            return !isLargeWindow
+            #endif
+        case .joinWithLink, .joinInvite:
             #if os(macOS)
             return true
             #else
@@ -103,10 +111,29 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet.
+    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, and
+    /// on the Mac "Who are you" inside the invite's.
     var pushesInSheet: Bool {
-        if case .defaultSplit = self { return true }
-        return false
+        switch self {
+        case .defaultSplit:
+            return true
+        case .joinPick:
+            #if os(macOS)
+            return true
+            #else
+            return false
+            #endif
+        default:
+            return false
+        }
+    }
+
+    /// A group's Expenses, Balances or Members: the tabs whose "Invite people" anchors the Mac's invite popover.
+    var isGroupTab: Bool {
+        switch self {
+        case .groupDetail, .balances, .members: true
+        default: false
+        }
     }
 
     /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.

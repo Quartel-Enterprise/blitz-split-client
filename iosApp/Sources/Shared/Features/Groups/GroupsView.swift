@@ -243,7 +243,8 @@ struct MainTabView: View {
     }
 
     /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
-    /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key.
+    /// bill, an invite opened from its link, a group's invite with an iPad's room, the profile, its editor and, on
+    /// iPhone, a key.
     @ViewBuilder
     static func destination(_ route: AppRoute) -> some View {
         switch route {
@@ -257,6 +258,7 @@ struct MainTabView: View {
         case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
+        case let .invite(route): InviteView(route: route)
         default: ProfileView()
         }
     }
