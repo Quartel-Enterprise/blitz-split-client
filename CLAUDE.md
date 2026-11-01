@@ -150,6 +150,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     with Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor history yet). A phone opens it
     full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
     on a phone), all over the group.
+  - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
+    "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
+    on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
+    it works offline. Períodos (only this screen keeps one): a trip lists "Toda a viagem" (the default, from its first
+    to its last day with a bill), "Este mês", "Mês passado" and "Escolher datas…"; any other group "Este ano", "Este
+    mês", "Mês passado", "Todo o período" (the default, as the notes say) and "Escolher datas…" (each platform's date
+    range picker, never after today). Total gasto, how many bills, "Média por pessoa" (the total over every member,
+    who hasn't joined included), "Sua parte" and "Você pagou"; "Por pessoa" shows Consumo (each part as each bill
+    split it) or Pagou, the largest first, someone who left the group as "Ex-membro". "Ao longo do tempo" is Barras or
+    Linha by Dia, Semana (Monday to Sunday), Mês or Ano, kept per device for every group and never synced
+    (`StatsChartPreferences` in `device_settings`): Dia only up to 3 months, the others once the period touches two of
+    them, Ano once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
+    doesn't fit opens on Dia (up to 3 months) or Mês, the disabled ones say why under the chart (`StatsGrainNote`).
+    Then the most expensive one, and "Maior despesa", which opens its Conta. A group without bills says "Nada para
+    mostrar ainda" with "Rachar conta"; a period without bills offers "Ver toda a viagem". Categories (the pie and
+    "Por categoria") wait for bills to have one (7.7), and there is no first-download progress ("Total gasto até
+    agora", 5.1d) yet. A phone scrolls one column; a tablet lying down, the web from the tablet up and the Mac put "Ao
+    longo do tempo" and "Maior despesa" in a second column, the web and the Mac with four summary cards.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
     conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
