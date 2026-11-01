@@ -9,14 +9,12 @@ import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.presentation.CopiedFeedback
+import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactInviteUiState
 import com.quare.blitzsplit.feature.contacts.presentation.model.InviteGroupOption
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -57,7 +55,9 @@ class ContactInviteViewModel(
     val actionWatcher: FlowWatcher<ContactInviteUiAction> = FlowWatcher(uiAction)
 
     private var book: ContactBookSnapshot? = null
-    private var copiedReset: Job? = null
+    private val copiedFeedback = CopiedFeedbackTimer(viewModelScope) { isCopied ->
+        uiState.update { it.copy(isLinkCopied = isCopied) }
+    }
 
     init {
         observeContactBook()
@@ -132,16 +132,10 @@ class ContactInviteViewModel(
         }
     }
 
-    // Why: a second tap keeps "Copiado" for two seconds from that tap.
     private fun copy() {
         val link = uiState.value.link ?: return
         send(ContactInviteUiAction.CopyLink(link))
-        uiState.update { it.copy(isLinkCopied = true) }
-        copiedReset?.cancel()
-        copiedReset = viewModelScope.launch {
-            delay(CopiedFeedback.duration)
-            uiState.update { it.copy(isLinkCopied = false) }
-        }
+        copiedFeedback.start()
     }
 
     private fun share() {

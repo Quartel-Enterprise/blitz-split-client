@@ -74,6 +74,9 @@ class ContactProfileViewModel(
     // Why: what Room said last, which "Adicionar a um grupo" lists the groups from.
     private var book: ContactBookSnapshot? = null
 
+    // Why: null until the connectivity is known, so a profile opened offline never asks the server.
+    private var isKnownOnline: Boolean? = null
+
     init {
         observeContactBook()
             .onEach { snapshot ->
@@ -84,6 +87,7 @@ class ContactProfileViewModel(
             .observe()
             .distinctUntilChanged()
             .onEach { isOnline ->
+                isKnownOnline = isOnline
                 uiState.update { it.copy(isOnline = isOnline) }
                 if (isOnline) {
                     refreshPendingMerge()
@@ -203,7 +207,7 @@ class ContactProfileViewModel(
         }
         // Why: a person a sync took away closes their profile; beside Contatos, the pane goes back to its placeholder.
         if (contact == null && isOwnRouteOnTop()) navigator.navigateBack()
-        if (!wasLoaded) refreshPendingMerge()
+        if (!wasLoaded && isKnownOnline == true) refreshPendingMerge()
     }
 
     private fun ContactProfileUiState.canHideWith(contact: Contact?): Boolean =

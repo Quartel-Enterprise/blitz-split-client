@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -77,18 +76,23 @@ class ContactsViewModel(
     val actionWatcher: FlowWatcher<ContactsUiAction> = FlowWatcher(uiAction)
 
     init {
-        combine(observeProfile(), observeAccount()) { profile, account ->
-            val displayName = profile?.displayName?.trim().orEmpty()
-            uiState.update {
-                it.copy(
-                    displayName = displayName,
-                    avatarInitial = Initials.firstOf(displayName),
-                    avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                    photoUrl = profile?.photo?.toImageUrl(),
-                    accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                )
-            }
-        }.launchIn(viewModelScope)
+        observeProfile()
+            .onEach { profile ->
+                val name = profile?.displayName?.trim().orEmpty()
+                uiState.update { state ->
+                    state.copy(
+                        displayName = name,
+                        avatarInitial = Initials.firstOf(name),
+                        avatarColor = profile?.avatarColor ?: AvatarColor.default,
+                        photoUrl = profile?.photo?.toImageUrl(),
+                    )
+                }
+            }.launchIn(viewModelScope)
+        observeAccount()
+            .onEach { account ->
+                val provider = (account.status as? AccountStatus.Connected)?.provider
+                uiState.update { state -> state.copy(accountProvider = provider) }
+            }.launchIn(viewModelScope)
         observeContactBook()
             .onEach { book ->
                 val (hidden, shown) = book.contacts.partition { it.isHidden }
