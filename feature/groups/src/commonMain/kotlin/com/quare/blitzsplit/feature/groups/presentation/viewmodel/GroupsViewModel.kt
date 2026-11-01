@@ -332,7 +332,7 @@ class GroupsViewModel(
     // Why: there is nothing to look in before the first group.
     private fun openSearch() {
         if (!uiState.value.canSearch) return
-        search { it.copy(isOpen = true) }
+        uiState.update { it.copy(search = searchedOf(it.search.copy(isOpen = true), it.groups)) }
     }
 
     /*
