@@ -95,7 +95,7 @@ struct BillDetailView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         // A form sheet on iPad has no back button: it closes
-        if AppRoute.billDetail(route).presentsAsSheet(in: windowLayout) {
+        if AppRoute.billDetail(route).presentsAsSheet(isLargeWindow: windowLayout.isLarge) {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Close", systemImage: "xmark", role: .cancel) {
                     model?.send(BillDetailUiEventOnBackClicked.shared)

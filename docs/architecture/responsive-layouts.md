@@ -83,10 +83,12 @@ Every layout rule is `ScreenLayout`, the size of what a view measures (`.measuri
 | `isLarge` | An iPad's room, 600 pt or more on the short side: an iPad, an iPhone Duo open (920×648) and upright (648×920), a wide Split View |
 | `showsListDetail` | `isLarge` and lying down (iOS only): the home's list and detail on an iPad lying down and an iPhone Duo open |
 
-The root measures the whole window into `AppModel.window` and the environment's `windowLayout`, so a screen inside a
-sheet still knows what it opened over: `AppRoute.presentsAsSheet(in:)` opens a key and a bill as a sheet with an
-iPad's room, pushed on an iPhone. The only idiom check left is `DeviceName`, the word the copy says ("iPhone",
-"iPad"), since an iPhone Duo is an iPhone whatever its size.
+The root measures the whole window (`.measuringWindow`) into the environment's `windowLayout`, so a screen inside a
+sheet still knows what it opened over, and into `AppModel.isLargeWindow`, which only changes when the window crosses
+an iPad's room, so a live resize never redraws the root: `AppRoute.presentsAsSheet(isLargeWindow:)` opens a key and a
+bill as a sheet with an iPad's room, pushed on an iPhone. Until that first measure the root draws nothing, so a back
+stack that already ends in a key or a bill never shows pushed and then jumps into a sheet. The only idiom check left
+is `DeviceName`, the word the copy says ("iPhone", "iPad"), since an iPhone Duo is an iPhone whatever its size.
 
 The pieces in `iosApp/Sources/Shared/DesignSystem`:
 

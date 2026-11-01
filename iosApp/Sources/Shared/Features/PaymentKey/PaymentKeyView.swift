@@ -56,7 +56,7 @@ struct PaymentKeyView: View {
     @Environment(\.windowLayout) private var windowLayout
 
     private var isSheet: Bool {
-        AppRoute.paymentKey(route).presentsAsSheet(in: windowLayout)
+        AppRoute.paymentKey(route).presentsAsSheet(isLargeWindow: windowLayout.isLarge)
     }
 
     private var isPix: Bool {

@@ -9,8 +9,10 @@ final class AppModel {
     private(set) var isReady: Bool
     private(set) var backStack: [AppRoute]
     private(set) var theme: ThemePreference
-    /// The whole window, which the root measures: whether a key or a bill opens as a sheet follows its size.
-    var window = ScreenLayout()
+    /// Whether the window has an iPad's room (`ScreenLayout.isLarge`), which decides whether a key or a bill opens as
+    /// a sheet. Nil until the root first measures the window, so nothing is pushed or presented by a guess; it only
+    /// changes when the window crosses the threshold, never on each step of a live resize.
+    private(set) var isLargeWindow: Bool?
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -29,6 +31,17 @@ final class AppModel {
         watches.add(viewModel.themeWatcher.observe { [weak self] theme in
             self?.theme = theme
         })
+    }
+
+    /// Whether the root measured the window yet: until then it draws nothing, as while the start route loads.
+    var isWindowMeasured: Bool {
+        isLargeWindow != nil
+    }
+
+    /// The root's measure of the window, kept only when it moves `isLargeWindow`.
+    func windowMeasured(_ window: ScreenLayout) {
+        guard isLargeWindow != window.isLarge else { return }
+        isLargeWindow = window.isLarge
     }
 
     var root: AppRoute {
@@ -51,7 +64,7 @@ final class AppModel {
     var sheet: AppRoute? {
         get {
             if isSheetStacked { return backStack[backStack.count - 2] }
-            guard backStack.count > 1, let top = backStack.last, top.presentsAsSheet(in: window) else { return nil }
+            guard backStack.count > 1, let top = backStack.last, presentsAsSheet(top) else { return nil }
             return top
         }
         set {
@@ -71,8 +84,14 @@ final class AppModel {
 
     /// The two top entries both open as sheets, so the second one stacks over the first instead of taking its place.
     private var isSheetStacked: Bool {
-        backStack.count > 2 && backStack[backStack.count - 1].presentsAsSheet(in: window)
-            && backStack[backStack.count - 2].presentsAsSheet(in: window)
+        backStack.count > 2 && presentsAsSheet(backStack[backStack.count - 1])
+            && presentsAsSheet(backStack[backStack.count - 2])
+    }
+
+    /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either.
+    private func presentsAsSheet(_ route: AppRoute) -> Bool {
+        guard let isLargeWindow else { return false }
+        return route.presentsAsSheet(isLargeWindow: isLargeWindow)
     }
 
     private var modalCount: Int {
