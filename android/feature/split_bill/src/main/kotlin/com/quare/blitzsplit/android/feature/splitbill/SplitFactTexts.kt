@@ -69,6 +69,10 @@ internal fun factTextOf(
 
     SplitFact.GroupDefault -> stringResource(R.string.split_bill_group_default)
 
+    is SplitFact.Items -> pluralStringResource(R.plurals.split_bill_fact_items, fact.count, fact.count)
+
+    is SplitFact.LooseItems -> pluralStringResource(R.plurals.split_bill_items_loose, fact.count, fact.count)
+
     is SplitFact.PersonParts -> if (fact.person.isMe) {
         pluralStringResource(R.plurals.split_bill_status_my_parts, fact.parts.toInt(), fact.parts)
     } else {

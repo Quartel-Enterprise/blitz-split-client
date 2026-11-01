@@ -34,6 +34,10 @@
         <item quantity="one">Igual entre %d</item>
         <item quantity="other">Igual entre %d</item>
     </plurals>
+    <plurals name="bill_detail_mode_items">
+        <item quantity="one">Por itens entre %d</item>
+        <item quantity="other">Por itens entre %d</item>
+    </plurals>
     <plurals name="bill_detail_mode_amount">
         <item quantity="one">Por valor entre %d</item>
         <item quantity="other">Por valor entre %d</item>
