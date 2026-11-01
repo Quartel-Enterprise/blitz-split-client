@@ -359,6 +359,27 @@ class PeopleBalancesTest {
     }
 
     @Test
+    fun `GIVEN a guest with bills in two groups WHEN netting THEN names their bills the most recent first`() {
+        // Given
+        val diegoHere = member("d1", "Diego")
+        val diegoThere = member("d2", "Diego")
+        val groups = listOf(group("churrasco", "Churrasco", me, diegoHere), group("futebol", "Futebol", me, diegoThere))
+        val money = mapOf(
+            "churrasco" to moneyOf(
+                guestBill("carne", "churrasco", "Carne", diegoHere.id, spentAt = 1_000L),
+                guestBill("bebidas", "churrasco", "Bebidas", diegoHere.id, spentAt = 2_000L),
+            ),
+            "futebol" to moneyOf(guestBill("pizza", "futebol", "Pizza", diegoThere.id, spentAt = 3_000L)),
+        )
+
+        // When
+        val person = PeopleBalances.of(groups, money).people.single()
+
+        // Then
+        assertEquals(listOf("Pizza", "Bebidas", "Carne"), person.guestBills)
+    }
+
+    @Test
     fun `GIVEN someone who joined WHEN netting THEN has no guest details`() {
         // Given
         val groups = listOf(group("floripa", "Floripa", me, ana))
@@ -455,6 +476,7 @@ class PeopleBalancesTest {
         description: String,
         payers: List<ExpensePayer>,
         shares: List<ExpenseShare>,
+        spentAt: Long = 0L,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
@@ -463,10 +485,26 @@ class PeopleBalancesTest {
         splitMode = SplitMode.AMOUNT,
         payers = payers,
         shares = shares,
-        spentAt = 0L,
+        spentAt = spentAt,
         isPending = false,
         updatedAt = 0L,
         updatedByMemberId = null,
+    )
+
+    // Why: this device's user paid a bill all on the guest.
+    private fun guestBill(
+        id: String,
+        groupId: String,
+        description: String,
+        guestId: String,
+        spentAt: Long,
+    ): Expense = bill(
+        id = id,
+        groupId = groupId,
+        description = description,
+        payers = listOf(ExpensePayer(me.id, 1_000L)),
+        shares = listOf(share(guestId, 1_000L)),
+        spentAt = spentAt,
     )
 
     private fun share(
