@@ -1317,6 +1317,28 @@
         }
       }
     },
+    "Split in which group?" : {
+      "comment" : "The sheet that picks the group of a new bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rachar em qual grupo?"
+          }
+        }
+      }
+    },
+    "Split in Which Group?" : {
+      "comment" : "The Mac's sheet that picks the group of a new bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rachar em qual grupo?"
+          }
+        }
+      }
+    },
     "Status" : {
       "comment" : "The Mac toolbar's segments: open or settled up groups",
       "localizations" : {
@@ -1357,6 +1379,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O grupo “%@” foi apagado."
+          }
+        }
+      }
+    },
+    "The one you used last comes marked" : {
+      "comment" : "Under the title of the sheet that picks the group of a new bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O último que você usou vem marcado"
           }
         }
       }
@@ -1981,7 +2014,7 @@
       }
     },
     "%lld people" : {
-      "comment" : "How many members the new group has",
+      "comment" : "How many members a group has: the new group, or one to split a bill in",
       "localizations" : {
         "en" : {
           "variations" : {

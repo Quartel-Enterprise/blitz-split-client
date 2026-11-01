@@ -271,6 +271,9 @@ private struct PhoneSplitBill: View {
         .navigationDestination(isPresented: splitShown) {
             PhoneSplitEditor(model: model)
         }
+        .sheet(isPresented: groupShown) {
+            GroupSheet(model: model)
+        }
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
             if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
@@ -318,11 +321,33 @@ private struct PhoneSplitBill: View {
 
     private var detailsSection: some View {
         Section {
-            LabeledContent("Group") {
-                HStack(spacing: 8) {
-                    GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 24)
-                    Text(verbatim: state.groupName)
-                        .lineLimit(1)
+            if state.canChangeGroup {
+                Button {
+                    model.send(SplitBillUiEventOnGroupClicked.shared)
+                } label: {
+                    HStack(spacing: 8) {
+                        Text("Group")
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 24)
+                        Text(verbatim: state.groupName)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                            .accessibilityHidden(true)
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+            } else {
+                LabeledContent("Group") {
+                    HStack(spacing: 8) {
+                        GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 24)
+                        Text(verbatim: state.groupName)
+                            .lineLimit(1)
+                    }
                 }
             }
             Button {
@@ -424,6 +449,16 @@ private struct PhoneSplitBill: View {
         )
     }
 
+    /// Dismissing "Split in which group?" (a swipe down) leaves the bill in its group.
+    private var groupShown: Binding<Bool> {
+        Binding(
+            get: { model.state.groupSelection != nil },
+            set: { shown in
+                if !shown, model.current.groupSelection != nil { model.send(SplitBillUiEventOnGroupDismissed.shared) }
+            },
+        )
+    }
+
     /// Dismissing the sheet (a swipe down), on "Who paid" or "Several people paid", keeps whoever paid before.
     private var payerShown: Binding<Bool> {
         Binding(
@@ -443,6 +478,49 @@ private struct DisclosureIndicator: View {
             .font(.footnote.weight(.semibold))
             .foregroundStyle(.tertiary)
             .accessibilityHidden(true)
+    }
+}
+
+/// "Split in which group?": the groups, the most recently used first, the one marked until "Continue".
+private struct GroupSheet: View {
+    let model: SplitBillModel
+
+    private var state: SplitBillUiState {
+        model.state
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(state.groups, id: \.id) { group in
+                    let isSelected = state.groupSelection?.groupId == group.id
+                    Button {
+                        model.send(SplitBillUiEventOnGroupPicked(groupId: group.id))
+                    } label: {
+                        GroupOptionLabel(group: group, isSelected: isSelected)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
+            }
+            .navigationTitle("Split in which group?")
+            .navigationSubtitle("The one you used last comes marked")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", systemImage: "xmark", role: .cancel) {
+                        model.send(SplitBillUiEventOnGroupDismissed.shared)
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Continue", systemImage: "checkmark") {
+                        model.send(SplitBillUiEventOnGroupDone.shared)
+                    }
+                    .buttonStyle(.glassProminent)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }
 
@@ -587,6 +665,32 @@ private struct SeveralPayersSheet: View {
 }
 #endif
 
+/// A group to pick: its shape, its name, how many people are in it and whether it is marked.
+private struct GroupOptionLabel: View {
+    let group: BillGroup
+    let isSelected: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            GroupAvatar(initials: group.initials, color: group.color, size: 36)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: group.name)
+                    .lineLimit(1)
+                Text("\(Int(group.memberCount)) people")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(Palette.accent)
+            }
+        }
+        .contentShape(.rect)
+    }
+}
+
 /// A face in "Several people paid", blank for someone who left the group.
 private struct PayerAmountFace: View {
     let row: PayerAmountRow
@@ -693,10 +797,19 @@ private struct MacBillForm: View {
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             }
             Form {
-                LabeledContent("Group:") {
-                    HStack(spacing: 6) {
-                        GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 18)
-                        Text(verbatim: state.groupName)
+                if state.canChangeGroup {
+                    Picker("Group:", selection: groupChoice) {
+                        ForEach(state.groups, id: \.id) { group in
+                            Text(verbatim: group.name).tag(group.id)
+                        }
+                    }
+                    .fixedSize()
+                } else {
+                    LabeledContent("Group:") {
+                        HStack(spacing: 6) {
+                            GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 18)
+                            Text(verbatim: state.groupName)
+                        }
                     }
                 }
                 LabeledContent("Amount:") {
@@ -809,6 +922,33 @@ private struct MacBillForm: View {
         .sheet(isPresented: severalPayersShown) {
             MacSeveralPayers(model: model)
         }
+        .sheet(isPresented: groupShown) {
+            MacGroupPicker(model: model)
+        }
+    }
+
+    /// The pop-up moves the bill to another group in one go: the ViewModel's selection opens, marks and closes at once.
+    private var groupChoice: Binding<String> {
+        Binding(
+            get: { model.state.groupId },
+            set: { groupId in
+                model.send(SplitBillUiEventOnGroupClicked.shared)
+                model.send(SplitBillUiEventOnGroupPicked(groupId: groupId))
+                model.send(SplitBillUiEventOnGroupDone.shared)
+            },
+        )
+    }
+
+    /// The home's "Split a Bill" asks for the group first; closing it any way but "Continue" keeps the marked one.
+    private var groupShown: Binding<Bool> {
+        Binding(
+            get: { model.state.groupSelection != nil },
+            set: { shown in
+                if !shown, model.current.groupSelection != nil {
+                    model.send(SplitBillUiEventOnGroupDismissed.shared)
+                }
+            },
+        )
     }
 
     /// The pop-up picks whoever paid in one go: the ViewModel's selection opens, marks and closes at once. "Several
@@ -838,6 +978,55 @@ private struct MacBillForm: View {
                 }
             },
         )
+    }
+}
+
+/// "Split in Which Group?", a sheet on the bill's sheet when the home's "Split a Bill" opens it.
+private struct MacGroupPicker: View {
+    let model: SplitBillModel
+
+    private var state: SplitBillUiState {
+        model.state
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Split in Which Group?")
+                    .font(.title2.bold())
+                Text("The one you used last comes marked")
+                    .foregroundStyle(.secondary)
+            }
+            List {
+                ForEach(state.groups, id: \.id) { group in
+                    let isSelected = state.groupSelection?.groupId == group.id
+                    Button {
+                        model.send(SplitBillUiEventOnGroupPicked(groupId: group.id))
+                    } label: {
+                        GroupOptionLabel(group: group, isSelected: isSelected)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
+            }
+            .listStyle(.inset(alternatesRowBackgrounds: true))
+            .frame(minHeight: 200)
+            HStack(spacing: 8) {
+                Spacer()
+                Button("Cancel") {
+                    model.send(SplitBillUiEventOnGroupDismissed.shared)
+                }
+                .keyboardShortcut(.cancelAction)
+                Button("Continue") {
+                    model.send(SplitBillUiEventOnGroupDone.shared)
+                }
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
+            }
+            .controlSize(.large)
+        }
+        .padding(20)
+        .frame(width: 420)
     }
 }
 
