@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.coverFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -129,11 +130,13 @@ private fun HomeTabletopPreview() {
 )
 @Composable
 private fun HomeCoverPreview() {
-    BlitzSplitTheme {
-        HomeContent(
-            state = buildHomePreviewState(),
-            onEvent = {},
-        )
+    CompositionLocalProvider(LocalFoldLayout provides coverFoldLayoutOf(360.dp, 374.dp)) {
+        BlitzSplitTheme {
+            HomeContent(
+                state = buildHomePreviewState(),
+                onEvent = {},
+            )
+        }
     }
 }
 

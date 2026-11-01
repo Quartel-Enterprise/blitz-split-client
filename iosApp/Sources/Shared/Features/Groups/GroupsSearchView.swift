@@ -82,30 +82,95 @@ struct GroupsSearchResultsList: View {
 }
 
 #if os(iOS)
-/// The search tab: a large "Search" title, the field under it, and All / Groups / People / Expenses as segments.
+/// The search tab: a large "Search" title, the field under it, and All / Groups / People / Expenses as segments. An
+/// iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt column on the left and the results on
+/// the right.
 struct GroupsSearchView: View {
     let model: GroupsModel
+    @State private var layout = ScreenLayout()
+
+    /// Lying down short of an iPad's room: an iPhone lying down.
+    private var usesSideColumn: Bool {
+        layout.usesTwoColumns && !layout.isLarge
+    }
 
     var body: some View {
-        VStack(spacing: 0) {
-            Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
-                ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
-                    Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
+        Group {
+            if usesSideColumn {
+                HStack(alignment: .top, spacing: 28) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Search")
+                            .font(.title.bold())
+                            .accessibilityAddTraits(.isHeader)
+                        GroupsSearchField(model: model)
+                        scopePicker
+                    }
+                    .frame(width: 300)
+                    .padding(.leading, 20)
+                    .padding(.top, 12)
+                    GroupsSearchResultsList(model: model)
                 }
+                .toolbarVisibility(.hidden, for: .navigationBar)
+            } else {
+                VStack(spacing: 0) {
+                    scopePicker
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                    GroupsSearchResultsList(model: model)
+                }
+                .searchable(
+                    text: GroupsSearchCopy.queryBinding(model),
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: Text("Groups, people and expenses"),
+                )
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 8)
-            GroupsSearchResultsList(model: model)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .navigationTitle("Search")
-        .searchable(
-            text: GroupsSearchCopy.queryBinding(model),
-            placement: .navigationBarDrawer(displayMode: .always),
-            prompt: Text("Groups, people and expenses"),
-        )
+        .measuringScreenLayout($layout)
+    }
+
+    private var scopePicker: some View {
+        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
+            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
+                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+}
+
+/// The search field of an iPhone lying down, in the column beside the results: the system's field sits in the bar,
+/// which the boards leave for the results there. It takes the focus as it opens, so the keyboard comes up at once.
+private struct GroupsSearchField: View {
+    let model: GroupsModel
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        let query = GroupsSearchCopy.queryBinding(model)
+        HStack(spacing: 6) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            TextField("Groups, people and expenses", text: query)
+                .focused($isFocused)
+                .submitLabel(.search)
+                .autocorrectionDisabled()
+            if !model.state.search.query.isEmpty {
+                Button("Clear", systemImage: "xmark.circle.fill") {
+                    query.wrappedValue = ""
+                }
+                .labelStyle(.iconOnly)
+                .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 10)
+        .frame(height: 40)
+        .background(.fill.tertiary, in: .capsule)
+        // Only for a new search; coming back from a result keeps the keyboard down over what was found
+        .onAppear { if model.current.search.query.isEmpty { isFocused = true } }
     }
 }
 #endif

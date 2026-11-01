@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -236,6 +237,144 @@ class HomeTabsTest {
 
         // Then
         assertEquals(listOf(Route.Welcome, Route.Restore), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group over the groups WHEN its rail opens Grupos THEN goes back to the groups`() {
+        // Given
+        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null))
+
+        // When
+        navigator.openHomeTab(HomeTab.GROUPS)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group over the groups WHEN its rail opens Saldos THEN Saldos takes the groups place`() {
+        // Given
+        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null), Route.Members("trip"))
+
+        // When
+        navigator.openHomeTab(HomeTab.BALANCES)
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group over Saldos filtered WHEN its rail opens Saldos THEN goes back to that Saldos`() {
+        // Given
+        val balances = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
+        prepareScenario(Route.Home, balances, Route.GroupDetail("trip", joinedAs = null))
+
+        // When
+        navigator.openHomeTab(HomeTab.BALANCES)
+
+        // Then
+        assertEquals(listOf(Route.Home, balances), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN statistics over the groups WHEN its rail opens Contatos THEN Contatos takes the groups place`() {
+        // Given
+        prepareScenario(Route.Home, Route.Groups, Route.GroupStats("trip"))
+
+        // When
+        navigator.openHomeTab(HomeTab.CONTACTS)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group over the groups WHEN its rail opens Atividade THEN Atividade takes the groups place`() {
+        // Given
+        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null))
+
+        // When
+        navigator.openHomeTab(HomeTab.ACTIVITY)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group Inicio opened WHEN its rail opens Inicio THEN goes back to Inicio`() {
+        // Given
+        prepareScenario(Route.Home, Route.GroupDetail("trip", joinedAs = null))
+
+        // When
+        navigator.openHomeTab(HomeTab.HOME)
+
+        // Then
+        assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group over the groups WHEN asking its home tab THEN is Grupos`() {
+        // Given
+        val route = Route.Members("trip")
+        val stack = listOf(Route.Home, Route.Groups, Route.GroupDetail("trip", joinedAs = null), route)
+
+        // When
+        val tab = stack.findHomeTabUnder(route)
+
+        // Then
+        assertEquals(HomeTab.GROUPS, tab)
+    }
+
+    @Test
+    fun `GIVEN a group Inicio opened WHEN asking its home tab THEN is Inicio`() {
+        // Given
+        val route = Route.GroupDetail("trip", joinedAs = null)
+
+        // When
+        val tab = listOf(Route.Home, route).findHomeTabUnder(route)
+
+        // Then
+        assertEquals(HomeTab.HOME, tab)
+    }
+
+    @Test
+    fun `GIVEN a group over a contact WHEN asking its home tab THEN is Contatos`() {
+        // Given
+        val route = Route.GroupDetail("trip", joinedAs = null)
+        val stack = listOf(Route.Home, Route.Contacts, Route.ContactsAgenda, route)
+
+        // When
+        val tab = stack.findHomeTabUnder(route)
+
+        // Then
+        assertEquals(HomeTab.CONTACTS, tab)
+    }
+
+    @Test
+    fun `GIVEN a screen no longer in the back stack WHEN asking its home tab THEN is the top one`() {
+        // Given
+        val stack = listOf(Route.Home, Route.Activity(personKey = null))
+
+        // When
+        val tab = stack.findHomeTabUnder(Route.GroupStats("trip"))
+
+        // Then
+        assertEquals(HomeTab.ACTIVITY, tab)
+    }
+
+    @Test
+    fun `GIVEN no home in the back stack WHEN asking a screen home tab THEN is Inicio`() {
+        // Given
+        val route = Route.GroupDetail("trip", joinedAs = null)
+
+        // When
+        val tab = listOf(Route.Welcome, route).findHomeTabUnder(route)
+
+        // Then
+        assertEquals(HomeTab.HOME, tab)
     }
 
     private fun prepareScenario(vararg stack: Route) {

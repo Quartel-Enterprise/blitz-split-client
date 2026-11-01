@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
@@ -182,8 +183,10 @@ class GroupDetailUiStateTest {
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
         teach = null,
+        homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
+        activityUnreadCount = 0,
     )
 
     private val day = ExpenseDay(

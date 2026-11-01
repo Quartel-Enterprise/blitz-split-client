@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
@@ -18,6 +19,8 @@ import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
@@ -33,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /*
@@ -50,6 +54,7 @@ class GroupStatsViewModel(
     observeExpenses: ObserveExpenses,
     observeStatsChartPreferences: ObserveStatsChartPreferences,
     observeCategoryTree: ObserveCategoryTree,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<GroupStatsUiState>
         field = MutableStateFlow(
@@ -84,6 +89,8 @@ class GroupStatsViewModel(
                 biggestExpense = null,
                 categories = emptyList(),
                 isLoaded = false,
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                activityUnreadCount = 0,
             ),
         )
 
@@ -124,11 +131,16 @@ class GroupStatsViewModel(
         navigator.backStack
             .onEach { if (isGone) leave() }
             .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: GroupStatsUiEvent) {
         when (event) {
             GroupStatsUiEvent.OnBackClicked -> leave()
+
+            is GroupStatsUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             is GroupStatsUiEvent.OnPeriodPicked -> pickPeriod(event.period)
 
@@ -267,6 +279,8 @@ class GroupStatsViewModel(
             biggestExpense = calculator.createBiggestOrNull(spending),
             categories = calculator.createCategories(spending),
             isLoaded = true,
+            homeTab = uiState.value.homeTab,
+            activityUnreadCount = uiState.value.activityUnreadCount,
         )
     }
 

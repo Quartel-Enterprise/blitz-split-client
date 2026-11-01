@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface MembersUiEvent : UiEvent {
@@ -13,6 +14,11 @@ sealed interface MembersUiEvent : UiEvent {
 
     // Why: the "Saldos" tab.
     data object OnBalancesTabClicked : MembersUiEvent
+
+    // Why: a tab of the home's rail, which Android keeps beside the group when it is drawn alone.
+    data class OnRailTabClicked(
+        val tab: HomeTab,
+    ) : MembersUiEvent
 
     data object OnAddClicked : MembersUiEvent
 

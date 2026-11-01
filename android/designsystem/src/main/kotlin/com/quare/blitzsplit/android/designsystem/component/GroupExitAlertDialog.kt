@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.WarningAmber
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
+import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
@@ -48,11 +49,14 @@ fun GroupExitAlertDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     onBackToGroups: () -> Unit,
+    // Why: off the hinge, in a book's right half and a tabletop's top half (5.3c to 5.3f on a foldable).
+    placement: DialogPlacement = rememberDialogPlacement(),
 ) {
     exit.deletedNotice?.let { notice ->
         GroupDeletedDialog(
             notice = notice,
             onBackToGroups = onBackToGroups,
+            placement = placement,
         )
         return
     }
@@ -75,6 +79,7 @@ fun GroupExitAlertDialog(
             isRunning = false,
             onConfirm = onConfirm,
             onDismiss = onDismiss,
+            placement = placement,
         )
 
         is GroupExitDialog.ConfirmLeave -> ExitDialog(
@@ -97,6 +102,7 @@ fun GroupExitAlertDialog(
             isRunning = exit.isRunning,
             onConfirm = onConfirm,
             onDismiss = onDismiss,
+            placement = placement,
         )
 
         is GroupExitDialog.DeleteBlocked -> ExitDialog(
@@ -120,6 +126,7 @@ fun GroupExitAlertDialog(
             isRunning = false,
             onConfirm = onConfirm,
             onDismiss = onDismiss,
+            placement = placement,
         )
 
         is GroupExitDialog.ConfirmDelete -> ExitDialog(
@@ -134,6 +141,7 @@ fun GroupExitAlertDialog(
             isRunning = exit.isRunning,
             onConfirm = onConfirm,
             onDismiss = onDismiss,
+            placement = placement,
         )
     }
 }
@@ -167,8 +175,9 @@ private fun ExitDialog(
     isRunning: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    placement: DialogPlacement,
 ) {
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = onDismiss,
         icon = {
             Icon(
@@ -181,7 +190,7 @@ private fun ExitDialog(
                 },
             )
         },
-        title = { Text(title) },
+        title = title,
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(message)
@@ -222,6 +231,7 @@ private fun ExitDialog(
                 enabled = !isRunning,
             ) { Text(dismiss) }
         },
+        placement = placement,
     )
 }
 
@@ -278,8 +288,9 @@ private fun DebtSummaryList(
 private fun GroupDeletedDialog(
     notice: GroupDeletedNotice,
     onBackToGroups: () -> Unit,
+    placement: DialogPlacement,
 ) {
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = onBackToGroups,
         icon = {
             Icon(
@@ -288,7 +299,7 @@ private fun GroupDeletedDialog(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
-        title = { Text(stringResource(R.string.designsystem_group_exit_deleted_title)) },
+        title = stringResource(R.string.designsystem_group_exit_deleted_title),
         text = {
             Text(
                 text = notice.deletedByName?.let {
@@ -301,5 +312,6 @@ private fun GroupDeletedDialog(
                 onClick = onBackToGroups,
             ) { Text(stringResource(R.string.designsystem_group_exit_back_to_groups)) }
         },
+        placement = placement,
     )
 }
