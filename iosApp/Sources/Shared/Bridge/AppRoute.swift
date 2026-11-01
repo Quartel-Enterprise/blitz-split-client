@@ -42,6 +42,7 @@ enum AppRoute: Hashable, Identifiable {
     case editProfile
     case deleteAccount
     case notificationSettings
+    case categoryMap
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
 
@@ -70,6 +71,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
         case is RouteNotificationSettings: self = .notificationSettings
+        case is RouteCategoryMap: self = .categoryMap
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         default: self = .welcome
         }
@@ -103,10 +105,13 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet.
+    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet,
+    /// and the category map inside Split a bill's (9.0). From the profile the map is pushed as any screen.
     var pushesInSheet: Bool {
-        if case .defaultSplit = self { return true }
-        return false
+        switch self {
+        case .defaultSplit, .categoryMap: true
+        default: false
+        }
     }
 
     /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.

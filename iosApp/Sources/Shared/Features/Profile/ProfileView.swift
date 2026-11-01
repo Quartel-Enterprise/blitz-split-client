@@ -128,6 +128,7 @@ struct ProfileView: View {
                 }
                 .foregroundStyle(.primary)
                 #endif
+                CategoryMapRow(model: model)
             }
             #if os(macOS)
             // The Mac's settings show the toggles right here, as the canvas draws them
@@ -626,5 +627,34 @@ extension AccountProvider {
 private extension Bundle {
     var appVersion: String {
         infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+    }
+}
+
+/// Preferences › "Category map" (flow 9): pushed on iPhone and iPad; the Mac keeps it in Settings › Categories.
+private struct CategoryMapRow: View {
+    let model: ProfileModel
+
+    #if os(macOS)
+    @Environment(\.openSettings) private var openSettings
+    #endif
+
+    var body: some View {
+        Button {
+            #if os(macOS)
+            openSettings()
+            #else
+            model.send(ProfileUiEventOnCategoryMapClicked.shared)
+            #endif
+        } label: {
+            LabeledContent {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            } label: {
+                Text("Category map")
+                Text("The words that pick a bill's category")
+            }
+        }
+        .foregroundStyle(.primary)
     }
 }

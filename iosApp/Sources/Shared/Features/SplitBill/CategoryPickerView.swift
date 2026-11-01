@@ -21,7 +21,7 @@ enum CategoryPickerCopy {
             return String(localized: "No word of your map. The bill stays in Other; tap the icon to pick one.")
         case .changed:
             let mapPath = state.mapCategory.map { self.path($0, in: state) } ?? ""
-            return String(localized: "You picked \(path). By the map it would be \(mapPath) (“\(term)”).")
+            return String(localized: "You picked \(path). By the map it would be \(mapPath) (“\(term)”). On saving, we ask whether the map learns.")
         default:
             return String(localized: "Category: \(path). Tap the icon to change it.")
         }
@@ -147,6 +147,9 @@ struct CategoryPickerView: View {
             searchSection
         } else {
             suggestionsSection
+            Section {
+                CategoryMapCardButton(model: model)
+            }
             Section("All categories") {
                 ForEach(state.categories.branches, id: \.category.id) { branch in
                     branchRow(branch, showsInline: showsInline)
@@ -547,5 +550,45 @@ extension View {
                 Text(verbatim: CategoryPickerCopy.deletionMessage(deletion, state: model.state))
             }
         }
+    }
+}
+
+/// "Category map" between Suggested and All categories (9.0): which word chose the bill's category, and the way to the
+/// words that choose it. It opens over the bill's form, which keeps what was typed.
+private struct CategoryMapCardButton: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        let state = model.state
+        Button {
+            model.send(SplitBillUiEventOnCategoryDismissed.shared)
+            model.send(SplitBillUiEventOnCategoryMapClicked.shared)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "tag")
+                    .foregroundStyle(Palette.accent)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Category map")
+                        .font(.headline)
+                    if let match = state.categoryMatches.first, let category = state.mapCategory {
+                        Text("\(CategoryCopy.name(category)) came from the word “\(match.term)”. See and edit the words that pick the category.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("See and edit the words that pick a bill's category from its title.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 }

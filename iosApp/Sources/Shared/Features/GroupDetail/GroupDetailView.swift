@@ -9,6 +9,7 @@ final class GroupDetailModel {
     private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
+    private(set) var teachErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -27,6 +28,7 @@ final class GroupDetailModel {
             case is GroupDetailUiActionShowLeaveError: self?.leaveErrorCount += 1
             case is GroupDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
+            case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
             default: break
             }
         })
@@ -158,9 +160,31 @@ struct GroupDetailView: View {
             onUndo: { model?.send(GroupDetailUiEventOnUndoPaymentClicked.shared) },
             onShown: { model?.send(GroupDetailUiEventOnRecordedPaymentNoticeShown.shared) },
         )
+        .glassToast("Couldn't teach the map. Try again.", trigger: model?.teachErrorCount ?? 0)
+        .safeAreaInset(edge: .bottom) {
+            if let model, let teach = model.state.teach, !teach.isPickingWord {
+                CategoryTeachBanner(teach: teach, model: model)
+            }
+        }
+        .sheet(isPresented: teachShown) {
+            if let model, let teach = model.state.teach {
+                NavigationStack { CategoryTeachSheet(teach: teach, model: model) }
+                    .formSheetSizing()
+            }
+        }
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
         }
+    }
+
+    /// "Teach the map" (9.3f) while the person picks the word; closing it any way is "Not now".
+    private var teachShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.teach?.isPickingWord == true },
+            set: { shown in
+                if !shown, model?.current.teach != nil { model?.send(GroupDetailUiEventOnTeachDismissed.shared) }
+            },
+        )
     }
 
     /// Dismissing the alert any other way than "Delete" closes the confirmation in the ViewModel too.

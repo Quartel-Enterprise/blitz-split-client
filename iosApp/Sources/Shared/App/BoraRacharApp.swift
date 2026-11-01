@@ -38,5 +38,11 @@ struct BoraRacharApp: App {
             GroupsCommands()
         }
         #endif
+        #if os(macOS)
+        // ⌘, : "Categories" holds the category map (9.1), as the canvas draws the Mac
+        Settings {
+            MacSettingsView()
+        }
+        #endif
     }
 }
