@@ -9,6 +9,10 @@ final class AppModel {
     private(set) var isReady: Bool
     private(set) var backStack: [AppRoute]
     private(set) var theme: ThemePreference
+    /// Whether the window has an iPad's room (`ScreenLayout.isLarge`), which decides whether a key or a bill opens as
+    /// a sheet. Nil until the root first measures the window, so nothing is pushed or presented by a guess; it only
+    /// changes when the window crosses the threshold, never on each step of a live resize.
+    private(set) var isLargeWindow: Bool?
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -29,6 +33,17 @@ final class AppModel {
         })
     }
 
+    /// Whether the root measured the window yet: until then it draws nothing, as while the start route loads.
+    var isWindowMeasured: Bool {
+        isLargeWindow != nil
+    }
+
+    /// The root's measure of the window, kept only when it moves `isLargeWindow`.
+    func windowMeasured(_ window: ScreenLayout) {
+        guard isLargeWindow != window.isLarge else { return }
+        isLargeWindow = window.isLarge
+    }
+
     var root: AppRoute {
         backStack.first ?? .welcome
     }
@@ -43,14 +58,15 @@ final class AppModel {
         }
     }
 
-    /// The entry a sheet shows instead of a pushed screen (a key or a bill on iPad and Mac, deleting the
-    /// account): the top one, or the one under it while a second sheet stacks over it or a screen is pushed inside it.
+    /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room and on the Mac,
+    /// deleting the account): the top one, or the one under it while a second sheet stacks over it or a screen is
+    /// pushed inside it.
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {
             if isSheetStacked { return backStack[backStack.count - 2] }
             if sheetPushCount > 0 { return backStack[backStack.count - 1 - sheetPushCount] }
-            guard backStack.count > 1, let top = backStack.last, top.presentsAsSheet else { return nil }
+            guard backStack.count > 1, let top = backStack.last, presentsAsSheet(top) else { return nil }
             return top
         }
         set {
@@ -73,13 +89,13 @@ final class AppModel {
     /// How many entries on top are pushed inside the sheet right under them.
     private var sheetPushCount: Int {
         let pushed = backStack.reversed().prefix { $0.pushesInSheet }.count
-        guard pushed > 0, backStack.count > pushed + 1, backStack[backStack.count - 1 - pushed].presentsAsSheet else {
+        guard pushed > 0, backStack.count > pushed + 1, presentsAsSheet(backStack[backStack.count - 1 - pushed]) else {
             return 0
         }
         return pushed
     }
 
-    /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet on iPad and Mac.
+    /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet (iPad's room, Mac).
     var stackedSheet: AppRoute? {
         get { isSheetStacked ? backStack.last : nil }
         set {
@@ -90,8 +106,14 @@ final class AppModel {
 
     /// The two top entries both open as sheets, so the second one stacks over the first instead of taking its place.
     private var isSheetStacked: Bool {
-        backStack.count > 2 && backStack[backStack.count - 1].presentsAsSheet
-            && backStack[backStack.count - 2].presentsAsSheet
+        backStack.count > 2 && presentsAsSheet(backStack[backStack.count - 1])
+            && presentsAsSheet(backStack[backStack.count - 2])
+    }
+
+    /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either.
+    private func presentsAsSheet(_ route: AppRoute) -> Bool {
+        guard let isLargeWindow else { return false }
+        return route.presentsAsSheet(isLargeWindow: isLargeWindow)
     }
 
     private var modalCount: Int {

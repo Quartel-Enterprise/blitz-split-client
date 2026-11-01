@@ -9,6 +9,7 @@ new features or modifying existing ones.
 - [@docs/architecture/use-cases.md](architecture/use-cases.md)
 - [@docs/architecture/dependency-injection.md](architecture/dependency-injection.md)
 - [@docs/architecture/navigation.md](architecture/navigation.md)
+- [@docs/architecture/responsive-layouts.md](architecture/responsive-layouts.md)
 - [@docs/architecture/data-sources-and-sync.md](architecture/data-sources-and-sync.md)
 - [@docs/architecture/coroutine-error-handling.md](architecture/coroutine-error-handling.md)
 - [@docs/architecture/new-feature-checklist.md](architecture/new-feature-checklist.md)

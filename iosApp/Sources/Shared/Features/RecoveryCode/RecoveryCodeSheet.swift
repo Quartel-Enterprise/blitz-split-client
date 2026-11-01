@@ -80,7 +80,7 @@ struct RecoveryCodeSheet: View {
         .scrollBounceBehavior(.basedOnSize)
         #if os(iOS)
         .presentationDetents([.height(contentHeight)])
-        .presentationSizing(.form)
+        .formSheetSizing()
         #else
         .frame(width: 480)
         .frame(minHeight: 420)

@@ -51,13 +51,15 @@ import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCode
 
 /*
  * Why: the body shared by the bottom sheet (phone) and the dialog (tablet). Lying down on a phone
- * it splits into two columns so "Já guardei" stays visible without scrolling.
+ * it splits into two columns so "Já guardei" stays visible without scrolling. In a book's half the
+ * dialog is narrower, so its two options stack, as the canvas draws it.
  */
 @Composable
 fun RecoveryCodeContent(
     formattedCode: String,
     state: RecoveryCodeUiState,
     layout: DeviceLayout,
+    isInHalf: Boolean,
     onEvent: (RecoveryCodeUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -106,7 +108,7 @@ fun RecoveryCodeContent(
             RecoveryCodeOptionsColumn(
                 state = state,
                 onEvent = onEvent,
-                isSideBySide = layout.isTablet,
+                isSideBySide = layout.isTablet && !isInHalf,
             )
             RecoveryCodeActionsRow(
                 onEvent = onEvent,
@@ -358,6 +360,7 @@ private fun RecoveryCodeContentPreview() {
                     isConnectExpanded = false,
                 ),
                 layout = DeviceLayout.PhonePortrait,
+                isInHalf = false,
                 onEvent = {},
                 modifier = Modifier.padding(24.dp),
             )

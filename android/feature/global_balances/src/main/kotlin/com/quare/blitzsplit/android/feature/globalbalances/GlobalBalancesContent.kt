@@ -44,7 +44,6 @@ import com.quare.blitzsplit.android.designsystem.component.HomeTab
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
-import com.quare.blitzsplit.android.designsystem.layout.ListDetailPaneSpacing
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
@@ -234,7 +233,7 @@ private fun BalancesListDetailLayout(
                 .weight(1f)
                 .fillMaxHeight()
                 .padding(
-                    start = ListDetailPaneSpacing,
+                    start = listDetail.paneSpacing,
                     end = if (listDetail.isBook) 16.dp else 32.dp,
                     top = 8.dp,
                 ),

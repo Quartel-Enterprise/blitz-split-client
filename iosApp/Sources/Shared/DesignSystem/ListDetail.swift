@@ -1,21 +1,18 @@
 import SwiftUI
 
-#if os(iOS)
-import UIKit
-#endif
-
 extension ScreenLayout {
-    /// The canvas' list and detail of Grupos and Saldos on an iPad lying down (1180×820): the list in one column and
-    /// what it opened beside it. Upright, in Split View and on iPhone, the detail opens over the list.
-    var showsListDetailOnPad: Bool {
+    /// The canvas' list and detail of Grupos and Saldos lying down with an iPad's room (an iPad at 1180×820, an
+    /// iPhone Duo open at 920×648): the list in one column and what it opened beside it. Upright, in a narrow Split
+    /// View and on an iPhone, even a large one lying down, the detail opens over the list. The Mac has its own rules.
+    var showsListDetail: Bool {
         #if os(iOS)
-        UIDevice.current.userInterfaceIdiom == .pad && isLarge && size.width > size.height
+        isLarge && size.width > size.height
         #else
         false
         #endif
     }
 
-    /// The list's column beside the detail on an iPad lying down, sidebar of the tabs aside.
+    /// The list's column beside the detail lying down, sidebar of the tabs aside.
     static let listColumnWidth: CGFloat = 400
 }
 

@@ -5,15 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.unit.width
 
-private val tabletSmallestWidth = 600.dp
-private val formDialogLongestSide = 960.dp
+private val formDialogFormFactors = setOf(FormFactor.TabletPortrait, FormFactor.TabletLandscape)
+private val groupDialogFormFactors = formDialogFormFactors + FormFactor.FoldableUpright
 
 /*
  * Why: the canvas draws every screen four times (phone and tablet, each upright and lying down).
@@ -56,7 +54,7 @@ private fun deviceLayoutOf(
     width: Dp,
     height: Dp,
 ): DeviceLayout = DeviceLayout(
-    isTablet = min(width, height) >= tabletSmallestWidth,
+    isTablet = min(width, height) >= TabletSmallestWidth,
     isLandscape = width > height,
 )
 
@@ -75,54 +73,38 @@ fun AdaptiveScreen(
 }
 
 /*
- * Why: the canvas opens a form like a new payment key as a 560dp dialog on a tablet, but full screen on an
- * unfolded foldable, whose inner screen (under 960dp on its longest side) a centered dialog would cross at
- * the hinge.
+ * Why: the canvas opens a form like a new payment key as a 560dp dialog on a tablet, but full screen on any
+ * foldable, which a centered dialog would cross at the hinge. The foldable is the one the device reports (decision
+ * 8), or a window under 960dp on its longest side that reports none.
  */
 @Composable
-fun rememberUsesFormDialog(): Boolean {
-    val size = LocalWindowInfo.current.containerSize
-    val density = LocalDensity.current
-    return remember(size, density) {
-        with(density) {
-            val width = size.width.toDp()
-            val height = size.height.toDp()
-            min(width, height) >= tabletSmallestWidth && max(width, height) >= formDialogLongestSide
-        }
-    }
-}
+fun rememberUsesFormDialog(): Boolean = rememberFoldLayout().formFactor in formDialogFormFactors
 
 /*
  * Why: the canvas draws what opens over a group (Rachar conta, Conta, Registrar pagamento) as a dialog on a tablet
- * and on the upright foldable, and full screen (or a sheet) on a phone, lying down and on the tabletop (a foldable
- * lying down, under 960dp wide), unlike the other forms, which open full screen on any foldable.
+ * and on the foldable upright (its hinge across and flat), and full screen (or a sheet) on a phone, lying down, on a
+ * book and on a tabletop, unlike the other forms, which open full screen on any foldable. The book's dialog in the
+ * end half (FoldDialog) is each flow's to adopt.
  */
 @Composable
-fun rememberUsesGroupDialog(): Boolean {
-    val size = LocalWindowInfo.current.containerSize
-    val density = LocalDensity.current
-    return remember(size, density) {
-        with(density) {
-            val width = size.width.toDp()
-            val height = size.height.toDp()
-            val isTablet = min(width, height) >= tabletSmallestWidth
-            isTablet && (height > width || max(width, height) >= formDialogLongestSide)
-        }
-    }
-}
+fun rememberUsesGroupDialog(): Boolean = rememberFoldLayout().formFactor in groupDialogFormFactors
 
-// Why: in the pane beside the home's list, a group's screen takes the one column of a tablet upright.
+/*
+ * Why: the activity's window, the one FoldLayout reads, so a screen inside a dialog's window still sizes itself by
+ * what it opened over and agrees with rememberFoldLayout() on whether it is a tablet. In the pane beside the home's
+ * list, a group's screen takes the one column of a tablet upright.
+ */
 @Composable
 fun rememberDeviceLayout(): DeviceLayout {
-    val size = LocalWindowInfo.current.containerSize
-    val density = LocalDensity.current
+    val window = rememberFoldLayout().windowBounds
     val isInDetailPane = LocalInDetailPane.current
-    return remember(size, density, isInDetailPane) {
-        if (isInDetailPane) return@remember DeviceLayout.TabletPortrait
-        with(density) {
+    return remember(window, isInDetailPane) {
+        if (isInDetailPane) {
+            DeviceLayout.TabletPortrait
+        } else {
             deviceLayoutOf(
-                width = size.width.toDp(),
-                height = size.height.toDp(),
+                width = window.width,
+                height = window.height,
             )
         }
     }

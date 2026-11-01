@@ -74,12 +74,13 @@ struct GlobalBalancesView: View {
     /// The whole screen, the column beside the list included, so showing it never changes what decides it.
     @State private var layout = ScreenLayout()
 
-    /// The canvas' list and detail: an iPad lying down, a Mac window wide enough for the inspector.
+    /// The canvas' list and detail: lying down with an iPad's room (an iPad, an iPhone Duo open), a Mac window wide
+    /// enough for the inspector.
     private var showsDetail: Bool {
         #if os(macOS)
         layout.size.width >= PersonInspector.minimumScreenWidth
         #else
-        layout.showsListDetailOnPad
+        layout.showsListDetail
         #endif
     }
 

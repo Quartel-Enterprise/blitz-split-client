@@ -29,7 +29,7 @@ feature/                # Presentation only: ViewModel, UiState, UiEvent, UiActi
 ├── groups/
 └── create_group/
 android/
-├── designsystem/       # BlitzSplitTheme, DeviceLayout, DevicePreviews, shared composables
+├── designsystem/       # BlitzSplitTheme, DeviceLayout, FoldLayout, DevicePreviews, shared composables
 ├── platform/           # Credential Manager (Google), password manager, QR scanner
 └── feature/            # The Compose UI of each feature: XScreen + XContent
     ├── welcome/

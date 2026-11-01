@@ -29,8 +29,9 @@ each platform.
       `settings.gradle.kts` and add it to `androidApp/build.gradle.kts`
 - [ ] `XScreen(viewModel: XViewModel = koinViewModel())`: collects `uiState` with `collectAsStateWithLifecycle()`,
       handles `uiAction` in a `LaunchedEffect(viewModel)`, calls `XContent`
-- [ ] `XContent(state, onEvent, modifier)`: stateless, adaptive through `AdaptiveScreen` / `DeviceLayout`, with
-      `@DevicePreviews` previews wrapped in `BlitzSplitTheme`
+- [ ] `XContent(state, onEvent, modifier)`: stateless, adaptive through `AdaptiveScreen` / `DeviceLayout` and, where
+      the boards draw a foldable of their own, `FormFactor` and the hinge layouts (see
+      [responsive-layouts.md](responsive-layouts.md)), with `@DevicePreviews` previews wrapped in `BlitzSplitTheme`
 - [ ] The `entry<Route.X>` in `AppNavDisplay`, or a slot the host screen takes when it is drawn inside another
       feature (as `GroupsScreen(recoveryCodeSheet = …)`)
 - [ ] Strings in English in the module's `res/values/strings.xml` and in Portuguese in `res/values-pt/strings.xml`
@@ -41,7 +42,8 @@ each platform.
 - [ ] `fun createXViewModel(): ViewModelHolder<XViewModel>` in `BlitzSplitApple`
 - [ ] `iosApp/Sources/Shared/Features/<Name>/XView.swift`: an `@Observable final class XModel` (holder, `WatchBag`,
       `stateWatcher`, `actionWatcher`, `send`, `isolated deinit { holder.clear() }`) and the `XView`; code that
-      differs by platform goes behind `#if os(macOS)` or into `Sources/iOS` / `Sources/macOS`
+      differs by platform goes behind `#if os(macOS)` or into `Sources/iOS` / `Sources/macOS`; layout follows the
+      window's size (`ScreenLayout`), never the idiom (see [responsive-layouts.md](responsive-layouts.md))
 - [ ] The route in `AppRoute` and `RootView`, or the sheet where its host presents it
 - [ ] Strings as English SwiftUI literals with their pt-BR translation in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
       both `BoraRachar-iOS` and `BoraRachar-macOS`

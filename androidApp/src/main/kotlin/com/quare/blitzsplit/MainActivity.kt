@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.quare.blitzsplit.android.designsystem.layout.FoldLayoutRoot
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
@@ -55,7 +56,9 @@ class MainActivity : ComponentActivity() {
                 )
             }
             BlitzSplitTheme(isDark = isDark) {
-                AppNavDisplay(appViewModel = appViewModel)
+                FoldLayoutRoot {
+                    AppNavDisplay(appViewModel = appViewModel)
+                }
             }
         }
     }
