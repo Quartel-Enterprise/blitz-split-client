@@ -101,34 +101,43 @@ private fun billHitsOf(
     foldedQuery: String,
 ): List<SearchBillHit> = groups
     .flatMap { item ->
+        val payersOf = PayersOfGroup(item.group)
         item.expenses.mapNotNull { expense ->
             GroupNameFilter.findMatchOrNull(expense.description, foldedQuery)?.let { match ->
-                billHitOf(item.group, expense, match)
+                billHitOf(item.group, expense, match, payersOf)
             }
         }
     }.sortedByDescending { it.spentAt }
+
+// Why: the group's names and payer order, built once per group rather than once per bill found.
+private class PayersOfGroup(
+    group: Group,
+) {
+    private val namesById = group.members.associate { it.id to it.name }
+    private val meId = group.members.firstOrNull { it.isMe }?.id
+    private val order = PayerOrder(group.members)
+
+    fun of(expense: Expense): List<SearchBillPayer> = order.sort(expense.payers.map { it.memberId }).map { id ->
+        SearchBillPayer(
+            name = namesById[id],
+            isMe = id == meId,
+        )
+    }
+}
 
 private fun billHitOf(
     group: Group,
     expense: Expense,
     match: TextMatch,
-): SearchBillHit {
-    val namesById = group.members.associate { it.id to it.name }
-    val meId = group.members.firstOrNull { it.isMe }?.id
-    return SearchBillHit(
-        id = expense.id,
-        groupId = group.id,
-        groupName = group.name,
-        description = expense.description,
-        descriptionMatch = match,
-        totalMinor = expense.amountMinor,
-        currency = group.currency,
-        payers = PayerOrder(group.members).sort(expense.payers.map { it.memberId }).map { id ->
-            SearchBillPayer(
-                name = namesById[id],
-                isMe = id == meId,
-            )
-        },
-        spentAt = expense.spentAt,
-    )
-}
+    payersOf: PayersOfGroup,
+): SearchBillHit = SearchBillHit(
+    id = expense.id,
+    groupId = group.id,
+    groupName = group.name,
+    description = expense.description,
+    descriptionMatch = match,
+    totalMinor = expense.amountMinor,
+    currency = group.currency,
+    payers = payersOf.of(expense),
+    spentAt = expense.spentAt,
+)
