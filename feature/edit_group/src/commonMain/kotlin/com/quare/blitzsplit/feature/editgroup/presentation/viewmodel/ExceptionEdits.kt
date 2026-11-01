@@ -13,7 +13,14 @@ import com.quare.blitzsplit.feature.editgroup.presentation.model.ExceptionEditor
 internal fun DefaultSplitUiState.withExceptionOpened(categoryId: String?): DefaultSplitUiState {
     val saved = categoryId?.let { id -> exceptions.firstOrNull { it.categoryId == id } }
     val mode = saved?.mode ?: DefaultSplitMode.EQUAL
-    val people = people.map { it.inException(mode, saved?.weights?.let { weights -> weights[it.id] ?: newcomerOf(mode) }) }
+    val people = people.map {
+        it.toExceptionPerson(
+            mode,
+            saved?.weights?.let { weights ->
+                weights[it.id] ?: newcomerOf(mode)
+            },
+        )
+    }
     val main = saved?.let { categories.mainOf(categories.resolve(it.categoryId)) }
     return copy(
         exceptionEditor = ExceptionEditor(
@@ -42,17 +49,29 @@ internal fun DefaultSplitUiState.withExceptionCategory(categoryId: String): Defa
 // Why: who is in stays in: "Igual" checks them, "Partes" gives them one each, "Porcentagem" shares 100 among them.
 internal fun DefaultSplitUiState.withExceptionMode(mode: DefaultSplitMode): DefaultSplitUiState {
     val editor = exceptionEditor?.takeIf { mode in CategorySplit.modes && mode != it.mode } ?: return this
-    val inSplit = editor.figures.weights.filterValues { it > 0 }.keys.ifEmpty { editor.people.map { it.id }.toSet() }
+    val inSplit = editor.figures.weights
+        .filterValues { it > 0 }
+        .keys
+        .ifEmpty { editor.people.map { it.id }.toSet() }
     val percents = IncomePercents.of(editor.people.map { it.id to if (it.id in inSplit) 1L else 0L })
     val people = editor.people.map { person ->
         val isIn = person.id in inSplit
-        val weight = when (mode) {
-            DefaultSplitMode.PERCENT -> percents[person.id] ?: 0L
-            else -> if (isIn) 1L else 0L
+        val weight = if (mode == DefaultSplitMode.PERCENT) {
+            percents[person.id] ?: 0L
+        } else if (isIn) {
+            1L
+        } else {
+            0L
         }
-        person.inException(mode, weight)
+        person.toExceptionPerson(mode, weight)
     }
-    return copy(exceptionEditor = editor.copy(mode = mode, people = people, figures = figuresOf(mode, people)))
+    return copy(
+        exceptionEditor = editor.copy(
+            mode = mode,
+            people = people,
+            figures = figuresOf(mode, people),
+        ),
+    )
 }
 
 internal fun DefaultSplitUiState.withExceptionPerson(
@@ -61,7 +80,12 @@ internal fun DefaultSplitUiState.withExceptionPerson(
 ): DefaultSplitUiState {
     val editor = exceptionEditor ?: return this
     val people = editor.people.map { if (it.id == memberId) change(it) else it }
-    return copy(exceptionEditor = editor.copy(people = people, figures = figuresOf(editor.mode, people)))
+    return copy(
+        exceptionEditor = editor.copy(
+            people = people,
+            figures = figuresOf(editor.mode, people),
+        ),
+    )
 }
 
 // Why: "Salvar exceção" changes the list in place, or adds it at the end.
@@ -96,7 +120,7 @@ internal fun DefaultSplitUiState.withExceptionRemoved(): DefaultSplitUiState {
 
 private fun newcomerOf(mode: DefaultSplitMode): Long = GroupDefaultSplit(mode, emptyMap(), emptyList()).weightOf("")
 
-private fun DefaultSplitPerson.inException(
+private fun DefaultSplitPerson.toExceptionPerson(
     mode: DefaultSplitMode,
     weight: Long?,
 ): DefaultSplitPerson {

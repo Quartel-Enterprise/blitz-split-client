@@ -71,7 +71,7 @@ class BillCategoryViewModelTest {
     }
 
     @Test
-    fun `GIVEN Mercado typed WHEN saving THEN the bill is Alimentação › Mercado by the map's word`() = runTest {
+    fun `GIVEN Mercado typed WHEN saving THEN the bill is Alimentacao in Mercado by the map word`() = runTest {
         // Given
         prepareScenario()
 
@@ -144,7 +144,12 @@ class BillCategoryViewModelTest {
     fun `GIVEN a saved bill WHEN editing it THEN keeps its category whatever the map says`() = runTest {
         // Given
         prepareScenario(
-            stored = listOf(bill.copy(description = "Mercado", categoryId = AppCategory.HOME_GAS.key)),
+            stored = listOf(
+                bill.copy(
+                    description = "Mercado",
+                    categoryId = AppCategory.HOME_GAS.key,
+                ),
+            ),
             expenseId = BILL_ID,
         )
 
@@ -157,13 +162,22 @@ class BillCategoryViewModelTest {
     }
 
     @Test
-    fun `GIVEN bills of the group WHEN opening the picker THEN suggests the map's first, then the most used`() = runTest {
+    fun `GIVEN bills of the group WHEN opening the picker THEN suggests the map first then the most used`() = runTest {
         // Given
         prepareScenario(
             stored = listOf(
-                bill.copy(id = "b1", categoryId = AppCategory.FOOD_RESTAURANT.key),
-                bill.copy(id = "b2", categoryId = AppCategory.FOOD_RESTAURANT.key),
-                bill.copy(id = "b3", categoryId = AppCategory.TRAVEL_LODGING.key),
+                bill.copy(
+                    id = "b1",
+                    categoryId = AppCategory.FOOD_RESTAURANT.key,
+                ),
+                bill.copy(
+                    id = "b2",
+                    categoryId = AppCategory.FOOD_RESTAURANT.key,
+                ),
+                bill.copy(
+                    id = "b3",
+                    categoryId = AppCategory.TRAVEL_LODGING.key,
+                ),
             ),
             groupCategories = listOf(churrasco),
         )
@@ -175,7 +189,12 @@ class BillCategoryViewModelTest {
         // Then
         val state = viewModel.uiState.value
         assertEquals(
-            listOf(AppCategory.FOOD_MARKET.key, AppCategory.FOOD_RESTAURANT.key, AppCategory.TRAVEL_LODGING.key, "churrasco"),
+            listOf(
+                AppCategory.FOOD_MARKET.key,
+                AppCategory.FOOD_RESTAURANT.key,
+                AppCategory.TRAVEL_LODGING.key,
+                "churrasco",
+            ),
             state.categorySuggestions.map { it.category.id },
         )
         assertEquals(
@@ -193,7 +212,7 @@ class BillCategoryViewModelTest {
     }
 
     @Test
-    fun `GIVEN a search WHEN typing THEN finds by the start of a word, and nothing for an unknown one`() = runTest {
+    fun `GIVEN a search WHEN typing THEN finds by the start of a word and nothing for an unknown one`() = runTest {
         // Given
         prepareScenario()
         viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
@@ -220,7 +239,12 @@ class BillCategoryViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnNewCategoryClicked(parentId = null, name = "Pet"))
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
         viewModel.onEvent(SplitBillUiEvent.OnCategoryIconPicked(CategoryIcon.PAW))
         viewModel.onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked)
 
@@ -234,11 +258,16 @@ class BillCategoryViewModelTest {
     }
 
     @Test
-    fun `GIVEN a name already in the same category WHEN typing it THEN Salvar waits, elsewhere it doesn't`() = runTest {
+    fun `GIVEN a name already in the same category WHEN typing it THEN Salvar waits elsewhere it does not`() = runTest {
         // Given
         prepareScenario(groupCategories = listOf(churrasco))
         viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
-        viewModel.onEvent(SplitBillUiEvent.OnNewCategoryClicked(parentId = AppCategory.FOOD.key, name = ""))
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = AppCategory.FOOD.key,
+                name = "",
+            ),
+        )
 
         // When
         viewModel.onEvent(SplitBillUiEvent.OnCategoryNameChanged("churrasco"))
@@ -257,61 +286,75 @@ class BillCategoryViewModelTest {
     }
 
     @Test
-    fun `GIVEN the bill on a group subcategory WHEN deleting it THEN says how many bills move and the bill goes to its parent`() =
+    fun `GIVEN the bill on a group subcategory WHEN deleting it THEN its bills move to the parent`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                bill.copy(categoryId = "churrasco"),
+                bill.copy(
+                    id = "b2",
+                    categoryId = "churrasco",
+                ),
+            ),
+            groupCategories = listOf(churrasco),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked("churrasco"))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteClicked)
+        val asked = viewModel.uiState.value.categoryDeletion
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed)
+
+        // Then
+        assertEquals(2, asked?.billCount)
+        assertEquals(AppCategory.FOOD.key, asked?.movesTo?.id)
+        val state = viewModel.uiState.value
+        assertEquals(AppCategory.FOOD.key, state.category.id)
+        assertNull(state.categoryDeletion)
+        assertTrue(
+            categories.groupCategories.value
+                .single()
+                .isDeleted,
+        )
+    }
+
+    @Test
+    fun `GIVEN an exception for Mercado WHEN the bills category changes THEN its split follows the category`() =
         runTest {
             // Given
             prepareScenario(
-                stored = listOf(bill.copy(categoryId = "churrasco"), bill.copy(id = "b2", categoryId = "churrasco")),
-                groupCategories = listOf(churrasco),
-            )
-            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
-            viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked("churrasco"))
-            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
-            viewModel.onEvent(SplitBillUiEvent.OnEditCategoryClicked("churrasco"))
-
-            // When
-            viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteClicked)
-            val asked = viewModel.uiState.value.categoryDeletion
-            viewModel.onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed)
-
-            // Then
-            assertEquals(2, asked?.billCount)
-            assertEquals(AppCategory.FOOD.key, asked?.movesTo?.id)
-            val state = viewModel.uiState.value
-            assertEquals(AppCategory.FOOD.key, state.category.id)
-            assertNull(state.categoryDeletion)
-            assertTrue(categories.groupCategories.value.single().isDeleted)
-        }
-
-    @Test
-    fun `GIVEN an exception for Mercado WHEN the bill's category changes THEN its split follows the category's`() = runTest {
-        // Given
-        prepareScenario(
-            storedGroup = home.copy(
-                defaultSplit = GroupDefaultSplit(
-                    mode = DefaultSplitMode.SHARES,
-                    weights = mapOf(PIERRE to 3L, ANA to 1L),
-                    exceptions = listOf(
-                        CategorySplit(AppCategory.FOOD_MARKET.key, DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 1L)),
+                storedGroup = home.copy(
+                    defaultSplit = GroupDefaultSplit(
+                        mode = DefaultSplitMode.SHARES,
+                        weights = mapOf(PIERRE to 3L, ANA to 1L),
+                        exceptions = listOf(
+                            CategorySplit(
+                                AppCategory.FOOD_MARKET.key,
+                                DefaultSplitMode.EQUAL,
+                                mapOf(PIERRE to 1L, ANA to 1L),
+                            ),
+                        ),
                     ),
                 ),
-            ),
-        )
-        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("248,00"))
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("248,00"))
 
-        // When
-        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Supermercado"))
-        val market = viewModel.uiState.value
-        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Conta de luz"))
-        val power = viewModel.uiState.value
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Supermercado"))
+            val market = viewModel.uiState.value
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Conta de luz"))
+            val power = viewModel.uiState.value
 
-        // Then
-        assertEquals(SplitMode.EQUAL, market.split.mode)
-        assertEquals(AppCategory.FOOD_MARKET.key, market.defaultSplitException?.id)
-        assertTrue(market.splitFollowsDefault)
-        assertEquals(SplitMode.SHARES, power.split.mode)
-        assertNull(power.defaultSplitException)
-    }
+            // Then
+            assertEquals(SplitMode.EQUAL, market.split.mode)
+            assertEquals(AppCategory.FOOD_MARKET.key, market.defaultSplitException?.id)
+            assertTrue(market.splitFollowsDefault)
+            assertEquals(SplitMode.SHARES, power.split.mode)
+            assertNull(power.defaultSplitException)
+        }
 
     private val pierre = GroupMember(
         id = PIERRE,

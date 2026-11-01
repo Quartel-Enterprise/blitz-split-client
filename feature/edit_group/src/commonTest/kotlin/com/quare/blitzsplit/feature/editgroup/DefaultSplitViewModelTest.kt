@@ -475,16 +475,29 @@ class DefaultSplitViewModelTest {
             // Then
             assertFalse(opened.canSaveException)
             assertEquals(
-                listOf(CategorySplit(AppCategory.FOOD_MARKET.key, DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 1L))),
+                listOf(
+                    CategorySplit(AppCategory.FOOD_MARKET.key, DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 1L)),
+                ),
                 added.exceptions,
             )
             assertTrue(added.hasChanges)
-            assertEquals(AppCategory.FOOD_MARKET.key, added.exceptionRows.single().category.id)
-            assertEquals(added.exceptions, groups.savedDefaultSplits.single().second?.exceptions)
+            assertEquals(
+                AppCategory.FOOD_MARKET.key,
+                added.exceptionRows
+                    .single()
+                    .category.id,
+            )
+            assertEquals(
+                added.exceptions,
+                groups.savedDefaultSplits
+                    .single()
+                    .second
+                    ?.exceptions,
+            )
         }
 
     @Test
-    fun `GIVEN an exception WHEN changing it to percentages that don't add up THEN it can't be saved until they do`() =
+    fun `GIVEN an exception WHEN changing it to percentages that do not add up THEN it waits until they do`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
@@ -504,7 +517,7 @@ class DefaultSplitViewModelTest {
         }
 
     @Test
-    fun `GIVEN an exception for Mercado WHEN adding another for Mercado THEN it is taken, and removing it empties the list`() =
+    fun `GIVEN an exception for Mercado WHEN adding another for Mercado THEN it is taken and removing empties it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
@@ -526,7 +539,14 @@ class DefaultSplitViewModelTest {
             assertNull(state.exceptionEditor)
         }
 
-    private val market = CategorySplit(AppCategory.FOOD_MARKET.key, DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 1L))
+    private val market = CategorySplit(
+        AppCategory.FOOD_MARKET.key,
+        DefaultSplitMode.EQUAL,
+        mapOf(
+            PIERRE to 1L,
+            ANA to 1L,
+        ),
+    )
 
     private fun prepareScenario(
         storedGroup: Group = home,

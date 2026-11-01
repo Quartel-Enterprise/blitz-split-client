@@ -2,8 +2,6 @@ package com.quare.blitzsplit.android.feature.groupstats
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.StatsChartType
@@ -11,6 +9,7 @@ import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
@@ -19,6 +18,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import kotlin.time.Duration.Companion.days
 
 // Why: Viagem Floripa as the canvas draws it, 24 to 29 October 2026.
@@ -100,13 +100,13 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
             amountMinor = 72_000L,
             isPending = false,
         ),
-        categories = previewCategories(),
+        categories = createPreviewCategories(),
         isLoaded = true,
     )
 }
 
 // Why: a trip mostly spent on lodging and food, as the canvas draws it.
-private fun previewCategories(): List<StatsCategoryRow> {
+private fun createPreviewCategories(): List<StatsCategoryRow> {
     val tree = CategoryTree.appOnly
     return listOf(
         Triple(AppCategory.TRAVEL, 120_000L, 50),

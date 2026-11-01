@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.editgroup
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -32,7 +30,6 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -44,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.ChoiceChipSurface
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
@@ -84,7 +82,10 @@ internal fun ExceptionsSection(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 60.dp)
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 8.dp,
+                            ),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -107,7 +108,11 @@ internal fun ExceptionsSection(
         }
     }
     TextButton(onClick = { onEvent(DefaultSplitUiEvent.OnAddExceptionClicked) }) {
-        Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.Outlined.Add,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+        )
         Text(
             text = stringResource(R.string.default_split_exception_add),
             modifier = Modifier.padding(start = 8.dp),
@@ -124,10 +129,12 @@ private fun exceptionSummaryOf(
     val values = row.valuesOf(state.people.map { it.id })
     return when (row.exception.mode) {
         DefaultSplitMode.SHARES -> stringResource(R.string.default_split_exception_shares, sharesTextOf(values))
+
         DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> stringResource(
             R.string.default_split_exception_percent,
             values.map { stringResource(R.string.default_split_exception_percent_value, it) }.joinToString(" · "),
         )
+
         DefaultSplitMode.EQUAL -> if (row.includedCount >= row.totalCount) {
             stringResource(R.string.default_split_exception_equal_all)
         } else {
@@ -163,7 +170,11 @@ internal fun ExceptionSheet(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 24.dp,
+                ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -179,7 +190,7 @@ internal fun ExceptionSheet(
                 )
             }
             SectionLabel(stringResource(R.string.default_split_exception_category))
-            CategoryChips(
+            CategoryChipRow(
                 categories = state.exceptionMains,
                 selectedId = editor.categoryId,
                 openId = editor.openMainId,
@@ -187,7 +198,7 @@ internal fun ExceptionSheet(
             )
             val subcategories = state.exceptionSubcategories
             if (subcategories.isNotEmpty()) {
-                CategoryChips(
+                CategoryChipRow(
                     categories = subcategories,
                     selectedId = editor.categoryId,
                     openId = null,
@@ -199,11 +210,13 @@ internal fun ExceptionSheet(
                 labels = state.exceptionModes.map { stringResource(it.exceptionLabelRes) },
                 selectedIndex = state.exceptionModes.indexOf(editor.mode),
                 groupLabel = stringResource(R.string.default_split_exception_how),
-                onClick = { index -> onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(state.exceptionModes[index])) },
+                onClick = { index ->
+                    onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(state.exceptionModes[index]))
+                },
                 itemRole = Role.RadioButton,
                 height = 44.dp,
             )
-            ExceptionPeople(
+            ExceptionPeopleList(
                 editor = editor,
                 onEvent = onEvent,
             )
@@ -240,7 +253,7 @@ internal fun ExceptionSheet(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CategoryChips(
+private fun CategoryChipRow(
     categories: List<Category>,
     selectedId: String?,
     openId: String?,
@@ -252,15 +265,8 @@ private fun CategoryChips(
     ) {
         categories.forEach { category ->
             val isSelected = category.id == selectedId || category.id == openId
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
-                contentColor = if (isSelected) {
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-                border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ChoiceChipSurface(
+                isSelected = isSelected,
                 modifier = Modifier.selectable(
                     selected = category.id == selectedId,
                     role = Role.RadioButton,
@@ -270,14 +276,24 @@ private fun CategoryChips(
                 Row(
                     modifier = Modifier
                         .heightIn(min = 32.dp)
-                        .padding(start = if (category.id == selectedId) 8.dp else 12.dp, end = 12.dp),
+                        .padding(
+                            start = if (category.id == selectedId) 8.dp else 12.dp,
+                            end = 12.dp,
+                        ),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (category.id == selectedId) {
-                        Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(
+                            Icons.Outlined.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
                     }
-                    Text(text = categoryName(category), style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        text = categoryName(category),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
             }
         }
@@ -285,7 +301,7 @@ private fun CategoryChips(
 }
 
 @Composable
-private fun ExceptionPeople(
+private fun ExceptionPeopleList(
     editor: ExceptionEditor,
     onEvent: (DefaultSplitUiEvent) -> Unit,
 ) {
@@ -310,11 +326,21 @@ private fun ExceptionPeople(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 56.dp)
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .padding(
+                            horizontal = 12.dp,
+                            vertical = 6.dp,
+                        ),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (editor.mode == DefaultSplitMode.EQUAL) Checkbox(checked = person.isIncluded, onCheckedChange = null)
+                    if (editor.mode ==
+                        DefaultSplitMode.EQUAL
+                    ) {
+                        Checkbox(
+                            checked = person.isIncluded,
+                            onCheckedChange = null,
+                        )
+                    }
                     AvatarBadge(
                         initial = person.initials,
                         color = person.avatarColor,
@@ -361,17 +387,21 @@ private fun exceptionStatusOf(
     val category = state.exceptionCategory
     return when {
         category == null -> stringResource(R.string.default_split_exception_pick)
+
         state.isExceptionCategoryTaken -> stringResource(R.string.default_split_exception_taken, categoryName(category))
+
         editor.showsPercentError && editor.remainingPercent > 0 -> stringResource(
             R.string.default_split_exception_percent_error,
             editor.percentSum.toInt(),
             editor.remainingPercent.toInt(),
         )
+
         editor.showsPercentError -> stringResource(
             R.string.default_split_exception_percent_over,
             editor.percentSum.toInt(),
             -editor.remainingPercent.toInt(),
         )
+
         else -> stringResource(
             R.string.default_split_exception_example,
             money.toText(editor.figures.exampleTotalMinor),

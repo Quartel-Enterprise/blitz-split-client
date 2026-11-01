@@ -1,14 +1,14 @@
 package com.quare.blitzsplit.feature.groupstats
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
-import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
-import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -643,7 +643,7 @@ class GroupStatsViewModelTest {
     )
 
     @Test
-    fun `GIVEN bills in categories WHEN the statistics open THEN Por categoria sums each main one, its subs and 100%`() =
+    fun `GIVEN bills in categories WHEN the statistics open THEN Por categoria sums mains and subs`() =
         runTest(testDispatcher) {
             // Given
             val at = millisOf("2026-10-28T12:00:00Z")
@@ -656,7 +656,16 @@ class GroupStatsViewModelTest {
                     expense("raffle", 200, at),
                 ),
                 groupCategories = listOf(
-                    GroupCategory("bbq", GROUP_ID, AppCategory.FOOD.key, "Churrasco", null, ANA, isDeleted = true, isPending = false),
+                    GroupCategory(
+                        "bbq",
+                        GROUP_ID,
+                        AppCategory.FOOD.key,
+                        "Churrasco",
+                        null,
+                        ANA,
+                        isDeleted = true,
+                        isPending = false,
+                    ),
                 ),
             )
 
@@ -674,28 +683,35 @@ class GroupStatsViewModelTest {
                 rows.first().subcategories.map { it.category.id },
             )
             assertEquals(listOf(AppCategory.FOOD_MARKET.key), rows[1].subcategories.map { it.category.id })
-            assertEquals(AppCategory.HOME.key, viewModel.uiState.value.topCategory?.category?.id)
+            assertEquals(
+                AppCategory.HOME.key,
+                viewModel.uiState.value.topCategory
+                    ?.category
+                    ?.id,
+            )
             assertEquals(1.0, rows.first().barFraction)
         }
 
     @Test
-    fun `GIVEN three equal categories WHEN rounding THEN the percentages still add up to 100`() = runTest(testDispatcher) {
-        // Given
-        val at = millisOf("2026-10-28T12:00:00Z")
-        prepareScenario(
-            stored = listOf(
-                expense("a", 100, at, categoryId = AppCategory.HOME.key),
-                expense("b", 100, at, categoryId = AppCategory.FOOD.key),
-                expense("c", 100, at, categoryId = AppCategory.LEISURE.key),
-            ),
-        )
+    fun `GIVEN three equal categories WHEN rounding THEN the percentages still add up to 100`() =
+        runTest(testDispatcher) {
+            // Given
+            val at = millisOf("2026-10-28T12:00:00Z")
+            prepareScenario(
+                stored = listOf(
+                    expense("a", 100, at, categoryId = AppCategory.HOME.key),
+                    expense("b", 100, at, categoryId = AppCategory.FOOD.key),
+                    expense("c", 100, at, categoryId = AppCategory.LEISURE.key),
+                ),
+            )
 
-        // When
-        val percents = viewModel.uiState.value.categories.map { it.percent }
+            // When
+            val percents = viewModel.uiState.value.categories
+                .map { it.percent }
 
-        // Then
-        assertEquals(100, percents.sum())
-    }
+            // Then
+            assertEquals(100, percents.sum())
+        }
 
     private fun paid(
         memberId: String,

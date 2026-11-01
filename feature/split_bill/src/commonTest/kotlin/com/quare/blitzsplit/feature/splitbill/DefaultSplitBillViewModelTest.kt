@@ -1,7 +1,5 @@
 package com.quare.blitzsplit.feature.splitbill
 
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
-import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -10,9 +8,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
@@ -220,7 +220,11 @@ class DefaultSplitBillViewModelTest {
         // Given
         prepareScenario(
             storedGroup = home.copy(
-                defaultSplit = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L), emptyList()),
+                defaultSplit = GroupDefaultSplit(
+                    DefaultSplitMode.INCOME,
+                    mapOf(PIERRE to 75L, ANA to 25L),
+                    emptyList(),
+                ),
             ),
         )
 
@@ -237,7 +241,8 @@ class DefaultSplitBillViewModelTest {
     fun `GIVEN percentages that lost someone who left WHEN a new bill opens THEN it splits equally among everyone`() =
         runTest(testDispatcher) {
             // Given
-            val percent = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf(PIERRE to 50L, ANA to 25L, CARLA to 25L), emptyList())
+            val percent =
+                GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf(PIERRE to 50L, ANA to 25L, CARLA to 25L), emptyList())
             prepareScenario(storedGroup = home.copy(defaultSplit = percent))
 
             // When
@@ -254,7 +259,11 @@ class DefaultSplitBillViewModelTest {
             // Given
             prepareScenario(
                 storedGroup = home.copy(
-                    defaultSplit = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L), emptyList()),
+                    defaultSplit = GroupDefaultSplit(
+                        DefaultSplitMode.EQUAL,
+                        mapOf(PIERRE to 1L, ANA to 0L),
+                        emptyList(),
+                    ),
                 ),
             )
 

@@ -49,10 +49,7 @@ class GroupCategoryMapperImpl : GroupCategoryMapper {
         pendingSync = false,
     )
 
-    /*
-     * Why: an upsert is checked against the server's insert policy as sent, also for a category that exists, so it
-     * always goes up as created by whoever pushes; the server keeps who really created it.
-     */
+    // Why: the server's insert policy checks each upsert as sent, so it names whoever pushes; the trigger keeps the first.
     override fun toDto(
         entity: GroupCategoryEntity,
         userId: String,

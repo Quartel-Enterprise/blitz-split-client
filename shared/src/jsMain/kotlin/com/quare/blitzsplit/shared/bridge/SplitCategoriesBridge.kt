@@ -93,8 +93,14 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
             CategoryHint.PICKED -> "picked"
         },
         matches = state.categoryMatches
-            .map { JsCategoryMatch(term = it.term, categoryId = it.categoryId, start = it.start, end = it.end) }
-            .toTypedArray(),
+            .map {
+                JsCategoryMatch(
+                    term = it.term,
+                    categoryId = it.categoryId,
+                    start = it.start,
+                    end = it.end,
+                )
+            }.toTypedArray(),
         isPickerOpen = state.categoryPicker != null,
         query = state.categoryPicker?.query.orEmpty(),
         openMainId = state.categoryPicker?.openMainId,
@@ -103,7 +109,9 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
             .map {
                 JsCategorySuggestion(
                     category = toJsCategory(it.category),
-                    reason = it.reason.name.lowercase().replace('_', '-'),
+                    reason = it.reason.name
+                        .lowercase()
+                        .replace('_', '-'),
                     isSelected = it.isSelected,
                 )
             }.toTypedArray(),
@@ -154,7 +162,10 @@ class SplitCategoriesPresenter internal constructor(
         send(SplitBillUiEvent.OnCategoryQueryChanged(text))
     }
 
-    fun getQuery(): String = viewModel().uiState.value.categoryPicker?.query.orEmpty()
+    fun getQuery(): String = viewModel()
+        .uiState.value.categoryPicker
+        ?.query
+        .orEmpty()
 
     fun toggleMain(categoryId: String) {
         send(SplitBillUiEvent.OnCategoryMainToggled(categoryId))
@@ -184,7 +195,10 @@ class SplitCategoriesPresenter internal constructor(
         send(SplitBillUiEvent.OnCategoryNameChanged(text))
     }
 
-    fun getName(): String = viewModel().uiState.value.categoryForm?.name.orEmpty()
+    fun getName(): String = viewModel()
+        .uiState.value.categoryForm
+        ?.name
+        .orEmpty()
 
     fun pickParent(parentId: String?) {
         send(SplitBillUiEvent.OnCategoryParentPicked(parentId))

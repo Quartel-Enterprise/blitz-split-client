@@ -29,7 +29,8 @@ internal object CategoryNames {
         return namesOf(category).any { TextFold.toFolded(it) == folded }
     }
 
-    private fun namesOf(category: Category): List<String> = category.app?.let(::appNamesOf) ?: listOfNotNull(category.name)
+    private fun namesOf(category: Category): List<String> =
+        category.app?.let(::appNamesOf) ?: listOfNotNull(category.name)
 
     private fun appNamesOf(category: AppCategory): List<String> = when (category) {
         AppCategory.FOOD -> listOf("Alimentação", "Food")

@@ -16,6 +16,9 @@ import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 
+private const val CORNER_FRACTION = 0.3f
+private const val ICON_FRACTION = 0.55f
+
 // Why: a category's icon on its main category's color, the same in a bill's row, the picker and the pie's legend.
 @Composable
 fun CategoryBadge(
@@ -38,6 +41,3 @@ fun CategoryBadge(
         )
     }
 }
-
-private const val CORNER_FRACTION = 0.3f
-private const val ICON_FRACTION = 0.55f

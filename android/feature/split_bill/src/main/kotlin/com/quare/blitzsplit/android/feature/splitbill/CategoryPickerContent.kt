@@ -1,13 +1,14 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -35,11 +35,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selected
@@ -83,10 +81,23 @@ internal fun CategoryPickerContent(
             navigationLabel = stringResource(R.string.split_bill_back),
             onNavigate = { onEvent(SplitBillUiEvent.OnCategoryDismissed) },
             confirmLabel = stringResource(
-                if (isDialog || usesTwoColumns) R.string.split_bill_category_new_long else R.string.split_bill_category_new,
+                if (isDialog ||
+                    usesTwoColumns
+                ) {
+                    R.string.split_bill_category_new_long
+                } else {
+                    R.string.split_bill_category_new
+                },
             ),
             isConfirmEnabled = true,
-            onConfirm = { onEvent(SplitBillUiEvent.OnNewCategoryClicked(parentId = null, name = "")) },
+            onConfirm = {
+                onEvent(
+                    SplitBillUiEvent.OnNewCategoryClicked(
+                        parentId = null,
+                        name = "",
+                    ),
+                )
+            },
             cancelLabel = stringResource(R.string.split_bill_cancel),
             isNavigationAtEndInDialog = false,
             iconAction = null,
@@ -99,18 +110,18 @@ internal fun CategoryPickerContent(
                 onEvent = onEvent,
             )
             if (state.isSearchingCategories) {
-                CategoryResults(
+                CategoryResultsList(
                     state = state,
                     query = picker.query.trim(),
                     onEvent = onEvent,
                 )
             } else {
-                SuggestedCategories(
+                SuggestedCategoriesSection(
                     state = state,
                     onEvent = onEvent,
                 )
                 SectionLabel(stringResource(R.string.split_bill_category_all))
-                CategoryBranches(
+                CategoryBranchesList(
                     state = state,
                     showsSubcategoriesInline = !usesTwoColumns,
                     onEvent = onEvent,
@@ -143,7 +154,10 @@ private fun CategorySearchField(
         trailingIcon = if (query.isNotEmpty()) {
             {
                 IconButton(onClick = { onEvent(SplitBillUiEvent.OnCategoryQueryChanged("")) }) {
-                    Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.split_bill_category_clear_search))
+                    Icon(
+                        Icons.Outlined.Close,
+                        contentDescription = stringResource(R.string.split_bill_category_clear_search),
+                    )
                 }
             }
         } else {
@@ -155,7 +169,7 @@ private fun CategorySearchField(
 }
 
 @Composable
-private fun SectionLabel(text: String) {
+internal fun SectionLabel(text: String) {
     Text(
         text = text,
         modifier = Modifier
@@ -169,7 +183,7 @@ private fun SectionLabel(text: String) {
 // Why: "Sugeridas", each with why ("Pela descrição"), and which is the group's most used.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SuggestedCategories(
+private fun SuggestedCategoriesSection(
     state: SplitBillUiState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
@@ -185,9 +199,14 @@ private fun SuggestedCategories(
                 text = categoryNameOf(suggestion.category),
                 isSelected = suggestion.isSelected,
                 hint = when (suggestion.reason) {
-                    CategorySuggestionReason.DESCRIPTION -> stringResource(R.string.split_bill_category_reason_description)
+                    CategorySuggestionReason.DESCRIPTION -> stringResource(
+                        R.string.split_bill_category_reason_description,
+                    )
+
                     CategorySuggestionReason.MOST_USED -> stringResource(R.string.split_bill_category_reason_most_used)
+
                     CategorySuggestionReason.GROUP -> stringResource(R.string.split_bill_category_reason_group)
+
                     CategorySuggestionReason.USED -> null
                 },
                 isGroupCategory = suggestion.category.isGroupCategory,
@@ -197,7 +216,11 @@ private fun SuggestedCategories(
     }
     state.mostUsedCategory?.let { mostUsed ->
         Text(
-            text = stringResource(R.string.split_bill_category_most_used_note, categoryNameOf(mostUsed), state.groupName),
+            text = stringResource(
+                R.string.split_bill_category_most_used_note,
+                categoryNameOf(mostUsed),
+                state.groupName,
+            ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -206,7 +229,7 @@ private fun SuggestedCategories(
 
 // Why: "Todas as categorias": each main one opens its subcategories, inline on a phone.
 @Composable
-private fun CategoryBranches(
+private fun CategoryBranchesList(
     state: SplitBillUiState,
     showsSubcategoriesInline: Boolean,
     onEvent: (SplitBillUiEvent) -> Unit,
@@ -233,7 +256,7 @@ private fun CategoryBranches(
                         onEvent = onEvent,
                     )
                     if (isOpen && showsSubcategoriesInline) {
-                        SubcategoryChips(
+                        SubcategoryChipRow(
                             state = state,
                             branch = branch,
                             onEvent = onEvent,
@@ -252,7 +275,7 @@ private fun CategoryBranches(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CategoryRow(
+internal fun CategoryRow(
     state: SplitBillUiState,
     branch: CategoryBranch,
     isOpen: Boolean,
@@ -260,51 +283,75 @@ private fun CategoryRow(
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     val category = branch.category
-    val editLabel = stringResource(R.string.split_bill_category_edit_action)
+    CategoryListRow(
+        category = category,
+        onClick = { onEvent(SplitBillUiEvent.OnCategoryMainToggled(category.id)) },
+        onEvent = onEvent,
+        trailing = {
+            if (showsChevron) {
+                Icon(
+                    imageVector = if (isOpen) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = null,
+                )
+            }
+        },
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = categoryNameOf(category),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (isOpen) FontWeight.SemiBold else FontWeight.Normal,
+            )
+            if (category.isGroupCategory) GroupMarkIcon()
+        }
+        Text(
+            text = branchSubtitleOf(state, branch),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+// Why: a category's row in the picker, its badge and what it says; a long press edits one of the group's (7.8e).
+@Composable
+private fun CategoryListRow(
+    category: Category,
+    onClick: () -> Unit,
+    onEvent: (SplitBillUiEvent) -> Unit,
+    trailing: @Composable RowScope.() -> Unit = {},
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 60.dp)
             .categoryClickable(
                 category = category,
-                editLabel = editLabel,
-                onClick = { onEvent(SplitBillUiEvent.OnCategoryMainToggled(category.id)) },
+                editLabel = stringResource(R.string.split_bill_category_edit_action),
+                onClick = onClick,
                 onEdit = { onEvent(SplitBillUiEvent.OnEditCategoryClicked(category.id)) },
-            ).padding(horizontal = 12.dp, vertical = 8.dp),
+            ).padding(
+                horizontal = 12.dp,
+                vertical = 8.dp,
+            ),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CategoryBadge(category = category)
-        Column(modifier = Modifier.weight(1f)) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = categoryNameOf(category),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = if (isOpen) FontWeight.SemiBold else FontWeight.Normal,
-                )
-                if (category.isGroupCategory) GroupMark()
-            }
-            Text(
-                text = branchSubtitleOf(state, branch),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        if (showsChevron) {
-            Icon(
-                imageVector = if (isOpen) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
-                contentDescription = null,
-            )
-        }
+        Column(
+            modifier = Modifier.weight(1f),
+            content = content,
+        )
+        trailing()
     }
 }
 
 // Why: the bill's subcategory under its main one, "Criada por Carla · do grupo" for the group's, else how many it has.
 @Composable
-private fun branchSubtitleOf(
+internal fun branchSubtitleOf(
     state: SplitBillUiState,
     branch: CategoryBranch,
 ): String {
@@ -312,10 +359,13 @@ private fun branchSubtitleOf(
     val selected = branch.subcategories.firstOrNull { it.id == state.category.id }
     return when {
         selected != null -> categoryNameOf(selected)
+
         category.isGroupCategory -> creatorNameOrNull(state, category)
             ?.let { stringResource(R.string.split_bill_category_created_by_group, it) }
             ?: stringResource(R.string.split_bill_category_from_group)
+
         branch.subcategories.isEmpty() -> stringResource(R.string.split_bill_category_no_subcategories)
+
         else -> pluralStringResource(
             R.plurals.split_bill_category_subcategories,
             branch.subcategories.size,
@@ -324,172 +374,9 @@ private fun branchSubtitleOf(
     }
 }
 
-// Why: lying down and on a tablet, the open category's subcategories beside the list.
-@Composable
-private fun SubcategoriesPane(
-    state: SplitBillUiState,
-    branch: CategoryBranch,
-    onEvent: (SplitBillUiEvent) -> Unit,
-) {
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                CategoryBadge(category = branch.category)
-                Column {
-                    Text(
-                        text = categoryNameOf(branch.category),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        text = stringResource(R.string.split_bill_category_side_hint, categoryNameOf(branch.category)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-            SubcategoryChips(
-                state = state,
-                branch = branch,
-                onEvent = onEvent,
-            )
-            Text(
-                text = stringResource(R.string.split_bill_category_hold_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-// Why: "Só Alimentação", its subcategories (a long press edits the group's) and "Nova em Alimentação".
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun SubcategoryChips(
-    state: SplitBillUiState,
-    branch: CategoryBranch,
-    onEvent: (SplitBillUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val main = branch.category
-    val mainName = categoryNameOf(main)
-    val editLabel = stringResource(R.string.split_bill_category_edit_action)
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        CategoryChip(
-            text = stringResource(R.string.split_bill_category_only, mainName),
-            isSelected = state.category.id == main.id,
-            hint = null,
-            isGroupCategory = false,
-            onClick = { onEvent(SplitBillUiEvent.OnCategoryPicked(main.id)) },
-        )
-        branch.subcategories.forEach { subcategory ->
-            CategoryChip(
-                text = categoryNameOf(subcategory),
-                isSelected = state.category.id == subcategory.id,
-                hint = null,
-                isGroupCategory = subcategory.isGroupCategory,
-                onClick = { onEvent(SplitBillUiEvent.OnCategoryPicked(subcategory.id)) },
-                onEdit = if (subcategory.isGroupCategory) {
-                    { onEvent(SplitBillUiEvent.OnEditCategoryClicked(subcategory.id)) }
-                } else {
-                    null
-                },
-                editLabel = editLabel,
-            )
-        }
-        Surface(
-            onClick = { onEvent(SplitBillUiEvent.OnNewCategoryClicked(parentId = main.id, name = "")) },
-            shape = RoundedCornerShape(8.dp),
-            color = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.primary,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        ) {
-            Row(
-                modifier = Modifier
-                    .heightIn(min = 32.dp)
-                    .padding(start = 8.dp, end = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Text(
-                    text = stringResource(R.string.split_bill_category_new_in, mainName),
-                    style = MaterialTheme.typography.labelLarge,
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun CategoryChip(
-    text: String,
-    isSelected: Boolean,
-    hint: String?,
-    isGroupCategory: Boolean,
-    onClick: () -> Unit,
-    onEdit: (() -> Unit)? = null,
-    editLabel: String = "",
-) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
-        contentColor = if (isSelected) {
-            MaterialTheme.colorScheme.onSecondaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        },
-        border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier
-            .semantics {
-                selected = isSelected
-                if (onEdit != null) customActions = listOf(CustomAccessibilityAction(editLabel) { onEdit().let { true } })
-            }.combinedClickable(
-                role = Role.RadioButton,
-                onClick = onClick,
-                onLongClick = onEdit,
-            ),
-    ) {
-        Row(
-            modifier = Modifier
-                .heightIn(min = 32.dp)
-                .padding(start = if (isSelected) 8.dp else 12.dp, end = 12.dp, top = 4.dp, bottom = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (isSelected) Icon(Icons.Outlined.Check, contentDescription = null, modifier = Modifier.size(18.dp))
-            Column {
-                Text(text = text, style = MaterialTheme.typography.labelLarge)
-                hint?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-            if (isGroupCategory) GroupMark()
-        }
-    }
-}
-
 // Why: the little people of a category created in the group.
 @Composable
-private fun GroupMark() {
+internal fun GroupMarkIcon() {
     Icon(
         imageVector = Icons.Outlined.Groups,
         contentDescription = stringResource(R.string.split_bill_category_from_group),
@@ -500,14 +387,14 @@ private fun GroupMark() {
 
 // Why: "2 resultados", each with where it is ("em Casa"), and "Criar categoria “alug”"; or nothing found (7.7c).
 @Composable
-private fun CategoryResults(
+private fun CategoryResultsList(
     state: SplitBillUiState,
     query: String,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     val results = state.categoryResults
     if (results.isEmpty()) {
-        NoCategoryFound(
+        NoCategoryFoundContent(
             state = state,
             query = query,
             onEvent = onEvent,
@@ -526,8 +413,19 @@ private fun CategoryResults(
             )
         }
     }
-    TextButton(onClick = { onEvent(SplitBillUiEvent.OnNewCategoryClicked(parentId = null, name = query)) }) {
-        Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+    TextButton(onClick = {
+        onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = query,
+            ),
+        )
+    }) {
+        Icon(
+            Icons.Outlined.Add,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+        )
         Text(
             text = stringResource(R.string.split_bill_category_create_query, query),
             modifier = Modifier.padding(start = 8.dp),
@@ -549,36 +447,28 @@ private fun ResultRow(
         shape = groupedRowShapeOf(index, count),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 60.dp)
-                .categoryClickable(
-                    category = category,
-                    editLabel = stringResource(R.string.split_bill_category_edit_action),
-                    onClick = { onEvent(SplitBillUiEvent.OnCategoryPicked(category.id)) },
-                    onEdit = { onEvent(SplitBillUiEvent.OnEditCategoryClicked(category.id)) },
-                ).padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        CategoryListRow(
+            category = category,
+            onClick = { onEvent(SplitBillUiEvent.OnCategoryPicked(category.id)) },
+            onEvent = onEvent,
         ) {
-            CategoryBadge(category = category)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = categoryNameOf(category), style = MaterialTheme.typography.bodyLarge)
-                parent?.let {
-                    Text(
-                        text = stringResource(R.string.split_bill_category_in, categoryNameOf(it)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+            Text(
+                text = categoryNameOf(category),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            parent?.let {
+                Text(
+                    text = stringResource(R.string.split_bill_category_in, categoryNameOf(it)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun NoCategoryFound(
+private fun NoCategoryFoundContent(
     state: SplitBillUiState,
     query: String,
     onEvent: (SplitBillUiEvent) -> Unit,
@@ -605,8 +495,19 @@ private fun NoCategoryFound(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Button(onClick = { onEvent(SplitBillUiEvent.OnNewCategoryClicked(parentId = null, name = query)) }) {
-            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+        Button(onClick = {
+            onEvent(
+                SplitBillUiEvent.OnNewCategoryClicked(
+                    parentId = null,
+                    name = query,
+                ),
+            )
+        }) {
+            Icon(
+                Icons.Outlined.Add,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
             Text(
                 text = stringResource(R.string.split_bill_category_create_short, query),
                 modifier = Modifier.padding(start = 8.dp),
@@ -617,7 +518,7 @@ private fun NoCategoryFound(
 
 // Why: a tap picks or opens it; a long press (and TalkBack's action) edits it, only for the group's own.
 @OptIn(ExperimentalFoundationApi::class)
-private fun Modifier.categoryClickable(
+internal fun Modifier.categoryClickable(
     category: Category,
     editLabel: String,
     onClick: () -> Unit,
@@ -635,8 +536,16 @@ private fun CategoryPickerContentPreview() {
     val state = createPreviewBillState()
     BlitzSplitTheme {
         CategoryPickerContent(
-            state = state.copy(categoryPicker = CategoryPicker(query = "", openMainId = "food")),
-            picker = CategoryPicker(query = "", openMainId = "food"),
+            state = state.copy(
+                categoryPicker = CategoryPicker(
+                    query = "",
+                    openMainId = "food",
+                ),
+            ),
+            picker = CategoryPicker(
+                query = "",
+                openMainId = "food",
+            ),
             isDialog = false,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
@@ -647,7 +556,10 @@ private fun CategoryPickerContentPreview() {
 @DevicePreviews
 @Composable
 private fun CategoryPickerContentSearchPreview() {
-    val picker = CategoryPicker(query = "alug", openMainId = null)
+    val picker = CategoryPicker(
+        query = "alug",
+        openMainId = null,
+    )
     BlitzSplitTheme {
         CategoryPickerContent(
             state = createPreviewBillState().copy(categoryPicker = picker),

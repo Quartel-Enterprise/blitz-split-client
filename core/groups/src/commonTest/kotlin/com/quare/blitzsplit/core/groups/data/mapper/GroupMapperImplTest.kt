@@ -2,8 +2,8 @@ package com.quare.blitzsplit.core.groups.data.mapper
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
-import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
+import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -1098,7 +1098,7 @@ class GroupMapperImplTest {
     )
 
     @Test
-    fun `GIVEN exceptions by category WHEN they go to Room and back THEN the group has them, unknown modes left out`() {
+    fun `GIVEN exceptions by category WHEN they go to Room and back THEN the group has them unknown modes left out`() {
         // Given
         val market = CategorySplit("food.market", DefaultSplitMode.EQUAL, mapOf("m-1" to 1L, "m-2" to 1L))
         val split = GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf("m-1" to 3L, "m-2" to 1L), listOf(market))

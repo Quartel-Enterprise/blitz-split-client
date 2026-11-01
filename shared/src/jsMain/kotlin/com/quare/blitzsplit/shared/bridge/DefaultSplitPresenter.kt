@@ -139,7 +139,9 @@ class DefaultSplitPresenter(
                         categoryId = editor.categoryId,
                         openMainId = editor.openMainId,
                         mode = editor.mode.code,
-                        rows = editor.figures.rows.map(::toJsRow).toTypedArray(),
+                        rows = editor.figures.rows
+                            .map(::toJsRow)
+                            .toTypedArray(),
                         exampleTotalMinor = editor.figures.exampleTotalMinor.toDouble(),
                         percentSum = editor.percentSum.toDouble(),
                         remainingPercent = editor.remainingPercent.toDouble(),

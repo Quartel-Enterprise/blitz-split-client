@@ -1,13 +1,13 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
-import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
-import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -297,7 +297,11 @@ data class SplitBillUiState(
     val categoryFormUsage: Int
         get() {
             val id = categoryForm?.categoryId ?: return 0
-            val subcategories = categories.branchOf(id)?.subcategories.orEmpty().map { it.id }
+            val subcategories = categories
+                .branchOf(id)
+                ?.subcategories
+                .orEmpty()
+                .map { it.id }
             return (listOf(id) + subcategories).sumOf { categoryUsage[it] ?: 0 }
         }
 

@@ -1,14 +1,23 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
+import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
+import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryDeletion
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -20,11 +29,35 @@ import kotlinx.coroutines.launch
 internal class CategoryEditing(
     private val uiState: MutableStateFlow<SplitBillUiState>,
     private val scope: CoroutineScope,
+    private val observeCategoryTree: ObserveCategoryTree,
+    private val observeExpenses: ObserveExpenses,
     private val saveGroupCategory: SaveGroupCategory,
     private val deleteGroupCategory: DeleteGroupCategory,
     private val emit: suspend (SplitBillUiAction) -> Unit,
     private val onCategoryChanged: () -> Unit,
 ) {
+    // Why: the words of the map (flow 9) that suggest a bill's category from its description.
+    private val terms = DefaultCategoryTerms.terms
+
+    // Why: the group's categories and how its bills use them, as a sync or a change here moves them.
+    fun observe(groupId: Flow<String>) {
+        groupId
+            .flatMapLatest { id -> combine(observeCategoryTree(id), observeExpenses(id), ::Pair) }
+            .onEach { (tree, expenses) -> change { it.withCategories(tree, expenses).withCategoryMatched(terms) } }
+            .launchIn(scope)
+    }
+
+    // Why: until the category is picked by hand, the description's words choose it (7.1).
+    fun changeDescription(text: String) {
+        change {
+            it
+                .copy(
+                    description = ExpenseRules.toCapped(text),
+                    hasEditedDescription = true,
+                ).withCategoryMatched(terms)
+        }
+    }
+
     fun onEvent(event: SplitBillUiEvent.Categories) {
         when (event) {
             SplitBillUiEvent.OnCategoryClicked -> uiState.update {
@@ -46,7 +79,12 @@ internal class CategoryEditing(
                 )
             }
 
-            is SplitBillUiEvent.OnNewCategoryClicked -> uiState.update { it.withNewCategoryForm(event.parentId, event.name) }
+            is SplitBillUiEvent.OnNewCategoryClicked -> uiState.update {
+                it.withNewCategoryForm(
+                    event.parentId,
+                    event.name,
+                )
+            }
 
             is SplitBillUiEvent.OnEditCategoryClicked -> uiState.update { it.withEditCategoryForm(event.categoryId) }
 

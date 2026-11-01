@@ -31,21 +31,26 @@ class CategoryRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a category created offline WHEN observing the group THEN it is there pending until a push takes it up`() =
-        runTest {
-            // Given
-            prepareScenario()
+    fun `GIVEN a category created offline WHEN observing the group THEN it is pending until a push`() = runTest {
+        // Given
+        prepareScenario()
 
-            // When
-            repository.createGroupCategory(category(id = "cat-1", name = "Pet"), createdAt = 5L)
-            val pending = repository.observeGroupCategories(GROUP_ID).first()
-            repository.uploadPending(USER_ID)
+        // When
+        repository.createGroupCategory(
+            category(
+                id = "cat-1",
+                name = "Pet",
+            ),
+            createdAt = 5L,
+        )
+        val pending = repository.observeGroupCategories(GROUP_ID).first()
+        repository.uploadPending(USER_ID)
 
-            // Then
-            assertEquals(listOf("Pet" to true), pending.map { it.name to it.isPending })
-            assertEquals(listOf("cat-1" to USER_ID), remote.upserted.map { it.id to it.createdBy })
-            assertFalse(repository.observeHasPendingChanges().first())
-        }
+        // Then
+        assertEquals(listOf("Pet" to true), pending.map { it.name to it.isPending })
+        assertEquals(listOf("cat-1" to USER_ID), remote.upserted.map { it.id to it.createdBy })
+        assertFalse(repository.observeHasPendingChanges().first())
+    }
 
     @Test
     fun `GIVEN a group that is gone WHEN creating a category in it THEN fails`() = runTest {
@@ -53,7 +58,13 @@ class CategoryRepositoryImplTest {
         prepareScenario()
 
         // When
-        val result = repository.createGroupCategory(category(id = "cat-1", groupId = "gone"), createdAt = 5L)
+        val result = repository.createGroupCategory(
+            category(
+                id = "cat-1",
+                groupId = "gone",
+            ),
+            createdAt = 5L,
+        )
 
         // Then
         assertTrue(result.isFailure)
@@ -64,8 +75,22 @@ class CategoryRepositoryImplTest {
         runTest {
             // Given
             prepareScenario()
-            repository.createGroupCategory(category(id = "main", name = "Praia", icon = CategoryIcon.SUN), 1L)
-            repository.createGroupCategory(category(id = "sub", name = "Quiosque", parentId = "main"), 2L)
+            repository.createGroupCategory(
+                category(
+                    id = "main",
+                    name = "Praia",
+                    icon = CategoryIcon.SUN,
+                ),
+                1L,
+            )
+            repository.createGroupCategory(
+                category(
+                    id = "sub",
+                    name = "Quiosque",
+                    parentId = "main",
+                ),
+                2L,
+            )
 
             // When
             repository.deleteGroupCategory("main", deletedAt = 9L)
@@ -77,18 +102,40 @@ class CategoryRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN a category edited here WHEN a newer server row comes THEN the server's wins, an older one doesn't`() =
+    fun `GIVEN a category edited here WHEN a newer server row comes THEN the servers wins an older one does not`() =
         runTest {
             // Given
             prepareScenario()
-            repository.createGroupCategory(category(id = "cat-1", name = "Pet"), createdAt = 5L)
+            repository.createGroupCategory(
+                category(
+                    id = "cat-1",
+                    name = "Pet",
+                ),
+                createdAt = 5L,
+            )
             repository.updateGroupCategory("cat-1", "Bichos", null, "paw", updatedAt = 7L)
 
             // When
-            remote.rows = listOf(dto(id = "cat-1", name = "Velho", updatedAt = 6L))
+            remote.rows = listOf(
+                dto(
+                    id = "cat-1",
+                    name = "Velho",
+                    updatedAt = 6L,
+                ),
+            )
             repository.download(USER_ID)
-            val afterOlder = repository.observeGroupCategories(GROUP_ID).first().single().name
-            remote.rows = listOf(dto(id = "cat-1", name = "Novo", updatedAt = 20L))
+            val afterOlder = repository
+                .observeGroupCategories(GROUP_ID)
+                .first()
+                .single()
+                .name
+            remote.rows = listOf(
+                dto(
+                    id = "cat-1",
+                    name = "Novo",
+                    updatedAt = 20L,
+                ),
+            )
             repository.download(USER_ID)
 
             // Then
@@ -101,7 +148,13 @@ class CategoryRepositoryImplTest {
     fun `GIVEN a synced category the server no longer has WHEN downloading THEN it leaves the device`() = runTest {
         // Given
         prepareScenario()
-        remote.rows = listOf(dto(id = "cat-1", name = "Pet", updatedAt = 3L))
+        remote.rows = listOf(
+            dto(
+                id = "cat-1",
+                name = "Pet",
+                updatedAt = 3L,
+            ),
+        )
         repository.download(USER_ID)
 
         // When
@@ -173,19 +226,19 @@ class CategoryRepositoryImplTest {
         )
     }
 
-    private class FakeGroupCategoryRemote : GroupCategoryRemoteDataSource {
-        val upserted = mutableListOf<GroupCategoryDto>()
-        var rows = emptyList<GroupCategoryDto>()
-
-        override suspend fun upsertCategories(categories: List<GroupCategoryDto>) {
-            upserted += categories
-        }
-
-        override suspend fun fetchCategories(): List<GroupCategoryDto> = rows
-    }
-
     private companion object {
         const val USER_ID = "user-1"
         const val GROUP_ID = "group-1"
     }
+}
+
+private class FakeGroupCategoryRemote : GroupCategoryRemoteDataSource {
+    val upserted = mutableListOf<GroupCategoryDto>()
+    var rows = emptyList<GroupCategoryDto>()
+
+    override suspend fun upsertCategories(categories: List<GroupCategoryDto>) {
+        upserted += categories
+    }
+
+    override suspend fun fetchCategories(): List<GroupCategoryDto> = rows
 }

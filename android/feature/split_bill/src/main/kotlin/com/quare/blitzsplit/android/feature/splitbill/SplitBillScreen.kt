@@ -1,10 +1,5 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
-import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryPicker
-import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
-import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -21,8 +16,13 @@ import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
+import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryPicker
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf

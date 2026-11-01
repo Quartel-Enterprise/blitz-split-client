@@ -13,7 +13,7 @@ class CategoryMatcherTest {
     private val terms = DefaultCategoryTerms.terms
 
     @Test
-    fun `GIVEN the default map WHEN counting its terms THEN there are 60, none twice`() {
+    fun `GIVEN the default map WHEN counting its terms THEN there are 60 none twice`() {
         // Given
         val keys = terms.map { CategoryMatcher.keyOf(it.term) }
 
@@ -27,7 +27,7 @@ class CategoryMatcherTest {
     }
 
     @Test
-    fun `GIVEN Mercado WHEN matching THEN Alimentação › Mercado by mercado, marking where it is`() {
+    fun `GIVEN Mercado WHEN matching THEN Alimentacao in Mercado by mercado marking where it is`() {
         // Given
         val title = "Mercado"
 
@@ -65,7 +65,7 @@ class CategoryMatcherTest {
     }
 
     @Test
-    fun `GIVEN accents and case that differ WHEN matching THEN still matches, but never inside a word`() {
+    fun `GIVEN accents and case that differ WHEN matching THEN still matches but never inside a word`() {
         // Given
         val accentless = "FARMACIA do centro"
         val inside = "Barbearia"
@@ -92,7 +92,7 @@ class CategoryMatcherTest {
     }
 
     @Test
-    fun `GIVEN terms typed WHEN validating THEN 2 to 30 letters, digits and spaces`() {
+    fun `GIVEN terms typed WHEN validating THEN 2 to 30 letters digits and spaces`() {
         // Given
         val valid = listOf("99", "uber eats", "pão")
         val invalid = listOf("a", " ", "uber!", "a".repeat(31))

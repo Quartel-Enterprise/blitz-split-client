@@ -22,6 +22,7 @@ data class CategorySplit(
 
     companion object {
         // Why: the ways an exception may split; "Pela renda" stays the default's alone, as the board offers.
-        val modes: List<DefaultSplitMode> = listOf(DefaultSplitMode.EQUAL, DefaultSplitMode.SHARES, DefaultSplitMode.PERCENT)
+        val modes: List<DefaultSplitMode> =
+            listOf(DefaultSplitMode.EQUAL, DefaultSplitMode.SHARES, DefaultSplitMode.PERCENT)
     }
 }

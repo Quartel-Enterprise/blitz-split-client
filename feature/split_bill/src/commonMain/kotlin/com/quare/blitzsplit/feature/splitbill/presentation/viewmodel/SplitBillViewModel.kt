@@ -5,27 +5,24 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
-import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
-import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
-import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -131,13 +128,12 @@ class SplitBillViewModel(
     // Why: the group as last shown, which a change of the bill's category shows again with that category's split.
     private var shownGroup: Group? = null
 
-    // Why: the words of the map (flow 9) that suggest a bill's category from its description.
-    private val categoryTerms = DefaultCategoryTerms.terms
-
     // Why: "Categoria" (7.7) and the group's own categories (7.8); its exception may change the bill's split.
     private val categoryEditing = CategoryEditing(
         uiState = uiState,
         scope = viewModelScope,
+        observeCategoryTree = observeCategoryTree,
+        observeExpenses = observeExpenses,
         saveGroupCategory = saveGroupCategory,
         deleteGroupCategory = deleteGroupCategory,
         emit = { uiAction.emit(it) },
@@ -172,10 +168,7 @@ class SplitBillViewModel(
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)
-        groupId
-            .flatMapLatest { id -> combine(observeCategoryTree(id), observeExpenses(id), ::Pair) }
-            .onEach { (tree, expenses) -> changeCategory { it.withCategories(tree, expenses).withCategoryMatched(categoryTerms) } }
-            .launchIn(viewModelScope)
+        categoryEditing.observe(groupId)
         if (settledPairs == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
@@ -216,13 +209,7 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnGroupDismissed -> uiState.update { it.copy(groupSelection = null) }
 
-            is SplitBillUiEvent.OnDescriptionChanged -> changeCategory {
-                it
-                    .copy(
-                        description = ExpenseRules.toCapped(event.text),
-                        hasEditedDescription = true,
-                    ).withCategoryMatched(categoryTerms)
-            }
+            is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 
             SplitBillUiEvent.OnPayerClicked -> uiState.update {
                 it.copy(payerSelection = PayerSelection(memberId = it.payerId.ifEmpty { null }))
@@ -402,12 +389,6 @@ class SplitBillViewModel(
     }
 
     // Why: a new bill's category picks its split, the exception of its category or the group's default (7.1k).
-    private fun changeCategory(transform: (SplitBillUiState) -> SplitBillUiState) {
-        val before = uiState.value.category.id
-        uiState.update(transform)
-        if (uiState.value.category.id != before) showCategorySplit()
-    }
-
     private fun showCategorySplit() {
         shownGroup?.let(::show)
     }
@@ -428,37 +409,7 @@ class SplitBillViewModel(
         }
         uiState.update { current ->
             val state = if (isAnotherGroup) current.toStartInAnotherGroup() else current
-            /*
-             * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the
-             * group. A bill being edited keeps its payer even after they left it, so saving never moves who paid.
-             * Several payers keep theirs in severalPayers, until every one of them left a new bill.
-             */
-            val severalPayers = state.severalPayers
-                ?.withPeople(people, group.currency, keepsFormer = state.isEditing)
-                ?.takeIf { it.payers.isNotEmpty() }
-            val payerId = if (severalPayers != null) {
-                ""
-            } else {
-                state.payerId.takeIf { id -> people.any { it.id == id } || (state.isEditing && id.isNotEmpty()) }
-                    ?: people.firstOrNull { it.isMe }?.id
-                    ?: people.firstOrNull()?.id.orEmpty()
-            }
-            val shown = state.copy(
-                groupId = group.id,
-                groupName = group.name,
-                groupInitials = Initials.of(group.name),
-                groupColor = group.color,
-                currency = group.currency,
-                people = people,
-                payerId = payerId,
-                severalPayers = severalPayers,
-                // Why: the payer of a bill being edited stays marked after they left the group.
-                payerSelection = state.payerSelection?.takeIf { selection ->
-                    selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
-                },
-                payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
-                isLoaded = true,
-            )
+            val shown = state.withGroupShown(group, people)
             val withSplit = shown.withSplitAmong(
                 people = people,
                 defaultSplit = group.defaultSplit,

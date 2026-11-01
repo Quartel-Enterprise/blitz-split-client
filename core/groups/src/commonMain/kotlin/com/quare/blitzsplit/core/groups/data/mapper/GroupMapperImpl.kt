@@ -5,8 +5,8 @@ import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitDto
 import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
-import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
+import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -25,7 +25,11 @@ import kotlinx.serialization.json.jsonObject
  * sight of a group because of it.
  */
 class GroupMapperImpl : GroupMapper {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        // Why: an older version saved no "exceptions"; the absent key reads as none.
+        explicitNulls = false
+    }
 
     override fun toDomain(
         groups: List<GroupEntity>,
@@ -244,12 +248,13 @@ class GroupMapperImpl : GroupMapper {
         )
     }
 
-    private fun weightDtosOf(weights: Map<String, Long>): List<DefaultSplitWeightDto> = weights.map { (memberId, weight) ->
-        DefaultSplitWeightDto(
-            memberId = memberId,
-            weight = weight,
-        )
-    }
+    private fun weightDtosOf(weights: Map<String, Long>): List<DefaultSplitWeightDto> =
+        weights.map { (memberId, weight) ->
+            DefaultSplitWeightDto(
+                memberId = memberId,
+                weight = weight,
+            )
+        }
 
     private fun decodeOrNull(text: String?): DefaultSplitDto? = text?.let {
         runCatching { json.decodeFromString<DefaultSplitDto>(it) }.getOrNull()

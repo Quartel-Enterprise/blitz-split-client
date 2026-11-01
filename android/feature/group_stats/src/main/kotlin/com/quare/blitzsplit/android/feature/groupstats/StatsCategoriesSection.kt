@@ -39,6 +39,7 @@ private const val FULL_TURN = 360f
 private const val START_ANGLE = -90f
 private const val SLICE_GAP_DEGREES = 2f
 private const val PERCENT = 100f
+private const val RING_FRACTION = 0.16f
 
 /*
  * Why: "Por categoria" (6.6): the pie with the largest category in its center and the legend with the percentages,
@@ -56,7 +57,12 @@ internal fun StatsCategoriesSection(
     Column(modifier = modifier) {
         StatsSectionHeading(
             text = stringResource(R.string.group_stats_by_category),
-            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 20.dp, bottom = 12.dp),
+            modifier = Modifier.padding(
+                start = 4.dp,
+                end = 4.dp,
+                top = 20.dp,
+                bottom = 12.dp,
+            ),
         )
         Row(
             modifier = Modifier
@@ -66,7 +72,7 @@ internal fun StatsCategoriesSection(
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CategoryPie(
+            CategoryPieDisplay(
                 rows = rows,
                 size = pieSize,
             )
@@ -94,12 +100,18 @@ internal fun StatsCategoriesSection(
 
 // Why: a ring of slices with a thin gap between them, the largest category's name and share in the middle.
 @Composable
-private fun CategoryPie(
+private fun CategoryPieDisplay(
     rows: List<StatsCategoryRow>,
     size: Dp,
 ) {
     val isDark = LocalIsDarkTheme.current
-    val parts = rows.map { stringResource(R.string.group_stats_category_pie_part, categoryName(it.category), it.percent) }
+    val parts = rows.map {
+        stringResource(
+            R.string.group_stats_category_pie_part,
+            categoryName(it.category),
+            it.percent,
+        )
+    }
     val description = stringResource(R.string.group_stats_category_pie, parts.joinToString(", "))
     val colors = rows.map { it.category.color.toContainerColor(isDark) }
     val top = rows.first()
@@ -188,8 +200,10 @@ private fun CategoryRowItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 14.dp)
-            .semantics(mergeDescendants = true) {},
+            .padding(
+                horizontal = 16.dp,
+                vertical = 14.dp,
+            ).semantics(mergeDescendants = true) {},
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.Top,
     ) {
@@ -224,5 +238,3 @@ private fun CategoryRowItem(
         }
     }
 }
-
-private const val RING_FRACTION = 0.16f

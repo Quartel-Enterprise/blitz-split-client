@@ -39,7 +39,11 @@ class SaveGroupCategoryUseCaseTest {
         save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, "me")
 
         // Then
-        assertNull(repository.groupCategories.value.single().icon)
+        assertNull(
+            repository.groupCategories.value
+                .single()
+                .icon,
+        )
     }
 
     @Test
@@ -56,11 +60,20 @@ class SaveGroupCategoryUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a category WHEN editing it THEN changes its name and place, and deleting it leaves a tombstone`() =
+    fun `GIVEN a category WHEN editing it THEN changes its name and place and deleting it leaves a tombstone`() =
         runTest {
             // Given
             repository.groupCategories.value = listOf(
-                GroupCategory("cat-1", GROUP_ID, null, "Pet", CategoryIcon.PAW, "ana", isDeleted = false, isPending = false),
+                GroupCategory(
+                    "cat-1",
+                    GROUP_ID,
+                    null,
+                    "Pet",
+                    CategoryIcon.PAW,
+                    "ana",
+                    isDeleted = false,
+                    isPending = false,
+                ),
             )
 
             // When
@@ -70,7 +83,11 @@ class SaveGroupCategoryUseCaseTest {
 
             // Then
             assertEquals(Triple("Bichos", "home", null), Triple(edited.name, edited.parentId, edited.icon))
-            assertTrue(repository.groupCategories.value.single().isDeleted)
+            assertTrue(
+                repository.groupCategories.value
+                    .single()
+                    .isDeleted,
+            )
         }
 
     private companion object {

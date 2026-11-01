@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 
 class CategoryTreeTest {
     @Test
-    fun `GIVEN group categories WHEN building the tree THEN the group's mains come before Outros and subs after the app's`() {
+    fun `GIVEN group categories WHEN building the tree THEN group mains come before Outros and subs last`() {
         // Given
         val tree = CategoryTree.of(listOf(praia, churrasco))
 
@@ -44,7 +44,10 @@ class CategoryTreeTest {
     @Test
     fun `GIVEN a deleted main group category WHEN resolving it or its subcategory THEN both read as Outros`() {
         // Given
-        val quiosque = churrasco.copy(id = "quiosque", parentId = "praia")
+        val quiosque = churrasco.copy(
+            id = "quiosque",
+            parentId = "praia",
+        )
         val tree = CategoryTree.of(listOf(praia.copy(isDeleted = true), quiosque))
 
         // When
@@ -71,7 +74,7 @@ class CategoryTreeTest {
     }
 
     @Test
-    fun `GIVEN a subcategory WHEN asking for its main THEN gives the main, and a main gives itself`() {
+    fun `GIVEN a subcategory WHEN asking for its main THEN gives the main and a main gives itself`() {
         // Given
         val tree = CategoryTree.of(listOf(churrasco))
 
@@ -85,7 +88,7 @@ class CategoryTreeTest {
     }
 
     @Test
-    fun `GIVEN Churrasco in Alimentação WHEN checking names THEN finds churrasco there but not elsewhere or for itself`() {
+    fun `GIVEN Churrasco in Alimentacao WHEN checking names THEN it is taken there only`() {
         // Given
         val tree = CategoryTree.of(listOf(churrasco, praia))
 

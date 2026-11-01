@@ -12,5 +12,5 @@ data class DefaultSplitDto(
     @SerialName("mode") val mode: String,
     @SerialName("weights") val weights: List<DefaultSplitWeightDto>,
     // Why: "Exceções por categoria" (6.7f); missing from what an older version saved.
-    @SerialName("exceptions") val exceptions: List<CategorySplitDto>? = null,
+    @SerialName("exceptions") val exceptions: List<CategorySplitDto>?,
 )

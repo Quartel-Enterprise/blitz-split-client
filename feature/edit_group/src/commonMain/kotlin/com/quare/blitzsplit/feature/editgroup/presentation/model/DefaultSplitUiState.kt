@@ -117,7 +117,11 @@ data class DefaultSplitUiState(
         get() = categories.branches.map { it.category }.filterNot { it.isOther }
 
     val exceptionSubcategories: List<Category>
-        get() = exceptionEditor?.openMainId?.let { categories.branchOf(it) }?.subcategories.orEmpty()
+        get() = exceptionEditor
+            ?.openMainId
+            ?.let { categories.branchOf(it) }
+            ?.subcategories
+            .orEmpty()
 
     // Why: a category takes one exception; the one being changed may keep its own.
     val isExceptionCategoryTaken: Boolean

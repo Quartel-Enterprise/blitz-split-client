@@ -38,7 +38,7 @@ class CategoryTree private constructor(
     }
 
     // Why: the main category a category belongs to, itself for a main one.
-    fun mainOf(category: Category): Category = category.parentId?.let { resolve(it) }?.takeIf { it.isMain } ?: category
+    fun mainOf(category: Category): Category = category.parentId?.let(::resolve)?.takeIf { it.isMain } ?: category
 
     fun branchOf(mainId: String): CategoryBranch? = branches.firstOrNull { it.category.id == mainId }
 

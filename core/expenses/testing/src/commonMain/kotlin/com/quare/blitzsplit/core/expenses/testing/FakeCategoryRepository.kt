@@ -69,7 +69,16 @@ class FakeCategoryRepository(
     ): Result<Unit> {
         saveError?.let { return Result.failure(it) }
         groupCategories.update { list ->
-            list.map { if (it.id == id || it.parentId == id) it.copy(isDeleted = true, isPending = true) else it }
+            list.map {
+                if (it.id == id || it.parentId == id) {
+                    it.copy(
+                        isDeleted = true,
+                        isPending = true,
+                    )
+                } else {
+                    it
+                }
+            }
         }
         return Result.success(Unit)
     }

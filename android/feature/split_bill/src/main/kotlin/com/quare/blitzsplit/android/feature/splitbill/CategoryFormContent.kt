@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -41,7 +42,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
 import com.quare.blitzsplit.android.designsystem.format.categoryIconLabel
@@ -111,7 +111,11 @@ internal fun CategoryFormContent(
             )
             if (state.showsOfflineNotice) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Outlined.CloudOff, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Outlined.CloudOff,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
                     NoteText(stringResource(R.string.split_bill_category_offline))
                 }
             }
@@ -162,7 +166,11 @@ private fun NameField(
             state.categories.findOrNull(form.categoryId)?.let { creatorNameOrNull(state, it) }?.let {
                 stringResource(R.string.split_bill_category_created_by, it)
             },
-            pluralStringResource(R.plurals.split_bill_category_used_in, state.categoryFormUsage, state.categoryFormUsage),
+            pluralStringResource(
+                R.plurals.split_bill_category_used_in,
+                state.categoryFormUsage,
+                state.categoryFormUsage,
+            ),
         ).joinToString(" · ")
 
         else -> stringResource(R.string.split_bill_category_name_help)
@@ -268,7 +276,11 @@ private fun PreviewRow(
                 modifier = Modifier.size(40.dp),
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(form.icon.imageVector, contentDescription = null, modifier = Modifier.size(22.dp))
+                    Icon(
+                        form.icon.imageVector,
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
+                    )
                 }
             }
             Column {

@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupSpending
@@ -15,6 +13,7 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
@@ -22,6 +21,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -223,20 +223,23 @@ internal class StatsCalculator(
         )
     }
 
-    // Why: each bill under the category it reads as (a deleted group category as its parent), percentages rounded so
-    // they add up to 100 by the largest remainders.
+    /*
+     * Why: each bill under the category it reads as (a deleted group category as its parent), percentages rounded so
+     * they add up to 100 by the largest remainders.
+     */
     fun createCategories(spending: GroupSpending): List<StatsCategoryRow> {
         val byCategory = spending.expenses.groupBy { categories.resolve(it.categoryId) }
         val byMain = byCategory.entries.groupBy({ categories.mainOf(it.key) }, { it })
         val total = spending.totalMinor
-        val mains = byMain.map { (main, entries) ->
-            val subcategories = entries
-                .filter { (category, _) -> category.id != main.id }
-                .map { (category, bills) -> StatsSubcategory(category, bills.sumOf { it.amountMinor }) }
-                .sortedByDescending { it.amountMinor }
-            main to (entries.sumOf { (_, bills) -> bills.sumOf { it.amountMinor } } to subcategories)
-        }.sortedByDescending { it.second.first }
-        val percents = roundedPercents(mains.map { it.second.first }, total)
+        val mains = byMain
+            .map { (main, entries) ->
+                val subcategories = entries
+                    .filter { (category, _) -> category.id != main.id }
+                    .map { (category, bills) -> StatsSubcategory(category, bills.sumOf { it.amountMinor }) }
+                    .sortedByDescending { it.amountMinor }
+                main to (entries.sumOf { (_, bills) -> bills.sumOf { it.amountMinor } } to subcategories)
+            }.sortedByDescending { it.second.first }
+        val percents = findRoundedPercents(mains.map { it.second.first }, total)
         val largest = mains.firstOrNull()?.second?.first ?: 0L
         return mains.mapIndexed { index, (main, amounts) ->
             StatsCategoryRow(
@@ -249,7 +252,7 @@ internal class StatsCalculator(
         }
     }
 
-    private fun roundedPercents(
+    private fun findRoundedPercents(
         amounts: List<Long>,
         total: Long,
     ): List<Int> {
