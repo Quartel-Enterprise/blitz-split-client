@@ -52,9 +52,11 @@ struct PaymentKeyView: View {
     /// a ViewModel made for nothing would still read the keys, and close the screen if the key is gone.
     @State private var model: PaymentKeyModel?
     @State private var layout = ScreenLayout()
+    /// The window under the sheet, not the sheet: whether this key is a sheet or a pushed screen.
+    @Environment(\.windowLayout) private var windowLayout
 
     private var isSheet: Bool {
-        AppRoute.paymentKey(route).presentsAsSheet
+        AppRoute.paymentKey(route).presentsAsSheet(in: windowLayout)
     }
 
     private var isPix: Bool {

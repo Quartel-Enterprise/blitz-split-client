@@ -52,6 +52,8 @@ struct BillDetailView: View {
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    /// The window under the sheet, not the sheet: whether this bill is a sheet that closes or a pushed screen.
+    @Environment(\.windowLayout) private var windowLayout
     #endif
 
     var body: some View {
@@ -93,7 +95,7 @@ struct BillDetailView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         // A form sheet on iPad has no back button: it closes
-        if AppRoute.billDetail(route).presentsAsSheet {
+        if AppRoute.billDetail(route).presentsAsSheet(in: windowLayout) {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Close", systemImage: "xmark", role: .cancel) {
                     model?.send(BillDetailUiEventOnBackClicked.shared)

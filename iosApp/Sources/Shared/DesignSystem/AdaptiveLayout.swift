@@ -1,7 +1,10 @@
 import SwiftUI
 
 /// The canvas draws every screen upright, lying down, on iPad and in a Mac window. Lying down (or in
-/// a wide Mac window) a screen splits into two columns; upright it is one centred column.
+/// a wide Mac window) a screen splits into two columns; upright it is one centred column. Every rule is the
+/// window's size, never the device's idiom, so an iPhone Duo open (920×648) gets what the boards draw for that
+/// size: an iPad's layouts lying down (648 pt on its short side) and upright (648×920). See
+/// docs/architecture/responsive-layouts.md.
 struct ScreenLayout: Equatable {
     var size: CGSize = .zero
 
@@ -9,6 +12,7 @@ struct ScreenLayout: Equatable {
         size.width > size.height && size.width >= 640
     }
 
+    /// An iPad's room, by size: at least 600 pt on the short side (an iPad, an iPhone Duo open, a wide Split View).
     var isLarge: Bool {
         min(size.width, size.height) >= 600
     }
@@ -32,4 +36,10 @@ extension View {
                 }
         }
     }
+}
+
+extension EnvironmentValues {
+    /// The whole window, measured once by the root, so a screen inside a sheet still knows what it opened over: an
+    /// iPad's room opens a key and a bill as sheets (`AppRoute.presentsAsSheet(in:)`), an iPhone's pushes them.
+    @Entry var windowLayout = ScreenLayout()
 }

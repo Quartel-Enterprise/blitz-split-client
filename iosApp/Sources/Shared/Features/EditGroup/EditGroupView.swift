@@ -1,9 +1,6 @@
 import Observation
 import Shared
 import SwiftUI
-#if os(iOS)
-import UIKit
-#endif
 
 @Observable
 final class EditGroupModel {
@@ -165,7 +162,7 @@ private struct EditGroupForm: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("The currency doesn’t change after the first expense.")
                     if state.showsOfflineNotice {
-                        Text("No internet: the change holds on this \(deviceWord) now and reaches the others once it reconnects.")
+                        Text("No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects.")
                     } else {
                         Text("Anyone in the group can change the name, the icon and the type.")
                     }
@@ -177,15 +174,6 @@ private struct EditGroupForm: View {
 
     private var nameErrorText: LocalizedStringKey {
         "Give the group a name, up to 40 characters."
-    }
-
-    /// "iPhone", "iPad" or "Mac", the canvas's word for this device.
-    private var deviceWord: String {
-        #if os(macOS)
-        "Mac"
-        #else
-        UIDevice.current.userInterfaceIdiom == .pad ? "iPad" : "iPhone"
-        #endif
     }
 
     private var nameBinding: Binding<String> {

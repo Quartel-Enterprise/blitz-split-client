@@ -9,6 +9,8 @@ final class AppModel {
     private(set) var isReady: Bool
     private(set) var backStack: [AppRoute]
     private(set) var theme: ThemePreference
+    /// The whole window, which the root measures: whether a key or a bill opens as a sheet follows its size.
+    var window = ScreenLayout()
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -43,13 +45,13 @@ final class AppModel {
         }
     }
 
-    /// The entry a sheet shows instead of a pushed screen (a key or a bill on iPad and Mac, deleting the
-    /// account): the top one, or the one under it while a second sheet stacks over it.
+    /// The entry a sheet shows instead of a pushed screen (a key or a bill with an iPad's room and on the Mac,
+    /// deleting the account): the top one, or the one under it while a second sheet stacks over it.
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {
             if isSheetStacked { return backStack[backStack.count - 2] }
-            guard backStack.count > 1, let top = backStack.last, top.presentsAsSheet else { return nil }
+            guard backStack.count > 1, let top = backStack.last, top.presentsAsSheet(in: window) else { return nil }
             return top
         }
         set {
@@ -58,7 +60,7 @@ final class AppModel {
         }
     }
 
-    /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet on iPad and Mac.
+    /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet (iPad's room, Mac).
     var stackedSheet: AppRoute? {
         get { isSheetStacked ? backStack.last : nil }
         set {
@@ -69,8 +71,8 @@ final class AppModel {
 
     /// The two top entries both open as sheets, so the second one stacks over the first instead of taking its place.
     private var isSheetStacked: Bool {
-        backStack.count > 2 && backStack[backStack.count - 1].presentsAsSheet
-            && backStack[backStack.count - 2].presentsAsSheet
+        backStack.count > 2 && backStack[backStack.count - 1].presentsAsSheet(in: window)
+            && backStack[backStack.count - 2].presentsAsSheet(in: window)
     }
 
     private var modalCount: Int {
