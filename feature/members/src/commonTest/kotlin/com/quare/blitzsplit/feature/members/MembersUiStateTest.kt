@@ -54,6 +54,7 @@ class MembersUiStateTest {
         isReleasing = false,
         isLoaded = true,
         homeTab = HomeTab.GROUPS,
+        activityUnreadCount = 0,
         personalInvite = null,
         myBalance = null,
         isEveryoneSettled = false,

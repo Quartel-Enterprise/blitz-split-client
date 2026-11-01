@@ -58,6 +58,7 @@ fun GroupStatsContent(
     WithGroupNavigationRail(
         selected = state.homeTab,
         onTabClick = { tab -> onEvent(GroupStatsUiEvent.OnRailTabClicked(tab)) },
+        activityBadgeCount = state.activityUnreadCount,
         modifier = modifier,
     ) { showsRail ->
         GroupStatsScaffold(

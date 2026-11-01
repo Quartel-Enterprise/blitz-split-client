@@ -82,6 +82,7 @@ fun MembersContent(
     WithGroupNavigationRail(
         selected = state.homeTab,
         onTabClick = { tab -> onEvent(MembersUiEvent.OnRailTabClicked(tab)) },
+        activityBadgeCount = state.activityUnreadCount,
         modifier = modifier,
     ) { showsRail ->
         MembersScaffold(
@@ -445,6 +446,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
     recordedPayment = null,
     isLoaded = true,
     homeTab = HomeTab.GROUPS,
+    activityUnreadCount = 0,
 )
 
 @DevicePreviews

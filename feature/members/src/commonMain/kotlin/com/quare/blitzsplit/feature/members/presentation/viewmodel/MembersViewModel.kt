@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
@@ -60,6 +61,7 @@ class MembersViewModel(
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
     observeRecordedPayment: ObserveRecordedPayment,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
@@ -78,6 +80,7 @@ class MembersViewModel(
                 recordedPayment = null,
                 isLoaded = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                activityUnreadCount = 0,
             ),
         )
 
@@ -124,6 +127,9 @@ class MembersViewModel(
         )
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
+            .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
     }
 

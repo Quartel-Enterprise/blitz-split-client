@@ -38,6 +38,7 @@ class BalancesViewModel(
                 isLoaded = false,
                 homeTab = useCases.navigator.backStack.value
                     .findHomeTabUnder(route),
+                activityUnreadCount = 0,
             ),
         )
 
@@ -65,6 +66,10 @@ class BalancesViewModel(
         )
         screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
+            .launchIn(viewModelScope)
+        useCases
+            .observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
     }
 

@@ -67,6 +67,7 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     homeTab = HomeTab.GROUPS,
     joinedAs = null,
     isAccountUnprotected = false,
+    activityUnreadCount = 0,
 )
 
 internal fun createPreviewDays(): List<ExpenseDay> = listOf(
@@ -182,4 +183,5 @@ internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
     exit = previewGroupExit,
     isLoaded = true,
     homeTab = HomeTab.GROUPS,
+    activityUnreadCount = 0,
 )

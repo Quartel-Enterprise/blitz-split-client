@@ -59,6 +59,7 @@ class GroupDetailViewModel(
                     .findHomeTabUnder(route),
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -90,6 +91,10 @@ class GroupDetailViewModel(
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
         combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
+            .launchIn(viewModelScope)
+        useCases
+            .observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         if (route.joinedAs != null) {
             observeAccount()

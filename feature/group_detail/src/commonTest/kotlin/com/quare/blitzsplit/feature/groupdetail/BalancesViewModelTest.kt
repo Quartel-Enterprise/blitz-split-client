@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
@@ -67,6 +68,7 @@ import kotlin.time.Instant
 
 class BalancesViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -818,6 +820,19 @@ class BalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Saldos drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            activityUnread.value = 3
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
+
+    @Test
     fun `GIVEN Saldos on top WHEN tapping Membros THEN the members tab takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1565,6 +1580,7 @@ class BalancesViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
+                observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

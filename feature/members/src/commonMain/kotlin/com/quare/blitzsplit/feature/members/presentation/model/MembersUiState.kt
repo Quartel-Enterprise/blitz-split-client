@@ -31,6 +31,8 @@ data class MembersUiState(
     val isLoaded: Boolean,
     // Why: the home tab the screen was opened from, which Android's rail beside it selects.
     val homeTab: HomeTab,
+    // Why: Atividade's unread badge on Android's rail beside the screen.
+    val activityUnreadCount: Int,
 ) {
     // Why: "4 membros · 2 já entraram".
     val memberCount: Int

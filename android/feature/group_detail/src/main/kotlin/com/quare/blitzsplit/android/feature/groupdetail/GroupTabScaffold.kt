@@ -74,6 +74,7 @@ internal fun GroupTabScaffold(
     onAction: (GroupAction) -> Unit,
     // Why: the home's rail beside the group drawn alone (WithGroupNavigationRail), on the tab it was opened from.
     homeTab: HomeTab,
+    activityBadgeCount: Int,
     onHomeTabClick: (HomeTab) -> Unit,
     modifier: Modifier = Modifier,
     listContent: LazyListScope.() -> Unit,
@@ -81,6 +82,7 @@ internal fun GroupTabScaffold(
     WithGroupNavigationRail(
         selected = homeTab,
         onTabClick = onHomeTabClick,
+        activityBadgeCount = activityBadgeCount,
         modifier = modifier,
     ) { showsRail ->
         GroupTabScaffoldContent(

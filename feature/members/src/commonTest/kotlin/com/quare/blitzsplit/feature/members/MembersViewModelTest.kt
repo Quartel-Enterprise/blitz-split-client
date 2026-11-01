@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -63,6 +64,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -401,6 +403,19 @@ class MembersViewModelTest {
         // Then
         assertEquals(HomeTab.GROUPS, state.homeTab)
     }
+
+    @Test
+    fun `GIVEN the screen drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            activityUnread.value = 3
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
 
     @Test
     fun `GIVEN the screen open WHEN tapping the expenses tab THEN the group takes its place`() =
@@ -3336,6 +3351,7 @@ class MembersViewModelTest {
             },
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

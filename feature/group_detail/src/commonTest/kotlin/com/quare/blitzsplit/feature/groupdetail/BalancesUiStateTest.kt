@@ -176,5 +176,6 @@ class BalancesUiStateTest {
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
         homeTab = HomeTab.GROUPS,
+        activityUnreadCount = 0,
     )
 }

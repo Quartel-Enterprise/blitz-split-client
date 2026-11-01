@@ -184,6 +184,7 @@ class GroupDetailUiStateTest {
         homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
+        activityUnreadCount = 0,
     )
 
     private val day = ExpenseDay(

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupstats
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -44,6 +45,7 @@ import kotlin.time.Instant
 
 class GroupStatsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
@@ -557,6 +559,20 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN unread activity counted WHEN another period redraws the statistics THEN the rail keeps counting it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            activityUnread.value = 3
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
+
+    @Test
     fun `GIVEN the statistics WHEN the group leaves the device THEN they close`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -722,6 +738,7 @@ class GroupStatsViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeStatsChartPreferences = { chart },
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
     }
 

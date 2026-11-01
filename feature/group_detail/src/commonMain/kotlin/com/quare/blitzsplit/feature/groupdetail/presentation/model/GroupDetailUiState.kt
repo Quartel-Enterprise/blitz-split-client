@@ -27,6 +27,8 @@ data class GroupDetailUiState(
     val joinedAs: String?,
     // Why: "Proteja seu acesso" under it, while the account has no Google or Apple.
     val isAccountUnprotected: Boolean,
+    // Why: Atividade's unread badge on Android's rail beside the screen.
+    val activityUnreadCount: Int,
 ) {
     val showsProtectAccess: Boolean
         get() = joinedAs != null && isAccountUnprotected
