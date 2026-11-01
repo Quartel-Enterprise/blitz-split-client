@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
@@ -21,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -29,14 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.SearchQueryField
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -92,6 +86,7 @@ internal fun GroupsSearchBar(
                     }
                     SearchQueryField(
                         query = search.query,
+                        placeholder = stringResource(R.string.groups_search_placeholder),
                         onQueryChange = { onEvent(GroupsUiEvent.OnSearchQueryChanged(it)) },
                         onSearch = { focusManager.clearFocus() },
                         modifier = Modifier
@@ -119,38 +114,6 @@ internal fun GroupsSearchBar(
             )
         }
     }
-}
-
-@Composable
-private fun SearchQueryField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val label = stringResource(R.string.groups_search_placeholder)
-    BasicTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier.semantics { contentDescription = label },
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-        singleLine = true,
-        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
-        decorationBox = { field ->
-            Box(contentAlignment = Alignment.CenterStart) {
-                if (query.isEmpty()) {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                field()
-            }
-        },
-    )
 }
 
 private fun scopeLabelOf(scope: SearchScope): Int = when (scope) {

@@ -41,6 +41,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.HomeTab
+import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -309,7 +310,12 @@ private fun FilterHeaderColumn(
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (state.showsOfflineNotice) OfflineChip(modifier = Modifier.padding(horizontal = 16.dp))
+        if (state.showsOfflineNotice) {
+            OfflineChip(
+                text = stringResource(R.string.global_balances_offline),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
         BalancesFilterRow(
             state = state,
             onFilterClick = { onEvent(GlobalBalancesUiEvent.OnFilterChanged(it)) },
