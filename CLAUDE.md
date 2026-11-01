@@ -69,8 +69,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     your share; a bill opens its Conta over its group, and "Ver tudo" opens Atividade ("Em breve" until it is built).
     "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
     on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
-    first download shows "Sincronizando…" with skeletons and "até agora · chegando o resto" (no "3 de 7 grupos": the
-    sync can't tell how many are coming); the sync chip as Grupos'; an account with neither Google nor Apple shows
+    first download (an account restored on a device with no profile, until its first sync settles, `FirstDownload`)
+    shows "Sincronizando…" with skeletons and "até agora · chegando o resto" while no group came down yet (no "3 de 7
+    grupos": the sync can't tell how many are coming), never on a relaunch; the sync chip as Grupos'; an account with neither Google nor Apple shows
     "Guarde seu código de recuperação" once the code was snoozed ("Lembrar depois"), ✕ hiding it until the next
     launch. A Flip's cover screen shows only Saldo geral, the latest bill and "Abra o celular para ver tudo".
   - "Fixar na Início" (the group's ⋮/⋯ menu on Despesas and Saldos, "Desafixar da Início" once pinned) is each

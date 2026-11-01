@@ -42,6 +42,7 @@ class SyncCoordinator(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val hiddenContactRepository: HiddenContactRepository,
+    private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -107,6 +108,15 @@ class SyncCoordinator(
 
     private suspend fun syncLocked(): Result<Unit> = suspendRunCatching {
         profileRepository.observeProfile().first() ?: return@suspendRunCatching
+        // Why: the first sync with a profile restored here settles the first download, failed or not.
+        try {
+            syncSteps()
+        } finally {
+            firstDownload.end()
+        }
+    }.also { result -> lastSyncFailed.value = result.isFailure }
+
+    private suspend fun syncSteps() {
         val userId = accountRepository.ensureRegistered().getOrThrow()
         profileRepository.downloadProfile(userId).getOrThrow()
         profileRepository.uploadPendingProfile(userId).getOrThrow()
@@ -158,7 +168,7 @@ class SyncCoordinator(
         groupsSynced.getOrThrow()
         pinsSynced.getOrThrow()
         hiddenContactsSynced.getOrThrow()
-    }.also { result -> lastSyncFailed.value = result.isFailure }
+    }
 
     /*
      * Why: under the sync lock, so a push in flight ends before the copy it reads is gone. In the app's
@@ -227,8 +237,8 @@ class SyncCoordinator(
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
-     * on the profile, the keys, the preferences, the groups and the pending bills' and payments' versions makes each new change
-     * count, while one going out triggers nothing.
+     * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions, the hidden
+     * contacts and the pins makes each new change count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
@@ -238,7 +248,8 @@ class SyncCoordinator(
             groupRepository.observeGroups(),
             observePendingMoneyVersions(),
             hiddenContactRepository.observeHidden(),
-        ) { keys, preferences, groups, pendingMoney, hidden -> listOf(keys, preferences, groups, pendingMoney, hidden) }
+            groupPinRepository.observePinnedGroupIds(),
+        ) { lists -> lists.toList() }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),

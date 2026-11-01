@@ -56,6 +56,7 @@ class CancelSignOutWhenSyncedUseCaseTest {
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 hiddenContactRepository = FakeHiddenContactRepository(),
+                firstDownload = FirstDownload(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),

@@ -47,9 +47,11 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.sync.FirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveFirstDownloadUseCase
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
@@ -99,6 +101,7 @@ class HomeViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var dismissal: RecoveryCodeCardDismissal
+    private lateinit var firstDownload: FirstDownload
     private lateinit var viewModel: HomeViewModel
     private val actions = mutableListOf<HomeUiAction>()
     private var retryCount = 0
@@ -1115,10 +1118,13 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN a local only install syncing with no group WHEN Inicio opens THEN shows the first use`() =
+    fun `GIVEN an account relaunched with no group WHEN its sync runs THEN shows the first use`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(syncState = SyncState.SYNCING)
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                syncState = SyncState.SYNCING,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -1129,12 +1135,13 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN an anonymous account syncing with no group WHEN Inicio opens THEN shows the first download`() =
+    fun `GIVEN a first download with no group yet WHEN Inicio opens THEN shows the first download`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 status = AccountStatus.Anonymous("anonymous"),
                 syncState = SyncState.SYNCING,
+                isFirstDownloadPending = true,
             )
 
             // When
@@ -1147,13 +1154,32 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN an account with groups on the device WHEN Inicio opens while syncing THEN is no first download`() =
+    fun `GIVEN a restore whose sync has not started WHEN Inicio opens THEN shows the first download`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                syncState = SyncState.SYNCED,
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isFirstDownload)
+            assertFalse(state.showsFirstUse)
+        }
+
+    @Test
+    fun `GIVEN a first download with groups already down WHEN Inicio opens THEN is no first download`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 status = AccountStatus.Anonymous("anonymous"),
                 syncState = SyncState.SYNCING,
                 storedGroups = listOf(trio()),
+                isFirstDownloadPending = true,
             )
 
             // When
@@ -1179,16 +1205,17 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN a Google account downloading WHEN the sync ends with no group THEN shows the first use`() =
+    fun `GIVEN a Google account downloading WHEN the first download ends with no group THEN shows the first use`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
                 syncState = SyncState.SYNCING,
+                isFirstDownloadPending = true,
             )
 
             // When
-            syncState.value = SyncState.SYNCED
+            firstDownload.end()
 
             // Then
             assertFalse(viewModel.uiState.value.isFirstDownload)
@@ -1202,6 +1229,7 @@ class HomeViewModelTest {
             prepareScenario(
                 status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
                 syncState = SyncState.SYNCING,
+                isFirstDownloadPending = true,
             )
 
             // When
@@ -1211,24 +1239,8 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
             assertTrue(state.showsHome)
             assertFalse(state.showsFirstUse)
+            assertFalse(state.isFirstDownload)
             assertEquals(1, state.groupCount)
-        }
-
-    @Test
-    fun `GIVEN a sync settled since Inicio opened WHEN another sync starts with no group THEN shows the first use`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                status = AccountStatus.Anonymous("anonymous"),
-                syncState = SyncState.SYNCED,
-            )
-
-            // When
-            syncState.value = SyncState.SYNCING
-
-            // Then
-            assertFalse(viewModel.uiState.value.isFirstDownload)
-            assertTrue(viewModel.uiState.value.showsFirstUse)
         }
 
     @Test
@@ -1878,6 +1890,7 @@ class HomeViewModelTest {
         storedSettlements: List<Settlement> = emptyList(),
         pinnedGroupIds: Set<String> = emptySet(),
         isCardDismissedThisLaunch: Boolean = false,
+        isFirstDownloadPending: Boolean = false,
     ) {
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -1895,6 +1908,7 @@ class HomeViewModelTest {
         navigator = BackStackNavigator(startRoute = Route.Home)
         deletions = InMemoryGroupDeletionRepository()
         dismissal = RecoveryCodeCardDismissal().also { it.isDismissed.value = isCardDismissedThisLaunch }
+        firstDownload = FirstDownload().also { if (isFirstDownloadPending) it.start() }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = HomeViewModel(
             navigator = navigator,
@@ -1917,6 +1931,7 @@ class HomeViewModelTest {
             observeProfile = ObserveProfileUseCase(FakeProfileRepository(profile)),
             observeAccount = ObserveAccountUseCase(account),
             observeSyncState = ObserveSyncState { this@HomeViewModelTest.syncState },
+            observeFirstDownload = ObserveFirstDownloadUseCase(firstDownload),
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
             observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { MutableSharedFlow() },
             observeGroupsMoney = money,

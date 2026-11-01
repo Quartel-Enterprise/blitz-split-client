@@ -465,7 +465,7 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN everything settled WHEN tapping Ver grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN everything settled WHEN tapping Ver grupos THEN opens the Grupos tab`() = runTest(testDispatcher) {
         // Given
         prepareScenario(bills = emptyList())
         val emptyState = viewModel.uiState.value.emptyState
@@ -476,7 +476,7 @@ class GlobalBalancesViewModelTest {
         // Then
         assertEquals(BalancesEmptyState.SETTLED, emptyState)
         assertEquals(0L, viewModel.uiState.value.primaryTotal.netMinor)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -792,7 +792,7 @@ class GlobalBalancesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Contacts, Route.ContactProfile("user:carla")),
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile("user:carla")),
                 navigator.backStack.value,
             )
         }
@@ -826,7 +826,7 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping the Grupos tab THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN Saldos WHEN tapping the Grupos tab THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -834,7 +834,7 @@ class GlobalBalancesViewModelTest {
         viewModel.onEvent(GlobalBalancesUiEvent.OnGroupsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -858,7 +858,7 @@ class GlobalBalancesViewModelTest {
         viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -1147,7 +1147,7 @@ class GlobalBalancesViewModelTest {
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
         val opened = Route.GlobalBalances(filter, charge = charge)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { navigator ->
+        navigator = BackStackNavigator(startRoute = Route.Home).also { navigator ->
             // Why: Contatos' "Cobrar" opens Saldos over the person's profile.
             if (charge != null) {
                 navigator.navigate(Route.Contacts)

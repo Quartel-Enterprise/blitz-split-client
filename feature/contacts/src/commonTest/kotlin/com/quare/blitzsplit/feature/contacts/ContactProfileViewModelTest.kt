@@ -217,7 +217,7 @@ class ContactProfileViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.Contacts,
                     Route.GlobalBalances(
                         BalancesFilter.OWES_YOU,
@@ -244,7 +244,7 @@ class ContactProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN her profile WHEN Ver em Saldos is tapped THEN opens the Saldos tab over the groups`() =
+    fun `GIVEN her profile WHEN Ver em Saldos is tapped THEN opens the Saldos tab over Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(personKey = CARLA_KEY)
@@ -254,7 +254,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }
@@ -268,7 +268,7 @@ class ContactProfileViewModelTest {
         viewModel.onEvent(ContactProfileUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -334,7 +334,7 @@ class ContactProfileViewModelTest {
                     .single { it.personKey == JULIA_KEY }
                     .isHidden,
             )
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
             assertFalse(viewModel.uiState.value.isHideConfirmOpen)
         }
 
@@ -357,7 +357,7 @@ class ContactProfileViewModelTest {
                     .single { it.personKey == JULIA_KEY }
                     .isHidden,
             )
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
             assertTrue(viewModel.uiState.value.canShow)
         }
 
@@ -621,7 +621,7 @@ class ContactProfileViewModelTest {
             groups.groups.value = listOf(futebol())
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -637,7 +637,7 @@ class ContactProfileViewModelTest {
             groups.groups.value = listOf(futebol())
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
             assertNull(viewModel.uiState.value.contact)
         }
 
@@ -979,7 +979,7 @@ class ContactProfileViewModelTest {
         merges = FakeGuestMergeRepository(pending = storedMerge)
         isOnline = MutableStateFlow(online)
         val route = Route.ContactProfile(personKey)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
             it.navigate(Route.Contacts)
             if (!inPane) it.navigate(route)
         }

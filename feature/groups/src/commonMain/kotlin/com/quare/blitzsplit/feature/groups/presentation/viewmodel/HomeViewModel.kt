@@ -25,13 +25,13 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
-import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -53,7 +53,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
-import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import com.quare.blitzsplit.feature.groups.presentation.model.syncBadgeOf
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -87,6 +87,7 @@ class HomeViewModel(
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeSyncState: ObserveSyncState,
+    observeFirstDownload: ObserveFirstDownload,
     observeGroups: ObserveGroups,
     observeGroupsMoney: ObserveGroupsMoney,
     observePeopleBalances: ObservePeopleBalances,
@@ -140,16 +141,8 @@ class HomeViewModel(
     // Why: the deletions no notice showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
 
-    /*
-     * Why: a first download only fills a device that had no group when Início first read it, for an account that
-     * was already on the server then (a sign in, the recovery code), until its first sync settles. A profile just
-     * made on this device starts local only and has nothing to download; a relaunch with groups shows them as they
-     * are. Once a sync settled, a later one with no group is the first use: the account just has none.
-     */
-    private var hasSyncSettled = false
-    private var isSyncing = false
-    private var wasOnServer: Boolean? = null
-    private var startedEmpty: Boolean? = null
+    // Why: a first download shows only while the device has no group yet; whatever came down already shows.
+    private var isFirstDownloadPending = false
 
     // Why: the group of the Registrar pagamento opened right over Início, whose notice Início shows once it closes.
     private val paymentGroupId = MutableStateFlow<String?>(null)
@@ -164,9 +157,6 @@ class HomeViewModel(
             connectivityObserver.observe(),
             recoveryCodeCardDismissal.isDismissed,
         ) { profile, account, syncState, isOnline, isCardDismissed ->
-            if (syncState != SyncState.SYNCING) hasSyncSettled = true
-            isSyncing = syncState == SyncState.SYNCING
-            if (wasOnServer == null) wasOnServer = account.status != AccountStatus.LocalOnly
             val displayName = profile?.displayName?.trim().orEmpty()
             val isAnonymous = account.status is AccountStatus.Anonymous
             uiState.update { state ->
@@ -178,7 +168,6 @@ class HomeViewModel(
                     accountProvider = (account.status as? AccountStatus.Connected)?.provider,
                     syncBadge = syncBadgeOf(syncState, isOnline),
                     isOnline = isOnline,
-                    isFirstDownload = isFirstDownload(),
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
                         !isCardDismissed,
@@ -207,7 +196,6 @@ class HomeViewModel(
                 val clock = activityClock()
                 groups = data.groups
                 rows = agedRowsOf(data.rows, clock)
-                if (startedEmpty == null) startedEmpty = rows.isEmpty()
                 uiState.update {
                     it.copy(
                         isLoaded = true,
@@ -218,6 +206,11 @@ class HomeViewModel(
                         isFirstDownload = isFirstDownload(),
                     )
                 }
+            }.launchIn(viewModelScope)
+        observeFirstDownload()
+            .onEach { isPending ->
+                isFirstDownloadPending = isPending
+                uiState.update { it.copy(isFirstDownload = isFirstDownload()) }
             }.launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people ->
@@ -343,7 +336,7 @@ class HomeViewModel(
         }
     }
 
-    private fun isFirstDownload(): Boolean = isSyncing && !hasSyncSettled && wasOnServer == true && startedEmpty == true
+    private fun isFirstDownload(): Boolean = isFirstDownloadPending && rows.isEmpty()
 
     // Why: only from Início on top, so a late tap never opens a screen over another one.
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Home
@@ -442,15 +435,4 @@ class HomeViewModel(
     }
 
     private fun paymentGroupOrNull(): Group? = groups.firstOrNull { it.id == paymentGroupId.value }
-
-    // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
-    private fun syncBadgeOf(
-        syncState: SyncState,
-        isOnline: Boolean,
-    ): SyncBadge? = when {
-        syncState == SyncState.SYNCED -> null
-        !isOnline -> SyncBadge.OFFLINE
-        syncState == SyncState.FAILED -> SyncBadge.FAILED
-        else -> SyncBadge.SYNCING
-    }
 }

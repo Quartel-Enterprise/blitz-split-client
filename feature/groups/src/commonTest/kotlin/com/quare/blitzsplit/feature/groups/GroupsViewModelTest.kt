@@ -210,7 +210,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test

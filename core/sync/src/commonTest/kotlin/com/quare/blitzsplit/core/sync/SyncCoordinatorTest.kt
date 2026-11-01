@@ -61,6 +61,7 @@ class SyncCoordinatorTest {
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
+    private lateinit var firstDownload: FirstDownload
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
 
@@ -522,6 +523,71 @@ class SyncCoordinatorTest {
         // Then
         assertTrue(result.isSuccess)
         assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN the sync with the restored profile succeeds THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN a first download pending and the groups fail to come down WHEN syncing THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+        groups.pullError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN a first download pending and the server cannot be reached WHEN syncing THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+        account.registerError = IllegalStateException("no connection")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN a first download pending and no profile on the device WHEN syncing THEN it stays pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            firstDownloadPending = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(firstDownload.observeIsPending().value)
     }
 
     @Test
@@ -4592,7 +4658,9 @@ class SyncCoordinatorTest {
         groupQueuedDuringFirstPush: Boolean = false,
         pendingBills: Boolean = false,
         pendingPayments: Boolean = false,
+        firstDownloadPending: Boolean = false,
     ) {
+        firstDownload = FirstDownload().also { if (firstDownloadPending) it.start() }
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
             it.signOutWhenSynced = signOutScheduled
@@ -4646,6 +4714,7 @@ class SyncCoordinatorTest {
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             hiddenContactRepository = FakeHiddenContactRepository(),
+            firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )
