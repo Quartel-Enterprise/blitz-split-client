@@ -305,15 +305,10 @@ internal fun StatsPeopleSection(
                 )
             }
         }
+        val showsPaid = state.peopleView == StatsPeopleView.PAID
         Text(
             text = stringResource(
-                if (state.peopleView ==
-                    StatsPeopleView.PAID
-                ) {
-                    R.string.group_stats_note_paid
-                } else {
-                    R.string.group_stats_note_consumption
-                },
+                if (showsPaid) R.string.group_stats_note_paid else R.string.group_stats_note_consumption,
             ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -351,6 +346,7 @@ private fun StatsPersonRowItem(
             color = person.avatarColor,
             size = 36.dp,
         )
+        val hasAmount = person.amountMinor > 0
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -366,9 +362,7 @@ private fun StatsPersonRowItem(
                 Text(
                     text = amount,
                     style = MaterialTheme.typography.titleSmall,
-                    color = if (person.amountMinor >
-                        0
-                    ) {
+                    color = if (hasAmount) {
                         MaterialTheme.colorScheme.onSurface
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant

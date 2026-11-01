@@ -34,20 +34,10 @@ data class GroupSpending(
                 totalMinor = within.sumOf { it.amountMinor },
                 pendingCount = within.count { it.isPending },
                 consumedByMember = toSumByMember(
-                    within.flatMap { expense ->
-                        expense.shares.map {
-                            it.memberId to
-                                it.amountMinor
-                        }
-                    },
+                    within.flatMap { expense -> expense.shares.map { part -> part.memberId to part.amountMinor } },
                 ),
                 paidByMember = toSumByMember(
-                    within.flatMap { expense ->
-                        expense.payers.map {
-                            it.memberId to
-                                it.amountMinor
-                        }
-                    },
+                    within.flatMap { expense -> expense.payers.map { part -> part.memberId to part.amountMinor } },
                 ),
                 biggest = within.maxByOrNull { it.amountMinor },
             )

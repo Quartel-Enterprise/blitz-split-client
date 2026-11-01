@@ -91,9 +91,8 @@ internal fun StatsChartImage(
                 }
                 val line = Path().apply {
                     points.forEachIndexed { index, point ->
-                        if (index ==
-                            0
-                        ) {
+                        val isFirst = index == 0
+                        if (isFirst) {
                             moveTo(point.x, point.y)
                         } else {
                             lineTo(point.x, point.y)
