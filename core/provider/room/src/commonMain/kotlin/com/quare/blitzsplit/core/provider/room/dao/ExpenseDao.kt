@@ -84,8 +84,9 @@ interface ExpenseDao {
      */
     @Query(
         "UPDATE expense SET description = :description, amountMinor = :amountMinor, splitMode = :splitMode, " +
-            "payersJson = :payersJson, sharesJson = :sharesJson, itemsJson = :itemsJson, spentAt = :spentAt, " +
-            "updatedAt = MAX(:now, updatedAt + 1), updatedBy = NULL, pendingSync = 1 " +
+            "payersJson = :payersJson, sharesJson = :sharesJson, itemsJson = :itemsJson, " +
+            "categoryId = :categoryId, spentAt = :spentAt, updatedAt = MAX(:now, updatedAt + 1), updatedBy = NULL, " +
+            "pendingSync = 1 " +
             "WHERE id = :id AND isDeleted = 0",
     )
     suspend fun updateExpense(
@@ -96,6 +97,7 @@ interface ExpenseDao {
         payersJson: String,
         sharesJson: String,
         itemsJson: String?,
+        categoryId: String?,
         spentAt: Long,
         now: Long,
     ): Int
@@ -123,6 +125,7 @@ interface ExpenseDao {
             payersJson = entity.payersJson,
             sharesJson = entity.sharesJson,
             itemsJson = entity.itemsJson,
+            categoryId = entity.categoryId,
             spentAt = entity.spentAt,
             isDeleted = entity.isDeleted,
             addedAt = entity.addedAt,
@@ -150,7 +153,8 @@ interface ExpenseDao {
     @Query(
         "UPDATE expense SET createdBy = :createdBy, description = :description, amountMinor = :amountMinor, " +
             "splitMode = :splitMode, payersJson = :payersJson, sharesJson = :sharesJson, " +
-            "itemsJson = :itemsJson, spentAt = :spentAt, isDeleted = :isDeleted, addedAt = :addedAt, " +
+            "itemsJson = :itemsJson, categoryId = :categoryId, spentAt = :spentAt, isDeleted = :isDeleted, " +
+            "addedAt = :addedAt, " +
             "updatedAt = :remoteUpdatedAt, updatedBy = :updatedBy, " +
             "pendingSync = 0 " +
             "WHERE id = :id AND updatedAt < :remoteUpdatedAt",
@@ -164,6 +168,7 @@ interface ExpenseDao {
         payersJson: String,
         sharesJson: String,
         itemsJson: String?,
+        categoryId: String?,
         spentAt: Long,
         isDeleted: Boolean,
         addedAt: Long,

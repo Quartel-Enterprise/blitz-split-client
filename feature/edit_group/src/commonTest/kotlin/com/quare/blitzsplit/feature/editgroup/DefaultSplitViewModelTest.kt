@@ -128,7 +128,7 @@ class DefaultSplitViewModelTest {
 
             // Then
             assertEquals(
-                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L)),
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L), emptyList()),
                 groups.savedDefaultSplits.single(),
             )
             assertEquals(mapOf(PIERRE to 900_000L, ANA to 300_000L), groups.savedIncomes[GROUP_ID])
@@ -270,7 +270,7 @@ class DefaultSplitViewModelTest {
 
         // Then
         assertEquals(
-            GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L)),
+            GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L), emptyList()),
             groups.savedDefaultSplits.single().second,
         )
     }
@@ -408,6 +408,7 @@ class DefaultSplitViewModelTest {
     private val threeToOne = GroupDefaultSplit(
         mode = DefaultSplitMode.SHARES,
         weights = mapOf(PIERRE to 3L, ANA to 1L),
+        exceptions = emptyList(),
     )
 
     private fun percent(
@@ -416,6 +417,7 @@ class DefaultSplitViewModelTest {
     ): GroupDefaultSplit = GroupDefaultSplit(
         mode = DefaultSplitMode.PERCENT,
         weights = mapOf(PIERRE to pierre, ANA to ana),
+        exceptions = emptyList(),
     )
 
     private fun member(

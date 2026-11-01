@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.data.mapper
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -1097,9 +1098,27 @@ class GroupMapperImplTest {
     )
 
     @Test
+    fun `GIVEN exceptions by category WHEN they go to Room and back THEN the group has them, unknown modes left out`() {
+        // Given
+        val market = CategorySplit("food.market", DefaultSplitMode.EQUAL, mapOf("m-1" to 1L, "m-2" to 1L))
+        val split = GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf("m-1" to 3L, "m-2" to 1L), listOf(market))
+        val encoded = mapper.encode(split, over = null).replace(
+            "]}]}",
+            "]},{\"category_id\":\"home\",\"mode\":\"income\",\"weights\":[]}]}",
+        )
+        val stored = groupEntity(id = "group-1").copy(defaultSplit = encoded)
+
+        // When
+        val group = mapper.toDomain(listOf(stored), emptyList()).single()
+
+        // Then
+        assertEquals(split, group.defaultSplit)
+    }
+
+    @Test
     fun `GIVEN a default split WHEN it goes to Room and back THEN the group has it as saved`() {
         // Given
-        val split = GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf("m-1" to 3L, "m-2" to 1L))
+        val split = GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf("m-1" to 3L, "m-2" to 1L), emptyList())
         val stored = groupEntity(id = "group-1").copy(defaultSplit = mapper.encode(split, over = null))
 
         // When
@@ -1141,15 +1160,15 @@ class GroupMapperImplTest {
     @Test
     fun `GIVEN a stored split with a key this version lacks WHEN encoding one over it THEN it keeps it`() {
         // Given
-        val stored = """{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],"exceptions":[1]}"""
-        val split = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf("m-1" to 0L))
+        val stored = """{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],"rounding":[1]}"""
+        val split = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf("m-1" to 0L), emptyList())
 
         // When
         val text = mapper.encode(split, over = stored)
 
         // Then
         assertEquals(
-            """{"mode":"equal","weights":[{"member_id":"m-1","weight":0}],"exceptions":[1]}""",
+            """{"mode":"equal","weights":[{"member_id":"m-1","weight":0}],"rounding":[1],"exceptions":[]}""",
             text,
         )
         val back = groupEntity(id = "group-1").copy(defaultSplit = text)

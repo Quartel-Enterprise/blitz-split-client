@@ -1206,6 +1206,7 @@ class GroupDetailPaymentsViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = spentAt,

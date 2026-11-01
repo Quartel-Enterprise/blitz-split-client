@@ -13,7 +13,17 @@ data class GroupDefaultSplit(
      * "Porcentagem" and "Pela renda". A member missing from it joined after it was saved.
      */
     val weights: Map<String, Long>,
+    // Why: the categories whose bills split another way (6.7f), at most one each.
+    val exceptions: List<CategorySplit>,
 ) {
+    /*
+     * Why: what a bill of a category opens with: the exception of the category itself, else of its main category,
+     * else this default. Ids go from the most specific; null ids are skipped.
+     */
+    fun exceptionFor(categoryIds: List<String?>): CategorySplit? = categoryIds
+        .filterNotNull()
+        .firstNotNullOfOrNull { id -> exceptions.firstOrNull { it.categoryId == id } }
+
     // Why: what someone who joined after it was saved starts with: in for "Igual", 1 part, 0%.
     fun weightOf(memberId: String): Long = weights[memberId] ?: newcomerWeight
 

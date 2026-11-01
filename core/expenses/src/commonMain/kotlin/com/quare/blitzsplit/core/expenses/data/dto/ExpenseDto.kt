@@ -16,6 +16,8 @@ data class ExpenseDto(
     @SerialName("shares") val shares: List<ExpenseShareDto>,
     // Why: "Itens da conta" the shares come from, sent as null so a split by other means clears them on the server.
     @SerialName("items") val items: ExpenseItemsDto?,
+    // Why: "Categoria", an app category's key or a group category's id; null for "Outros".
+    @SerialName("category_id") val categoryId: String?,
     @SerialName("spent_at") val spentAt: Long,
     @SerialName("is_deleted") val isDeleted: Boolean,
     @SerialName("added_at") val addedAt: Long,

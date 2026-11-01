@@ -76,6 +76,7 @@ class ObserveExpensesUseCaseTest {
         payers = emptyList(),
         shares = emptyList(),
         items = null,
+        categoryId = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = 1L,

@@ -1,5 +1,19 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomGroupCategoryLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseGroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapperImpl
+import com.quare.blitzsplit.core.expenses.data.repository.CategoryRepositoryImpl
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomExpenseLocalDataSource
@@ -99,4 +113,11 @@ val expenseModule = module {
     factoryOf(::ObservePeopleBalancesUseCase).bind<ObservePeopleBalances>()
     factoryOf(::SettleUpUseCase).bind<SettleUp>()
     factoryOf(::ObserveSettledUpUseCase).bind<ObserveSettledUp>()
+    singleOf(::RoomGroupCategoryLocalDataSource).bind<GroupCategoryLocalDataSource>()
+    singleOf(::SupabaseGroupCategoryRemoteDataSource).bind<GroupCategoryRemoteDataSource>()
+    singleOf(::GroupCategoryMapperImpl).bind<GroupCategoryMapper>()
+    singleOf(::CategoryRepositoryImpl).bind<CategoryRepository>()
+    factoryOf(::ObserveCategoryTreeUseCase).bind<ObserveCategoryTree>()
+    factoryOf(::SaveGroupCategoryUseCase).bind<SaveGroupCategory>()
+    factoryOf(::DeleteGroupCategoryUseCase).bind<DeleteGroupCategory>()
 }

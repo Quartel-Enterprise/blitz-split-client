@@ -1,10 +1,12 @@
 package com.quare.blitzsplit.core.groups.data.mapper
 
+import com.quare.blitzsplit.core.groups.data.dto.CategorySplitDto
 import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitDto
 import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -199,10 +201,12 @@ class GroupMapperImpl : GroupMapper {
         val known = json.encodeToJsonElement(
             DefaultSplitDto(
                 mode = defaultSplit.mode.code,
-                weights = defaultSplit.weights.map { (memberId, weight) ->
-                    DefaultSplitWeightDto(
-                        memberId = memberId,
-                        weight = weight,
+                weights = weightDtosOf(defaultSplit.weights),
+                exceptions = defaultSplit.exceptions.map {
+                    CategorySplitDto(
+                        categoryId = it.categoryId,
+                        mode = it.mode.code,
+                        weights = weightDtosOf(it.weights),
                     )
                 },
             ),
@@ -225,6 +229,25 @@ class GroupMapperImpl : GroupMapper {
         return GroupDefaultSplit(
             mode = mode,
             weights = dto.weights.associate { it.memberId to it.weight },
+            // Why: an exception in a mode this version doesn't offer is left out, its bills splitting by the default.
+            exceptions = dto.exceptions.orEmpty().mapNotNull { exception ->
+                val exceptionMode = DefaultSplitMode
+                    .fromCodeOrNull(exception.mode)
+                    ?.takeIf { it in CategorySplit.modes }
+                    ?: return@mapNotNull null
+                CategorySplit(
+                    categoryId = exception.categoryId,
+                    mode = exceptionMode,
+                    weights = exception.weights.associate { it.memberId to it.weight },
+                )
+            },
+        )
+    }
+
+    private fun weightDtosOf(weights: Map<String, Long>): List<DefaultSplitWeightDto> = weights.map { (memberId, weight) ->
+        DefaultSplitWeightDto(
+            memberId = memberId,
+            weight = weight,
         )
     }
 

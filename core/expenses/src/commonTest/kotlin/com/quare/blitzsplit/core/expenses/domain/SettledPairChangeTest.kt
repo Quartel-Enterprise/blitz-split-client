@@ -406,6 +406,7 @@ class SettledPairChangeTest {
         payers = listOf(ExpensePayer(payerId, shares.sumOf { it.amountMinor })),
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = BILL_AT,
         isPending = false,
         updatedAt = BILL_AT,

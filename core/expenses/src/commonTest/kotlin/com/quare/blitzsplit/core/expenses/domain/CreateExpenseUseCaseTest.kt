@@ -36,6 +36,7 @@ class CreateExpenseUseCaseTest {
             splitMode = SplitMode.PERCENT,
             shares = shares,
             items = null,
+            categoryId = "food.market",
             spentAt = 5_000L,
         )
 
@@ -56,6 +57,7 @@ class CreateExpenseUseCaseTest {
         )
         assertEquals(shares, created.shares)
         assertEquals(5_000L, created.spentAt)
+        assertEquals("food.market", created.categoryId)
         assertTrue(created.isPending)
         assertEquals(listOf(7_000L), repository.createdAts)
     }
@@ -118,6 +120,7 @@ class CreateExpenseUseCaseTest {
             splitMode = SplitMode.EQUAL,
             shares = shares,
             items = null,
+            categoryId = null,
             spentAt = 5_000L,
         )
 
@@ -338,6 +341,7 @@ class CreateExpenseUseCaseTest {
         splitMode = splitMode,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
     )
 

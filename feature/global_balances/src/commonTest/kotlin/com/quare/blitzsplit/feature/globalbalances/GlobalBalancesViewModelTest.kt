@@ -1034,6 +1034,7 @@ class GlobalBalancesViewModelTest {
         payers = listOf(ExpensePayer(toMemberId, amountMinor)),
         shares = listOf(ExpenseShare(fromMemberId, amountMinor, amountMinor)),
         items = null,
+        categoryId = null,
         spentAt = 0L,
         isPending = false,
         updatedAt = 0L,

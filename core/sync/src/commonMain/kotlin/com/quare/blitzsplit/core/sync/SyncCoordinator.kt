@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
@@ -38,6 +39,7 @@ class SyncCoordinator(
     private val groupRepository: GroupRepository,
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
+    private val categoryRepository: CategoryRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -130,6 +132,8 @@ class SyncCoordinator(
             expenseRepository.uploadPendingExpenses(userId).getOrThrow()
             settlementRepository.downloadSettlements(userId).getOrThrow()
             settlementRepository.uploadPendingSettlements(userId).getOrThrow()
+            categoryRepository.download(userId).getOrThrow()
+            categoryRepository.uploadPending(userId).getOrThrow()
         }
         offerRecoveryCodeIfDue()
         signOutIfScheduledAndSynced()
@@ -269,7 +273,10 @@ class SyncCoordinator(
         combine(
             expenseRepository.observeHasPendingChanges(),
             settlementRepository.observeHasPendingChanges(),
-        ) { hasPendingExpenses, hasPendingSettlements -> hasPendingExpenses || hasPendingSettlements },
+            categoryRepository.observeHasPendingChanges(),
+        ) { hasPendingExpenses, hasPendingSettlements, hasPendingCategories ->
+            hasPendingExpenses || hasPendingSettlements || hasPendingCategories
+        },
     ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingMoney ->
         hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney
     }.distinctUntilChanged()
@@ -278,11 +285,11 @@ class SyncCoordinator(
      * Why: the versions of the bills and the payments waiting to go up, which change with each one saved. Kept apart,
      * so a bill going up while a payment of the same version is saved still counts as a change.
      */
-    private fun observePendingMoneyVersions(): Flow<Pair<List<Long>, List<Long>>> = combine(
+    private fun observePendingMoneyVersions(): Flow<List<List<Long>>> = combine(
         expenseRepository.observePendingVersions(),
         settlementRepository.observePendingVersions(),
-        ::Pair,
-    )
+        categoryRepository.observePendingVersions(),
+    ) { expenses, settlements, categories -> listOf(expenses, settlements, categories) }
 
     private suspend fun offerRecoveryCodeIfDue() {
         val account = accountRepository.observeAccount().first()

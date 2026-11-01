@@ -23,6 +23,7 @@ class CreateExpenseUseCase(
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
         items: BillItems?,
+        categoryId: String?,
         spentAt: Long,
     ): Result<String> {
         if (!ExpenseRules.isSplitValid(amountMinor, splitMode, payers, shares, items)) {
@@ -41,6 +42,7 @@ class CreateExpenseUseCase(
                     splitMode = splitMode,
                     shares = shares,
                     items = items,
+                    categoryId = categoryId,
                     spentAt = spentAt,
                     now = now,
                 ),

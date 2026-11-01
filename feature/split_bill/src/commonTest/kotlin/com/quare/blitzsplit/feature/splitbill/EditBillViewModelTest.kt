@@ -1014,6 +1014,7 @@ class EditBillViewModelTest {
         payers = listOf(ExpensePayer(ANA, 31_200L)),
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = yesterdayMillis,
         isPending = false,
         updatedAt = SAVED_VERSION,

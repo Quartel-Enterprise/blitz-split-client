@@ -491,6 +491,7 @@ class GroupsRowActionsTest {
         payers = listOf(ExpensePayer("member-Ana", 30000L)),
         shares = listOf("Pierre", "Ana", "Bruno").map { ExpenseShare("member-$it", 10000L, 1L) },
         items = null,
+        categoryId = null,
         spentAt = 0L,
         isPending = false,
         updatedAt = 0L,

@@ -460,6 +460,7 @@ class ItemsViewModelTest {
             extraMinor = 0L,
             isFromReceipt = false,
         ),
+        categoryId = null,
         spentAt = NOW_MILLIS,
         isPending = false,
         updatedAt = NOW_MILLIS,

@@ -257,6 +257,7 @@ class EditAfterPaymentViewModelTest {
             ExpenseShare(BRUNO, 10_400L, weight = 1L),
         ),
         items = null,
+        categoryId = null,
         spentAt = yesterdayMillis,
         isPending = false,
         updatedAt = SAVED_VERSION,

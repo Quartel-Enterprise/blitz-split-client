@@ -1505,6 +1505,7 @@ class BillDetailViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = spentAt,
         isPending = isPending,
         updatedAt = spentAt,
