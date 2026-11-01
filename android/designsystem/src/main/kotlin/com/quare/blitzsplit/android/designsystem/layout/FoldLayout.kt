@@ -8,6 +8,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -115,15 +116,22 @@ fun tabletopFoldLayoutOf(
     ),
 )
 
+/*
+ * Why: the origin is read again whenever the configuration changes, which a window moved without resizing
+ * (freeform, desktop windowing, a split screen window moved) brings while containerSize stays, and is itself a key,
+ * so the bounds never keep the old place on screen.
+ */
 @Composable
 private fun rememberWindowFoldLayout(): FoldLayout {
     val foldingFeatures by collectFoldingFeaturesAsState()
     val containerSize = LocalWindowInfo.current.containerSize
     val density = LocalDensity.current
     val context = LocalContext.current
-    return remember(foldingFeatures, containerSize, density, context) {
+    val configuration = LocalConfiguration.current
+    val origin = remember(context, configuration, containerSize, foldingFeatures) { windowOriginOf(context) }
+    return remember(foldingFeatures, containerSize, density, origin) {
         density.foldLayoutOf(
-            origin = windowOriginOf(context),
+            origin = origin,
             size = containerSize,
             feature = foldingFeatures.firstOrNull(),
         )
