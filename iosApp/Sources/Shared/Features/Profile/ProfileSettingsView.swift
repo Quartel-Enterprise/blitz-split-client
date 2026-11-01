@@ -44,12 +44,15 @@ struct SettingsView: View {
     @Bindable var app: AppModel
 
     @Environment(\.dismiss) private var dismiss
+    /// The profile's ViewModel, made once a profile exists and dropped once none is left, so redrawing this window (a
+    /// sidebar click, the main window moving the back stack) never makes another.
+    @State private var model: ProfileModel?
     @State private var pane: ProfileSettingsPane? = .profile
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var body: some View {
         Group {
-            if app.hasProfile {
+            if app.hasProfile, let model {
                 NavigationSplitView(columnVisibility: $columnVisibility) {
                     List(ProfileSettingsPane.allCases, selection: $pane) { pane in
                         Label(pane.title, systemImage: pane.symbol)
@@ -57,7 +60,7 @@ struct SettingsView: View {
                     }
                     .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
                 } detail: {
-                    ProfileView(pane: pane)
+                    ProfileView(model: model, pane: pane)
                 }
                 .onGeometryChange(for: Bool.self, of: { $0.size.width < 700 }) { isNarrow in
                     columnVisibility = isNarrow ? .detailOnly : .all
@@ -80,7 +83,12 @@ struct SettingsView: View {
         // Closing the window closes its sheet, which the main window waits on
         .onDisappear { app.settingsSheet = nil }
         .onChange(of: app.hasProfile, initial: true) { _, hasProfile in
-            if !hasProfile { dismiss() }
+            if hasProfile {
+                if model == nil { model = ProfileModel() }
+            } else {
+                model = nil
+                dismiss()
+            }
         }
     }
 }
