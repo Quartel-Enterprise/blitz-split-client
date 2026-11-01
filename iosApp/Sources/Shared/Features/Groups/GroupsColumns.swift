@@ -2,10 +2,12 @@ import Shared
 import SwiftUI
 
 /// The Groups and Search tabs' stack. On iPhone, iPad upright and the Mac, one NavigationStack pushes what the groups
-/// open over them. On an iPad lying down (5.1, 5.2) the list keeps its column and the group's Expenses, Balances or
-/// Members, the first entry over the groups in the shared back stack, roots a second stack beside it, which pushes
-/// whatever the group opens; with no group open yet it holds the canvas' shapes. The list's stack stays the first
-/// view either way, so turning the iPad keeps its scroll.
+/// open over them. On an iPad lying down (5.1, 5.2) the list keeps its column while nothing but the group's Expenses,
+/// Balances or Members is above the groups in the shared back stack: the first of them roots a second stack beside
+/// it, and with no group open yet it holds the canvas' shapes. Anything else the group or the list opens (Statistics,
+/// the profile, a joined invite) covers the whole tab, as upright and as Android's scene does, since the ViewModel
+/// ignores the list's taps under it; a sheet keeps the columns under it. The list's stack stays the first view
+/// either way, so turning the iPad keeps its scroll.
 struct GroupsColumns<ListContent: View>: View {
     let model: GroupsModel
     /// The shared back stack above the groups, as this tab shows it.
@@ -15,8 +17,10 @@ struct GroupsColumns<ListContent: View>: View {
     /// The whole tab, the column beside the list included, so showing it never changes what decides it.
     @State private var layout = ScreenLayout()
 
+    /// The column beside the list: an iPad lying down, with only the group's tabs above the groups (sheets aside,
+    /// which the path leaves out).
     private var showsDetail: Bool {
-        layout.showsListDetailOnPad
+        layout.showsListDetailOnPad && path.allSatisfy(Self.isGroupTab)
     }
 
     var body: some View {
@@ -43,12 +47,17 @@ struct GroupsColumns<ListContent: View>: View {
         }
     }
 
+    /// A group's Expenses, Balances or Members, the only screens the column beside the list draws.
+    private static func isGroupTab(_ route: AppRoute) -> Bool {
+        switch route {
+        case .groupDetail, .balances, .members: true
+        default: false
+        }
+    }
+
     /// The group's tab right above the groups, which roots the column beside the list.
     private var paneRoute: AppRoute? {
-        switch path.first {
-        case .groupDetail, .balances, .members: path.first
-        default: nil
-        }
+        path.first.flatMap { Self.isGroupTab($0) ? $0 : nil }
     }
 
     /// Beside the detail the list pushes nothing; on its own it pushes the whole path, as before.
@@ -62,7 +71,8 @@ struct GroupsColumns<ListContent: View>: View {
         )
     }
 
-    /// What the group beside the list pushed over itself; a back gesture there shortens the shared stack.
+    /// Another group's tab stacked over the first one (a bill saved in another group); a back gesture there shortens
+    /// the shared stack.
     private var panePath: Binding<[AppRoute]> {
         Binding(
             get: { Array(path.dropFirst(paneRoute == nil ? 0 : 1)) },
