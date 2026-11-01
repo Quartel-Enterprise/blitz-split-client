@@ -204,7 +204,7 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio"))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
