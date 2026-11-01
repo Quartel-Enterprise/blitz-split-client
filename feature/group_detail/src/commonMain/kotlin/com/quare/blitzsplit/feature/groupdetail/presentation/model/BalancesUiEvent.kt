@@ -22,12 +22,15 @@ sealed interface BalancesUiEvent : UiEvent {
     data object OnMembersClicked : BalancesUiEvent
 
     // Why: a tab of the home's rail, which Android keeps beside the group when it is drawn alone.
-    data class OnHomeTabClicked(
+    data class OnRailTabClicked(
         val tab: HomeTab,
     ) : BalancesUiEvent
 
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : BalancesUiEvent
+
+    // Why: "Fixar na Início" or "Desafixar da Início" in the ⋮ menu.
+    data object OnPinToggled : BalancesUiEvent
 
     // Why: "Sair do grupo" in the ⋮ menu.
     data object OnLeaveGroupClicked : BalancesUiEvent

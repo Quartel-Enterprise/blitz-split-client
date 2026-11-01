@@ -82,7 +82,7 @@ class RestoreViewModelTest {
 
         // Then
         assertEquals(listOf("K7QM-4XPA-9TRE"), account.restoredCodes)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
 
     @Test
@@ -262,7 +262,7 @@ class RestoreViewModelTest {
 
         // Then
         assertEquals(listOf(AccountProvider.GOOGLE to "token"), account.idTokenConnections)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
 
     @Test
@@ -371,7 +371,7 @@ class RestoreViewModelTest {
         account.status = AccountStatus.Connected("user", AccountProvider.APPLE)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
 
     @Test
@@ -527,7 +527,7 @@ class RestoreViewModelTest {
             providerSignIn = ProviderSignInImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),
-                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                connectWithBrowser = ConnectWithBrowserUseCase(account),
                 completeSignIn = {
                     profilePullCount++
                     profilePull.await()

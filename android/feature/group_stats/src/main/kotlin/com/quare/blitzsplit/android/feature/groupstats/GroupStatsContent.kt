@@ -20,12 +20,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -57,17 +54,16 @@ fun GroupStatsContent(
     onEvent: (GroupStatsUiEvent) -> Unit,
     onPickDates: () -> Unit,
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     WithGroupNavigationRail(
-        onTabClick = { tab -> onEvent(GroupStatsUiEvent.OnHomeTabClicked(tab)) },
+        selected = state.homeTab,
+        onTabClick = { tab -> onEvent(GroupStatsUiEvent.OnRailTabClicked(tab)) },
         modifier = modifier,
     ) { showsRail ->
         GroupStatsScaffold(
             state = state,
             onEvent = onEvent,
             onPickDates = onPickDates,
-            snackbarHostState = snackbarHostState,
             showsRail = showsRail,
         )
     }
@@ -79,7 +75,6 @@ private fun GroupStatsScaffold(
     state: GroupStatsUiState,
     onEvent: (GroupStatsUiEvent) -> Unit,
     onPickDates: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     showsRail: Boolean,
 ) {
     val layout = rememberDeviceLayout()
@@ -91,7 +86,6 @@ private fun GroupStatsScaffold(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
         topBar = {
             MediumFlexibleTopAppBar(

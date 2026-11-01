@@ -124,9 +124,6 @@ class MembersPresenter(
 
                 MembersUiAction.ShowReleaseError -> JsMembersAction("release-error", null, null, null)
 
-                // Why: only Android's rail asks for Atividade; the web has no rail beside a group.
-                MembersUiAction.ShowComingSoon -> JsMembersAction("coming-soon", null, null, null)
-
                 is MembersUiAction.CopyLink -> JsMembersAction("copy", action.link, null, null)
 
                 is MembersUiAction.SharePersonalLink -> JsMembersAction(

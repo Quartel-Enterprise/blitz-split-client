@@ -78,7 +78,7 @@ class ProviderSignInController(
             is SignInStep.SignedIn -> {
                 showConnecting(null, false)
                 when (step.outcome) {
-                    SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Groups)
+                    SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Home)
                     SignInOutcome.NEEDS_PROFILE -> navigator.navigate(Route.ProfileSetup)
                 }
             }

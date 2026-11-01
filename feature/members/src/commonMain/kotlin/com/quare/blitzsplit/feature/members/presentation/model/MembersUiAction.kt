@@ -12,9 +12,6 @@ sealed interface MembersUiAction {
         val groupName: String,
     ) : MembersUiAction
 
-    // Why: Atividade, on the home's rail beside the group, is not built yet.
-    data object ShowComingSoon : MembersUiAction
-
     // Why: the device couldn't save the change, which is rare enough to just say so.
     data object ShowChangeError : MembersUiAction
 

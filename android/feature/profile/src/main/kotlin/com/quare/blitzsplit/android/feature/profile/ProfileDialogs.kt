@@ -54,7 +54,12 @@ internal fun ProfileDialogsOverlay(
         ProfileDialog.VISIBILITY_INFO -> FoldAlertDialog(
             onDismissRequest = onDismiss,
             title = stringResource(R.string.profile_visibility),
-            text = { Text(stringResource(R.string.profile_visibility_body)) },
+            text = {
+                Text(
+                    text = stringResource(R.string.profile_visibility_body),
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                )
+            },
             confirmButton = {
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_visibility_ok)) }
             },
@@ -162,7 +167,10 @@ private fun UnlinkAccountDialog(
         },
         title = stringResource(R.string.profile_unlink_title, provider),
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Text(stringResource(R.string.profile_unlink_body))
                 if (state.showsOfflineNotice) {
                     Row(
@@ -305,7 +313,10 @@ private fun DialogBodyColumn(
     text: String,
     state: ProfileUiState,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         Text(text)
         if (state.hasSignOutFailed) SignOutFailedText()
     }

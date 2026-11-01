@@ -5,7 +5,6 @@ import SwiftUI
 @Observable
 final class ContactsModel {
     private(set) var state: ContactsUiState
-    private(set) var comingSoonCount = 0
     private(set) var changeErrorCount = 0
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createContactsViewModel()
@@ -19,7 +18,6 @@ final class ContactsModel {
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
-            case is ContactsUiActionShowComingSoon: self?.comingSoonCount += 1
             case is ContactsUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
@@ -243,7 +241,6 @@ struct ContactsView: View {
             }
         }
         .glassToast([
-            GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
             GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model.changeErrorCount),
         ])
         .onChange(of: state.isSearchOpen) { _, isOpen in

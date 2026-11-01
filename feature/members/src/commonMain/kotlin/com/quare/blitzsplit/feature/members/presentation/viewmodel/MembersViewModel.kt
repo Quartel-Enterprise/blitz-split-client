@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openGroupTab
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
@@ -76,6 +77,7 @@ class MembersViewModel(
                 isEveryoneSettled = false,
                 recordedPayment = null,
                 isLoaded = false,
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
             ),
         )
 
@@ -145,9 +147,7 @@ class MembersViewModel(
                 tab = Route.Balances(route.groupId),
             )
 
-            is MembersUiEvent.OnHomeTabClicked -> if (isOnTop() && !navigator.openHomeTab(event.tab)) {
-                send(MembersUiAction.ShowComingSoon)
-            }
+            is MembersUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,

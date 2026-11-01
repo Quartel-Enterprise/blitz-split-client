@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
@@ -172,6 +173,7 @@ class GroupDetailUiStateTest {
             totalSpentMinor = if (hasBills) 12_000 else 0,
             myBalance = null,
             isEveryoneSettled = false,
+            isPinned = false,
         ),
         days = if (hasBills) listOf(day) else emptyList(),
         paymentToDelete = null,
@@ -179,6 +181,7 @@ class GroupDetailUiStateTest {
         showsBillDeletedNotice = false,
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
+        homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
     )

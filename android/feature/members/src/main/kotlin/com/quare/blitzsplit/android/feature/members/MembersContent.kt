@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
@@ -79,7 +80,8 @@ fun MembersContent(
     modifier: Modifier = Modifier,
 ) {
     WithGroupNavigationRail(
-        onTabClick = { tab -> onEvent(MembersUiEvent.OnHomeTabClicked(tab)) },
+        selected = state.homeTab,
+        onTabClick = { tab -> onEvent(MembersUiEvent.OnRailTabClicked(tab)) },
         modifier = modifier,
     ) { showsRail ->
         MembersScaffold(
@@ -442,6 +444,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
     isEveryoneSettled = false,
     recordedPayment = null,
     isLoaded = true,
+    homeTab = HomeTab.GROUPS,
 )
 
 @DevicePreviews

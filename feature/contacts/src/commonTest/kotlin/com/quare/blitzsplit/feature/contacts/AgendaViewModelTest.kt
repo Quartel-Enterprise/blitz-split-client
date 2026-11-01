@@ -268,7 +268,7 @@ class AgendaViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.Contacts,
                     Route.ContactsAgenda,
                     Route.ContactInvite(
@@ -294,7 +294,7 @@ class AgendaViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.Contacts,
                     Route.ContactInvite(
                         personKey = null,
@@ -337,7 +337,7 @@ class AgendaViewModelTest {
             viewModel.onEvent(AgendaUiEvent.OnInviteClicked("agenda-helena"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
         }
 
     @Test
@@ -368,7 +368,7 @@ class AgendaViewModelTest {
         viewModel.onEvent(AgendaUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -381,7 +381,7 @@ class AgendaViewModelTest {
             viewModel.onEvent(AgendaUiEvent.OnBackClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     private val agenda = listOf(
@@ -403,7 +403,7 @@ class AgendaViewModelTest {
     )
 
     private fun TestScope.prepareScenario(inPane: Boolean = false) {
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
             it.navigate(Route.Contacts)
             if (!inPane) it.navigate(Route.ContactsAgenda)
         }

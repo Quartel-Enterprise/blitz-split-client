@@ -47,8 +47,8 @@ data class FoldLayout(
     val windowBounds: DpRect,
     val hinge: FoldHinge?,
     /*
-     * Why: the app runs on a Flip's cover screen, where Grupos only draws its cover (5.1): the whole display is that
-     * small, not the window alone, so a phone's split screen half never counts as one.
+     * Why: the app runs on a Flip's cover screen, where Início (flow 10) and Grupos (5.1) only draw their cover: the
+     * whole display is that small, not the window alone, so a phone's split screen half never counts as one.
      */
     val isOnCoverScreen: Boolean,
 ) {

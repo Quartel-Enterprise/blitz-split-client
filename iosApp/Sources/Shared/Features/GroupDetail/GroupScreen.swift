@@ -9,6 +9,8 @@ struct GroupScreenActions {
     let stats: () -> Void
     let members: () -> Void
     let editGroup: () -> Void
+    /// "Pin to Home" or "Unpin from Home", as the header says the group is.
+    let togglePin: () -> Void
     let leaveGroup: () -> Void
     let deleteGroup: () -> Void
     let splitBill: () -> Void
@@ -25,6 +27,7 @@ struct GroupScreenActions {
         stats: {},
         members: {},
         editGroup: {},
+        togglePin: {},
         leaveGroup: {},
         deleteGroup: {},
         splitBill: {},
@@ -140,10 +143,15 @@ private struct GroupScreenBars: ViewModifier {
         }
     }
 
-    /// "⋯": only what changes the group itself (6.1i); offline, Leave and Delete say they need the internet (6.1j).
-    /// The Mac's items that open a dialog end in "…".
+    /// "⋯": only what changes the group itself (6.1i), Pin to Home first, which works offline; offline, Leave and
+    /// Delete say they need the internet (6.1j). The Mac's items that open a dialog end in "…".
     private var groupMenu: some View {
         Menu("More group options", systemImage: "ellipsis") {
+            if header?.isPinned == true {
+                Button("Unpin from Home", systemImage: "pin.slash", action: actions.togglePin)
+            } else {
+                Button("Pin to Home", systemImage: "pin", action: actions.togglePin)
+            }
             Button(editGroupTitle, systemImage: "pencil", action: actions.editGroup)
             Divider()
             Button(action: actions.leaveGroup) {
@@ -195,19 +203,7 @@ private struct GroupScreenBars: ViewModifier {
     }
 
     private var splitBillButton: some View {
-        Button(action: actions.splitBill) {
-            // A toolbar draws a Label as its icon only: the canvas spells "Split a bill" out
-            HStack(spacing: 6) {
-                Image(systemName: "plus")
-                Text("Split a bill")
-            }
-            .fontWeight(.semibold)
-        }
-        #if os(iOS)
-        .buttonStyle(.glassProminent)
-        #else
-        .buttonStyle(.borderedProminent)
-        #endif
+        SplitBillButton(action: actions.splitBill)
     }
 
     #if os(iOS)

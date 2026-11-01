@@ -75,18 +75,25 @@ final class ProfileModel {
 /// the keys and preferences in a second one, each scrolling on its own; an iPad lying down draws the first one as the
 /// panel of a Settings split. Upright with an iPad's room it is one 520 pt column.
 struct ProfileView: View {
-    @State private var model = ProfileModel()
     #if os(macOS)
+    /// Ajustes' own (`SettingsView`), made once per profile: SwiftUI rebuilds this view's value whenever the window
+    /// redraws.
+    let model: ProfileModel
     /// The section Ajustes' sidebar picked, which the form scrolls to.
     var pane: ProfileSettingsPane?
+    /// Bumped on every click in Ajustes' sidebar, the section already picked included, so the form scrolls back to it.
+    var scrollRequest: Int
     /// Made once the settings appear, as the other screens make theirs: SwiftUI rebuilds this view's value
     /// whenever its parent redraws.
     @State private var notificationModel: NotificationSettingsModel?
 
-    init(pane: ProfileSettingsPane? = nil) {
+    init(model: ProfileModel, pane: ProfileSettingsPane?, scrollRequest: Int) {
+        self.model = model
         self.pane = pane
+        self.scrollRequest = scrollRequest
     }
     #else
+    @State private var model = ProfileModel()
     /// The screen's own size, which decides the columns.
     @State private var layout = ScreenLayout()
     /// The iPhone Duo's fold, where the two columns sit on each side of it rather than as a Settings split.
@@ -142,7 +149,7 @@ struct ProfileView: View {
                 }
             }
             .formStyle(.grouped)
-            .onChange(of: pane) { _, pane in
+            .onChange(of: scrollRequest) {
                 guard let pane else { return }
                 withAnimation { proxy.scrollTo(pane, anchor: .top) }
             }

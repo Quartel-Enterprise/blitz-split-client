@@ -4,40 +4,62 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.HomeTab
 
 /*
- * Why: Grupos is the home's root tab, under Saldos and whatever either opened. Going back to it closes all of them, as
- * a tab bar does; nothing changes while the groups are on top or gone from the back stack.
+ * Why: Início is the root of the home, where the app opens; every other tab of the home (Grupos, Saldos, Contatos,
+ * Atividade) is a route right above it, and the tabs take each other's place there, as a tab bar does. Opening a
+ * tab already in the back stack goes back to it, closing whatever it opened; any other tab, Saldos with another
+ * filter included, replaces whatever is above Início. Without Início in the back stack (the welcome, the restore)
+ * nothing changes: there is no home yet.
+ */
+fun Navigator.openHomeTab(tab: Route) {
+    val stack = backStack.value
+    val tabIndex = stack.indexOf(tab)
+    val homeIndex = stack.indexOf(Route.Home)
+    when {
+        tabIndex >= 0 -> popTo(tabIndex + 1)
+        homeIndex >= 0 -> replaceAbove(homeIndex + 1, tab)
+    }
+}
+
+/*
+ * Why: Grupos is the home tab under what a group's row opened. Going back to it closes all of them, as a tab bar
+ * does.
  */
 fun Navigator.popToGroups() {
-    val stack = backStack.value
-    val groupsIndex = stack.indexOf(Route.Groups)
-    if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) popTo(groupsIndex + 1)
+    openHomeTab(Route.Groups)
 }
 
 /*
- * Why: Saldos and Contatos are tabs next to Grupos, drawn over the groups; from a screen the groups or another tab
- * opened, the tab closes it first, as a tab bar does. Nothing changes while that tab is already right above the groups.
+ * Why: a tab of the rail a screen outside the home keeps (Android's beside a group's screens drawn alone), through
+ * openHomeTab like the home's own tabs: a tab already in the back stack, Saldos with any filter, goes back to it, and
+ * any other opens in its first state.
  */
-fun Navigator.openHomeTab(route: Route) {
-    val stack = backStack.value
-    val groupsIndex = stack.indexOf(Route.Groups)
-    if (groupsIndex < 0) return
-    val above = stack.getOrNull(groupsIndex + 1)
-    if (above != null && above::class == route::class && groupsIndex + 1 == stack.lastIndex) return
-    popToGroups()
-    navigate(route)
+fun Navigator.openHomeTab(tab: HomeTab) {
+    openHomeTab(backStack.value.lastOrNull { it.homeTabOrNull() == tab } ?: tab.route)
 }
 
 /*
- * Why: a tab of the rail a screen outside the home keeps (Android's on a group's screens): Grupos goes back to the
- * groups, Saldos and Contatos open over them. False for Atividade, not built yet, which the screen answers with "Em
- * breve".
+ * Why: the home tab a screen outside the home sits in, which the rail beside it selects: the nearest one under it in
+ * the back stack (Início for a group Início opened, Grupos for one a row of Grupos opened), Início once none is.
  */
-fun Navigator.openHomeTab(tab: HomeTab): Boolean {
-    when (tab) {
-        HomeTab.GROUPS -> popToGroups()
-        HomeTab.BALANCES -> openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
-        HomeTab.CONTACTS -> openHomeTab(Route.Contacts)
-        HomeTab.ACTIVITY -> return false
+fun List<Route>.findHomeTabUnder(route: Route): HomeTab {
+    val index = lastIndexOf(route).takeIf { it >= 0 } ?: size
+    return take(index).asReversed().firstNotNullOfOrNull { it.homeTabOrNull() } ?: HomeTab.HOME
+}
+
+private val HomeTab.route: Route
+    get() = when (this) {
+        HomeTab.HOME -> Route.Home
+        HomeTab.GROUPS -> Route.Groups
+        HomeTab.BALANCES -> Route.GlobalBalances(BalancesFilter.ALL, charge = null)
+        HomeTab.CONTACTS -> Route.Contacts
+        HomeTab.ACTIVITY -> Route.Activity(personKey = null)
     }
-    return true
+
+private fun Route.homeTabOrNull(): HomeTab? = when (this) {
+    Route.Home -> HomeTab.HOME
+    Route.Groups -> HomeTab.GROUPS
+    is Route.GlobalBalances -> HomeTab.BALANCES
+    Route.Contacts -> HomeTab.CONTACTS
+    is Route.Activity -> HomeTab.ACTIVITY
+    else -> null
 }

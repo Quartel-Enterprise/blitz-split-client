@@ -75,13 +75,8 @@ class BalancesPresenter(
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 BalancesUiAction.ShowLeaveError -> "leave-error"
-
                 BalancesUiAction.ShowDeleteError -> "delete-error"
-
                 BalancesUiAction.ShowChangeError -> "change-error"
-
-                // Why: only Android's rail asks for Atividade; the web has no rail beside a group.
-                BalancesUiAction.ShowComingSoon -> "coming-soon"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -111,6 +106,11 @@ class BalancesPresenter(
 
     fun members() {
         viewModel.onEvent(BalancesUiEvent.OnMembersClicked)
+    }
+
+    // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
+    fun togglePin() {
+        viewModel.onEvent(BalancesUiEvent.OnPinToggled)
     }
 
     fun editGroup() {

@@ -21,8 +21,10 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -41,6 +43,7 @@ internal val emptyGroupHeader = GroupHeader(
     totalSpentMinor = 0L,
     myBalance = null,
     isEveryoneSettled = false,
+    isPinned = false,
 )
 
 /*
@@ -78,6 +81,10 @@ internal class GroupScreen(
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
 
+    // Why: "Fixar na Início" or "Desafixar da Início", as the header last showed it.
+    var isPinned = false
+        private set
+
     /*
      * Why: a sync may bring other members' bills and payments while the screen is open, or remove the whole group.
      * show gets the balances too, already worked out, and showNotice the payment Registrar pagamento just recorded.
@@ -91,8 +98,15 @@ internal class GroupScreen(
             useCases.observeGroup(groupId),
             useCases.observeExpenses(groupId),
             useCases.observeSettlements(groupId),
-            ::Triple,
-        ).onEach { (group, expenses, settlements) ->
+            // Why: only this group's pin, so pinning another group doesn't redo this one's balances.
+            useCases
+                .observePinnedGroupIds()
+                .map { pinnedIds -> groupId in pinnedIds }
+                .distinctUntilChanged(),
+        ) { group, expenses, settlements, isGroupPinned ->
+            isPinned = isGroupPinned
+            Triple(group, expenses, settlements)
+        }.onEach { (group, expenses, settlements) ->
             this.group = group
             isGroupGone = group == null
             if (group == null) {
@@ -164,15 +178,9 @@ internal class GroupScreen(
         )
     }
 
-    /*
-     * Why: a tab of the home's rail, which Android keeps beside a group drawn alone; Atividade isn't built yet, which
-     * showComingSoon says.
-     */
-    fun openHomeTab(
-        tab: HomeTab,
-        showComingSoon: suspend () -> Unit,
-    ) {
-        if (isOnTop() && !useCases.navigator.openHomeTab(tab)) scope.launch { showComingSoon() }
+    // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.
+    fun openHomeTab(tab: HomeTab) {
+        if (isOnTop()) useCases.navigator.openHomeTab(tab)
     }
 
     fun openSplitBill() {
@@ -206,6 +214,13 @@ internal class GroupScreen(
             fromMemberId = meId,
             toMemberId = creditorId,
         )
+    }
+
+    // Why: "Fixar na Início" pins the group to the top of Início's "Seus grupos"; the same item unpins it.
+    fun togglePin() {
+        if (group == null) return
+        val pin = !isPinned
+        scope.launch { useCases.setGroupPinned(groupId, pin) }
     }
 
     // Why: "Voltar para Grupos" on "Grupo apagado".
@@ -249,10 +264,11 @@ internal class GroupScreen(
         }
     }
 
+    // Why: a stack without Início still lands on the groups, never stays on a group that is gone.
     private fun backToGroups() {
-        val home = useCases.navigator.backStack.value
-            .indexOf(Route.Groups)
-        if (home >= 0) useCases.navigator.popTo(home + 1) else useCases.navigator.replaceAll(Route.Groups)
+        val navigator = useCases.navigator
+        if (Route.Home !in navigator.backStack.value) navigator.replaceAll(Route.Home)
+        navigator.openHomeTab(Route.Groups)
     }
 }
 
@@ -260,6 +276,7 @@ internal fun groupHeaderOf(
     group: Group,
     totalSpentMinor: Long,
     balances: GroupBalances,
+    isPinned: Boolean,
 ): GroupHeader {
     val meId = group.members.firstOrNull { it.isMe }?.id
     return GroupHeader(
@@ -273,5 +290,6 @@ internal fun groupHeaderOf(
         totalSpentMinor = totalSpentMinor,
         myBalance = balances.balanceOrNull(meId),
         isEveryoneSettled = balances.isEveryoneSettled,
+        isPinned = isPinned,
     )
 }

@@ -16,6 +16,13 @@ sealed interface Route {
 
     data object Restore : Route
 
+    /*
+     * Why: "Início" (flow 10), the home's first tab and where the app opens once there is a profile: the root of the
+     * back stack under every other tab of the home.
+     */
+    data object Home : Route
+
+    // Why: "Grupos", the home's second tab, right above Início.
     data object Groups : Route
 
     data object Profile : Route
@@ -98,8 +105,14 @@ sealed interface Route {
     ) : Route
 
     /*
-     * Why: the home's second tab, "Saldos" (flow 8): each person once, netted across every group. Over the groups, so
-     * the Grupos tab and back return to them; "A receber" and "A pagar" open it already filtered.
+     * Why: Início's "Registrar pagamento", which asks who paid whom first: every open pair of every group, the most
+     * recently used group first, one of which opens Registrar pagamento in its place.
+     */
+    data object PickPayment : Route
+
+    /*
+     * Why: the home's third tab, "Saldos" (flow 8): each person once, netted across every group. Right above Início,
+     * in the place of the other tabs, so back returns to Início; "A receber" and "A pagar" open it already filtered.
      */
     data class GlobalBalances(
         val filter: BalancesFilter,
@@ -133,6 +146,14 @@ sealed interface Route {
     data class ContactInvite(
         val personKey: String?,
         val name: String?,
+    ) : Route
+
+    /*
+     * Why: the home's "Atividade" tab (page 12), the feed and notification center of every group, over the groups like
+     * Saldos. personKey (PeopleBalances.keyOf) opens it on one person, from a contact's history, as a removable chip.
+     */
+    data class Activity(
+        val personKey: String?,
     ) : Route
 
     /*

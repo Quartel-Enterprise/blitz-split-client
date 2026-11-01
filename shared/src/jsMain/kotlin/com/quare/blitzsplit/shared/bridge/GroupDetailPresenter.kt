@@ -114,13 +114,8 @@ class GroupDetailPresenter(
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
-
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
-
                 GroupDetailUiAction.ShowChangeError -> "change-error"
-
-                // Why: only Android's rail asks for Atividade; the web has no rail beside a group.
-                GroupDetailUiAction.ShowComingSoon -> "coming-soon"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -153,6 +148,11 @@ class GroupDetailPresenter(
 
     fun balances() {
         viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
+    }
+
+    // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
+    fun togglePin() {
+        viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
     }
 
     fun editGroup() {

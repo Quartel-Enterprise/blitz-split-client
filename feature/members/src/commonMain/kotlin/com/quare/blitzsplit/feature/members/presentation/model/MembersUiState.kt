@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.members.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 
 data class MembersUiState(
     val groupName: String,
@@ -28,6 +29,8 @@ data class MembersUiState(
     val recordedPayment: PaymentNotice?,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: the home tab the screen was opened from, which Android's rail beside it selects.
+    val homeTab: HomeTab,
 ) {
     // Why: "4 membros · 2 já entraram".
     val memberCount: Int

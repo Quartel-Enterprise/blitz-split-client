@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
@@ -35,6 +36,8 @@ class BalancesViewModel(
                 recordedPayment = null,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                homeTab = useCases.navigator.backStack.value
+                    .findHomeTabUnder(route),
             ),
         )
 
@@ -79,11 +82,11 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
 
-            is BalancesUiEvent.OnHomeTabClicked -> screen.openHomeTab(event.tab) {
-                uiAction.emit(BalancesUiAction.ShowComingSoon)
-            }
+            is BalancesUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
+
+            BalancesUiEvent.OnPinToggled -> screen.togglePin()
 
             BalancesUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
@@ -121,6 +124,7 @@ class BalancesViewModel(
                     group = group,
                     totalSpentMinor = expenses.sumOf { expense -> expense.amountMinor },
                     balances = balances,
+                    isPinned = screen.isPinned,
                 ),
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine

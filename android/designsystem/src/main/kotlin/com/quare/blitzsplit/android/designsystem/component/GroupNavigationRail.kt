@@ -17,12 +17,14 @@ import com.quare.blitzsplit.core.model.HomeTab
 /*
  * Why: a group's screens (Despesas, Saldos, Membros, Estatísticas) drawn alone anywhere wider than a phone upright (a
  * phone lying down, a tablet or a foldable upright, Estatísticas over a whole tablet or book) keep the home's rail
- * with Grupos selected, as the canvas draws them ("No Android o trilho fica"), without "Rachar conta": the group has
- * its own. Beside the home's list the list's rail is already there, and the tabletop draws none. content gets whether
- * the rail shows, so its Scaffold leaves out the start inset the rail already takes (toGroupRailInsets).
+ * with the tab they were opened from selected, as the canvas draws them ("No Android o trilho fica"), without "Rachar
+ * conta": the group has its own. That tab goes back to it, as the others open theirs. Beside the home's list the
+ * list's rail is already there, and the tabletop draws none. content gets whether the rail shows, so its Scaffold
+ * leaves out the start inset the rail already takes (toGroupRailInsets).
  */
 @Composable
 fun WithGroupNavigationRail(
+    selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (showsRail: Boolean) -> Unit,
@@ -33,8 +35,9 @@ fun WithGroupNavigationRail(
     Row(modifier = modifier.fillMaxSize()) {
         if (showsRail) {
             HomeNavigationRail(
-                selected = HomeTab.GROUPS,
+                selected = selected,
                 onTabClick = onTabClick,
+                reselects = true,
             )
         }
         Box(modifier = Modifier.weight(1f)) { content(showsRail) }

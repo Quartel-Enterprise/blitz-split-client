@@ -72,12 +72,14 @@ internal fun GroupTabScaffold(
     frame: GroupTabFrame,
     snackbarHostState: SnackbarHostState,
     onAction: (GroupAction) -> Unit,
-    // Why: the home's rail beside the group drawn alone (WithGroupNavigationRail).
+    // Why: the home's rail beside the group drawn alone (WithGroupNavigationRail), on the tab it was opened from.
+    homeTab: HomeTab,
     onHomeTabClick: (HomeTab) -> Unit,
     modifier: Modifier = Modifier,
     listContent: LazyListScope.() -> Unit,
 ) {
     WithGroupNavigationRail(
+        selected = homeTab,
         onTabClick = onHomeTabClick,
         modifier = modifier,
     ) { showsRail ->

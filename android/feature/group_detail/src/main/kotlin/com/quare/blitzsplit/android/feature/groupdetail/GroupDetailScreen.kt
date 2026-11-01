@@ -32,7 +32,6 @@ fun GroupDetailScreen(
     val deleteError = stringResource(DesignR.string.designsystem_group_exit_delete_error)
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
-    val comingSoon = stringResource(DesignR.string.designsystem_coming_soon)
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {
@@ -41,7 +40,6 @@ fun GroupDetailScreen(
                 GroupDetailUiAction.ShowLeaveError -> showSnackbar(leaveError)
                 GroupDetailUiAction.ShowDeleteError -> showSnackbar(deleteError)
                 GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
-                GroupDetailUiAction.ShowComingSoon -> showSnackbar(comingSoon)
             }
         }
     }

@@ -62,6 +62,8 @@ data class GroupsUiState(
     val selectedGroupId: String?,
     // Why: "Última atividade" on the Flip's cover screen; null with no bill on the device.
     val latestBill: LatestBill?,
+    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    val activityUnreadCount: Int,
 ) {
     // Why: "Buscar" only shows once there is a group, as the empty home has nothing to look in.
     val canSearch: Boolean

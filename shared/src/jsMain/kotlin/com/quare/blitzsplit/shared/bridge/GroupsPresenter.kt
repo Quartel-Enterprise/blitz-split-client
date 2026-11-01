@@ -123,6 +123,8 @@ class JsGroupsState(
     val canSearch: Boolean,
     val isSearching: Boolean,
     val search: JsGroupsSearch,
+    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    val activityUnreadCount: Int,
 )
 
 class GroupsPresenter {
@@ -165,6 +167,7 @@ class GroupsPresenter {
                 canSearch = state.canSearch,
                 isSearching = state.isSearching,
                 search = toJsGroupsSearch(state.search),
+                activityUnreadCount = state.activityUnreadCount,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -199,6 +202,11 @@ class GroupsPresenter {
 
     fun openProfile() {
         viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
+    }
+
+    // Why: Início, the home's first tab.
+    fun openHome() {
+        viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
     }
 
     fun openBalances() {

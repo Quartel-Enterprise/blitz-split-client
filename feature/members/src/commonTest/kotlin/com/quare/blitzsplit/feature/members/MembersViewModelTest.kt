@@ -384,22 +384,22 @@ class MembersViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(MembersUiEvent.OnHomeTabClicked(HomeTab.GROUPS))
+        viewModel.onEvent(MembersUiEvent.OnRailTabClicked(HomeTab.GROUPS))
 
         // Then
         assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN the screen open WHEN its rail opens Atividade THEN says it comes soon`() = runTest(testDispatcher) {
+    fun `GIVEN the screen over the groups WHEN drawn THEN its rail selects Grupos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
         // When
-        viewModel.onEvent(MembersUiEvent.OnHomeTabClicked(HomeTab.ACTIVITY))
+        val state = viewModel.uiState.value
 
         // Then
-        assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
+        assertEquals(HomeTab.GROUPS, state.homeTab)
     }
 
     @Test

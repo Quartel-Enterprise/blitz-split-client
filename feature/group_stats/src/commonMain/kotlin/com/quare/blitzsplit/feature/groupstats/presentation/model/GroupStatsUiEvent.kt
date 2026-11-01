@@ -9,7 +9,7 @@ sealed interface GroupStatsUiEvent : UiEvent {
     data object OnBackClicked : GroupStatsUiEvent
 
     // Why: a tab of the home's rail, which Android keeps beside the statistics.
-    data class OnHomeTabClicked(
+    data class OnRailTabClicked(
         val tab: HomeTab,
     ) : GroupStatsUiEvent
 

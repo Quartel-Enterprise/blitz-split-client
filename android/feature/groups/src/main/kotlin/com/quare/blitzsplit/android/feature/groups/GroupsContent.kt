@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -32,14 +31,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.CloudSync
-import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -64,12 +60,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -79,9 +73,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
-
-// Why: a phone lying down's column of the actions and "Saldo geral", or Buscar's field, as the canvas draws it.
-private val sideColumnWidth = 320.dp
 
 /*
  * Why: the home. No visible title, since the selected Groups tab already names it: the top bar only holds the QR
@@ -121,7 +112,12 @@ fun GroupsContent(
          * the rail already takes.
          */
         Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) GroupsNavigationRail(onEvent = onEvent)
+            if (layout.usesNavigationRail) {
+                GroupsNavigationRail(
+                    activityBadgeCount = state.activityUnreadCount,
+                    onEvent = onEvent,
+                )
+            }
             Scaffold(
                 modifier = Modifier
                     .weight(1f)
@@ -153,7 +149,12 @@ fun GroupsContent(
                     }
                 },
                 bottomBar = {
-                    if (!layout.usesNavigationRail) GroupsNavigationBar(onEvent = onEvent)
+                    if (!layout.usesNavigationRail) {
+                        GroupsNavigationBar(
+                            activityBadgeCount = state.activityUnreadCount,
+                            onEvent = onEvent,
+                        )
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentWindowInsets = if (layout.usesNavigationRail) {
@@ -195,11 +196,19 @@ fun GroupsContent(
                 ) {
                     if (state.groups.isEmpty()) {
                         EmptyGroupsPane(
-                            state = state,
-                            onEvent = onEvent,
                             layout = layout,
+                            showsCard = state.showsEmptyState,
+                            onCreateGroup = { onEvent(GroupsUiEvent.OnCreateGroupClicked) },
+                            onJoinWithLink = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) },
                             isInBookHalf = listDetail?.isBook == true,
-                        )
+                        ) {
+                            SyncBadgeChip(
+                                badge = state.syncBadge,
+                                pendingChangeCount = state.pendingChangeCount,
+                                canRetry = state.canRetrySync,
+                                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+                            )
+                        }
                     } else {
                         GroupsListPane(
                             state = state,
@@ -247,137 +256,7 @@ private fun GroupsTopBar(
     )
 }
 
-// Why: the QR reader, Buscar once there is a group, and the profile: the top bar's, or the side column's lying down.
-@Composable
-private fun GroupsTopActionsComponent(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
-) {
-    IconButton(onClick = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) }) {
-        Icon(
-            imageVector = Icons.Outlined.QrCode2,
-            contentDescription = stringResource(R.string.groups_join_with_link),
-        )
-    }
-    // Why: only once there is a group to look in.
-    if (state.canSearch) {
-        IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchOpened) }) {
-            Icon(
-                imageVector = Icons.Outlined.Search,
-                contentDescription = stringResource(R.string.groups_search),
-            )
-        }
-    }
-    IconButton(
-        onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
-        modifier = Modifier.size(48.dp),
-    ) {
-        val profileLabel = stringResource(R.string.groups_profile)
-        AvatarBadge(
-            initial = state.avatarInitial,
-            color = state.avatarColor,
-            modifier = Modifier.semantics { contentDescription = profileLabel },
-            photoUrl = state.photoUrl,
-        )
-    }
-}
-
-/*
- * Why: a phone lying down (5.1, 5.2): on the left, 320 dp, the actions, the sync status while it asks for attention and
- * "Saldo geral", which stay still, or Buscar's field and scopes; on the right the list, or the results, scrolling on
- * their own. Pulling the list down syncs.
- */
-@Composable
-private fun GroupsSideColumnLayout(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
-    layout: DeviceLayout,
-    listState: LazyGridState,
-    onLongPress: (GroupRow) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(
-                start = 24.dp,
-                end = 24.dp,
-                top = 12.dp,
-            ),
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .width(sideColumnWidth)
-                .fillMaxHeight()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            if (state.isSearching) {
-                GroupsSearchHeader(
-                    search = state.search,
-                    onEvent = onEvent,
-                )
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    GroupsTopActionsComponent(
-                        state = state,
-                        onEvent = onEvent,
-                    )
-                }
-                SyncBadgeChip(
-                    badge = state.syncBadge,
-                    pendingChangeCount = state.pendingChangeCount,
-                    canRetry = state.canRetrySync,
-                    onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
-                )
-                GroupsSummaryCard(
-                    summary = state.summary,
-                    onEvent = onEvent,
-                    isStacked = true,
-                )
-            }
-        }
-        if (state.isSearching) {
-            GroupsSearchPane(
-                search = state.search,
-                onEvent = onEvent,
-                layout = layout,
-                modifier = Modifier.weight(1f),
-                horizontalPadding = 0.dp,
-            )
-        } else {
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = { onEvent(GroupsUiEvent.OnRefresh) },
-                modifier = Modifier.weight(1f),
-            ) {
-                LazyVerticalGrid(
-                    columns = gridCellsOf(state),
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    groupsListItems(
-                        state = state,
-                        onEvent = onEvent,
-                        onLongPress = onLongPress,
-                        selectedGroupId = null,
-                        showsSummary = false,
-                    )
-                }
-            }
-        }
-    }
-}
-
-private fun gridCellsOf(state: GroupsUiState): GridCells = if (state.showsGrid) {
+internal fun gridCellsOf(state: GroupsUiState): GridCells = if (state.showsGrid) {
     GridCells.Adaptive(minCardWidthOf(state.layout.gridSize))
 } else {
     GridCells.Fixed(1)
@@ -456,12 +335,21 @@ private fun horizontalPaddingOf(
     16.dp
 }
 
+/*
+ * Why: Grupos without a group, and Início's first use, which says the same with its own words (body): the sync chip
+ * on top, then the card with "Criar grupo" and "Entrar com link ou QR".
+ */
 @Composable
-private fun EmptyGroupsPane(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
+internal fun EmptyGroupsPane(
     layout: DeviceLayout,
-    isInBookHalf: Boolean,
+    // Why: nothing until the groups are read, so the empty card never flashes before the list.
+    showsCard: Boolean,
+    onCreateGroup: () -> Unit,
+    onJoinWithLink: () -> Unit,
+    @StringRes body: Int = R.string.groups_empty_body,
+    // Why: a book's half keeps the large card's tighter padding and stacks its two actions.
+    isInBookHalf: Boolean = false,
+    syncChip: @Composable () -> Unit,
 ) {
     /*
      * Why: always scrollable, so a pull feeds PullToRefreshBox's nested scroll on every layout and before the groups
@@ -469,10 +357,13 @@ private fun EmptyGroupsPane(
      */
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         EmptyGroupsColumn(
-            state = state,
-            onEvent = onEvent,
             layout = layout,
+            showsCard = showsCard,
+            body = body,
+            onCreateGroup = onCreateGroup,
+            onJoinWithLink = onJoinWithLink,
             isInBookHalf = isInBookHalf,
+            syncChip = syncChip,
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -483,10 +374,13 @@ private fun EmptyGroupsPane(
 
 @Composable
 private fun EmptyGroupsColumn(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
+    showsCard: Boolean,
+    @StringRes body: Int,
+    onCreateGroup: () -> Unit,
+    onJoinWithLink: () -> Unit,
     isInBookHalf: Boolean,
+    syncChip: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -496,21 +390,17 @@ private fun EmptyGroupsColumn(
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        SyncBadgeChip(
-            badge = state.syncBadge,
-            pendingChangeCount = state.pendingChangeCount,
-            canRetry = state.canRetrySync,
-            onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
-        )
+        syncChip()
         when {
-            // Why: nothing until the groups are read, so the empty card never flashes before the list.
-            !state.showsEmptyState -> Unit
+            !showsCard -> Unit
 
             // Why: the spacers split what the card leaves, and shrink to nothing once it needs the scroll.
             layout.isTablet -> {
                 Spacer(modifier = Modifier.weight(1f))
                 EmptyGroupsCard(
-                    onEvent = onEvent,
+                    body = body,
+                    onCreateGroup = onCreateGroup,
+                    onJoinWithLink = onJoinWithLink,
                     isHorizontal = false,
                     isLarge = true,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -520,13 +410,17 @@ private fun EmptyGroupsColumn(
             }
 
             layout.isLandscape -> EmptyGroupsCard(
-                onEvent = onEvent,
+                body = body,
+                onCreateGroup = onCreateGroup,
+                onJoinWithLink = onJoinWithLink,
                 isHorizontal = true,
                 isLarge = false,
             )
 
             else -> EmptyGroupsCard(
-                onEvent = onEvent,
+                body = body,
+                onCreateGroup = onCreateGroup,
+                onJoinWithLink = onJoinWithLink,
                 isHorizontal = false,
                 isLarge = false,
                 modifier = Modifier.padding(top = 24.dp),
@@ -535,8 +429,9 @@ private fun EmptyGroupsColumn(
     }
 }
 
+// Why: the chip only shows while the sync asks for attention; Grupos and Início draw it alike.
 @Composable
-private fun SyncBadgeChip(
+internal fun SyncBadgeChip(
     badge: SyncBadge?,
     pendingChangeCount: Int,
     canRetry: Boolean,

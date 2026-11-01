@@ -1,9 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 sealed interface BalancesUiAction {
-    // Why: Atividade, on the home's rail beside the group, is not built yet.
-    data object ShowComingSoon : BalancesUiAction
-
     // Why: the device couldn't sync or reach the server, so nobody left; trying again may work.
     data object ShowLeaveError : BalancesUiAction
 

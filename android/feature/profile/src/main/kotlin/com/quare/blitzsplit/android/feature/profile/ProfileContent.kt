@@ -188,36 +188,17 @@ private fun ProfileTwoColumnLayout(
                 .padding(horizontal = if (isTablet) 48.dp else 24.dp),
             horizontalArrangement = Arrangement.spacedBy(if (isTablet) 48.dp else 32.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .width(if (isTablet) tabletStartWidth else phoneLandscapeStartWidth)
-                    .profileColumn(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                ProfileIdentityContent(
-                    state = state,
-                    onEvent = onEvent,
-                )
-                AboutSection(
-                    appVersion = appVersion,
-                    onEvent = onEvent,
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .profileColumn(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                ProfileKeysContent(
-                    state = state,
-                    onEvent = onEvent,
-                )
-                ProfileSignOutContent(
-                    state = state,
-                    onEvent = onEvent,
-                )
-            }
+            ProfileStartColumn(
+                state = state,
+                appVersion = appVersion,
+                onEvent = onEvent,
+                modifier = Modifier.width(if (isTablet) tabletStartWidth else phoneLandscapeStartWidth),
+            )
+            ProfileEndColumn(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
@@ -231,40 +212,23 @@ private fun ProfileBookLayout(
 ) {
     TwoHalvesLayout(
         start = {
-            Column(
+            ProfileStartColumn(
+                state = state,
+                appVersion = appVersion,
+                onEvent = onEvent,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 32.dp)
-                    .profileColumn(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                ProfileIdentityContent(
-                    state = state,
-                    onEvent = onEvent,
-                )
-                AboutSection(
-                    appVersion = appVersion,
-                    onEvent = onEvent,
-                )
-            }
+                    .padding(start = 32.dp),
+            )
         },
         end = {
-            Column(
+            ProfileEndColumn(
+                state = state,
+                onEvent = onEvent,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(end = 32.dp)
-                    .profileColumn(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                ProfileKeysContent(
-                    state = state,
-                    onEvent = onEvent,
-                )
-                ProfileSignOutContent(
-                    state = state,
-                    onEvent = onEvent,
-                )
-            }
+                    .padding(end = 32.dp),
+            )
         },
         modifier = Modifier.fillMaxSize(),
         gap = bookGap,
@@ -272,7 +236,51 @@ private fun ProfileBookLayout(
 }
 
 @Composable
-private fun Modifier.profileColumn(): Modifier = verticalScroll(rememberScrollState()).padding(vertical = 8.dp)
+private fun ProfileStartColumn(
+    state: ProfileUiState,
+    appVersion: String,
+    onEvent: (ProfileUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        ProfileIdentityContent(
+            state = state,
+            onEvent = onEvent,
+        )
+        AboutSection(
+            appVersion = appVersion,
+            onEvent = onEvent,
+        )
+    }
+}
+
+@Composable
+private fun ProfileEndColumn(
+    state: ProfileUiState,
+    onEvent: (ProfileUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        ProfileKeysContent(
+            state = state,
+            onEvent = onEvent,
+        )
+        ProfileSignOutContent(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
+}
 
 @Composable
 private fun ProfileIdentityContent(

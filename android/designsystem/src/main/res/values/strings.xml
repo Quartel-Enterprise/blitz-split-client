@@ -98,6 +98,7 @@
     <string name="designsystem_former_member">Former member</string>
     <string name="designsystem_you">You</string>
     <string name="designsystem_you_paid">You paid</string>
+    <string name="designsystem_tab_home">Home</string>
     <string name="designsystem_tab_groups">Groups</string>
     <string name="designsystem_tab_balances">Balances</string>
     <string name="designsystem_tab_contacts">Contacts</string>
@@ -124,4 +125,8 @@
     <string name="designsystem_settled_pair_owes_me_less">with the change, %1$s is left owing you %2$s.</string>
     <string name="designsystem_settled_pair_even">with the change, %1$s and %2$s are settled up.</string>
     <string name="designsystem_settled_pair_even_with_me">with the change, you and %s are settled up.</string>
+    <plurals name="designsystem_tab_unread">
+        <item quantity="one">%d unread</item>
+        <item quantity="other">%d unread</item>
+    </plurals>
 </resources>

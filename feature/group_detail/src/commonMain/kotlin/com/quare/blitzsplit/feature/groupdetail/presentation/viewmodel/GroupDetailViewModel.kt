@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
@@ -54,6 +55,8 @@ class GroupDetailViewModel(
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                homeTab = useCases.navigator.backStack.value
+                    .findHomeTabUnder(route),
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
             ),
@@ -117,11 +120,11 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnBalancesTabClicked -> screen.openTab(Route.Balances(route.groupId))
 
-            is GroupDetailUiEvent.OnHomeTabClicked -> screen.openHomeTab(event.tab) {
-                uiAction.emit(GroupDetailUiAction.ShowComingSoon)
-            }
+            is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
+
+            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
@@ -180,6 +183,7 @@ class GroupDetailViewModel(
                     group = group,
                     totalSpentMinor = expenses.sumOf { expense -> expense.amountMinor },
                     balances = balances,
+                    isPinned = screen.isPinned,
                 ),
                 days = days,
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.

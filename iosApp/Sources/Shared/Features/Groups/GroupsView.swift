@@ -9,11 +9,7 @@ final class GroupsModel {
     private(set) var leaveErrorCount = 0
     private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
-    private(set) var deletedGroupCount = 0
-    /// "Carla deleted the group “Ana's birthday”.", kept while the toast shows.
-    private(set) var deletedGroupText: LocalizedStringKey = ""
-    /// The toast's own duration on the groups.
-    static let deletedGroupToastDuration: Duration = .seconds(4)
+    let deletedGroup = DeletedGroupToast()
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createGroupsViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -24,9 +20,8 @@ final class GroupsModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
             if !state.isRefreshing { self?.endRefreshes() }
-            // State, not an action, so it waits until the home is on top; the next deleted group follows
-            if let notice = state.deletedGroupNotice, notice.groupId != self?.shownDeletedGroupId {
-                self?.showDeletedGroup(notice)
+            self?.deletedGroup.show(state.deletedGroupNotice) {
+                self?.send(GroupsUiEventOnDeletedGroupNoticeShown.shared)
             }
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
@@ -40,24 +35,6 @@ final class GroupsModel {
         })
     }
 
-    /// The notice on screen, so a state update meanwhile doesn't show it twice.
-    @ObservationIgnored private var shownDeletedGroupId: String?
-
-    private func showDeletedGroup(_ notice: DeletedGroupNotice) {
-        shownDeletedGroupId = notice.groupId
-        if let name = notice.deletedByName {
-            deletedGroupText = "\(name) deleted the group “\(notice.groupName)”."
-        } else {
-            deletedGroupText = "The group “\(notice.groupName)” was deleted."
-        }
-        deletedGroupCount += 1
-        // Shown once the toast is gone, as Android's snackbar does, so the next deleted group doesn't replace it
-        Task { [weak self] in
-            try? await Task.sleep(for: Self.deletedGroupToastDuration)
-            self?.send(GroupsUiEventOnDeletedGroupNoticeShown.shared)
-        }
-    }
-
     /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: the search field reads
     /// its text back at once, so the caret never jumps.
     var current: GroupsUiState {
@@ -69,231 +46,22 @@ final class GroupsModel {
     }
 
     /// The pulls waiting for the sync they asked for, resumed by the state that says it ended.
-    @ObservationIgnored private var pendingRefreshes: [CheckedContinuation<Void, Never>] = []
+    @ObservationIgnored private let refreshes = PendingRefreshes()
 
     /// Pulled down: asks for a sync and returns once the shared code says it ended (at once offline).
     func refresh() async {
         send(GroupsUiEventOnRefresh.shared)
         // The event marks the sync as started before it returns, and starts none offline
-        guard (holder.viewModel.uiState.value as! GroupsUiState).isRefreshing else { return }
-        await withCheckedContinuation { continuation in
-            pendingRefreshes.append(continuation)
-        }
+        await refreshes.wait(isRefreshing: (holder.viewModel.uiState.value as! GroupsUiState).isRefreshing)
     }
 
     private func endRefreshes() {
-        let ended = pendingRefreshes
-        pendingRefreshes = []
-        ended.forEach { $0.resume() }
+        refreshes.endAll()
     }
 
     isolated deinit {
         endRefreshes()
         holder.clear()
-    }
-}
-
-/// The tabs of the canvas. Groups, Balances and Contacts are built; Activity answers "Coming soon". Search is the iPhone's and
-/// the iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
-enum MainTab: Hashable {
-    case groups
-    case balances
-    case contacts
-    case activity
-    case search
-}
-
-/// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable).
-struct MainTabView: View {
-    /// The shared back stack above the groups: a group's expenses, balances or members, an invite opened from its
-    /// link, the profile, its editor and, on iPhone, a key.
-    @Binding var path: [AppRoute]
-
-    @State private var model = GroupsModel()
-    @State private var showsRecoveryCode = false
-
-    var body: some View {
-        TabView(selection: tabSelection) {
-            Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
-                // An iPad lying down draws the group beside the list
-                GroupsColumns(model: model, path: stackPath(isSearch: false), isInFront: isInFront(isSearch: false)) {
-                    GroupsView(model: model)
-                }
-                #if os(macOS)
-                // What the View menu's Grid Size reads and changes, only while the groups are in front
-                .focusedSceneValue(\.groupsModel, path.isEmpty ? model : nil)
-                #endif
-            }
-            // The shared back stack holds Balances over the groups, so its tab shows while it is right above them
-            Tab("Balances", systemImage: "creditcard", value: MainTab.balances) {
-                NavigationStack(path: balancesPath) {
-                    if let route = balancesRoute {
-                        GlobalBalancesView(route: route)
-                            .id(route)
-                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
-                    } else {
-                        Color.clear
-                    }
-                }
-            }
-            // Contacts sits right above the groups too, and keeps what it opens in its own tab's stack
-            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
-                if isContactsShown {
-                    ContactsColumns(path: contactsPath)
-                } else {
-                    Color.clear
-                }
-            }
-            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
-            #if os(iOS)
-            // Nothing to look in before the first group
-            if model.state.canSearch {
-                Tab(value: MainTab.search, role: .search) {
-                    // An iPad lying down opens the first result beside the results
-                    GroupsColumns(model: model, path: stackPath(isSearch: true), isInFront: isInFront(isSearch: true)) {
-                        GroupsSearchView(model: model)
-                    }
-                }
-            }
-            #endif
-        }
-        .tabViewStyle(.sidebarAdaptable)
-        .glassToast(
-            [GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount)]
-                + GroupExitCopy.errorToasts(
-                    leave: model.leaveErrorCount,
-                    delete: model.deleteErrorCount,
-                    change: model.changeErrorCount,
-                ),
-        )
-        // Its own toast, for its longer duration; the two seldom show at once
-        .glassToast(
-            model.deletedGroupText,
-            trigger: model.deletedGroupCount,
-            duration: GroupsModel.deletedGroupToastDuration,
-        )
-        // Shown once the first sync issued a code; the sheet settles the prompt itself ("I've saved it",
-        // "Remind me later" or a swipe down), which hides it here too.
-        .onChange(of: model.state.showsRecoveryCodePrompt, initial: true) { _, isDue in
-            showsRecoveryCode = isDue
-        }
-        .sheet(isPresented: $showsRecoveryCode) {
-            RecoveryCodeSheet()
-        }
-    }
-
-    // Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
-    // and goes back to the groups, past what its results opened; leaving Balances or Contacts goes back to the groups
-    // too.
-    private var tabSelection: Binding<MainTab> {
-        Binding(
-            get: {
-                if showsSearchTab { return .search }
-                if balancesRoute != nil { return .balances }
-                return isContactsShown ? .contacts : .groups
-            },
-            set: { tab in
-                switch tab {
-                case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
-                case .contacts: model.send(GroupsUiEventOnContactsTabClicked.shared)
-                case .activity: model.send(GroupsUiEventOnActivityTabClicked.shared)
-                case .search: model.send(GroupsUiEventOnSearchOpened.shared)
-                case .groups:
-                    if showsSearchTab {
-                        model.send(GroupsUiEventOnSearchTabLeft.shared)
-                    } else if balancesRoute != nil || isContactsShown {
-                        model.send(GroupsUiEventOnGroupsTabClicked.shared)
-                    }
-                }
-            },
-        )
-    }
-
-    /// Balances right above the groups, which its tab shows; nil while the Groups tab is in front.
-    private var balancesRoute: RouteGlobalBalances? {
-        if case let .globalBalances(route) = path.first { return route }
-        return nil
-    }
-
-    /// Contacts right above the groups, which its tab shows.
-    private var isContactsShown: Bool {
-        if case .contacts = path.first { return true }
-        return false
-    }
-
-    /// What Contacts opened over itself (a person's profile, the agenda, Balances with a request), in its tab's stack.
-    private var contactsPath: Binding<[AppRoute]> {
-        Binding(
-            get: { isContactsShown ? Array(path.dropFirst()) : [] },
-            set: { newValue in
-                guard isContactsShown, let first = path.first else { return }
-                path = [first] + newValue
-            },
-        )
-    }
-
-    /// What Balances pushed over itself (the profile), shown in its own tab's stack.
-    private var balancesPath: Binding<[AppRoute]> {
-        Binding(
-            get: { balancesRoute != nil ? Array(path.dropFirst()) : [] },
-            set: { newValue in
-                guard balancesRoute != nil, let first = path.first else { return }
-                path = [first] + newValue
-            },
-        )
-    }
-
-    /// The search tab is selected: only the iPhone and the iPad have one, the Mac searches in the groups' toolbar. Read
-    /// from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups until the watcher catches up.
-    private var showsSearchTab: Bool {
-        #if os(iOS)
-        model.current.isSearching
-        #else
-        false
-        #endif
-    }
-
-    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, Balances while
-    /// it is right above the groups, else Groups. The other tabs' stacks stay at their root, so a screen never shows in
-    /// two.
-    private func stackPath(isSearch: Bool) -> Binding<[AppRoute]> {
-        Binding(
-            get: { isInFront(isSearch: isSearch) ? path : [] },
-            set: { newValue in
-                guard isInFront(isSearch: isSearch) else { return }
-                path = newValue
-            },
-        )
-    }
-
-    /// Search while it is open, Groups while neither Search, Balances nor Contacts is: the tab whose stack holds the
-    /// path.
-    private func isInFront(isSearch: Bool) -> Bool {
-        balancesRoute == nil && !isContactsShown && showsSearchTab == isSearch
-    }
-
-    /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
-    /// bill, an invite opened from its link, a group's invite with an iPad's room, the profile, its editor and, on
-    /// iPhone, a key. Contacts also pushes a person's profile, the agenda, and Balances opened from a profile's Request.
-    @ViewBuilder
-    static func destination(_ route: AppRoute) -> some View {
-        switch route {
-        case .editProfile: EditProfileView()
-        case .notificationSettings: NotificationSettingsView()
-        case let .paymentKey(route): PaymentKeyView(route: route)
-        case let .members(route): MembersView(route: route)
-        case let .groupDetail(route): GroupDetailView(route: route)
-        case let .balances(route): BalancesView(route: route)
-        case let .billDetail(route): BillDetailView(route: route)
-        case let .groupStats(route): GroupStatsView(route: route)
-        case let .joinInvite(route): JoinInviteView(route: route)
-        case let .joinPick(route): JoinPickView(route: route)
-        case let .invite(route): InviteView(route: route)
-        case let .contactProfile(route): ContactProfileView(route: route)
-        case .contactsAgenda: AgendaView()
-        case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
-        default: ProfileView()
-        }
     }
 }
 
@@ -364,14 +132,7 @@ struct GroupsView: View {
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Color.clear
-                    .frame(width: 1, height: 1)
-                    .accessibilityElement()
-                    .accessibilityLabel(Text("Groups"))
-                    .accessibilityAddTraits(.isHeader)
-            }
-            .sharedBackgroundVisibility(.hidden)
+            HiddenTabTitle(title: String(localized: "Groups"))
             ToolbarItemGroup(placement: .primaryAction) {
                 joinButton
                 profileButton
@@ -425,17 +186,9 @@ struct GroupsView: View {
                 profileButton
             }
             ToolbarItem(placement: .primaryAction) {
-                Button {
+                SplitBillButton {
                     model.send(GroupsUiEventOnSplitBillClicked.shared)
-                } label: {
-                    // A toolbar draws a Label as its icon only: the canvas spells "Split a bill" out
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus")
-                        Text("Split a bill")
-                    }
-                    .fontWeight(.semibold)
                 }
-                .buttonStyle(.borderedProminent)
             }
         }
         #endif
@@ -448,18 +201,13 @@ struct GroupsView: View {
     }
 
     private var profileButton: some View {
-        Button {
+        ProfileToolbarButton(
+            initial: model.state.avatarInitial,
+            color: model.state.avatarColor,
+            photoUrl: model.state.photoUrl,
+        ) {
             model.send(GroupsUiEventOnProfileClicked.shared)
-        } label: {
-            AvatarPhoto(
-                initial: model.state.avatarInitial,
-                color: model.state.avatarColor,
-                photoUrl: model.state.photoUrl,
-                size: 32,
-                font: .subheadline.weight(.semibold),
-            )
         }
-        .accessibilityLabel("Profile")
     }
 
     #if os(macOS)

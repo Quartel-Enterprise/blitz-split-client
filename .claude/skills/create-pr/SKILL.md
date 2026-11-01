@@ -295,8 +295,10 @@ checks the app against the library's TypeScript definitions and Vite bundles it.
 It fails on copied code `.jscpd-baseline.json` doesn't list, and lists both copies with their
 lines: extract the copied code into one place the callers use (see "Copied code" in
 [code-style.md](../../../docs/architecture/code-style.md)). When it fails because the branch removed
-copied code or renamed a file that has some, run `./scripts/cpd.sh --update-baseline` and commit the
-baseline. Never pass `--allow-new` to get past the check without asking the user.
+copied code, or renamed or moved a file that has some (a new path with the same copied lines as a
+listed path whose file is gone), run `./scripts/cpd.sh --update-baseline` and commit the baseline.
+Any other file whose copied lines grew needs `--allow-new`, even when the total drops. Never pass
+`--allow-new` to get past the check without asking the user.
 
 If any check fails, stop and report which one and why. Fix it before going on; never push a branch
 whose checks fail.

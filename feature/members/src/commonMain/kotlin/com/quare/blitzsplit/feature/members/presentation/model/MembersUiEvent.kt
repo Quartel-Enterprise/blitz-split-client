@@ -16,7 +16,7 @@ sealed interface MembersUiEvent : UiEvent {
     data object OnBalancesTabClicked : MembersUiEvent
 
     // Why: a tab of the home's rail, which Android keeps beside the group when it is drawn alone.
-    data class OnHomeTabClicked(
+    data class OnRailTabClicked(
         val tab: HomeTab,
     ) : MembersUiEvent
 

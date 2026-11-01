@@ -34,7 +34,7 @@ half opened, bounds, separating) once, and hands it down as `LocalFoldLayout`. R
 | `bookSplit` | Where the halves side by side meet, on screen: the vertical hinge (or the middle without one) on a book, the middle on a tabletop lying down, null elsewhere |
 | `tabletopSplit` | Where the top and bottom meet on a tabletop (half opened, hinge across), null elsewhere |
 | `hinge` | The raw fold (`FoldHinge`), for anything the above doesn't answer |
-| `isOnCoverScreen` | A Flip's cover screen: the whole display (the largest window it allows) is under 480 dp on its long side, so a phone's split screen half never counts. `formFactor` stays `Phone` there; only Grupos draws a cover |
+| `isOnCoverScreen` | A Flip's cover screen: the whole display (the largest window it allows) is under 480 dp on its long side, so a phone's split screen half never counts. `formFactor` stays `Phone` there; Início (`HomeLayout.COVER`) and Grupos draw their cover, every other screen draws as on a phone |
 
 How `formFactor` is decided: under 600 dp on the short side is a phone, whatever it reports (a Flip open is a phone);
 a vertical hinge is a book in any posture; a half opened horizontal one a tabletop; with no fold, 960 dp or more on
@@ -54,7 +54,7 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento, Cobrar: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
 | `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)`, a cover screen one `coverFoldLayoutOf(360.dp, 374.dp)` |
-| `HomeNavigationRail` / `WithGroupNavigationRail` | The home's rail (no labels on a phone lying down), and the same rail with Grupos selected beside a group's screen drawn alone wider than a phone upright, never on a tabletop nor in the pane beside the list; its content's Scaffold leaves out the start inset (`toGroupRailInsets`) |
+| `HomeNavigationRail` / `WithGroupNavigationRail` | The home's rail (no labels on a phone lying down nor a tabletop), and the same rail beside a group's screen drawn alone wider than a phone upright, never on a tabletop nor in the pane beside the list, with the tab the group was opened from selected (`homeTab`) and tappable again to go back to it (`reselects`); its content's Scaffold leaves out the start inset (`toGroupRailInsets`) |
 
 A confirmation that keeps off the hinge is `ConfirmDialog(placement = rememberDialogPlacement(...))`, and any other
 alert `FoldAlertDialog(..., placement = rememberDialogPlacement(...))` (the icon, title, text and buttons of Material's
@@ -147,7 +147,8 @@ for interactions) is not read. Before building anything by hand for the Duo:
 The Mac's profile is the app's `Settings` scene (Ajustes, ⌘,), which shares the app's `AppModel` with the main
 window: `AppModel` pops a `Route.Profile` the shared code pushes and asks the root to `openSettings()` instead, and
 what the profile opens (`AppRoute.opensInSettings`: a key, deleting the account) is `AppModel.settingsSheet`, a sheet
-on the Settings window that the main window never draws.
+on the Settings window that the main window never draws (see
+[navigation.md](navigation.md#the-macs-ajustes-two-windows-one-back-stack)).
 
 The boards' Duo measures are provisional (taken from Apple's diagrams); compare with Apple's template before matching
 a number exactly.

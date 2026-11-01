@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlin.test.Test
@@ -166,6 +167,7 @@ class BalancesUiStateTest {
             totalSpentMinor = 0L,
             myBalance = null,
             isEveryoneSettled = false,
+            isPinned = false,
         ),
         myDebts = myDebts,
         otherDebts = otherDebts,
@@ -173,5 +175,6 @@ class BalancesUiStateTest {
         recordedPayment = null,
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
+        homeTab = HomeTab.GROUPS,
     )
 }
