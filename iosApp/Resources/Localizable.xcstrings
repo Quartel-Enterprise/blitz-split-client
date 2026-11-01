@@ -8089,6 +8089,528 @@
           }
         }
       }
+    },
+    "owes you" : {
+      "comment" : "Under someone's net in the home's Balances: they owe this device's user",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "te deve"
+          }
+        }
+      }
+    },
+    "Net, already offset" : {
+      "comment" : "Closes By group of someone across several groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Líquido, já compensado"
+          }
+        }
+      }
+    },
+    "Show" : {
+      "comment" : "The filter of the home's Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar"
+          }
+        }
+      }
+    },
+    "You owe" : {
+      "comment" : "The home's Balances: the filter and the section of the people this device's user owes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você deve"
+          }
+        }
+      }
+    },
+    "Owe you" : {
+      "comment" : "The home's Balances: the filter and the section of the people who owe this device's user",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te devem"
+          }
+        }
+      }
+    },
+    "Offline · this %@'s balances" : {
+      "comment" : "The home's Balances offline; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline · saldos deste %@"
+          }
+        }
+      }
+    },
+    "already offset across groups" : {
+      "comment" : "Under the overall balance of the home's Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "já compensado entre os grupos"
+          }
+        }
+      }
+    },
+    "adding up every group" : {
+      "comment" : "Under the overall balance of the home's Balances when nothing is open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "somando todos os grupos"
+          }
+        }
+      }
+    },
+    "%@ by group" : {
+      "comment" : "The region of someone's groups in the home's Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ por grupo"
+          }
+        }
+      }
+    },
+    "By group" : {
+      "comment" : "Opens what each group adds to someone's net",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por grupo"
+          }
+        }
+      }
+    },
+    "By group:" : {
+      "comment" : "The label of the groups a settling up across groups closes, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por grupo:"
+          }
+        }
+      }
+    },
+    "Hide %@ by group" : {
+      "comment" : "VoiceOver: closes someone's groups in the home's Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esconder %@ por grupo"
+          }
+        }
+      }
+    },
+    "Show %@ by group" : {
+      "comment" : "VoiceOver: opens someone's groups in the home's Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver %@ por grupo"
+          }
+        }
+      }
+    },
+    "Got paid by %@" : {
+      "comment" : "VoiceOver: records a payment received from someone across groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recebi de %@"
+          }
+        }
+      }
+    },
+    "Request" : {
+      "comment" : "Opens a message asking someone who owes this device's user to pay",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cobrar"
+          }
+        }
+      }
+    },
+    "Request from %@" : {
+      "comment" : "The sheet that asks someone to pay, and its button for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cobrar %@"
+          }
+        }
+      }
+    },
+    "Settle up with %@" : {
+      "comment" : "VoiceOver: settles up with someone across groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acertar com %@"
+          }
+        }
+      }
+    },
+    "You owe nothing" : {
+      "comment" : "The home's Balances on You owe with nobody to pay",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você não deve nada"
+          }
+        }
+      }
+    },
+    "Nobody owes you" : {
+      "comment" : "The home's Balances on Owe you with nobody owing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém te deve"
+          }
+        }
+      }
+    },
+    "All settled" : {
+      "comment" : "The home's Balances with nothing open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo acertado"
+          }
+        }
+      }
+    },
+    "You've settled up with everyone. You still have %@ to get back from %lld people." : {
+      "comment" : "The home's Balances with nobody to pay; %1$@ is what others owe, %2$lld how many people",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You've settled up with everyone. You still have %1$@ to get back from %2$lld person."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You've settled up with everyone. You still have %1$@ to get back from %2$lld people."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Você já acertou com todo mundo. Ainda tem %1$@ para receber de %2$lld pessoa."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Você já acertou com todo mundo. Ainda tem %1$@ para receber de %2$lld pessoas."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "You still owe %@ to %lld people." : {
+      "comment" : "The home's Balances with nobody owing; %1$@ is what this device's user owes, %2$lld to how many people",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You still owe %1$@ to %2$lld person."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You still owe %1$@ to %2$lld people."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Você ainda deve %1$@ para %2$lld pessoa."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Você ainda deve %1$@ para %2$lld pessoas."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Nobody owes you and you owe nobody. When someone adds a bill, the balance shows up here." : {
+      "comment" : "The home's Balances with nothing open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém te deve e você não deve a ninguém. Quando alguém lançar uma conta, o saldo aparece aqui."
+          }
+        }
+      }
+    },
+    "See who you owe" : {
+      "comment" : "Shows You owe from an empty Owe you",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver para quem você deve"
+          }
+        }
+      }
+    },
+    "See groups" : {
+      "comment" : "Goes back to the groups from the home's Balances with nothing open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver grupos"
+          }
+        }
+      }
+    },
+    "%@ · guest" : {
+      "comment" : "Someone nobody joined as in their groups; %@ is the group or how many",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · convidado"
+          }
+        }
+      }
+    },
+    "Overall balance %@ · already offset across groups" : {
+      "comment" : "Under the Mac's Balances title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo geral %@ · já compensado entre os grupos"
+          }
+        }
+      }
+    },
+    "Overall balance %@ · adding up every group" : {
+      "comment" : "Under the Mac's Balances title when nothing is open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo geral %@ · somando os grupos"
+          }
+        }
+      }
+    },
+    "the groups %@" : {
+      "comment" : "Where a debt comes from in a Request message; %@ lists the groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dos grupos %@"
+          }
+        }
+      }
+    },
+    "the group %@" : {
+      "comment" : "Where a debt comes from in a Request message; %@ is the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "do grupo %@"
+          }
+        }
+      }
+    },
+    "Hi %@! By the Blitz Split math, you owe me %@ from %@." : {
+      "comment" : "A Request message: %1$@ is the person, %2$@ the amount, %3$@ the group or groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oi, %1$@! Pelas contas do Bora Rachar, ficou %2$@ %3$@ para você me pagar."
+          }
+        }
+      }
+    },
+    "Hi %@! You owe me %@ from %@: your part of %@, minus the %@ you already paid." : {
+      "comment" : "A Request message to a guest: the person, the amount, the groups, the bills and what they already paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oi, %1$@! Ficou %2$@ %3$@ para você me pagar: sua parte de %4$@, menos os %5$@ que você já pagou."
+          }
+        }
+      }
+    },
+    "Hi %@! You owe me %@ from %@: your part of %@." : {
+      "comment" : "A Request message to a guest: the person, the amount, the groups and the bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oi, %1$@! Ficou %2$@ %3$@ para você me pagar: sua parte de %4$@."
+          }
+        }
+      }
+    },
+    "%@ Pix: %@" : {
+      "comment" : "A Request message followed by this device's user's Pix key",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ Pix: %2$@"
+          }
+        }
+      }
+    },
+    "CPF" : {
+      "comment" : "A Pix key type",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CPF"
+          }
+        }
+      }
+    },
+    "%@ owes you %@ · %@" : {
+      "comment" : "Under Request's title: the person, the amount and the group or how many",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te deve %2$@ · %3$@"
+          }
+        }
+      }
+    },
+    "%@ is a guest without the app. They only learn about it from this message, so it already says what went into the bill." : {
+      "comment" : "Request to a guest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Só fica sabendo por esta mensagem, então ela já leva o que entrou na conta."
+          }
+        }
+      }
+    },
+    "Message" : {
+      "comment" : "The editable text of a Request",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensagem"
+          }
+        }
+      }
+    },
+    "Include my Pix key" : {
+      "comment" : "Adds this device's user's Pix key to a Request",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incluir minha chave Pix"
+          }
+        }
+      }
+    },
+    "Copy message" : {
+      "comment" : "Copies a Request's message",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar mensagem"
+          }
+        }
+      }
+    },
+    "Send" : {
+      "comment" : "Opens the share sheet with a Request's message",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar"
+          }
+        }
+      }
+    },
+    "The app records one payment in each group." : {
+      "comment" : "Record payment across several groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O app anota um pagamento em cada grupo."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
