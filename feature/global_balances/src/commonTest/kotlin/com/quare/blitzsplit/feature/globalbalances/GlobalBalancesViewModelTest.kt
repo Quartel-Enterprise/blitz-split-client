@@ -299,6 +299,27 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN Voce deve WHEN a stale pick of someone who owes you arrives THEN Tudo keeps the first person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.YOU_OWE)
+            val carla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.ALL))
+
+            // Then
+            assertNull(viewModel.uiState.value.pickedPersonId)
+            assertEquals(
+                "Bruno",
+                viewModel.uiState.value.selectedPerson
+                    ?.name,
+            )
+        }
+
+    @Test
     fun `GIVEN everything settled WHEN Saldos opens THEN the pane shows nobody`() = runTest(testDispatcher) {
         // Given
         prepareScenario(bills = emptyList())

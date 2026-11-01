@@ -144,8 +144,11 @@ class GlobalBalancesViewModel(
 
             is GlobalBalancesUiEvent.OnPersonExpandToggled -> toggle(event.personId)
 
-            // Why: only someone listed, so a stale tap never picks a person a sync just settled.
-            is GlobalBalancesUiEvent.OnPersonSelected -> if (personOrNull(event.personId) != null) {
+            /*
+             * Why: only someone the filter lists, so a stale tap never picks a person a sync just settled, nor one the
+             * filter hides, whom the pane would jump to once the filter changes.
+             */
+            is GlobalBalancesUiEvent.OnPersonSelected -> if (isListed(event.personId)) {
                 uiState.update { it.copy(pickedPersonId = event.personId) }
             }
 
@@ -303,6 +306,10 @@ class GlobalBalancesViewModel(
     }
 
     private fun personOrNull(personId: String): PersonBalance? = balances.people.firstOrNull { idOf(it) == personId }
+
+    private fun isListed(personId: String): Boolean = uiState.value.sections.any { section ->
+        section.rows.any { it.id == personId }
+    }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 
