@@ -101,12 +101,13 @@ private fun FoldHalfPane(
         ) { measurables, constraints ->
             val width = constraints.maxWidth
             val height = constraints.maxHeight
-            val topHalfBottom = hingeGap.gapOf(
-                density = this,
-                split = fold.tabletopSplit,
-                isSideBySide = false,
-                length = height,
-            ).first
+            val topHalfBottom = hingeGap
+                .gapOf(
+                    density = this,
+                    split = fold.tabletopSplit,
+                    isSideBySide = false,
+                    length = height,
+                ).first
             val half = if (placement == DialogPlacement.TopHalf) {
                 IntRect(
                     left = 0,
