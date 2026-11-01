@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -482,12 +483,4 @@ internal fun amountColorOf(netMinor: Long): Color = when {
     netMinor > 0 -> MaterialTheme.colorScheme.primary
     netMinor < 0 -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.onSurfaceVariant
-}
-
-// Why: the row or card of the group open beside the list takes the canvas' secondary container.
-@Composable
-internal fun selectableRowColorOf(isSelected: Boolean): Color = if (isSelected) {
-    MaterialTheme.colorScheme.secondaryContainer
-} else {
-    MaterialTheme.colorScheme.surfaceContainerLowest
 }

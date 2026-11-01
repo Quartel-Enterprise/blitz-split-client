@@ -36,6 +36,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
@@ -164,11 +165,7 @@ internal fun PersonPickRow(
         onClick = { onEvent(GlobalBalancesUiEvent.OnPersonSelected(row.id)) },
         modifier = modifier.fillMaxWidth(),
         shape = groupedRowShapeOf(index, count),
-        color = if (isSelected) {
-            MaterialTheme.colorScheme.secondaryContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerLowest
-        },
+        color = selectableRowColorOf(isSelected),
     ) {
         Box(
             modifier = Modifier.padding(
