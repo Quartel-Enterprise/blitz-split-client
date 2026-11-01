@@ -124,6 +124,10 @@ struct MainTabView: View {
                             }
                         }
                 }
+                #if os(macOS)
+                // What the View menu's Grid Size reads and changes, only while the groups are in front
+                .focusedSceneValue(\.groupsModel, path.isEmpty ? model : nil)
+                #endif
             }
             Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
@@ -242,8 +246,6 @@ struct GroupsView: View {
             }
         }
         #else
-        // What the View menu's Grid Size reads and changes while this window shows the groups
-        .focusedSceneValue(\.groupsModel, model)
         .navigationSubtitle(macSubtitle)
         .toolbar {
             if !state.groups.isEmpty {
