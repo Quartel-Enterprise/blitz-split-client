@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
-import com.quare.blitzsplit.android.designsystem.layout.ListDetailPaneSpacing
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.core.navigation.Route
 
@@ -49,7 +48,7 @@ private fun homeDirectiveOf(
     listDetail: ListDetailLayout?,
 ): PaneScaffoldDirective = windowDirective.copy(
     maxHorizontalPartitions = if (listDetail != null) 2 else 1,
-    horizontalPartitionSpacerSize = if (listDetail != null) ListDetailPaneSpacing else 0.dp,
+    horizontalPartitionSpacerSize = listDetail?.paneSpacing ?: 0.dp,
     maxVerticalPartitions = 1,
     verticalPartitionSpacerSize = 0.dp,
 )

@@ -51,7 +51,7 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `FoldDialogSceneStrategy.dialogMetadataOf(properties)` | A navigation entry in a `FoldDialog` over the entry under it (`AppNavDisplay` uses it for every dialog route) |
 | `rememberUsesFormDialog()` | Novo grupo, Editar grupo, Convidar, the keys, Excluir conta: a dialog on a tablet, full screen on any foldable |
 | `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento, Cobrar: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
-| `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge) |
+| `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
 | `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)` |
 
 The two `rememberUses…Dialog` rules are the presentations of today. A flow whose boards draw something else on a

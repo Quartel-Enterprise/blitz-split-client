@@ -11,9 +11,6 @@ import androidx.compose.ui.unit.dp
 
 private val tabletListPaneWidth = 520.dp
 
-// Why: the gap between the list and the detail, the hinge band of an unfolded book.
-val ListDetailPaneSpacing: Dp = HingeBand
-
 /*
  * Why: the canvas splits Grupos and Saldos into a list and its detail only on a tablet lying down (1280×800) and an
  * unfolded book (841×673, the tabletop lying down alike), the book's halves on the hinge it reports, so a Galaxy Z
@@ -24,6 +21,11 @@ val ListDetailPaneSpacing: Dp = HingeBand
 data class ListDetailLayout(
     // Why: the rail and the list, 520dp on a tablet, the half before the hinge on a book.
     val listPaneWidth: Dp,
+    /*
+     * Why: the gap between the list and the detail: on a book the band the hinge reports (at least HingeBand), so a
+     * hinge wider than 24dp still keeps the detail off it; HingeBand on a tablet, as the canvas draws it.
+     */
+    val paneSpacing: Dp,
     // Why: a book's halves are narrow, so the panes keep the tighter margins of the canvas.
     val isBook: Boolean,
 )
@@ -49,12 +51,14 @@ private fun listDetailLayoutOf(
             } else {
                 window.right - split.bandEnd
             },
+            paneSpacing = split.bandEnd - split.bandStart,
             isBook = true,
         )
     }
     return if (fold.formFactor == FormFactor.TabletLandscape) {
         ListDetailLayout(
             listPaneWidth = tabletListPaneWidth,
+            paneSpacing = HingeBand,
             isBook = false,
         )
     } else {
