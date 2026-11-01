@@ -7,6 +7,7 @@ import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
+import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
@@ -52,7 +53,8 @@ export function App() {
   const isJoinWithLink = top.name === 'join-with-link'
   const isSplitBill = top.name === 'split-bill'
   const isEditGroup = top.name === 'edit-group'
-  const isRegisterPayment = top.name === 'register-payment'
+  // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
+  const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
   const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isRegisterPayment || isPaymentKey || isDeleteAccount
   let pageIndex = backStack.length - (isDialog ? 2 : 1)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
@@ -72,7 +74,9 @@ export function App() {
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
       {isEditGroup && <EditGroupDialog key={top.groupId} route={top} />}
-      {isRegisterPayment && <RegisterPaymentDialog key={`${top.groupId}/${top.fromMemberId}/${top.toMemberId}`} route={top} />}
+      {isRegisterPayment && (
+        <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
+      )}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
@@ -92,6 +96,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <GroupDetailScreen key={route.groupId} route={route} /> : null
     case 'balances':
       return route ? <BalancesScreen key={route.groupId} route={route} /> : null
+    case 'global-balances':
+      return route ? <GlobalBalancesScreen route={route} /> : null
     case 'join-invite':
       // Why: the group's link and each member's personal link of the same group are different invites.
       return route ? <JoinInviteScreen key={`${route.inviteCode}/${route.inviteMemberCode ?? ''}`} route={route} /> : null
