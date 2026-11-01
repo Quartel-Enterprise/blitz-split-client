@@ -508,6 +508,7 @@ class GroupsRowActionsTest {
         avatarColor = AvatarColor.BLUE,
         isMe = isMe,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
 

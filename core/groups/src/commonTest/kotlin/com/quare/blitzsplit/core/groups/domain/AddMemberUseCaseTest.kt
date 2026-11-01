@@ -294,6 +294,7 @@ class AddMemberUseCaseTest {
                 avatarColor = color,
                 isMe = index == 0,
                 hasJoined = index == 0,
+                userId = null,
                 inviteCode = null,
             )
         },

@@ -1322,6 +1322,7 @@ class JoinInviteViewModelTest {
                 AvatarColor.BLUE,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
         ),

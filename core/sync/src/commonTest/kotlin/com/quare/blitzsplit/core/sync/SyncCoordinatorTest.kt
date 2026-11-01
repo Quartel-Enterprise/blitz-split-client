@@ -4462,6 +4462,7 @@ class SyncCoordinatorTest {
                 avatarColor = AvatarColor.BLUE,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
         ),

@@ -1255,6 +1255,7 @@ class BalancesViewModelTest {
         avatarColor = color,
         isMe = isMe,
         hasJoined = hasJoined,
+        userId = null,
         inviteCode = null,
     )
 

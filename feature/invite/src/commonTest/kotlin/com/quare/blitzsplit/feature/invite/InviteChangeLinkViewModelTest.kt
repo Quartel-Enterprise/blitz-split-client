@@ -454,6 +454,7 @@ class InviteChangeLinkViewModelTest {
         AvatarColor.BLUE,
         isMe = true,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
     private val ana = GroupMember(
@@ -462,6 +463,7 @@ class InviteChangeLinkViewModelTest {
         AvatarColor.PEACH,
         isMe = false,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
 

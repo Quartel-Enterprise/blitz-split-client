@@ -178,6 +178,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
             mapped.members.single(),
@@ -759,6 +760,7 @@ class GroupMapperImplTest {
             avatarColor = AvatarColor.SAND,
             isMe = false,
             hasJoined = false,
+            userId = null,
             inviteCode = null,
         )
 
@@ -875,6 +877,7 @@ class GroupMapperImplTest {
             avatarColor = AvatarColor.SAND,
             isMe = false,
             hasJoined = false,
+            userId = null,
             inviteCode = "Xy7kQ2",
         )
 
@@ -1054,6 +1057,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
             GroupMember(
@@ -1062,6 +1066,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
             GroupMember(
@@ -1070,6 +1075,7 @@ class GroupMapperImplTest {
                 avatarColor = AvatarColor.SAND,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
         ),

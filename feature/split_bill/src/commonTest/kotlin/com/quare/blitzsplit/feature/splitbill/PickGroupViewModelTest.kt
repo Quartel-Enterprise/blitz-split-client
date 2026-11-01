@@ -411,6 +411,7 @@ class PickGroupViewModelTest {
         avatarColor = AvatarColor.PEACH,
         isMe = isMe,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
 

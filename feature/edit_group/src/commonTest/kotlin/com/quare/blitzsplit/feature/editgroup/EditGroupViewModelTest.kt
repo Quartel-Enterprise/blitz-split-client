@@ -1143,6 +1143,7 @@ class EditGroupViewModelTest {
                 avatarColor = AvatarColor.BLUE,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
             GroupMember(
@@ -1151,6 +1152,7 @@ class EditGroupViewModelTest {
                 avatarColor = AvatarColor.PEACH,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
         ),

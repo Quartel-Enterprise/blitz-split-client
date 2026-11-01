@@ -30,6 +30,7 @@ class AddMemberUseCase(
                 avatarColor = MemberColors.findLeastUsed(group.members.map(GroupMember::avatarColor)),
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
             addedAt = currentTimeMillis(),

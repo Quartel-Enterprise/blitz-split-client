@@ -497,6 +497,7 @@ class GroupsSearchTest {
                 avatarColor = AvatarColor.PEACH,
                 isMe = index == 0,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             )
         },

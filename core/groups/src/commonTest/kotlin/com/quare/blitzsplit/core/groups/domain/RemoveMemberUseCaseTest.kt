@@ -58,6 +58,7 @@ class RemoveMemberUseCaseTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
             GroupMember(
@@ -66,6 +67,7 @@ class RemoveMemberUseCaseTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
         ),

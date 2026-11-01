@@ -96,6 +96,7 @@ class RenameMemberUseCaseTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
             GroupMember(
@@ -104,6 +105,7 @@ class RenameMemberUseCaseTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
         ),
