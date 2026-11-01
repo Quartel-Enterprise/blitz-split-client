@@ -170,8 +170,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
     the group never stacks over itself. Convidar's "Ir para o grupo" opens it too.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
-    with Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor history yet). A phone opens it
-    full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
+    with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
+    history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
     on a phone), all over the group.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
@@ -187,10 +187,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     them, Ano once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
     doesn't fit opens on Dia (up to 3 months) or Mês, the disabled ones say why under the chart (`StatsGrainNote`).
     Then the most expensive one, and "Maior despesa", which opens its Conta. A group without bills says "Nada para
-    mostrar ainda" with "Rachar conta"; a period without bills offers "Ver toda a viagem". Categories (the pie and
-    "Por categoria") wait for bills to have one (7.7), and there is no first-download progress ("Total gasto até
-    agora", 5.1d) yet. A phone scrolls one column; a tablet lying down, the web from the tablet up and the Mac put "Ao
-    longo do tempo" and "Maior despesa" in a second column, the web and the Mac with four summary cards.
+    mostrar ainda" with "Rachar conta"; a period without bills offers "Ver toda a viagem". "Por categoria" draws the
+    period's spending as a ring in each main category's fixed color, the largest in its center, then each main
+    category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
+    to 100), a bill without a category counted in Outros and one of a deleted category in its parent or Outros.
+    There is no first-download progress ("Total gasto até agora", 5.1d) yet. A phone scrolls one column; a tablet
+    lying down, the web from the tablet up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, the web and the Mac with four summary cards.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
     conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
@@ -264,11 +266,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     bill everyone gets the same of, R$ 120,00 among six). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
-    writes only `mode` and `weights` over the stored object); Igual with everyone in saves no default. Someone who joined
-    after it was saved starts in, with 1 part or at 0% ("Carla entrou no grupo. Começa com 1 parte; ajuste se
+    writes only `mode`, `weights` and `exceptions` over the stored object); Igual with everyone in and no exception
+    saves no default. Someone who joined after it was saved starts in, with 1 part or at 0% ("Carla entrou no grupo. Começa com 1 parte; ajuste se
     precisar.", until someone saves). Two columns lying down (the ways to split, the people with the example), in
-    the Mac's sheet, an iPad lying down and the web from 1024 px. There are no exceptions by category yet: bills have
-    no category (7.7).
+    the Mac's sheet, an iPad lying down and the web from 1024 px. "Exceções por categoria" (6.7f) lists the categories
+    that split their own way ("Nenhuma. Todas as categorias seguem a divisão acima."): "Adicionar exceção" opens
+    "Exceção por categoria" (a bottom sheet on Android, a sheet on iOS and macOS, in the dialog's place on the web),
+    one main category or subcategory (each at most once) split by Igual (who is in it), Partes or Porcentagem (whole
+    numbers adding up to 100), with its own example, saved with the rest of the default by Salvar
+    (`GroupDefaultSplit.exceptions`, `ExceptionEditor`). A new bill of that category, or of a subcategory of it
+    without its own, starts from the exception instead of the default (7.1k, `GroupDefaultSplit.exceptionFor`):
+    "Divisão" says "Exceção do grupo para Mercado" and Dividir's notice "Exceção do grupo para Mercado: Igual" (7.2g),
+    and changing the category moves the bill to the other way while Dividir was never changed by hand.
   - "Sair do grupo" and "Apagar grupo" (5.3c to 5.3f, 6.1i to 6.1k) need the internet: offline the ⋮ menu shows
     them disabled with "Precisa de internet", since only the server knows every device's bills and payments. The
     device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
@@ -287,7 +296,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     312,00 de R$ 312,00. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does
     (`SplitBillUiState.severalPayers`, `payerAmounts`). A new total keeps what each one paid, and Salvar waits until
     someone makes it add up again; one person holding the whole total is one payer again. "Quando"
-    picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
+    picks date and time, never after now. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
     Valores, % (whole numbers adding up to 100), Partes or Itens, and only changes the bill on "Pronto". A new bill starts
@@ -325,6 +334,25 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     on the server too. Lying down and on tablets the status and what each one pays sit beside the items; a phone,
     lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. Items from a
     receipt read (7.1e) come later.
+  - "Categoria" (7.7): every bill has one, the icon beside "Descrição" (a menu with a submenu per main category on
+    the Mac). Until it is picked by hand, the description's words choose it (the 60 default terms of flow 9, whole
+    words ignoring case and accents, the longest term winning, ties to the first in the text, `CategoryMatcher`), else
+    Outros, and the line under the description says why ("Alimentação › Mercado pela palavra “mercado”…", "3
+    palavras do mapa casaram…", "Nenhuma palavra…", "Você escolheu…"). The picker (pushed on iOS, in the form's
+    place on Android and the web) has "Buscar categoria" (by name, accents ignored, "Criar “Pet”" when nothing is
+    found), up to four "Sugeridas" (the description's, the group's most used, the group's own) and every main
+    category opening its subcategories ("Só Alimentação" keeps the main one; beside the list lying down and on
+    tablets); Outros is picked at once. A bill saved as Outros without a pick stores no category. The app's
+    categories (10 main ones and their subcategories, `AppCategory`) are named by each platform; Despesas' rows and
+    Conta show the category's badge in its main category's color, Conta also "Alimentação › Mercado".
+  - "Nova categoria" (7.8, `GroupCategory`, the group's `group_categories`): anyone in the group may create, rename,
+    move and delete the group's own categories, offline too (the change waits in the queue, Last-Write-Wins per
+    row). A name has 1 to 30 letters and can't repeat inside the same main category, the app's names included; a
+    main category picks one of 18 icons, a subcategory takes its parent's; one with subcategories stays a main one.
+    Editing (a long press or a right click on the group's category, "Editar “X”…" on the Mac) says how many bills
+    use it; deleting asks "Apagar “X”?" saying where its bills go: they move to its parent, or Outros, at read time,
+    since a deleted category stays as a tombstone (`CategoryTree.resolve`), its subcategories going with it. A new
+    category is picked for the bill at once.
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
