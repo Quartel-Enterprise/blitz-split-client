@@ -765,7 +765,7 @@ class BalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN Saldos drawn alone WHEN its rail opens Saldos THEN the home's Saldos takes the group's place`() =
+    fun `GIVEN Saldos drawn alone WHEN its rail opens Saldos THEN the home Saldos takes the group place`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()

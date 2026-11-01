@@ -1579,13 +1579,25 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN bills in two groups WHEN the groups open THEN the latest saved is the cover's last activity`() =
+    fun `GIVEN bills in two groups WHEN the groups open THEN the latest saved is the cover last activity`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                storedGroups = listOf(trio(), trio(id = "trip", name = "Viagem Floripa")),
+                storedGroups = listOf(
+                    trio(),
+                    trio(
+                        id = "trip",
+                        name = "Viagem Floripa",
+                    ),
+                ),
                 storedExpenses = listOf(
-                    bill("old", paidBy = "Ana", amountMinor = 9000L, splitOver = everyone, updatedAt = daysAgo(2)),
+                    bill(
+                        "old",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                        updatedAt = daysAgo(2),
+                    ),
                     bill(
                         "uber",
                         groupId = "trip",
@@ -1616,16 +1628,24 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the latest bill only saved here WHEN the groups open THEN this device's user saved it`() =
+    fun `GIVEN the latest bill only saved here WHEN the groups open THEN this device user saved it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 storedGroups = listOf(trio()),
-                storedExpenses = listOf(bill("dinner", paidBy = "Ana", amountMinor = 9000L, splitOver = everyone)),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
             )
 
             // When
-            val author = viewModel.uiState.value.latestBill?.savedBy
+            val author = viewModel.uiState.value.latestBill
+                ?.savedBy
 
             // Then
             assertEquals(LatestBillAuthor.Me, author)
@@ -1638,12 +1658,19 @@ class GroupsViewModelTest {
             prepareScenario(
                 storedGroups = listOf(trio()),
                 storedExpenses = listOf(
-                    bill("dinner", paidBy = "Ana", amountMinor = 9000L, splitOver = everyone, savedBy = "Carla"),
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                        savedBy = "Carla",
+                    ),
                 ),
             )
 
             // When
-            val author = viewModel.uiState.value.latestBill?.savedBy
+            val author = viewModel.uiState.value.latestBill
+                ?.savedBy
 
             // Then
             assertEquals(LatestBillAuthor.Unknown, author)

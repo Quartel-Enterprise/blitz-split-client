@@ -65,7 +65,7 @@ class HomeTabsTest {
     }
 
     @Test
-    fun `GIVEN a group over the groups WHEN its rail opens Saldos THEN Saldos takes the group's place`() {
+    fun `GIVEN a group over the groups WHEN its rail opens Saldos THEN Saldos takes the group place`() {
         // Given
         prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null), Route.Members("trip"))
 
@@ -81,7 +81,7 @@ class HomeTabsTest {
     }
 
     @Test
-    fun `GIVEN a group over the groups WHEN its rail opens Contatos THEN Contatos takes the group's place`() {
+    fun `GIVEN a group over the groups WHEN its rail opens Contatos THEN Contatos takes the group place`() {
         // Given
         prepareScenario(Route.Groups, Route.GroupStats("trip"))
 
@@ -94,7 +94,7 @@ class HomeTabsTest {
     }
 
     @Test
-    fun `GIVEN a group over the groups WHEN its rail opens Atividade THEN says it isn't built and stays`() {
+    fun `GIVEN a group over the groups WHEN its rail opens Atividade THEN says it is not built and stays`() {
         // Given
         prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null))
 

@@ -1005,7 +1005,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN Contatos takes the group's place`() =
+    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN Contatos takes the group place`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
