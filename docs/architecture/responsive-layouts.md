@@ -54,6 +54,12 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
 | `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)` |
 
+Not checked on a device yet: `TwoHalvesLayout`, `TopBottomHalvesLayout`, `tabletopFoldLayoutOf` and
+`FoldHinge.isSeparating` have no screen using them, so their layout math (right to left, a hinge band partly off the
+layout) has only run in previews. They land ahead of the flows that need them, and each flow's responsive slice
+adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then. `FoldDialog` and
+`FoldDialogSceneStrategy` already draw the recovery code and every dialog route.
+
 The two `rememberUses…Dialog` rules are the presentations of today. A flow whose boards draw something else on a
 foldable (Novo grupo as a 560 dp dialog upright and in the right half on a book, Registrar pagamento in the right half
 instead of a sheet) switches on `formFactor` for that route in `AppNavDisplay` and tells its screen how it is drawn:
@@ -98,6 +104,10 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo, Editar grupo, Registrar pagamento, Cobrar): about 540 pt on iPad |
 | `billSheetSizing(in: windowLayout)` | A bill's sheet: 820×640 lying down, 620×860 upright, never more than the window. Check on a device that the sheet's two columns still fit when adopting it |
 | `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` doesn't cover (a top and bottom split upright, a custom overlay) |
+
+Not checked on a device yet: `TwoColumnsLayout`, `FoldDivision` / `.readingFoldDivision` and `billSheetSizing` have
+no screen using them; the per-flow slices adopt them and check them on the iPhone Duo simulator and an iPad then.
+`formSheetSizing()` already sizes the recovery code's sheet.
 
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind
