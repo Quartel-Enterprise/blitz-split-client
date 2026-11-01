@@ -9,6 +9,7 @@ private val exportedToApple = listOf(
     projects.core.presentation,
     projects.core.navigation,
     projects.core.expenses,
+    projects.core.contacts,
     projects.feature.welcome,
     projects.feature.profileSetup,
     projects.feature.restore,
@@ -30,6 +31,7 @@ private val exportedToApple = listOf(
     projects.feature.registerPayment,
     projects.feature.globalBalances,
     projects.feature.groupStats,
+    projects.feature.contacts,
 )
 
 kotlin {
@@ -54,6 +56,7 @@ kotlin {
             implementation(projects.core.account)
             implementation(projects.core.profile)
             implementation(projects.core.groups)
+            implementation(projects.core.contacts)
             implementation(projects.core.sync)
             implementation(projects.core.settings)
             implementation(projects.core.provider.room)

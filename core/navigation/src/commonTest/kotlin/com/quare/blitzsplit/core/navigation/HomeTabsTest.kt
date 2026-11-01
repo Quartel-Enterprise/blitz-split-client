@@ -13,7 +13,7 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GlobalBalances(BalancesFilter.ALL),
+            Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null),
             Route.SettleUp("user:carla", GroupCurrency.BRL),
         )
 

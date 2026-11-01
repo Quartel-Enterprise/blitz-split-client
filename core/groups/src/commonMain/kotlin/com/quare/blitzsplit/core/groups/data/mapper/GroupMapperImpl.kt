@@ -105,7 +105,8 @@ class GroupMapperImpl : GroupMapper {
         groupId = groupId,
         name = member.name,
         avatarColor = member.avatarColor.code,
-        userId = null,
+        // Why: "Adicionar a um grupo" (11.5) adds someone who already uses the app as their account.
+        userId = member.userId,
         isMe = false,
         addedAt = addedAt,
         updatedAt = addedAt,
@@ -131,13 +132,14 @@ class GroupMapperImpl : GroupMapper {
     )
 
     /*
-     * Why: only this device's own account goes up. The server keeps the account of a member someone joined as anyway,
-     * and refuses one the member no longer has, as after "Liberar nome", with the whole upload.
+     * Why: only this device's own account goes up, and the account "Adicionar a um grupo" added a member as, until the
+     * member's first sync (the server makes its code then). The server keeps the account of a member someone joined
+     * as anyway, and refuses one the member no longer has, as after "Liberar nome", with the whole upload.
      */
     override fun toDto(entity: GroupMemberEntity): GroupMemberDto = GroupMemberDto(
         id = entity.id,
         groupId = entity.groupId,
-        userId = entity.userId.takeIf { entity.isMe },
+        userId = entity.userId.takeIf { entity.isMe || entity.inviteCode == null },
         name = entity.name,
         avatarColor = entity.avatarColor,
         addedAt = entity.addedAt,

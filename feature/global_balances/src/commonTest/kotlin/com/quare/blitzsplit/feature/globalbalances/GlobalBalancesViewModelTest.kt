@@ -780,11 +780,22 @@ class GlobalBalancesViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
         viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
 
         // Then
-        assertEquals(List<GlobalBalancesUiAction>(2) { GlobalBalancesUiAction.ShowComingSoon }, actions)
+        assertEquals(listOf<GlobalBalancesUiAction>(GlobalBalancesUiAction.ShowComingSoon), actions)
+    }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Contatos tab THEN opens Contatos in its place`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -1054,7 +1065,7 @@ class GlobalBalancesViewModelTest {
         updatedAt = 0L,
     )
 
-    private val route = Route.GlobalBalances(BalancesFilter.ALL)
+    private val route = Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null)
 
     private fun TestScope.prepareScenario(
         filter: BalancesFilter = BalancesFilter.ALL,
@@ -1070,7 +1081,7 @@ class GlobalBalancesViewModelTest {
         recordedPayments = InMemoryRecordedPaymentRepository()
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
-        val opened = Route.GlobalBalances(filter)
+        val opened = Route.GlobalBalances(filter, chargePersonKey = null)
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(opened) }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = GlobalBalancesViewModel(
