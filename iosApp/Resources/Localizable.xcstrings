@@ -9102,6 +9102,17 @@
         }
       }
     },
+    "Week shows up in periods longer than a week." : {
+      "comment" : "The group statistics: why Week is off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semana aparece em períodos mais longos que uma semana."
+          }
+        }
+      }
+    },
     "Year shows up in periods longer than a year." : {
       "comment" : "The group statistics: why Year is off",
       "localizations" : {

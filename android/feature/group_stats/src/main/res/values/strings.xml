@@ -46,6 +46,7 @@
     <string name="group_stats_note_day">Day works for periods of up to 3 months.</string>
     <string name="group_stats_note_week_month_year">Week, Month and Year show up in periods longer than a week.</string>
     <string name="group_stats_note_month_year">Month and Year show up in periods longer than a month.</string>
+    <string name="group_stats_note_week">Week shows up in periods longer than a week.</string>
     <string name="group_stats_note_year">Year shows up in periods longer than a year.</string>
     <string name="group_stats_note_year_switches_all">To compare years, pick Year: the period becomes All time.</string>
     <string name="group_stats_note_year_switches_trip">To compare years, pick Year: the period becomes The whole trip.</string>

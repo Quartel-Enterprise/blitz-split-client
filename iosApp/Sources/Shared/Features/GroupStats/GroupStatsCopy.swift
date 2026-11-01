@@ -113,6 +113,9 @@ enum GroupStatsCopy {
             if note == .monthAndYearNeedLongerPeriod {
                 return String(localized: "Month and Year show up in periods longer than a month.")
             }
+            if note == .weekNeedsLongerPeriod {
+                return String(localized: "Week shows up in periods longer than a week.")
+            }
             if note == .yearNeedsLongerPeriod {
                 return String(localized: "Year shows up in periods longer than a year.")
             }

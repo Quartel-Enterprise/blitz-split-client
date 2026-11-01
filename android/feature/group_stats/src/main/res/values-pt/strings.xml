@@ -46,6 +46,7 @@
     <string name="group_stats_note_day">Dia vale para períodos de até 3 meses.</string>
     <string name="group_stats_note_week_month_year">Semana, Mês e Ano aparecem em períodos mais longos que uma semana.</string>
     <string name="group_stats_note_month_year">Mês e Ano aparecem em períodos mais longos que um mês.</string>
+    <string name="group_stats_note_week">Semana aparece em períodos mais longos que uma semana.</string>
     <string name="group_stats_note_year">Ano aparece em períodos mais longos que um ano.</string>
     <string name="group_stats_note_year_switches_all">Para comparar anos, escolha Ano: o período vira Todo o período.</string>
     <string name="group_stats_note_year_switches_trip">Para comparar anos, escolha Ano: o período vira Toda a viagem.</string>

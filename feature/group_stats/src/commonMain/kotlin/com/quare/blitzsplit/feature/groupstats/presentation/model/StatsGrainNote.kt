@@ -11,6 +11,9 @@ enum class StatsGrainNote {
     // Why: "Mês e Ano aparecem em períodos mais longos que um mês."
     MONTH_AND_YEAR_NEED_LONGER_PERIOD,
 
+    // Why: "Semana aparece em períodos mais longos que uma semana.", while Mês fits.
+    WEEK_NEEDS_LONGER_PERIOD,
+
     // Why: "Ano aparece em períodos mais longos que um ano."
     YEAR_NEEDS_LONGER_PERIOD,
 

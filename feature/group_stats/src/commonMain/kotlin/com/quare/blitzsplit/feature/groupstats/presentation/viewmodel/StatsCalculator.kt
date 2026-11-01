@@ -109,18 +109,21 @@ internal class StatsCalculator(
 
     fun createGrainNotes(span: DateSpan): List<StatsGrainNote> {
         val longerOff = listOf(StatsGrain.WEEK, StatsGrain.MONTH, StatsGrain.YEAR).filterNot { isEnabled(it, span) }
+        val longerNotes = when (longerOff) {
+            listOf(StatsGrain.WEEK, StatsGrain.MONTH, StatsGrain.YEAR) ->
+                listOf(StatsGrainNote.WEEK_MONTH_AND_YEAR_NEED_LONGER_PERIOD)
+
+            listOf(StatsGrain.MONTH, StatsGrain.YEAR) -> listOf(StatsGrainNote.MONTH_AND_YEAR_NEED_LONGER_PERIOD)
+
+            // Why: a period in one week that crosses into another month (Oct 31 to Nov 1) has Mês but not Semana.
+            else -> listOfNotNull(
+                StatsGrainNote.WEEK_NEEDS_LONGER_PERIOD.takeIf { StatsGrain.WEEK in longerOff },
+                StatsGrainNote.YEAR_NEEDS_LONGER_PERIOD.takeIf { StatsGrain.YEAR in longerOff },
+            )
+        }
         return listOfNotNull(
             StatsGrainNote.DAY_NEEDS_SHORT_PERIOD.takeUnless { span.canSplitBy(StatsGrain.DAY) },
-            when (longerOff) {
-                listOf(StatsGrain.WEEK, StatsGrain.MONTH, StatsGrain.YEAR) ->
-                    StatsGrainNote.WEEK_MONTH_AND_YEAR_NEED_LONGER_PERIOD
-
-                listOf(StatsGrain.MONTH, StatsGrain.YEAR) -> StatsGrainNote.MONTH_AND_YEAR_NEED_LONGER_PERIOD
-
-                listOf(StatsGrain.YEAR) -> StatsGrainNote.YEAR_NEEDS_LONGER_PERIOD
-
-                else -> null
-            },
+        ) + longerNotes + listOfNotNull(
             StatsGrainNote.YEAR_SWITCHES_PERIOD.takeIf {
                 isEnabled(StatsGrain.YEAR, span) && !span.canSplitBy(StatsGrain.YEAR)
             },
