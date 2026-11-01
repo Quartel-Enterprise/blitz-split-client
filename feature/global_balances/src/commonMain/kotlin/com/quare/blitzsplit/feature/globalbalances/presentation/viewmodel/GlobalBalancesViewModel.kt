@@ -114,8 +114,14 @@ class GlobalBalancesViewModel(
         observePaymentKeys()
             .map(::pixKeyOrNull)
             .distinctUntilChanged()
-            .onEach { key -> uiState.update { it.copy(pixKey = key) } }
-            .launchIn(viewModelScope)
+            .onEach { key ->
+                uiState.update {
+                    it.copy(
+                        pixKey = key,
+                        charge = it.charge?.copy(hasPixKey = key != null),
+                    )
+                }
+            }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -143,10 +149,16 @@ class GlobalBalancesViewModel(
             is GlobalBalancesUiEvent.OnChargeClicked -> openCharge(event.personId)
 
             is GlobalBalancesUiEvent.OnChargePixKeyToggled -> updateCharge { charge ->
-                if (charge.canTogglePixKey) charge.copy(includesPixKey = event.isIncluded) else charge
+                if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
             }
 
-            is GlobalBalancesUiEvent.OnChargeMessageChanged -> updateCharge { it.copy(editedMessage = event.message) }
+            // Why: the switch locks as it is once the message is the person's, whatever key loads later.
+            is GlobalBalancesUiEvent.OnChargeMessageChanged -> updateCharge {
+                it.copy(
+                    editedMessage = event.message,
+                    pixKeyChoice = it.includesPixKey,
+                )
+            }
 
             is GlobalBalancesUiEvent.OnChargeShareClicked -> emitForCharge(
                 GlobalBalancesUiAction.ShareMessage(event.message),
@@ -253,7 +265,8 @@ class GlobalBalancesViewModel(
         isGuest = person.isGuest,
         guestBills = person.guestBills,
         guestPaidMinor = person.guestPaidMinor,
-        includesPixKey = previous?.includesPixKey ?: (pixKey != null),
+        hasPixKey = pixKey != null,
+        pixKeyChoice = previous?.pixKeyChoice,
         editedMessage = previous?.editedMessage,
     )
 

@@ -447,6 +447,62 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Cobrar opened before the Pix key loaded WHEN the key arrives THEN includes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = emptyList())
+            openChargeForCarla()
+
+            // When
+            keys.keys.value = listOf(pixKey)
+
+            // Then
+            assertEquals(pixKey, viewModel.uiState.value.pixKey)
+            assertEquals(
+                true,
+                viewModel.uiState.value.charge
+                    ?.includesPixKey,
+            )
+        }
+
+    @Test
+    fun `GIVEN the Pix key switched off WHEN the profile keys change THEN stays off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
+
+        // When
+        keys.keys.value = listOf(pixKey.copy(value = "pierre@novo.com"))
+
+        // Then
+        assertEquals(
+            false,
+            viewModel.uiState.value.charge
+                ?.includesPixKey,
+        )
+    }
+
+    @Test
+    fun `GIVEN the message edited without a Pix key WHEN the key arrives THEN the locked switch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = emptyList())
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
+
+            // When
+            keys.keys.value = listOf(pixKey)
+
+            // Then
+            assertEquals(
+                false,
+                viewModel.uiState.value.charge
+                    ?.includesPixKey,
+            )
+        }
+
+    @Test
     fun `GIVEN someone you owe WHEN Cobrar arrives for them THEN nothing opens`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
