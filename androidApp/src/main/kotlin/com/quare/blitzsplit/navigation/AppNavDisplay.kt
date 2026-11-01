@@ -49,6 +49,7 @@ import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -101,8 +102,12 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
-    // Why: the home says whether it has no group at all, which only the book draws beside an empty detail.
-    var isHomeEmpty by rememberSaveable { mutableStateOf(false) }
+    /*
+     * Why: the home says whether it has no group at all, which only the book draws beside an empty detail. It can't
+     * say so while a route covers it, so a group's tab on the stack (one just joined) counts as a group already.
+     */
+    var isGroupsScreenEmpty by rememberSaveable { mutableStateOf(false) }
+    val isHomeEmpty = isGroupsScreenEmpty && backStack.none { tabGroupIdOrNull(it) != null }
     val listDetail = homeListDetailOf(
         listDetail = rememberListDetailLayout(),
         isHomeEmpty = isHomeEmpty,
@@ -131,7 +136,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Groups>(metadata = groupsMetadata) {
                 GroupsScreen(
                     recoveryCodeSheet = { RecoveryCodeSheet() },
-                    onEmptyChanged = { isHomeEmpty = it },
+                    onEmptyChanged = { isGroupsScreenEmpty = it },
                 )
             }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
