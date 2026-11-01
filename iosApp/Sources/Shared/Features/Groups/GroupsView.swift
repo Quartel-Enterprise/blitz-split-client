@@ -115,9 +115,9 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: tabSelection) {
             Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
-                NavigationStack(path: stackPath(isSearch: false)) {
+                // An iPad lying down draws the group beside the list
+                GroupsColumns(model: model, path: stackPath(isSearch: false)) {
                     GroupsView(model: model)
-                        .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
                 #if os(macOS)
                 // What the View menu's Grid Size reads and changes, only while the groups are in front
@@ -142,9 +142,9 @@ struct MainTabView: View {
             // Nothing to look in before the first group
             if model.state.canSearch {
                 Tab(value: MainTab.search, role: .search) {
-                    NavigationStack(path: stackPath(isSearch: true)) {
+                    // An iPad lying down opens the first result beside the results
+                    GroupsColumns(model: model, path: stackPath(isSearch: true)) {
                         GroupsSearchView(model: model)
-                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                     }
                 }
             }
@@ -240,7 +240,7 @@ struct MainTabView: View {
     /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
     /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key.
     @ViewBuilder
-    private static func destination(_ route: AppRoute) -> some View {
+    static func destination(_ route: AppRoute) -> some View {
         switch route {
         case .editProfile: EditProfileView()
         case .notificationSettings: NotificationSettingsView()
