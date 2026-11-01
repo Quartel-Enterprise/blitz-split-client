@@ -32,19 +32,22 @@ data class GlobalBalancesUiState(
     // Why: "Pagamento de Carla registrado." with "Desfazer", once settling up with her closed over Saldos.
     val recordedPayment: PaymentNotice?,
 ) {
-    val sections: List<PeopleSection>
-        get() = listOfNotNull(
+    // Why: once per state, since the JS presenter and each SwiftUI body pass read it many times.
+    val sections: List<PeopleSection> by lazy {
+        listOfNotNull(
             sectionOf(isYouOwe = true).takeIf { filter != BalancesFilter.OWES_YOU },
             sectionOf(isYouOwe = false).takeIf { filter != BalancesFilter.YOU_OWE },
         ).filter { it.rows.isNotEmpty() }
+    }
 
-    val emptyState: BalancesEmptyState?
-        get() = when {
+    val emptyState: BalancesEmptyState? by lazy {
+        when {
             !isLoaded || sections.isNotEmpty() -> null
             people.isEmpty() -> BalancesEmptyState.SETTLED
             filter == BalancesFilter.YOU_OWE -> BalancesEmptyState.NOTHING_TO_PAY
             else -> BalancesEmptyState.NOTHING_TO_RECEIVE
         }
+    }
 
     // Why: the hero and the "Tudo" amount.
     val primaryTotal: PeopleTotal
