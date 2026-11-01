@@ -3,12 +3,13 @@ import type { GroupsPresenter, JsGroupsState, JsSearchBillHit, JsSearchBillPayer
 import { useState, type KeyboardEvent, type ReactNode } from 'react'
 import { Avatar } from '@/components/common'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { balanceTone } from '@/features/balances/BalanceCard'
+import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { formatMoney, formatNames, formatSignedMoney } from '@/lib/money'
+import { formatMoney, formatSignedMoney } from '@/lib/money'
+import { payerNamesText } from '@/lib/payers'
 import { isAppleDevice } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
@@ -211,9 +212,9 @@ function billMetaText(hit: JsSearchBillHit): string {
 }
 
 function paidText(payers: JsSearchBillPayer[]): string | null {
-  const nameOf = (payer: JsSearchBillPayer) => (payer.isMe ? t('groups_searchYou') : (payer.name ?? t('groups_searchFormerMember')))
-  if (payers.length > 2) return t('groups_searchPaidByCount', { count: payers.length })
-  if (payers.length === 2) return t('groups_searchPaidBySeveral', { names: formatNames(payers.map(nameOf)) })
+  if (payers.length > 1) {
+    return t('groups_searchPaidBySeveral', { names: payerNamesText(payers.map((payer) => (payer.isMe ? t('splitBill_you') : nameOrFormer(payer.name)))) })
+  }
   const payer = payers[0]
   if (!payer) return null
   if (payer.isMe) return t('groups_searchYouPaid')

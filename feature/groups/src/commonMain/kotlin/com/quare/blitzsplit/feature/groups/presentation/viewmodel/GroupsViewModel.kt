@@ -221,8 +221,11 @@ class GroupsViewModel(
                         hasLoadedGroups = true,
                         summary = summaryOf(home.rows),
                         pendingChangeCount = home.pendingChangeCount,
-                        // Why: what the search found changes with the device's data, a sync's included.
-                        search = searchedOf(it.search, home.rows),
+                        /*
+                         * Why: what the search found changes with the device's data, a sync's included. Once the last
+                         * group goes the search closes, so the next group doesn't bring back a forgotten search.
+                         */
+                        search = if (home.rows.isEmpty()) GroupsSearch.closed else searchedOf(it.search, home.rows),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -329,9 +332,12 @@ class GroupsViewModel(
         }
     }
 
-    // Why: there is nothing to look in before the first group.
+    /*
+     * Why: there is nothing to look in before the first group, and only from the groups on top, so ⌘K over a dialog
+     * on the web or iOS's search tab over a pushed screen doesn't open a search whose close would pop that screen.
+     */
     private fun openSearch() {
-        if (!uiState.value.canSearch) return
+        if (!uiState.value.canSearch || !isOnTop()) return
         uiState.update { it.copy(search = searchedOf(it.search.copy(isOpen = true), it.groups)) }
     }
 

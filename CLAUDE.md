@@ -93,20 +93,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     in two lines, the faces and last activity, in Compacto only the dot and "na fila", the web's last activity only at
     Grande and the Mac's members by name, and the balance with its word) and the same ⋮/⋯, long press and right click
     as the row.
-  - The home's "Buscar" (5.2) looks in the groups, people (the members, never this device's user, once per group they
-    are in) and bills on the device, the settled groups included, offline too, ignoring case and accents
-    (`GroupNameFilter`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
-    found. It only shows once there is a group: Android's magnifier in the top bar, whose search bar takes the bar's
-    place (back closes it), iOS's search tab (in the iPad's sidebar), "Buscar… ⌘K" in the web's sidebar (the phone's
-    magnifier), opening a command dialog with ⌘K or Ctrl+K, and the Mac's toolbar field, whose results take the
-    groups' place once something is typed. "Tudo", "Grupos", "Pessoas" and "Despesas" pick the sections, on the web
-    and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
-    settled group's bill comes as its group ("Quitado · despesa “Churros”", as the design draws it), and "Despesas"
-    lists it too. A group opens the group, a person the Membros of the group they were found in (Contatos isn't built
-    yet), a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
-    looks, nothing found says "Nada com “pizza”". Closing forgets the text; leaving iOS's search tab also goes back
-    to the groups (`GroupsUiState.search`). The web's "Filtrar grupos" stays, as the board draws it. The first result
-    doesn't open in a detail pane yet, since the home has no list-detail.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
