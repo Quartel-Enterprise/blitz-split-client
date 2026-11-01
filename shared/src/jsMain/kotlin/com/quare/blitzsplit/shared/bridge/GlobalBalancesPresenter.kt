@@ -95,6 +95,8 @@ class JsGlobalBalancesState(
     val sections: Array<JsPeopleSection>,
     // Why: every row whichever the filter, for the desktop's choice of the person shown.
     val people: Array<JsPersonRow>,
+    // Why: the person the desktop's pane beside the list shows, null while nobody is listed.
+    val selectedPersonId: String?,
     // Why: "settled", "nothing-to-pay" or "nothing-to-receive", null while there are rows.
     val emptyState: String?,
     // Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open.
@@ -133,6 +135,7 @@ class GlobalBalancesPresenter(
                 toReceivePeopleCount = state.toReceivePeopleCount,
                 sections = state.sections.map(::toJsPeopleSection).toTypedArray(),
                 people = state.people.map(::toJsPersonRow).toTypedArray(),
+                selectedPersonId = state.selectedPerson?.id,
                 emptyState = when (state.emptyState) {
                     BalancesEmptyState.SETTLED -> "settled"
                     BalancesEmptyState.NOTHING_TO_PAY -> "nothing-to-pay"
@@ -183,6 +186,11 @@ class GlobalBalancesPresenter(
     fun changeFilter(code: String) {
         val filter = BalancesFilter.entries.firstOrNull { toFilterCode(it) == code } ?: return
         viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(filter))
+    }
+
+    // Why: a row picked on the desktop, whose person the pane beside the list then shows.
+    fun selectPerson(personId: String) {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(personId))
     }
 
     fun togglePerson(personId: String) {
