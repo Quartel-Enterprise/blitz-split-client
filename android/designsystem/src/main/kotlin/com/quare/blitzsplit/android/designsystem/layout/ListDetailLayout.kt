@@ -4,23 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-private val expandedWidth = 840.dp
-private val compactHeight = 480.dp
-private val bookLongestSide = 960.dp
 private val tabletListPaneWidth = 520.dp
 
 // Why: the gap between the list and the detail, the hinge band of an unfolded book.
-val ListDetailPaneSpacing: Dp = 24.dp
+val ListDetailPaneSpacing: Dp = HingeBand
 
 /*
- * Why: the canvas splits Grupos and Saldos into a list and its detail only on an expanded window that isn't a phone
- * lying down: a tablet lying down (1280×800) and an unfolded book (841×673, the tabletop alike). A phone lying down
- * (915×412) keeps its two columns of one screen, a tablet or a foldable upright one centered column.
+ * Why: the canvas splits Grupos and Saldos into a list and its detail only on a tablet lying down (1280×800) and an
+ * unfolded book (841×673, the tabletop lying down alike), the book's halves on the hinge it reports, so a Galaxy Z
+ * Fold held as a book (673×841, hinge down the middle) splits too. A phone lying down (915×412) keeps its two columns
+ * of one screen, a tablet or a foldable upright one centered column.
  */
 @Immutable
 data class ListDetailLayout(
@@ -33,20 +31,34 @@ data class ListDetailLayout(
 // Why: null while the window draws one pane, as a phone, a phone lying down and anything upright do.
 @Composable
 fun rememberListDetailLayout(): ListDetailLayout? {
-    val size = LocalWindowInfo.current.containerSize
-    val density = LocalDensity.current
-    return remember(size, density) {
-        with(density) {
-            val width = size.width.toDp()
-            val height = size.height.toDp()
-            // Why: a large tablet upright can pass 840dp of width, and still keeps its one centered column.
-            if (width < expandedWidth || height < compactHeight || width <= height) return@remember null
-            val isBook = width < bookLongestSide
-            ListDetailLayout(
-                listPaneWidth = if (isBook) (width - ListDetailPaneSpacing) / 2 else tabletListPaneWidth,
-                isBook = isBook,
-            )
-        }
+    val fold = rememberFoldLayout()
+    val layoutDirection = LocalLayoutDirection.current
+    return remember(fold, layoutDirection) { listDetailLayoutOf(fold, layoutDirection) }
+}
+
+private fun listDetailLayoutOf(
+    fold: FoldLayout,
+    layoutDirection: LayoutDirection,
+): ListDetailLayout? {
+    val split = fold.bookSplit
+    if (split != null) {
+        val window = fold.windowBounds
+        return ListDetailLayout(
+            listPaneWidth = if (layoutDirection == LayoutDirection.Ltr) {
+                split.bandStart - window.left
+            } else {
+                window.right - split.bandEnd
+            },
+            isBook = true,
+        )
+    }
+    return if (fold.formFactor == FormFactor.TabletLandscape) {
+        ListDetailLayout(
+            listPaneWidth = tabletListPaneWidth,
+            isBook = false,
+        )
+    } else {
+        null
     }
 }
 

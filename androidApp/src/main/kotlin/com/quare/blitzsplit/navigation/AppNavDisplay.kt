@@ -14,7 +14,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
@@ -67,7 +66,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     val usesFormDialog = rememberUsesFormDialog()
     val formDialogMetadata = if (usesFormDialog) {
-        DialogSceneStrategy.dialog(
+        FoldDialogSceneStrategy.dialogMetadataOf(
             DialogProperties(
                 dismissOnClickOutside = false,
                 usePlatformDefaultWidth = false,
@@ -78,7 +77,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
-        DialogSceneStrategy.dialog(
+        FoldDialogSceneStrategy.dialogMetadataOf(
             DialogProperties(
                 dismissOnClickOutside = false,
                 usePlatformDefaultWidth = false,
@@ -98,7 +97,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             rememberViewModelStoreNavEntryDecorator(),
         ),
         // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
-        sceneStrategies = listOf(DialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
+        sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
         entryProvider = entryProvider {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
