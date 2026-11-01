@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
+import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
@@ -40,6 +41,7 @@ class SyncCoordinator(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val activityRepository: ActivityRepository,
+    private val hiddenContactRepository: HiddenContactRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -141,12 +143,18 @@ class SyncCoordinator(
             activityRepository.uploadPendingActivity(userId).getOrThrow()
             activityRepository.downloadActivity(userId).getOrThrow()
         }
+        // Why: Contatos' hidden list is the user's own, like the keys, so it syncs apart from the groups.
+        val hiddenContactsSynced = suspendRunCatching {
+            hiddenContactRepository.download(userId).getOrThrow()
+            hiddenContactRepository.uploadPending(userId).getOrThrow()
+        }
         offerRecoveryCodeIfDue()
         signOutIfScheduledAndSynced()
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
         groupsSynced.getOrThrow()
         activitySynced.getOrThrow()
+        hiddenContactsSynced.getOrThrow()
     }.also { result -> lastSyncFailed.value = result.isFailure }
 
     /*
@@ -171,6 +179,7 @@ class SyncCoordinator(
                     suspendRunCatching { notificationPreferencesRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { activityRepository.clear() }
+                    suspendRunCatching { hiddenContactRepository.clear() }
                     suspendRunCatching { profileRepository.clear() }
                     suspendRunCatching { accountRepository.endDeletedSession() }
                 }
@@ -226,7 +235,8 @@ class SyncCoordinator(
             notificationPreferencesRepository.observePreferences(),
             groupRepository.observeGroups(),
             observePendingMoneyVersions(),
-        ) { keys, preferences, groups, pendingMoney -> listOf(keys, preferences, groups, pendingMoney) }
+            hiddenContactRepository.observeHidden(),
+        ) { keys, preferences, groups, pendingMoney, hidden -> listOf(keys, preferences, groups, pendingMoney, hidden) }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
@@ -271,6 +281,7 @@ class SyncCoordinator(
         notificationPreferencesRepository.clear()
         groupRepository.clear()
         activityRepository.clear()
+        hiddenContactRepository.clear()
         profileRepository.clear()
     }
 
@@ -282,7 +293,10 @@ class SyncCoordinator(
         combine(
             expenseRepository.observeHasPendingChanges(),
             settlementRepository.observeHasPendingChanges(),
-        ) { hasPendingExpenses, hasPendingSettlements -> hasPendingExpenses || hasPendingSettlements },
+            hiddenContactRepository.observeHasPendingChanges(),
+        ) { hasPendingExpenses, hasPendingSettlements, hasPendingHidden ->
+            hasPendingExpenses || hasPendingSettlements || hasPendingHidden
+        },
     ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingMoney ->
         hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney
     }.distinctUntilChanged()

@@ -17,7 +17,6 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivityGroupOpt
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityStatus
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityTarget
-import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiAction
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import kotlinx.coroutines.flow.map
@@ -226,17 +225,6 @@ class ActivityPresenter(
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
-        return JsWatch(watch::cancel)
-    }
-
-    // Why: "coming-soon", a toast in the page's words.
-    fun observeActions(onAction: (String) -> Unit): JsWatch {
-        val actions = viewModel.uiAction.map { action ->
-            when (action) {
-                ActivityUiAction.ShowComingSoon -> "coming-soon"
-            }
-        }
-        val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
     }
 

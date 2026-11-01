@@ -93,8 +93,8 @@ final class GroupsModel {
     }
 }
 
-/// The tabs of the canvas. Groups, Balances and Activity are built; Contacts answers "Coming soon". Search is the
-/// iPhone's and the iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
+/// The tabs of the canvas, all built: Groups, Balances, Contacts and Activity. Search is the iPhone's and the iPad's
+/// search tab, once there is a group; the Mac searches from its toolbar instead.
 enum MainTab: Hashable {
     case groups
     case balances
@@ -143,7 +143,14 @@ struct MainTabView: View {
                     }
                 }
             }
-            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
+            // Contacts sits right above the groups too, and keeps what it opens in its own tab's stack
+            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
+                if isContactsShown {
+                    ContactsColumns(path: tabPath(isShown: isContactsShown))
+                } else {
+                    Color.clear
+                }
+            }
             // Activity sits over the groups as Balances does; the badge counts every unread item, in the accent
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) {
                 NavigationStack(path: tabPath(isShown: activityRoute != nil)) {
@@ -194,15 +201,15 @@ struct MainTabView: View {
         }
     }
 
-    // Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
-    // and goes back to the groups, past what its results opened; leaving Balances or Activity goes back to the
-    // groups too.
+    // Selecting a tab opens it over the groups. Leaving Search forgets it and goes back to the groups, past what its
+    // results opened; leaving Balances, Contacts or Activity goes back to the groups too.
     private var tabSelection: Binding<MainTab> {
         Binding(
             get: {
                 if showsSearchTab { return .search }
                 if activityRoute != nil { return .activity }
-                return balancesRoute != nil ? .balances : .groups
+                if balancesRoute != nil { return .balances }
+                return isContactsShown ? .contacts : .groups
             },
             set: { tab in
                 switch tab {
@@ -213,7 +220,7 @@ struct MainTabView: View {
                 case .groups:
                     if showsSearchTab {
                         model.send(GroupsUiEventOnSearchTabLeft.shared)
-                    } else if balancesRoute != nil || activityRoute != nil {
+                    } else if balancesRoute != nil || activityRoute != nil || isContactsShown {
                         model.send(GroupsUiEventOnGroupsTabClicked.shared)
                     }
                 }
@@ -233,7 +240,13 @@ struct MainTabView: View {
         return nil
     }
 
-    /// What Balances or Activity pushed over itself (the profile, a group, a bill), shown in its own tab's stack
+    /// Contacts right above the groups, which its tab shows.
+    private var isContactsShown: Bool {
+        if case .contacts = path.first { return true }
+        return false
+    }
+
+    /// What Balances, Contacts or Activity pushed over itself (the profile, a group, a bill, a person), shown in its own tab's stack
     /// while that tab is the one right above the groups.
     private func tabPath(isShown: Bool) -> Binding<[AppRoute]> {
         Binding(
@@ -255,8 +268,8 @@ struct MainTabView: View {
         #endif
     }
 
-    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, Balances or
-    /// Activity while it is right above the groups, else Groups. The other tabs' stacks stay at their root, so a screen
+    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, Balances,
+    /// Contacts or Activity while it is right above the groups, else Groups. The other tabs' stacks stay at their root, so a screen
     /// never shows in two.
     private func stackPath(isSearch: Bool) -> Binding<[AppRoute]> {
         Binding(
@@ -268,10 +281,10 @@ struct MainTabView: View {
         )
     }
 
-    /// Search while it is open, Groups while neither Search, Balances nor Activity is: the tab whose stack holds the
-    /// path.
+    /// Search while it is open, Groups while neither Search, Balances, Contacts nor Activity is: the tab whose stack
+    /// holds the path.
     private func isInFront(isSearch: Bool) -> Bool {
-        balancesRoute == nil && activityRoute == nil && showsSearchTab == isSearch
+        balancesRoute == nil && activityRoute == nil && !isContactsShown && showsSearchTab == isSearch
     }
 
     #if os(iOS)
@@ -284,7 +297,8 @@ struct MainTabView: View {
     #endif
 
     /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
-    /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key.
+    /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key. Contacts also pushes a
+    /// person's profile, the agenda, and Balances opened from a profile's Request.
     @ViewBuilder
     static func destination(_ route: AppRoute) -> some View {
         switch route {
@@ -298,6 +312,9 @@ struct MainTabView: View {
         case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
+        case let .contactProfile(route): ContactProfileView(route: route)
+        case .contactsAgenda: AgendaView()
+        case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         default: ProfileView()
         }
     }

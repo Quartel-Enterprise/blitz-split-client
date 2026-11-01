@@ -2,7 +2,7 @@ import { CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, Lis
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
-import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { HomeShell, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
@@ -30,7 +30,6 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>
 export function ActivityScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new ActivityPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsActivityState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), () => toast(t('groups_comingSoon')))
   // Why: the canvas' desktop (from 1024 px) splits the feed and the item picked; narrower, one column.
   const isWide = useMediaQuery('(min-width: 1024px)')
   const isPhone = !useMediaQuery('(min-width: 768px)')

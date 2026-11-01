@@ -11,15 +11,15 @@ fun Navigator.popToGroups() {
 }
 
 /*
- * Why: Atividade is a home tab over the groups, like Saldos: it takes the place of whatever the groups opened, and a
- * second tap on it while it is on top changes nothing. From a contact's history (page 11) it opens on that person.
+ * Why: Saldos, Contatos and Atividade are tabs next to Grupos, drawn over the groups; from a screen the groups or another tab
+ * opened, the tab closes it first, as a tab bar does. Nothing changes while that tab is already right above the groups.
  */
-fun Navigator.openActivityTab(personKey: String?) {
+fun Navigator.openHomeTab(route: Route) {
     val stack = backStack.value
     val groupsIndex = stack.indexOf(Route.Groups)
     if (groupsIndex < 0) return
-    val tab = Route.Activity(personKey)
-    if (stack.getOrNull(groupsIndex + 1) == tab && groupsIndex + 1 == stack.lastIndex) return
+    val above = stack.getOrNull(groupsIndex + 1)
+    if (above != null && above::class == route::class && groupsIndex + 1 == stack.lastIndex) return
     popToGroups()
-    navigate(tab)
+    navigate(route)
 }

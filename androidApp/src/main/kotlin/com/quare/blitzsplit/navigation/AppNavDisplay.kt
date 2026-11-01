@@ -25,6 +25,12 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
+import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
+import com.quare.blitzsplit.android.feature.contacts.ContactInvitePresentation
+import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
+import com.quare.blitzsplit.android.feature.contacts.ContactProfileScreen
+import com.quare.blitzsplit.android.feature.contacts.ContactsScreen
+import com.quare.blitzsplit.android.feature.contacts.rememberContactInvitePresentation
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
@@ -102,6 +108,19 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
+    }
+    val contactInvitePresentation = rememberContactInvitePresentation()
+    val contactInviteMetadata = when (contactInvitePresentation) {
+        ContactInvitePresentation.BottomSheet -> BottomSheetSceneStrategy.bottomSheet
+
+        ContactInvitePresentation.Dialog -> FoldDialogSceneStrategy.dialogMetadataOf(
+            DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        )
+
+        ContactInvitePresentation.TabletopHalves -> emptyMap()
     }
     /*
      * Why: the home says whether it has no group at all, which only the book draws beside an empty detail. It can't
@@ -222,6 +241,17 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 RegisterPaymentScreen(
                     route = route,
                     isDialog = usesBillDialog,
+                )
+            }
+            // Why: the home's Contatos tab, over the groups; a wide window draws the profile or the agenda beside it.
+            entry<Route.Contacts> { ContactsScreen() }
+            entry<Route.ContactProfile> { route -> ContactProfileScreen(route) }
+            entry<Route.ContactsAgenda> { AgendaScreen() }
+            // Why: a sheet on a phone, a dialog elsewhere, and the code above the hinge on a tabletop.
+            entry<Route.ContactInvite>(metadata = contactInviteMetadata) { route ->
+                ContactInviteScreen(
+                    route = route,
+                    presentation = contactInvitePresentation,
                 )
             }
             entry<Route.Members>(metadata = homeDetailPaneMetadata) { route ->

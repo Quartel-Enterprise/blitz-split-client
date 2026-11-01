@@ -7,6 +7,10 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -119,6 +123,19 @@ object BlitzSplitApple : KoinComponent {
     // Why: the home's Atividade tab, on one person when a contact's history opens it.
     fun createActivityViewModel(route: Route.Activity): ViewModelHolder<ActivityViewModel> =
         ViewModelHolder(ActivityViewModel::class) { get { parametersOf(route) } }
+
+    fun createContactsViewModel(): ViewModelHolder<ContactsViewModel> =
+        ViewModelHolder(ContactsViewModel::class) { get() }
+
+    // Why: each person opens their own profile, which reads them from its route (beside Contatos too).
+    fun createContactProfileViewModel(route: Route.ContactProfile): ViewModelHolder<ContactProfileViewModel> =
+        ViewModelHolder(ContactProfileViewModel::class) { get { parametersOf(route) } }
+
+    fun createAgendaViewModel(): ViewModelHolder<AgendaViewModel> = ViewModelHolder(AgendaViewModel::class) { get() }
+
+    // Why: the invite reads whom it is for (an agenda's name, a guest's personal link) from its route.
+    fun createContactInviteViewModel(route: Route.ContactInvite): ViewModelHolder<ContactInviteViewModel> =
+        ViewModelHolder(ContactInviteViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
         ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }

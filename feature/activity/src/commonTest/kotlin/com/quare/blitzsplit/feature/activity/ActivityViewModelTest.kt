@@ -44,7 +44,6 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDeletion
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityEmptyState
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityFilter
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityStatus
-import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiAction
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -52,7 +51,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -77,7 +75,6 @@ class ActivityViewModelTest {
     private lateinit var route: Route.Activity
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ActivityViewModel
-    private val actions = mutableListOf<ActivityUiAction>()
     private var syncGate: CompletableDeferred<Unit>? = null
     private var syncNowCount = 0
     private var loadOlderGate: CompletableDeferred<Unit>? = null
@@ -1424,11 +1421,14 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnBalancesTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
-    fun `GIVEN Atividade WHEN tapping Contatos THEN says it is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN Atividade WHEN tapping Contatos THEN opens Contatos in its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -1436,8 +1436,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnContactsTabClicked)
 
         // Then
-        assertEquals(listOf<ActivityUiAction>(ActivityUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -1773,7 +1772,6 @@ class ActivityViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             minuteTicks = MinuteTicks { minutes.map { } },
         )
-        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 
     private companion object {

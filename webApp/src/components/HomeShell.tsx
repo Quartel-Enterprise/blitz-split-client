@@ -5,7 +5,7 @@ import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
-/** The home's four tabs, in the canvas' order; Contatos isn't built yet and answers "Em breve". */
+/** The home's four tabs, in the canvas' order, all built: Grupos, Saldos, Contatos and Atividade. */
 export type HomeTab = 'groups' | 'balances' | 'contacts' | 'activity'
 
 const tabs: { tab: HomeTab; label: MessageKey; icon: ReactNode }[] = [
@@ -31,7 +31,7 @@ export interface HomeProfile {
 }
 
 /**
- * The home's frame around Grupos, Saldos and Atividade: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and
+ * The home's frame around Grupos, Saldos, Contatos and Atividade: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and
  * the phone a top bar with a bottom navigation, as the canvas draws them. The selected tab names the page.
  */
 export function HomeShell({

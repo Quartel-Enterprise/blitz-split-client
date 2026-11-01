@@ -39,6 +39,7 @@ import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
+import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
@@ -744,6 +745,68 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Cobrar from the profile of Carla WHEN Saldos opens THEN her message opens in the currency shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups + group(
+                    "usa",
+                    "Viagem EUA",
+                    me("me-usa"),
+                    joined("carla-usa", "Carla", "carla"),
+                    currency = GroupCurrency.USD,
+                ),
+                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                filter = BalancesFilter.OWES_YOU,
+                charge = BalancesCharge("user:carla", GroupCurrency.USD),
+            )
+
+            // When
+            val charge = viewModel.uiState.value.charge
+
+            // Then
+            assertEquals("Carla", charge?.name)
+            assertEquals(5_000L, charge?.amountMinor)
+            assertEquals(listOf("Viagem EUA"), charge?.groupNames)
+        }
+
+    @Test
+    fun `GIVEN Cobrar from a profile WHEN the person owes you nothing there THEN goes back to the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                filter = BalancesFilter.OWES_YOU,
+                charge = BalancesCharge("user:bruno", GroupCurrency.BRL),
+            )
+
+            // When
+            val stack = navigator.backStack.value
+
+            // Then
+            assertNull(viewModel.uiState.value.charge)
+            assertEquals(Route.ContactProfile("user:bruno"), stack.last())
+        }
+
+    @Test
+    fun `GIVEN the message Cobrar opened from a profile WHEN closing it THEN goes back to the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                filter = BalancesFilter.OWES_YOU,
+                charge = BalancesCharge("user:carla", GroupCurrency.BRL),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Contacts, Route.ContactProfile("user:carla")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN Cobrar open WHEN closing it THEN it goes`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -958,18 +1021,6 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping a tab not built yet THEN says it is coming soon`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
-
-        // Then
-        assertEquals(listOf<GlobalBalancesUiAction>(GlobalBalancesUiAction.ShowComingSoon), actions)
-    }
-
-    @Test
     fun `GIVEN Saldos WHEN tapping the Atividade tab THEN opens it in place of Saldos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -979,6 +1030,18 @@ class GlobalBalancesViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Groups, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Contatos tab THEN opens Contatos in its place`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -1305,7 +1368,7 @@ class GlobalBalancesViewModelTest {
         isPending = false,
     )
 
-    private val route = Route.GlobalBalances(BalancesFilter.ALL)
+    private val route = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
     private fun TestScope.prepareScenario(
         filter: BalancesFilter = BalancesFilter.ALL,
@@ -1314,6 +1377,7 @@ class GlobalBalancesViewModelTest {
         storedSettlements: List<Settlement> = emptyList(),
         storedKeys: List<PaymentKey> = listOf(bitcoinKey, pixKey),
         online: Boolean = true,
+        charge: BalancesCharge? = null,
     ) {
         val groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -1321,8 +1385,15 @@ class GlobalBalancesViewModelTest {
         recordedPayments = InMemoryRecordedPaymentRepository()
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
-        val opened = Route.GlobalBalances(filter)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(opened) }
+        val opened = Route.GlobalBalances(filter, charge = charge)
+        navigator = BackStackNavigator(startRoute = Route.Groups).also { navigator ->
+            // Why: Contatos' "Cobrar" opens Saldos over the person's profile.
+            if (charge != null) {
+                navigator.navigate(Route.Contacts)
+                navigator.navigate(Route.ContactProfile(charge.personKey))
+            }
+            navigator.navigate(opened)
+        }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         activity = FakeActivityRepository()
         val accountStatus = ObserveAccountStatus { flowOf(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)) }

@@ -24,7 +24,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.openActivityTab
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
@@ -96,6 +96,9 @@ class GlobalBalancesViewModel(
         totals = emptyList(),
         me = null,
     )
+
+    // Why: Contatos' "Cobrar" opens the message once, as soon as Room is read.
+    private var isRouteChargeOpened = false
 
     // Why: what a tap set each row's "Por grupo" to; the others open as the filter opens them.
     private var expandedById = emptyMap<String, Boolean>()
@@ -191,17 +194,16 @@ class GlobalBalancesViewModel(
                 GlobalBalancesUiAction.CopyMessage(event.message),
             )
 
-            GlobalBalancesUiEvent.OnChargeDismissed -> uiState.update { it.copy(charge = null) }
+            GlobalBalancesUiEvent.OnChargeDismissed -> dismissCharge()
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
 
             GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
-            GlobalBalancesUiEvent.OnActivityTabClicked -> navigator.openActivityTab(personKey = null)
+            GlobalBalancesUiEvent.OnContactsTabClicked -> if (isOnTop()) navigator.openHomeTab(Route.Contacts)
 
-            GlobalBalancesUiEvent.OnContactsTabClicked -> viewModelScope.launch {
-                uiAction.emit(GlobalBalancesUiAction.ShowComingSoon)
-            }
+            GlobalBalancesUiEvent.OnActivityTabClicked ->
+                if (isOnTop()) navigator.openHomeTab(Route.Activity(personKey = null))
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 
@@ -230,6 +232,27 @@ class GlobalBalancesViewModel(
                 isLoaded = true,
             )
         }
+        openRouteChargeOnce()
+    }
+
+    // Why: from Contatos' "Cobrar", the person's message right away, in the currency the profile showed.
+    private fun openRouteChargeOnce() {
+        val charge = route.charge ?: return
+        if (isRouteChargeOpened) return
+        isRouteChargeOpened = true
+        val person = balances.findPersonOrNull(charge.personKey, charge.currency.code)?.takeIf { it.netMinor > 0 }
+        if (person == null) {
+            // Why: nothing to charge any more (a sync settled it): back to the profile rather than a stray Saldos.
+            if (isOnTop()) navigator.navigateBack()
+            return
+        }
+        openCharge(idOf(person))
+    }
+
+    // Why: opened for Contatos' "Cobrar", Saldos is only that message: closing it goes back to the profile.
+    private fun dismissCharge() {
+        uiState.update { it.copy(charge = null) }
+        if (route.charge != null && isOnTop()) navigator.navigateBack()
     }
 
     // Why: a new filter opens its lone person's "Por grupo" afresh.

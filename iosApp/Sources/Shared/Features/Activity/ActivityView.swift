@@ -5,7 +5,6 @@ import SwiftUI
 @Observable
 final class ActivityModel {
     private(set) var state: ActivityUiState
-    private(set) var comingSoonCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<ActivityViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -16,9 +15,6 @@ final class ActivityModel {
         state = viewModel.uiState.value as! ActivityUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
-        })
-        watches.add(viewModel.actionWatcher.observe { [weak self] action in
-            if action is ActivityUiActionShowComingSoon { self?.comingSoonCount += 1 }
         })
     }
 
@@ -154,7 +150,6 @@ struct ActivityView: View {
         }
         .focusedSceneValue(\.activityModel, model)
         #endif
-        .glassToast("Coming soon", trigger: model?.comingSoonCount ?? 0)
         .alert(
             model?.state.deletedNotice.map { Text(ActivityCopy.deletedTitle($0)) } ?? Text(verbatim: ""),
             isPresented: model?.isDeletedNoticeShown ?? .constant(false),

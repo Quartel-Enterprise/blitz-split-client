@@ -6,12 +6,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiAction
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -25,18 +23,7 @@ fun ActivityScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
-    LaunchedEffect(viewModel) {
-        viewModel.uiAction.collect { action ->
-            when (action) {
-                ActivityUiAction.ShowComingSoon -> scope.showReplacingSnackbar(
-                    snackbarHostState,
-                    resources.getString(R.string.activity_coming_soon),
-                )
-            }
-        }
-    }
     // Why: a tapped item whose bill or group is gone says who deleted it, and the record stays.
     val deletion = state.deletedNotice
     if (deletion != null) {

@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -37,12 +38,9 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivityFilter
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityGroupOption
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityTarget
-import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiAction
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiState
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -99,11 +97,7 @@ class ActivityViewModel(
             ),
         )
 
-    val uiAction: SharedFlow<ActivityUiAction>
-        field = MutableSharedFlow<ActivityUiAction>()
-
     val stateWatcher: FlowWatcher<ActivityUiState> = FlowWatcher(uiState)
-    val actionWatcher: FlowWatcher<ActivityUiAction> = FlowWatcher(uiAction)
 
     // Why: what Room said last, which the rows are drawn from again when the filter, the page or the day changes.
     private var feed = ActivityFeed(
@@ -216,9 +210,7 @@ class ActivityViewModel(
 
             ActivityUiEvent.OnBalancesTabClicked -> openBalancesTab()
 
-            ActivityUiEvent.OnContactsTabClicked -> viewModelScope.launch {
-                uiAction.emit(ActivityUiAction.ShowComingSoon)
-            }
+            ActivityUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
             ActivityUiEvent.OnBackClicked -> navigator.popToGroups()
         }
@@ -363,8 +355,7 @@ class ActivityViewModel(
     }
 
     private fun openBalancesTab() {
-        navigator.popToGroups()
-        navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
+        navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
     }
 
     private fun itemOrNull(itemId: String): ActivityItem? = entries.firstOrNull { it.item.id == itemId }?.item

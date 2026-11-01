@@ -2,7 +2,6 @@
 <resources>
     <string name="activity_title">Atividade</string>
     <string name="activity_profile">Perfil</string>
-    <string name="activity_coming_soon">Em breve</string>
     <string name="activity_you">Você</string>
     <string name="activity_former_member">Ex-membro</string>
     <string name="activity_today">Hoje</string>
