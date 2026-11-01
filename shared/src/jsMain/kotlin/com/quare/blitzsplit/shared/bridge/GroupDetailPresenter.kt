@@ -116,6 +116,8 @@ class GroupDetailPresenter(
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
+                // Why: only Android's rail asks for Atividade; the web has no rail beside a group.
+                GroupDetailUiAction.ShowComingSoon -> "coming-soon"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
