@@ -102,14 +102,15 @@ data class ItemsEditor(
 
     /*
      * Why: "Dividir a diferença" shares it in proportion to what each one consumed, so only once every item has
-     * someone and, for a total below the items, while what they consumed covers it.
+     * someone and, for a total below the items, while the shares it gives (rounding included) leave nobody below zero.
      */
     val canSplitDifference: Boolean
         get() = remainingMinor != 0L &&
             totalMinor > 0 &&
             looseItems.isEmpty() &&
             breakdown.itemsMinor > 0 &&
-            breakdown.itemsMinor + split.extraMinor + remainingMinor >= 0
+            BillItemsSplit.breakdownOf(split.copy(extraMinor = split.extraMinor + remainingMinor), payerIds).shares !=
+            null
 
     val canAddItem: Boolean
         get() = items.size < BillItemsSplit.MAX_ITEMS
