@@ -17,6 +17,12 @@ struct ScreenLayout: Equatable {
         min(size.width, size.height) >= 600
     }
 
+    /// The iPhone Duo closed (about 452×648 pt): upright, wider than any iPhone (440 pt at most) yet short of an
+    /// iPad's room, and shorter than any iPhone upright, where the boards drop what doesn't fit (Welcome's benefits).
+    var isShortColumn: Bool {
+        size.width < size.height && size.width > 440 && !isLarge && size.height < 700
+    }
+
     /// The widest a single column grows (520 on iPad, the canvas rule).
     static let singleColumnMaxWidth: CGFloat = 520
 
