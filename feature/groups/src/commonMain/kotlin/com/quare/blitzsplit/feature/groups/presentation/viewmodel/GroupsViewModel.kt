@@ -25,7 +25,6 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
-import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -62,7 +61,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
-import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import com.quare.blitzsplit.feature.groups.presentation.model.syncBadgeOf
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -579,16 +578,5 @@ class GroupsViewModel(
                 ),
             )
         }
-    }
-
-    // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
-    private fun syncBadgeOf(
-        syncState: SyncState,
-        isOnline: Boolean,
-    ): SyncBadge? = when {
-        syncState == SyncState.SYNCED -> null
-        !isOnline -> SyncBadge.OFFLINE
-        syncState == SyncState.FAILED -> SyncBadge.FAILED
-        else -> SyncBadge.SYNCING
     }
 }

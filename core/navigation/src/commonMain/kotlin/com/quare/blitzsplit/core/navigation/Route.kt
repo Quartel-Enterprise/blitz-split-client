@@ -107,8 +107,8 @@ sealed interface Route {
     data object PickPayment : Route
 
     /*
-     * Why: the home's second tab, "Saldos" (flow 8): each person once, netted across every group. Over the groups, so
-     * the Grupos tab and back return to them; "A receber" and "A pagar" open it already filtered.
+     * Why: the home's third tab, "Saldos" (flow 8): each person once, netted across every group. Right above Início,
+     * in the place of the other tabs, so back returns to Início; "A receber" and "A pagar" open it already filtered.
      */
     data class GlobalBalances(
         val filter: BalancesFilter,

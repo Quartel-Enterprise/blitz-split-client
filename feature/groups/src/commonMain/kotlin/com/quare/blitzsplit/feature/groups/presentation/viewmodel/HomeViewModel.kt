@@ -53,7 +53,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
-import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import com.quare.blitzsplit.feature.groups.presentation.model.syncBadgeOf
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -441,15 +441,4 @@ class HomeViewModel(
     }
 
     private fun paymentGroupOrNull(): Group? = groups.firstOrNull { it.id == paymentGroupId.value }
-
-    // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
-    private fun syncBadgeOf(
-        syncState: SyncState,
-        isOnline: Boolean,
-    ): SyncBadge? = when {
-        syncState == SyncState.SYNCED -> null
-        !isOnline -> SyncBadge.OFFLINE
-        syncState == SyncState.FAILED -> SyncBadge.FAILED
-        else -> SyncBadge.SYNCING
-    }
 }

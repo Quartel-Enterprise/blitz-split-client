@@ -218,8 +218,8 @@ class SyncCoordinator(
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
-     * on the profile, the keys, the preferences, the groups and the pending bills' and payments' versions makes each new change
-     * count, while one going out triggers nothing.
+     * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions and the
+     * pins makes each new change count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
@@ -228,7 +228,8 @@ class SyncCoordinator(
             notificationPreferencesRepository.observePreferences(),
             groupRepository.observeGroups(),
             observePendingMoneyVersions(),
-        ) { keys, preferences, groups, pendingMoney -> listOf(keys, preferences, groups, pendingMoney) }
+            groupPinRepository.observePinnedGroupIds(),
+        ) { keys, preferences, groups, pendingMoney, pins -> listOf(keys, preferences, groups, pendingMoney, pins) }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),

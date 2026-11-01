@@ -20,8 +20,10 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -95,9 +97,13 @@ internal class GroupScreen(
             useCases.observeGroup(groupId),
             useCases.observeExpenses(groupId),
             useCases.observeSettlements(groupId),
-            useCases.observePinnedGroupIds(),
-        ) { group, expenses, settlements, pinnedIds ->
-            isPinned = groupId in pinnedIds
+            // Why: only this group's pin, so pinning another group doesn't redo this one's balances.
+            useCases
+                .observePinnedGroupIds()
+                .map { pinnedIds -> groupId in pinnedIds }
+                .distinctUntilChanged(),
+        ) { group, expenses, settlements, isGroupPinned ->
+            isPinned = isGroupPinned
             Triple(group, expenses, settlements)
         }.onEach { (group, expenses, settlements) ->
             this.group = group
@@ -252,8 +258,11 @@ internal class GroupScreen(
         }
     }
 
+    // Why: a stack without Início still lands on the groups, never stays on a group that is gone.
     private fun backToGroups() {
-        useCases.navigator.openHomeTab(Route.Groups)
+        val navigator = useCases.navigator
+        if (Route.Home !in navigator.backStack.value) navigator.replaceAll(Route.Home)
+        navigator.openHomeTab(Route.Groups)
     }
 }
 
