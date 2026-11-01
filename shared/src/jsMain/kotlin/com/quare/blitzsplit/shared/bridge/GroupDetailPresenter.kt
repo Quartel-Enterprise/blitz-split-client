@@ -32,6 +32,8 @@ class JsExpenseRow(
     val payers: Array<JsExpenseRowPayer>,
     val totalMinor: Double,
     val myBalanceMinor: Double?,
+    // Why: the row's icon, the category the bill reads as.
+    val category: JsCategory,
     val isPending: Boolean,
 )
 
@@ -230,6 +232,7 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
         }.toTypedArray(),
     totalMinor = row.totalMinor.toDouble(),
     myBalanceMinor = row.myBalanceMinor?.toDouble(),
+    category = toJsCategory(row.category),
     isPending = row.isPending,
 )
 

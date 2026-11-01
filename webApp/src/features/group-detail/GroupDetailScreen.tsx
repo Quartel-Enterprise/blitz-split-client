@@ -17,6 +17,7 @@ import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
+import { CategoryBadge } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage } from './GroupPage'
@@ -210,7 +211,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
   const balance = expense.myBalanceMinor
   return (
     <DayRow
-      icon={<ReceiptText className="size-4" />}
+      icon={<CategoryBadge category={expense.category} className="size-full rounded-[inherit]" />}
       title={expense.description}
       meta={paid}
       amount={formatMoney(expense.totalMinor, currency, fractionDigits)}

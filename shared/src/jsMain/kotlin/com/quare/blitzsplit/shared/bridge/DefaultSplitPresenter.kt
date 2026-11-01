@@ -57,6 +57,38 @@ class JsDefaultSplitState(
     val showsSaveError: Boolean,
     val canSave: Boolean,
     val showsOfflineNotice: Boolean,
+    // Why: "Exceções por categoria" (6.7f) and the sheet of one, null while it is closed.
+    val exceptions: Array<JsSplitException>,
+    val exceptionEditor: JsExceptionEditor?,
+    val exceptionMains: Array<JsCategory>,
+    val exceptionSubcategories: Array<JsCategory>,
+    val exceptionCategory: JsCategory?,
+    val isExceptionCategoryTaken: Boolean,
+    val canSaveException: Boolean,
+    val exceptionModes: Array<String>,
+)
+
+// Why: one exception; mode is the DefaultSplitMode's code, values the weights of who is in it ("2 para 1").
+class JsSplitException(
+    val categoryId: String,
+    val category: JsCategory,
+    val mode: String,
+    val values: Array<Double>,
+    val includedCount: Int,
+    val totalCount: Int,
+)
+
+class JsExceptionEditor(
+    val editedCategoryId: String?,
+    val categoryId: String?,
+    val openMainId: String?,
+    val mode: String,
+    val rows: Array<JsDefaultSplitRow>,
+    val exampleTotalMinor: Double,
+    val percentSum: Double,
+    val remainingPercent: Double,
+    val showsPercentError: Boolean,
+    val addsUp: Boolean,
 )
 
 class DefaultSplitPresenter(
@@ -90,6 +122,37 @@ class DefaultSplitPresenter(
                 showsSaveError = state.showsSaveError,
                 canSave = state.canSave,
                 showsOfflineNotice = state.showsOfflineNotice,
+                exceptions = state.exceptionRows
+                    .map { row ->
+                        JsSplitException(
+                            categoryId = row.exception.categoryId,
+                            category = toJsCategory(row.category),
+                            mode = row.exception.mode.code,
+                            values = row.valuesOf(state.people.map { it.id }).map { it.toDouble() }.toTypedArray(),
+                            includedCount = row.includedCount,
+                            totalCount = row.totalCount,
+                        )
+                    }.toTypedArray(),
+                exceptionEditor = state.exceptionEditor?.let { editor ->
+                    JsExceptionEditor(
+                        editedCategoryId = editor.editedCategoryId,
+                        categoryId = editor.categoryId,
+                        openMainId = editor.openMainId,
+                        mode = editor.mode.code,
+                        rows = editor.figures.rows.map(::toJsRow).toTypedArray(),
+                        exampleTotalMinor = editor.figures.exampleTotalMinor.toDouble(),
+                        percentSum = editor.percentSum.toDouble(),
+                        remainingPercent = editor.remainingPercent.toDouble(),
+                        showsPercentError = editor.showsPercentError,
+                        addsUp = editor.addsUp,
+                    )
+                },
+                exceptionMains = state.exceptionMains.map(::toJsCategory).toTypedArray(),
+                exceptionSubcategories = state.exceptionSubcategories.map(::toJsCategory).toTypedArray(),
+                exceptionCategory = state.exceptionCategory?.let(::toJsCategory),
+                isExceptionCategoryTaken = state.isExceptionCategoryTaken,
+                canSaveException = state.canSaveException,
+                exceptionModes = state.exceptionModes.map { it.code }.toTypedArray(),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -138,6 +201,60 @@ class DefaultSplitPresenter(
 
     fun save() {
         viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+    }
+
+    fun addException() {
+        viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+    }
+
+    fun openException(categoryId: String) {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(categoryId))
+    }
+
+    fun pickExceptionCategory(categoryId: String) {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(categoryId))
+    }
+
+    fun selectExceptionMode(code: String) {
+        val mode = DefaultSplitMode.fromCodeOrNull(code) ?: return
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(mode))
+    }
+
+    fun toggleExceptionPerson(memberId: String) {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPersonToggled(memberId))
+    }
+
+    fun increaseExceptionParts(memberId: String) {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPartsIncreased(memberId))
+    }
+
+    fun decreaseExceptionParts(memberId: String) {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPartsDecreased(memberId))
+    }
+
+    fun changeExceptionPercent(
+        memberId: String,
+        text: String,
+    ) {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPercentChanged(memberId, text))
+    }
+
+    fun getExceptionPercentText(memberId: String): String = viewModel.uiState.value.exceptionEditor
+        ?.people
+        ?.firstOrNull { it.id == memberId }
+        ?.percentText
+        .orEmpty()
+
+    fun saveException() {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionSaveClicked)
+    }
+
+    fun removeException() {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionRemoveClicked)
+    }
+
+    fun dismissException() {
+        viewModel.onEvent(DefaultSplitUiEvent.OnExceptionDismissed)
     }
 
     fun dispose() {
