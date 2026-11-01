@@ -128,7 +128,8 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// A group's Expenses, Balances or Members: the tabs whose "Invite people" anchors the Mac's invite popover.
+    /// A group's Expenses, Balances or Members: the only screens the column beside the list draws, and the tabs whose
+    /// "Invite people" anchors the Mac's invite popover.
     var isGroupTab: Bool {
         switch self {
         case .groupDetail, .balances, .members: true

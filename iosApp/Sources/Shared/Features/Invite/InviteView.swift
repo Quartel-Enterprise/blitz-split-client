@@ -276,7 +276,7 @@ private struct InviteButtons: View {
         let state = model.state
         VStack(spacing: spacing) {
             if let link = state.link, state.displayLink != nil, state.qrCode != nil {
-                ShareLink(item: link, message: Text("Let's split the bills of \(state.groupName) on Blitz Split. Join with this link:")) {
+                ShareLink(item: link, message: inviteShareMessage(groupName: state.groupName)) {
                     Label("Share invite", systemImage: "square.and.arrow.up")
                         .font(.headline)
                         .frame(maxWidth: .infinity, minHeight: 36)
@@ -303,6 +303,11 @@ private struct InviteButtons: View {
             }
         }
     }
+}
+
+/// The message the share sheet sends with the invite link, from the screen and from the Mac's popover.
+private func inviteShareMessage(groupName: String) -> Text {
+    Text("Let's split the bills of \(groupName) on Blitz Split. Join with this link:")
 }
 
 #if os(macOS)
@@ -347,7 +352,7 @@ private struct InvitePopoverContent: View {
                 .padding(.trailing, 4)
                 .padding(.vertical, 4)
                 .background(Palette.card, in: .rect(cornerRadius: 8))
-                ShareLink(item: link, message: Text("Let's split the bills of \(state.groupName) on Blitz Split. Join with this link:")) {
+                ShareLink(item: link, message: inviteShareMessage(groupName: state.groupName)) {
                     Label("Share…", systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }

@@ -20,7 +20,7 @@ import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 
 // Why: the gap of flow 3's book, centered on the hinge: its 24dp band and 24dp on each side.
-private val bookGap = 72.dp
+internal val bookGap = 72.dp
 private val phoneLandscapeStartWidth = 330.dp
 private val tabletStartWidth = 380.dp
 private val tabletMaxWidth = 920.dp
