@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -20,9 +19,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
@@ -38,8 +39,9 @@ private val tabletDialogWidth = 560.dp
 
 /*
  * Why: shown over the groups once the first sync issued a code. A phone gets a bottom sheet (at
- * most 640dp wide when lying down) and a tablet a centred dialog. Dismissing it counts as "Lembrar
- * depois", so the code comes back on the next launch.
+ * most 640dp wide when lying down) and a tablet a centred dialog; a book and a tabletop lying down
+ * get it in the right half, never over the hinge, with the groups under the scrim (1.4). Dismissing
+ * it counts as "Lembrar depois", so the code comes back on the next launch.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,9 +52,11 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
     val layout = rememberDeviceLayout()
     val onDismiss = { viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked) }
     if (layout.isTablet) {
-        BasicAlertDialog(
+        val placement = rememberDialogPlacement()
+        val isInHalf = placement != DialogPlacement.Centered
+        FoldDialog(
             onDismissRequest = onDismiss,
-            properties = DialogProperties(usePlatformDefaultWidth = false),
+            placement = placement,
         ) {
             Surface(
                 modifier = Modifier.widthIn(max = tabletDialogWidth),
@@ -63,10 +67,11 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
                     formattedCode = formattedCode,
                     state = state,
                     layout = layout,
+                    isInHalf = isInHalf,
                     onEvent = viewModel::onEvent,
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(24.dp),
+                        .padding(if (isInHalf) 20.dp else 24.dp),
                 )
             }
         }
@@ -81,6 +86,7 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
                 formattedCode = formattedCode,
                 state = state,
                 layout = layout,
+                isInHalf = false,
                 onEvent = viewModel::onEvent,
                 modifier = Modifier
                     .fillMaxWidth()
