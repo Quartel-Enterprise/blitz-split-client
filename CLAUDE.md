@@ -180,6 +180,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     tombstone and goes back to the group, past Conta. A bill someone else deleted while open closes, and Despesas
     do grupo says "Esta conta foi apagada" once it is on top (`GroupDetailUiState.showsBillDeletedNotice`); never
     for a bill this device deleted (`NoticeBillGone`).
+  - Editing or deleting a bill after a payment (7.4b) is allowed: the payment still counts and the balance is redone.
+    While the change typed in "Editar conta" moves the balance of a pair with a payment dated at or after the bill's
+    "Quando", the form says so before saving, live as it is typed: "Elisa já acertou com Bruno depois desta conta. O
+    acerto continua valendo e o saldo é refeito: com a mudança, Elisa volta a dever R$ 20,00 a Bruno." ("passa a
+    dever" the other way round or for more of what was still owed, "ficam quitados" when they end up even), naming
+    only the latest such payment (`SettledPairChange`, the group's `GroupBalances` with the saved bill and with the
+    change). It takes the place of "Qualquer pessoa do grupo pode editar ou apagar.", as a card above "Apagar conta"
+    on Android and a section above it on iOS, at the top of the form on the Mac and the web; Salvar saves at once,
+    with no extra question. "Apagar esta conta?" ends with the same sentence, from Conta too
+    (`BillDeletion.settledPair`). A payment dated before the bill, or one whose pair the change doesn't move, says
+    nothing.
   - "Membros" (`Route.Members`) is the group's tab, and opens from Convidar's "Ver quem já entrou". Any member may
     rename and add members, but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for
     someone who joined), after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite
@@ -207,7 +218,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and closes only once the debt or the group is gone. A payment is never edited: "Pagamento de Ana registrado."
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
     tombstone, offline too). No
-    notifications nor Atividade yet, and no warning when a bill is edited after a payment (7.4b).
+    notifications nor Atividade yet.
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
     grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
     the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
