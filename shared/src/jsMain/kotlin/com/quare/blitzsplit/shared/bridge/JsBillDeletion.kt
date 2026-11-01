@@ -15,7 +15,7 @@ class JsBillDeletion(
 
 /*
  * Why: "Elisa já acertou com Bruno depois desta conta. … com a mudança, Elisa volta a dever R$ 20,00 a Bruno." (7.4b)
- * The outcome is "owes-again", "owes" or "even"; a null name is someone who left the group.
+ * The outcome is "owes-again", "owes", "owes-less" or "even"; a null name is someone who left the group.
  */
 class JsSettledPair(
     val payerName: String?,
@@ -44,6 +44,7 @@ internal fun toJsSettledPair(change: SettledPairChange): JsSettledPair = JsSettl
     outcome = when (change.outcome) {
         SettledPairOutcome.OWES_AGAIN -> "owes-again"
         SettledPairOutcome.OWES -> "owes"
+        SettledPairOutcome.OWES_LESS -> "owes-less"
         SettledPairOutcome.EVEN -> "even"
     },
     debtorName = change.debtorName,

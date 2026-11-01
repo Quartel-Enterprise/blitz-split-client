@@ -138,6 +138,51 @@ class SettledPairChangeTest {
     }
 
     @Test
+    fun `GIVEN Elisa paid half of her part WHEN her part shrinks THEN she is left owing less`() {
+        // Given
+        val half = elisaPaidBruno.copy(amountMinor = 5_000L)
+        val changed = jantar.withShares(BRUNO to 12_000L, ELISA to 8_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(half))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES_LESS, change?.outcome)
+        assertEquals(true, change?.debtorIsPayer)
+        assertEquals(3_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN Elisa paid more than her part WHEN her part grows THEN Bruno is left owing her less`() {
+        // Given
+        val more = elisaPaidBruno.copy(amountMinor = 15_000L)
+        val changed = jantar.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(more))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES_LESS, change?.outcome)
+        assertEquals("Bruno", change?.debtorName)
+        assertEquals(3_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN Elisa paid half of her part WHEN her part drops below it THEN Bruno comes to owe her`() {
+        // Given
+        val half = elisaPaidBruno.copy(amountMinor = 5_000L)
+        val changed = jantar.withShares(BRUNO to 18_000L, ELISA to 2_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(half))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES, change?.outcome)
+        assertEquals("Bruno", change?.debtorName)
+        assertEquals(3_000L, change?.amountMinor)
+    }
+
+    @Test
     fun `GIVEN a payment after the bill WHEN Quando moves past it THEN says nothing`() {
         // Given
         val changed = jantar

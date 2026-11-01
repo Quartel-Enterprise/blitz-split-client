@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import kotlin.math.abs
+import kotlin.math.sign
 
 /*
  * Why: "Elisa já acertou com Bruno depois desta conta. O acerto continua valendo e o saldo é refeito: com a mudança,
@@ -88,14 +89,25 @@ data class SettledPairChange(
                 payerIsMe = payer?.isMe == true,
                 receiverName = receiver?.name,
                 receiverIsMe = receiver?.isMe == true,
-                outcome = when {
-                    owedAfterMinor == 0L -> SettledPairOutcome.EVEN
-                    owedAfterMinor > 0 && owedBeforeMinor <= 0 -> SettledPairOutcome.OWES_AGAIN
-                    else -> SettledPairOutcome.OWES
-                },
+                outcome = outcomeOf(owedBeforeMinor, owedAfterMinor),
                 debtorIsPayer = owedAfterMinor >= 0,
                 amountMinor = abs(owedAfterMinor),
             )
+        }
+
+        // Why: a debt that stays the same way round but shrinks "fica devendo"; one that grows or flips "passa a dever".
+        private fun outcomeOf(
+            owedBeforeMinor: Long,
+            owedAfterMinor: Long,
+        ): SettledPairOutcome = when {
+            owedAfterMinor == 0L -> SettledPairOutcome.EVEN
+
+            owedAfterMinor > 0 && owedBeforeMinor <= 0 -> SettledPairOutcome.OWES_AGAIN
+
+            owedAfterMinor.sign == owedBeforeMinor.sign && abs(owedAfterMinor) < abs(owedBeforeMinor) ->
+                SettledPairOutcome.OWES_LESS
+
+            else -> SettledPairOutcome.OWES
         }
 
         // Why: what the payment's payer owes its receiver, negative while the receiver owes the payer.

@@ -8,7 +8,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 
 /*
  * Why: "Elisa já acertou com Bruno depois desta conta. O acerto continua valendo e o saldo é refeito: com a mudança,
- * Elisa volta a dever R$ 20,00 a Bruno.", in Editar conta and in "Apagar esta conta?" (7.4b).
+ * Elisa volta a dever R$ 20,00 a Bruno.", in Editar conta and in "Apagar esta conta?" (7.4b). A remaining debt that
+ * shrinks "fica devendo"; one that grows or flips "passa a dever".
  */
 @Composable
 fun settledPairSentenceOf(
@@ -50,6 +51,12 @@ private fun outcomeOf(
             R.string.designsystem_settled_pair_owes,
             R.string.designsystem_settled_pair_i_owe,
             R.string.designsystem_settled_pair_owes_me,
+        )
+
+        SettledPairOutcome.OWES_LESS -> Triple(
+            R.string.designsystem_settled_pair_owes_less,
+            R.string.designsystem_settled_pair_i_owe_less,
+            R.string.designsystem_settled_pair_owes_me_less,
         )
 
         SettledPairOutcome.EVEN -> return when {
