@@ -34,6 +34,13 @@ data class SettledPairChange(
     val creditorIsMe: Boolean
         get() = if (debtorIsPayer) receiverIsMe else payerIsMe
 
+    /*
+     * Why: the pair and how it ends up, without the amount, which moves with every digit typed: a screen reader says
+     * the warning again only when this changes, never on each keystroke.
+     */
+    val announcementKey: SettledPairChange
+        get() = copy(amountMinor = 0L)
+
     companion object {
         /*
          * Why: the latest payment dated at or after the bill ("depois desta conta") between two people whose balance

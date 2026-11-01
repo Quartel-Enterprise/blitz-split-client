@@ -15,7 +15,9 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 // Why: Bruno paid R$ 300 split equally among Bruno, Elisa and Pierre (this device's user); Elisa then paid him back.
 class SettledPairChangeTest {
@@ -212,6 +214,32 @@ class SettledPairChangeTest {
     }
 
     @Test
+    fun `GIVEN two changes that differ only in the amount WHEN comparing their announcement keys THEN they match`() {
+        // Given
+        val first = settledPairChange(SettledPairOutcome.OWES_AGAIN, amountMinor = 2_000L)
+        val second = settledPairChange(SettledPairOutcome.OWES_AGAIN, amountMinor = 3_000L)
+
+        // When
+        val matches = first.announcementKey == second.announcementKey
+
+        // Then
+        assertTrue(matches)
+    }
+
+    @Test
+    fun `GIVEN two changes with another outcome WHEN comparing their announcement keys THEN they differ`() {
+        // Given
+        val first = settledPairChange(SettledPairOutcome.OWES_AGAIN, amountMinor = 2_000L)
+        val second = settledPairChange(SettledPairOutcome.EVEN, amountMinor = 2_000L)
+
+        // When
+        val matches = first.announcementKey == second.announcementKey
+
+        // Then
+        assertFalse(matches)
+    }
+
+    @Test
     fun `GIVEN two pairs settled after the bill WHEN both change THEN names the latest payment which is mine`() {
         // Given
         val iPaidBruno = elisaPaidBruno.copy(
@@ -346,6 +374,19 @@ class SettledPairChangeTest {
         paidAt = PAID_AT,
         isPending = false,
         updatedAt = PAID_AT,
+    )
+
+    private fun settledPairChange(
+        outcome: SettledPairOutcome,
+        amountMinor: Long,
+    ): SettledPairChange = SettledPairChange(
+        payerName = "Elisa",
+        payerIsMe = false,
+        receiverName = "Bruno",
+        receiverIsMe = false,
+        outcome = outcome,
+        debtorIsPayer = true,
+        amountMinor = amountMinor,
     )
 
     private fun Expense.withShares(vararg parts: Pair<String, Long>): Expense =

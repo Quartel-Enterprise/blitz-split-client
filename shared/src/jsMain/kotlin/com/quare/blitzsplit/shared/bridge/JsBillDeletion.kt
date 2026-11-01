@@ -28,6 +28,8 @@ class JsSettledPair(
     val creditorName: String?,
     val creditorIsMe: Boolean,
     val amountMinor: Double,
+    // Why: changes with the pair or how it ends up, never with the amount alone: when a screen reader says it again.
+    val announcementKey: String,
 )
 
 internal fun toJsBillDeletion(deletion: BillDeletion): JsBillDeletion = JsBillDeletion(
@@ -52,4 +54,5 @@ internal fun toJsSettledPair(change: SettledPairChange): JsSettledPair = JsSettl
     creditorName = change.creditorName,
     creditorIsMe = change.creditorIsMe,
     amountMinor = change.amountMinor.toDouble(),
+    announcementKey = change.announcementKey.toString(),
 )

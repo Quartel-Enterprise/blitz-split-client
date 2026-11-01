@@ -1,3 +1,4 @@
+import Accessibility
 import Observation
 import Shared
 import SwiftUI
@@ -141,6 +142,12 @@ struct SplitBillView: View {
         )
         .glassToast("Couldn't save the bill. Try again.", trigger: model?.saveErrorCount ?? 0)
         .glassToast("Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0)
+        // VoiceOver says the settled pair warning when it shows and when the pair or how it ends up changes, never on
+        // each digit of the amount (7.4b).
+        .onChange(of: model?.state.settledPair?.announcementKey) { _, key in
+            guard key != nil, let model, let settledPair = model.state.settledPair else { return }
+            AccessibilityNotification.Announcement(BillCopy.settledPair(settledPair, currency: model.state.currency)).post()
+        }
         .onAppear {
             if model == nil { model = SplitBillModel(route: route) }
         }
