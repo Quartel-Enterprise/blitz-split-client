@@ -6,6 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
@@ -88,6 +89,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     val listDetail = rememberListDetailLayout()
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    val groupsMetadata = remember(listDetail) { homeListPaneMetadataOf(listDetail) }
     NavDisplay(
         backStack = backStack,
         onBack = { appViewModel.navigator.navigateBack() },
@@ -102,7 +104,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
-            entry<Route.Groups>(metadata = homeListPaneMetadataOf(listDetail)) {
+            entry<Route.Groups>(metadata = groupsMetadata) {
                 GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() })
             }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
