@@ -100,7 +100,12 @@ class GroupsSearchTest {
     fun `GIVEN a screen over the groups WHEN opening the search THEN it stays closed`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.JoinWithLink(skippedCode = null, skippedMemberCode = null))
+        navigator.navigate(
+            Route.JoinWithLink(
+                skippedCode = null,
+                skippedMemberCode = null,
+            ),
+        )
 
         // When
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
@@ -388,7 +393,26 @@ class GroupsSearchTest {
     }
 
     @Test
-    fun `GIVEN a result open from the search WHEN closing it THEN forgets the text and goes back to the groups`() =
+    fun `GIVEN a result open from the search WHEN closing it THEN forgets the text and keeps the result open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertFalse(search.isOpen)
+            assertEquals("", search.query)
+            assertEquals(2, navigator.backStack.value.size)
+        }
+
+    @Test
+    fun `GIVEN a result open from the search tab WHEN leaving the tab THEN forgets the text and goes back home`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -398,7 +422,7 @@ class GroupsSearchTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+            viewModel.onEvent(GroupsUiEvent.OnSearchTabLeft)
 
             // Then
             val search = viewModel.uiState.value.search

@@ -176,7 +176,7 @@ struct MainTabView: View {
                 case .activity: model.send(GroupsUiEventOnActivityTabClicked.shared)
                 case .search: model.send(GroupsUiEventOnSearchOpened.shared)
                 case .groups:
-                    if showsSearchTab { model.send(GroupsUiEventOnSearchClosed.shared) }
+                    if showsSearchTab { model.send(GroupsUiEventOnSearchTabLeft.shared) }
                 }
             },
         )

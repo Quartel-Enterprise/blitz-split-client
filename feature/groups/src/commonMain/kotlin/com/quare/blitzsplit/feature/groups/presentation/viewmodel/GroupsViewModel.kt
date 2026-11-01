@@ -317,6 +317,8 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSearchClosed -> closeSearch()
 
+            GroupsUiEvent.OnSearchTabLeft -> leaveSearchTab()
+
             is GroupsUiEvent.OnSearchQueryChanged -> search { it.copy(query = event.query) }
 
             is GroupsUiEvent.OnSearchScopeChanged -> search { it.copy(scope = event.scope) }
@@ -341,12 +343,14 @@ class GroupsViewModel(
         uiState.update { it.copy(search = searchedOf(it.search.copy(isOpen = true), it.groups)) }
     }
 
-    /*
-     * Why: closing forgets what was typed. iOS's search tab shows what its results opened, so leaving it goes back to
-     * the groups; elsewhere the search only closes with the groups on top.
-     */
+    // Why: closing forgets what was typed.
     private fun closeSearch() {
         uiState.update { it.copy(search = GroupsSearch.closed) }
+    }
+
+    // Why: what iOS's search tab opened goes with it, back to the groups.
+    private fun leaveSearchTab() {
+        closeSearch()
         val stack = navigator.backStack.value
         val groupsIndex = stack.indexOf(Route.Groups)
         if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)
