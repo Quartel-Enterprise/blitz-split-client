@@ -15,6 +15,7 @@ data class ExpenseDto(
     @SerialName("payers") val payers: List<ExpensePayerDto>,
     @SerialName("shares") val shares: List<ExpenseShareDto>,
     // Why: "Itens da conta" the shares come from, sent as null so a split by other means clears them on the server.
+    @Serializable(with = LenientExpenseItemsSerializer::class)
     @SerialName("items") val items: ExpenseItemsDto?,
     @SerialName("spent_at") val spentAt: Long,
     @SerialName("is_deleted") val isDeleted: Boolean,
