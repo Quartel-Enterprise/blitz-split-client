@@ -8,6 +8,8 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 data class PersonRow(
     // Why: the person and the currency, unique in the list.
     val id: String,
+    // Why: the person whichever the currency, so someone with groups in two currencies counts once.
+    val personKey: String,
     // Why: null for someone no longer in the group, whom each UI calls "Ex-membro".
     val name: String?,
     val initials: String,

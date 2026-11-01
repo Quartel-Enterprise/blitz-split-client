@@ -22,21 +22,11 @@ import kotlinx.coroutines.flow.mapNotNull
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
-// Why: amounts in the currency's minor unit, as numbers JavaScript reads exactly, with the currency's ISO 4217 code.
+// Why: one amount in the currency's minor unit, as a number JavaScript reads exactly, with its ISO 4217 code.
 class JsCurrencyAmount(
     val currency: String,
     val fractionDigits: Int,
     val amountMinor: Double,
-)
-
-class JsPeopleTotal(
-    val currency: String,
-    val fractionDigits: Int,
-    val netMinor: Double,
-    val toReceiveMinor: Double,
-    val toPayMinor: Double,
-    val toReceiveCount: Int,
-    val toPayCount: Int,
 )
 
 // Why: one line of "Por grupo"; amountMinor is positive when they owe you in that group.
@@ -97,12 +87,20 @@ class JsGlobalBalancesState(
     val accountProvider: String?,
     // Why: "all", "you-owe" or "owes-you".
     val filter: String,
-    val totals: Array<JsPeopleTotal>,
+    // Why: the home's money type, one per currency.
+    val totals: Array<JsBalanceTotal>,
+    // Why: "1 pessoa" and "4 pessoas" under the filter's totals, each person once over every currency.
+    val toPayPeopleCount: Int,
+    val toReceivePeopleCount: Int,
     val sections: Array<JsPeopleSection>,
     // Why: every row whichever the filter, for the desktop's choice of the person shown.
     val people: Array<JsPersonRow>,
     // Why: "settled", "nothing-to-pay" or "nothing-to-receive", null while there are rows.
     val emptyState: String?,
+    // Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open.
+    val emptyStateTotal: JsBalanceTotal,
+    // Why: how many people that amount is from or to.
+    val emptyStatePeopleCount: Int,
     // Why: the PaymentKeyType's name ("EMAIL") and the value of the Pix key Cobrar offers, null without one.
     val pixKeyType: String?,
     val pixKeyValue: String?,
@@ -131,6 +129,8 @@ class GlobalBalancesPresenter(
                 accountProvider = state.accountProvider?.code,
                 filter = toFilterCode(state.filter),
                 totals = state.totals.map(::toJsPeopleTotal).toTypedArray(),
+                toPayPeopleCount = state.toPayPeopleCount,
+                toReceivePeopleCount = state.toReceivePeopleCount,
                 sections = state.sections.map(::toJsPeopleSection).toTypedArray(),
                 people = state.people.map(::toJsPersonRow).toTypedArray(),
                 emptyState = when (state.emptyState) {
@@ -139,6 +139,8 @@ class GlobalBalancesPresenter(
                     BalancesEmptyState.NOTHING_TO_RECEIVE -> "nothing-to-receive"
                     null -> null
                 },
+                emptyStateTotal = toJsPeopleTotal(state.emptyStateTotal),
+                emptyStatePeopleCount = state.emptyStatePeopleCount,
                 pixKeyType = state.pixKey?.type?.name,
                 pixKeyValue = state.pixKey?.value,
                 charge = state.charge?.let(::toJsChargeDraft),
@@ -262,14 +264,12 @@ private fun toFilterCode(filter: BalancesFilter): String = when (filter) {
     BalancesFilter.OWES_YOU -> "owes-you"
 }
 
-private fun toJsPeopleTotal(total: PeopleTotal): JsPeopleTotal = JsPeopleTotal(
+private fun toJsPeopleTotal(total: PeopleTotal): JsBalanceTotal = JsBalanceTotal(
     currency = total.currency.code,
     fractionDigits = total.currency.fractionDigits,
     netMinor = total.netMinor.toDouble(),
     toReceiveMinor = total.toReceiveMinor.toDouble(),
     toPayMinor = total.toPayMinor.toDouble(),
-    toReceiveCount = total.toReceiveCount,
-    toPayCount = total.toPayCount,
 )
 
 private fun toJsCurrencyAmount(amount: CurrencyAmount): JsCurrencyAmount = JsCurrencyAmount(

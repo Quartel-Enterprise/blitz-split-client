@@ -3,12 +3,11 @@ package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
-import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeSettledUp
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
@@ -22,6 +21,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -48,8 +48,8 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GlobalBalancesViewModel(
     private val route: Route.GlobalBalances,
     private val navigator: Navigator,
-    private val consumeSettledUp: ConsumeSettledUp,
-    private val deleteSettlement: DeleteSettlement,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     observePeopleBalances: ObservePeopleBalances,
     observeSettledUp: ObserveSettledUp,
     observeProfile: ObserveProfile,
@@ -89,11 +89,10 @@ class GlobalBalancesViewModel(
         me = null,
     )
 
-    // Why: the rows whose "Por grupo" differs from how they open.
-    private var toggledIds = emptySet<String>()
+    // Why: what a tap set each row's "Por grupo" to; the others open as the filter opens them.
+    private var expandedById = emptyMap<String, Boolean>()
 
-    // Why: the payments the notice on screen undoes together.
-    private var noticeSettlementIds = emptyList<String>()
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
     init {
         combine(observeProfile(), observeAccount()) { profile, account ->
@@ -116,17 +115,26 @@ class GlobalBalancesViewModel(
         observePaymentKeys()
             .map(::pixKeyOrNull)
             .distinctUntilChanged()
-            .onEach { key -> uiState.update { it.copy(pixKey = key) } }
-            .launchIn(viewModelScope)
+            .onEach { key ->
+                uiState.update {
+                    it.copy(
+                        pixKey = key,
+                        charge = it.charge?.copy(hasPixKey = key != null),
+                    )
+                }
+            }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        // Why: the notice waits until Saldos is on top again, under Registrar pagamento, and Room is read.
-        combine(observeSettledUp(), navigator.backStack, uiState.map { it.isLoaded }.distinctUntilChanged(), ::Triple)
-            .onEach { (settledUp, _, isLoaded) ->
-                if (settledUp != null && isLoaded && isOnTop()) showSettledUp(settledUp)
-            }.launchIn(viewModelScope)
+        notices.watchSettledUp(
+            scope = viewModelScope,
+            recorded = observeSettledUp(),
+            backStack = navigator.backStack,
+            isLoaded = uiState.map { it.isLoaded },
+            isOnTop = ::isOnTop,
+            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+        )
     }
 
     fun onEvent(event: GlobalBalancesUiEvent) {
@@ -142,10 +150,16 @@ class GlobalBalancesViewModel(
             is GlobalBalancesUiEvent.OnChargeClicked -> openCharge(event.personId)
 
             is GlobalBalancesUiEvent.OnChargePixKeyToggled -> updateCharge { charge ->
-                if (charge.canTogglePixKey) charge.copy(includesPixKey = event.isIncluded) else charge
+                if (charge.canTogglePixKey) charge.copy(pixKeyChoice = event.isIncluded) else charge
             }
 
-            is GlobalBalancesUiEvent.OnChargeMessageChanged -> updateCharge { it.copy(editedMessage = event.message) }
+            // Why: the switch locks as it is once the message is the person's, whatever key loads later.
+            is GlobalBalancesUiEvent.OnChargeMessageChanged -> updateCharge {
+                it.copy(
+                    editedMessage = event.message,
+                    pixKeyChoice = it.includesPixKey,
+                )
+            }
 
             is GlobalBalancesUiEvent.OnChargeShareClicked -> emitForCharge(
                 GlobalBalancesUiAction.ShareMessage(event.message),
@@ -159,7 +173,7 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
 
-            GlobalBalancesUiEvent.OnGroupsTabClicked -> backToGroups()
+            GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GlobalBalancesUiEvent.OnContactsTabClicked,
             GlobalBalancesUiEvent.OnActivityTabClicked,
@@ -175,7 +189,7 @@ class GlobalBalancesViewModel(
 
     private fun showPeople() {
         val state = uiState.value
-        val rows = rowsOf(balances.people, state.filter, toggledIds)
+        val rows = rowsOf(balances.people, state.filter, expandedById)
         uiState.update {
             it.copy(
                 people = rows,
@@ -197,13 +211,14 @@ class GlobalBalancesViewModel(
     // Why: a new filter opens its lone person's "Por grupo" afresh.
     private fun changeFilter(filter: BalancesFilter) {
         if (filter == uiState.value.filter) return
-        toggledIds = emptySet()
+        expandedById = emptyMap()
         uiState.update { it.copy(filter = filter) }
         showPeople()
     }
 
     private fun toggle(personId: String) {
-        toggledIds = if (personId in toggledIds) toggledIds - personId else toggledIds + personId
+        val row = uiState.value.people.firstOrNull { it.id == personId } ?: return
+        expandedById = expandedById + (personId to !row.isExpanded)
         showPeople()
     }
 
@@ -251,7 +266,8 @@ class GlobalBalancesViewModel(
         isGuest = person.isGuest,
         guestBills = person.guestBills,
         guestPaidMinor = person.guestPaidMinor,
-        includesPixKey = previous?.includesPixKey ?: (pixKey != null),
+        hasPixKey = pixKey != null,
+        pixKeyChoice = previous?.pixKeyChoice,
         editedMessage = previous?.editedMessage,
     )
 
@@ -266,44 +282,18 @@ class GlobalBalancesViewModel(
 
     private fun handleEmptyAction() {
         when (uiState.value.emptyState) {
-            BalancesEmptyState.SETTLED -> backToGroups()
+            BalancesEmptyState.SETTLED -> navigator.popToGroups()
             BalancesEmptyState.NOTHING_TO_PAY -> changeFilter(BalancesFilter.OWES_YOU)
             BalancesEmptyState.NOTHING_TO_RECEIVE -> changeFilter(BalancesFilter.YOU_OWE)
             null -> Unit
         }
     }
 
-    // Why: Grupos is the tab under Saldos, so going back to it also closes whatever Saldos opened over itself.
-    private fun backToGroups() {
-        val groupsIndex = navigator.backStack.value.indexOf(Route.Groups)
-        if (groupsIndex >= 0) navigator.popTo(groupsIndex + 1)
-    }
-
-    private fun showSettledUp(settledUp: SettledUp) {
-        consumeSettledUp(settledUp)
-        noticeSettlementIds = settledUp.settlementIds
-        uiState.update {
-            it.copy(
-                recordedPayment = PaymentNotice(
-                    settlementId = settledUp.settlementIds.firstOrNull().orEmpty(),
-                    fromName = settledUp.personName.takeUnless { settledUp.isPaidByMe },
-                    fromIsMe = settledUp.isPaidByMe,
-                    toName = settledUp.personName.takeIf { settledUp.isPaidByMe },
-                ),
-            )
-        }
-    }
-
-    // Why: every payment of the settling up goes back together; one that fails still counts, which the screen says.
+    // Why: the payments of the settling up go back together, all or none; a failure keeps them all, which it says.
     private fun undoSettledUp() {
-        if (uiState.value.recordedPayment == null) return
-        val ids = noticeSettlementIds
-        noticeSettlementIds = emptyList()
+        val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        viewModelScope.launch {
-            val failed = ids.map { id -> deleteSettlement(id) }.any { it.isFailure }
-            if (failed) uiAction.emit(GlobalBalancesUiAction.ShowChangeError)
-        }
+        notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(GlobalBalancesUiAction.ShowChangeError) }
     }
 
     private fun personOrNull(personId: String): PersonBalance? = balances.people.firstOrNull { idOf(it) == personId }

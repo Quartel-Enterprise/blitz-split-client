@@ -1,15 +1,14 @@
 package com.quare.blitzsplit.feature.registerpayment
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
-import com.quare.blitzsplit.core.expenses.data.repository.InMemorySettledUpRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
@@ -31,6 +30,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKi
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -48,6 +48,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SettleUpViewModelTest {
@@ -55,7 +56,7 @@ class SettleUpViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
-    private lateinit var settledUps: InMemorySettledUpRepository
+    private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: RegisterPaymentViewModel
     private val actions = mutableListOf<RegisterPaymentUiAction>()
@@ -143,13 +144,31 @@ class SettleUpViewModelTest {
             assertTrue(recorded.all { it.method == SettlementMethod.CASH })
             assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
             assertEquals(
-                SettledUp(
+                RecordedPayment.SettledUp(
                     recorded.map { it.id },
                     personName = "Carla",
                     isPaidByMe = false,
                 ),
-                settledUps.observeSettledUp().first(),
+                recordedPayments.observeRecorded().first(),
             )
+        }
+
+    @Test
+    fun `GIVEN Grupos tapped while settling up WHEN the save finishes THEN a later Saldos owes no notice`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(recordGate = gate)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            navigator.popTo(1)
+            navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(3, settlements.recordedSettlements.size)
+            assertNull(recordedPayments.observeRecorded().first())
         }
 
     @Test
@@ -261,7 +280,10 @@ class SettleUpViewModelTest {
         updatedAt = 0L,
     )
 
-    private fun TestScope.prepareScenario(bills: List<Expense> = defaultBills) {
+    private fun TestScope.prepareScenario(
+        bills: List<Expense> = defaultBills,
+        recordGate: CompletableDeferred<Unit>? = null,
+    ) {
         groups = FakeGroupRepository(
             initialGroups = listOf(
                 group(FLORIPA, ME_FLORIPA, CARLA_FLORIPA),
@@ -270,8 +292,8 @@ class SettleUpViewModelTest {
             ),
         )
         expenses = FakeExpenseRepository(initialExpenses = bills)
-        settlements = FakeSettlementRepository()
-        settledUps = InMemorySettledUpRepository()
+        settlements = FakeSettlementRepository().also { it.recordGate = recordGate }
+        recordedPayments = InMemoryRecordedPaymentRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.GlobalBalances(BalancesFilter.ALL))
             it.navigate(route)
@@ -280,15 +302,16 @@ class SettleUpViewModelTest {
         viewModel = RegisterPaymentViewModel(
             route = route,
             navigator = navigator,
-            recordSettlement = RecordSettlementUseCase(settlements, InMemoryRecordedPaymentRepository()) { NOW },
-            settleUp = SettleUpUseCase(settlements, settledUps) { NOW },
+            recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { NOW },
+            settleUp = SettleUpUseCase(settlements, recordedPayments) { NOW },
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             currentTimeMillis = { NOW },
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observePeopleBalances = ObservePeopleBalancesUseCase(
-                observeGroupsByActivity = ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+                observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,
             ),
             connectivityObserver = NetworkConnectivityObserver { flowOf(true) },

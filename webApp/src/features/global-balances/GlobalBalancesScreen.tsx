@@ -1,5 +1,5 @@
 import { ChevronDown, CircleCheck, Check, WifiOff } from 'lucide-react'
-import { GlobalBalancesPresenter, type JsGlobalBalancesState, type JsPeopleSection, type JsPeopleTotal, type JsPersonRow, type JsRoute } from 'blitzsplit-shared'
+import { GlobalBalancesPresenter, type JsBalanceTotal, type JsGlobalBalancesState, type JsPeopleSection, type JsPersonRow, type JsRoute } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -80,7 +80,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
           <>
             <FilterCards presenter={presenter} state={state} />
             {state.emptyState ? (
-              <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.totals[0]} />
+              <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal} count={state.emptyStatePeopleCount} />
             ) : (
               <section aria-label={t('globalBalances_title')} className="overflow-hidden rounded-xl border bg-card">
                 {state.sections.map((section, index) => (
@@ -128,16 +128,16 @@ function FilterCards({ presenter, state }: { presenter: GlobalBalancesPresenter;
   )
 }
 
-function amountOf(filter: string, total: JsPeopleTotal): number {
+function amountOf(filter: string, total: JsBalanceTotal): number {
   return filter === 'all' ? total.netMinor : filter === 'you-owe' ? -total.toPayMinor : total.toReceiveMinor
 }
 
-function amountTone(filter: string, total: JsPeopleTotal): string {
+function amountTone(filter: string, total: JsBalanceTotal): string {
   return balanceTone(amountOf(filter, total))
 }
 
 // Why: "Saldo geral" is the signed net ("+R$ 186,40"); the other two are amounts ("R$ 126,00").
-function totalText(filter: string, total: JsPeopleTotal): string {
+function totalText(filter: string, total: JsBalanceTotal): string {
   if (filter === 'all') return formatSignedMoney(total.netMinor, total.currency, total.fractionDigits)
   return formatMoney(Math.abs(amountOf(filter, total)), total.currency, total.fractionDigits)
 }
@@ -148,8 +148,8 @@ function peopleText(count: number): string {
 }
 
 function subText(filter: string, state: JsGlobalBalancesState): string {
-  const toPay = state.totals.reduce((sum, total) => sum + total.toPayCount, 0)
-  const toReceive = state.totals.reduce((sum, total) => sum + total.toReceiveCount, 0)
+  const toPay = state.toPayPeopleCount
+  const toReceive = state.toReceivePeopleCount
   if (filter === 'you-owe') return peopleText(toPay)
   if (filter === 'owes-you') return peopleText(toReceive)
   if (toPay + toReceive === 0) return t('globalBalances_allSubSettled')
@@ -240,10 +240,9 @@ function PersonRowItem({ presenter, row }: { presenter: GlobalBalancesPresenter;
 }
 
 /** "Tudo acertado" leads to Grupos, "Você não deve nada" to Te devem, and nobody owing you to Você deve. */
-function EmptyBalances({ presenter, emptyState, total }: { presenter: GlobalBalancesPresenter; emptyState: string; total: JsPeopleTotal | undefined }) {
+function EmptyBalances({ presenter, emptyState, total, count }: { presenter: GlobalBalancesPresenter; emptyState: string; total: JsBalanceTotal | undefined; count: number }) {
   const words = emptyWords[emptyState] ?? emptyWords.settled
   const isPay = emptyState === 'nothing-to-pay'
-  const count = total ? (isPay ? total.toReceiveCount : total.toPayCount) : 0
   const amount = total ? formatMoney(isPay ? total.toReceiveMinor : total.toPayMinor, total.currency, total.fractionDigits) : ''
   const body = words.bodyOne && count === 1 ? t(words.bodyOne, { amount }) : t(words.body, { amount, count })
   return (

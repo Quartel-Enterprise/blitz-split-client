@@ -1011,7 +1011,7 @@ class BalancesViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Ana",
                     fromIsMe = false,
                     toName = "Pierre",
@@ -1057,7 +1057,14 @@ class BalancesViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -1102,7 +1109,14 @@ class BalancesViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test

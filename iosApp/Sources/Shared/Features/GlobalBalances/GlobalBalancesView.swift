@@ -197,7 +197,7 @@ private struct GlobalBalancesList: View {
             #endif
             if let emptyState = state.emptyState {
                 Section {
-                    EmptyBalances(model: model, emptyState: emptyState, total: state.primaryTotal)
+                    EmptyBalances(model: model, emptyState: emptyState, total: state.emptyStateTotal)
                 }
                 .listRowBackground(Color.clear)
             }

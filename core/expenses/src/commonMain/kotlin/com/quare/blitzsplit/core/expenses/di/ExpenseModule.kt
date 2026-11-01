@@ -15,17 +15,14 @@ import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
-import com.quare.blitzsplit.core.expenses.data.repository.InMemorySettledUpRepository
 import com.quare.blitzsplit.core.expenses.data.repository.SettlementRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.repository.DeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
-import com.quare.blitzsplit.core.expenses.domain.repository.SettledUpRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
-import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeSettledUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -45,7 +42,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
@@ -102,8 +98,5 @@ val expenseModule = module {
     factoryOf(::ConsumeRecordedPaymentUseCase).bind<ConsumeRecordedPayment>()
     factoryOf(::ObservePeopleBalancesUseCase).bind<ObservePeopleBalances>()
     factoryOf(::SettleUpUseCase).bind<SettleUp>()
-    // Why: one for the whole app, since Registrar pagamento posts the notice that the global Saldos under it shows.
-    singleOf(::InMemorySettledUpRepository).bind<SettledUpRepository>()
     factoryOf(::ObserveSettledUpUseCase).bind<ObserveSettledUp>()
-    factoryOf(::ConsumeSettledUpUseCase).bind<ConsumeSettledUp>()
 }

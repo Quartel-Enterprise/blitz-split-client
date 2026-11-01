@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -1974,6 +1975,35 @@ class GroupsViewModelTest {
     }
 
     @Test
+    fun `GIVEN Rachar conta over the groups WHEN a late tap on A receber arrives THEN it stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Pierre",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+            val splitBill = Route.SplitBill(
+                groupId = trio().id,
+                expenseId = null,
+                picksGroupFirst = false,
+            )
+            navigator.navigate(splitBill)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, splitBill), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN no group yet WHEN tapping Rachar conta THEN opens Novo grupo`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -2157,7 +2187,7 @@ class GroupsViewModelTest {
             )
 
             // When
-            settlements.deleteSettlement("paid", deletedAt = now)
+            settlements.deleteSettlements(listOf("paid"), deletedAt = now)
 
             // Then
             val state = viewModel.uiState.value
@@ -2180,7 +2210,7 @@ class GroupsViewModelTest {
                     ),
                 ),
             )
-            settlements.deleteSettlement("paid", deletedAt = now)
+            settlements.deleteSettlements(listOf("paid"), deletedAt = now)
 
             // When
             settlements.uploadPendingSettlements("user-1")
@@ -2515,6 +2545,10 @@ class GroupsViewModelTest {
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },
+            observePeopleBalances = ObservePeopleBalancesUseCase(
+                observeGroups = ObserveGroupsUseCase(groups),
+                observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
+            ),
         )
     }
 }

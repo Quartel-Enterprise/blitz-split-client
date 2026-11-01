@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
@@ -29,6 +30,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
@@ -95,6 +97,7 @@ class GroupsViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
+    observePeopleBalances: ObservePeopleBalances,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -133,6 +136,13 @@ class GroupsViewModel(
 
     // Why: what the dialogs of "Sair do grupo" and "Apagar grupo" read of the group asked for, as Room has it now.
     private var groupsWithMoney = emptyList<GroupWithMoney>()
+
+    // Why: whom "A pagar" settles up with straight away, as the global Saldos has them.
+    private var peopleBalances = PeopleBalances(
+        people = emptyList(),
+        totals = emptyList(),
+        me = null,
+    )
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
@@ -237,6 +247,9 @@ class GroupsViewModel(
         observeGroupsLayout()
             .onEach { layout -> uiState.update { it.copy(layout = layout) } }
             .launchIn(viewModelScope)
+        observePeopleBalances()
+            .onEach { people -> peopleBalances = people }
+            .launchIn(viewModelScope)
         // Why: only the group a row's "Acertar" was about can owe the home a notice; a group's own screens show theirs.
         notices.watch(
             scope = viewModelScope,
@@ -302,7 +315,8 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSplitBillClicked -> openSplitBill()
 
-            GroupsUiEvent.OnToReceiveClicked -> if (uiState.value.summary.canOpenToReceive) {
+            // Why: only from the groups on top, so a late tap never closes a screen over them, a half-typed bill's.
+            GroupsUiEvent.OnToReceiveClicked -> if (isOnTop() && uiState.value.summary.canOpenToReceive) {
                 openBalancesTab(BalancesFilter.OWES_YOU)
             }
 
@@ -332,7 +346,7 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
 
-            GroupsUiEvent.OnGroupsTabClicked -> popToGroups()
+            GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
@@ -357,13 +371,7 @@ class GroupsViewModel(
     // Why: what iOS's search tab opened goes with it, back to the groups.
     private fun leaveSearchTab() {
         closeSearch()
-        popToGroups()
-    }
-
-    private fun popToGroups() {
-        val stack = navigator.backStack.value
-        val groupsIndex = stack.indexOf(Route.Groups)
-        if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)
+        navigator.popToGroups()
     }
 
     // Why: what is typed or picked only counts while the search shows, so a late keystroke can't reopen it.
@@ -423,7 +431,7 @@ class GroupsViewModel(
         val groupsIndex = stack.indexOf(Route.Groups)
         if (groupsIndex < 0 || stack.getOrNull(groupsIndex + 1) is Route.GlobalBalances) return
         closeSearch()
-        navigator.popTo(groupsIndex + 1)
+        navigator.popToGroups()
         navigator.navigate(Route.GlobalBalances(filter))
     }
 
@@ -431,19 +439,7 @@ class GroupsViewModel(
     private fun openToPay() {
         if (!isOnTop()) return
         openBalancesTab(BalancesFilter.YOU_OWE)
-        val toPay = PeopleBalances
-            .of(
-                groups = groupsWithMoney.map { it.group },
-                money = groupsWithMoney.associate { item ->
-                    item.group.id to GroupMoney(
-                        expenses = item.expenses,
-                        settlements = item.settlements,
-                        pendingDeletionCount = item.pendingDeletionCount,
-                    )
-                },
-            ).people
-            .filter { it.netMinor < 0 }
-        val person = toPay.singleOrNull() ?: return
+        val person = peopleBalances.people.singleOrNull { it.netMinor < 0 } ?: return
         navigator.navigate(
             Route.SettleUp(
                 personKey = person.key,
@@ -510,7 +506,7 @@ class GroupsViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        notices.delete(viewModelScope, notice.settlementId) { uiAction.emit(GroupsUiAction.ShowChangeError) }
+        notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(GroupsUiAction.ShowChangeError) }
     }
 
     private fun exitGroupOrNull(): Group? = groupsWithMoney

@@ -3,18 +3,16 @@ package com.quare.blitzsplit.feature.globalbalances
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
-import com.quare.blitzsplit.core.expenses.data.repository.InMemorySettledUpRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeSettledUpUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
@@ -66,7 +64,7 @@ class GlobalBalancesViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
-    private lateinit var settledUps: InMemorySettledUpRepository
+    private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private lateinit var keys: FakePaymentKeyRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
@@ -137,6 +135,30 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Carla owes you in two currencies WHEN Saldos opens THEN counts her once among who owes you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups + group(
+                    "usa",
+                    "Viagem EUA",
+                    me("me-usa"),
+                    joined("carla-usa", "Carla", "carla"),
+                    currency = GroupCurrency.USD,
+                ),
+                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(4, state.totals.sumOf { it.toReceiveCount })
+            assertEquals(3, state.toReceivePeopleCount)
+            assertEquals(1, state.toPayPeopleCount)
+        }
+
+    @Test
     fun `GIVEN A pagar opened Saldos WHEN it opens THEN shows only whom you owe with the lone row open`() =
         runTest(testDispatcher) {
             // Given
@@ -189,6 +211,46 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN a row opened on Te devem WHEN a sync leaves that person alone THEN the row stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.OWES_YOU)
+            val carla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carla.id))
+
+            // When
+            expenses.expenses.update { bills -> bills.filterNot { it.id in setOf("e2", "e6") } }
+
+            // Then
+            val rows = viewModel.uiState.value.sections
+                .single()
+                .rows
+            assertEquals(listOf("Carla"), rows.map { it.name })
+            assertTrue(rows.single().isExpanded)
+        }
+
+    @Test
+    fun `GIVEN the lone row closed WHEN a sync brings someone else into the filter THEN the row stays closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.YOU_OWE)
+            val bruno = viewModel.uiState.value.people
+                .single { it.name == "Bruno" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(bruno.id))
+
+            // When
+            expenses.expenses.update { bills -> bills + owes(FLORIPA, ME_FLORIPA, ANA_FLORIPA, 20_000L, id = "e7") }
+
+            // Then
+            val rows = viewModel.uiState.value.sections
+                .single()
+                .rows
+            assertEquals(listOf("Ana", "Bruno"), rows.mapNotNull { it.name }.sorted())
+            assertTrue(rows.none { it.isExpanded })
+        }
+
+    @Test
     fun `GIVEN a row opened WHEN changing the filter THEN rows open as the new filter opens them`() =
         runTest(testDispatcher) {
             // Given
@@ -222,6 +284,29 @@ class GlobalBalancesViewModelTest {
                 .isEmpty(),
         )
     }
+
+    @Test
+    fun `GIVEN only another currency owes you WHEN filtering Voce deve THEN the empty state counts that currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups.map { group ->
+                    if (group.id == CHURRASCO) group.copy(currency = GroupCurrency.USD) else group
+                },
+                bills = listOf(owes(CHURRASCO, CARLA_CHURRASCO, ME_CHURRASCO, 3_250L)),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(BalancesEmptyState.NOTHING_TO_PAY, state.emptyState)
+            assertEquals(GroupCurrency.BRL, state.primaryTotal.currency)
+            assertEquals(GroupCurrency.USD, state.emptyStateTotal.currency)
+            assertEquals(3_250L, state.emptyStateTotal.toReceiveMinor)
+            assertEquals(1, state.emptyStateTotal.toReceiveCount)
+        }
 
     @Test
     fun `GIVEN you owe nothing WHEN tapping Ver quem te deve THEN shows Te devem`() = runTest(testDispatcher) {
@@ -384,6 +469,62 @@ class GlobalBalancesViewModelTest {
         )
         assertNull(viewModel.uiState.value.pixKey)
     }
+
+    @Test
+    fun `GIVEN Cobrar opened before the Pix key loaded WHEN the key arrives THEN includes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = emptyList())
+            openChargeForCarla()
+
+            // When
+            keys.keys.value = listOf(pixKey)
+
+            // Then
+            assertEquals(pixKey, viewModel.uiState.value.pixKey)
+            assertEquals(
+                true,
+                viewModel.uiState.value.charge
+                    ?.includesPixKey,
+            )
+        }
+
+    @Test
+    fun `GIVEN the Pix key switched off WHEN the profile keys change THEN stays off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        openChargeForCarla()
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargePixKeyToggled(isIncluded = false))
+
+        // When
+        keys.keys.value = listOf(pixKey.copy(value = "pierre@novo.com"))
+
+        // Then
+        assertEquals(
+            false,
+            viewModel.uiState.value.charge
+                ?.includesPixKey,
+        )
+    }
+
+    @Test
+    fun `GIVEN the message edited without a Pix key WHEN the key arrives THEN the locked switch stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = emptyList())
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
+
+            // When
+            keys.keys.value = listOf(pixKey)
+
+            // Then
+            assertEquals(
+                false,
+                viewModel.uiState.value.charge
+                    ?.includesPixKey,
+            )
+        }
 
     @Test
     fun `GIVEN someone you owe WHEN Cobrar arrives for them THEN nothing opens`() = runTest(testDispatcher) {
@@ -558,8 +699,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         navigator.navigate(Route.SettleUp("user:carla", GroupCurrency.BRL))
-        settledUps.post(
-            SettledUp(
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
                 listOf("p1", "p2"),
                 personName = "Carla",
                 isPaidByMe = false,
@@ -572,7 +713,7 @@ class GlobalBalancesViewModelTest {
         // Then
         assertEquals(
             PaymentNotice(
-                settlementId = "p1",
+                settlementIds = listOf("p1", "p2"),
                 fromName = "Carla",
                 fromIsMe = false,
                 toName = null,
@@ -582,14 +723,14 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN the notice of a settling up WHEN tapping Desfazer THEN undoes every payment of it`() =
+    fun `GIVEN the notice of a settling up WHEN tapping Desfazer THEN undoes every payment of it at once`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 storedSettlements = listOf(payment("p1", FLORIPA), payment("p2", APE)),
             )
-            settledUps.post(
-                SettledUp(
+            recordedPayments.post(
+                RecordedPayment.SettledUp(
                     listOf("p1", "p2"),
                     personName = "Bruno",
                     isPaidByMe = true,
@@ -600,6 +741,7 @@ class GlobalBalancesViewModelTest {
             viewModel.onEvent(GlobalBalancesUiEvent.OnUndoPaymentClicked)
 
             // Then
+            assertEquals(listOf(listOf("p1", "p2")), settlements.deleteCalls)
             assertEquals(listOf("p1", "p2"), settlements.deletedIds)
             assertNull(viewModel.uiState.value.recordedPayment)
             assertTrue(actions.isEmpty())
@@ -609,8 +751,8 @@ class GlobalBalancesViewModelTest {
     fun `GIVEN undoing fails WHEN tapping Desfazer THEN says so`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        settledUps.post(
-            SettledUp(
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
                 listOf("p1"),
                 personName = "Bruno",
                 isPaidByMe = true,
@@ -629,8 +771,8 @@ class GlobalBalancesViewModelTest {
     fun `GIVEN the notice shown WHEN it goes away THEN it is not shown again`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        settledUps.post(
-            SettledUp(
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
                 listOf("p1"),
                 personName = "Bruno",
                 isPaidByMe = true,
@@ -739,12 +881,13 @@ class GlobalBalancesViewModelTest {
         id: String,
         name: String,
         vararg members: GroupMember,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Group = Group(
         id = id,
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.PEACH,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         members = members.toList(),
         isPending = false,
         inviteCode = null,
@@ -802,7 +945,7 @@ class GlobalBalancesViewModelTest {
         val groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
-        settledUps = InMemorySettledUpRepository()
+        recordedPayments = InMemoryRecordedPaymentRepository()
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
         val opened = Route.GlobalBalances(filter)
@@ -811,13 +954,13 @@ class GlobalBalancesViewModelTest {
         viewModel = GlobalBalancesViewModel(
             route = opened,
             navigator = navigator,
-            consumeSettledUp = ConsumeSettledUpUseCase(settledUps),
-            deleteSettlement = DeleteSettlementUseCase(settlements, InMemoryRecordedPaymentRepository()) { 0L },
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 0L },
             observePeopleBalances = ObservePeopleBalancesUseCase(
-                observeGroupsByActivity = ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+                observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,
             ),
-            observeSettledUp = ObserveSettledUpUseCase(settledUps),
+            observeSettledUp = ObserveSettledUpUseCase(recordedPayments),
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),
             ),

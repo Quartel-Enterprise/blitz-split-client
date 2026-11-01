@@ -21,15 +21,21 @@ interface SettlementRepository {
     // Why: when each payment waiting to go up was last changed, so a new one triggers a sync after a failed push.
     fun observePendingVersions(): Flow<List<Long>>
 
-    // Why: on the device first, offline included; the sync takes it to the server after its group and members.
-    suspend fun createSettlement(
-        settlement: Settlement,
+    /*
+     * Why: on the device first, offline included; the sync takes them to the server after their groups and members.
+     * All or none, so a settling up across groups that fails on one leaves nothing waiting to sync.
+     */
+    suspend fun createSettlements(
+        settlements: List<Settlement>,
         recordedAt: Long,
     ): Result<Unit>
 
-    // Why: "Desfazer", a tombstone the sync takes up; fails when the payment is already gone.
-    suspend fun deleteSettlement(
-        id: String,
+    /*
+     * Why: "Desfazer" and "Apagar este acerto?", tombstones the sync takes up, all or none; a payment already gone is
+     * what was asked.
+     */
+    suspend fun deleteSettlements(
+        ids: List<String>,
         deletedAt: Long,
     ): Result<Unit>
 

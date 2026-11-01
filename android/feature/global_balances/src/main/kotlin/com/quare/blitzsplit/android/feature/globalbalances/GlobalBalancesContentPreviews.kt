@@ -65,6 +65,7 @@ private fun createPreviewRow(
     isExpanded: Boolean = false,
 ): PersonRow = PersonRow(
     id = name,
+    personKey = name,
     name = name,
     initials = name.take(2).uppercase(),
     color = AvatarColor.LILAC,

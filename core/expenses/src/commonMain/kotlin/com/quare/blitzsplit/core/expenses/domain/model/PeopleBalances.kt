@@ -108,7 +108,10 @@ data class PeopleBalances(
                 netMinor = netMinor,
                 groups = parts.map { it.balance },
                 isGuest = isGuest,
-                guestBills = guestBills.map { it.second.description }.distinct(),
+                guestBills = guestBills
+                    .sortedByDescending { (_, expense) -> expense.spentAt }
+                    .map { (_, expense) -> expense.description }
+                    .distinct(),
                 guestPaidMinor = if (isGuest) guestPaidOf(guestBills, netMinor) else null,
             )
         }

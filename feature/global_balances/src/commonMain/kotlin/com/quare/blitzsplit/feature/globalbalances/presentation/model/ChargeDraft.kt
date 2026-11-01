@@ -21,11 +21,17 @@ data class ChargeDraft(
     val guestBills: List<String>,
     // Why: "menos os R$ 182,50 que você já pagou", when those numbers add up to what they owe.
     val guestPaidMinor: Long?,
-    // Why: "Incluir minha chave Pix", on by default while the profile has a Pix key.
-    val includesPixKey: Boolean,
+    // Why: the profile has a Pix key now, which may load or change while Cobrar is open.
+    val hasPixKey: Boolean,
+    // Why: "Incluir minha chave Pix" as the person switched it, or as it was when they edited the message; null before.
+    val pixKeyChoice: Boolean?,
     // Why: null until the message is edited; from then on the UIs show and send this text.
     val editedMessage: String?,
 ) {
+    // Why: "Incluir minha chave Pix", on by default while the profile has a Pix key.
+    val includesPixKey: Boolean
+        get() = pixKeyChoice ?: hasPixKey
+
     // Why: once the message is edited the key is the person's to type, so the switch can't rewrite their text.
     val canTogglePixKey: Boolean
         get() = editedMessage == null

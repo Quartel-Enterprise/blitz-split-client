@@ -16,12 +16,18 @@ interface SettlementLocalDataSource {
 
     suspend fun getPendingSettlements(ownerUserId: String): List<SettlementEntity>
 
-    // Why: fails when the group is no longer on the device, which a sync may have removed meanwhile.
-    suspend fun insertSettlement(entity: SettlementEntity)
+    /*
+     * Why: all or none, in one transaction; fails when a group is no longer on the device, which a sync may have
+     * removed meanwhile.
+     */
+    suspend fun insertSettlements(entities: List<SettlementEntity>)
 
-    // Why: a payment already gone, which a sync deleted meanwhile, is what was asked, so only a disk error fails.
+    /*
+     * Why: all or none, in one transaction. A payment already gone, which a sync deleted meanwhile, is what was asked,
+     * so only a disk error fails.
+     */
     suspend fun markDeleted(
-        id: String,
+        ids: List<String>,
         now: Long,
     )
 
