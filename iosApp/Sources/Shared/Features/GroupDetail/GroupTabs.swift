@@ -40,3 +40,20 @@ struct GroupTabsPicker: View {
         )
     }
 }
+
+#if os(iOS)
+/// The picker as its own section of a group's list on iPhone and iPad, with no row inset of its own, so it lines up
+/// with the cards below at the list's margin on Expenses, Balances and Members alike.
+struct GroupTabsSection: View {
+    let selected: GroupTab
+    let onSelect: (GroupTab) -> Void
+
+    var body: some View {
+        Section {
+            GroupTabsPicker(selected: selected, onSelect: onSelect)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets())
+    }
+}
+#endif
