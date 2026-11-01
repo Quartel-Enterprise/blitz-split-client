@@ -14,7 +14,8 @@ enum class DialogPlacement {
 
 /*
  * Why: the canvas' default per posture. A tabletop lying down has the book's halves and draws its dialogs like the
- * book's (flows 1 and 7); a flow whose boards put them in a tabletop's top half (flow 2) passes TopHalf itself.
+ * book's (flows 1 and 7); an upright tabletop draws them in its top half. A flow whose boards put them in a tabletop's
+ * top half even lying down (flow 2) passes TopHalf itself.
  */
 @Composable
 fun rememberDialogPlacement(): DialogPlacement {

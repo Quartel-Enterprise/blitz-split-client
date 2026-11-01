@@ -24,8 +24,8 @@ private class FoldDialogScene<T : Any>(
     override val key: Any,
     override val previousEntries: List<NavEntry<T>>,
     override val overlaidEntries: List<NavEntry<T>>,
-    entry: NavEntry<T>,
-    properties: DialogProperties,
+    private val entry: NavEntry<T>,
+    private val properties: DialogProperties,
     onBack: () -> Unit,
 ) : OverlayScene<T> {
     override val entries: List<NavEntry<T>> = listOf(entry)
@@ -39,6 +39,23 @@ private class FoldDialogScene<T : Any>(
                 entry.Content()
             }
         }
+    }
+
+    // Why: a scene calculated again for the same entries is the same scene, as Navigation 3's own dialog scene says.
+    override fun equals(other: Any?): Boolean = other is FoldDialogScene<*> &&
+        key == other.key &&
+        previousEntries == other.previousEntries &&
+        overlaidEntries == other.overlaidEntries &&
+        entry == other.entry &&
+        properties == other.properties
+
+    override fun hashCode(): Int {
+        var result = key.hashCode()
+        result = 31 * result + previousEntries.hashCode()
+        result = 31 * result + overlaidEntries.hashCode()
+        result = 31 * result + entry.hashCode()
+        result = 31 * result + properties.hashCode()
+        return result
     }
 }
 
