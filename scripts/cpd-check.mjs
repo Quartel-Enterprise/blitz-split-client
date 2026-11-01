@@ -7,7 +7,7 @@
 // them, until --update-baseline lowers them, so copied code removed can't come back unnoticed.
 
 import { appendFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, dirname, extname, join, relative } from "node:path";
+import { basename, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Why: shorter than this once imports and comments are gone, a clone is a shared header, not copied code.
@@ -101,11 +101,16 @@ const current = Object.fromEntries([...copiedLines].map(([path, lines]) => [path
 const grown = Object.keys(current).filter((path) => current[path] > (baseline[path] ?? 0));
 const shrunk = Object.keys(baseline).filter((path) => (current[path] ?? 0) < baseline[path]);
 
-// Why: a renamed or moved file shows up as a new path with the same copied lines as a listed path whose file is gone.
-const vanished = Object.keys(baseline).filter((path) => !isOnDisk(path));
+/*
+ * Why: a moved file shows up as a new path with the file name and copied lines of a listed path whose file is gone.
+ * The count alone would let unrelated new copied code stand in for a deleted file; a file renamed with its copied
+ * code is new copied code under that rule too, and takes --allow-new.
+ */
+const listings = new Map();
+const vanished = Object.keys(baseline).filter((path) => !(path in current) && !isOnDisk(path));
 const renamedFrom = new Map();
 for (const path of grown.filter((path) => !(path in baseline))) {
-    const from = vanished.find((old) => baseline[old] === current[path]);
+    const from = vanished.find((old) => baseline[old] === current[path] && basename(old) === basename(path));
     if (from === undefined) continue;
     vanished.splice(vanished.indexOf(from), 1);
     renamedFrom.set(path, from);
@@ -165,19 +170,24 @@ function reportGrown(paths) {
 function warnAboutGrowth(base) {
     const taken = Object.keys(baseline).filter((path) => baseline[path] > (base[path] ?? 0));
     if (taken.length === 0) return;
-    const lines = taken.map((path) => `${path}: ${base[path] ?? 0} → ${baseline[path]} lines`);
+    const change = (path) => `${base[path] ?? 0} → ${baseline[path]} lines`;
     console.log(`::warning file=.jscpd-baseline.json::The baseline takes in copied code in ${taken.length} file${taken.length === 1 ? "" : "s"}, listed in the job summary`);
-    lines.forEach((line) => console.log(`   ${line}`));
+    taken.forEach((path) => console.log(`   ${path}: ${change(path)}`));
     if (process.env.GITHUB_STEP_SUMMARY) {
-        const summary = ["### The baseline takes in copied code", "", ...lines.map((line) => `- \`${line.replace(": ", "`: ")}`), ""];
+        const summary = ["### The baseline takes in copied code", "", ...taken.map((path) => `- \`${path}\`: ${change(path)}`), ""];
         appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summary.join("\n")}\n`);
     }
 }
 
-// Why: existsSync ignores case on macOS, where renaming Foo.kt to foo.kt would leave Foo.kt "on disk" locally only.
+// Why: existsSync ignores case on macOS, where renaming Foo/ to foo/ would leave Foo/X.kt "on disk" locally only.
 function isOnDisk(path) {
-    const directory = join(ROOT, dirname(path));
-    return existsSync(directory) && readdirSync(directory).includes(basename(path));
+    let directory = ROOT;
+    for (const part of path.split("/")) {
+        if (!listings.has(directory)) listings.set(directory, existsSync(directory) ? readdirSync(directory) : []);
+        if (!listings.get(directory).includes(part)) return false;
+        directory = join(directory, part);
+    }
+    return true;
 }
 
 function readBaseline(path) {

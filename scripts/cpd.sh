@@ -14,6 +14,20 @@
 set -e
 
 ROOT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." > /dev/null && pwd)"
+
+# Why: the check runs from the repo root, so a relative --base path is made absolute against where the script ran.
+args=()
+while [ $# -gt 0 ]; do
+    if [ "$1" = "--base" ] && [ $# -gt 1 ] && [ "${2#/}" = "$2" ]; then
+        args+=("$1" "$PWD/$2")
+        shift 2
+    else
+        args+=("$1")
+        shift
+    fi
+done
+set -- "${args[@]}"
+
 cd "$ROOT"
 
 if ! command -v npm > /dev/null || ! command -v node > /dev/null \

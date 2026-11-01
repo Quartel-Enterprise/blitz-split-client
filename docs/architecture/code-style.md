@@ -330,7 +330,8 @@ needs Node.js 18 or later and nothing else.
 extract the copied code into one place the callers use (a use case or coordinator under the ViewModels, a component
 of `:android:designsystem`, `iosApp/Sources/Shared/DesignSystem` or `webApp/src/components`). A file with fewer fails
 too, until `--update-baseline` writes the new numbers, so the baseline only shrinks. Without `--allow-new` it refuses
-any file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a renamed or
-moved file: a new path with the same copied lines as a listed path whose file is gone. `--allow-new` is for a copy on
+any file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved
+file: a new path with the file name and copied lines of a listed path whose file is gone. A file renamed with its
+copied code needs `--allow-new`, like any new copy. `--allow-new` is for a copy on
 purpose (an `actual` per platform that happens to match): say why in the pull request, where CI raises one warning
 and lists each file whose copied lines grew against main in the job summary.
