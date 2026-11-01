@@ -111,11 +111,14 @@ fun rememberUsesGroupDialog(): Boolean {
     }
 }
 
+// Why: in the pane beside the home's list, a group's screen takes the one column of a tablet upright.
 @Composable
 fun rememberDeviceLayout(): DeviceLayout {
     val size = LocalWindowInfo.current.containerSize
     val density = LocalDensity.current
-    return remember(size, density) {
+    val isInDetailPane = LocalInDetailPane.current
+    return remember(size, density, isInDetailPane) {
+        if (isInDetailPane) return@remember DeviceLayout.TabletPortrait
         with(density) {
             deviceLayoutOf(
                 width = size.width.toDp(),

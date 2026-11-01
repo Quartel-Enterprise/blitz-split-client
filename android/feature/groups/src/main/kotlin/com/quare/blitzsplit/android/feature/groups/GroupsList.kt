@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -70,6 +71,8 @@ internal fun LazyGridScope.groupsListItems(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     onLongPress: (GroupRow) -> Unit,
+    // Why: the group open beside the list in a list and detail, its row or card highlighted; null on a phone.
+    selectedGroupId: String?,
 ) {
     item(
         key = "summary",
@@ -119,6 +122,7 @@ internal fun LazyGridScope.groupsListItems(
         ) { group ->
             GroupGridCard(
                 group = group,
+                isSelected = group.id == selectedGroupId,
                 size = state.layout.gridSize,
                 isOnline = state.exit.isOnline,
                 onEvent = onEvent,
@@ -135,6 +139,7 @@ internal fun LazyGridScope.groupsListItems(
         ) { index, group ->
             GroupListRow(
                 group = group,
+                isSelected = group.id == selectedGroupId,
                 shape = groupedRowShapeOf(index, open.size),
                 isOnline = state.exit.isOnline,
                 onEvent = onEvent,
@@ -165,6 +170,7 @@ internal fun LazyGridScope.groupsListItems(
     ) { index, group ->
         GroupListRow(
             group = group,
+            isSelected = group.id == selectedGroupId,
             shape = groupedRowShapeOf(index, settled.size),
             isOnline = state.exit.isOnline,
             onEvent = onEvent,
@@ -251,6 +257,7 @@ private fun SettledToggle(
 @Composable
 private fun GroupListRow(
     group: GroupRow,
+    isSelected: Boolean,
     shape: Shape,
     isOnline: Boolean,
     onEvent: (GroupsUiEvent) -> Unit,
@@ -260,9 +267,11 @@ private fun GroupListRow(
     val money = rememberMoneyFormatter(group.currency)
     val dates = rememberDateTimeTextFormatter()
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { selected = isSelected },
         shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        color = selectableRowColorOf(isSelected),
     ) {
         Row(
             modifier = Modifier
@@ -473,4 +482,12 @@ internal fun amountColorOf(netMinor: Long): Color = when {
     netMinor > 0 -> MaterialTheme.colorScheme.primary
     netMinor < 0 -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.onSurfaceVariant
+}
+
+// Why: the row or card of the group open beside the list takes the canvas' secondary container.
+@Composable
+internal fun selectableRowColorOf(isSelected: Boolean): Color = if (isSelected) {
+    MaterialTheme.colorScheme.secondaryContainer
+} else {
+    MaterialTheme.colorScheme.surfaceContainerLowest
 }

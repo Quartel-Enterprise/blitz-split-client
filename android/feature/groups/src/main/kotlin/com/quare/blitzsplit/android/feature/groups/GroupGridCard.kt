@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -84,6 +86,7 @@ internal fun minCardWidthOf(size: GroupGridSize): Dp = when (size) {
 @Composable
 internal fun GroupGridCard(
     group: GroupRow,
+    isSelected: Boolean,
     size: GroupGridSize,
     isOnline: Boolean,
     onEvent: (GroupsUiEvent) -> Unit,
@@ -94,9 +97,11 @@ internal fun GroupGridCard(
     val money = rememberMoneyFormatter(group.currency)
     val dates = rememberDateTimeTextFormatter()
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { selected = isSelected },
         shape = cardShape,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        color = selectableRowColorOf(isSelected),
     ) {
         Box {
             Column(

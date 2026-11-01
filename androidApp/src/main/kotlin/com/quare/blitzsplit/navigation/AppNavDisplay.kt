@@ -3,6 +3,7 @@ package com.quare.blitzsplit.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -14,6 +15,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
@@ -49,6 +51,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * Why: the back stack lives in :core:navigation and the ViewModels move it; Navigation 3 only
  * draws its entries, so Android walks the same flow as SwiftUI and React.
  */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val uiState by appViewModel.uiState.collectAsStateWithLifecycle()
@@ -83,6 +86,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
+    val listDetail = rememberListDetailLayout()
+    val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
     NavDisplay(
         backStack = backStack,
         onBack = { appViewModel.navigator.navigateBack() },
@@ -90,12 +95,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
             rememberViewModelStoreNavEntryDecorator(),
         ),
-        sceneStrategies = listOf(DialogSceneStrategy(), BottomSheetSceneStrategy()),
+        // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
+        sceneStrategies = listOf(DialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
         entryProvider = entryProvider {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
-            entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+            // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
+            entry<Route.Groups>(metadata = homeListPaneMetadataOf(listDetail)) {
+                GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() })
+            }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
@@ -121,7 +130,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesFormDialog,
                 )
             }
-            entry<Route.GroupDetail> { route -> GroupDetailScreen(route) }
+            // Why: the group's tabs go in the pane beside the groups, where the window has room for it.
+            entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
+                InGroupPane(listDetail) { GroupDetailScreen(route) }
+            }
             // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
                 EditGroupScreen(
@@ -143,8 +155,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesBillDialog,
                 )
             }
-            // Why: a tab of the group, which takes Despesas' or Membros' place.
-            entry<Route.Balances> { route -> BalancesScreen(route) }
+            // Why: a tab of the group, which takes Despesas' or Membros' place, beside the groups too.
+            entry<Route.Balances>(metadata = homeDetailPaneMetadata) { route ->
+                InGroupPane(listDetail) { BalancesScreen(route) }
+            }
             entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
             entry<Route.RegisterPayment>(
@@ -166,7 +180,9 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesBillDialog,
                 )
             }
-            entry<Route.Members> { route -> MembersScreen(route) }
+            entry<Route.Members>(metadata = homeDetailPaneMetadata) { route ->
+                InGroupPane(listDetail) { MembersScreen(route) }
+            }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }
             entry<Route.JoinPick> { route -> JoinPickScreen(route) }
             entry<Route.JoinWithLink> { route -> JoinWithLinkScreen(route) }

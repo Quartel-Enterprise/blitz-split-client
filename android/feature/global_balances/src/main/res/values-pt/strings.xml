@@ -26,6 +26,13 @@
     <string name="global_balances_settle_with">Acertar com %s</string>
     <string name="global_balances_charge">Cobrar</string>
     <string name="global_balances_charge_person">Cobrar %s</string>
+    <string name="global_balances_detail_pane">Saldo com %s</string>
+    <string name="global_balances_detail_owes_you">%s te deve</string>
+    <string name="global_balances_detail_you_owe">Você deve a %s</string>
+    <string name="global_balances_detail_guest">%s · convidado sem app</string>
+    <string name="global_balances_detail_note_owed">O líquido já compensa os grupos: Cobrar e Recebi usam %s. O app anota um pagamento em cada grupo.</string>
+    <string name="global_balances_detail_note_settle">O líquido já compensa os grupos: Acertar usa %s. O app anota um pagamento em cada grupo.</string>
+    <string name="global_balances_detail_note_single">Só um grupo em aberto com %s.</string>
     <string name="global_balances_settled_title">Tudo acertado</string>
     <string name="global_balances_settled_body">Ninguém te deve e você não deve a ninguém. Quando alguém lançar uma conta, o saldo aparece aqui.</string>
     <string name="global_balances_settled_action">Ver grupos</string>

@@ -10,6 +10,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -53,6 +54,9 @@ fun GroupsScreen(
         onUndo = { viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked) },
         onShown = { viewModel.onEvent(GroupsUiEvent.OnRecordedPaymentNoticeShown) },
     )
+    // Why: the window decides whether the group opens beside the list, which the ViewModel needs for taps and search.
+    val showsDetailPane = rememberListDetailLayout() != null
+    LaunchedEffect(showsDetailPane) { viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(showsDetailPane)) }
     // Why: back closes the search before it leaves the home.
     BackHandler(enabled = state.isSearching) { viewModel.onEvent(GroupsUiEvent.OnSearchClosed) }
     GroupsContent(

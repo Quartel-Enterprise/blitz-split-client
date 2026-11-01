@@ -30,11 +30,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
@@ -68,49 +70,11 @@ internal fun PersonBalanceCard(
             ),
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                PersonFaceBadge(row)
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    Text(
-                        text = name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        text = metaOf(row),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    Text(
-                        text = money.toSignedText(row.netMinor),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = amountColorOf(row.netMinor),
-                    )
-                    Text(
-                        text = stringResource(
-                            if (row.owesYou) R.string.global_balances_owes_you else R.string.global_balances_you_owe,
-                        ),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            PersonSummaryRow(
+                row = row,
+                name = name,
+                money = money,
+            )
             AnimatedVisibility(visible = row.isExpanded) {
                 PersonGroupsCard(
                     groups = row.groups,
@@ -128,14 +92,110 @@ internal fun PersonBalanceCard(
     }
 }
 
+// Why: the face, the name with its groups, and the net with whose way it goes, alike in the row and the list's pick.
 @Composable
-private fun PersonFaceBadge(row: PersonRow) {
+private fun PersonSummaryRow(
+    row: PersonRow,
+    name: String,
+    money: MoneyFormatter,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PersonFaceBadge(row)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = metaOf(row),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = money.toSignedText(row.netMinor),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = amountColorOf(row.netMinor),
+            )
+            Text(
+                text = stringResource(
+                    if (row.owesYou) R.string.global_balances_owes_you else R.string.global_balances_you_owe,
+                ),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/*
+ * Why: a person in the list beside the detail (an Android tablet lying down, an unfolded book): a tap shows them in the
+ * pane, which holds "Por grupo" and the actions, and the one shown takes the secondary container.
+ */
+@Composable
+internal fun PersonPickRow(
+    row: PersonRow,
+    isSelected: Boolean,
+    index: Int,
+    count: Int,
+    onEvent: (GlobalBalancesUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val money = rememberMoneyFormatter(row.currency)
+    val name = row.name ?: stringResource(DesignR.string.designsystem_former_member)
+    Surface(
+        selected = isSelected,
+        onClick = { onEvent(GlobalBalancesUiEvent.OnPersonSelected(row.id)) },
+        modifier = modifier.fillMaxWidth(),
+        shape = groupedRowShapeOf(index, count),
+        color = if (isSelected) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLowest
+        },
+    ) {
+        Box(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 12.dp,
+            ),
+        ) {
+            PersonSummaryRow(
+                row = row,
+                name = name,
+                money = money,
+            )
+        }
+    }
+}
+
+@Composable
+internal fun PersonFaceBadge(
+    row: PersonRow,
+    size: Dp = faceSize,
+) {
     val color = row.color
     // Why: a blank face for someone no longer in the group, as the group's Saldos draws them.
     if (color == null) {
         Box(
             modifier = Modifier
-                .size(faceSize)
+                .size(size)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape),
         )
         return
@@ -143,7 +203,7 @@ private fun PersonFaceBadge(row: PersonRow) {
     AvatarBadge(
         initial = row.initials,
         color = color,
-        size = faceSize,
+        size = size,
     )
 }
 
@@ -188,6 +248,25 @@ private fun ActionsRow(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
+        PersonActionsRow(
+            row = row,
+            name = name,
+            onEvent = onEvent,
+        )
+    }
+}
+
+// Why: Recebi and Cobrar for someone who owes you, else Acertar, in the row and in the pane beside the list.
+@Composable
+internal fun PersonActionsRow(
+    row: PersonRow,
+    name: String,
+    onEvent: (GlobalBalancesUiEvent) -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         if (row.owesYou) {
             val received = stringResource(R.string.global_balances_received_from, name)
             TextButton(
