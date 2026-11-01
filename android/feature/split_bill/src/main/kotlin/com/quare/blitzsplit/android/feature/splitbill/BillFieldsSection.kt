@@ -72,53 +72,70 @@ internal fun BillFieldsSection(
     )
 }
 
-// Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group.
+/*
+ * Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group. A group
+ * that can't change is a plain label (no button role for TalkBack), not a disabled control.
+ */
 @Composable
 private fun GroupChip(
     state: SplitBillUiState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
-    Surface(
-        onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
-        enabled = state.canChangeGroup,
-        modifier = Modifier.semantics {
-            if (state.canChangeGroup) contentDescription = changeLabel
-        },
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        // Why: a group that can't change reads as plain, not as a disabled control.
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) {
-        Row(
-            modifier = Modifier
-                .height(40.dp)
-                .padding(
-                    start = 4.dp,
-                    end = if (state.canChangeGroup) 10.dp else 14.dp,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+    val shape = CircleShape
+    val color = MaterialTheme.colorScheme.surfaceContainerHigh
+    val contentColor = MaterialTheme.colorScheme.onSurface
+    if (state.canChangeGroup) {
+        val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+        Surface(
+            onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
+            modifier = Modifier.semantics { contentDescription = changeLabel },
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
         ) {
-            GroupBadge(
-                initials = state.groupInitials,
-                color = state.groupColor,
-                size = 32.dp,
+            GroupChipContent(state)
+        }
+    } else {
+        Surface(
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
+        ) {
+            GroupChipContent(state)
+        }
+    }
+}
+
+@Composable
+private fun GroupChipContent(state: SplitBillUiState) {
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .padding(
+                start = 4.dp,
+                end = if (state.canChangeGroup) 10.dp else 14.dp,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GroupBadge(
+            initials = state.groupInitials,
+            color = state.groupColor,
+            size = 32.dp,
+        )
+        Text(
+            text = state.groupName,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (state.canChangeGroup) {
+            Icon(
+                imageVector = Icons.Outlined.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
             )
-            Text(
-                text = state.groupName,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (state.canChangeGroup) {
-                Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
         }
     }
 }
