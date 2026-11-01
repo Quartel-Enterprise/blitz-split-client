@@ -64,6 +64,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
+import com.quare.blitzsplit.feature.contacts.presentation.model.ContactBalanceNote
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiState
 
@@ -419,16 +420,16 @@ private fun BalanceCard(
                     color = netColorOf(net.amountMinor),
                 )
                 Text(
-                    text = when {
-                        contact.isSettled -> stringResource(R.string.contacts_balance_nothing)
+                    text = when (state.balanceNote) {
+                        ContactBalanceNote.NOTHING_OPEN -> stringResource(R.string.contacts_balance_nothing)
 
-                        state.isNetOfSeveralGroups -> pluralStringResource(
+                        ContactBalanceNote.OFFSET_ACROSS_GROUPS -> pluralStringResource(
                             R.plurals.contacts_balance_offset,
                             contact.groups.size,
                             contact.groups.size,
                         )
 
-                        else ->
+                        ContactBalanceNote.ONE_GROUP ->
                             contact.groups
                                 .firstOrNull()
                                 ?.groupName

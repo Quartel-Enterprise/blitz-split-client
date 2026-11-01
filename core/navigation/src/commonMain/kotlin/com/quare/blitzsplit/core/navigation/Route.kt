@@ -99,11 +99,8 @@ sealed interface Route {
      */
     data class GlobalBalances(
         val filter: BalancesFilter,
-        /*
-         * Why: Contatos' "Cobrar" (11.2) opens Saldos' message (8.2) for that person (PersonBalance.key) right away;
-         * closing it goes back to the profile. Null from the home's tabs and cards.
-         */
-        val chargePersonKey: String?,
+        // Why: Contatos' "Cobrar" opens the message right away; closing it goes back. Null from the home's tabs and cards.
+        val charge: BalancesCharge?,
     ) : Route
 
     /*

@@ -170,13 +170,18 @@ class ContactsViewModel(
 
             is ContactsUiEvent.OnAgendaLoaded -> uiState.update { it.copy(agenda = event.contacts) }
 
-            ContactsUiEvent.OnGroupsTabClicked -> if (isOnTop()) navigator.popToGroups()
+            ContactsUiEvent.OnGroupsTabClicked -> if (isTabShown()) navigator.popToGroups()
 
-            ContactsUiEvent.OnBalancesTabClicked -> openBalances(BalancesFilter.ALL)
+            ContactsUiEvent.OnBalancesTabClicked -> if (isTabShown()) {
+                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+            }
 
-            ContactsUiEvent.OnActivityTabClicked -> emit(ContactsUiAction.ShowComingSoon)
+            ContactsUiEvent.OnActivityTabClicked -> if (isTabShown()) emit(ContactsUiAction.ShowComingSoon)
 
-            ContactsUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
+            ContactsUiEvent.OnProfileClicked -> if (isTabShown()) {
+                closeOverTab()
+                navigator.navigate(Route.Profile)
+            }
 
             ContactsUiEvent.OnPaneBackClicked -> uiState.update {
                 it.copy(
@@ -222,7 +227,7 @@ class ContactsViewModel(
     }
 
     private fun openBalances(filter: BalancesFilter) {
-        if (isOnTop()) navigator.openHomeTab(Route.GlobalBalances(filter, chargePersonKey = null))
+        if (isOnTop()) navigator.openHomeTab(Route.GlobalBalances(filter, charge = null))
     }
 
     private fun show(key: String) {
@@ -237,6 +242,19 @@ class ContactsViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Contacts
+
+    /*
+     * Why: the tab bar (or rail, or sidebar) stays in sight over a profile the web and iOS draw in the tab, so its taps
+     * count while Contatos is the tab, closing what it opened first, as a tab bar does.
+     */
+    private fun isTabShown(): Boolean {
+        val stack = navigator.backStack.value
+        return stack.getOrNull(stack.indexOf(Route.Groups) + 1) == Route.Contacts && Route.Groups in stack
+    }
+
+    private fun closeOverTab() {
+        navigator.popTo(navigator.backStack.value.indexOf(Route.Contacts) + 1)
+    }
 
     private fun zeroTotalOf(currency: GroupCurrency): PeopleTotal = PeopleTotal(
         currency = currency,

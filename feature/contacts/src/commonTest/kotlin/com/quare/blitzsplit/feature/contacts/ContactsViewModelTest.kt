@@ -661,7 +661,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null)),
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }
@@ -676,7 +676,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE, chargePersonKey = null)),
+            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -703,7 +703,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.OWES_YOU, chargePersonKey = null)),
+            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -742,13 +742,13 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null)),
+            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
             navigator.backStack.value,
         )
     }
 
     @Test
-    fun `GIVEN a profile over Contatos WHEN a late tap on the Saldos tab arrives THEN changes nothing`() =
+    fun `GIVEN a profile over Contatos WHEN the Saldos tab is tapped THEN closes it and opens Saldos`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -759,7 +759,38 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a profile over Contatos WHEN the avatar is tapped THEN closes it and opens the user profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnProfileClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Contacts, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Saldos in place of Contatos WHEN a late Contatos tab event arrives THEN changes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnBalancesTabClicked)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnGroupsTabClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }

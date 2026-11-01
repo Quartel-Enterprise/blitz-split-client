@@ -61,7 +61,7 @@ class HomePaneTest {
     @Test
     fun `GIVEN Saldos right above the groups WHEN reading the group beside them THEN there is none`() {
         // Given
-        prepareScenario(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null))
+        prepareScenario(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null))
 
         // When
         val groupId = navigator.backStack.value.groupBesideGroupsOrNull()

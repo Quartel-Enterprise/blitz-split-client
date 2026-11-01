@@ -223,19 +223,24 @@ class GlobalBalancesViewModel(
         openRouteChargeOnce()
     }
 
-    // Why: from Contatos' "Cobrar", the person's message right away, in the first currency they owe you in.
+    // Why: from Contatos' "Cobrar", the person's message right away, in the currency the profile showed.
     private fun openRouteChargeOnce() {
-        val key = route.chargePersonKey ?: return
+        val charge = route.charge ?: return
         if (isRouteChargeOpened) return
         isRouteChargeOpened = true
-        val person = balances.people.firstOrNull { it.key == key && it.netMinor > 0 } ?: return
+        val person = balances.findPersonOrNull(charge.personKey, charge.currency.code)?.takeIf { it.netMinor > 0 }
+        if (person == null) {
+            // Why: nothing to charge any more (a sync settled it): back to the profile rather than a stray Saldos.
+            if (isOnTop()) navigator.navigateBack()
+            return
+        }
         openCharge(idOf(person))
     }
 
-    // Why: opened for Contatos' "Cobrar", closing the message goes back to the profile it came from.
+    // Why: opened for Contatos' "Cobrar", Saldos is only that message: closing it goes back to the profile.
     private fun dismissCharge() {
         uiState.update { it.copy(charge = null) }
-        if (route.chargePersonKey != null && isOnTop()) navigator.navigateBack()
+        if (route.charge != null && isOnTop()) navigator.navigateBack()
     }
 
     // Why: a new filter opens its lone person's "Por grupo" afresh.

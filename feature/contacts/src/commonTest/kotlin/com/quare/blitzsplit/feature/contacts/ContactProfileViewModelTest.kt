@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
+import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
@@ -133,7 +134,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                Route.GlobalBalances(BalancesFilter.OWES_YOU, chargePersonKey = CARLA_KEY),
+                Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = BalancesCharge(CARLA_KEY, GroupCurrency.BRL)),
                 navigator.backStack.value.last(),
             )
             assertEquals(4, navigator.backStack.value.size)
@@ -218,7 +219,10 @@ class ContactProfileViewModelTest {
                 listOf(
                     Route.Groups,
                     Route.Contacts,
-                    Route.GlobalBalances(BalancesFilter.OWES_YOU, chargePersonKey = CARLA_KEY),
+                    Route.GlobalBalances(
+                        BalancesFilter.OWES_YOU,
+                        charge = BalancesCharge(CARLA_KEY, GroupCurrency.BRL),
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -250,7 +254,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null)),
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }

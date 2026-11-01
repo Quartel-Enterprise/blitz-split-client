@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.contacts.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.model.QrCode
 
 /*
@@ -23,7 +24,7 @@ data class ContactInviteUiState(
 ) {
     val selectedGroup: InviteGroupOption? get() = groups.firstOrNull { it.groupId == selectedGroupId }
 
-    val displayLink: String? get() = link?.substringAfter("://")?.substringBefore("?")
+    val displayLink: String? get() = link?.let(InviteLink::displayOf)
 
     // Why: no group yet, only "Novo grupo".
     val hasNoGroups: Boolean get() = isLoaded && groups.isEmpty()

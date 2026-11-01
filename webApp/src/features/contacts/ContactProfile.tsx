@@ -223,10 +223,9 @@ function BalanceSection({ presenter, state, contact }: { presenter: ContactProfi
   const name = contact.name
   const net = contact.netMinor
   const label = net > 0 ? t('contactProfile_owesYou', { name }) : net < 0 ? t('contactProfile_youOwe', { name }) : t('contactProfile_settled')
-  const isAllSettled = contact.groups.every((group) => group.amountMinor === 0)
-  const sub = isAllSettled
+  const sub = state.balanceNote === 'nothing-open'
     ? t('contactProfile_nothingOpen')
-    : state.isNetOfSeveralGroups
+    : state.balanceNote === 'offset-across-groups'
       ? t('contactProfile_netOfGroups', { count: contact.groups.length })
       : (contact.groups[0]?.name ?? '')
   const actions = [

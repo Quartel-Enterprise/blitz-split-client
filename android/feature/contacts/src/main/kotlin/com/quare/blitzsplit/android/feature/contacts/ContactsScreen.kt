@@ -53,12 +53,16 @@ fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
         detailPane = {
             val key = state.selectedKey
             when {
-                key != null -> ContactProfileScreen(
-                    route = Route.ContactProfile(key),
-                    isInPane = true,
-                )
+                key != null -> PickScopedPane(pick = key) {
+                    ContactProfileScreen(
+                        route = Route.ContactProfile(key),
+                        isInPane = true,
+                    )
+                }
 
-                state.isAgendaPicked -> AgendaScreen(isInPane = true)
+                state.isAgendaPicked -> PickScopedPane(pick = Route.ContactsAgenda) {
+                    AgendaScreen(isInPane = true)
+                }
 
                 else -> DetailPlaceholderPane()
             }

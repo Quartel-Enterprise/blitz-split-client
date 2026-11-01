@@ -106,6 +106,8 @@ class JsContactProfileState(
     val pendingMergeRequestedAt: Double?,
     val isCancellingMerge: Boolean,
     val isNetOfSeveralGroups: Boolean,
+    // Why: the line under the net: "nothing-open", "offset-across-groups" or "one-group".
+    val balanceNote: String,
     val showsOfflineNotice: Boolean,
     val isOnline: Boolean,
     val isHideConfirmOpen: Boolean,
@@ -282,6 +284,9 @@ private fun toJsContactProfileState(state: ContactProfileUiState): JsContactProf
     pendingMergeRequestedAt = state.pendingMerge?.requestedAt?.toDouble(),
     isCancellingMerge = state.isCancellingMerge,
     isNetOfSeveralGroups = state.isNetOfSeveralGroups,
+    balanceNote = state.balanceNote.name
+        .lowercase()
+        .replace('_', '-'),
     showsOfflineNotice = state.showsOfflineNotice,
     isOnline = state.isOnline,
     isHideConfirmOpen = state.isHideConfirmOpen,

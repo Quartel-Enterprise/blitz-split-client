@@ -62,17 +62,13 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
 /** Tablet and phone: the profile in the list's place, still in the home's frame with Contatos selected. */
 function ProfileOverList({ contacts, state, personKey }: { contacts: ContactsPresenter; state: JsContactsState; personKey: string }) {
   const profile = useContactProfile(personKey)
-  // Why: a tab or the avatar closes the profile first, as a tab bar does, since Contatos only acts while on top.
-  const fromContacts = (event: (presenter: ContactsPresenter) => void) => {
-    profile.presenter?.back()
-    event(contacts)
-  }
+  // Why: Contatos' tab events close the profile first, as a tab bar does (ContactsViewModel).
   return (
     <HomeShell
       selected="contacts"
       profile={state}
-      onTab={(tab) => fromContacts((p) => tabEvents[tab]?.(p))}
-      onProfile={() => fromContacts((p) => p.openProfile())}
+      onTab={(tab) => tabEvents[tab]?.(contacts)}
+      onProfile={() => contacts.openProfile()}
     >
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:px-8 sm:py-7">
         <h1 className="sr-only">{t('contacts_title')}</h1>

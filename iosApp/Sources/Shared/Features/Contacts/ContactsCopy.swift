@@ -43,11 +43,11 @@ enum ContactsCopy {
 
     /// Under the net: "Already offset across 3 groups", the one group's name, or nothing open anywhere.
     static func balanceNote(_ state: ContactProfileUiState, contact: Contact) -> String {
-        if state.isNetOfSeveralGroups {
-            return String(localized: "Already offset across \(contact.groups.count) groups")
+        switch state.balanceNote {
+        case .nothingOpen: return String(localized: "Nothing open in any group")
+        case .offsetAcrossGroups: return String(localized: "Already offset across \(contact.groups.count) groups")
+        default: return contact.groups.first?.groupName ?? ""
         }
-        if contact.net.amountMinor == 0 { return String(localized: "Nothing open in any group") }
-        return contact.groups.first?.groupName ?? ""
     }
 
     /// "Uses Blitz Split · 3 groups in common", or a guest's "Guest · not on the app yet".

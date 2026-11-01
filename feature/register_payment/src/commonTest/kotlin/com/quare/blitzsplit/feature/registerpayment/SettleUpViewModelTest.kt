@@ -143,7 +143,7 @@ class SettleUpViewModelTest {
             assertEquals(listOf(9_840L, 9_800L, 3_250L), recorded.map { it.amountMinor })
             assertTrue(recorded.all { it.method == SettlementMethod.CASH })
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null)),
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
             assertEquals(
@@ -164,7 +164,7 @@ class SettleUpViewModelTest {
             prepareScenario(recordGate = gate)
             viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
             navigator.popTo(1)
-            navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null))
+            navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
 
             // When
             gate.complete(Unit)
@@ -215,7 +215,7 @@ class SettleUpViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null)),
+            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -302,7 +302,7 @@ class SettleUpViewModelTest {
         settlements = FakeSettlementRepository().also { it.recordGate = recordGate }
         recordedPayments = InMemoryRecordedPaymentRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null))
+            it.navigate(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
             it.navigate(route)
         }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)

@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
@@ -101,7 +102,12 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnBackClicked -> if (isOwnRouteOnTop()) navigator.navigateBack()
 
             ContactProfileUiEvent.OnChargeClicked -> findContactIf { uiState.value.canCharge }?.let { contact ->
-                navigate(Route.GlobalBalances(BalancesFilter.OWES_YOU, chargePersonKey = contact.key))
+                navigate(
+                    Route.GlobalBalances(
+                        BalancesFilter.OWES_YOU,
+                        charge = BalancesCharge(contact.key, contact.net.currency),
+                    ),
+                )
             }
 
             ContactProfileUiEvent.OnReceivedClicked -> findContactIf { uiState.value.canReceive }?.let(::openSettleUp)
@@ -142,7 +148,7 @@ class ContactProfileViewModel(
             }
 
             ContactProfileUiEvent.OnViewBalancesClicked -> if (isShown()) {
-                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, chargePersonKey = null))
+                navigator.openHomeTab(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
             }
 
             ContactProfileUiEvent.OnSeeAllHistoryClicked -> emit(ContactProfileUiAction.ShowComingSoon)

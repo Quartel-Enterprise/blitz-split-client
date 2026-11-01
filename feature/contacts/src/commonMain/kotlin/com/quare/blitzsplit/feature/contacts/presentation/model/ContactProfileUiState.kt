@@ -63,6 +63,13 @@ data class ContactProfileUiState(
     val isNetOfSeveralGroups: Boolean
         get() = (contact?.groups?.size ?: 0) > 1
 
+    val balanceNote: ContactBalanceNote
+        get() = when {
+            contact == null || contact.groups.all { it.amountMinor == 0L } -> ContactBalanceNote.NOTHING_OPEN
+            isNetOfSeveralGroups -> ContactBalanceNote.OFFSET_ACROSS_GROUPS
+            else -> ContactBalanceNote.ONE_GROUP
+        }
+
     // Why: "Offline · o que você fizer entra na fila".
     val showsOfflineNotice: Boolean
         get() = !isOnline

@@ -150,7 +150,7 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
 - **Hidden contacts**: "Ocultar de Contatos" is a row of `hidden_contact` per person key (`user:<id>` or
-  `name:<folded name>`), synced by `updatedAt` like the keys, each user's own list across their devices. Showing
+  `name:<name in lower case, single spaces>`, no accent folding), synced by `updatedAt` like the keys, each user's own list across their devices. Showing
   again keeps the row with `isHidden = false`, so the change syncs; whether someone hidden comes back (a newer
   shared bill or an open balance) is worked out from the device's bills (`ContactBook`), never stored.
 - **Groups**: a group (`split_group`) and its members (`group_member`) sync by `updatedAt` like the keys: a newer

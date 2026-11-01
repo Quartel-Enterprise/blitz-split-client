@@ -2,12 +2,14 @@ package com.quare.blitzsplit.core.contacts.domain
 
 import com.quare.blitzsplit.core.contacts.contact
 import com.quare.blitzsplit.core.contacts.contactGroup
+import com.quare.blitzsplit.core.contacts.domain.model.MemberNameTakenException
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.AddContactToGroupUseCase
 import com.quare.blitzsplit.core.contacts.group
 import com.quare.blitzsplit.core.contacts.me
 import com.quare.blitzsplit.core.contacts.member
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -89,6 +91,37 @@ class AddContactToGroupUseCaseTest {
                     .single()
                     .second.avatarColor,
             )
+        }
+
+    @Test
+    fun `GIVEN another member called Carla WHEN adding the account Carla THEN adds her with a nickname`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group("ape", me("ape"), member("carla-ape", "Carla"))))
+
+        // When
+        val result = useCase(carla, groupId = "ape")
+
+        // Then
+        assertTrue(result.isSuccess)
+        val added = repository.addedMembers.single().second
+        assertEquals("Carla 2", added.name)
+        assertEquals("carla", added.userId)
+    }
+
+    @Test
+    fun `GIVEN an account called Diego in the group WHEN adding the guest Diego THEN fails and adds nobody`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group("ape", me("ape"), member("diego-ape", "Diego", userId = "diego"))),
+            )
+
+            // When
+            val result = useCase(diego, groupId = "ape")
+
+            // Then
+            assertIs<MemberNameTakenException>(result.exceptionOrNull())
+            assertTrue(repository.addedMembers.isEmpty())
         }
 
     @Test
@@ -197,6 +230,7 @@ class AddContactToGroupUseCaseTest {
             repository = repository,
             observeGroup = observeGroup,
             addMember = AddMemberUseCase(repository, observeGroup) { now },
+            checkMemberName = CheckMemberNameUseCase(),
             currentTimeMillis = { now },
         )
     }

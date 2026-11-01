@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
 import com.quare.blitzsplit.core.navigation.openBesideGroups
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -466,15 +467,12 @@ class GroupsViewModel(
 
     // Why: Saldos and Contatos, drawn over the groups, first close a screen the groups opened, as a tab bar does.
     private fun openTab(tab: Route) {
-        val stack = navigator.backStack.value
-        val groupsIndex = stack.indexOf(Route.Groups)
-        if (groupsIndex < 0 || stack.getOrNull(groupsIndex + 1)?.let { it::class } == tab::class) return
+        if (Route.Groups !in navigator.backStack.value) return
         closeSearch()
-        navigator.popToGroups()
-        navigator.navigate(tab)
+        navigator.openHomeTab(tab)
     }
 
-    private fun toBalancesTab(filter: BalancesFilter): Route = Route.GlobalBalances(filter, chargePersonKey = null)
+    private fun toBalancesTab(filter: BalancesFilter): Route = Route.GlobalBalances(filter, charge = null)
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
     private fun openToPay() {
