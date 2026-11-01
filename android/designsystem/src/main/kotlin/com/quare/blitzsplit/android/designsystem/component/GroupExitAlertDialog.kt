@@ -35,7 +35,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 
 /*
  * Why: what "Sair do grupo" and "Apagar grupo" open (5.3c to 5.3f), and "Grupo apagado" (6.1k), over either tab of the
@@ -43,7 +43,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
  */
 @Composable
 fun GroupExitAlertDialog(
-    exit: GroupExitUiState,
+    exit: GroupExitState,
     money: MoneyFormatter,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,

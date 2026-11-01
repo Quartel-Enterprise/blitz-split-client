@@ -3,7 +3,7 @@ package com.quare.blitzsplit.core.sync.exit
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -28,8 +28,8 @@ class GroupExitController(
     private val onExited: () -> Unit,
     private val showError: suspend (isDelete: Boolean) -> Unit,
 ) {
-    val state: StateFlow<GroupExitUiState>
-        field = MutableStateFlow(GroupExitUiState.idle)
+    val state: StateFlow<GroupExitState>
+        field = MutableStateFlow(GroupExitState.idle)
 
     private var target: GroupExitTarget? = null
 

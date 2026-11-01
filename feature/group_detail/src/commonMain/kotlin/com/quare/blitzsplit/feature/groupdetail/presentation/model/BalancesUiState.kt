@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 
 // Why: "Saldos", the group's tab with who owes whom, each pair once and already netted.
@@ -16,7 +16,7 @@ data class BalancesUiState(
     // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento closed over this screen.
     val recordedPayment: PaymentNotice?,
     // Why: "Sair do grupo" and "Apagar grupo", and "Grupo apagado".
-    val exit: GroupExitUiState,
+    val exit: GroupExitState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {

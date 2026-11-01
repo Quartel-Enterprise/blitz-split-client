@@ -4,7 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.faceOf
@@ -67,7 +67,7 @@ internal class GroupScreen(
         showError = showExitError,
     )
 
-    val exitState: StateFlow<GroupExitUiState> = exit.state
+    val exitState: StateFlow<GroupExitState> = exit.state
 
     private var group: Group? = null
     private var balances = GroupBalances(

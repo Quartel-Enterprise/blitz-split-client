@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
@@ -91,7 +91,7 @@ class GroupsViewModel(
                 filterQuery = "",
                 isRefreshing = false,
                 deletedGroupNotice = null,
-                exit = GroupExitUiState.idle,
+                exit = GroupExitState.idle,
                 exitGroupId = null,
             ),
         )

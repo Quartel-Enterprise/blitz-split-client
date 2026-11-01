@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 
 data class GroupDetailUiState(
@@ -17,7 +17,7 @@ data class GroupDetailUiState(
      */
     val showsBillDeletedNotice: Boolean,
     // Why: "Sair do grupo" and "Apagar grupo", and "Grupo apagado".
-    val exit: GroupExitUiState,
+    val exit: GroupExitState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {

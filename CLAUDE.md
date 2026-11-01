@@ -160,7 +160,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     once nobody owes anything ("Ainda há saldo em aberto" lists the pairs, with "Ver saldos"), for everyone, with its
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
     even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
-    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitUiState.deletedNotice`), once on top again if
+    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again if
     a bill covered them; any other screen of the group (Membros, Convidar) just closes, and the home says "Carla
     apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",

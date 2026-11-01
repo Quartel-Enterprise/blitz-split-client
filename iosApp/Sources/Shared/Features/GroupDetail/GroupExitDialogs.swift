@@ -84,7 +84,7 @@ enum GroupExitCopy {
 extension View {
     /// What "Leave group" and "Delete group" open (5.3c to 5.3f), and "Group deleted" (6.1k), over the group's tab.
     /// While the server answers, the alert gives way to a spinner over the screen.
-    func groupExitDialogs(exit: GroupExitUiState?, currency: GroupCurrency?, actions: GroupScreenActions) -> some View {
+    func groupExitDialogs(exit: GroupExitState?, currency: GroupCurrency?, actions: GroupScreenActions) -> some View {
         modifier(
             GroupExitDialogs(
                 exit: exit,
@@ -100,7 +100,7 @@ extension View {
 extension View {
     /// The same dialogs over the home, from a row's ⋯ menu or long press, which never shows "Group deleted".
     func groupExitDialogs(
-        exit: GroupExitUiState,
+        exit: GroupExitState,
         currency: GroupCurrency?,
         onConfirm: @escaping () -> Void,
         onDismiss: @escaping () -> Void,
@@ -118,7 +118,7 @@ extension View {
 }
 
 private struct GroupExitDialogs: ViewModifier {
-    let exit: GroupExitUiState?
+    let exit: GroupExitState?
     let currency: GroupCurrency?
     let onConfirm: () -> Void
     let onDismiss: () -> Void
