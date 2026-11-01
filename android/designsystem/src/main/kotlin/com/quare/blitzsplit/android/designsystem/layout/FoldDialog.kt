@@ -5,16 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.LayoutDirection
@@ -76,7 +69,7 @@ private fun FoldHalfPane(
     val fold = rememberFoldLayout()
     val isTopHalf = placement == DialogPlacement.TopHalf
     val split = if (isTopHalf) fold.tabletopSplit else fold.bookSplit
-    var originOnScreen by remember { mutableStateOf(Offset.Zero) }
+    val hingeGap = rememberLayoutHingeGap()
     Box(modifier = Modifier.fillMaxSize()) {
         if (onScrimClick != null) {
             Spacer(
@@ -91,15 +84,15 @@ private fun FoldHalfPane(
             },
             modifier = Modifier
                 .fillMaxSize()
-                .onPlaced { coordinates -> originOnScreen = coordinates.positionOnScreen() },
+                .then(hingeGap.modifier),
         ) { measurables, constraints ->
             val width = constraints.maxWidth
             val height = constraints.maxHeight
-            val origin = if (isTopHalf) originOnScreen.y else originOnScreen.x
-            val gapRange = halvesGapOf(
+            val gapRange = hingeGap.gapOf(
+                density = this,
+                split = split,
+                isSideBySide = !isTopHalf,
                 length = if (isTopHalf) height else width,
-                band = split?.let { it.bandStart.toPx() - origin..it.bandEnd.toPx() - origin },
-                gap = HingeBand.roundToPx(),
             )
             val half = when {
                 isTopHalf -> IntRect(
