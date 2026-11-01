@@ -149,9 +149,16 @@ private fun ProfileSingleColumn(
                 state = state,
                 onEvent = onEvent,
             )
-            ProfileSettingsContent(
+            ProfileKeysContent(
                 state = state,
+                onEvent = onEvent,
+            )
+            AboutSection(
                 appVersion = appVersion,
+                onEvent = onEvent,
+            )
+            ProfileSignOutContent(
+                state = state,
                 onEvent = onEvent,
             )
         }
@@ -159,8 +166,9 @@ private fun ProfileSingleColumn(
 }
 
 /*
- * Why: lying down there is little height, so who you are and your account go left, the keys and settings right, each
- * column scrolling on its own: a 330dp column on a phone, 380dp in a tablet's centered container.
+ * Why: lying down there is little height, so who you are, your account and the privacy rows go left, the keys,
+ * preferences and signing out right, each column scrolling on its own: a 330dp column on a phone, 380dp in a tablet's
+ * centered container.
  */
 @Composable
 private fun ProfileTwoColumnLayout(
@@ -190,6 +198,10 @@ private fun ProfileTwoColumnLayout(
                     state = state,
                     onEvent = onEvent,
                 )
+                AboutSection(
+                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
             }
             Column(
                 modifier = Modifier
@@ -197,9 +209,12 @@ private fun ProfileTwoColumnLayout(
                     .profileColumn(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                ProfileSettingsContent(
+                ProfileKeysContent(
                     state = state,
-                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
+                ProfileSignOutContent(
+                    state = state,
                     onEvent = onEvent,
                 )
             }
@@ -207,7 +222,7 @@ private fun ProfileTwoColumnLayout(
     }
 }
 
-// Why: a book (and a tabletop lying down) splits on the hinge: who you are and your account before it, the rest after.
+// Why: a book (and a tabletop lying down) splits on the hinge, the columns of lying down a half each.
 @Composable
 private fun ProfileBookLayout(
     state: ProfileUiState,
@@ -227,6 +242,10 @@ private fun ProfileBookLayout(
                     state = state,
                     onEvent = onEvent,
                 )
+                AboutSection(
+                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
             }
         },
         end = {
@@ -237,9 +256,12 @@ private fun ProfileBookLayout(
                     .profileColumn(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                ProfileSettingsContent(
+                ProfileKeysContent(
                     state = state,
-                    appVersion = appVersion,
+                    onEvent = onEvent,
+                )
+                ProfileSignOutContent(
+                    state = state,
                     onEvent = onEvent,
                 )
             }
@@ -268,9 +290,8 @@ private fun ProfileIdentityContent(
 }
 
 @Composable
-private fun ProfileSettingsContent(
+private fun ProfileKeysContent(
     state: ProfileUiState,
-    appVersion: String,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     PaymentKeysSection(
@@ -281,10 +302,13 @@ private fun ProfileSettingsContent(
         state = state,
         onEvent = onEvent,
     )
-    AboutSection(
-        appVersion = appVersion,
-        onEvent = onEvent,
-    )
+}
+
+@Composable
+private fun ProfileSignOutContent(
+    state: ProfileUiState,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
     SignOutButton(
         state = state,
         onEvent = onEvent,
