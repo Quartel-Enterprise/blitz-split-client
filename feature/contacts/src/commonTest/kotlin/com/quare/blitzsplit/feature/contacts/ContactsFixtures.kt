@@ -156,6 +156,7 @@ internal fun owes(
             weight = amountMinor,
         ),
     ),
+    items = null,
     spentAt = spentAt,
     isPending = false,
     updatedAt = updatedAt,
