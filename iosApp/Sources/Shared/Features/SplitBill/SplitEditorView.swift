@@ -76,6 +76,7 @@ private struct DefaultSplitNotice: View {
         case .amount: String(localized: "This bill splits by amounts.")
         case .percent: String(localized: "This bill splits by percentage.")
         case .shares: String(localized: "This bill splits by shares.")
+        case .items: String(localized: "This bill splits by items.")
         default: String(localized: "This bill splits equally.")
         }
         return "\(base) \(now)"
@@ -291,6 +292,19 @@ struct PhoneSplitEditor: View {
                 .disabled(model.state.splitEditor?.addsUp != true)
             }
         }
+        .navigationDestination(isPresented: itemsShown) {
+            PhoneItemsEditor(model: model)
+        }
+    }
+
+    /// Items (Dividir's fifth mode) pushes "Bill items"; its back goes back to Split.
+    private var itemsShown: Binding<Bool> {
+        Binding(
+            get: { model.state.itemsEditor != nil },
+            set: { shown in
+                if !shown, model.current.itemsEditor != nil { model.send(SplitBillUiEventOnItemsDismissed.shared) }
+            },
+        )
     }
 
     @ViewBuilder
