@@ -3,7 +3,6 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
-import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
@@ -32,6 +31,10 @@ class JsRegisterPaymentState(
     val from: JsPaymentPerson?,
     val to: JsPaymentPerson?,
     val debtMinor: Double,
+    // Why: "Por grupo" of a settling up across groups from the global Saldos; empty for a pair of one group.
+    val groupParts: Array<JsPersonGroup>,
+    // Why: across several groups only the whole net settles, so the amount can't be changed.
+    val isAmountLocked: Boolean,
     val amountText: String,
     // Why: the SettlementMethod's code: "pix", "cash", "transfer" or "other".
     val method: String,
@@ -55,7 +58,8 @@ class JsRegisterPaymentState(
 class RegisterPaymentPresenter(
     route: JsRoute,
 ) {
-    private val paymentRoute = route.route as Route.RegisterPayment
+    // Why: a pair of one group ("register-payment") or someone across groups ("settle-up").
+    private val paymentRoute = route.route
     private val holder = ViewModelHolder(RegisterPaymentViewModel::class) {
         KoinPlatform.getKoin().get { parametersOf(paymentRoute) }
     }
@@ -69,6 +73,8 @@ class RegisterPaymentPresenter(
                 from = state.from?.let(::toJsPaymentPerson),
                 to = state.to?.let(::toJsPaymentPerson),
                 debtMinor = state.debtMinor.toDouble(),
+                groupParts = state.groupParts.map(::toJsPersonGroup).toTypedArray(),
+                isAmountLocked = state.isAmountLocked,
                 amountText = state.amountText,
                 method = state.method.code,
                 paidAt = state.paidAt.toDouble(),

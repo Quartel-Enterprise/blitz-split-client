@@ -33,6 +33,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -1276,6 +1277,7 @@ class RegisterPaymentViewModelTest {
         avatarColor = color,
         isMe = isMe,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
 
@@ -1355,6 +1357,7 @@ class RegisterPaymentViewModelTest {
                 settlements,
                 InMemoryRecordedPaymentRepository(),
             ) { clockMillis },
+            settleUp = { _, _, _, _, _ -> error("unused") },
             currentTimeMillis = { clockMillis },
             currentTimeZone = { timeZone },
             decimalSeparator = { decimalSeparator },
@@ -1364,6 +1367,7 @@ class RegisterPaymentViewModelTest {
             } else {
                 ObserveGroupBalances { balancesNeverAnswer }
             },
+            observePeopleBalances = { emptyFlow() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

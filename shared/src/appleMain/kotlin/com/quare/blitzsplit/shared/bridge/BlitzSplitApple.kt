@@ -10,6 +10,7 @@ import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGro
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
+import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -104,6 +105,13 @@ object BlitzSplitApple : KoinComponent {
 
     fun createRegisterPaymentViewModel(route: Route.RegisterPayment): ViewModelHolder<RegisterPaymentViewModel> =
         ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }
+
+    // Why: "Acertar" or "Recebi" of the global Saldos open Registrar pagamento across the person's groups.
+    fun createSettleUpViewModel(route: Route.SettleUp): ViewModelHolder<RegisterPaymentViewModel> =
+        ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }
+
+    fun createGlobalBalancesViewModel(route: Route.GlobalBalances): ViewModelHolder<GlobalBalancesViewModel> =
+        ViewModelHolder(GlobalBalancesViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
         ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }

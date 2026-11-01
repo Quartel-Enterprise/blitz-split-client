@@ -28,6 +28,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.GroupsLayout
@@ -191,13 +192,65 @@ class GroupsViewModelTest {
             backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
             viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<GroupsUiAction>(3) { GroupsUiAction.ShowComingSoon }, actions)
+            assertEquals(List<GroupsUiAction>(2) { GroupsUiAction.ShowComingSoon }, actions)
         }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Saldos tab THEN opens Saldos with everyone over the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a group open over the groups WHEN tapping the Saldos tab THEN closes it and opens Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.GroupDetail("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Saldos open WHEN tapping the Grupos tab THEN goes back to the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnGroupsTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Saldos already open WHEN tapping its tab again THEN stays as it is`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.GlobalBalances(BalancesFilter.YOU_OWE))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN a group someone else deleted WHEN the home is on top THEN says so once`() = runTest(testDispatcher) {
@@ -1838,7 +1891,7 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN something to pay WHEN tapping A pagar THEN says the balances are coming soon`() =
+    fun `GIVEN one person to pay WHEN tapping A pagar THEN opens settling up with them over Voce deve`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1852,40 +1905,73 @@ class GroupsViewModelTest {
                     ),
                 ),
             )
-            val actions = mutableListOf<GroupsUiAction>()
-            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnToPayClicked)
 
             // Then
-            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GlobalBalances(BalancesFilter.YOU_OWE),
+                    Route.SettleUp(
+                        personKey = "name:ana",
+                        currency = GroupCurrency.BRL,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
         }
 
     @Test
-    fun `GIVEN something to receive WHEN tapping A receber THEN says the balances are coming soon`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = listOf(trio()),
-                storedExpenses = listOf(
-                    bill(
-                        "dinner",
-                        paidBy = "Pierre",
-                        amountMinor = 9000L,
-                        splitOver = everyone,
-                    ),
+    fun `GIVEN two people to pay WHEN tapping A pagar THEN opens Saldos on Voce deve`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "dinner",
+                    paidBy = "Ana",
+                    amountMinor = 9000L,
+                    splitOver = everyone,
                 ),
-            )
-            val actions = mutableListOf<GroupsUiAction>()
-            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+                bill(
+                    "lunch",
+                    paidBy = "Bruno",
+                    amountMinor = 6000L,
+                    splitOver = everyone,
+                ),
+            ),
+        )
 
-            // When
-            viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnToPayClicked)
 
-            // Then
-            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
-        }
+        // Then
+        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN something to receive WHEN tapping A receber THEN opens Saldos on Te devem`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill(
+                    "dinner",
+                    paidBy = "Pierre",
+                    amountMinor = 9000L,
+                    splitOver = everyone,
+                ),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.OWES_YOU)), navigator.backStack.value)
+    }
 
     @Test
     fun `GIVEN no group yet WHEN tapping Rachar conta THEN opens Novo grupo`() = runTest(testDispatcher) {
@@ -2372,6 +2458,7 @@ class GroupsViewModelTest {
         avatarColor = color,
         isMe = isMe,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
 

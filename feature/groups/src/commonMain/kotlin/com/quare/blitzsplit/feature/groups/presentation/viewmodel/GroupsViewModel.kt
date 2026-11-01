@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
@@ -20,6 +21,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
@@ -300,10 +302,11 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSplitBillClicked -> openSplitBill()
 
-            // Why: the global Saldos (flow 8) opens already filtered once it exists; until then, "Em breve".
-            GroupsUiEvent.OnToReceiveClicked -> if (uiState.value.summary.canOpenToReceive) showComingSoon()
+            GroupsUiEvent.OnToReceiveClicked -> if (uiState.value.summary.canOpenToReceive) {
+                openBalancesTab(BalancesFilter.OWES_YOU)
+            }
 
-            GroupsUiEvent.OnToPayClicked -> if (uiState.value.summary.canOpenToPay) showComingSoon()
+            GroupsUiEvent.OnToPayClicked -> if (uiState.value.summary.canOpenToPay) openToPay()
 
             is GroupsUiEvent.OnShowSettledChanged -> uiState.update { it.copy(showsSettledGroups = event.isShown) }
 
@@ -327,7 +330,10 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
 
-            GroupsUiEvent.OnBalancesTabClicked,
+            GroupsUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
+
+            GroupsUiEvent.OnGroupsTabClicked -> popToGroups()
+
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
             -> showComingSoon()
@@ -351,6 +357,10 @@ class GroupsViewModel(
     // Why: what iOS's search tab opened goes with it, back to the groups.
     private fun leaveSearchTab() {
         closeSearch()
+        popToGroups()
+    }
+
+    private fun popToGroups() {
         val stack = navigator.backStack.value
         val groupsIndex = stack.indexOf(Route.Groups)
         if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)
@@ -402,6 +412,44 @@ class GroupsViewModel(
         if (layout == uiState.value.layout) return
         uiState.update { it.copy(layout = layout) }
         viewModelScope.launch { updateGroupsLayout(layout) }
+    }
+
+    /*
+     * Why: Saldos is the tab next to Grupos, drawn over the groups; from a screen the groups opened (iOS keeps the tab
+     * bar over it), it closes that screen first, as a tab bar does.
+     */
+    private fun openBalancesTab(filter: BalancesFilter) {
+        val stack = navigator.backStack.value
+        val groupsIndex = stack.indexOf(Route.Groups)
+        if (groupsIndex < 0 || stack.getOrNull(groupsIndex + 1) is Route.GlobalBalances) return
+        closeSearch()
+        navigator.popTo(groupsIndex + 1)
+        navigator.navigate(Route.GlobalBalances(filter))
+    }
+
+    // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
+    private fun openToPay() {
+        if (!isOnTop()) return
+        openBalancesTab(BalancesFilter.YOU_OWE)
+        val toPay = PeopleBalances
+            .of(
+                groups = groupsWithMoney.map { it.group },
+                money = groupsWithMoney.associate { item ->
+                    item.group.id to GroupMoney(
+                        expenses = item.expenses,
+                        settlements = item.settlements,
+                        pendingDeletionCount = item.pendingDeletionCount,
+                    )
+                },
+            ).people
+            .filter { it.netMinor < 0 }
+        val person = toPay.singleOrNull() ?: return
+        navigator.navigate(
+            Route.SettleUp(
+                personKey = person.key,
+                currency = person.currency,
+            ),
+        )
     }
 
     private fun showComingSoon() {
