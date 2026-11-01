@@ -44,18 +44,39 @@ final class AppModel {
     }
 
     /// The entry a sheet shows instead of a pushed screen (a key or a bill on iPad and Mac, deleting the
-    /// account): the top one, or the one under it while a second sheet stacks over it.
+    /// account): the top one, or the one under it while a second sheet stacks over it or a screen is pushed inside it.
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {
             if isSheetStacked { return backStack[backStack.count - 2] }
+            if sheetPushCount > 0 { return backStack[backStack.count - 1 - sheetPushCount] }
             guard backStack.count > 1, let top = backStack.last, top.presentsAsSheet else { return nil }
             return top
         }
         set {
             guard newValue == nil, sheet != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(backStack.count - (isSheetStacked ? 2 : 1)))
+            let shown = isSheetStacked ? 2 : 1 + sheetPushCount
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - shown))
         }
+    }
+
+    /// The entries pushed inside the sheet (the default split inside Edit group's): its own NavigationStack's path.
+    /// Its back button shortens it, and the shared back stack catches up.
+    var sheetPath: [AppRoute] {
+        get { Array(backStack.suffix(sheetPushCount)) }
+        set {
+            guard newValue.count < sheetPushCount else { return }
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - sheetPushCount + newValue.count))
+        }
+    }
+
+    /// How many entries on top are pushed inside the sheet right under them.
+    private var sheetPushCount: Int {
+        let pushed = backStack.reversed().prefix { $0.pushesInSheet }.count
+        guard pushed > 0, backStack.count > pushed + 1, backStack[backStack.count - 1 - pushed].presentsAsSheet else {
+            return 0
+        }
+        return pushed
     }
 
     /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet on iPad and Mac.
@@ -75,6 +96,7 @@ final class AppModel {
 
     private var modalCount: Int {
         if isSheetStacked { return 2 }
+        if sheetPushCount > 0 { return 1 + sheetPushCount }
         return sheet == nil && cover == nil ? 0 : 1
     }
 

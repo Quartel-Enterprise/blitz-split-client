@@ -161,6 +161,24 @@ private struct EditGroupForm: View {
                         }
                     }
                 }
+                // Pushes "Default split" inside this sheet, which keeps what is typed here
+                Button {
+                    model.send(EditGroupUiEventOnDefaultSplitClicked.shared)
+                } label: {
+                    HStack(spacing: 8) {
+                        LabeledContent("Default split") {
+                            Text(verbatim: DefaultSplitCopy.modeLabel(state.defaultSplitMode))
+                        }
+                        Image(systemName: "chevron.forward")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                            .accessibilityHidden(true)
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .disabled(state.isSaving)
+                .accessibilityHint("How new expenses split")
             } footer: {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("The currency doesn’t change after the first expense.")

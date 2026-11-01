@@ -31,6 +31,9 @@ enum AppRoute: Hashable, Identifiable {
     case billDetail(RouteBillDetail)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case editGroup(RouteEditGroup)
+    /// The group's default split, pushed inside Edit group's sheet; holds the Kotlin route itself, which its ViewModel
+    /// reads the group from.
+    case defaultSplit(RouteDefaultSplit)
     /// The group's statistics; holds the Kotlin route itself, which its ViewModel reads the group from.
     case groupStats(RouteGroupStats)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite code from.
@@ -62,6 +65,7 @@ enum AppRoute: Hashable, Identifiable {
         case let splitBill as RouteSplitBill: self = .splitBill(splitBill)
         case let billDetail as RouteBillDetail: self = .billDetail(billDetail)
         case let editGroup as RouteEditGroup: self = .editGroup(editGroup)
+        case let defaultSplit as RouteDefaultSplit: self = .defaultSplit(defaultSplit)
         case let groupStats as RouteGroupStats: self = .groupStats(groupStats)
         case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
         case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
@@ -100,6 +104,12 @@ enum AppRoute: Hashable, Identifiable {
         default:
             return false
         }
+    }
+
+    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet.
+    var pushesInSheet: Bool {
+        if case .defaultSplit = self { return true }
+        return false
     }
 
     /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.

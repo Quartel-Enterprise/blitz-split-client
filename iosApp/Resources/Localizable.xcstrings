@@ -9538,6 +9538,568 @@
           }
         }
       }
+    },
+    "Default split" : {
+      "comment" : "Edit group's row and the title of the screen of how the group's new expenses split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Divisão padrão"
+          }
+        }
+      }
+    },
+    "How new expenses split" : {
+      "comment" : "Accessibility hint of Edit group's Default split row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como as despesas novas se dividem"
+          }
+        }
+      }
+    },
+    "%@ · for new expenses" : {
+      "comment" : "Default split: under the title; %@ is the group's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · para as despesas novas"
+          }
+        }
+      }
+    },
+    "Couldn’t save the split. Try again." : {
+      "comment" : "Default split: the device couldn't save it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar a divisão. Tente de novo."
+          }
+        }
+      }
+    },
+    "Incomes stay on this %@ only. The group sees only the percentages." : {
+      "comment" : "Default split, By income: %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As rendas ficam só neste %@. O grupo vê só as porcentagens."
+          }
+        }
+      }
+    },
+    "No internet: the new split holds on this %@ now and reaches the others once it reconnects." : {
+      "comment" : "Default split offline; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: a divisão nova vale neste %@ agora e chega aos outros quando ele reconectar."
+          }
+        }
+      }
+    },
+    "Counts for new expenses. Each expense can change it on the spot. Expenses already added don't change." : {
+      "comment" : "Default split: what it changes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vale para as despesas novas. Em cada despesa dá para mudar na hora. As despesas já lançadas não mudam."
+          }
+        }
+      }
+    },
+    "%@ of each bill" : {
+      "comment" : "Default split, Shares: %@ is the person's percentage of every bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ de cada conta"
+          }
+        }
+      }
+    },
+    "%@ of each %@" : {
+      "comment" : "Default split, Percentage: the person's part of the example bill, then the example bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ de cada %@"
+          }
+        }
+      }
+    },
+    "Income per month · %@ of each bill" : {
+      "comment" : "Default split, By income: %@ is the person's percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renda por mês · %@ de cada conta"
+          }
+        }
+      }
+    },
+    "1 of %lld · %@" : {
+      "comment" : "Default split, Equal: one of how many people, then the percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 de %lld · %@"
+          }
+        }
+      }
+    },
+    "Out of the split by default" : {
+      "comment" : "Default split, Equal: someone unchecked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fica de fora por padrão"
+          }
+        }
+      }
+    },
+    "%@ · just joined" : {
+      "comment" : "Default split: someone who joined since it was saved; %@ is their line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · acabou de entrar"
+          }
+        }
+      }
+    },
+    "Income of %@" : {
+      "comment" : "Default split: the income field of a person",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renda de %@"
+          }
+        }
+      }
+    },
+    "The sum is %@. %@ missing." : {
+      "comment" : "Default split: the percentages add up to less than 100",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A soma dá %@. Faltam %@."
+          }
+        }
+      }
+    },
+    "The sum is %@. %@ over." : {
+      "comment" : "Default split: the percentages add up to more than 100",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A soma dá %@. Passou %@."
+          }
+        }
+      }
+    },
+    "On a %@ bill: %@ each" : {
+      "comment" : "Default split, Equal: the example bill and each one's part",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numa conta de %@: %@ para cada um"
+          }
+        }
+      }
+    },
+    "On a %@ bill:" : {
+      "comment" : "Default split: the example bill, each one's part follows",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numa conta de %@:"
+          }
+        }
+      }
+    },
+    "Adjust the percentages until they add up to %@ to save." : {
+      "comment" : "Default split: why Save is disabled; %@ is 100%",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajuste as porcentagens até somar %@ para salvar."
+          }
+        }
+      }
+    },
+    "Whoever isn't in an expense leaves it when splitting." : {
+      "comment" : "Default split, Equal: under the example",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem não estiver numa despesa sai dela na hora de rachar."
+          }
+        }
+      }
+    },
+    "Percentage" : {
+      "comment" : "A way the group's default split splits",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porcentagem"
+          }
+        }
+      }
+    },
+    "By income" : {
+      "comment" : "A way the group's default split splits: each one's part follows their income",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pela renda"
+          }
+        }
+      }
+    },
+    "E.g. 3 to 1. Good for couples and families" : {
+      "comment" : "Default split: under Shares",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ex.: 3 para 1. Bom para casais e famílias"
+          }
+        }
+      }
+    },
+    "E.g. %@ and %@" : {
+      "comment" : "Default split: under Percentage; two percentages",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ex.: %@ e %@"
+          }
+        }
+      }
+    },
+    "Each one's part follows their income" : {
+      "comment" : "Default split: under By income",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A parte de cada um segue a renda"
+          }
+        }
+      }
+    },
+    "Everyone pays the same part" : {
+      "comment" : "Default split: under Equal",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos pagam a mesma parte"
+          }
+        }
+      }
+    },
+    "Each one's income" : {
+      "comment" : "Default split, By income: above the people",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renda de cada um"
+          }
+        }
+      }
+    },
+    "Who's in the split" : {
+      "comment" : "Default split, Equal: above the people",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem entra na divisão"
+          }
+        }
+      }
+    },
+    "%@ joined the group" : {
+      "comment" : "Default split: %@ is the name of who joined since it was saved",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entrou no grupo"
+          }
+        }
+      }
+    },
+    "They start with 1 share" : {
+      "comment" : "Default split: one person who joined starts with one share",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Começa com 1 parte"
+          }
+        }
+      }
+    },
+    "Each one starts with 1 share" : {
+      "comment" : "Default split: several people who joined start with one share each",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada um começa com 1 parte"
+          }
+        }
+      }
+    },
+    "They start at %@" : {
+      "comment" : "Default split: one person who joined starts at 0%",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Começa com %@"
+          }
+        }
+      }
+    },
+    "Each one starts at %@" : {
+      "comment" : "Default split: several people who joined start at 0%",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada um começa com %@"
+          }
+        }
+      }
+    },
+    "They're already in the split" : {
+      "comment" : "Default split, Equal: one person who joined is in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já entra na divisão"
+          }
+        }
+      }
+    },
+    "%@. %@; adjust if needed." : {
+      "comment" : "Default split: who joined, then how they start",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@. %@; ajuste se precisar."
+          }
+        }
+      }
+    },
+    "%lld to %lld" : {
+      "comment" : "Default split by shares between two people, as in 3 to 1",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld para %2$lld"
+          }
+        }
+      }
+    },
+    "without %@" : {
+      "comment" : "Default split, Equal: who it leaves out",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sem %@"
+          }
+        }
+      }
+    },
+    "The default lives in Edit group › Default split. Bills already added don't change." : {
+      "comment" : "Split, for a group with a default split: under the modes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O padrão fica em Editar grupo › Divisão padrão. As contas já lançadas não mudam."
+          }
+        }
+      }
+    },
+    "Group default" : {
+      "comment" : "The bill's split row: it follows the group's default split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padrão do grupo"
+          }
+        }
+      }
+    },
+    "Back to default" : {
+      "comment" : "Split: go back to the group's default split for this bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voltar ao padrão"
+          }
+        }
+      }
+    },
+    "Different from the group's default" : {
+      "comment" : "Split: this bill no longer follows the group's default split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diferente do padrão do grupo"
+          }
+        }
+      }
+    },
+    "%@ default: %@" : {
+      "comment" : "Split: the group's name, then its default split, as in Shares, 3 to 1",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padrão do %@: %@"
+          }
+        }
+      }
+    },
+    "It came this way. Changing it here only counts for this bill." : {
+      "comment" : "Split: the bill opened with the group's default split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já veio assim. Mudar aqui vale só para esta conta."
+          }
+        }
+      }
+    },
+    "%@'s default is %@." : {
+      "comment" : "Split: the group's name, then its default split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O padrão do %@ é %@."
+          }
+        }
+      }
+    },
+    "This bill splits by amounts." : {
+      "comment" : "Split: this bill's way, off the group's default",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta fica por valores."
+          }
+        }
+      }
+    },
+    "This bill splits by percentage." : {
+      "comment" : "Split: this bill's way, off the group's default",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta fica por porcentagem."
+          }
+        }
+      }
+    },
+    "This bill splits by shares." : {
+      "comment" : "Split: this bill's way, off the group's default",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta fica por partes."
+          }
+        }
+      }
+    },
+    "This bill splits equally." : {
+      "comment" : "Split: this bill's way, off the group's default",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta fica igual."
+          }
+        }
+      }
+    },
+    "Several people joined the group" : {
+      "comment" : "Default split: %@ are the names of the people who joined since it was saved",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ joined the group"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entraram no grupo"
+          }
+        }
+      }
+    },
+    "Several people are already in the split" : {
+      "comment" : "Default split: the people who joined since it was saved are in it",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They're already in the split"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já entram na divisão"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

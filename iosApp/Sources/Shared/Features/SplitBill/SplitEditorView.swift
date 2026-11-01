@@ -25,6 +25,63 @@ private struct SplitModePicker: View {
     }
 }
 
+/// Above the modes for a group with a default split (7.2f, 7.2h): where the split came from, or that this bill changed
+/// it, with "Back to default".
+private struct DefaultSplitNotice: View {
+    let split: BillDefaultSplit
+    let editor: SplitEditor
+    let state: SplitBillUiState
+    let send: (any SplitBillUiEvent) -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "chart.pie")
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: title)
+                    .font(.subheadline.weight(.semibold))
+                Text(verbatim: detail)
+                    .font(.footnote)
+            }
+            Spacer(minLength: 8)
+            if state.isSplitEditorOffDefault {
+                Button("Back to default") {
+                    send(SplitBillUiEventOnSplitResetToDefault.shared)
+                }
+                .buttonStyle(.borderless)
+                .font(.footnote.weight(.semibold))
+            }
+        }
+        .foregroundStyle(state.isSplitEditorOffDefault ? Color.primary : Palette.onInfoContainer)
+        .accessibilityElement(children: .contain)
+    }
+
+    private var summary: String {
+        DefaultSplitCopy.description(split)
+    }
+
+    private var title: String {
+        state.isSplitEditorOffDefault
+            ? String(localized: "Different from the group's default")
+            : String(localized: "\(state.groupName) default: \(summary)")
+    }
+
+    private var detail: String {
+        guard state.isSplitEditorOffDefault else {
+            return String(localized: "It came this way. Changing it here only counts for this bill.")
+        }
+        let base = String(localized: "\(state.groupName)'s default is \(summary).")
+        guard editor.mode != split.editor.mode else { return base }
+        let now = switch editor.mode {
+        case .amount: String(localized: "This bill splits by amounts.")
+        case .percent: String(localized: "This bill splits by percentage.")
+        case .shares: String(localized: "This bill splits by shares.")
+        default: String(localized: "This bill splits equally.")
+        }
+        return "\(base) \(now)"
+    }
+}
+
 /// "$62.40 each" over "$312.00 among 5 people. Diego is out.", with the bar of what the parts cover by amount.
 private struct SplitStatusView: View {
     let status: SplitBillCopy.Status
@@ -276,6 +333,14 @@ struct PhoneSplitEditor: View {
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+        if model.state.showsDefaultSplitNotice, let split = model.state.defaultSplit {
+            Section {
+                DefaultSplitNotice(split: split, editor: editor, state: model.state) { model.send($0) }
+                    .listRowBackground(
+                        model.state.isSplitEditorOffDefault ? Palette.card : Palette.infoContainer,
+                    )
+            }
+        }
         Section {
             SplitModePicker(mode: editor.mode) { model.send($0) }
         }
@@ -286,7 +351,7 @@ struct PhoneSplitEditor: View {
             SplitStatusView(status: status)
                 .listRowBackground(status.isError ? Palette.errorContainer : Palette.card)
         } footer: {
-            Text(verbatim: SplitBillCopy.hint(editor))
+            Text(verbatim: SplitBillCopy.hint(editor, state: model.state))
         }
     }
 
@@ -325,6 +390,16 @@ struct MacSplitEditor: View {
                     Text(verbatim: SplitBillCopy.paidBy(editor.currency.format(editor.totalMinor), state: model.state))
                     .foregroundStyle(.secondary)
                 }
+                if model.state.showsDefaultSplitNotice, let split = model.state.defaultSplit {
+                    DefaultSplitNotice(split: split, editor: editor, state: model.state) { model.send($0) }
+                        .padding(12)
+                        .background(
+                            model.state.isSplitEditorOffDefault
+                                ? AnyShapeStyle(.fill.quaternary)
+                                : AnyShapeStyle(Palette.infoContainer),
+                            in: .rect(cornerRadius: 10),
+                        )
+                }
                 SplitModePicker(mode: editor.mode) { model.send($0) }
                 SplitStatusView(status: status)
                     .padding(12)
@@ -351,7 +426,7 @@ struct MacSplitEditor: View {
                     .background(.background, in: .rect(cornerRadius: 10))
                     .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.separator))
                 }
-                Text(verbatim: SplitBillCopy.hint(editor))
+                Text(verbatim: SplitBillCopy.hint(editor, state: model.state))
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
