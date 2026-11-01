@@ -21,10 +21,10 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 
 // Why: "Saldos": the group's header and tabs, then who owes whom, "Com você" first and "Entre os outros" after.
 @Composable

@@ -14,6 +14,7 @@
     <string name="groups_tab_contacts">Contatos</string>
     <string name="groups_tab_activity">Atividade</string>
     <string name="groups_coming_soon">Em breve</string>
+    <string name="groups_change_error">Não deu para salvar a mudança. Tente de novo.</string>
     <string name="groups_new_group">Novo grupo</string>
     <string name="groups_only_you">Só você</string>
     <string name="groups_extra_members">+%d</string>
@@ -60,4 +61,13 @@
         <item quantity="one">%d semana</item>
         <item quantity="other">%d semanas</item>
     </plurals>
+    <string name="groups_row_more">Mais ações: %s</string>
+    <string name="groups_actions_title">Ações do grupo %s</string>
+    <string name="groups_action_invite">Convidar pessoas</string>
+    <string name="groups_action_invite_hint">Link ou QR do grupo</string>
+    <string name="groups_action_leave">Sair do grupo</string>
+    <string name="groups_action_leave_hint">Acerte os %s antes</string>
+    <string name="groups_action_delete">Apagar grupo</string>
+    <string name="groups_action_delete_hint">Só quando todos tiverem acertado</string>
+    <string name="groups_actions_offline">Sair e apagar precisam de internet, para conferir os saldos de todo mundo antes.</string>
 </resources>

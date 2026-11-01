@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: the canvas's medium flexible bar: the group's shape, name and totals, collapsing to one line as the list scrolls.
 @OptIn(ExperimentalMaterial3Api::class)
@@ -191,7 +192,7 @@ private fun MenuItemText(
         Text(label)
         if (!isOnline) {
             Text(
-                text = stringResource(R.string.group_detail_needs_internet),
+                text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
                 style = MaterialTheme.typography.bodySmall,
             )
         }

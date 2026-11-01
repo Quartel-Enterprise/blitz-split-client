@@ -40,6 +40,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 internal const val META_SEPARATOR = " · "
 
@@ -215,7 +216,7 @@ private fun ExpenseMetaLine(
 @Composable
 private fun paidTextOrNull(payers: List<ExpenseRowPayer>): String? {
     if (payers.size > 1) {
-        val formerMember = stringResource(R.string.group_detail_former_member)
+        val formerMember = stringResource(DesignR.string.designsystem_former_member)
         val you = stringResource(R.string.group_detail_you)
         return paidBySeveralOf(payers.map { if (it.isMe) you else it.name ?: formerMember })
     }

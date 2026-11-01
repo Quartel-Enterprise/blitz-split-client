@@ -2,13 +2,13 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf

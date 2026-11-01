@@ -1,11 +1,13 @@
 import { Check, ChevronRight, CloudOff, ListFilter, Plus, QrCode, RefreshCw, SquarePlus } from 'lucide-react'
 import type { GroupsPresenter, JsBalanceTotal, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { GroupExitDialog } from '@/features/group-detail/GroupExitDialog'
+import { GroupRowMenu } from '@/features/groups/GroupRowMenu'
 import { t, type MessageKey } from '@/i18n'
 import { formatShortDate } from '@/lib/dates'
 import { formatMoney, formatPlainMoney, formatSignedMoney } from '@/lib/money'
@@ -14,11 +16,29 @@ import { cn } from '@/lib/utils'
 /**
  * The groups page: "Saldo geral", "A receber" and "A pagar", the tabs Em aberto / Quitados with "Filtrar grupos", and
  * the groups as a table (desktop and tablet, which drops the activity column) or a list (phone). A row opens the
- * group; its ⋯ menu and the grid come with their own flows.
+ * group; its ⋯ menu (or a right click on the table) holds the group's actions. The grid comes with its own flow.
  */
 export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
   const groups = state.showsSettledGroups ? state.settledGroups : state.openGroups
   const showsNoGroups = state.showsSettledGroups ? state.showsNoSettledGroups : state.showsNoOpenGroups
+  /*
+   * Why: one row's menu at a time, which its ⋯ or a right click on the table's row opens. The table and the phone's
+   * list are both rendered (CSS hides one), so the key says which, or the hidden twin's menu would open too.
+   */
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const menuOf = (group: JsGroupRow, surface: 'table' | 'cards') => {
+    const key = `${surface}:${group.id}`
+    return (
+      <GroupRowMenu
+        presenter={presenter}
+        group={group}
+        isOnline={state.exit.isOnline}
+        open={openMenu === key}
+        onOpenChange={(open) => setOpenMenu(open ? key : null)}
+      />
+    )
+  }
+  const exitGroup = state.exitGroup
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -66,9 +86,26 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
         )
       ) : (
         <>
-          <GroupsTable presenter={presenter} groups={groups} />
-          <GroupsCardList presenter={presenter} groups={groups} />
+          <GroupsTable
+            presenter={presenter}
+            groups={groups}
+            menuOf={(group) => menuOf(group, 'table')}
+            onContextMenu={(groupId) => setOpenMenu(`table:${groupId}`)}
+          />
+          <GroupsCardList presenter={presenter} groups={groups} menuOf={(group) => menuOf(group, 'cards')} />
         </>
+      )}
+
+      {exitGroup && (
+        <GroupExitDialog
+          exit={state.exit}
+          currency={exitGroup.currency}
+          fractionDigits={exitGroup.fractionDigits}
+          events={{
+            confirmGroupExit: () => presenter.confirmGroupExit(),
+            dismissGroupExit: () => presenter.dismissGroupExit(),
+          }}
+        />
       )}
     </>
   )
@@ -313,8 +350,14 @@ function membersText(count: number): string {
   return count === 1 ? t('groups_onlyYou') : t('groups_memberCount', { count })
 }
 
-/** Desktop and tablet: Grupo, Membros, Última atividade (desktop only) and Seu saldo. */
-function GroupsTable({ presenter, groups }: { presenter: GroupsPresenter; groups: JsGroupRow[] }) {
+interface GroupRowsProps {
+  presenter: GroupsPresenter
+  groups: JsGroupRow[]
+  menuOf: (group: JsGroupRow) => ReactNode
+}
+
+/** Desktop and tablet: Grupo, Membros, Última atividade (desktop only), Seu saldo and the ⋯ of each row. */
+function GroupsTable({ presenter, groups, menuOf, onContextMenu }: GroupRowsProps & { onContextMenu: (groupId: string) => void }) {
   return (
     <div className="hidden overflow-hidden rounded-xl border bg-card md:block">
       <table className="w-full table-fixed text-sm">
@@ -332,11 +375,22 @@ function GroupsTable({ presenter, groups }: { presenter: GroupsPresenter; groups
             <th scope="col" className="w-[130px] px-3 text-right font-medium lg:w-[150px]">
               {t('groups_columnBalance')}
             </th>
+            <th scope="col" className="w-12">
+              <span className="sr-only">{t('groups_columnActions')}</span>
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y">
           {groups.map((group) => (
-            <tr key={group.id} onClick={() => presenter.openGroup(group.id)} className="h-14 cursor-pointer hover:bg-accent">
+            <tr
+              key={group.id}
+              onClick={() => presenter.openGroup(group.id)}
+              onContextMenu={(event) => {
+                event.preventDefault()
+                onContextMenu(group.id)
+              }}
+              className="h-14 cursor-pointer hover:bg-accent"
+            >
               <td className="px-3">
                 <span className="flex min-w-0 items-center gap-2.5">
                   <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
@@ -363,6 +417,7 @@ function GroupsTable({ presenter, groups }: { presenter: GroupsPresenter; groups
               <td className="px-3 text-right">
                 <GroupBalance group={group} />
               </td>
+              <td className="pr-2 text-right">{menuOf(group)}</td>
             </tr>
           ))}
         </tbody>
@@ -371,15 +426,15 @@ function GroupsTable({ presenter, groups }: { presenter: GroupsPresenter; groups
   )
 }
 
-/** The phone: a list, each row with its member count under the name. */
-function GroupsCardList({ presenter, groups }: { presenter: GroupsPresenter; groups: JsGroupRow[] }) {
+/** The phone: a list, each row with its member count under the name and its ⋯. */
+function GroupsCardList({ presenter, groups, menuOf }: GroupRowsProps) {
   return (
     <ul className="flex flex-col divide-y rounded-xl border bg-card md:hidden">
       {groups.map((group) => (
-        <li key={group.id}>
+        <li key={group.id} className="flex items-center pr-1">
           <button
             onClick={() => presenter.openGroup(group.id)}
-            className="flex min-h-[60px] w-full items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+            className="flex min-h-[60px] min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
           >
             <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
             <span className="flex min-w-0 flex-1 flex-col">
@@ -391,6 +446,7 @@ function GroupsCardList({ presenter, groups }: { presenter: GroupsPresenter; gro
             </span>
             <GroupBalance group={group} />
           </button>
+          {menuOf(group)}
         </li>
       ))}
     </ul>

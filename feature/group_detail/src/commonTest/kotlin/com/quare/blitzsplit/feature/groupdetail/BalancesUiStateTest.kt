@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtKind
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DebtRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.idleGroupExit
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -171,7 +171,7 @@ class BalancesUiStateTest {
         otherDebts = otherDebts,
         hasBills = hasBills,
         recordedPayment = null,
-        exit = idleGroupExit,
+        exit = GroupExitState.idle,
         isLoaded = isLoaded,
     )
 }

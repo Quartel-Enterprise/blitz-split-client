@@ -41,6 +41,34 @@ sealed interface GroupsUiEvent : UiEvent {
         val query: String,
     ) : GroupsUiEvent
 
+    /*
+     * Why: the row's ⋮ menu (⋯ on Apple and the web) or its long press: "Convidar pessoas", "Sair do grupo" and
+     * "Apagar grupo" of that group, without opening it.
+     */
+    data class OnInviteClicked(
+        val groupId: String,
+    ) : GroupsUiEvent
+
+    data class OnLeaveGroupClicked(
+        val groupId: String,
+    ) : GroupsUiEvent
+
+    data class OnDeleteGroupClicked(
+        val groupId: String,
+    ) : GroupsUiEvent
+
+    // Why: the main button of the dialog they open: "Sair", "Apagar para todos", "Acertar" or "Ver saldos".
+    data object OnGroupExitConfirmed : GroupsUiEvent
+
+    // Why: "Cancelar" or "Agora não", or the dialog dismissed.
+    data object OnGroupExitDismissed : GroupsUiEvent
+
     // Why: the snackbar of a deleted group went away, so the next one, if any, can show.
     data object OnDeletedGroupNoticeShown : GroupsUiEvent
+
+    // Why: "Desfazer" on the notice of a payment just recorded from a row's "Acertar".
+    data object OnUndoPaymentClicked : GroupsUiEvent
+
+    // Why: the notice went away without Desfazer.
+    data object OnRecordedPaymentNoticeShown : GroupsUiEvent
 }

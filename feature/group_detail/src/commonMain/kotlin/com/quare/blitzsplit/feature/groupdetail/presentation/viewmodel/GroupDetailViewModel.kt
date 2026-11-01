@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
@@ -48,7 +49,7 @@ class GroupDetailViewModel(
                 paymentToDelete = null,
                 recordedPayment = null,
                 showsBillDeletedNotice = false,
-                exit = idleGroupExit,
+                exit = GroupExitState.idle,
                 isLoaded = false,
             ),
         )
@@ -63,16 +64,19 @@ class GroupDetailViewModel(
         route = route,
         groupId = route.groupId,
         useCases = useCases,
+        scope = viewModelScope,
+        showExitError = { isDelete ->
+            uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
+        },
     )
 
     init {
         screen.watch(
-            scope = viewModelScope,
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
-        screen.exitState
+        screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
@@ -102,15 +106,13 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnLeaveGroupClicked -> screen.askToLeave()
+            GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
-            GroupDetailUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
+            GroupDetailUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
 
-            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.confirmExit(viewModelScope) { isDelete ->
-                uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
-            }
+            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.exit.confirm()
 
-            GroupDetailUiEvent.OnGroupExitDismissed -> screen.dismissExit()
+            GroupDetailUiEvent.OnGroupExitDismissed -> screen.exit.dismiss()
 
             GroupDetailUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
 
@@ -224,7 +226,7 @@ class GroupDetailViewModel(
     private fun deletePayment() {
         val payment = uiState.value.paymentToDelete ?: return
         uiState.update { it.copy(paymentToDelete = null) }
-        screen.deletePayment(viewModelScope, payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
+        screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 
     private fun showBillDeleted() {
@@ -235,6 +237,6 @@ class GroupDetailViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        screen.deletePayment(viewModelScope, notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
+        screen.deletePayment(notice.settlementId) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 }

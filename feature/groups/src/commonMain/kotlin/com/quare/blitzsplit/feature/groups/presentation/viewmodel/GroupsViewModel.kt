@@ -3,9 +3,16 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
+import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
@@ -19,9 +26,13 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.sync.exit.GroupExitController
+import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
@@ -42,6 +53,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -54,6 +68,11 @@ class GroupsViewModel(
     private val syncNow: SyncNow,
     private val navigator: Navigator,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
+    leaveGroup: LeaveGroup,
+    deleteGroup: DeleteGroup,
+    observeRecordedPayment: ObserveRecordedPayment,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
     minuteTicks: MinuteTicks,
@@ -83,6 +102,9 @@ class GroupsViewModel(
                 filterQuery = "",
                 isRefreshing = false,
                 deletedGroupNotice = null,
+                exit = GroupExitState.idle,
+                exitGroupId = null,
+                recordedPayment = null,
             ),
         )
 
@@ -95,8 +117,31 @@ class GroupsViewModel(
     // Why: the deletions no screen showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
 
-    // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
-    private var isOnline = true
+    // Why: what the dialogs of "Sair do grupo" and "Apagar grupo" read of the group asked for, as Room has it now.
+    private var groupsWithMoney = emptyList<GroupWithMoney>()
+
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
+    // Why: leaving or deleting from a row stays on the home, which the group just leaves.
+    private val exit = GroupExitController(
+        leaveGroup = leaveGroup,
+        deleteGroup = deleteGroup,
+        scope = viewModelScope,
+        openRegisterPayment = { groupId, fromMemberId, toMemberId ->
+            open(
+                Route.RegisterPayment(
+                    groupId = groupId,
+                    fromMemberId = fromMemberId,
+                    toMemberId = toMemberId,
+                ),
+            )
+        },
+        openBalances = { groupId -> open(Route.Balances(groupId)) },
+        onExited = {},
+        showError = { isDelete ->
+            uiAction.emit(if (isDelete) GroupsUiAction.ShowDeleteError else GroupsUiAction.ShowLeaveError)
+        },
+    )
 
     init {
         combine(
@@ -105,7 +150,7 @@ class GroupsViewModel(
             observeSyncState(),
             connectivityObserver.observe(),
         ) { profile, account, syncState, isOnline ->
-            this.isOnline = isOnline
+            exit.setOnline(isOnline)
             val displayName = profile?.displayName?.trim().orEmpty()
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
             val update: (GroupsUiState) -> GroupsUiState = { state ->
@@ -142,6 +187,10 @@ class GroupsViewModel(
                     pendingDeletionCount = ofGroup.pendingDeletionCount,
                 )
             }
+        }.onEach { groups ->
+            groupsWithMoney = groups
+            // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
+            if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
         }.map { groups ->
             GroupsOnHome(
                 rows = rowsOf(
@@ -163,6 +212,23 @@ class GroupsViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+        exit.state
+            .onEach { exit -> uiState.update { it.copy(exit = exit) } }
+            .launchIn(viewModelScope)
+        // Why: only the group a row's "Acertar" was about can owe the home a notice; a group's own screens show theirs.
+        notices.watch(
+            scope = viewModelScope,
+            recorded = uiState
+                .map { it.exitGroupId }
+                .distinctUntilChanged()
+                .flatMapLatest { groupId -> groupId?.let(observeRecordedPayment::invoke) ?: flowOf(null) },
+            backStack = navigator.backStack,
+            isLoaded = uiState.map { it.hasLoadedGroups },
+            isOnTop = ::isOnTop,
+            meId = { exitGroupOrNull()?.members?.firstOrNull { it.isMe }?.id },
+            nameOf = { id -> exitGroupOrNull()?.members?.firstOrNull { it.id == id }?.name },
+            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+        )
         // Why: only while the home is on top; a deleted group still open shows its own "Grupo apagado".
         combine(observeGroupDeletions(), navigator.backStack, ::Pair)
             .onEach { (deletions, _) ->
@@ -191,10 +257,24 @@ class GroupsViewModel(
                 )
             }
 
+            is GroupsUiEvent.OnInviteClicked -> open(Route.Invite(event.groupId, isNewGroup = false))
+
+            is GroupsUiEvent.OnLeaveGroupClicked -> askToExit(event.groupId, GroupExitController::askToLeave)
+
+            is GroupsUiEvent.OnDeleteGroupClicked -> askToExit(event.groupId, GroupExitController::askToDelete)
+
+            GroupsUiEvent.OnGroupExitConfirmed -> exit.confirm()
+
+            GroupsUiEvent.OnGroupExitDismissed -> exit.dismiss()
+
             GroupsUiEvent.OnDeletedGroupNoticeShown -> {
                 uiState.update { it.copy(deletedGroupNotice = null) }
                 showNextDeletion()
             }
+
+            GroupsUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
+
+            GroupsUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
 
             GroupsUiEvent.OnRefresh -> refresh()
 
@@ -228,7 +308,8 @@ class GroupsViewModel(
 
     private fun refresh() {
         if (uiState.value.isRefreshing) return
-        if (!isOnline) return
+        // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
+        if (!exit.state.value.isOnline) return
         uiState.update { it.copy(isRefreshing = true) }
         viewModelScope.launch {
             // Why: a failure shows as the sync badge's "Sem resposta do servidor", so the result is not read here.
@@ -238,6 +319,41 @@ class GroupsViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Groups
+
+    // Why: only from the groups on top, as a row's tap.
+    private fun open(route: Route) {
+        if (isOnTop()) navigator.navigate(route)
+    }
+
+    // Why: a request in flight keeps its group; offline the menu shows both disabled, so the controller does nothing.
+    private fun askToExit(
+        groupId: String,
+        ask: GroupExitController.() -> Unit,
+    ) {
+        if (!uiState.value.exit.canLeaveOrDelete || !isOnTop()) return
+        uiState.update { it.copy(exitGroupId = groupId) }
+        exit.update(exitTargetOrNull(groupId))
+        exit.ask()
+    }
+
+    private fun undoRecordedPayment() {
+        val notice = uiState.value.recordedPayment ?: return
+        uiState.update { it.copy(recordedPayment = null) }
+        notices.delete(viewModelScope, notice.settlementId) { uiAction.emit(GroupsUiAction.ShowChangeError) }
+    }
+
+    private fun exitGroupOrNull(): Group? = groupsWithMoney
+        .firstOrNull { it.group.id == uiState.value.exitGroupId }
+        ?.group
+
+    private fun exitTargetOrNull(groupId: String?): GroupExitTarget? {
+        val item = groupsWithMoney.firstOrNull { it.group.id == groupId } ?: return null
+        return GroupExitTarget(
+            group = item.group,
+            balances = GroupBalances.of(item.expenses, item.settlements),
+            billCount = item.expenses.size,
+        )
+    }
 
     private fun showNextDeletion() {
         val deletion = pendingDeletions.firstOrNull() ?: return

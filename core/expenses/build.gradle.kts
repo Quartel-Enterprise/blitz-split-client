@@ -8,6 +8,8 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             api(libs.kotlinx.datetime)
+            // Why: Saldos and the exit dialogs name a debt's members as the group has them (debtRowOf, faceOf).
+            implementation(projects.core.groups)
             implementation(projects.core.utils)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)

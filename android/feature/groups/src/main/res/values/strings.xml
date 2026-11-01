@@ -14,6 +14,7 @@
     <string name="groups_tab_contacts">Contacts</string>
     <string name="groups_tab_activity">Activity</string>
     <string name="groups_coming_soon">Coming soon</string>
+    <string name="groups_change_error">Couldn\'t save the change. Try again.</string>
     <string name="groups_new_group">New group</string>
     <string name="groups_only_you">Just you</string>
     <string name="groups_extra_members">+%d</string>
@@ -60,4 +61,13 @@
         <item quantity="one">%d week</item>
         <item quantity="other">%d weeks</item>
     </plurals>
+    <string name="groups_row_more">More actions: %s</string>
+    <string name="groups_actions_title">Actions for %s</string>
+    <string name="groups_action_invite">Invite people</string>
+    <string name="groups_action_invite_hint">Group link or QR code</string>
+    <string name="groups_action_leave">Leave group</string>
+    <string name="groups_action_leave_hint">Settle the %s first</string>
+    <string name="groups_action_delete">Delete group</string>
+    <string name="groups_action_delete_hint">Only once everyone has settled up</string>
+    <string name="groups_actions_offline">Leaving and deleting need the internet, to check everyone\'s balances first.</string>
 </resources>
