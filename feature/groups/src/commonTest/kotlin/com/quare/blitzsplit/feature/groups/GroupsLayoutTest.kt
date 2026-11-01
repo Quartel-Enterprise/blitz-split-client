@@ -101,6 +101,21 @@ class GroupsLayoutTest {
         }
 
     @Test
+    fun `GIVEN the grid WHEN a filter is typed THEN shows the matches as a list and keeps the size pickable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = largeGrid)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnFilterChanged("apê"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsGrid)
+            assertTrue(state.canPickGridSize)
+        }
+
+    @Test
     fun `GIVEN the stored layout read after the groups opened WHEN it arrives THEN shows it`() =
         runTest(testDispatcher) {
             // Given

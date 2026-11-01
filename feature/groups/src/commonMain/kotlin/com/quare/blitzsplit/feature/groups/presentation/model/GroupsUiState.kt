@@ -55,11 +55,14 @@ data class GroupsUiState(
      */
     val recordedPayment: PaymentNotice?,
 ) {
-    // Why: only the open groups go in the grid; Quitados and the search stay a list.
+    // Why: only the open groups go in the grid; Quitados and what a filter finds stay a list.
     val showsGrid: Boolean
-        get() = layout.display == GroupsDisplay.GRID
+        get() = canPickGridSize && filterQuery.isBlank()
 
-    // Why: "Tamanho da grade" is disabled while the list is picked.
+    /*
+     * Why: "Tamanho da grade" is disabled while the list is picked, but not while a filter shows its matches as a list:
+     * the grid comes back as it was once the filter is cleared.
+     */
     val canPickGridSize: Boolean
         get() = layout.display == GroupsDisplay.GRID
 

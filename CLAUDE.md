@@ -82,12 +82,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`GroupRow.hasOpenDebts`) say what blocks them before the tap, which still opens the dialog listing what is open.
   - The home's "Lista ou grade" (5.5, 5.6): the open groups show as a list (the default) or a grid of cards, at
     Compacto, Padrão or Grande, kept per device and never synced (`GroupsLayout` in `device_settings`, so it outlives
-    a sign out; the grid keeps its size while the list is picked). Quitados (and the search) stay a list. Android and
-    iOS pick it in the "Em aberto" header's menu (Lista, Grade, then "Tamanho da grade", disabled while the list is
-    picked, `GroupsUiState.canPickGridSize`); the web in a toggle group and a Select next to the filter (on a phone
-    the Select only shows with the grid); the Mac in toolbar segments, a Finder-like slider under the grid and View ›
+    a sign out; the grid keeps its size while the list is picked). Quitados and what a filter or the search finds stay
+    a list. Android and iOS pick it in the "Em aberto" header's menu (Lista, Grade, then "Tamanho da grade",
+    disabled while the list is picked, `GroupsUiState.canPickGridSize`); the web in a toggle group and a Select next
+    to the filter (on a phone the Select only shows with the grid); the Mac in toolbar segments, a Finder-like slider under the grid and View ›
     Tamanho da grade. The columns are as many as fit the list's width at each size's minimum card width, never a
-    number picked (Android 112/144/220 dp, iOS 104/140/220 pt, the Mac 150/200/280 pt, the web 104/150/300 px on a
+    number picked (Android 104/144/220 dp, iOS 104/140/220 pt, the Mac 150/200/280 pt, the web 104/150/300 px on a
     phone and 180/240/340 px from the tablet up), which makes a phone 3, 2 and 1, Android's tablet column 4, 3 and 2,
     and the web's desktop and the Mac 5, 4 and 3. A card holds the row's content stacked (the group's shape, its name
     in two lines, the faces and last activity, in Compacto only the dot and "na fila", the web's last activity only at
