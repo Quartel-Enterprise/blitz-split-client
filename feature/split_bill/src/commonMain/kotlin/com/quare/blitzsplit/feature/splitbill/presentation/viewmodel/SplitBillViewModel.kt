@@ -11,6 +11,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
+import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
@@ -65,6 +69,9 @@ class SplitBillViewModel(
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
+    observeCategoryTree: ObserveCategoryTree,
+    saveGroupCategory: SaveGroupCategory,
+    deleteGroupCategory: DeleteGroupCategory,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
@@ -121,6 +128,22 @@ class SplitBillViewModel(
         },
     )
 
+    // Why: the group as last shown, which a change of the bill's category shows again with that category's split.
+    private var shownGroup: Group? = null
+
+    // Why: the words of the map (flow 9) that suggest a bill's category from its description.
+    private val categoryTerms = DefaultCategoryTerms.terms
+
+    // Why: "Categoria" (7.7) and the group's own categories (7.8); its exception may change the bill's split.
+    private val categoryEditing = CategoryEditing(
+        uiState = uiState,
+        scope = viewModelScope,
+        saveGroupCategory = saveGroupCategory,
+        deleteGroupCategory = deleteGroupCategory,
+        emit = { uiAction.emit(it) },
+        onCategoryChanged = ::showCategorySplit,
+    )
+
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
@@ -149,6 +172,10 @@ class SplitBillViewModel(
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)
+        groupId
+            .flatMapLatest { id -> combine(observeCategoryTree(id), observeExpenses(id), ::Pair) }
+            .onEach { (tree, expenses) -> changeCategory { it.withCategories(tree, expenses).withCategoryMatched(categoryTerms) } }
+            .launchIn(viewModelScope)
         if (settledPairs == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
@@ -189,11 +216,12 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnGroupDismissed -> uiState.update { it.copy(groupSelection = null) }
 
-            is SplitBillUiEvent.OnDescriptionChanged -> uiState.update {
-                it.copy(
-                    description = ExpenseRules.toCapped(event.text),
-                    hasEditedDescription = true,
-                )
+            is SplitBillUiEvent.OnDescriptionChanged -> changeCategory {
+                it
+                    .copy(
+                        description = ExpenseRules.toCapped(event.text),
+                        hasEditedDescription = true,
+                    ).withCategoryMatched(categoryTerms)
             }
 
             SplitBillUiEvent.OnPayerClicked -> uiState.update {
@@ -259,6 +287,8 @@ class SplitBillViewModel(
             }
 
             is SplitBillUiEvent.Items -> items.onEvent(event)
+
+            is SplitBillUiEvent.Categories -> categoryEditing.onEvent(event)
 
             SplitBillUiEvent.OnSaveClicked -> save()
 
@@ -371,7 +401,19 @@ class SplitBillViewModel(
         }
     }
 
+    // Why: a new bill's category picks its split, the exception of its category or the group's default (7.1k).
+    private fun changeCategory(transform: (SplitBillUiState) -> SplitBillUiState) {
+        val before = uiState.value.category.id
+        uiState.update(transform)
+        if (uiState.value.category.id != before) showCategorySplit()
+    }
+
+    private fun showCategorySplit() {
+        shownGroup?.let(::show)
+    }
+
     private fun show(group: Group) {
+        shownGroup = group
         val people = group.members.map { it.toBillPerson() }
         val isAnotherGroup = shownGroupId != null && shownGroupId != group.id
         shownGroupId = group.id
@@ -527,6 +569,7 @@ class SplitBillViewModel(
                     splitMode = state.split.mode,
                     shares = shares,
                     items = state.split.items,
+                    categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
                 ).map { }
             } else {
@@ -539,6 +582,7 @@ class SplitBillViewModel(
                     splitMode = state.split.mode,
                     shares = shares,
                     items = state.split.items,
+                    categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
                 )
             }

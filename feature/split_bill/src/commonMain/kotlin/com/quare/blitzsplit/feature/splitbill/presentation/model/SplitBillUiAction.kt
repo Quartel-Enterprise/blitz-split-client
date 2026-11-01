@@ -6,4 +6,9 @@ sealed interface SplitBillUiAction {
 
     // Why: the device couldn't delete the bill, as rare.
     data object ShowDeleteError : SplitBillUiAction
+
+    // Why: the device couldn't save the category (7.8), as rare.
+    data object ShowCategorySaveError : SplitBillUiAction
+
+    data object ShowCategoryDeleteError : SplitBillUiAction
 }

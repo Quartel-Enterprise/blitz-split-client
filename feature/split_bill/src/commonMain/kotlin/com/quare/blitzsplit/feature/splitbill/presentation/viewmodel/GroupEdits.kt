@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -46,6 +49,14 @@ internal fun createInitialBillState(
         itemDeletion = null,
         feeEditor = null,
         defaultSplit = null,
+        categories = CategoryTree.appOnly,
+        categoryId = null,
+        isCategoryPicked = false,
+        categoryMatches = emptyList(),
+        categoryUsage = emptyMap(),
+        categoryPicker = null,
+        categoryForm = null,
+        categoryDeletion = null,
         conflict = null,
         settledPair = null,
         deletion = null,
@@ -113,4 +124,10 @@ internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
     itemDeletion = null,
     feeEditor = null,
     defaultSplit = null,
+    // Why: one of the last group's own categories means nothing in another; the app's stay picked.
+    categoryId = categoryId?.takeIf { AppCategory.fromKeyOrNull(it) != null },
+    isCategoryPicked = isCategoryPicked && AppCategory.fromKeyOrNull(categoryId) != null,
+    categoryPicker = null,
+    categoryForm = null,
+    categoryDeletion = null,
 )

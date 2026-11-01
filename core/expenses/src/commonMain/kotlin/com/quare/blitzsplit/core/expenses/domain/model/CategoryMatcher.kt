@@ -11,13 +11,18 @@ object CategoryMatcher {
     fun matchOrNull(
         title: String,
         terms: List<CategoryTerm>,
-    ): CategoryMatch? {
+    ): CategoryMatch? = matches(title, terms).firstOrNull()
+
+    // Why: every term the title has, the one that chooses first ("uber eats", "hotel", "uber").
+    fun matches(
+        title: String,
+        terms: List<CategoryTerm>,
+    ): List<CategoryMatch> {
         val words = wordsOf(title)
-        if (words.isEmpty()) return null
+        if (words.isEmpty()) return emptyList()
         return terms
             .mapNotNull { term -> firstMatchOrNull(words, term) }
             .sortedWith(compareByDescending<CategoryMatch> { keyOf(it.term).length }.thenBy { it.start })
-            .firstOrNull()
     }
 
     // Why: what a term is matched as, lowercase without accents and single spaces, also the map's key.

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -452,6 +454,9 @@ class EditSeveralPayersViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -586,6 +587,14 @@ class SplitBillUiStateTest {
         itemDeletion = null,
         feeEditor = null,
         defaultSplit = null,
+        categories = CategoryTree.appOnly,
+        categoryId = null,
+        isCategoryPicked = false,
+        categoryMatches = emptyList(),
+        categoryUsage = emptyMap(),
+        categoryPicker = null,
+        categoryForm = null,
+        categoryDeletion = null,
         conflict = conflict,
         settledPair = settledPair,
         deletion = null,
