@@ -397,6 +397,11 @@ export const en = {
 
   splitBill_title: 'Split a bill',
   splitBill_group: 'Group',
+  splitBill_groupTitle: 'Split in which group?',
+  splitBill_groupLead: 'The one you used last comes marked',
+  splitBill_groupContinue: 'Continue',
+  splitBill_groupPeopleOne: '{count} person',
+  splitBill_groupPeopleOther: '{count} people',
   splitBill_amount: 'Amount',
   splitBill_description: 'Description',
   splitBill_descriptionPlaceholder: 'What was it? E.g. Groceries',
