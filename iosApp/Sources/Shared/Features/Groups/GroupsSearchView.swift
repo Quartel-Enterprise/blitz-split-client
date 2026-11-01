@@ -141,12 +141,17 @@ enum GroupsSearchCopy {
     /// The text with what the search found in bold, as the canvas marks "Chur" in "Churrasco". The match counts
     /// UTF-16 units, as Kotlin does.
     static func marked(_ text: String, _ match: TextMatch?) -> AttributedString {
+        marked(text, from: match.map { Int($0.start) }, to: match.map { Int($0.end) })
+    }
+
+    /// The same mark from where the match starts and ends, in UTF-16 units: Contatos' search marks names too.
+    static func marked(_ text: String, from start: Int?, to end: Int?) -> AttributedString {
         var result = AttributedString(text)
-        guard let match, match.start >= 0, match.start < match.end, Int(match.end) <= text.utf16.count else {
+        guard let start, let end, start >= 0, start < end, end <= text.utf16.count else {
             return result
         }
-        let lower = String.Index(utf16Offset: Int(match.start), in: text)
-        let upper = String.Index(utf16Offset: Int(match.end), in: text)
+        let lower = String.Index(utf16Offset: start, in: text)
+        let upper = String.Index(utf16Offset: end, in: text)
         if let range = Range(lower..<upper, in: result) {
             result[range].inlinePresentationIntent = .stronglyEmphasized
         }

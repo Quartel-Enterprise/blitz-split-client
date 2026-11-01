@@ -38,6 +38,15 @@ enum AppRoute: Hashable, Identifiable {
     case joinPick(RouteJoinPick)
     /// Holds the Kotlin route itself, which its ViewModel reads the invite to skip from.
     case joinWithLink(RouteJoinWithLink)
+    /// The home's Contacts tab, right above the groups.
+    case contacts
+    /// A person's profile; holds the Kotlin route itself, which its ViewModel reads the person from.
+    case contactProfile(RouteContactProfile)
+    /// Inviting from the device's contacts.
+    case contactsAgenda
+    /// A group's invite link for someone or anyone; holds the Kotlin route itself, which its ViewModel reads whom it
+    /// is for from.
+    case contactInvite(RouteContactInvite)
     case profile
     case editProfile
     case deleteAccount
@@ -66,6 +75,10 @@ enum AppRoute: Hashable, Identifiable {
         case let joinInvite as RouteJoinInvite: self = .joinInvite(joinInvite)
         case let joinPick as RouteJoinPick: self = .joinPick(joinPick)
         case let joinWithLink as RouteJoinWithLink: self = .joinWithLink(joinWithLink)
+        case is RouteContacts: self = .contacts
+        case let contactProfile as RouteContactProfile: self = .contactProfile(contactProfile)
+        case is RouteContactsAgenda: self = .contactsAgenda
+        case let contactInvite as RouteContactInvite: self = .contactInvite(contactInvite)
         case is RouteProfile: self = .profile
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
@@ -79,12 +92,12 @@ enum AppRoute: Hashable, Identifiable {
 
     /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
     /// and a bill open as a form sheet and on the Mac as a sheet on its window, as the canvas draws them; an iPhone,
-    /// lying down too, pushes them. Deleting the account, a new group, its invite, editing a group, a new or edited bill and recording a
-    /// payment (settling up across groups included) are sheets everywhere. The invite reader is a sheet on the Mac,
-    /// and covers the whole screen on iPhone and iPad.
+    /// lying down too, pushes them. Deleting the account, a new group, its invite, editing a group, a new or edited
+    /// bill, recording a payment (settling up across groups included) and Contacts' invite are sheets everywhere. The
+    /// invite reader is a sheet on the Mac, and covers the whole screen on iPhone and iPad.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
-        case .deleteAccount, .createGroup, .invite, .splitBill, .editGroup, .registerPayment, .settleUp:
+        case .deleteAccount, .createGroup, .invite, .splitBill, .editGroup, .registerPayment, .settleUp, .contactInvite:
             return true
         case .joinWithLink:
             #if os(macOS)
