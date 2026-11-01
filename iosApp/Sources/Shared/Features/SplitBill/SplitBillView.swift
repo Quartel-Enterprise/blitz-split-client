@@ -214,12 +214,20 @@ private struct SplitFaces: View {
     }
 }
 
+/// SwiftUI may drop a sheet asked to present while another one still slides in, which "Split in which group?" would
+/// be as the home's "Split a bill" opens: it waits until the bill's sheet has appeared and settled.
+private enum SheetPresentation {
+    static let settle: Duration = .milliseconds(500)
+}
+
 #if os(iOS)
 private struct PhoneSplitBill: View {
     let model: SplitBillModel
 
     @State private var layout = ScreenLayout()
     @FocusState private var focusedField: Field?
+    /// Whether this sheet has settled, so "Split in which group?" can present over it.
+    @State private var isSettled = false
 
     private enum Field {
         case amount
@@ -284,6 +292,10 @@ private struct PhoneSplitBill: View {
         }
         .onAppear {
             if state.amountText.isEmpty { focusedField = .amount }
+        }
+        .task {
+            try? await Task.sleep(for: SheetPresentation.settle)
+            if !Task.isCancelled { isSettled = true }
         }
     }
 
@@ -452,7 +464,7 @@ private struct PhoneSplitBill: View {
     /// Dismissing "Split in which group?" (a swipe down) leaves the bill in its group.
     private var groupShown: Binding<Bool> {
         Binding(
-            get: { model.state.groupSelection != nil },
+            get: { isSettled && model.state.groupSelection != nil },
             set: { shown in
                 if !shown, model.current.groupSelection != nil { model.send(SplitBillUiEventOnGroupDismissed.shared) }
             },
@@ -769,6 +781,8 @@ private struct MacBillForm: View {
     let model: SplitBillModel
 
     @FocusState private var isAmountFocused: Bool
+    /// Whether this sheet has settled, so "Split in Which Group?" can present over it.
+    @State private var isSettled = false
 
     private var state: SplitBillUiState {
         model.state
@@ -925,6 +939,10 @@ private struct MacBillForm: View {
         }
         .padding(20)
         .onAppear { isAmountFocused = true }
+        .task {
+            try? await Task.sleep(for: SheetPresentation.settle)
+            if !Task.isCancelled { isSettled = true }
+        }
         .sheet(isPresented: severalPayersShown) {
             MacSeveralPayers(model: model)
         }
@@ -948,7 +966,7 @@ private struct MacBillForm: View {
     /// The home's "Split a Bill" asks for the group first; closing it any way but "Continue" keeps the marked one.
     private var groupShown: Binding<Bool> {
         Binding(
-            get: { model.state.groupSelection != nil },
+            get: { isSettled && model.state.groupSelection != nil },
             set: { shown in
                 if !shown, model.current.groupSelection != nil {
                     model.send(SplitBillUiEventOnGroupDismissed.shared)
