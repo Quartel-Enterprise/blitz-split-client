@@ -45,6 +45,8 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link; the `leave_group` and `delete_group` functions and the `removed_groups` table |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
+| `SupabaseHiddenContactRemoteDataSource` | the `hidden_contacts` table (Postgrest): the people the user hid from Contatos |
+| `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
@@ -71,8 +73,8 @@ so nothing above it sees an HTTP status:
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
 3. `syncOnUserSwitch()`: when the session moves to another user, it syncs right away under the new one, whose
    profile replaces this device's copy (see below).
-4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences, groups
-   and bills, and
+4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences, groups,
+   bills and hidden contacts, and
    their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
@@ -147,6 +149,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   deleted on the server. Deleting the default writes the key that takes over in the same upsert. Two devices may each mark a default offline, so readers
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
+- **Hidden contacts**: "Ocultar de Contatos" is a row of `hidden_contact` per person key (`user:<id>` or
+  `name:<folded name>`), synced by `updatedAt` like the keys, each user's own list across their devices. Showing
+  again keeps the row with `isHidden = false`, so the change syncs; whether someone hidden comes back (a newer
+  shared bill or an open balance) is worked out from the device's bills (`ContactBook`), never stored.
 - **Groups**: a group (`split_group`) and its members (`group_member`) sync by `updatedAt` like the keys: a newer
   server row wins (`GroupDao.applyRemote*`), and the push sends the groups before their members, since the server
   only lets the creator or a member write a group's members. A new group belongs to the profile's account, like a
