@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="group_detail_back">Back</string>
+    <string name="group_detail_stats">Statistics</string>
     <string name="group_detail_invite">Invite people</string>
     <string name="group_detail_more">More group options</string>
     <string name="group_detail_edit_group">Edit group</string>

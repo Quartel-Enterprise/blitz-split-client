@@ -803,6 +803,19 @@ class BalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Saldos on top WHEN tapping Estatisticas THEN opens the statistics over it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = BalancesUiEvent.OnStatsClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf(Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN Saldos on top WHEN tapping Editar grupo THEN opens the edit over it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

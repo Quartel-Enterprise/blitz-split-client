@@ -19,4 +19,10 @@ data class DeviceSettingsEntity(
     // Why: the grid's "Compacto", "Padrão" or "Grande"; null until picked on this device.
     @ColumnInfo(defaultValue = "NULL")
     val groupGridSize: String?,
+    // Why: "Barras" or "Linha" in a group's statistics; null until picked on this device.
+    @ColumnInfo(defaultValue = "NULL")
+    val statsChartType: String?,
+    // Why: "Dia", "Semana", "Mês" or "Ano" in a group's statistics; null until picked on this device.
+    @ColumnInfo(defaultValue = "NULL")
+    val statsGrain: String?,
 )

@@ -906,6 +906,20 @@ class GroupDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN the screen on top WHEN tapping Estatisticas THEN opens the statistics of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnStatsClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN Rachar conta already opened WHEN tapping Convidar THEN the back stack stays`() =
         runTest(testDispatcher) {
             // Given

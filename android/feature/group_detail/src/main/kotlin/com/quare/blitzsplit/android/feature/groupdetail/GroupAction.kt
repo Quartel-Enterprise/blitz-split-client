@@ -7,6 +7,7 @@ package com.quare.blitzsplit.android.feature.groupdetail
 internal enum class GroupAction {
     BACK,
     INVITE,
+    STATS,
     EDIT_GROUP,
     LEAVE_GROUP,
     DELETE_GROUP,

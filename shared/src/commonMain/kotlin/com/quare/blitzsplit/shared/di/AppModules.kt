@@ -22,6 +22,7 @@ import com.quare.blitzsplit.feature.editprofile.di.editProfileModule
 import com.quare.blitzsplit.feature.globalbalances.di.globalBalancesModule
 import com.quare.blitzsplit.feature.groupdetail.di.groupDetailModule
 import com.quare.blitzsplit.feature.groups.di.groupsModule
+import com.quare.blitzsplit.feature.groupstats.di.groupStatsModule
 import com.quare.blitzsplit.feature.invite.di.inviteModule
 import com.quare.blitzsplit.feature.join.di.joinModule
 import com.quare.blitzsplit.feature.members.di.membersModule
@@ -84,6 +85,7 @@ val sharedModules: List<Module> = listOf(
     editGroupModule,
     registerPaymentModule,
     globalBalancesModule,
+    groupStatsModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

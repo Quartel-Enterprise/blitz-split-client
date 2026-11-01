@@ -14,6 +14,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.Global
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
@@ -118,6 +119,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createBillDetailViewModel(route: Route.BillDetail): ViewModelHolder<BillDetailViewModel> =
         ViewModelHolder(BillDetailViewModel::class) { get { parametersOf(route) } }
+
+    fun createGroupStatsViewModel(route: Route.GroupStats): ViewModelHolder<GroupStatsViewModel> =
+        ViewModelHolder(GroupStatsViewModel::class) { get { parametersOf(route) } }
 
     fun createEditGroupViewModel(route: Route.EditGroup): ViewModelHolder<EditGroupViewModel> =
         ViewModelHolder(EditGroupViewModel::class) { get { parametersOf(route) } }

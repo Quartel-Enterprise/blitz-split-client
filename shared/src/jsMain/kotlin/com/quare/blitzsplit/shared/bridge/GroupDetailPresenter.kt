@@ -129,6 +129,10 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
     }
 
+    fun stats() {
+        viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
+    }
+
     fun members() {
         viewModel.onEvent(GroupDetailUiEvent.OnMembersClicked)
     }

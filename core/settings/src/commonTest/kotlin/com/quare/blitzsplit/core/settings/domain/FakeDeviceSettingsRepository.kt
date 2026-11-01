@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.settings.domain
 
 import com.quare.blitzsplit.core.model.GroupsLayout
+import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,8 @@ internal class FakeDeviceSettingsRepository(
     val updatedThemes = mutableListOf<ThemePreference>()
     val layout = MutableStateFlow(GroupsLayout.initial)
     val updatedLayouts = mutableListOf<GroupsLayout>()
+    val statsChart = MutableStateFlow(StatsChartPreferences.initial)
+    val updatedStatsCharts = mutableListOf<StatsChartPreferences>()
 
     override fun observeTheme(): Flow<ThemePreference> = theme
 
@@ -26,5 +29,12 @@ internal class FakeDeviceSettingsRepository(
     override suspend fun updateGroupsLayout(layout: GroupsLayout) {
         updatedLayouts += layout
         this.layout.value = layout
+    }
+
+    override fun observeStatsChart(): Flow<StatsChartPreferences> = statsChart
+
+    override suspend fun updateStatsChart(preferences: StatsChartPreferences) {
+        updatedStatsCharts += preferences
+        statsChart.value = preferences
     }
 }

@@ -46,6 +46,7 @@ final class BalancesModel {
         GroupScreenActions(
             select: { [weak self] in self?.select($0) },
             invite: { [weak self] in self?.send(BalancesUiEventOnInviteClicked.shared) },
+            stats: { [weak self] in self?.send(BalancesUiEventOnStatsClicked.shared) },
             members: { [weak self] in self?.send(BalancesUiEventOnMembersClicked.shared) },
             editGroup: { [weak self] in self?.send(BalancesUiEventOnEditGroupClicked.shared) },
             leaveGroup: { [weak self] in self?.send(BalancesUiEventOnLeaveGroupClicked.shared) },

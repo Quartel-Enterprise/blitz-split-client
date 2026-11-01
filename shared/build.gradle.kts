@@ -29,6 +29,7 @@ private val exportedToApple = listOf(
     projects.feature.editGroup,
     projects.feature.registerPayment,
     projects.feature.globalBalances,
+    projects.feature.groupStats,
 )
 
 kotlin {

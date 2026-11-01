@@ -11,6 +11,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: "Convidar pessoas", the top bar's and the empty state's.
     data object OnInviteClicked : GroupDetailUiEvent
 
+    // Why: "Estatísticas" in the top bar, next to "Convidar pessoas".
+    data object OnStatsClicked : GroupDetailUiEvent
+
     // Why: the "Membros" tab and the faces under the name.
     data object OnMembersClicked : GroupDetailUiEvent
 

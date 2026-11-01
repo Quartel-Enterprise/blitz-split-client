@@ -25,6 +25,7 @@ import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.BalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.groupstats.GroupStatsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinPickScreen
@@ -144,6 +145,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: a tab of the group, which takes Despesas' or Membros' place.
             entry<Route.Balances> { route -> BalancesScreen(route) }
+            entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
             entry<Route.RegisterPayment>(
                 metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,

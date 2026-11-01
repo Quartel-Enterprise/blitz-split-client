@@ -17,14 +17,15 @@ internal class SplitBillExits(
     }
 
     /*
-     * Why: a new bill goes back to the group's screen it was split from, or opens its group's Despesas in its place:
-     * from the home, or once another group was picked.
+     * Why: a new bill goes back to the group's screen it was split from (a tab, or its Estatísticas' empty "Rachar
+     * conta", which sits over a tab), or opens its group's Despesas in its place: from the home, or once another
+     * group was picked.
      */
     fun leaveToBillGroup(groupId: String) {
         if (!isOnTop()) return
         val stack = navigator.backStack.value
         val below = stack.getOrNull(stack.lastIndex - 1)
-        if (below != null && tabGroupIdOrNull(below) == groupId) {
+        if (below != null && (tabGroupIdOrNull(below) == groupId || below == Route.GroupStats(groupId))) {
             navigator.navigateBack()
         } else {
             navigator.replaceTop(Route.GroupDetail(groupId))

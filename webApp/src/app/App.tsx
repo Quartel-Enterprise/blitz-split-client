@@ -9,6 +9,7 @@ import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDial
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
+import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
@@ -94,6 +95,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <MembersScreen key={route.groupId} route={route} /> : null
     case 'group-detail':
       return route ? <GroupDetailScreen key={route.groupId} route={route} /> : null
+    case 'group-stats':
+      return route ? <GroupStatsScreen key={route.groupId} route={route} /> : null
     case 'balances':
       return route ? <BalancesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':

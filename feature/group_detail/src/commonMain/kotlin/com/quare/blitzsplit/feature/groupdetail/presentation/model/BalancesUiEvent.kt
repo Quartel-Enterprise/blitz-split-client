@@ -11,6 +11,9 @@ sealed interface BalancesUiEvent : UiEvent {
     // Why: "Convidar pessoas" in the top bar.
     data object OnInviteClicked : BalancesUiEvent
 
+    // Why: "Estatísticas" in the top bar.
+    data object OnStatsClicked : BalancesUiEvent
+
     // Why: the "Despesas" tab.
     data object OnExpensesTabClicked : BalancesUiEvent
 

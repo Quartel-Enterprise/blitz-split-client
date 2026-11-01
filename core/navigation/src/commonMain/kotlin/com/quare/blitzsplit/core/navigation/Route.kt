@@ -43,6 +43,14 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    /*
+     * Why: "Estatísticas do grupo" (6.6), from the chart button on the group's bar: what the group spent and who
+     * spent it, from the bills on the device. Back goes to the tab it was opened from.
+     */
+    data class GroupStats(
+        val groupId: String,
+    ) : Route
+
     // Why: "Editar grupo", from the group's ⋮ menu: a sheet over the group on iOS and macOS, a dialog on the web.
     data class EditGroup(
         val groupId: String,
