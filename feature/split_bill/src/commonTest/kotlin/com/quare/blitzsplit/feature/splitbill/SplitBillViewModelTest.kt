@@ -2003,6 +2003,24 @@ class SplitBillViewModelTest {
     }
 
     @Test
+    fun `GIVEN a bill split from the group statistics WHEN tapping Salvar THEN goes back to them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(openedOver = listOf(Route.GroupDetail(GROUP_ID), Route.GroupStats(GROUP_ID)))
+            typeAmount("100")
+            describe("Mercado")
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID), Route.GroupStats(GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN another payer a Valores split and another day WHEN tapping Salvar THEN saves them`() =
         runTest(testDispatcher) {
             // Given
@@ -2249,6 +2267,7 @@ class SplitBillViewModelTest {
         decimalSeparator: Char = ',',
         createError: Throwable? = null,
         createGate: CompletableDeferred<Unit>? = null,
+        openedOver: List<Route> = listOf(Route.GroupDetail(GROUP_ID)),
     ) {
         clockMillis = now
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
@@ -2258,7 +2277,7 @@ class SplitBillViewModelTest {
         }
         isOnline = MutableStateFlow(online)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            openedOver.forEach(it::navigate)
             it.navigate(route)
         }
         val roomNeverAnswers = MutableSharedFlow<Group?>()

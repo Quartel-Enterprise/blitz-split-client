@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
@@ -61,6 +62,7 @@ internal fun StatsOverTimeSection(
     modifier: Modifier = Modifier,
 ) {
     val today = stringResource(R.string.group_stats_today)
+    val chartTypeLabel = stringResource(R.string.group_stats_chart_type)
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.padding(
@@ -73,7 +75,9 @@ internal fun StatsOverTimeSection(
         ) {
             StatsSectionHeading(stringResource(R.string.group_stats_over_time), modifier = Modifier.weight(1f))
             Row(
-                modifier = Modifier.selectableGroup(),
+                modifier = Modifier
+                    .selectableGroup()
+                    .semantics { contentDescription = chartTypeLabel },
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 StatsChartTypeToggle(
@@ -258,17 +262,30 @@ internal fun StatsBiggestSection(
                         isMe = { it.isMe },
                         nameOf = { it.name },
                     )
-                    Text(
-                        text = paid?.let {
-                            stringResource(
-                                R.string.group_stats_biggest_meta,
-                                whenText,
-                                it,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        // Why: the queue's orange dot, as Despesas and the other platforms draw it.
+                        if (expense.isPending) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
                             )
-                        } ?: whenText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                        }
+                        Text(
+                            text = paid?.let {
+                                stringResource(
+                                    R.string.group_stats_biggest_meta,
+                                    whenText,
+                                    it,
+                                )
+                            } ?: whenText,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
                 Text(money.toText(expense.amountMinor), style = MaterialTheme.typography.titleSmall)
             }

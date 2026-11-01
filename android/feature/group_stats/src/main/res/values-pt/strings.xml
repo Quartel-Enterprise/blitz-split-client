@@ -2,7 +2,6 @@
 <resources>
     <string name="group_stats_title">Estatísticas</string>
     <string name="group_stats_back">Voltar para %s</string>
-    <string name="group_stats_period">Período</string>
     <string name="group_stats_period_all_trip">Toda a viagem</string>
     <string name="group_stats_period_all">Todo o período</string>
     <string name="group_stats_period_this_year">Este ano</string>
@@ -11,7 +10,6 @@
     <string name="group_stats_period_custom">Escolher datas…</string>
     <string name="group_stats_period_custom_hint">De um dia até outro</string>
     <string name="group_stats_period_hint">%1$s · %2$s</string>
-    <string name="group_stats_period_short">%1$s · %2$s</string>
     <string name="group_stats_expenses_none">nenhuma despesa</string>
     <string name="group_stats_summary">Resumo do período</string>
     <string name="group_stats_total_spent">Total gasto</string>
@@ -48,6 +46,7 @@
     <string name="group_stats_note_day">Dia vale para períodos de até 3 meses.</string>
     <string name="group_stats_note_week_month_year">Semana, Mês e Ano aparecem em períodos mais longos que uma semana.</string>
     <string name="group_stats_note_month_year">Mês e Ano aparecem em períodos mais longos que um mês.</string>
+    <string name="group_stats_note_week">Semana aparece em períodos mais longos que uma semana.</string>
     <string name="group_stats_note_year">Ano aparece em períodos mais longos que um ano.</string>
     <string name="group_stats_note_year_switches_all">Para comparar anos, escolha Ano: o período vira Todo o período.</string>
     <string name="group_stats_note_year_switches_trip">Para comparar anos, escolha Ano: o período vira Toda a viagem.</string>

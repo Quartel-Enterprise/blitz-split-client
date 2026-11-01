@@ -13,7 +13,7 @@ import { controlClass } from '@/components/fields'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { formatDayTime, toDateInputValue } from '@/lib/dates'
+import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
 import { formatMoney, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { StatsChart } from './StatsChart'
@@ -428,8 +428,9 @@ function PickDatesDialog({
   const [start, setStart] = useState(toDateInputValue(initialStart))
   const [end, setEnd] = useState(toDateInputValue(initialEnd))
   const today = toDateInputValue(Date.now())
-  const startMillis = dateInputMillis(start)
-  const endMillis = dateInputMillis(end)
+  // Why: noon of the day typed, so the day stays the same in the browser's time zone.
+  const startMillis = fromDateTimeInputs(start, '12:00')
+  const endMillis = fromDateTimeInputs(end, '12:00')
   const canApply = startMillis != null && endMillis != null
   return (
     <ResponsiveDialog
@@ -466,11 +467,4 @@ function PickDatesDialog({
       }}
     />
   )
-}
-
-// Why: noon of the day typed, so the day stays the same in the browser's time zone.
-function dateInputMillis(value: string): number | null {
-  const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
-  if (!day) return null
-  return new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3]), 12).getTime()
 }

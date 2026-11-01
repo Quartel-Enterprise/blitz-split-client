@@ -107,6 +107,8 @@ internal fun grainNoteTextOf(state: GroupStatsUiState): String? = state.grainNot
 
                 StatsGrainNote.MONTH_AND_YEAR_NEED_LONGER_PERIOD -> R.string.group_stats_note_month_year
 
+                StatsGrainNote.WEEK_NEEDS_LONGER_PERIOD -> R.string.group_stats_note_week
+
                 StatsGrainNote.YEAR_NEEDS_LONGER_PERIOD -> R.string.group_stats_note_year
 
                 StatsGrainNote.YEAR_SWITCHES_PERIOD -> if (state.isTrip) {

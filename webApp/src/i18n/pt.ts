@@ -961,6 +961,7 @@ export const pt: Record<MessageKey, string> = {
   stats_noteDay: 'Dia vale para períodos de até 3 meses.',
   stats_noteWeekMonthYear: 'Semana, Mês e Ano aparecem em períodos mais longos que uma semana.',
   stats_noteMonthYear: 'Mês e Ano aparecem em períodos mais longos que um mês.',
+  stats_noteWeek: 'Semana aparece em períodos mais longos que uma semana.',
   stats_noteYear: 'Ano aparece em períodos mais longos que um ano.',
   stats_noteYearSwitchesAll: 'Para comparar anos, escolha Ano: o período vira Todo o período.',
   stats_noteYearSwitchesTrip: 'Para comparar anos, escolha Ano: o período vira Toda a viagem.',

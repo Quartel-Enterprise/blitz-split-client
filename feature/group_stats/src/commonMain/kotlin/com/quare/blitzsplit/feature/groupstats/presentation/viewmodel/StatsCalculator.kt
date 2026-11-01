@@ -109,18 +109,21 @@ internal class StatsCalculator(
 
     fun createGrainNotes(span: DateSpan): List<StatsGrainNote> {
         val longerOff = listOf(StatsGrain.WEEK, StatsGrain.MONTH, StatsGrain.YEAR).filterNot { isEnabled(it, span) }
+        val longerNotes = when (longerOff) {
+            listOf(StatsGrain.WEEK, StatsGrain.MONTH, StatsGrain.YEAR) ->
+                listOf(StatsGrainNote.WEEK_MONTH_AND_YEAR_NEED_LONGER_PERIOD)
+
+            listOf(StatsGrain.MONTH, StatsGrain.YEAR) -> listOf(StatsGrainNote.MONTH_AND_YEAR_NEED_LONGER_PERIOD)
+
+            // Why: a period in one week that crosses into another month (Oct 31 to Nov 1) has Mês but not Semana.
+            else -> listOfNotNull(
+                StatsGrainNote.WEEK_NEEDS_LONGER_PERIOD.takeIf { StatsGrain.WEEK in longerOff },
+                StatsGrainNote.YEAR_NEEDS_LONGER_PERIOD.takeIf { StatsGrain.YEAR in longerOff },
+            )
+        }
         return listOfNotNull(
             StatsGrainNote.DAY_NEEDS_SHORT_PERIOD.takeUnless { span.canSplitBy(StatsGrain.DAY) },
-            when (longerOff) {
-                listOf(StatsGrain.WEEK, StatsGrain.MONTH, StatsGrain.YEAR) ->
-                    StatsGrainNote.WEEK_MONTH_AND_YEAR_NEED_LONGER_PERIOD
-
-                listOf(StatsGrain.MONTH, StatsGrain.YEAR) -> StatsGrainNote.MONTH_AND_YEAR_NEED_LONGER_PERIOD
-
-                listOf(StatsGrain.YEAR) -> StatsGrainNote.YEAR_NEEDS_LONGER_PERIOD
-
-                else -> null
-            },
+        ) + longerNotes + listOfNotNull(
             StatsGrainNote.YEAR_SWITCHES_PERIOD.takeIf {
                 isEnabled(StatsGrain.YEAR, span) && !span.canSplitBy(StatsGrain.YEAR)
             },
@@ -133,11 +136,20 @@ internal class StatsCalculator(
         grain: StatsGrain,
     ): List<StatsBar> {
         val buckets = span.splitBy(grain)
-        val amounts = buckets.map { bucket ->
-            spending.expenses
-                .filter { SpentDay.dateOf(it.spentAt, timeZone) in bucket }
-                .sumOf { it.amountMinor }
+        // Why: each bill's day once, into the bucket holding it (the buckets follow each other in order).
+        val amountsByBucket = LongArray(buckets.size)
+        spending.expenses.forEach { expense ->
+            val date = SpentDay.dateOf(expense.spentAt, timeZone)
+            val index = buckets.binarySearch { bucket ->
+                when {
+                    bucket.end < date -> -1
+                    bucket.start > date -> 1
+                    else -> 0
+                }
+            }
+            if (index >= 0) amountsByBucket[index] += expense.amountMinor
         }
+        val amounts = amountsByBucket.toList()
         val peak = amounts.indexOf(amounts.maxOrNull()?.takeIf { it > 0 })
         val labelStep = if (buckets.size <= maxLabelsOf(grain)) 1 else ceil(buckets.size / SPARSE_LABELS).toInt()
         return buckets.mapIndexed { index, bucket ->

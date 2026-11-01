@@ -91,6 +91,7 @@ const grainNotes: Record<string, MessageKey> = {
   DAY_NEEDS_SHORT_PERIOD: 'stats_noteDay',
   WEEK_MONTH_AND_YEAR_NEED_LONGER_PERIOD: 'stats_noteWeekMonthYear',
   MONTH_AND_YEAR_NEED_LONGER_PERIOD: 'stats_noteMonthYear',
+  WEEK_NEEDS_LONGER_PERIOD: 'stats_noteWeek',
   YEAR_NEEDS_LONGER_PERIOD: 'stats_noteYear',
   YEAR_SWITCHES_PERIOD: 'stats_noteYearSwitchesAll',
 }

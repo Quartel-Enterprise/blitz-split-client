@@ -410,6 +410,48 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN a trip WHEN picking two days of one week across two months THEN says why Semana and Ano are off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                GroupStatsUiEvent.OnCustomPeriodPicked(
+                    startMillis = millisOf("2026-09-30T10:00:00Z"),
+                    endMillis = millisOf("2026-10-01T10:00:00Z"),
+                ),
+            )
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf(true, false, true, false), state.grains.map { it.isEnabled })
+            assertEquals(
+                listOf(StatsGrainNote.WEEK_NEEDS_LONGER_PERIOD, StatsGrainNote.YEAR_NEEDS_LONGER_PERIOD),
+                state.grainNotes,
+            )
+        }
+
+    @Test
+    fun `GIVEN a trip WHEN picking dates past today THEN the period ends today`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(
+            GroupStatsUiEvent.OnCustomPeriodPicked(
+                startMillis = millisOf("2026-10-20T10:00:00Z"),
+                endMillis = millisOf("2026-11-15T10:00:00Z"),
+            ),
+        )
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(millisOf("2026-10-20T00:00:00Z"), state.periodStartMillis)
+        assertEquals(millisOf("2026-10-29T00:00:00Z"), state.periodEndMillis)
+    }
+
+    @Test
     fun `GIVEN a trip WHEN the statistics open THEN the biggest bill names who paid it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

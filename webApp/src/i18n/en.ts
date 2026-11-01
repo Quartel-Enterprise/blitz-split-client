@@ -960,6 +960,7 @@ export const en = {
   stats_noteDay: 'Day works for periods of up to 3 months.',
   stats_noteWeekMonthYear: 'Week, Month and Year show up in periods longer than a week.',
   stats_noteMonthYear: 'Month and Year show up in periods longer than a month.',
+  stats_noteWeek: 'Week shows up in periods longer than a week.',
   stats_noteYear: 'Year shows up in periods longer than a year.',
   stats_noteYearSwitchesAll: 'To compare years, pick Year: the period becomes All time.',
   stats_noteYearSwitchesTrip: 'To compare years, pick Year: the period becomes The whole trip.',

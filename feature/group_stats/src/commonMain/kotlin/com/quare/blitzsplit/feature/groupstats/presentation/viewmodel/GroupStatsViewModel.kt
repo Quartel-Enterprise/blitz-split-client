@@ -88,6 +88,9 @@ class GroupStatsViewModel(
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
     private var chart = StatsChartPreferences.initial
+
+    // Why: the last pick not stored yet; older echoes of the database never undo it while it is saving.
+    private var pendingChart: StatsChartPreferences? = null
     private var period = StatsPeriod.ALL
     private var customSpan: DateSpan? = null
     private var peopleView = StatsPeopleView.CONSUMPTION
@@ -104,7 +107,7 @@ class GroupStatsViewModel(
         ).onEach { (group, expenses, chart) ->
             this.group = group
             this.expenses = expenses
-            this.chart = chart
+            keepStoredChart(chart)
             isGone = group == null
             if (group == null) leave() else render()
         }.launchIn(viewModelScope)
@@ -150,13 +153,15 @@ class GroupStatsViewModel(
         render()
     }
 
+    // Why: "Escolher datas…" never goes past today, whatever a typed date (the web's date field) says.
     private fun pickCustomPeriod(
         startMillis: Long,
         endMillis: Long,
     ) {
         val timeZone = currentTimeZone()
-        val first = SpentDay.dateOf(startMillis, timeZone)
-        val last = SpentDay.dateOf(endMillis, timeZone)
+        val today = SpentDay.dateOf(currentTimeMillis(), timeZone)
+        val first = minOf(SpentDay.dateOf(startMillis, timeZone), today)
+        val last = minOf(SpentDay.dateOf(endMillis, timeZone), today)
         customSpan = DateSpan(minOf(first, last), maxOf(first, last))
         period = StatsPeriod.CUSTOM
         render()
@@ -171,8 +176,17 @@ class GroupStatsViewModel(
         keepChart(chart.copy(grain = grain))
     }
 
+    private fun keepStoredChart(stored: StatsChartPreferences) {
+        val pending = pendingChart
+        if (pending == null || pending == stored) {
+            pendingChart = null
+            chart = stored
+        }
+    }
+
     private fun keepChart(chart: StatsChartPreferences) {
         this.chart = chart
+        pendingChart = chart
         render()
         viewModelScope.launch { updateStatsChartPreferences(chart) }
     }
@@ -223,13 +237,7 @@ class GroupStatsViewModel(
             expenseCount = spending.expenses.size,
             pendingCount = spending.pendingCount,
             memberCount = memberCount,
-            averagePerPersonMinor = if (memberCount >
-                0
-            ) {
-                toRoundedQuotient(spending.totalMinor, memberCount.toLong())
-            } else {
-                0L
-            },
+            averagePerPersonMinor = toAveragePerPerson(spending.totalMinor, memberCount),
             myShareMinor = myShare,
             mySharePercent = if (myShare != null && spending.totalMinor > 0) {
                 toRoundedQuotient(myShare * PERCENT, spending.totalMinor).toInt()
@@ -270,6 +278,11 @@ class GroupStatsViewModel(
     private fun leave() {
         if (isOnTop()) navigator.navigateBack()
     }
+
+    private fun toAveragePerPerson(
+        totalMinor: Long,
+        memberCount: Int,
+    ): Long = if (memberCount > 0) toRoundedQuotient(totalMinor, memberCount.toLong()) else 0L
 
     private fun toRoundedQuotient(
         dividend: Long,
