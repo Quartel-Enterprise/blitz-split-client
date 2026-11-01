@@ -51,7 +51,7 @@ class JsDefaultSplitState(
     val addsUp: Boolean,
     val showsPercentError: Boolean,
     // Why: "Carla entrou no grupo", the names of whoever joined since the split was saved.
-    val newcomers: Array<String>,
+    val joinedPeople: Array<String>,
     val isLoaded: Boolean,
     val isSaving: Boolean,
     val showsSaveError: Boolean,
@@ -84,7 +84,7 @@ class DefaultSplitPresenter(
                 remainingPercent = state.remainingPercent.toDouble(),
                 addsUp = state.addsUp,
                 showsPercentError = state.showsPercentError,
-                newcomers = state.newcomers.map { it.name }.toTypedArray(),
+                joinedPeople = state.joinedPeople.map { it.name }.toTypedArray(),
                 isLoaded = state.isLoaded,
                 isSaving = state.isSaving,
                 showsSaveError = state.showsSaveError,

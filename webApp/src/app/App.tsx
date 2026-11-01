@@ -6,6 +6,7 @@ import { BalancesScreen } from '@/features/balances/BalancesScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
+import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
@@ -54,10 +55,14 @@ export function App() {
   const isJoinWithLink = top.name === 'join-with-link'
   const isSplitBill = top.name === 'split-bill'
   const isEditGroup = top.name === 'edit-group'
+  // Why: "Divisão padrão" takes Editar grupo's place, which stays mounted under it with what was typed.
+  const isDefaultSplit = top.name === 'default-split'
+  const editGroup = isEditGroup ? top : isDefaultSplit && backStack[backStack.length - 2]?.name === 'edit-group' ? backStack[backStack.length - 2] : undefined
   // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
-  const isDialog = isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isRegisterPayment || isPaymentKey || isDeleteAccount
-  let pageIndex = backStack.length - (isDialog ? 2 : 1)
+  const isDialog =
+    isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPaymentKey || isDeleteAccount
+  let pageIndex = backStack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
   const bill = backStack[pageIndex]?.name === 'bill-detail' ? backStack[pageIndex] : undefined
@@ -74,7 +79,8 @@ export function App() {
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
-      {isEditGroup && <EditGroupDialog key={top.groupId} route={top} />}
+      {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
+      {isDefaultSplit && <DefaultSplitDialog key={top.groupId} route={top} />}
       {isRegisterPayment && (
         <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
       )}

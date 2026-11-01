@@ -1,5 +1,5 @@
-import type { JsBillPerson, JsSplitEditor, JsSplitFact } from 'blitzsplit-shared'
-import { t } from '@/i18n'
+import type { JsBillDefaultSplit, JsBillPerson, JsSplitEditor, JsSplitFact } from 'blitzsplit-shared'
+import { t, type MessageKey } from '@/i18n'
 import { formatNames, formatPercent } from '@/lib/money'
 
 /** An amount in the bill's currency, from its minor unit. */
@@ -74,6 +74,8 @@ export function splitFactText(fact: JsSplitFact, money: Money, place: FactPlace 
       return t('split_addsUpPercent', { percent: formatPercent(100) })
     case 'parts':
       return t(count === 1 ? 'split_sharesOne' : 'split_sharesOther', { count, amount })
+    case 'group-default':
+      return t('split_groupDefault')
     case 'person-parts':
       return fact.person?.isMe ? t('split_youHaveShares', { count }) : t('split_hasShares', { name: fact.person?.name ?? '', count })
     default:
@@ -101,7 +103,34 @@ export function splitStatus(editor: JsSplitEditor, money: Money): SplitStatus {
   }
 }
 
-/** "R$ 62,40 cada · Diego não participa", the line under Rachar conta's "Divisão". */
-export function splitSummary(editor: JsSplitEditor, money: Money): string {
-  return editor.summary.map((fact) => splitFactText(fact, money, 'summary')).join(' · ')
+/**
+ * "R$ 62,40 cada · Diego não participa", the line under Rachar conta's "Divisão", "Padrão do grupo" first while the
+ * bill keeps the group's default split.
+ */
+export function splitSummary(facts: JsSplitFact[], money: Money): string {
+  return facts.map((fact) => splitFactText(fact, money, 'summary')).join(' · ')
+}
+
+const defaultModes: Record<string, MessageKey> = {
+  equal: 'defaultSplit_modeEqual',
+  shares: 'defaultSplit_modeShares',
+  percent: 'defaultSplit_modePercent',
+  income: 'defaultSplit_modeIncome',
+}
+
+/** "Partes, 3 para 1", "Porcentagem, 75% e 25%", "Igual, sem Diego": the group's default split a bill opens with. */
+export function defaultSplitText(split: JsBillDefaultSplit): string {
+  const mode = t(defaultModes[split.mode] ?? 'defaultSplit_modeEqual')
+  let detail: string | null
+  if (split.mode === 'shares') {
+    detail =
+      split.values.length === 2
+        ? t('split_defaultSharesTwo', { first: split.values[0], second: split.values[1] })
+        : formatNames(split.values.map(String))
+  } else if (split.mode === 'percent' || split.mode === 'income') {
+    detail = formatNames(split.values.map(formatPercent))
+  } else {
+    detail = split.excluded.length > 0 ? t('split_defaultWithout', { names: formatNames(split.excluded.map(personName)) }) : null
+  }
+  return detail ? t('split_defaultDescription', { mode, detail }) : mode
 }

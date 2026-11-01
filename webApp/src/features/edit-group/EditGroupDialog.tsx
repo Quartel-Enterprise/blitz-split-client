@@ -1,4 +1,4 @@
-import { Check, ChevronDown, CircleAlert, Loader2, Lock } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, CircleAlert, Loader2, Lock } from 'lucide-react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Button } from '@/components/ui/button'
@@ -11,9 +11,16 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t } from '@/i18n'
+import { t, type MessageKey } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
+
+const defaultSplitModes: Record<string, MessageKey> = {
+  equal: 'defaultSplit_modeEqual',
+  shares: 'defaultSplit_modeShares',
+  percent: 'defaultSplit_modePercent',
+  income: 'defaultSplit_modeIncome',
+}
 
 const formId = 'edit-group-form'
 const nameId = 'edit-group-name'
@@ -23,9 +30,10 @@ const currencyNoteId = 'edit-group-currency-note'
 
 /**
  * "Edit group", over the group: a dialog on desktop and tablet, a drawer with stacked buttons on the phone.
- * Closing it any way (Esc, the overlay, Cancel) is the ViewModel's close.
+ * Closing it any way (Esc, the overlay, Cancel) is the ViewModel's close. "Divisão padrão" opens in its place, so it
+ * stays mounted (closed) while `isCovered` and comes back with what was typed.
  */
-export function EditGroupDialog({ route }: { route: JsRoute }) {
+export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovered: boolean }) {
   const presenter = usePresenter(() => new EditGroupPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsEditGroupState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -48,7 +56,7 @@ export function EditGroupDialog({ route }: { route: JsRoute }) {
   const form = <EditGroupForm presenter={presenter} state={state} />
 
   return isDesktop ? (
-    <Dialog open onOpenChange={onOpenChange}>
+    <Dialog open={!isCovered} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle>{t('editGroup_title')}</DialogTitle>
@@ -62,7 +70,7 @@ export function EditGroupDialog({ route }: { route: JsRoute }) {
       </DialogContent>
     </Dialog>
   ) : (
-    <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
+    <Drawer open={!isCovered} onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
         <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
           <DrawerTitle>{t('editGroup_title')}</DrawerTitle>
@@ -168,6 +176,20 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
           </span>
         </div>
       </div>
+
+      <button
+        type="button"
+        disabled={state.isSaving}
+        onClick={() => presenter.openDefaultSplit()}
+        className="flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50"
+      >
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-sm font-medium">{t('editGroup_defaultSplit')}</span>
+          <span className="text-[13px] text-muted-foreground">{t('editGroup_defaultSplitHelp')}</span>
+        </span>
+        <span className="text-sm text-muted-foreground">{t(defaultSplitModes[state.defaultSplitMode] ?? 'defaultSplit_modeEqual')}</span>
+        <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
+      </button>
 
       <p className="text-[13px] text-muted-foreground">{t(state.showsOfflineNotice ? 'editGroup_offlineNote' : 'editGroup_note')}</p>
     </form>

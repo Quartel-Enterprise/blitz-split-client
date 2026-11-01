@@ -97,10 +97,12 @@ class JsPayerAmounts(
 
 /*
  * Why: the group's "Divisão padrão" a new bill opens with. mode is the DefaultSplitMode's code ("shares"), values the
- * parts or percentages of who is in it ("3 para 1"), excluded who an "Igual" default leaves out.
+ * parts or percentages of who is in it ("3 para 1"), excluded who an "Igual" default leaves out, editorMode the
+ * SplitMode's code it gives the bill ("percent" for "Pela renda").
  */
 class JsBillDefaultSplit(
     val mode: String,
+    val editorMode: String,
     val values: Array<Double>,
     val excluded: Array<JsBillPerson>,
 )
@@ -232,6 +234,7 @@ class SplitBillPresenter(
                 defaultSplit = state.defaultSplit?.let { default ->
                     JsBillDefaultSplit(
                         mode = default.mode.code,
+                        editorMode = default.editor.mode.code,
                         values = default.values.map { it.toDouble() }.toTypedArray(),
                         excluded = default.excluded.map(::toJsBillPerson).toTypedArray(),
                     )
