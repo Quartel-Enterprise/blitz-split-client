@@ -1,8 +1,12 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillItem
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
@@ -209,7 +213,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(PIERRE, 1_000L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertTrue(isValid)
@@ -221,7 +225,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(ANA, 400L), payer(PIERRE, 600L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertTrue(isValid)
@@ -233,7 +237,7 @@ class ExpenseRulesTest {
         val payers = emptyList<ExpensePayer>()
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertFalse(isValid)
@@ -245,7 +249,7 @@ class ExpenseRulesTest {
         val shares = emptyList<ExpenseShare>()
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -257,7 +261,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(PIERRE, 500L), payer(PIERRE, 500L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertFalse(isValid)
@@ -269,7 +273,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(ANA, 500L), share(ANA, 500L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -281,7 +285,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(PIERRE, 1_100L), payer(ANA, -100L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertFalse(isValid)
@@ -293,7 +297,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 1_100L, weight = 1_100L), share(ANA, -100L, weight = 0L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.AMOUNT, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.AMOUNT, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -305,7 +309,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 500L, weight = 2L), share(ANA, 500L, weight = -1L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.SHARES, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.SHARES, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -317,7 +321,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(PIERRE, 600L), payer(ANA, 399L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertFalse(isValid)
@@ -329,7 +333,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(PIERRE, 1_001L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertFalse(isValid)
@@ -341,7 +345,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 500L), share(ANA, 499L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -353,7 +357,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 501L), share(ANA, 500L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -365,7 +369,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 300L, weight = 30L), share(ANA, 700L, weight = 70L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares, null)
 
         // Then
         assertTrue(isValid)
@@ -377,7 +381,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 300L, weight = 29L), share(ANA, 700L, weight = 70L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -389,7 +393,7 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 300L, weight = 31L), share(ANA, 700L, weight = 70L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares, null)
 
         // Then
         assertFalse(isValid)
@@ -402,7 +406,7 @@ class ExpenseRulesTest {
         val modes = listOf(SplitMode.EQUAL, SplitMode.AMOUNT, SplitMode.SHARES)
 
         // When
-        val validity = modes.map { ExpenseRules.isSplitValid(1_000L, it, wholeBillByPierre, shares) }
+        val validity = modes.map { ExpenseRules.isSplitValid(1_000L, it, wholeBillByPierre, shares, null) }
 
         // Then
         assertEquals(listOf(true, true, true), validity)
@@ -414,7 +418,7 @@ class ExpenseRulesTest {
         val payers = listOf(payer(PIERRE, 1_000L), payer(ANA, 0L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.EQUAL, payers, halves, null)
 
         // Then
         assertTrue(isValid)
@@ -426,11 +430,76 @@ class ExpenseRulesTest {
         val shares = listOf(share(PIERRE, 1_000L, weight = 100L), share(ANA, 0L, weight = 0L))
 
         // When
-        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares)
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.PERCENT, wholeBillByPierre, shares, null)
 
         // Then
         assertTrue(isValid)
     }
+
+    @Test
+    fun `GIVEN a bill split by its items with the shares they give WHEN checking the split THEN it is valid`() {
+        // Given
+        val shares = listOf(share(PIERRE, 500L, weight = 500L), share(ANA, 500L, weight = 500L))
+
+        // When
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.ITEMS, wholeBillByPierre, shares, pizzaForTwo)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN items whose shares are not the ones saved WHEN checking the split THEN it is not valid`() {
+        // Given
+        val shares = listOf(share(PIERRE, 600L, weight = 600L), share(ANA, 400L, weight = 400L))
+
+        // When
+        val isValid = ExpenseRules.isSplitValid(1_000L, SplitMode.ITEMS, wholeBillByPierre, shares, pizzaForTwo)
+
+        // Then
+        assertFalse(isValid)
+    }
+
+    @Test
+    fun `GIVEN items on a bill split another way or none by items WHEN checking the split THEN it is not valid`() {
+        // Given
+        val shares = listOf(share(PIERRE, 500L, weight = 500L), share(ANA, 500L, weight = 500L))
+
+        // When
+        val withItems = ExpenseRules.isSplitValid(1_000L, SplitMode.AMOUNT, wholeBillByPierre, shares, pizzaForTwo)
+        val withoutItems = ExpenseRules.isSplitValid(1_000L, SplitMode.ITEMS, wholeBillByPierre, shares, null)
+
+        // Then
+        assertFalse(withItems)
+        assertFalse(withoutItems)
+    }
+
+    private val pizzaForTwo = BillItems(
+        items = listOf(
+            BillItem(
+                id = "pizza",
+                name = "Pizza",
+                quantity = 1L,
+                unitPriceMinor = 1_000L,
+                mode = ItemSplitMode.EQUAL,
+                entries = listOf(
+                    SplitEntry(
+                        memberId = PIERRE,
+                        value = 1L,
+                    ),
+                    SplitEntry(
+                        memberId = ANA,
+                        value = 1L,
+                    ),
+                ),
+            ),
+        ),
+        servicePercent = 0L,
+        couvertMinor = 0L,
+        couvertMemberIds = listOf(PIERRE, ANA),
+        extraMinor = 0L,
+        isFromReceipt = false,
+    )
 
     private val wholeBillByPierre = listOf(payer(PIERRE, 1_000L))
 

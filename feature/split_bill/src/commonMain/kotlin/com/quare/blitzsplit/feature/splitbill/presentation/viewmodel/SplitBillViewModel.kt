@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -112,6 +111,16 @@ class SplitBillViewModel(
      */
     private var hasPickedSplit = false
 
+    // Why: Dividir's fifth mode, "Itens da conta" and its items, whose "Pronto" picks the bill's split too.
+    private val items = ItemsEditing(
+        uiState = uiState,
+        separator = { separator },
+        onItemsDone = {
+            hasPickedSplit = true
+            amountAnchor = null
+        },
+    )
+
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
@@ -212,9 +221,13 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnSpentAtChanged -> changeSpentAt(event.epochMillis)
 
-            SplitBillUiEvent.OnSplitClicked -> uiState.update { it.copy(splitEditor = it.split) }
+            SplitBillUiEvent.OnSplitClicked -> openSplit()
 
-            is SplitBillUiEvent.OnSplitModeClicked -> editSplit { it.toMode(event.mode, separator) }
+            is SplitBillUiEvent.OnSplitModeClicked -> if (event.mode == SplitMode.ITEMS) {
+                items.open()
+            } else {
+                editSplit { it.toMode(event.mode, separator) }
+            }
 
             is SplitBillUiEvent.OnPersonToggled -> editSplit { editor ->
                 editor.withRows { row ->
@@ -240,7 +253,12 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSplitDone -> confirmSplit()
 
-            SplitBillUiEvent.OnSplitDismissed -> uiState.update { it.copy(splitEditor = null) }
+            SplitBillUiEvent.OnSplitDismissed -> {
+                items.forget()
+                uiState.update { it.copy(splitEditor = null) }
+            }
+
+            is SplitBillUiEvent.Items -> items.onEvent(event)
 
             SplitBillUiEvent.OnSaveClicked -> save()
 
@@ -328,42 +346,10 @@ class SplitBillViewModel(
         group: Group,
         expense: Expense,
     ) {
-        val people = group.members.map { it.toBillPerson() }
-        val payerId = expense.payers
-            .singleOrNull()
-            ?.memberId
-            .orEmpty()
-        val severalPayers = expense.payers.takeIf { it.size > 1 }?.let {
-            payerAmountsOf(
-                expense = expense,
-                people = people,
-                currency = group.currency,
-                decimalSeparator = separator,
-            )
-        }
-        val split = splitEditorOf(
-            expense = expense,
-            people = people,
-            currency = group.currency,
-            decimalSeparator = separator,
-        )
-        amountAnchor = if (expense.splitMode == SplitMode.AMOUNT) expense.amountMinor to split.entries else null
-        uiState.update {
-            it.copy(
-                currency = group.currency,
-                amountText = AmountInput.format(
-                    amountMinor = expense.amountMinor,
-                    currency = group.currency,
-                    decimalSeparator = separator,
-                ),
-                description = expense.description,
-                payerId = payerId,
-                severalPayers = severalPayers,
-                spentAt = expense.spentAt,
-                spentDay = SpentDay.relativeDayOf(expense.spentAt, currentTimeMillis(), currentTimeZone()),
-                split = split,
-            )
-        }
+        val spentDay = SpentDay.relativeDayOf(expense.spentAt, currentTimeMillis(), currentTimeZone())
+        uiState.update { it.toFilledWith(group, expense, separator, spentDay) }
+        val split = uiState.value.split
+        amountAnchor = if (split.mode == SplitMode.AMOUNT) expense.amountMinor to split.entries else null
     }
 
     // Why: someone else's save that a sync brought, while the form keeps what is being typed here.
@@ -392,6 +378,7 @@ class SplitBillViewModel(
         if (isAnotherGroup) {
             amountAnchor = null
             hasPickedSplit = false
+            items.forget()
         }
         // Why: a member who left takes their part of "Valores" along, so a new total rescales only the ones who stay.
         amountAnchor = amountAnchor?.let { (total, entries) ->
@@ -436,7 +423,7 @@ class SplitBillViewModel(
                 followsDefault = !state.isEditing && !hasPickedSplit,
             )
             // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
-            withSplit.withBillTotal()
+            withSplit.withItemsAmong(people).withBillTotal()
         }
     }
 
@@ -500,8 +487,16 @@ class SplitBillViewModel(
         }
     }
 
+    // Why: a bill split by its items opens Dividir straight on "Itens da conta".
+    private fun openSplit() {
+        uiState.update { it.copy(splitEditor = it.split) }
+        if (uiState.value.split.mode == SplitMode.ITEMS) items.open()
+    }
+
     private fun confirmSplit() {
         val editor = uiState.value.splitEditor?.takeIf { it.addsUp } ?: return
+        if (editor.mode == SplitMode.ITEMS) return
+        items.forget()
         hasPickedSplit = true
         amountAnchor = if (editor.mode == SplitMode.AMOUNT) editor.totalMinor to editor.entries else null
         uiState.update {
@@ -531,6 +526,7 @@ class SplitBillViewModel(
                     payers = payers,
                     splitMode = state.split.mode,
                     shares = shares,
+                    items = state.split.items,
                     spentAt = state.spentAt,
                 ).map { }
             } else {
@@ -542,6 +538,7 @@ class SplitBillViewModel(
                     payers = payers,
                     splitMode = state.split.mode,
                     shares = shares,
+                    items = state.split.items,
                     spentAt = state.spentAt,
                 )
             }

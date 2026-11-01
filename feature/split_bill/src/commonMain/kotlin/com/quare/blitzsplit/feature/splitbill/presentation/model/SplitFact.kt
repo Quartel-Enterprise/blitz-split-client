@@ -88,6 +88,16 @@ sealed interface SplitFact {
         val parts: Long,
     ) : SplitFact
 
+    // Why: Itens, under Rachar conta's "Divisão", "6 itens".
+    data class Items(
+        val count: Int,
+    ) : SplitFact
+
+    // Why: Itens, "2 itens sem ninguém", once the only people in some items left the group.
+    data class LooseItems(
+        val count: Int,
+    ) : SplitFact
+
     // Why: Rachar conta's "Divisão" opened with the group's "Divisão padrão" and still follows it, "Padrão do grupo".
     data object GroupDefault : SplitFact
 }

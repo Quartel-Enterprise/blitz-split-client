@@ -752,6 +752,7 @@ class GroupBalancesTest {
         splitMode = SplitMode.AMOUNT,
         payers = payers,
         shares = shares,
+        items = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,

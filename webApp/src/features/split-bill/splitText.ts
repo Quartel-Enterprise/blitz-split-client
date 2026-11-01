@@ -76,6 +76,10 @@ export function splitFactText(fact: JsSplitFact, money: Money, place: FactPlace 
       return t(count === 1 ? 'split_sharesOne' : 'split_sharesOther', { count, amount })
     case 'group-default':
       return t('split_groupDefault')
+    case 'items':
+      return t(count === 1 ? 'split_factItemsOne' : 'split_factItemsOther', { count })
+    case 'loose-items':
+      return t(count === 1 ? 'split_looseItemsOne' : 'split_looseItemsOther', { count })
     case 'person-parts':
       return fact.person?.isMe ? t('split_youHaveShares', { count }) : t('split_hasShares', { name: fact.person?.name ?? '', count })
     default:

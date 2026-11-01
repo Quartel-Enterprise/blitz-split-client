@@ -47,6 +47,30 @@ internal fun SplitStatusCard(
                 money = money,
             )
         }.joinToString(SENTENCE_SEPARATOR)
+    StatusCard(
+        isOk = isOk,
+        title = title,
+        message = message,
+        progress = if (editor.mode == SplitMode.AMOUNT && editor.totalMinor > 0) {
+            (editor.assignedMinor.toFloat() / editor.totalMinor).coerceIn(0f, 1f)
+        } else {
+            null
+        },
+    )
+}
+
+/*
+ * Why: Dividir's, "Itens da conta"'s and "Item"'s status: whether it adds up, the bar of how much is covered where
+ * there is one, the sentences under it and, for the items, the ways out of a difference.
+ */
+@Composable
+internal fun StatusCard(
+    isOk: Boolean,
+    title: String,
+    message: String,
+    progress: Float?,
+    actions: @Composable () -> Unit = {},
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,9 +106,9 @@ internal fun SplitStatusCard(
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-            if (editor.mode == SplitMode.AMOUNT && editor.totalMinor > 0) {
+            progress?.let {
                 LinearProgressIndicator(
-                    progress = { (editor.assignedMinor.toFloat() / editor.totalMinor).coerceIn(0f, 1f) },
+                    progress = { it },
                     modifier = Modifier.fillMaxWidth(),
                     color = if (isOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                     trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -99,6 +123,7 @@ internal fun SplitStatusCard(
                     MaterialTheme.colorScheme.onErrorContainer
                 },
             )
+            actions()
         }
     }
 }

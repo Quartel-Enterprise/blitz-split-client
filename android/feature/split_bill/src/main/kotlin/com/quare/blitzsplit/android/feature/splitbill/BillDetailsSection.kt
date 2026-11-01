@@ -217,7 +217,7 @@ private fun LeadingIcon(icon: @Composable () -> Unit) {
 
 // Why: saving works offline; the note says where the bill waits, with the home's pending dot.
 @Composable
-private fun OfflineNoteRow() {
+internal fun OfflineNoteRow(text: String = stringResource(R.string.split_bill_offline)) {
     Row(
         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -229,7 +229,7 @@ private fun OfflineNoteRow() {
                 .background(MaterialTheme.colorScheme.tertiary, CircleShape),
         )
         Text(
-            text = stringResource(R.string.split_bill_offline),
+            text = text,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

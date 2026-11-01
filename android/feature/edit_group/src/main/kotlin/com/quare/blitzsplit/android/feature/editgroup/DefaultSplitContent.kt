@@ -77,6 +77,7 @@ fun DefaultSplitContent(
             onConfirm = { onEvent(DefaultSplitUiEvent.OnSaveClicked) },
             cancelLabel = stringResource(R.string.default_split_cancel),
             isNavigationAtEndInDialog = false,
+            iconAction = null,
         ),
         isDialog = isDialog,
         snackbarHostState = remember { SnackbarHostState() },

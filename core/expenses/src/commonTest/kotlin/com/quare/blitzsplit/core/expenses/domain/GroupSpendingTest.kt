@@ -101,6 +101,7 @@ class GroupSpendingTest {
         splitMode = SplitMode.EQUAL,
         payers = payers,
         shares = shares,
+        items = null,
         spentAt = Instant.parse(spentAt).toEpochMilliseconds(),
         isPending = isPending,
         updatedAt = 0L,
