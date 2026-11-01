@@ -106,8 +106,19 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     lists it too. A group opens the group, a person the Membros of the group they were found in (Contatos isn't built
     yet), a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
     looks, nothing found says "Nada com “pizza”". Closing forgets the text; leaving iOS's search tab also goes back
-    to the groups (`GroupsUiState.search`). The web's "Filtrar grupos" stays, as the board draws it. The first result
-    doesn't open in a detail pane yet, since the home has no list-detail.
+    to the groups (`GroupsUiState.search`). The web's "Filtrar grupos" stays, as the board draws it. Where the home
+    draws its list and detail, the first result opens beside the results as it is typed: a group or a bill's group
+    as its Despesas, a person as the Membros they were found in (a bill's Conta waits for a tap), never over a result
+    tapped since with the same first result.
+  - The home's list and detail (5.1): an Android tablet lying down, an unfolded book (the tabletop alike) and an iPad
+    lying down draw the list (with the rail on Android) and, beside it, the group tapped, its Despesas, Saldos and
+    Membros taking each other's place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
+    tapped beside another takes its place; Convidar, Sair, Apagar and "Ver saldos" work from the list with the group
+    beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
+    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). In the pane the group has
+    no back arrow and, on Android, no "Rachar conta": the rail's opens it with that group marked. A phone, a phone
+    lying down, anything upright, the Mac and the web keep the group over the list; turning the device upright leaves
+    the group open, drawn over it.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
@@ -139,9 +150,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     chave Pix" is on, which locks once the message is edited), "Enviar" opens the system share (a ShareLink on Apple,
     `navigator.share` or a copy on the web) and "Copiar mensagem" copies; a bottom sheet on an Android phone and a
     560 dp dialog on its tablets, a sheet on iOS and macOS, a 480 px dialog on the web (a drawer on a phone). It all
-    works offline on the device's data, and has no "Rachar conta". The canvas' list and detail (Android tablets lying
-    down, the web's desktop, the Mac's inspector) waits for the app to have that pattern: one column with "Por grupo"
-    in the row, the filter beside the list on Android lying down.
+    works offline on the device's data, and has no "Rachar conta". An Android tablet lying down, an unfolded book, an
+    iPad lying down, the web's desktop (from 1024 px) and a Mac window wide enough for the inspector list the people
+    beside the one picked (`GlobalBalancesUiState.selectedPerson`, the first listed until a row is picked or once the
+    filter hides the pick): their groups by name, "Carla te deve R$ 32,90" with the actions, "Por grupo" (a table on
+    the web) and "O líquido já compensa os grupos: Cobrar e Recebi usam R$ 32,90. O app anota um pagamento em cada
+    grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
+    column with "Por grupo" in the row, the filter beside the list on a phone lying down.
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
