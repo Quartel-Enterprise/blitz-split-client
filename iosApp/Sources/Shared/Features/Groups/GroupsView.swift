@@ -116,7 +116,7 @@ struct MainTabView: View {
         TabView(selection: tabSelection) {
             Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
                 // An iPad lying down draws the group beside the list
-                GroupsColumns(model: model, path: stackPath(isSearch: false)) {
+                GroupsColumns(model: model, path: stackPath(isSearch: false), isInFront: isInFront(isSearch: false)) {
                     GroupsView(model: model)
                 }
                 #if os(macOS)
@@ -143,7 +143,7 @@ struct MainTabView: View {
             if model.state.canSearch {
                 Tab(value: MainTab.search, role: .search) {
                     // An iPad lying down opens the first result beside the results
-                    GroupsColumns(model: model, path: stackPath(isSearch: true)) {
+                    GroupsColumns(model: model, path: stackPath(isSearch: true), isInFront: isInFront(isSearch: true)) {
                         GroupsSearchView(model: model)
                     }
                 }
@@ -229,12 +229,17 @@ struct MainTabView: View {
     /// two.
     private func stackPath(isSearch: Bool) -> Binding<[AppRoute]> {
         Binding(
-            get: { balancesRoute == nil && showsSearchTab == isSearch ? path : [] },
+            get: { isInFront(isSearch: isSearch) ? path : [] },
             set: { newValue in
-                guard balancesRoute == nil, showsSearchTab == isSearch else { return }
+                guard isInFront(isSearch: isSearch) else { return }
                 path = newValue
             },
         )
+    }
+
+    /// Search while it is open, Groups while neither Search nor Balances is: the tab whose stack holds the path.
+    private func isInFront(isSearch: Bool) -> Bool {
+        balancesRoute == nil && showsSearchTab == isSearch
     }
 
     /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a

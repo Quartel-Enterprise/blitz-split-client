@@ -12,6 +12,8 @@ struct GroupsColumns<ListContent: View>: View {
     let model: GroupsModel
     /// The shared back stack above the groups, as this tab shows it.
     @Binding var path: [AppRoute]
+    /// This tab is the one in front, the only one that tells the ViewModel whether the column beside the list shows.
+    let isInFront: Bool
     @ViewBuilder let list: () -> ListContent
 
     /// The whole tab, the column beside the list included, so showing it never changes what decides it.
@@ -21,6 +23,13 @@ struct GroupsColumns<ListContent: View>: View {
     /// which the path leaves out).
     private var showsDetail: Bool {
         layout.showsListDetailOnPad && path.allSatisfy(Self.isGroupTab)
+    }
+
+    /// What this tab tells the ViewModel, nil while another tab is in front or before the first layout, whose zero
+    /// size would say there is no column for a moment.
+    private var reportedDetail: Bool? {
+        guard isInFront, layout.size != .zero else { return nil }
+        return showsDetail
     }
 
     var body: some View {
@@ -42,7 +51,8 @@ struct GroupsColumns<ListContent: View>: View {
         .environment(\.showsGroupBesideList, showsDetail)
         .measuringScreenLayout($layout)
         // The ViewModel then lets the list replace the group beside it and opens the search's first result there
-        .onChange(of: showsDetail, initial: true) { _, isShown in
+        .onChange(of: reportedDetail, initial: true) { _, isShown in
+            guard let isShown else { return }
             model.send(GroupsUiEventOnDetailPaneChanged(isShown: isShown))
         }
     }
