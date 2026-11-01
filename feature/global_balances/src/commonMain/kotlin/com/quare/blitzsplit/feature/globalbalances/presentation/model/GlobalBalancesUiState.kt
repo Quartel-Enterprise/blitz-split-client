@@ -49,6 +49,19 @@ data class GlobalBalancesUiState(
         }
     }
 
+    // Why: "1 pessoa" under Você deve and "4 pessoas" under Te devem, each person once over every currency.
+    val toPayPeopleCount: Int by lazy { peopleCountOf(owesYou = false) }
+
+    val toReceivePeopleCount: Int by lazy { peopleCountOf(owesYou = true) }
+
+    // Why: the empty states' "para receber de 4 pessoas", in emptyStateTotal's currency.
+    val emptyStatePeopleCount: Int
+        get() = when (emptyState) {
+            BalancesEmptyState.NOTHING_TO_PAY -> emptyStateTotal.toReceiveCount
+            BalancesEmptyState.NOTHING_TO_RECEIVE -> emptyStateTotal.toPayCount
+            else -> 0
+        }
+
     // Why: the hero and the "Tudo" amount.
     val primaryTotal: PeopleTotal
         get() = totals.first()
@@ -67,6 +80,11 @@ data class GlobalBalancesUiState(
     // Why: "Offline · saldos deste aparelho": everything works on what the device has.
     val showsOfflineNotice: Boolean
         get() = !isOnline
+
+    private fun peopleCountOf(owesYou: Boolean): Int = people
+        .filter { it.owesYou == owesYou }
+        .distinctBy { it.personKey }
+        .size
 
     private fun sectionOf(isYouOwe: Boolean): PeopleSection {
         val rows = people.filter { (it.netMinor < 0) == isYouOwe }

@@ -135,6 +135,30 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Carla owes you in two currencies WHEN Saldos opens THEN counts her once among who owes you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups + group(
+                    "usa",
+                    "Viagem EUA",
+                    me("me-usa"),
+                    joined("carla-usa", "Carla", "carla"),
+                    currency = GroupCurrency.USD,
+                ),
+                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(4, state.totals.sumOf { it.toReceiveCount })
+            assertEquals(3, state.toReceivePeopleCount)
+            assertEquals(1, state.toPayPeopleCount)
+        }
+
+    @Test
     fun `GIVEN A pagar opened Saldos WHEN it opens THEN shows only whom you owe with the lone row open`() =
         runTest(testDispatcher) {
             // Given
@@ -857,12 +881,13 @@ class GlobalBalancesViewModelTest {
         id: String,
         name: String,
         vararg members: GroupMember,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Group = Group(
         id = id,
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.PEACH,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         members = members.toList(),
         isPending = false,
         inviteCode = null,

@@ -29,6 +29,7 @@ internal fun rowsOf(
         val isOpenByDefault = isAlone && person in inFilter
         PersonRow(
             id = id,
+            personKey = person.key,
             name = person.name,
             initials = person.name?.let(Initials::of).orEmpty(),
             color = person.face?.color,
