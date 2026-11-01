@@ -117,7 +117,13 @@ class RecoveryCodeViewModel(
                 hasSignInFailed = false,
             )
         }
-        viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
+        viewModelScope.launch {
+            providerConnector.connect(
+                provider = provider,
+                isFromProfile = false,
+                launchNativeSignIn = ::launchNativeSignIn,
+            )
+        }
     }
 
     private suspend fun launchNativeSignIn(provider: AccountProvider) {

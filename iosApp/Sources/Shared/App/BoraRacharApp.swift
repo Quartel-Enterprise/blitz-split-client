@@ -11,13 +11,18 @@ struct BoraRacharApp: App {
     private static let didBecomeActive = UIApplication.didBecomeActiveNotification
     #endif
 
+    /// The shared back stack's view, made once the shared code started: every window draws it, and on the Mac the
+    /// Settings window too.
+    @State private var app: AppModel
+
     init() {
         BlitzSplitApple.shared.start()
+        _app = State(initialValue: AppModel())
     }
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(app: app)
                 // borarachar://auth-callback: the browser sign in (Google) coming back
                 .onOpenURL { url in
                     BlitzSplitApple.shared.handleDeepLink(url: url)
@@ -37,6 +42,13 @@ struct BoraRacharApp: App {
         .commands {
             GroupsCommands()
             ActivityCommands()
+        }
+        #endif
+
+        #if os(macOS)
+        // Ajustes (⌘,): the profile, as the canvas draws it on the Mac
+        Settings {
+            SettingsView(app: app)
         }
         #endif
     }

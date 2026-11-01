@@ -105,6 +105,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
+    /*
+     * Why: like a payment key, a tablet keeps the profile behind Excluir conta; a book and a tabletop, which open the
+     * profile's confirmations in one half (4.6, 4.9), open it in the right half too; elsewhere it is full screen.
+     */
+    val usesDeleteAccountDialog = usesFormDialog || formFactor == FormFactor.Book || formFactor == FormFactor.Tabletop
+    val deleteAccountMetadata = if (usesDeleteAccountDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
@@ -173,9 +183,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesFormDialog,
                 )
             }
-            // Why: like a payment key, a tablet keeps the profile behind it; elsewhere it opens full screen.
-            entry<Route.DeleteAccount>(metadata = formDialogMetadata) {
-                DeleteAccountScreen(isDialog = usesFormDialog)
+            entry<Route.DeleteAccount>(metadata = deleteAccountMetadata) {
+                DeleteAccountScreen(isDialog = usesDeleteAccountDialog)
             }
             // Why: a dialog over the home wider than a phone; a phone opens it full screen, in two columns lying down.
             entry<Route.CreateGroup>(metadata = createGroupMetadata) {

@@ -527,7 +527,7 @@ class RestoreViewModelTest {
             providerSignIn = ProviderSignInImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),
-                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                connectWithBrowser = ConnectWithBrowserUseCase(account),
                 completeSignIn = {
                     profilePullCount++
                     profilePull.await()

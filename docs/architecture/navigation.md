@@ -109,7 +109,7 @@ var path: [AppRoute] {
 
 A push always starts in a ViewModel and reaches SwiftUI through the watcher. A pop can start in SwiftUI (the back
 button, the edge swipe): the `NavigationStack` already moved, so the setter only tells the shared stack how many
-entries remain with `popTo`. When the root is `.groups`, `RootView` swaps the stack for `MainTabView`, the
+entries remain with `popTo`. When the root is `.home` (Início), `RootView` swaps the stack for `MainTabView`, the
 `TabView` with `.tabViewStyle(.sidebarAdaptable)` (a tab bar on iPhone, a sidebar on iPad and Mac).
 
 Some routes open as a sheet instead of a push (`AppRoute.presentsAsSheet`: a payment key, and a bill on iPad and
@@ -118,6 +118,28 @@ both sheets ("Editar conta" over a bill's "Conta"), `AppModel.stackedSheet` pres
 instead of replacing it, and closing either pops the shared stack down to what is still shown. On the Mac, a group's
 Convidar over one of its tabs is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
 tab's button draws it (`.invitePopover(host:)`); closing it pops it the same way.
+
+#### The Mac's Ajustes: two windows, one back stack
+
+The Mac's profile is Ajustes, the app's `Settings` window, which draws the same back stack as the main window: a
+`Route.Profile` the shared code pushes, from whichever tab (Início's or Grupos' avatar, Atividade's, "Proteja seu
+acesso"), is popped at once and opens Ajustes instead, and what Ajustes opens
+(`AppRoute.opensInSettings`: a key, deleting the account) is pushed on top as usual. Each window reads only its own
+entries, so a sheet open in one never changes the other's:
+
+- `AppModel.windowStack`, the back stack without the trailing `opensInSettings` entries, is all the main window's
+  `path`, `sheet`, `stackedSheet`, `invitePopover` and `cover` read, and what their setters pop to. A key opened in
+  Ajustes over the main window's "Editar grupo" leaves that sheet where it is.
+- `AppModel.settingsSheet` is the top entry while it is one of Ajustes'; closing it pops down to `windowStack`.
+- Ajustes' entries only ever sit on top, since a ViewModel's `navigateBack()` pops the top whichever window drew
+  it: while `settingsSheet` is open the main window is disabled, and a screen the shared code still opens over it (a
+  link opened from outside, a menu command) closes Ajustes' entries, `AppModel` keeping what was opened above them
+  (`replaceAbove`).
+
+Ajustes draw the profile while there is one, once Início is the root (`AppModel.hasProfile`), and close once none
+is left. Since the profile is never on the back stack there, a screen never learns where it is from the top entry: the
+profile tells `ProviderConnector.connect` that a browser sign in leaves from it (`isFromProfile`), so the browser
+coming back reopens it, which on the Mac opens Ajustes.
 
 ### Web: last entry and browser history
 
