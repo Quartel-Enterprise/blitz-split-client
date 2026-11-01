@@ -13,15 +13,17 @@ class ObserveGroupsByActivityUseCase(
     private val observeGroups: ObserveGroups,
     private val observeGroupsMoney: ObserveGroupsMoney,
 ) : ObserveGroupsByActivity {
-    // Why: a stable sort, so the groups' own order (the latest change first) breaks a tie, as on the home.
+    // Why: in the home's order (GroupActivity.compareMostRecentFirst), each group's activity read once per emission.
     override fun invoke(): Flow<List<Group>> = combine(observeGroups(), observeGroupsMoney()) { groups, money ->
-        groups.sortedByDescending { group ->
-            val ofGroup = money[group.id] ?: GroupMoney.NONE
-            GroupActivity.latestAtOf(
-                groupUpdatedAt = group.updatedAt,
-                expenses = ofGroup.expenses,
-                settlements = ofGroup.settlements,
-            )
-        }
+        groups
+            .map { group ->
+                val ofGroup = money[group.id] ?: GroupMoney.NONE
+                group to GroupActivity.latestAtOf(
+                    groupUpdatedAt = group.updatedAt,
+                    expenses = ofGroup.expenses,
+                    settlements = ofGroup.settlements,
+                )
+            }.sortedWith(GroupActivity.compareMostRecentFirst { (_, activityAt) -> activityAt })
+            .map { (group, _) -> group }
     }
 }

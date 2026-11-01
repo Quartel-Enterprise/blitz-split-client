@@ -26,7 +26,8 @@ fun Navigator.openGroupTab(
     }
 }
 
-private fun tabGroupIdOrNull(route: Route): String? = when (route) {
+// Why: the group whose tab (Despesas, Saldos or Membros) the route is, null for any other screen.
+fun tabGroupIdOrNull(route: Route): String? = when (route) {
     is Route.GroupDetail -> route.groupId
     is Route.Balances -> route.groupId
     is Route.Members -> route.groupId

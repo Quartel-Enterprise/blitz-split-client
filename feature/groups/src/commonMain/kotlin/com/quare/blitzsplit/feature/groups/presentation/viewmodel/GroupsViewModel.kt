@@ -461,7 +461,8 @@ class GroupsViewModel(
      * (7.1i), the most recently used one marked: the first row, since the rows go by their last activity.
      */
     private fun openSplitBill() {
-        if (!isOnTop()) return
+        // Why: before Room answers, no group yet doesn't mean there is none.
+        if (!isOnTop() || !uiState.value.hasLoadedGroups) return
         val recent = uiState.value.groups.firstOrNull()
         if (recent == null) {
             navigator.navigate(Route.CreateGroup)

@@ -12,4 +12,11 @@ object GroupActivity {
         expenses.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
         settlements.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
     )
+
+    /*
+     * Why: the one order of the home's rows and of "Rachar em qual grupo?", so the group the home lists first is the
+     * one Rachar conta marks. The most recent activity first; in a stable sort (sortedWith), the list's own order
+     * (the groups' latest change first) breaks a tie.
+     */
+    fun <T> compareMostRecentFirst(activityAtOf: (T) -> Long): Comparator<T> = compareByDescending(activityAtOf)
 }

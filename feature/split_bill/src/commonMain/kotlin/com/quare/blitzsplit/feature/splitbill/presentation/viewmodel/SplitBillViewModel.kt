@@ -243,7 +243,7 @@ class SplitBillViewModel(
         // Why: a group that comes back before this screen is on top again keeps it open.
         isGroupGone = group == null
         when {
-            group == null -> exits.leave()
+            group == null -> handleGroupGone()
 
             route.expenseId == null -> show(group)
 
@@ -262,6 +262,12 @@ class SplitBillViewModel(
                 show(group)
             }
         }
+    }
+
+    // Why: a new bill whose picked group went goes back to the group it was opened for, and closes once that one went.
+    private fun handleGroupGone() {
+        isGroupGone = route.expenseId != null || groupId.value == route.groupId
+        if (isGroupGone) exits.leave() else groupId.value = route.groupId
     }
 
     /*
@@ -484,6 +490,8 @@ class SplitBillViewModel(
     private fun save() {
         val state = uiState.value
         if (!state.canSave) return
+        // Why: until the group picked in "Rachar em qual grupo?" is read, who pays and splits are the last group's.
+        if (state.groupId != groupId.value) return
         val amountMinor = state.amountMinor ?: return
         val shares = state.split.shares ?: return
         val payers = state.severalPayers?.payers ?: listOf(
@@ -497,7 +505,7 @@ class SplitBillViewModel(
             val expenseId = route.expenseId
             val result = if (expenseId == null) {
                 createExpense(
-                    groupId = groupId.value,
+                    groupId = state.groupId,
                     description = state.description,
                     amountMinor = amountMinor,
                     payers = payers,
@@ -519,7 +527,7 @@ class SplitBillViewModel(
             }
             result
                 .onSuccess {
-                    if (expenseId == null) exits.leaveToBillGroup(groupId.value) else exits.leave()
+                    if (expenseId == null) exits.leaveToBillGroup(state.groupId) else exits.leave()
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }
                     uiAction.emit(SplitBillUiAction.ShowSaveError)

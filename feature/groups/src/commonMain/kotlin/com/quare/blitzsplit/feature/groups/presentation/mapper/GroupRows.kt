@@ -19,18 +19,13 @@ private const val MAX_FACES = 3
 private const val DAYS_IN_WEEK = 7
 private const val MAX_WEEKS = 4
 
-/*
- * Why: the most recent activity first, the groups' own order (the latest change first) breaking a tie, as the
- * design's "Em aberto" and "Quitados" both list them.
- */
+// Why: in the order "Rachar em qual grupo?" lists them too, as the design's "Em aberto" and "Quitados" both list them.
 internal fun rowsOf(
     groups: List<GroupWithMoney>,
     clock: ActivityClock,
 ): List<GroupRow> = groups
     .map { rowOf(it, clock) }
-    .withIndex()
-    .sortedWith(compareByDescending<IndexedValue<GroupRow>> { it.value.lastActivity.epochMillis }.thenBy { it.index })
-    .map { it.value }
+    .sortedWith(GroupActivity.compareMostRecentFirst { it.lastActivity.epochMillis })
 
 internal fun rowOf(
     item: GroupWithMoney,

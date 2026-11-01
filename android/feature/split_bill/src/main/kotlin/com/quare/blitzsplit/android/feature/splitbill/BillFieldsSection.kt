@@ -72,58 +72,78 @@ internal fun BillFieldsSection(
     )
 }
 
-// Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group.
+/*
+ * Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group. A group
+ * that can't change is a plain label (no button role for TalkBack), not a disabled control.
+ */
 @Composable
 private fun GroupChip(
     state: SplitBillUiState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
-    Surface(
-        onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
-        enabled = state.canChangeGroup,
-        modifier = Modifier.semantics {
-            if (state.canChangeGroup) contentDescription = changeLabel
-        },
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        // Why: a group that can't change reads as plain, not as a disabled control.
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) {
-        Row(
-            modifier = Modifier
-                .height(40.dp)
-                .padding(
-                    start = 4.dp,
-                    end = if (state.canChangeGroup) 10.dp else 14.dp,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+    val shape = CircleShape
+    val color = MaterialTheme.colorScheme.surfaceContainerHigh
+    val contentColor = MaterialTheme.colorScheme.onSurface
+    if (state.canChangeGroup) {
+        val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+        Surface(
+            onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
+            modifier = Modifier.semantics { contentDescription = changeLabel },
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
         ) {
-            GroupBadge(
-                initials = state.groupInitials,
-                color = state.groupColor,
-                size = 32.dp,
-            )
-            Text(
-                text = state.groupName,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (state.canChangeGroup) {
-                Icon(
-                    imageVector = Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
+            GroupChipContent(state)
+        }
+    } else {
+        Surface(
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
+        ) {
+            GroupChipContent(state)
         }
     }
 }
 
-// Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir.
+@Composable
+private fun GroupChipContent(state: SplitBillUiState) {
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .padding(
+                start = 4.dp,
+                end = if (state.canChangeGroup) 10.dp else 14.dp,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GroupBadge(
+            initials = state.groupInitials,
+            color = state.groupColor,
+            size = 32.dp,
+        )
+        Text(
+            text = state.groupName,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (state.canChangeGroup) {
+            Icon(
+                imageVector = Icons.Outlined.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+    }
+}
+
+/*
+ * Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir, and
+ * only once "Rachar em qual grupo?" no longer covers it.
+ */
 @Composable
 private fun AmountField(
     state: SplitBillUiState,
@@ -132,8 +152,9 @@ private fun AmountField(
 ) {
     val focusRequester = remember { FocusRequester() }
     val isAmountEmpty = state.amountText.isEmpty()
-    LaunchedEffect(focusRequester) {
-        if (isAmountEmpty) focusRequester.requestFocus()
+    val isAskingGroup = state.groupSelection != null
+    LaunchedEffect(focusRequester, isAskingGroup) {
+        if (isAmountEmpty && !isAskingGroup) focusRequester.requestFocus()
     }
     val help = listOfNotNull(
         amountHelpOrNull(
