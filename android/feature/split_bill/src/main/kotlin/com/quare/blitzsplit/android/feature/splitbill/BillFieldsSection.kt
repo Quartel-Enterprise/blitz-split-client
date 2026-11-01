@@ -123,7 +123,10 @@ private fun GroupChip(
     }
 }
 
-// Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir.
+/*
+ * Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir, and
+ * only once "Rachar em qual grupo?" no longer covers it.
+ */
 @Composable
 private fun AmountField(
     state: SplitBillUiState,
@@ -132,8 +135,9 @@ private fun AmountField(
 ) {
     val focusRequester = remember { FocusRequester() }
     val isAmountEmpty = state.amountText.isEmpty()
-    LaunchedEffect(focusRequester) {
-        if (isAmountEmpty) focusRequester.requestFocus()
+    val isAskingGroup = state.groupSelection != null
+    LaunchedEffect(focusRequester, isAskingGroup) {
+        if (isAmountEmpty && !isAskingGroup) focusRequester.requestFocus()
     }
     val help = listOfNotNull(
         amountHelpOrNull(

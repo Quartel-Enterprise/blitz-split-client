@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
 
 // Why: where "Rachar conta" and "Editar conta" go once closed, saved or deleted, only while still on top.
 internal class SplitBillExits(
@@ -23,7 +24,7 @@ internal class SplitBillExits(
         if (!isOnTop()) return
         val stack = navigator.backStack.value
         val below = stack.getOrNull(stack.lastIndex - 1)
-        if (below != null && below.isScreenOf(groupId)) {
+        if (below != null && tabGroupIdOrNull(below) == groupId) {
             navigator.navigateBack()
         } else {
             navigator.replaceTop(Route.GroupDetail(groupId))
@@ -36,12 +37,5 @@ internal class SplitBillExits(
         val stack = navigator.backStack.value
         val detailIndex = stack.indexOfLast { it is Route.BillDetail && it.expenseId == route.expenseId }
         if (detailIndex > 0) navigator.popTo(detailIndex) else navigator.navigateBack()
-    }
-
-    private fun Route.isScreenOf(groupId: String): Boolean = when (this) {
-        is Route.GroupDetail -> this.groupId == groupId
-        is Route.Balances -> this.groupId == groupId
-        is Route.Members -> this.groupId == groupId
-        else -> false
     }
 }
