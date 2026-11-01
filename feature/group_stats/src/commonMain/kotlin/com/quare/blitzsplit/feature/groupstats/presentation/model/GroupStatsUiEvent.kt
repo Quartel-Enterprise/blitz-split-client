@@ -1,11 +1,17 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.model
 
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface GroupStatsUiEvent : UiEvent {
     data object OnBackClicked : GroupStatsUiEvent
+
+    // Why: a tab of the home's rail, which Android keeps beside the statistics.
+    data class OnHomeTabClicked(
+        val tab: HomeTab,
+    ) : GroupStatsUiEvent
 
     // Why: an entry of the period menu; "Escolher datas…" opens each platform's date picker instead.
     data class OnPeriodPicked(

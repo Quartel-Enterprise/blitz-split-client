@@ -79,6 +79,10 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
 
+            is BalancesUiEvent.OnHomeTabClicked -> screen.openHomeTab(event.tab) {
+                uiAction.emit(BalancesUiAction.ShowComingSoon)
+            }
+
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
             BalancesUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()

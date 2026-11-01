@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -375,6 +376,30 @@ class MembersViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Groups, Route.Balances("group-1")), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN its rail opens Grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnHomeTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN its rail opens Atividade THEN says it comes soon`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnHomeTabClicked(HomeTab.ACTIVITY))
+
+        // Then
+        assertEquals(listOf<MembersUiAction>(MembersUiAction.ShowComingSoon), actions)
     }
 
     @Test

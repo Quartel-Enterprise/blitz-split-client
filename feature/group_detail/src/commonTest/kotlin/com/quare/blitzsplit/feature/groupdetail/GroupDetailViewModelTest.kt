@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -1001,6 +1002,50 @@ class GroupDetailViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN Contatos takes the group's place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnHomeTabClicked(HomeTab.CONTACTS)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Atividade THEN says it comes soon and stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnHomeTabClicked(HomeTab.ACTIVITY)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowComingSoon), actions)
+            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill over the group WHEN its rail is tapped THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+        val event = GroupDetailUiEvent.OnHomeTabClicked(HomeTab.GROUPS)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf(Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")), navigator.backStack.value)
     }
 
     @Test

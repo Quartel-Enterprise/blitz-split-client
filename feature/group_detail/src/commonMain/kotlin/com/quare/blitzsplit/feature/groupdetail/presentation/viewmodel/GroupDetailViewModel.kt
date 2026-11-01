@@ -117,6 +117,10 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnBalancesTabClicked -> screen.openTab(Route.Balances(route.groupId))
 
+            is GroupDetailUiEvent.OnHomeTabClicked -> screen.openHomeTab(event.tab) {
+                uiAction.emit(GroupDetailUiAction.ShowComingSoon)
+            }
+
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()

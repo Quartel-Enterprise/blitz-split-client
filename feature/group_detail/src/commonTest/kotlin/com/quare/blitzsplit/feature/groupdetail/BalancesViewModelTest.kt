@@ -29,8 +29,10 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -760,6 +762,37 @@ class BalancesViewModelTest {
 
         // Then
         assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Saldos drawn alone WHEN its rail opens Saldos THEN the home's Saldos takes the group's place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = BalancesUiEvent.OnHomeTabClicked(HomeTab.BALANCES)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Saldos drawn alone WHEN its rail opens Atividade THEN says it comes soon`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = BalancesUiEvent.OnHomeTabClicked(HomeTab.ACTIVITY)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowComingSoon), actions)
+        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
     }
 
     @Test

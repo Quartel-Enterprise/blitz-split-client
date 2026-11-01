@@ -16,17 +16,21 @@ import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiAction
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriodOption
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -83,7 +87,11 @@ class GroupStatsViewModel(
             ),
         )
 
+    val uiAction: SharedFlow<GroupStatsUiAction>
+        field = MutableSharedFlow<GroupStatsUiAction>()
+
     val stateWatcher: FlowWatcher<GroupStatsUiState> = FlowWatcher(uiState)
+    val actionWatcher: FlowWatcher<GroupStatsUiAction> = FlowWatcher(uiAction)
 
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
@@ -119,6 +127,10 @@ class GroupStatsViewModel(
     fun onEvent(event: GroupStatsUiEvent) {
         when (event) {
             GroupStatsUiEvent.OnBackClicked -> leave()
+
+            is GroupStatsUiEvent.OnHomeTabClicked -> if (isOnTop() && !navigator.openHomeTab(event.tab)) {
+                viewModelScope.launch { uiAction.emit(GroupStatsUiAction.ShowComingSoon) }
+            }
 
             is GroupStatsUiEvent.OnPeriodPicked -> pickPeriod(event.period)
 

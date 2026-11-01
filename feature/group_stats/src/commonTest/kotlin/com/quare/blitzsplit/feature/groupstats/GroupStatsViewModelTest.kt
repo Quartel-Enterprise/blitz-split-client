@@ -13,11 +13,13 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiAction
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
@@ -27,6 +29,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyl
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -530,6 +533,37 @@ class GroupStatsViewModelTest {
         // Then
         assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN the statistics WHEN the rail opens Grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnHomeTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the statistics WHEN the rail opens Atividade THEN says it comes soon and stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val actions = mutableListOf<GroupStatsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnHomeTabClicked(HomeTab.ACTIVITY))
+
+            // Then
+            assertEquals(listOf<GroupStatsUiAction>(GroupStatsUiAction.ShowComingSoon), actions)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN the statistics WHEN the group leaves the device THEN they close`() = runTest(testDispatcher) {

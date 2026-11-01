@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -143,6 +144,10 @@ class MembersViewModel(
                 from = route,
                 tab = Route.Balances(route.groupId),
             )
+
+            is MembersUiEvent.OnHomeTabClicked -> if (isOnTop() && !navigator.openHomeTab(event.tab)) {
+                send(MembersUiAction.ShowComingSoon)
+            }
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,

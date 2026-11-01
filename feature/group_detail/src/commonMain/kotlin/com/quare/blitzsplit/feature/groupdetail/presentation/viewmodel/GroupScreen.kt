@@ -11,8 +11,10 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 // Why: the faces under the group's name; the rest is "+N".
 private const val MAX_FACES = 4
@@ -159,6 +162,17 @@ internal class GroupScreen(
             from = route,
             tab = tab,
         )
+    }
+
+    /*
+     * Why: a tab of the home's rail, which Android keeps beside a group drawn alone; Atividade isn't built yet, which
+     * showComingSoon says.
+     */
+    fun openHomeTab(
+        tab: HomeTab,
+        showComingSoon: suspend () -> Unit,
+    ) {
+        if (isOnTop() && !useCases.navigator.openHomeTab(tab)) scope.launch { showComingSoon() }
     }
 
     fun openSplitBill() {
