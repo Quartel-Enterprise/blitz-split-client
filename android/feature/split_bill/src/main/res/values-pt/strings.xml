@@ -135,4 +135,20 @@
         <item quantity="one">%d pessoa</item>
         <item quantity="other">%d pessoas</item>
     </plurals>
+    <string name="split_bill_group_default">Padrão do grupo</string>
+    <string name="split_bill_default_title">Padrão do %1$s: %2$s</string>
+    <string name="split_bill_default_body">Já veio assim. Mudar aqui vale só para esta conta.</string>
+    <string name="split_bill_default_off_title">Diferente do padrão do grupo</string>
+    <string name="split_bill_default_off_body">O padrão do %1$s é %2$s.</string>
+    <string name="split_bill_default_off_now">Esta conta fica %s.</string>
+    <string name="split_bill_default_now_equal">igual</string>
+    <string name="split_bill_default_now_amount">por valores</string>
+    <string name="split_bill_default_now_percent">por porcentagem</string>
+    <string name="split_bill_default_now_shares">por partes</string>
+    <string name="split_bill_default_reset">Voltar ao padrão</string>
+    <string name="split_bill_default_description">%1$s, %2$s</string>
+    <string name="split_bill_default_without">sem %s</string>
+    <string name="split_bill_default_shares_two">%1$d para %2$d</string>
+    <string name="split_bill_default_percent">%d%%</string>
+    <string name="split_bill_hint_default">O padrão fica em Editar grupo › Divisão padrão. As contas já lançadas não mudam.</string>
 </resources>

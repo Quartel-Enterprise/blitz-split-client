@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -60,12 +61,14 @@ import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 
 private val listEndRadius = 20.dp
+private val listInnerRadius = 6.dp
 
 @Composable
 fun EditGroupContent(
@@ -162,6 +165,10 @@ private fun ColumnScope.EditGroupFormColumn(
         onEvent = onEvent,
     )
     CurrencyRow(
+        state = state,
+        onEvent = onEvent,
+    )
+    DefaultSplitRow(
         state = state,
         onEvent = onEvent,
     )
@@ -314,7 +321,12 @@ private fun CurrencyRow(
         Surface(
             onClick = { isMenuOpen = true },
             enabled = !state.isCurrencyLocked,
-            shape = RoundedCornerShape(listEndRadius),
+            shape = RoundedCornerShape(
+                topStart = listEndRadius,
+                topEnd = listEndRadius,
+                bottomStart = listInnerRadius,
+                bottomEnd = listInnerRadius,
+            ),
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
             Row(
@@ -389,6 +401,67 @@ private fun CurrencyRow(
     }
 }
 
+// Why: "Divisão padrão" under Moeda, with the way the group splits now; it opens over the form, which keeps what is typed.
+@Composable
+private fun DefaultSplitRow(
+    state: EditGroupUiState,
+    onEvent: (EditGroupUiEvent) -> Unit,
+) {
+    Surface(
+        onClick = { onEvent(EditGroupUiEvent.OnDefaultSplitClicked) },
+        modifier = Modifier.padding(
+            start = 16.dp,
+            end = 16.dp,
+            top = 2.dp,
+        ),
+        enabled = !state.isSaving,
+        shape = RoundedCornerShape(
+            topStart = listInnerRadius,
+            topEnd = listInnerRadius,
+            bottomStart = listEndRadius,
+            bottomEnd = listEndRadius,
+        ),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 64.dp)
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.edit_group_default_split),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = stringResource(R.string.edit_group_default_split_help),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                text = stringResource(state.defaultSplitMode.labelRes),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
 @DevicePreviews
 @Composable
 private fun EditGroupPreview() {
@@ -429,6 +502,7 @@ private fun buildPreviewState(
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     isCurrencyLocked = true,
+    defaultSplitMode = DefaultSplitMode.SHARES,
     isOnline = isOnline,
     isLoaded = true,
     isSaving = false,

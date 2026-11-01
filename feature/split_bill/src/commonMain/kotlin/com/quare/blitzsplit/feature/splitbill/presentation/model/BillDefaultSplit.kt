@@ -16,6 +16,6 @@ data class BillDefaultSplit(
     val excluded: List<BillPerson>,
 ) {
     // Why: the same way to split with the same weights, whatever the total.
-    fun isFollowedBy(split: SplitEditor): Boolean =
-        split.mode == editor.mode && split.entries.map { it.memberId to it.value } == editor.entries.map { it.memberId to it.value }
+    fun isFollowedBy(split: SplitEditor): Boolean = split.mode == editor.mode &&
+        split.entries.map { it.memberId to it.value } == editor.entries.map { it.memberId to it.value }
 }

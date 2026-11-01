@@ -80,8 +80,6 @@ class SplitBillViewModel(
     val stateWatcher: FlowWatcher<SplitBillUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<SplitBillUiAction> = FlowWatcher(uiAction)
 
-    private val amountSeparators = setOf(',', '.')
-
     private val exits = SplitBillExits(navigator, route)
 
     // Why: the group the bill goes to, which "Rachar em qual grupo?" may change for a new bill.
@@ -228,7 +226,7 @@ class SplitBillViewModel(
             }
 
             is SplitBillUiEvent.OnPersonValueChanged -> editSplit { editor ->
-                val text = valueTextOf(event.text, editor.mode)
+                val text = TypedText.toSplitValueText(event.text, editor.mode)
                 editor.withRows { row -> if (row.person.id == event.memberId) row.copy(valueText = text) else row }
             }
 
@@ -236,7 +234,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.OnPartsDecreased -> changeParts(event.memberId, -1)
 
-            SplitBillUiEvent.OnSplitResetToDefault -> resetSplitToDefault()
+            SplitBillUiEvent.OnSplitResetToDefault -> uiState.update { it.withSplitEditorReset() }
 
             SplitBillUiEvent.OnSplitDone -> confirmSplit()
 
@@ -430,25 +428,10 @@ class SplitBillViewModel(
                 payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
                 isLoaded = true,
             )
-            val defaultSplit = if (state.isEditing) {
-                null
-            } else {
-                billDefaultSplitOf(group.defaultSplit, people, group.currency, shown.payerIds, state.split.totalMinor)
-            }
-            val split = if (state.isEditing || hasPickedSplit) {
-                state.split.withPeople(people, group.currency, shown.payerIds, !state.isEditing)
-            } else {
-                defaultSplit?.editor ?: createEmptySplit(group.currency).withPeople(
-                    people = people,
-                    currency = group.currency,
-                    payerIds = shown.payerIds,
-                    includesNewcomers = true,
-                )
-            }
-            val withSplit = shown.copy(
-                split = split,
-                splitEditor = state.splitEditor?.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
-                defaultSplit = defaultSplit,
+            val withSplit = shown.withSplitAmong(
+                people = people,
+                defaultSplit = group.defaultSplit,
+                followsDefault = !state.isEditing && !hasPickedSplit,
             )
             // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
             withSplit.withBillTotal()
@@ -460,7 +443,7 @@ class SplitBillViewModel(
     }
 
     private fun changeAmount(text: String) {
-        val capped = toAmountText(text)
+        val capped = TypedText.toAmountText(text)
         uiState.update { state ->
             state
                 .copy(
@@ -492,7 +475,7 @@ class SplitBillViewModel(
         memberId: String,
         text: String,
     ) {
-        val amountText = toAmountText(text)
+        val amountText = TypedText.toAmountText(text)
         uiState.update { state ->
             state.copy(payerAmounts = state.payerAmounts?.withAmountText(memberId, amountText))
         }
@@ -511,25 +494,6 @@ class SplitBillViewModel(
         editSplit { editor ->
             editor.withRows { row ->
                 if (row.person.id == memberId) row.copy(parts = (row.parts + delta).coerceIn(0L, MAX_PARTS)) else row
-            }
-        }
-    }
-
-    // Why: only Dividir's split goes back; the bill's own changes only on "Pronto", as any other change there.
-    private fun resetSplitToDefault() {
-        uiState.update { state ->
-            val default = state.defaultSplit
-            val editor = state.splitEditor
-            if (default == null || editor == null) {
-                state
-            } else {
-                state.copy(
-                    splitEditor = default.editor
-                        .copy(
-                            totalMinor = editor.totalMinor,
-                            payerIds = editor.payerIds,
-                        ).withShares(),
-                )
             }
         }
     }
@@ -621,25 +585,9 @@ class SplitBillViewModel(
 
     // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
     private val separator: Char
-        get() = decimalSeparator().takeIf { it in amountSeparators } ?: '.'
-
-    private fun valueTextOf(
-        text: String,
-        mode: SplitMode,
-    ): String = if (mode == SplitMode.AMOUNT) {
-        toAmountText(text)
-    } else {
-        text.filter { it.isDigit() }.take(PERCENT_MAX_LENGTH)
-    }
-
-    // Why: what an amount field keeps of what was typed, the bill's and each of Valores'.
-    private fun toAmountText(text: String): String =
-        text.filter { it.isDigit() || it in amountSeparators }.take(AMOUNT_MAX_LENGTH)
+        get() = decimalSeparator().takeIf { it in TypedText.amountSeparators } ?: '.'
 
     private companion object {
-        // Why: "100.000.000,00" with room for the separators someone types.
-        const val AMOUNT_MAX_LENGTH = 16
-        const val PERCENT_MAX_LENGTH = 3
         const val MAX_PARTS = 99L
     }
 }

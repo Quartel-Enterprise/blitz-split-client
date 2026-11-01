@@ -19,7 +19,8 @@ class UpdateDefaultSplitUseCase(
         defaultSplit: GroupDefaultSplit,
         incomes: Map<String, Long>,
     ): Result<Unit> {
-        val isEveryoneEqually = defaultSplit.mode == DefaultSplitMode.EQUAL && defaultSplit.weights.values.all { it > 0 }
+        val isEveryoneEqually =
+            defaultSplit.mode == DefaultSplitMode.EQUAL && defaultSplit.weights.values.all { it > 0 }
         return repository.updateDefaultSplit(
             groupId = groupId,
             defaultSplit = defaultSplit.takeUnless { isEveryoneEqually },

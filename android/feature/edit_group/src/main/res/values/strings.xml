@@ -16,4 +16,59 @@
     <string name="edit_group_note">Anyone in the group can change the name, the icon and the type.</string>
     <string name="edit_group_offline_note">No internet: the change holds on this device now and reaches the others once it reconnects.</string>
     <string name="edit_group_save_error">Couldn’t save the group. Try again.</string>
+    <string name="edit_group_default_split">Default split</string>
+    <string name="edit_group_default_split_help">How new expenses split</string>
+    <string name="default_split_title">Default split</string>
+    <string name="default_split_subtitle">%s · for new expenses</string>
+    <string name="default_split_back">Back to Edit group</string>
+    <string name="default_split_cancel">Cancel</string>
+    <string name="default_split_note">Counts for new expenses. Each expense can change it on the spot. Expenses already added don\'t change.</string>
+    <string name="default_split_offline_note">No internet: the new split holds on this device now and reaches the others once it reconnects.</string>
+    <string name="default_split_save_error">Couldn’t save the split. Try again.</string>
+    <plurals name="default_split_joined">
+        <item quantity="one">%s joined the group</item>
+        <item quantity="other">%s joined the group</item>
+    </plurals>
+    <plurals name="default_split_joined_equal">
+        <item quantity="one">They\'re already in the split</item>
+        <item quantity="other">They\'re already in the split</item>
+    </plurals>
+    <plurals name="default_split_joined_shares">
+        <item quantity="one">They start with 1 share</item>
+        <item quantity="other">Each one starts with 1 share</item>
+    </plurals>
+    <plurals name="default_split_joined_percent">
+        <item quantity="one">They start at 0%</item>
+        <item quantity="other">Each one starts at 0%</item>
+    </plurals>
+    <string name="default_split_joined_sentence">%1$s. %2$s; adjust if needed.</string>
+    <string name="default_split_modes">How to split</string>
+    <string name="default_split_hint_equal">Everyone pays the same part</string>
+    <string name="default_split_hint_shares">E.g. 3 to 1. Good for couples and families</string>
+    <string name="default_split_hint_percent">E.g. 75% and 25%</string>
+    <string name="default_split_hint_income">Each one\'s part follows their income</string>
+    <string name="default_split_list_equal">Who\'s in the split</string>
+    <string name="default_split_list_shares">Each one\'s shares</string>
+    <string name="default_split_list_percent">Each one\'s percentage</string>
+    <string name="default_split_list_income">Each one\'s income</string>
+    <string name="default_split_income_note">Incomes stay on this device only. The group sees only the percentages.</string>
+    <string name="default_split_parts_of">%s\'s shares</string>
+    <string name="default_split_percent_of">%s\'s percentage</string>
+    <string name="default_split_income_of">%s\'s income</string>
+    <string name="default_split_less">One share less</string>
+    <string name="default_split_more">One share more</string>
+    <string name="default_split_sum_left">The sum is %1$d%%. %2$d%% missing.</string>
+    <string name="default_split_sum_over">The sum is %1$d%%. %2$d%% over.</string>
+    <string name="default_split_sum_help">Adjust the percentages until they add up to 100% to save.</string>
+    <string name="default_split_example_equal">On a %1$s bill: %2$s each</string>
+    <string name="default_split_example">On a %s bill:</string>
+    <string name="default_split_example_equal_help">Whoever isn\'t in an expense leaves it when splitting.</string>
+    <string name="default_split_example_part">%1$s %2$s</string>
+    <string name="default_split_row_equal">1 of %1$d · %2$s%%</string>
+    <string name="default_split_row_out">Out of the split by default</string>
+    <string name="default_split_row_shares">%d%% of each bill</string>
+    <string name="default_split_row_percent">%1$s of each %2$s</string>
+    <string name="default_split_row_income">Income per month · %d%% of each bill</string>
+    <string name="default_split_row_new">%s · just joined</string>
+    <string name="default_split_me">%s (you)</string>
 </resources>

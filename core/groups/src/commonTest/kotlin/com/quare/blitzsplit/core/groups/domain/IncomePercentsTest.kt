@@ -30,7 +30,7 @@ class IncomePercentsTest {
     }
 
     @Test
-    fun `GIVEN uneven incomes WHEN working out the percentages THEN the largest remainders round up and the sum is 100`() {
+    fun `GIVEN uneven incomes WHEN working out the percentages THEN the largest remainders round up`() {
         // Given
         val incomes = listOf("a" to 1L, "b" to 2L, "c" to 4L)
 

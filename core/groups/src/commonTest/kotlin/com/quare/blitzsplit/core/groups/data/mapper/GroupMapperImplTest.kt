@@ -1109,7 +1109,7 @@ class GroupMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a default split in a mode this version doesn't know WHEN mapping THEN the group splits equally`() {
+    fun `GIVEN a default split in a mode this version does not know WHEN mapping THEN the group splits equally`() {
         // Given
         val stored = groupEntity(id = "group-1").copy(defaultSplit = """{"mode":"items","weights":[]}""")
 
@@ -1138,7 +1138,7 @@ class GroupMapperImplTest {
     }
 
     @Test
-    fun `GIVEN incomes WHEN encoding and decoding them THEN they come back, and none is null`() {
+    fun `GIVEN incomes WHEN encoding and decoding them THEN they come back and none is null`() {
         // Given
         val incomes = mapOf("m-1" to 900_000L)
 

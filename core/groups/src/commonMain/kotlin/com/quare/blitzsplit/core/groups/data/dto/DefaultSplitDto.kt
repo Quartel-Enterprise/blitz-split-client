@@ -9,9 +9,3 @@ data class DefaultSplitDto(
     @SerialName("mode") val mode: String,
     @SerialName("weights") val weights: List<DefaultSplitWeightDto>,
 )
-
-@Serializable
-data class DefaultSplitWeightDto(
-    @SerialName("member_id") val memberId: String,
-    @SerialName("weight") val weight: Long,
-)

@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillDefaultSplit
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 
@@ -228,5 +229,46 @@ internal fun billDefaultSplitOf(
         editor = editor,
         values = people.mapNotNull { person -> weights.getValue(person.id).takeIf { it > 0 } },
         excluded = people.filter { weights.getValue(it.id) <= 0 },
+    )
+}
+
+/*
+ * Why: the bill's split and Dividir's among the group's people as they are now. A new bill follows the group's
+ * "Divisão padrão" (everyone equally without one) until "Pronto" picks its own; one being edited keeps its split, so
+ * saving it never adds whoever joined meanwhile.
+ */
+internal fun SplitBillUiState.withSplitAmong(
+    people: List<BillPerson>,
+    defaultSplit: GroupDefaultSplit?,
+    followsDefault: Boolean,
+): SplitBillUiState {
+    val billDefault = if (isEditing) {
+        null
+    } else {
+        billDefaultSplitOf(defaultSplit, people, currency, payerIds, split.totalMinor)
+    }
+    val bill = if (followsDefault) {
+        billDefault?.editor
+            ?: createEmptySplit(currency).withPeople(people, currency, payerIds, includesNewcomers = true)
+    } else {
+        split.withPeople(people, currency, payerIds, !isEditing)
+    }
+    return copy(
+        split = bill,
+        splitEditor = splitEditor?.withPeople(people, currency, payerIds, !isEditing),
+        defaultSplit = billDefault,
+    )
+}
+
+// Why: "Voltar ao padrão" only puts Dividir's split back; the bill's own changes on "Pronto", as any change there.
+internal fun SplitBillUiState.withSplitEditorReset(): SplitBillUiState {
+    val default = defaultSplit ?: return this
+    val editor = splitEditor ?: return this
+    return copy(
+        splitEditor = default.editor
+            .copy(
+                totalMinor = editor.totalMinor,
+                payerIds = editor.payerIds,
+            ).withShares(),
     )
 }

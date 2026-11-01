@@ -135,4 +135,20 @@
         <item quantity="one">%d person</item>
         <item quantity="other">%d people</item>
     </plurals>
+    <string name="split_bill_group_default">Group default</string>
+    <string name="split_bill_default_title">%1$s default: %2$s</string>
+    <string name="split_bill_default_body">It came this way. Changing it here only counts for this bill.</string>
+    <string name="split_bill_default_off_title">Different from the group\'s default</string>
+    <string name="split_bill_default_off_body">%1$s\'s default is %2$s.</string>
+    <string name="split_bill_default_off_now">This bill splits %s.</string>
+    <string name="split_bill_default_now_equal">equally</string>
+    <string name="split_bill_default_now_amount">by amounts</string>
+    <string name="split_bill_default_now_percent">by percentage</string>
+    <string name="split_bill_default_now_shares">by shares</string>
+    <string name="split_bill_default_reset">Back to default</string>
+    <string name="split_bill_default_description">%1$s, %2$s</string>
+    <string name="split_bill_default_without">without %s</string>
+    <string name="split_bill_default_shares_two">%1$d to %2$d</string>
+    <string name="split_bill_default_percent">%d%%</string>
+    <string name="split_bill_hint_default">The default lives in Edit group › Default split. Bills already added don\'t change.</string>
 </resources>

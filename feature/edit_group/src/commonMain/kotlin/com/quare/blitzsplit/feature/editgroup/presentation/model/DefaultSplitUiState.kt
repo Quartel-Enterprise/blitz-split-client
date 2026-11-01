@@ -32,7 +32,7 @@ data class DefaultSplitUiState(
     val hasChanges: Boolean,
 ) {
     // Why: each one's weight as Salvar saves it; worked out once per state, since every UI reads it on each keystroke.
-    val weights: Map<String, Long> = people.associate { it.id to it.weightIn(mode) }.let { typed ->
+    val weights: Map<String, Long> = people.associate { it.id to it.toWeightIn(mode) }.let { typed ->
         if (mode != DefaultSplitMode.INCOME) return@let typed
         val incomes = people.map { it.id to (AmountInput.parse(it.incomeText, currency) ?: 0L) }
         if (incomes.any { (_, income) -> income > 0 }) {
@@ -112,7 +112,7 @@ data class DefaultSplitUiState(
         const val EXAMPLE_UNITS = 100L
         const val ROUND_UNITS = 10L
 
-        fun DefaultSplitPerson.weightIn(mode: DefaultSplitMode): Long = when (mode) {
+        fun DefaultSplitPerson.toWeightIn(mode: DefaultSplitMode): Long = when (mode) {
             DefaultSplitMode.EQUAL -> if (isIncluded) 1L else 0L
             DefaultSplitMode.SHARES -> parts
             DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> AmountInput.parseWhole(percentText) ?: 0L
@@ -125,19 +125,19 @@ data class DefaultSplitUiState(
         ): Long {
             val unit = ExpenseRules.minorPerMajorFor(currency)
             if (mode != DefaultSplitMode.EQUAL || count == 0) return EXAMPLE_UNITS * unit
-            val step = lcm(ROUND_UNITS, count.toLong())
+            val step = findLeastCommonMultiple(ROUND_UNITS, count.toLong())
             return (EXAMPLE_UNITS + step - 1) / step * step * unit
         }
 
-        fun lcm(
+        fun findLeastCommonMultiple(
             a: Long,
             b: Long,
-        ): Long = a / gcd(a, b) * b
+        ): Long = a / findGreatestCommonDivisor(a, b) * b
 
-        tailrec fun gcd(
+        tailrec fun findGreatestCommonDivisor(
             a: Long,
             b: Long,
-        ): Long = if (b == 0L) a else gcd(b, a % b)
+        ): Long = if (b == 0L) a else findGreatestCommonDivisor(b, a % b)
 
         // Why: the cents a split can't share evenly go as in Rachar conta, to whoever pays: this device's user by default.
         fun rowsOf(state: DefaultSplitUiState): List<DefaultSplitRow> {

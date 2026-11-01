@@ -3520,24 +3520,37 @@ class GroupRepositoryImplTest {
     )
 
     @Test
-    fun `GIVEN a group WHEN saving its default split THEN the device holds it pending, with the incomes typed`() =
-        runTest {
-            // Given
-            prepareScenario(storedGroups = listOf(group(id = "group-1", updatedAt = 5L)))
-            val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("m-1" to 75L, "m-2" to 25L))
+    fun `GIVEN a group WHEN saving its default split THEN the device holds it pending with the incomes`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 5L,
+                ),
+            ),
+        )
+        val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("m-1" to 75L, "m-2" to 25L))
 
-            // When
-            val result = repository.updateDefaultSplit("group-1", split, mapOf("m-1" to 900_000L), updatedAt = 9L)
+        // When
+        val result = repository.updateDefaultSplit("group-1", split, mapOf("m-1" to 900_000L), updatedAt = 9L)
 
-            // Then
-            assertTrue(result.isSuccess)
-            assertEquals(split, repository.observeGroups().first().single().defaultSplit)
-            assertEquals(mapOf("m-1" to 900_000L), repository.getSplitIncomes("group-1").getOrThrow())
-            assertTrue(local.group("group-1")!!.pendingSync)
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            split,
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .defaultSplit,
+        )
+        assertEquals(mapOf("m-1" to 900_000L), repository.getSplitIncomes("group-1").getOrThrow())
+        assertTrue(local.group("group-1")!!.pendingSync)
+    }
 
     @Test
-    fun `GIVEN the device can't write WHEN saving the default split THEN it fails`() = runTest {
+    fun `GIVEN the device cannot write WHEN saving the default split THEN it fails`() = runTest {
         // Given
         prepareScenario(
             storedGroups = listOf(group(id = "group-1")),

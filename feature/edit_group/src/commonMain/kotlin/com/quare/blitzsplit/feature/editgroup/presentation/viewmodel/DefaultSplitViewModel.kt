@@ -55,6 +55,8 @@ class DefaultSplitViewModel(
 
     val stateWatcher: FlowWatcher<DefaultSplitUiState> = FlowWatcher(uiState)
 
+    private val amountSeparators = setOf(',', '.')
+
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
 
@@ -104,7 +106,12 @@ class DefaultSplitViewModel(
             }
 
             is DefaultSplitUiEvent.OnIncomeChanged -> updatePerson(event.memberId) {
-                it.copy(incomeText = event.text.filter { char -> char.isDigit() || char in amountSeparators }.take(AMOUNT_MAX_LENGTH))
+                it.copy(
+                    incomeText = event.text
+                        .filter { char ->
+                            char.isDigit() || char in amountSeparators
+                        }.take(AMOUNT_MAX_LENGTH),
+                )
             }
 
             DefaultSplitUiEvent.OnSaveClicked -> save()
@@ -194,7 +201,13 @@ class DefaultSplitViewModel(
             isNew = false,
             isIncluded = mode != DefaultSplitMode.EQUAL || weight > 0,
             parts = if (mode == DefaultSplitMode.SHARES) weight else 1L,
-            percentText = if (mode == DefaultSplitMode.PERCENT || mode == DefaultSplitMode.INCOME) weight.toString() else "",
+            percentText = if (mode == DefaultSplitMode.PERCENT ||
+                mode == DefaultSplitMode.INCOME
+            ) {
+                weight.toString()
+            } else {
+                ""
+            },
             incomeText = "",
         )
     }
@@ -214,9 +227,10 @@ class DefaultSplitViewModel(
     private fun DefaultSplitUiState.toMode(mode: DefaultSplitMode): DefaultSplitUiState {
         if (mode == this.mode) return this
         val inSplit = weights.filterValues { it > 0 }.keys.ifEmpty { people.map { it.id }.toSet() }
-        val percents = when {
-            usesPercent && addsUp -> weights
-            else -> IncomePercents.of(people.map { it.id to if (it.id in inSplit) 1L else 0L })
+        val percents = if (usesPercent && addsUp) {
+            weights
+        } else {
+            IncomePercents.of(people.map { it.id to if (it.id in inSplit) 1L else 0L })
         }
         return copy(
             mode = mode,
@@ -317,8 +331,6 @@ class DefaultSplitViewModel(
     )
 
     private companion object {
-        val amountSeparators = setOf(',', '.')
-
         const val PERCENT_MAX_LENGTH = 3
 
         // Why: "100.000.000,00" with room for the separators someone types.

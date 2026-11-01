@@ -21,7 +21,7 @@ class JsRoute internal constructor(
 
     /*
      * Why: the group of "invite", "members", "group-detail", "balances", "register-payment", "split-bill",
-     * "bill-detail", "edit-group" and "group-stats", null for every other route.
+     * "bill-detail", "edit-group", "default-split" and "group-stats", null for every other route.
      */
     val groupId: String? = when (route) {
         is Route.Invite -> route.groupId
@@ -32,6 +32,7 @@ class JsRoute internal constructor(
         is Route.SplitBill -> route.groupId
         is Route.BillDetail -> route.groupId
         is Route.EditGroup -> route.groupId
+        is Route.DefaultSplit -> route.groupId
         is Route.GroupStats -> route.groupId
         else -> null
     }

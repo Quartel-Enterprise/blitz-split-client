@@ -62,7 +62,7 @@ class DefaultSplitBillViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group splitting 3 to 1 WHEN a new bill opens THEN it splits by parts and says it is the group's default`() =
+    fun `GIVEN 3 to 1 WHEN a new bill opens THEN it splits by parts and says it is the default`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
@@ -96,7 +96,7 @@ class DefaultSplitBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN Dividir open on the default WHEN changing the mode THEN it says the bill differs and Voltar ao padrao undoes it`() =
+    fun `GIVEN Dividir on the default WHEN changing the mode THEN Voltar ao padrao undoes it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
@@ -128,7 +128,8 @@ class DefaultSplitBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
 
             // When
-            groups.groups.value = listOf(home.copy(defaultSplit = threeToOne.copy(weights = mapOf(PIERRE to 1L, ANA to 2L))))
+            groups.groups.value =
+                listOf(home.copy(defaultSplit = threeToOne.copy(weights = mapOf(PIERRE to 1L, ANA to 2L))))
 
             // Then
             assertEquals(SplitMode.EQUAL, viewModel.uiState.value.split.mode)
@@ -150,21 +151,31 @@ class DefaultSplitBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN someone who joined after the default WHEN a new bill opens THEN they have 1 part`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne, members = home.members + carla))
+    fun `GIVEN someone who joined after the default WHEN a new bill opens THEN they have 1 part`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(
+                    defaultSplit = threeToOne,
+                    members = home.members + carla,
+                ),
+            )
 
-        // When
-        val rows = viewModel.uiState.value.split.rows
+            // When
+            val rows = viewModel.uiState.value.split.rows
 
-        // Then
-        assertEquals(listOf(3L, 1L, 1L), rows.map { it.parts })
-    }
+            // Then
+            assertEquals(listOf(3L, 1L, 1L), rows.map { it.parts })
+        }
 
     @Test
     fun `GIVEN Pela renda WHEN a new bill opens THEN it splits by the percentages`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(storedGroup = home.copy(defaultSplit = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L))))
+        prepareScenario(
+            storedGroup = home.copy(
+                defaultSplit = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L)),
+            ),
+        )
 
         // When
         val state = viewModel.uiState.value
@@ -194,7 +205,11 @@ class DefaultSplitBillViewModelTest {
     fun `GIVEN Igual without Ana by default WHEN a new bill opens THEN Ana is out of it and named as left out`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(storedGroup = home.copy(defaultSplit = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L))))
+            prepareScenario(
+                storedGroup = home.copy(
+                    defaultSplit = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L)),
+                ),
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -208,7 +223,10 @@ class DefaultSplitBillViewModelTest {
     fun `GIVEN a saved bill WHEN editing it in a group with a default THEN it keeps its split with no notice`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne), expenseId = BILL_ID)
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = threeToOne),
+                expenseId = BILL_ID,
+            )
 
             // When
             viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
@@ -268,8 +286,16 @@ class DefaultSplitBillViewModelTest {
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer(PIERRE, 10_000)),
         shares = listOf(
-            ExpenseShare(memberId = PIERRE, amountMinor = 5_000, weight = 1),
-            ExpenseShare(memberId = ANA, amountMinor = 5_000, weight = 1),
+            ExpenseShare(
+                memberId = PIERRE,
+                amountMinor = 5_000,
+                weight = 1,
+            ),
+            ExpenseShare(
+                memberId = ANA,
+                amountMinor = 5_000,
+                weight = 1,
+            ),
         ),
         spentAt = 1_000L,
         isPending = false,

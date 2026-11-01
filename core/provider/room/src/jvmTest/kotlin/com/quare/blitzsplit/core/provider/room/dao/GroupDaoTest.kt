@@ -818,7 +818,7 @@ class GroupDaoTest {
     }
 
     @Test
-    fun `GIVEN a group WHEN saving its default split THEN only the split and the incomes change, pending`() = runTest {
+    fun `GIVEN a group WHEN saving its default split THEN only the split and the incomes change`() = runTest {
         // Given
         prepareScenario(stored = entity(updatedAt = 5L))
 
@@ -840,18 +840,19 @@ class GroupDaoTest {
     }
 
     @Test
-    fun `GIVEN incomes typed here WHEN a newer server row comes THEN takes its split and keeps the incomes`() = runTest {
-        // Given
-        prepareScenario(stored = entity(updatedAt = 5L).copy(splitIncomes = INCOMES_JSON))
+    fun `GIVEN incomes typed here WHEN a newer server row comes THEN takes its split and keeps the incomes`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 5L).copy(splitIncomes = INCOMES_JSON))
 
-        // When
-        dao.applyRemoteGroup(entity(updatedAt = 9L).copy(defaultSplit = SHARES_JSON))
+            // When
+            dao.applyRemoteGroup(entity(updatedAt = 9L).copy(defaultSplit = SHARES_JSON))
 
-        // Then
-        val group = dao.observeGroups().first().single()
-        assertEquals(SHARES_JSON, group.defaultSplit)
-        assertEquals(INCOMES_JSON, group.splitIncomes)
-    }
+            // Then
+            val group = dao.observeGroups().first().single()
+            assertEquals(SHARES_JSON, group.defaultSplit)
+            assertEquals(INCOMES_JSON, group.splitIncomes)
+        }
 
     private fun entity(
         id: String = "group-1",

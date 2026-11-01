@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
+import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
@@ -125,6 +126,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createEditGroupViewModel(route: Route.EditGroup): ViewModelHolder<EditGroupViewModel> =
         ViewModelHolder(EditGroupViewModel::class) { get { parametersOf(route) } }
+
+    fun createDefaultSplitViewModel(route: Route.DefaultSplit): ViewModelHolder<DefaultSplitViewModel> =
+        ViewModelHolder(DefaultSplitViewModel::class) { get { parametersOf(route) } }
 
     // Why: each invite link opens its own ViewModels, which read the code from their route.
     fun createJoinInviteViewModel(route: Route.JoinInvite): ViewModelHolder<JoinInviteViewModel> =
