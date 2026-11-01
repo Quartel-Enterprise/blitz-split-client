@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupSpending
@@ -34,6 +37,7 @@ internal class StatsCalculator(
     private val expenses: List<Expense>,
     private val today: LocalDate,
     private val timeZone: TimeZone,
+    private val categories: CategoryTree,
 ) {
     // Why: "Toda a viagem" or "Todo o período", from the first to the last day with a bill.
     val allSpan: DateSpan = expenses
@@ -219,6 +223,47 @@ internal class StatsCalculator(
         )
     }
 
+    // Why: each bill under the category it reads as (a deleted group category as its parent), percentages rounded so
+    // they add up to 100 by the largest remainders.
+    fun createCategories(spending: GroupSpending): List<StatsCategoryRow> {
+        val byCategory = spending.expenses.groupBy { categories.resolve(it.categoryId) }
+        val byMain = byCategory.entries.groupBy({ categories.mainOf(it.key) }, { it })
+        val total = spending.totalMinor
+        val mains = byMain.map { (main, entries) ->
+            val subcategories = entries
+                .filter { (category, _) -> category.id != main.id }
+                .map { (category, bills) -> StatsSubcategory(category, bills.sumOf { it.amountMinor }) }
+                .sortedByDescending { it.amountMinor }
+            main to (entries.sumOf { (_, bills) -> bills.sumOf { it.amountMinor } } to subcategories)
+        }.sortedByDescending { it.second.first }
+        val percents = roundedPercents(mains.map { it.second.first }, total)
+        val largest = mains.firstOrNull()?.second?.first ?: 0L
+        return mains.mapIndexed { index, (main, amounts) ->
+            StatsCategoryRow(
+                category = main,
+                amountMinor = amounts.first,
+                percent = percents[index],
+                barFraction = if (largest > 0) amounts.first.toDouble() / largest else 0.0,
+                subcategories = amounts.second,
+            )
+        }
+    }
+
+    private fun roundedPercents(
+        amounts: List<Long>,
+        total: Long,
+    ): List<Int> {
+        if (total <= 0) return amounts.map { 0 }
+        val exact = amounts.map { it * PERCENT_UNITS }
+        val floors = exact.map { (it / total).toInt() }.toMutableList()
+        val missing = PERCENT_UNITS.toInt() - floors.sum()
+        exact.indices
+            .sortedByDescending { exact[it] % total }
+            .take(missing.coerceAtLeast(0))
+            .forEach { floors[it] += 1 }
+        return floors
+    }
+
     private fun maxLabelsOf(grain: StatsGrain): Int = when (grain) {
         StatsGrain.WEEK -> MAX_WEEK_LABELS
         StatsGrain.MONTH -> MAX_MONTH_LABELS
@@ -226,6 +271,7 @@ internal class StatsCalculator(
     }
 
     private companion object {
+        const val PERCENT_UNITS = 100L
         const val MAX_DOTS = 12
         const val MAX_LABELS = 7
 

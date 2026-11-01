@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
@@ -47,6 +49,7 @@ class GroupStatsViewModel(
     observeGroup: ObserveGroup,
     observeExpenses: ObserveExpenses,
     observeStatsChartPreferences: ObserveStatsChartPreferences,
+    observeCategoryTree: ObserveCategoryTree,
 ) : ViewModel() {
     val uiState: StateFlow<GroupStatsUiState>
         field = MutableStateFlow(
@@ -79,6 +82,7 @@ class GroupStatsViewModel(
                 bars = emptyList(),
                 grainNotes = emptyList(),
                 biggestExpense = null,
+                categories = emptyList(),
                 isLoaded = false,
             ),
         )
@@ -87,6 +91,7 @@ class GroupStatsViewModel(
 
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
+    private var categoryTree = CategoryTree.appOnly
     private var chart = StatsChartPreferences.initial
 
     // Why: the last pick not stored yet; older echoes of the database never undo it while it is saving.
@@ -111,6 +116,11 @@ class GroupStatsViewModel(
             isGone = group == null
             if (group == null) leave() else render()
         }.launchIn(viewModelScope)
+        observeCategoryTree(route.groupId)
+            .onEach { tree ->
+                categoryTree = tree
+                render()
+            }.launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
             .launchIn(viewModelScope)
@@ -199,6 +209,7 @@ class GroupStatsViewModel(
             expenses = expenses,
             today = SpentDay.dateOf(currentTimeMillis(), timeZone),
             timeZone = timeZone,
+            categories = categoryTree,
         )
     }
 
@@ -254,6 +265,7 @@ class GroupStatsViewModel(
             bars = calculator.createBars(spending, span, grain),
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
+            categories = calculator.createCategories(spending),
             isLoaded = true,
         )
     }

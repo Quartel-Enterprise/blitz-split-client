@@ -1,5 +1,9 @@
 package com.quare.blitzsplit.feature.groupstats
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -48,6 +52,7 @@ class GroupStatsViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var chart: MutableStateFlow<StatsChartPreferences>
     private lateinit var keptCharts: MutableList<StatsChartPreferences>
+    private lateinit var categories: FakeCategoryRepository
     private lateinit var viewModel: GroupStatsViewModel
 
     @BeforeTest
@@ -637,6 +642,61 @@ class GroupStatsViewModelTest {
         weight = 1,
     )
 
+    @Test
+    fun `GIVEN bills in categories WHEN the statistics open THEN Por categoria sums each main one, its subs and 100%`() =
+        runTest(testDispatcher) {
+            // Given
+            val at = millisOf("2026-10-28T12:00:00Z")
+            prepareScenario(
+                stored = listOf(
+                    expense("rent", 7_000, at, categoryId = AppCategory.HOME_RENT.key),
+                    expense("condo", 1_000, at, categoryId = AppCategory.HOME_CONDO.key),
+                    expense("market", 1_500, at, categoryId = AppCategory.FOOD_MARKET.key),
+                    expense("bbq", 300, at, categoryId = "bbq"),
+                    expense("raffle", 200, at),
+                ),
+                groupCategories = listOf(
+                    GroupCategory("bbq", GROUP_ID, AppCategory.FOOD.key, "Churrasco", null, ANA, isDeleted = true, isPending = false),
+                ),
+            )
+
+            // When
+            val rows = viewModel.uiState.value.categories
+
+            // Then
+            assertEquals(
+                listOf(AppCategory.HOME.key to 8_000L, AppCategory.FOOD.key to 1_800L, AppCategory.OTHER.key to 200L),
+                rows.map { it.category.id to it.amountMinor },
+            )
+            assertEquals(listOf(80, 18, 2), rows.map { it.percent })
+            assertEquals(
+                listOf(AppCategory.HOME_RENT.key, AppCategory.HOME_CONDO.key),
+                rows.first().subcategories.map { it.category.id },
+            )
+            assertEquals(listOf(AppCategory.FOOD_MARKET.key), rows[1].subcategories.map { it.category.id })
+            assertEquals(AppCategory.HOME.key, viewModel.uiState.value.topCategory?.category?.id)
+            assertEquals(1.0, rows.first().barFraction)
+        }
+
+    @Test
+    fun `GIVEN three equal categories WHEN rounding THEN the percentages still add up to 100`() = runTest(testDispatcher) {
+        // Given
+        val at = millisOf("2026-10-28T12:00:00Z")
+        prepareScenario(
+            stored = listOf(
+                expense("a", 100, at, categoryId = AppCategory.HOME.key),
+                expense("b", 100, at, categoryId = AppCategory.FOOD.key),
+                expense("c", 100, at, categoryId = AppCategory.LEISURE.key),
+            ),
+        )
+
+        // When
+        val percents = viewModel.uiState.value.categories.map { it.percent }
+
+        // Then
+        assertEquals(100, percents.sum())
+    }
+
     private fun paid(
         memberId: String,
         amountMinor: Long,
@@ -652,6 +712,7 @@ class GroupStatsViewModelTest {
         payers: List<ExpensePayer> = listOf(paid(PIERRE, amountMinor)),
         shares: List<ExpenseShare> = listOf(share(PIERRE, amountMinor)),
         isPending: Boolean = false,
+        categoryId: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = GROUP_ID,
@@ -661,7 +722,7 @@ class GroupStatsViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
-        categoryId = null,
+        categoryId = categoryId,
         spentAt = spentAt,
         isPending = isPending,
         updatedAt = spentAt,
@@ -672,7 +733,9 @@ class GroupStatsViewModelTest {
         group: Group = trip,
         stored: List<Expense> = tripBills,
         keptChart: StatsChartPreferences = StatsChartPreferences.initial,
+        groupCategories: List<GroupCategory> = emptyList(),
     ) {
+        categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
@@ -693,6 +756,7 @@ class GroupStatsViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeStatsChartPreferences = { chart },
+            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
         )
     }
 
