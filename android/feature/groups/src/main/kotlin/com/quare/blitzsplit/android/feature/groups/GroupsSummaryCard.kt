@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -43,6 +44,8 @@ internal fun GroupsSummaryCard(
     summary: GroupsSummary,
     onEvent: (GroupsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: in a phone lying down's narrow column the buttons go side by side under the amount, as the canvas draws it.
+    isStacked: Boolean = false,
 ) {
     val locale = LocalLocale.current.platformLocale
     val formatters = remember(summary.totals, locale) {
@@ -55,73 +58,111 @@ internal fun GroupsSummaryCard(
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ) {
-        Row(
-            modifier = Modifier.padding(
-                start = 24.dp,
-                end = 16.dp,
-                top = 20.dp,
-                bottom = 20.dp,
-            ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        val amount: @Composable () -> Unit = {
+            SummaryAmountColumn(
+                summary = summary,
+                signed = signed,
+                isCompact = isStacked,
+            )
+        }
+        val toReceive: @Composable (Modifier) -> Unit = { buttonModifier ->
+            SummaryButton(
+                label = stringResource(R.string.groups_summary_to_receive),
+                descriptionOf = { stringResource(R.string.groups_summary_to_receive_description, it) },
+                amounts = amountsOf(summary.totals, BalanceTotal::toReceiveMinor).map { (currency, minor) ->
+                    signed(currency, minor)
+                },
+                amountColor = MaterialTheme.colorScheme.primary,
+                isEnabled = summary.canOpenToReceive,
+                onClick = { onEvent(GroupsUiEvent.OnToReceiveClicked) },
+                modifier = buttonModifier,
+            )
+        }
+        val toPay: @Composable (Modifier) -> Unit = { buttonModifier ->
+            SummaryButton(
+                label = stringResource(R.string.groups_summary_to_pay),
+                descriptionOf = { stringResource(R.string.groups_summary_to_pay_description, it) },
+                amounts = amountsOf(summary.totals, BalanceTotal::toPayMinor).map { (currency, minor) ->
+                    signed(currency, -minor)
+                },
+                amountColor = MaterialTheme.colorScheme.error,
+                isEnabled = summary.canOpenToPay,
+                onClick = { onEvent(GroupsUiEvent.OnToPayClicked) },
+                modifier = buttonModifier,
+            )
+        }
+        if (isStacked) {
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.padding(
+                    horizontal = 18.dp,
+                    vertical = 16.dp,
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text(
-                    text = stringResource(R.string.groups_summary_title),
-                    style = MaterialTheme.typography.titleSmall,
-                )
-                amountsOf(summary.totals, BalanceTotal::netMinor).forEach { (currency, minor) ->
-                    Text(
-                        text = signed(currency, minor),
-                        style = if (summary.totals.size > 1) {
-                            MaterialTheme.typography.headlineSmall
-                        } else {
-                            MaterialTheme.typography.headlineLarge
-                        },
-                        fontWeight = FontWeight.ExtraBold,
-                        maxLines = 1,
-                    )
+                amount()
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    toReceive(Modifier.weight(1f))
+                    toPay(Modifier.weight(1f))
                 }
-                Text(
-                    text = stringResource(
-                        when (summary.kind) {
-                            GroupBalanceKind.TO_RECEIVE -> R.string.groups_summary_to_receive_hint
-                            GroupBalanceKind.YOU_OWE -> R.string.groups_summary_to_pay_hint
-                            else -> R.string.groups_summary_settled_hint
-                        },
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
             }
-            Column(
-                modifier = Modifier.width(IntrinsicSize.Max),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+        } else {
+            Row(
+                modifier = Modifier.padding(
+                    start = 24.dp,
+                    end = 16.dp,
+                    top = 20.dp,
+                    bottom = 20.dp,
+                ),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                SummaryButton(
-                    label = stringResource(R.string.groups_summary_to_receive),
-                    descriptionOf = { stringResource(R.string.groups_summary_to_receive_description, it) },
-                    amounts = amountsOf(summary.totals, BalanceTotal::toReceiveMinor).map { (currency, minor) ->
-                        signed(currency, minor)
-                    },
-                    amountColor = MaterialTheme.colorScheme.primary,
-                    isEnabled = summary.canOpenToReceive,
-                    onClick = { onEvent(GroupsUiEvent.OnToReceiveClicked) },
-                )
-                SummaryButton(
-                    label = stringResource(R.string.groups_summary_to_pay),
-                    descriptionOf = { stringResource(R.string.groups_summary_to_pay_description, it) },
-                    amounts = amountsOf(summary.totals, BalanceTotal::toPayMinor).map { (currency, minor) ->
-                        signed(currency, -minor)
-                    },
-                    amountColor = MaterialTheme.colorScheme.error,
-                    isEnabled = summary.canOpenToPay,
-                    onClick = { onEvent(GroupsUiEvent.OnToPayClicked) },
-                )
+                Box(modifier = Modifier.weight(1f)) { amount() }
+                Column(
+                    modifier = Modifier.width(IntrinsicSize.Max),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    toReceive(Modifier.fillMaxWidth())
+                    toPay(Modifier.fillMaxWidth())
+                }
             }
         }
+    }
+}
+
+// Why: "Saldo geral", one amount per currency, and what it means; smaller in a phone lying down's column.
+@Composable
+private fun SummaryAmountColumn(
+    summary: GroupsSummary,
+    signed: (GroupCurrency, Long) -> String,
+    isCompact: Boolean,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            text = stringResource(R.string.groups_summary_title),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        amountsOf(summary.totals, BalanceTotal::netMinor).forEach { (currency, minor) ->
+            Text(
+                text = signed(currency, minor),
+                style = when {
+                    summary.totals.size > 1 -> MaterialTheme.typography.headlineSmall
+                    isCompact -> MaterialTheme.typography.headlineMedium
+                    else -> MaterialTheme.typography.headlineLarge
+                },
+                fontWeight = FontWeight.ExtraBold,
+                maxLines = 1,
+            )
+        }
+        Text(
+            text = stringResource(
+                when (summary.kind) {
+                    GroupBalanceKind.TO_RECEIVE -> R.string.groups_summary_to_receive_hint
+                    GroupBalanceKind.YOU_OWE -> R.string.groups_summary_to_pay_hint
+                    else -> R.string.groups_summary_settled_hint
+                },
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
@@ -133,13 +174,13 @@ private fun SummaryButton(
     amountColor: Color,
     isEnabled: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val description = descriptionOf(amounts.joinToString(", "))
     Surface(
         onClick = onClick,
         enabled = isEnabled,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .semantics { contentDescription = description },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface,
@@ -185,7 +226,7 @@ private fun SummaryButton(
 }
 
 // Why: each currency with something in it, or a zero in the first currency when none has.
-private fun amountsOf(
+internal fun amountsOf(
     totals: List<BalanceTotal>,
     select: (BalanceTotal) -> Long,
 ): List<Pair<GroupCurrency, Long>> {

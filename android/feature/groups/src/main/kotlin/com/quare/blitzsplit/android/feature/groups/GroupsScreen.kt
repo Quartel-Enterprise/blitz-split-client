@@ -11,6 +11,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -87,5 +88,7 @@ fun GroupsScreen(
             onBackToGroups = { viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed) },
         )
     }
-    if (state.showsRecoveryCodePrompt) recoveryCodeSheet()
+    // Why: no form on a Flip's cover screen, where the home only draws its cover; the prompt waits for the phone open.
+    val isOnCover = rememberFoldLayout().isOnCoverScreen && state.groups.isNotEmpty()
+    if (state.showsRecoveryCodePrompt && !isOnCover) recoveryCodeSheet()
 }
