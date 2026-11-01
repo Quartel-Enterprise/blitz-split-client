@@ -429,14 +429,10 @@ struct PhoneGroupScaffold<Sections: View>: View {
                     balanceCard
                 }
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
+                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                 .listRowSeparator(.hidden)
             }
-            Section {
-                GroupTabsPicker(selected: tab, onSelect: actions.select)
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            GroupTabsSection(selected: tab, onSelect: actions.select)
             sections
         }
         .listStyle(.insetGrouped)
