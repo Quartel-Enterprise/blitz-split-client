@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
@@ -203,6 +204,22 @@ data class SplitBillUiState(
     // Why: the category the map's term chooses, null when no term is in the description.
     val mapCategory: Category?
         get() = categoryMatches.firstOrNull()?.let { categories.findOrNull(it.categoryId) }
+
+    /*
+     * Why: "Ensinar ao mapa?" (9.3e) once a new bill is saved in a category picked by hand that the map wouldn't pick,
+     * Outros never.
+     */
+    fun teachOfferOrNull(expenseId: String): CategoryTeachOffer? {
+        val category = category
+        if (isEditing || !isCategoryPicked || category.isOther || category.id == mapCategory?.id) return null
+        return CategoryTeachOffer(
+            expenseId = expenseId,
+            groupId = groupId,
+            title = description.trim(),
+            categoryId = category.id,
+            mapCategoryId = mapCategory?.id,
+        )
+    }
 
     val categoryHint: CategoryHint
         get() {

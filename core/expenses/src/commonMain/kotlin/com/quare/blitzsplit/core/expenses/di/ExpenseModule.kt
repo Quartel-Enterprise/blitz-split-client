@@ -78,6 +78,32 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOffer
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTeachOffer
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.OfferCategoryTeachUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTeachRepository
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
+import com.quare.blitzsplit.core.expenses.data.repository.CategoryTermRepositoryImpl
+import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapperImpl
+import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseCategoryTermRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomCategoryTermLocalDataSource
 
 val expenseModule = module {
     singleOf(::RoomExpenseLocalDataSource).bind<ExpenseLocalDataSource>()
@@ -120,4 +146,18 @@ val expenseModule = module {
     factoryOf(::ObserveCategoryTreeUseCase).bind<ObserveCategoryTree>()
     factoryOf(::SaveGroupCategoryUseCase).bind<SaveGroupCategory>()
     factoryOf(::DeleteGroupCategoryUseCase).bind<DeleteGroupCategory>()
+    factoryOf(::ObserveMapCategoriesUseCase).bind<ObserveMapCategories>()
+    singleOf(::RoomCategoryTermLocalDataSource).bind<CategoryTermLocalDataSource>()
+    singleOf(::SupabaseCategoryTermRemoteDataSource).bind<CategoryTermRemoteDataSource>()
+    singleOf(::CategoryTermMapperImpl).bind<CategoryTermMapper>()
+    singleOf(::CategoryTermRepositoryImpl).bind<CategoryTermRepository>()
+    factoryOf(::ObserveCategoryMapUseCase).bind<ObserveCategoryMap>()
+    factoryOf(::SaveCategoryTermUseCase).bind<SaveCategoryTerm>()
+    factoryOf(::RemoveCategoryTermUseCase).bind<RemoveCategoryTerm>()
+    factoryOf(::RestoreCategoryMapUseCase).bind<RestoreCategoryMap>()
+    // Why: one for the whole app, since Rachar conta posts the question that the group's Despesas asks.
+    singleOf(::InMemoryCategoryTeachRepository).bind<CategoryTeachRepository>()
+    factoryOf(::OfferCategoryTeachUseCase).bind<OfferCategoryTeach>()
+    factoryOf(::ObserveCategoryTeachOfferUseCase).bind<ObserveCategoryTeachOffer>()
+    factoryOf(::ConsumeCategoryTeachOfferUseCase).bind<ConsumeCategoryTeachOffer>()
 }

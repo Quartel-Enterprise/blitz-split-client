@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface GroupCategoryLocalDataSource {
     fun observeCategories(groupId: String): Flow<List<GroupCategoryEntity>>
 
+    fun observeAllCategories(): Flow<List<GroupCategoryEntity>>
+
     fun observeHasPending(): Flow<Boolean>
 
     fun observePendingVersions(): Flow<List<Long>>

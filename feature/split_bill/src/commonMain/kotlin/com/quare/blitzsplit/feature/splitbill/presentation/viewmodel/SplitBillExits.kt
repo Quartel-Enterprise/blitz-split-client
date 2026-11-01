@@ -11,6 +11,11 @@ internal class SplitBillExits(
 ) {
     fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 
+    // Why: "Mapa de categorias" from "Categoria" (9.0), over Rachar conta, which keeps what was typed.
+    fun openCategoryMap() {
+        if (isOnTop()) navigator.navigate(Route.CategoryMap)
+    }
+
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     fun leave() {
         if (isOnTop()) navigator.navigateBack()

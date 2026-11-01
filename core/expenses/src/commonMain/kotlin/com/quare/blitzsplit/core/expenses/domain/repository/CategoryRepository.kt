@@ -7,6 +7,9 @@ interface CategoryRepository {
     // Why: the group's categories, deleted ones too, so their bills still read as their parent.
     fun observeGroupCategories(groupId: String): Flow<List<GroupCategory>>
 
+    // Why: every group's categories on the device, which a term of the map may send titles to (9.2).
+    fun observeAllGroupCategories(): Flow<List<GroupCategory>>
+
     fun observeHasPendingChanges(): Flow<Boolean>
 
     // Why: when each change waiting to go up was last made, so a new one triggers a sync after a failed push.

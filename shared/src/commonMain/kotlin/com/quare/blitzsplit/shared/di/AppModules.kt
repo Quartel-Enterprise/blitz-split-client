@@ -27,6 +27,7 @@ import com.quare.blitzsplit.feature.invite.di.inviteModule
 import com.quare.blitzsplit.feature.join.di.joinModule
 import com.quare.blitzsplit.feature.members.di.membersModule
 import com.quare.blitzsplit.feature.notificationsettings.di.notificationSettingsModule
+import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
 import com.quare.blitzsplit.feature.paymentkey.di.paymentKeyModule
 import com.quare.blitzsplit.feature.profilesetup.di.profileSetupModule
 import com.quare.blitzsplit.feature.recoverycode.di.recoveryCodeModule
@@ -75,6 +76,7 @@ val sharedModules: List<Module> = listOf(
     paymentKeyModule,
     deleteAccountModule,
     notificationSettingsModule,
+    categoryMapModule,
     createGroupModule,
     inviteModule,
     membersModule,

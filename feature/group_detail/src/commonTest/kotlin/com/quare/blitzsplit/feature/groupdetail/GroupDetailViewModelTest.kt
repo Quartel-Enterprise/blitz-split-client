@@ -73,6 +73,14 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 
 class GroupDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -80,6 +88,8 @@ class GroupDetailViewModelTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupDetailViewModel
+    private val teach = InMemoryCategoryTeachRepository()
+    private val terms = FakeCategoryTermRepository()
     private val actions = mutableListOf<GroupDetailUiAction>()
     private val deletedBills = InMemoryDeletedBillRepository()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
@@ -121,6 +131,64 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(listOf(AppCategory.FOOD_MARKET.key, AppCategory.OTHER.key), rows.map { it.category.id })
+        }
+
+    @Test
+    fun `GIVEN a bill saved in a category the map would not pick WHEN the screen shows THEN asks to teach it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            teach.post(teachOffer)
+            val state = viewModel.uiState.value
+
+            // Then
+            val asking = state.teach
+            assertEquals(AppCategory.LEISURE_SPORTS.key, asking?.category?.id)
+            assertEquals(AppCategory.HOME_RENT.key, asking?.mapCategory?.id)
+            assertEquals(listOf("aluguel", "prancha"), asking?.words?.map { it.term })
+            assertEquals("prancha", asking?.selectedKey)
+            assertEquals(AppCategory.HOME_RENT.key, asking?.words?.first()?.currentCategory?.id)
+            assertEquals(null, teach.observeOffer().first())
+        }
+
+    @Test
+    fun `GIVEN the teach question WHEN teaching the word picked THEN the map sends it to the bill category`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            val picking = viewModel.uiState.value.teach
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("aluguel"))
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertTrue(picking?.isPickingWord ?: false)
+            assertEquals(null, viewModel.uiState.value.teach)
+            val change = terms.changes.value.single()
+            assertEquals("aluguel" to AppCategory.LEISURE_SPORTS.key, change.term to change.categoryId)
+        }
+
+    @Test
+    fun `GIVEN the teach question WHEN not now or another group THEN nothing goes into the map`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            teach.post(teachOffer.copy(groupId = "another-group"))
+            val otherGroup = viewModel.uiState.value.teach
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+
+            // Then
+            assertEquals(null, otherGroup)
+            assertEquals(null, viewModel.uiState.value.teach)
+            assertTrue(terms.changes.value.isEmpty())
         }
 
     @Test
@@ -1627,6 +1695,14 @@ class GroupDetailViewModelTest {
         updatedByMemberId = null,
     )
 
+    private val teachOffer = CategoryTeachOffer(
+        expenseId = "bill-1",
+        groupId = GROUP_ID,
+        title = "Aluguel da prancha",
+        categoryId = AppCategory.LEISURE_SPORTS.key,
+        mapCategoryId = AppCategory.HOME_RENT.key,
+    )
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
@@ -1654,6 +1730,12 @@ class GroupDetailViewModelTest {
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            teachUseCases = CategoryTeachUseCases(
+                observeOffer = ObserveCategoryTeachOfferUseCase(teach),
+                consumeOffer = ConsumeCategoryTeachOfferUseCase(teach),
+                observeMap = ObserveCategoryMapUseCase(terms),
+                saveTerm = SaveCategoryTermUseCase(terms) { nowMillis },
+            ),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },

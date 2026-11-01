@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
@@ -40,6 +41,7 @@ class SyncCoordinator(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
+    private val categoryTermRepository: CategoryTermRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -121,6 +123,11 @@ class SyncCoordinator(
             notificationPreferencesRepository.downloadPreferences(userId).getOrThrow()
             notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
         }
+        // Why: the person's category map (flow 9), theirs alone like the keys.
+        val termsSynced = suspendRunCatching {
+            categoryTermRepository.download(userId).getOrThrow()
+            categoryTermRepository.uploadPending(userId).getOrThrow()
+        }
         /*
          * Why: the bills and the payments after their groups, which they need on the device to come
          * down and on the server to go up.
@@ -139,6 +146,7 @@ class SyncCoordinator(
         signOutIfScheduledAndSynced()
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
+        termsSynced.getOrThrow()
         groupsSynced.getOrThrow()
     }.also { result -> lastSyncFailed.value = result.isFailure }
 
@@ -162,6 +170,7 @@ class SyncCoordinator(
                     // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
                     suspendRunCatching { paymentKeyRepository.clear() }
                     suspendRunCatching { notificationPreferencesRepository.clear() }
+                    suspendRunCatching { categoryTermRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { profileRepository.clear() }
                     suspendRunCatching { accountRepository.endDeletedSession() }
@@ -218,7 +227,8 @@ class SyncCoordinator(
             notificationPreferencesRepository.observePreferences(),
             groupRepository.observeGroups(),
             observePendingMoneyVersions(),
-        ) { keys, preferences, groups, pendingMoney -> listOf(keys, preferences, groups, pendingMoney) }
+            categoryTermRepository.observeChanges(),
+        ) { keys, preferences, groups, pendingMoney, terms -> listOf(keys, preferences, groups, pendingMoney, terms) }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
@@ -261,6 +271,7 @@ class SyncCoordinator(
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()
         notificationPreferencesRepository.clear()
+        categoryTermRepository.clear()
         groupRepository.clear()
         profileRepository.clear()
     }
@@ -268,7 +279,10 @@ class SyncCoordinator(
     private fun observeHasPendingChanges(): Flow<Boolean> = combine(
         profileRepository.observeHasPendingChanges(),
         paymentKeyRepository.observeHasPendingChanges(),
-        notificationPreferencesRepository.observeHasPendingChanges(),
+        combine(
+            notificationPreferencesRepository.observeHasPendingChanges(),
+            categoryTermRepository.observeHasPendingChanges(),
+        ) { hasPendingPreferences, hasPendingTerms -> hasPendingPreferences || hasPendingTerms },
         groupRepository.observeHasPendingChanges(),
         combine(
             expenseRepository.observeHasPendingChanges(),

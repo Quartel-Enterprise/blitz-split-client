@@ -51,6 +51,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.first
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.OfferCategoryTeachUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 
 // Why: a bill's category (7.7): suggested by the map from its description, picked by hand, and the group's own (7.8).
 class BillCategoryViewModelTest {
@@ -58,6 +64,9 @@ class BillCategoryViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var categories: FakeCategoryRepository
+    private lateinit var terms: FakeCategoryTermRepository
+    private lateinit var teach: InMemoryCategoryTeachRepository
+    private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
 
     @BeforeTest
@@ -424,11 +433,83 @@ class BillCategoryViewModelTest {
         updatedByMemberId = null,
     )
 
+    @Test
+    fun `GIVEN pizzaria added to the map WHEN typing it THEN the bill is Restaurante by that word`() = runTest {
+        // Given
+        prepareScenario(
+            termChanges = listOf(
+                CategoryTermChange(
+                    key = "pizzaria",
+                    term = "pizzaria",
+                    categoryId = AppCategory.FOOD_RESTAURANT.key,
+                    isRestored = false,
+                    isPending = true,
+                ),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Pizzaria do centro"))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(AppCategory.FOOD_RESTAURANT.key, state.category.id)
+        assertEquals(CategoryHint.BY_TERM, state.categoryHint)
+    }
+
+    @Test
+    fun `GIVEN a category picked by hand the map would not pick WHEN saving THEN asks to teach the map`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("180,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Aluguel da prancha"))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.LEISURE_SPORTS.key))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        val offer = teach.observeOffer().first()
+        assertEquals(AppCategory.LEISURE_SPORTS.key, offer?.categoryId)
+        assertEquals(AppCategory.HOME_RENT.key, offer?.mapCategoryId)
+        assertEquals("Aluguel da prancha", offer?.title)
+        assertEquals(GROUP_ID, offer?.groupId)
+    }
+
+    @Test
+    fun `GIVEN the category the map picked WHEN saving THEN nothing asks to teach`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("312,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado"))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertNull(teach.observeOffer().first())
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN tapping the map card THEN opens the category map over the bill`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMapClicked)
+
+        // Then
+        assertEquals(Route.CategoryMap, navigator.backStack.value.last())
+    }
+
     private fun prepareScenario(
         storedGroup: Group = home,
         stored: List<Expense> = emptyList(),
         groupCategories: List<GroupCategory> = emptyList(),
         expenseId: String? = null,
+        termChanges: List<CategoryTermChange> = emptyList(),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = stored)
@@ -438,7 +519,9 @@ class BillCategoryViewModelTest {
             expenseId = expenseId,
             picksGroupFirst = false,
         )
-        val navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        terms = FakeCategoryTermRepository(initialChanges = termChanges)
+        teach = InMemoryCategoryTeachRepository()
+        navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.GroupDetail(GROUP_ID))
             it.navigate(route)
         }
@@ -459,6 +542,8 @@ class BillCategoryViewModelTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            observeCategoryMap = ObserveCategoryMapUseCase(terms),
+            offerCategoryTeach = OfferCategoryTeachUseCase(teach),
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
             deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

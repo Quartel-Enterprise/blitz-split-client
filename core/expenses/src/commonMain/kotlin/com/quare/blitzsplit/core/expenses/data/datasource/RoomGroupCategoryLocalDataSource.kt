@@ -9,6 +9,8 @@ class RoomGroupCategoryLocalDataSource(
 ) : GroupCategoryLocalDataSource {
     override fun observeCategories(groupId: String): Flow<List<GroupCategoryEntity>> = dao.observeCategories(groupId)
 
+    override fun observeAllCategories(): Flow<List<GroupCategoryEntity>> = dao.observeAllCategories()
+
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()
 
     override fun observePendingVersions(): Flow<List<Long>> = dao.observePendingUpdatedAts()

@@ -14,11 +14,13 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
+import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -67,6 +69,8 @@ class SplitBillViewModel(
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
     observeCategoryTree: ObserveCategoryTree,
+    observeCategoryMap: ObserveCategoryMap,
+    private val offerCategoryTeach: OfferCategoryTeach,
     saveGroupCategory: SaveGroupCategory,
     deleteGroupCategory: DeleteGroupCategory,
     connectivityObserver: NetworkConnectivityObserver,
@@ -134,6 +138,7 @@ class SplitBillViewModel(
         scope = viewModelScope,
         observeCategoryTree = observeCategoryTree,
         observeExpenses = observeExpenses,
+        observeCategoryMap = observeCategoryMap,
         saveGroupCategory = saveGroupCategory,
         deleteGroupCategory = deleteGroupCategory,
         emit = { uiAction.emit(it) },
@@ -276,6 +281,8 @@ class SplitBillViewModel(
             is SplitBillUiEvent.Items -> items.onEvent(event)
 
             is SplitBillUiEvent.Categories -> categoryEditing.onEvent(event)
+
+            SplitBillUiEvent.OnCategoryMapClicked -> exits.openCategoryMap()
 
             SplitBillUiEvent.OnSaveClicked -> save()
 
@@ -522,7 +529,11 @@ class SplitBillViewModel(
                     items = state.split.items,
                     categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
-                ).map { }
+                ).map { id ->
+                    // Why: "Ensinar ao mapa?" (9.3e), which the group's Despesas asks once it shows.
+                    state.teachOfferOrNull(id)?.let(offerCategoryTeach::invoke)
+                    Unit
+                }
             } else {
                 updateExpense(
                     expenseId = expenseId,

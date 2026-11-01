@@ -20,6 +20,11 @@ class CategoryRepositoryImpl(
         .map { entities -> entities.map(groupMapper::toDomain) }
         .distinctUntilChanged()
 
+    override fun observeAllGroupCategories(): Flow<List<GroupCategory>> = groupLocal
+        .observeAllCategories()
+        .map { entities -> entities.map(groupMapper::toDomain) }
+        .distinctUntilChanged()
+
     override fun observeHasPendingChanges(): Flow<Boolean> = groupLocal.observeHasPending().distinctUntilChanged()
 
     override fun observePendingVersions(): Flow<List<Long>> = groupLocal.observePendingVersions().distinctUntilChanged()

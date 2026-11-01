@@ -42,6 +42,7 @@ class GroupDetailViewModel(
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
     observeCategoryTree: ObserveCategoryTree,
+    teachUseCases: CategoryTeachUseCases,
     useCases: GroupScreenUseCases,
 ) : ViewModel() {
     val uiState: StateFlow<GroupDetailUiState>
@@ -77,12 +78,22 @@ class GroupDetailViewModel(
     private var categoryTree = CategoryTree.appOnly
     private var showAgain: (() -> Unit)? = null
 
+    private val teaching = CategoryTeaching(
+        groupId = route.groupId,
+        useCases = teachUseCases,
+        scope = viewModelScope,
+        read = { uiState.value.teach },
+        write = { teach -> uiState.update { it.copy(teach = teach) } },
+        showError = { uiAction.emit(GroupDetailUiAction.ShowTeachError) },
+    )
+
     init {
         observeCategoryTree(route.groupId)
             .onEach { tree ->
                 categoryTree = tree
                 showAgain?.invoke()
             }.launchIn(viewModelScope)
+        teaching.watch(observeCategoryTree(route.groupId))
         screen.watch(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
@@ -143,6 +154,14 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             GroupDetailUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
+
+            GroupDetailUiEvent.OnTeachClicked -> teaching.open()
+
+            GroupDetailUiEvent.OnTeachDismissed -> teaching.dismiss()
+
+            is GroupDetailUiEvent.OnTeachWordPicked -> teaching.pick(event.key)
+
+            GroupDetailUiEvent.OnTeachConfirmed -> teaching.confirm()
         }
     }
 

@@ -64,6 +64,11 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.flowOf
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 
 // Why: the payments, balance card and payment notice of Despesas; the bills are in GroupDetailViewModelTest.
 class GroupDetailPaymentsViewModelTest {
@@ -1257,6 +1262,12 @@ class GroupDetailPaymentsViewModelTest {
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            teachUseCases = CategoryTeachUseCases(
+                observeOffer = { flowOf(null) },
+                consumeOffer = {},
+                observeMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
+                saveTerm = SaveCategoryTermUseCase(FakeCategoryTermRepository()) { 0L },
+            ),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->

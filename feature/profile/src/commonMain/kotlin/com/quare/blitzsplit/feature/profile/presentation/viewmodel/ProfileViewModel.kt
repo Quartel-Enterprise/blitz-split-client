@@ -198,6 +198,7 @@ class ProfileViewModel(
             ProfileUiEvent.OnRetrySyncClicked -> retry()
             is ProfileUiEvent.OnThemeSelected -> selectTheme(event.theme)
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
+            ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
             ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
             ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
             ProfileUiEvent.OnSignOutClicked -> showSignOutDialog()

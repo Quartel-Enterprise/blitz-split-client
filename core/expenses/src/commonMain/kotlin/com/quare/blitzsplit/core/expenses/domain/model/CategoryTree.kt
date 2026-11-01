@@ -42,6 +42,9 @@ class CategoryTree private constructor(
 
     fun branchOf(mainId: String): CategoryBranch? = branches.firstOrNull { it.category.id == mainId }
 
+    // Why: the group a category was created in, null for the app's; "só no Viagem Floripa" in the map (9.1).
+    fun groupIdOf(categoryId: String): String? = groupCategories[categoryId]?.groupId
+
     // Why: "Não pode repetir dentro da mesma categoria" (7.8c), ignoring case and accents, among the group's.
     fun hasGroupName(
         parentId: String?,
