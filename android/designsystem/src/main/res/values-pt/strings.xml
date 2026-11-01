@@ -105,4 +105,16 @@
     <string name="designsystem_person_net">Líquido, já compensado</string>
     <string name="designsystem_person_total">Total</string>
     <string name="designsystem_person_by_group">Por grupo</string>
+    <string name="designsystem_settled_pair_paid">%1$s já acertou com %2$s depois desta conta.</string>
+    <string name="designsystem_settled_pair_i_paid">Você já acertou com %s depois desta conta.</string>
+    <string name="designsystem_settled_pair_paid_me">%s já acertou com você depois desta conta.</string>
+    <string name="designsystem_settled_pair_redone">O acerto continua valendo e o saldo é refeito:</string>
+    <string name="designsystem_settled_pair_owes_again">com a mudança, %1$s volta a dever %2$s a %3$s.</string>
+    <string name="designsystem_settled_pair_i_owe_again">com a mudança, você volta a dever %1$s a %2$s.</string>
+    <string name="designsystem_settled_pair_owes_me_again">com a mudança, %1$s volta a te dever %2$s.</string>
+    <string name="designsystem_settled_pair_owes">com a mudança, %1$s passa a dever %2$s a %3$s.</string>
+    <string name="designsystem_settled_pair_i_owe">com a mudança, você passa a dever %1$s a %2$s.</string>
+    <string name="designsystem_settled_pair_owes_me">com a mudança, %1$s passa a te dever %2$s.</string>
+    <string name="designsystem_settled_pair_even">com a mudança, %1$s e %2$s ficam quitados.</string>
+    <string name="designsystem_settled_pair_even_with_me">com a mudança, você e %s ficam quitados.</string>
 </resources>

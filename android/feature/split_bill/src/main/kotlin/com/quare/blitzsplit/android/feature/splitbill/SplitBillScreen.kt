@@ -95,6 +95,7 @@ fun SplitBillScreen(
         DeleteBillDialog(
             description = deletion.description,
             myBalanceMinor = deletion.myBalanceMinor,
+            settledPair = deletion.settledPair,
             isDeleting = state.isDeleting,
             money = rememberMoneyFormatter(state.currency),
             onConfirm = { viewModel.onEvent(SplitBillUiEvent.OnDeleteConfirmed) },

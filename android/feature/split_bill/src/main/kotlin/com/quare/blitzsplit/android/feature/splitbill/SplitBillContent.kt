@@ -10,11 +10,14 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 private const val PREVIEW_TWO_MINUTES_MILLIS = 120_000L
+private const val PREVIEW_SETTLED_PAIR_MINOR = 2_000L
 
 @Composable
 fun SplitBillContent(
@@ -64,6 +67,7 @@ fun SplitBillContent(
                 if (state.isEditing) {
                     BillEditingFooter(
                         state = state,
+                        money = money,
                         onEvent = onEvent,
                     )
                 }
@@ -112,6 +116,25 @@ private fun SplitBillContentConflictPreview() {
                 changerName = "Ana",
                 changerIsMe = false,
                 changedAt = System.currentTimeMillis() - PREVIEW_TWO_MINUTES_MILLIS,
+            ),
+        ),
+    )
+}
+
+@DevicePreviews
+@Composable
+private fun SplitBillContentSettledPairPreview() {
+    PreviewSplitBillContent(
+        createPreviewBillState(
+            isEditing = true,
+            settledPair = SettledPairChange(
+                payerName = "Elisa",
+                payerIsMe = false,
+                receiverName = "Bruno",
+                receiverIsMe = false,
+                outcome = SettledPairOutcome.OWES_AGAIN,
+                debtorIsPayer = true,
+                amountMinor = PREVIEW_SETTLED_PAIR_MINOR,
             ),
         ),
     )
