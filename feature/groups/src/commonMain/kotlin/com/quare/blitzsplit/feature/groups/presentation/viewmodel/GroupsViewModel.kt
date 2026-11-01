@@ -314,7 +314,8 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSplitBillClicked -> openSplitBill()
 
-            GroupsUiEvent.OnToReceiveClicked -> if (uiState.value.summary.canOpenToReceive) {
+            // Why: only from the groups on top, so a late tap never closes a screen over them, a half-typed bill's.
+            GroupsUiEvent.OnToReceiveClicked -> if (isOnTop() && uiState.value.summary.canOpenToReceive) {
                 openBalancesTab(BalancesFilter.OWES_YOU)
             }
 

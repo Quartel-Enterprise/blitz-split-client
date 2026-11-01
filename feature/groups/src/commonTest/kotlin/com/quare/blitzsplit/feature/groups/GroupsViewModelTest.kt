@@ -1975,6 +1975,35 @@ class GroupsViewModelTest {
     }
 
     @Test
+    fun `GIVEN Rachar conta over the groups WHEN a late tap on A receber arrives THEN it stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Pierre",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+            val splitBill = Route.SplitBill(
+                groupId = trio().id,
+                expenseId = null,
+                picksGroupFirst = false,
+            )
+            navigator.navigate(splitBill)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, splitBill), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN no group yet WHEN tapping Rachar conta THEN opens Novo grupo`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
