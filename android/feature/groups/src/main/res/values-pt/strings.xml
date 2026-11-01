@@ -78,4 +78,24 @@
     <string name="groups_grid_size_compact">Compacto</string>
     <string name="groups_grid_size_standard">Padrão</string>
     <string name="groups_grid_size_large">Grande</string>
+    <string name="groups_search">Buscar</string>
+    <string name="groups_search_back">Voltar</string>
+    <string name="groups_search_placeholder">Buscar grupos, pessoas e despesas</string>
+    <string name="groups_search_clear">Limpar busca</string>
+    <string name="groups_search_scopes">Procurar em</string>
+    <string name="groups_search_scope_all">Tudo</string>
+    <string name="groups_search_scope_groups">Grupos</string>
+    <string name="groups_search_scope_people">Pessoas</string>
+    <string name="groups_search_scope_bills">Despesas</string>
+    <string name="groups_search_section_groups">Grupos</string>
+    <string name="groups_search_section_people">Pessoas</string>
+    <string name="groups_search_section_bills">Despesas</string>
+    <string name="groups_search_group_meta">%1$s · %2$s</string>
+    <string name="groups_search_settled_bill">Quitado · despesa “%s”</string>
+    <string name="groups_search_bill_meta">%1$s · %2$s</string>
+    <string name="groups_search_you">Você</string>
+    <string name="groups_search_you_paid">Você pagou</string>
+    <string name="groups_search_hint">Procura em grupos, pessoas e despesas deste aparelho, inclusive nos grupos quitados, sem precisar de internet.</string>
+    <string name="groups_search_none_title">Nada com “%s”</string>
+    <string name="groups_search_none_body">Procuramos em grupos, pessoas e despesas deste aparelho, inclusive nos grupos quitados.</string>
 </resources>

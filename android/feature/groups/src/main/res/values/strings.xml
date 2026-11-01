@@ -78,4 +78,24 @@
     <string name="groups_grid_size_compact">Compact</string>
     <string name="groups_grid_size_standard">Standard</string>
     <string name="groups_grid_size_large">Large</string>
+    <string name="groups_search">Search</string>
+    <string name="groups_search_back">Back</string>
+    <string name="groups_search_placeholder">Search groups, people and expenses</string>
+    <string name="groups_search_clear">Clear search</string>
+    <string name="groups_search_scopes">Search in</string>
+    <string name="groups_search_scope_all">All</string>
+    <string name="groups_search_scope_groups">Groups</string>
+    <string name="groups_search_scope_people">People</string>
+    <string name="groups_search_scope_bills">Expenses</string>
+    <string name="groups_search_section_groups">Groups</string>
+    <string name="groups_search_section_people">People</string>
+    <string name="groups_search_section_bills">Expenses</string>
+    <string name="groups_search_group_meta">%1$s · %2$s</string>
+    <string name="groups_search_settled_bill">Settled up · expense “%s”</string>
+    <string name="groups_search_bill_meta">%1$s · %2$s</string>
+    <string name="groups_search_you">You</string>
+    <string name="groups_search_you_paid">You paid</string>
+    <string name="groups_search_hint">Searches the groups, people and expenses on this device, settled groups included, even without internet.</string>
+    <string name="groups_search_none_title">Nothing for “%s”</string>
+    <string name="groups_search_none_body">We searched the groups, people and expenses on this device, settled groups included.</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +53,8 @@ fun GroupsScreen(
         onUndo = { viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked) },
         onShown = { viewModel.onEvent(GroupsUiEvent.OnRecordedPaymentNoticeShown) },
     )
+    // Why: back closes the search before it leaves the home.
+    BackHandler(enabled = state.isSearching) { viewModel.onEvent(GroupsUiEvent.OnSearchClosed) }
     GroupsContent(
         state = state,
         onEvent = viewModel::onEvent,
