@@ -79,6 +79,10 @@ class GroupRepositoryImpl(
         )
     }
 
+    /*
+     * Why: written over the stored JSON, so the keys a newer app added survive. Back to splitting equally is null,
+     * those keys included: the server only takes a default split with a mode.
+     */
     override suspend fun updateDefaultSplit(
         groupId: String,
         defaultSplit: GroupDefaultSplit?,
@@ -87,7 +91,12 @@ class GroupRepositoryImpl(
     ): Result<Unit> = suspendRunCatching {
         local.updateDefaultSplit(
             id = groupId,
-            defaultSplit = defaultSplit?.let(mapper::encode),
+            defaultSplit = defaultSplit?.let {
+                mapper.encode(
+                    defaultSplit = it,
+                    over = local.getDefaultSplit(groupId),
+                )
+            },
             splitIncomes = mapper.encodeIncomes(incomes),
             updatedAt = updatedAt,
         )

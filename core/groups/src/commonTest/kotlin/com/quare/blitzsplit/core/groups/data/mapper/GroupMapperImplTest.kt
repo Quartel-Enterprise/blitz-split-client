@@ -1,7 +1,5 @@
 package com.quare.blitzsplit.core.groups.data.mapper
 
-import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitDto
-import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -13,6 +11,9 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -1099,7 +1100,7 @@ class GroupMapperImplTest {
     fun `GIVEN a default split WHEN it goes to Room and back THEN the group has it as saved`() {
         // Given
         val split = GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf("m-1" to 3L, "m-2" to 1L))
-        val stored = groupEntity(id = "group-1").copy(defaultSplit = mapper.encode(split))
+        val stored = groupEntity(id = "group-1").copy(defaultSplit = mapper.encode(split, over = null))
 
         // When
         val group = mapper.toDomain(listOf(stored), emptyList()).single()
@@ -1123,10 +1124,10 @@ class GroupMapperImplTest {
     @Test
     fun `GIVEN a server row with a default split WHEN it goes up again THEN the same split is sent`() {
         // Given
-        val dto = DefaultSplitDto(
-            mode = "percent",
-            weights = listOf(DefaultSplitWeightDto("m-1", 75L), DefaultSplitWeightDto("m-2", 25L)),
-        )
+        val dto = Json
+            .parseToJsonElement(
+                """{"mode":"percent","weights":[{"member_id":"m-1","weight":75}],"exceptions":[{"category":"food"}]}""",
+            ).jsonObject
         val entity = mapper.toEntity(serverGroup(dto), ownerUserId = "user-1")
 
         // When
@@ -1135,6 +1136,24 @@ class GroupMapperImplTest {
         // Then
         assertEquals(dto, pushed.defaultSplit)
         assertNull(entity.splitIncomes)
+    }
+
+    @Test
+    fun `GIVEN a stored split with a key this version lacks WHEN encoding one over it THEN it keeps it`() {
+        // Given
+        val stored = """{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],"exceptions":[1]}"""
+        val split = GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf("m-1" to 0L))
+
+        // When
+        val text = mapper.encode(split, over = stored)
+
+        // Then
+        assertEquals(
+            """{"mode":"equal","weights":[{"member_id":"m-1","weight":0}],"exceptions":[1]}""",
+            text,
+        )
+        val back = groupEntity(id = "group-1").copy(defaultSplit = text)
+        assertEquals(split, mapper.toDomain(listOf(back), emptyList()).single().defaultSplit)
     }
 
     @Test
@@ -1151,7 +1170,7 @@ class GroupMapperImplTest {
         assertTrue(mapper.decodeIncomes("not json").isEmpty())
     }
 
-    private fun serverGroup(defaultSplit: DefaultSplitDto): GroupDto = GroupDto(
+    private fun serverGroup(defaultSplit: JsonObject): GroupDto = GroupDto(
         id = "group-1",
         createdBy = "user-1",
         name = "Apê 302",

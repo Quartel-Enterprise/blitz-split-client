@@ -185,6 +185,9 @@ interface GroupDao {
     @Query("SELECT splitIncomes FROM split_group WHERE id = :id")
     suspend fun getSplitIncomes(id: String): String?
 
+    @Query("SELECT defaultSplit FROM split_group WHERE id = :id")
+    suspend fun getDefaultSplit(id: String): String?
+
     // Why: someone who joined sees the group too, so only a member nobody is yet can be removed.
     @Query(
         "UPDATE group_member SET isRemoved = 1, updatedAt = :removedAt, pendingSync = 1 " +

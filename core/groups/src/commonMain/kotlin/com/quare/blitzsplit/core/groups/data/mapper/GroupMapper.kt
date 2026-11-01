@@ -53,8 +53,14 @@ interface GroupMapper {
         userId: String,
     ): GroupMemberEntity
 
-    // Why: the JSON Room keeps "Divisão padrão" in, the same the server keeps.
-    fun encode(defaultSplit: GroupDefaultSplit): String
+    /*
+     * Why: the JSON Room keeps "Divisão padrão" in, the same the server keeps. Only the keys this version knows are
+     * written over the stored JSON, so the ones a newer app added to it survive the change.
+     */
+    fun encode(
+        defaultSplit: GroupDefaultSplit,
+        over: String?,
+    ): String
 
     // Why: the incomes "Pela renda" was typed with, which only this device keeps; null when there are none.
     fun encodeIncomes(incomes: Map<String, Long>): String?

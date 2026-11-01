@@ -14,6 +14,9 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 
 /*
  * Why: a type, color or currency a newer app wrote reads as the closest one this version knows, so nobody loses
@@ -63,7 +66,12 @@ class GroupMapperImpl : GroupMapper {
         pendingSync = true,
         ownerUserId = ownerUserId,
         inviteCode = group.inviteCode,
-        defaultSplit = group.defaultSplit?.let(::encode),
+        defaultSplit = group.defaultSplit?.let {
+            encode(
+                defaultSplit = it,
+                over = null,
+            )
+        },
         splitIncomes = null,
     )
 
@@ -119,7 +127,7 @@ class GroupMapperImpl : GroupMapper {
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
         inviteCode = null,
-        defaultSplit = decodeOrNull(entity.defaultSplit),
+        defaultSplit = objectOrNull(entity.defaultSplit),
     )
 
     /*
@@ -152,7 +160,7 @@ class GroupMapperImpl : GroupMapper {
         pendingSync = false,
         ownerUserId = ownerUserId,
         inviteCode = dto.inviteCode,
-        defaultSplit = dto.defaultSplit?.let { json.encodeToString(it) },
+        defaultSplit = dto.defaultSplit?.toString(),
         // Why: never on the server; applyRemoteGroup leaves the ones this device has alone.
         splitIncomes = null,
     )
@@ -184,17 +192,23 @@ class GroupMapperImpl : GroupMapper {
         inviteCode = entity.inviteCode,
     )
 
-    override fun encode(defaultSplit: GroupDefaultSplit): String = json.encodeToString(
-        DefaultSplitDto(
-            mode = defaultSplit.mode.code,
-            weights = defaultSplit.weights.map { (memberId, weight) ->
-                DefaultSplitWeightDto(
-                    memberId = memberId,
-                    weight = weight,
-                )
-            },
-        ),
-    )
+    override fun encode(
+        defaultSplit: GroupDefaultSplit,
+        over: String?,
+    ): String {
+        val known = json.encodeToJsonElement(
+            DefaultSplitDto(
+                mode = defaultSplit.mode.code,
+                weights = defaultSplit.weights.map { (memberId, weight) ->
+                    DefaultSplitWeightDto(
+                        memberId = memberId,
+                        weight = weight,
+                    )
+                },
+            ),
+        )
+        return JsonObject(objectOrNull(over).orEmpty() + known.jsonObject).toString()
+    }
 
     override fun encodeIncomes(incomes: Map<String, Long>): String? = incomes.takeIf { it.isNotEmpty() }?.let {
         json.encodeToString(it)
@@ -216,5 +230,9 @@ class GroupMapperImpl : GroupMapper {
 
     private fun decodeOrNull(text: String?): DefaultSplitDto? = text?.let {
         runCatching { json.decodeFromString<DefaultSplitDto>(it) }.getOrNull()
+    }
+
+    private fun objectOrNull(text: String?): JsonObject? = text?.let {
+        runCatching { json.parseToJsonElement(it) as? JsonObject }.getOrNull()
     }
 }

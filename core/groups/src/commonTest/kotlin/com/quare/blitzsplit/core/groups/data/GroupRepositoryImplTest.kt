@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -3550,6 +3551,38 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a server split with a key this version lacks WHEN editing it THEN the push keeps the key`() = runTest {
+        // Given
+        val serverRow = Json.decodeFromString<GroupDto>(
+            """
+            {"id":"group-1","created_by":"user-1","name":"Apê 302","type":"home","color":"blue","currency":"BRL",
+            "added_at":1,"updated_at":2,"invite_code":"abc",
+            "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
+            "exceptions":[{"category":"food","mode":"equal"}]}}
+            """.trimIndent(),
+        )
+        prepareScenario(remoteGroups = listOf(serverRow))
+        repository.downloadGroups("user-1").getOrThrow()
+        val split = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf("m-1" to 60L, "m-2" to 40L))
+
+        // When
+        repository.updateDefaultSplit("group-1", split, emptyMap(), updatedAt = 9L).getOrThrow()
+        repository.uploadPendingGroups("user-1").getOrThrow()
+
+        // Then
+        val pushed = remote.upsertedGroups
+            .single()
+            .single()
+            .defaultSplit!!
+        assertEquals(serverRow.defaultSplit!!["exceptions"], pushed["exceptions"])
+        assertEquals("\"percent\"", pushed["mode"].toString())
+        assertEquals(
+            """[{"member_id":"m-1","weight":60},{"member_id":"m-2","weight":40}]""",
+            pushed["weights"].toString(),
+        )
+    }
+
+    @Test
     fun `GIVEN the device cannot write WHEN saving the default split THEN it fails`() = runTest {
         // Given
         prepareScenario(
@@ -3852,6 +3885,11 @@ private class FakeGroupLocalDataSource(
     override suspend fun getSplitIncomes(id: String): String? {
         groupWriteError?.let { throw it }
         return group(id)?.splitIncomes
+    }
+
+    override suspend fun getDefaultSplit(id: String): String? {
+        groupWriteError?.let { throw it }
+        return group(id)?.defaultSplit
     }
 
     override suspend fun removeMember(

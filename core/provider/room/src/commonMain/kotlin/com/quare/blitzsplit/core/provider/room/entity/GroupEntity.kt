@@ -26,8 +26,8 @@ data class GroupEntity(
     // Why: the code of the invite link, which the server makes; null until the group's first sync brings it.
     val inviteCode: String?,
     /*
-     * Why: "Divisão padrão" (6.7) as the JSON the server keeps ({"mode", "weights"}), synced with the group's other
-     * fields; null while the group splits equally among everyone.
+     * Why: "Divisão padrão" (6.7) as the JSON object the server keeps ({"mode", "weights"}, plus whatever a newer
+     * app adds), synced with the group's other fields; null while the group splits equally among everyone.
      */
     @ColumnInfo(defaultValue = "NULL")
     val defaultSplit: String?,

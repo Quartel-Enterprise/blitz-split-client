@@ -47,6 +47,9 @@ interface GroupLocalDataSource {
 
     suspend fun getSplitIncomes(id: String): String?
 
+    // Why: the stored JSON, so a new "Divisão padrão" keeps the keys a newer app wrote in it.
+    suspend fun getDefaultSplit(id: String): String?
+
     // Why: a member who joined, or this device's user, is left as it is.
     suspend fun removeMember(
         id: String,
