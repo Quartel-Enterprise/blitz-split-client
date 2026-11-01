@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import kotlin.math.abs
+import kotlin.math.sign
 
 /*
  * Why: "Elisa já acertou com Bruno depois desta conta. O acerto continua valendo e o saldo é refeito: com a mudança,
@@ -33,11 +34,19 @@ data class SettledPairChange(
     val creditorIsMe: Boolean
         get() = if (debtorIsPayer) receiverIsMe else payerIsMe
 
+    /*
+     * Why: the pair and how it ends up, without the amount, which moves with every digit typed: a screen reader says
+     * the warning again only when this changes, never on each keystroke.
+     */
+    val announcementKey: SettledPairChange
+        get() = copy(amountMinor = 0L)
+
     companion object {
         /*
          * Why: the latest payment dated at or after the bill ("depois desta conta") between two people whose balance
          * the change moves, comparing the group's balances with the saved bill and with its change; a null change
-         * deletes it. Null when no such payment is there, so nothing is said.
+         * deletes it. "After the bill" follows the Quando being typed, since once saved that is the bill's date.
+         * Null when no such payment is there, so nothing is said.
          */
         fun findOrNull(
             saved: Expense,
@@ -49,8 +58,9 @@ data class SettledPairChange(
             val others = expenses.filter { it.id != saved.id }
             val before = GroupBalances.of(others + saved, settlements)
             val after = GroupBalances.of(others + listOfNotNull(changed), settlements)
+            val spentAt = changed?.spentAt ?: saved.spentAt
             val settlement = settlements
-                .filter { it.paidAt >= saved.spentAt }
+                .filter { it.paidAt >= spentAt }
                 .sortedByDescending { it.paidAt }
                 .firstOrNull { before.owedOf(it) != after.owedOf(it) }
                 ?: return null
@@ -86,14 +96,25 @@ data class SettledPairChange(
                 payerIsMe = payer?.isMe == true,
                 receiverName = receiver?.name,
                 receiverIsMe = receiver?.isMe == true,
-                outcome = when {
-                    owedAfterMinor == 0L -> SettledPairOutcome.EVEN
-                    owedAfterMinor > 0 && owedBeforeMinor <= 0 -> SettledPairOutcome.OWES_AGAIN
-                    else -> SettledPairOutcome.OWES
-                },
+                outcome = outcomeOf(owedBeforeMinor, owedAfterMinor),
                 debtorIsPayer = owedAfterMinor >= 0,
                 amountMinor = abs(owedAfterMinor),
             )
+        }
+
+        // Why: a debt that stays the same way round but shrinks "fica devendo"; one that grows or flips "passa a dever".
+        private fun outcomeOf(
+            owedBeforeMinor: Long,
+            owedAfterMinor: Long,
+        ): SettledPairOutcome = when {
+            owedAfterMinor == 0L -> SettledPairOutcome.EVEN
+
+            owedAfterMinor > 0 && owedBeforeMinor <= 0 -> SettledPairOutcome.OWES_AGAIN
+
+            owedAfterMinor.sign == owedBeforeMinor.sign && abs(owedAfterMinor) < abs(owedBeforeMinor) ->
+                SettledPairOutcome.OWES_LESS
+
+            else -> SettledPairOutcome.OWES
         }
 
         // Why: what the payment's payer owes its receiver, negative while the receiver owes the payer.

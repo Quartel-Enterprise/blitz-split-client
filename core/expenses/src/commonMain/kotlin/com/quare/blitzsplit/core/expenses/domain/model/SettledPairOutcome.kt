@@ -8,6 +8,9 @@ enum class SettledPairOutcome {
     // Why: "Bruno passa a dever R$ 98,00 a Elisa": the other way round, or more of what was still owed.
     OWES,
 
+    // Why: "Elisa fica devendo R$ 30,00 a Bruno": less of what was still owed, the same way round.
+    OWES_LESS,
+
     // Why: "Elisa e Bruno ficam quitados".
     EVEN,
 }

@@ -15,7 +15,9 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 // Why: Bruno paid R$ 300 split equally among Bruno, Elisa and Pierre (this device's user); Elisa then paid him back.
 class SettledPairChangeTest {
@@ -135,6 +137,106 @@ class SettledPairChangeTest {
         assertEquals(SettledPairOutcome.OWES, change?.outcome)
         assertEquals(true, change?.debtorIsPayer)
         assertEquals(7_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN Elisa paid half of her part WHEN her part shrinks THEN she is left owing less`() {
+        // Given
+        val half = elisaPaidBruno.copy(amountMinor = 5_000L)
+        val changed = jantar.withShares(BRUNO to 12_000L, ELISA to 8_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(half))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES_LESS, change?.outcome)
+        assertEquals(true, change?.debtorIsPayer)
+        assertEquals(3_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN Elisa paid more than her part WHEN her part grows THEN Bruno is left owing her less`() {
+        // Given
+        val more = elisaPaidBruno.copy(amountMinor = 15_000L)
+        val changed = jantar.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(more))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES_LESS, change?.outcome)
+        assertEquals("Bruno", change?.debtorName)
+        assertEquals(3_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN Elisa paid half of her part WHEN her part drops below it THEN Bruno comes to owe her`() {
+        // Given
+        val half = elisaPaidBruno.copy(amountMinor = 5_000L)
+        val changed = jantar.withShares(BRUNO to 18_000L, ELISA to 2_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(half))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES, change?.outcome)
+        assertEquals("Bruno", change?.debtorName)
+        assertEquals(3_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN a payment after the bill WHEN Quando moves past it THEN says nothing`() {
+        // Given
+        val changed = jantar
+            .withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+            .copy(spentAt = PAID_AT + 1L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(elisaPaidBruno))
+
+        // Then
+        assertNull(change)
+    }
+
+    @Test
+    fun `GIVEN a payment dated before the bill WHEN Quando moves before it THEN warns of it`() {
+        // Given
+        val earlier = elisaPaidBruno.copy(paidAt = BILL_AT - 1L)
+        val changed = jantar
+            .withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+            .copy(spentAt = BILL_AT - 2L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(earlier))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES_AGAIN, change?.outcome)
+    }
+
+    @Test
+    fun `GIVEN two changes that differ only in the amount WHEN comparing their announcement keys THEN they match`() {
+        // Given
+        val first = settledPairChange(SettledPairOutcome.OWES_AGAIN, amountMinor = 2_000L)
+        val second = settledPairChange(SettledPairOutcome.OWES_AGAIN, amountMinor = 3_000L)
+
+        // When
+        val matches = first.announcementKey == second.announcementKey
+
+        // Then
+        assertTrue(matches)
+    }
+
+    @Test
+    fun `GIVEN two changes with another outcome WHEN comparing their announcement keys THEN they differ`() {
+        // Given
+        val first = settledPairChange(SettledPairOutcome.OWES_AGAIN, amountMinor = 2_000L)
+        val second = settledPairChange(SettledPairOutcome.EVEN, amountMinor = 2_000L)
+
+        // When
+        val matches = first.announcementKey == second.announcementKey
+
+        // Then
+        assertFalse(matches)
     }
 
     @Test
@@ -272,6 +374,19 @@ class SettledPairChangeTest {
         paidAt = PAID_AT,
         isPending = false,
         updatedAt = PAID_AT,
+    )
+
+    private fun settledPairChange(
+        outcome: SettledPairOutcome,
+        amountMinor: Long,
+    ): SettledPairChange = SettledPairChange(
+        payerName = "Elisa",
+        payerIsMe = false,
+        receiverName = "Bruno",
+        receiverIsMe = false,
+        outcome = outcome,
+        debtorIsPayer = true,
+        amountMinor = amountMinor,
     )
 
     private fun Expense.withShares(vararg parts: Pair<String, Long>): Expense =

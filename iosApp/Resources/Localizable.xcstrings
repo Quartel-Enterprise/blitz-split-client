@@ -1568,6 +1568,28 @@
         }
       }
     },
+    "with the change, %@ is left owing %@ to %@." : {
+      "comment" : "How a pair that settled up ends up: the first %@ (a name) still owes, less than before, the second (an amount) to the third (a name)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ fica devendo %2$@ a %3$@."
+          }
+        }
+      }
+    },
+    "with the change, %@ is left owing you %@." : {
+      "comment" : "How a pair that settled up ends up: the first %@ (a name) still owes this user, less than before, the second (an amount)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ fica te devendo %2$@."
+          }
+        }
+      }
+    },
     "with the change, %@ now owes %@ %@." : {
       "comment" : "How a pair that settled up ends up: the first %@ now owes the second (names) the third (an amount)",
       "localizations" : {
@@ -1619,6 +1641,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "com a mudança, você e %@ ficam quitados."
+          }
+        }
+      }
+    },
+    "with the change, you are left owing %@ to %@." : {
+      "comment" : "How a pair that settled up ends up: this user still owes, less than before, the first %@ (an amount) to the second (a name)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, você fica devendo %1$@ a %2$@."
           }
         }
       }

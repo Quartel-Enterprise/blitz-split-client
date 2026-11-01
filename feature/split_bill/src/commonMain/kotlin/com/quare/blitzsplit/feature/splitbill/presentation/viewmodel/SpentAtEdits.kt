@@ -21,3 +21,19 @@ internal fun SplitBillUiState.withSpentAt(
         latestSpentAt = now,
     )
 }
+
+/*
+ * Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day. Opening the
+ * picker never moves what was picked, even a time a clock ahead of this device's saved.
+ */
+internal fun SplitBillUiState.withSpentAtLimitRefreshed(
+    now: Long,
+    timeZone: TimeZone,
+): SplitBillUiState = copy(
+    spentDay = SpentDay.relativeDayOf(
+        epochMillis = spentAt,
+        nowMillis = now,
+        timeZone = timeZone,
+    ),
+    latestSpentAt = now,
+)

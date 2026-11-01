@@ -128,7 +128,8 @@ enum BillCopy {
     }
 
     /// "The payment still counts and the balance is worked out again: with the change, Elisa owes Bruno R$ 20.00
-    /// again.", "… Bruno now owes Elisa R$ 98.00." or "… Elisa and Bruno are settled up.".
+    /// again.", "… Bruno now owes Elisa R$ 98.00.", "… Elisa is left owing R$ 30.00 to Bruno." (a remaining debt that
+    /// shrinks) or "… Elisa and Bruno are settled up.".
     static func settledPairDetail(_ change: SettledPairChange, currency: GroupCurrency) -> String {
         let outcome = settledPairOutcome(change, currency: currency)
         return String(localized: "The payment still counts and the balance is worked out again: \(outcome)")
@@ -147,6 +148,10 @@ enum BillCopy {
             if change.debtorIsMe { return String(localized: "with the change, you now owe \(creditor) \(amount).") }
             if change.creditorIsMe { return String(localized: "with the change, \(debtor) now owes you \(amount).") }
             return String(localized: "with the change, \(debtor) now owes \(creditor) \(amount).")
+        case .owesLess:
+            if change.debtorIsMe { return String(localized: "with the change, you are left owing \(amount) to \(creditor).") }
+            if change.creditorIsMe { return String(localized: "with the change, \(debtor) is left owing you \(amount).") }
+            return String(localized: "with the change, \(debtor) is left owing \(amount) to \(creditor).")
         default:
             if change.debtorIsMe { return String(localized: "with the change, you and \(creditor) are settled up.") }
             if change.creditorIsMe { return String(localized: "with the change, you and \(debtor) are settled up.") }

@@ -19,11 +19,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -91,7 +93,8 @@ internal fun BillConflictBanner(
 
 /*
  * Why: "Elisa já acertou com Bruno depois desta conta. O acerto continua valendo e o saldo é refeito: ...", under the
- * form while the change being typed unsettles a payment made after the bill (7.4b).
+ * form while the change being typed unsettles a payment made after the bill (7.4b). TalkBack says it as a pane when it
+ * shows and when the pair or how it ends up changes, not as a live region re-read on every digit of the amount.
  */
 @Composable
 internal fun SettledPairCard(
@@ -99,10 +102,12 @@ internal fun SettledPairCard(
     money: MoneyFormatter,
     modifier: Modifier = Modifier,
 ) {
+    val sentence = settledPairSentenceOf(change, money)
+    val announcement = remember(change.announcementKey) { sentence }
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .semantics { liveRegion = LiveRegionMode.Polite },
+            .semantics { paneTitle = announcement },
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.tertiaryContainer,
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -117,7 +122,7 @@ internal fun SettledPairCard(
                 contentDescription = null,
             )
             Text(
-                text = settledPairSentenceOf(change, money),
+                text = sentence,
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
-import { settledPairDetail, settledPairLead } from '@/features/bill-detail/settledPairText'
+import { settledPairDetail, settledPairLead, settledPairSentence } from '@/features/bill-detail/settledPairText'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -176,6 +176,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
     >
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
       {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
+      <SettledPairAnnouncement change={state.settledPair} money={money} />
       <div className="grid gap-x-6 gap-y-4 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-4">
           <GroupField presenter={presenter} state={state} />
@@ -413,17 +414,33 @@ function ConflictBanner({ conflict }: { conflict: JsBillConflict }) {
 
 /**
  * The change being typed unsettles a payment made after the bill: "Elisa já acertou com Bruno depois desta conta",
- * and how the pair ends up once it is saved (7.4b).
+ * and how the pair ends up once it is saved (7.4b). Not a live region: SettledPairAnnouncement says it.
  */
 function SettledPairBanner({ change, money }: { change: JsSettledPair; money: Money }) {
   return (
-    <div role="status" className="flex gap-3 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-5">
+    <div className="flex gap-3 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-5">
       <Banknote aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
       <p className="flex flex-col gap-1">
         <strong className="font-semibold">{settledPairLead(change)}</strong>
         <span>{settledPairDetail(change, money)}</span>
       </p>
     </div>
+  )
+}
+
+/**
+ * What a screen reader says of the settled pair warning: always in the form, so the live region exists before it
+ * fills, and its text only changes when the warning shows or the pair or how it ends up changes, never on each digit
+ * of the amount.
+ */
+function SettledPairAnnouncement({ change, money }: { change: JsSettledPair | null | undefined; money: Money }) {
+  const key = change?.announcementKey ?? null
+  const [announced, setAnnounced] = useState<{ key: string | null; text: string }>({ key: null, text: '' })
+  if (announced.key !== key) setAnnounced({ key, text: change ? settledPairSentence(change, money) : '' })
+  return (
+    <p role="status" className="sr-only">
+      {announced.text}
+    </p>
   )
 }
 

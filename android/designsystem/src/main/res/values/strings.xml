@@ -113,6 +113,9 @@
     <string name="designsystem_settled_pair_owes">with the change, %1$s now owes %3$s %2$s.</string>
     <string name="designsystem_settled_pair_i_owe">with the change, you now owe %2$s %1$s.</string>
     <string name="designsystem_settled_pair_owes_me">with the change, %1$s now owes you %2$s.</string>
+    <string name="designsystem_settled_pair_owes_less">with the change, %1$s is left owing %2$s to %3$s.</string>
+    <string name="designsystem_settled_pair_i_owe_less">with the change, you are left owing %1$s to %2$s.</string>
+    <string name="designsystem_settled_pair_owes_me_less">with the change, %1$s is left owing you %2$s.</string>
     <string name="designsystem_settled_pair_even">with the change, %1$s and %2$s are settled up.</string>
     <string name="designsystem_settled_pair_even_with_me">with the change, you and %s are settled up.</string>
 </resources>

@@ -37,12 +37,14 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -107,32 +109,37 @@ class SplitBillViewModel(
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
-    // Why: the payment deleting the bill would unsettle, which "Apagar esta conta?" says when it opens.
-    private var deletionSettledPair: SettledPairChange? = null
+    // Why: one read of the bill's group, shared by the form and by what a change to the bill unsettles.
+    private val group: SharedFlow<Group?> = groupId
+        .flatMapLatest { observeGroup(it) }
+        .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+
+    // Why: the payments a change to the bill unsettles (7.4b), only while editing, since only a saved bill can.
+    private val settledPairs = route.expenseId?.let {
+        SettledPairs(viewModelScope, it, route.groupId, group, observeExpenses, observeSettlements)
+    }
+
+    // Why: what "Apagar esta conta?" says deleting the bill unsettles, read from that one source when it opens.
+    private val deletionSettledPair: SettledPairChange?
+        get() = settledPairs?.deletionPair?.value
 
     /*
      * Why: a sync may bring other members while the bill is being filled in, or remove the whole group. While editing,
-     * it may also bring someone else's edit of the bill, or its deletion.
+     * it may also bring someone else's edit of the bill, or its deletion, or a payment it unsettles.
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        combine(groupId.flatMapLatest { observeGroup(it) }, expenseFlow, ::Pair)
-            .onEach { (group, expense) -> handle(group, expense) }
-            .launchIn(viewModelScope)
-        val editedExpenseId = route.expenseId
-        if (editedExpenseId == null) {
+        combine(group, expenseFlow, ::Pair)
+            .onEach { (group, expense) ->
+                handle(group, expense)
+                settledPairs?.refresh(uiState.value)
+            }.launchIn(viewModelScope)
+        if (settledPairs == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
                 .launchIn(viewModelScope)
         } else {
-            observeSettledPairs(
-                expenseId = editedExpenseId,
-                groupId = route.groupId,
-                uiState = uiState,
-                observeGroup = observeGroup,
-                observeExpenses = observeExpenses,
-                observeSettlements = observeSettlements,
-            ).onEach(::showSettledPairs).launchIn(viewModelScope)
+            settledPairs.showIn(uiState)
         }
         navigator.backStack
             .onEach {
@@ -149,6 +156,11 @@ class SplitBillViewModel(
     }
 
     fun onEvent(event: SplitBillUiEvent) {
+        handleEvent(event)
+        settledPairs?.refresh(uiState.value)
+    }
+
+    private fun handleEvent(event: SplitBillUiEvent) {
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
@@ -188,7 +200,9 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSeveralPayersDismissed -> uiState.update { it.copy(payerAmounts = null) }
 
-            SplitBillUiEvent.OnSpentAtOpened -> changeSpentAt(uiState.value.spentAt)
+            SplitBillUiEvent.OnSpentAtOpened -> uiState.update {
+                it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone())
+            }
 
             is SplitBillUiEvent.OnSpentAtChanged -> changeSpentAt(event.epochMillis)
 
@@ -273,7 +287,9 @@ class SplitBillViewModel(
                 // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
                 val meId = group.members.firstOrNull { it.isMe }?.id
                 uiState.update { state ->
-                    state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId, deletionSettledPair) })
+                    state.copy(
+                        deletion = state.deletion?.let { BillDeletion.of(expense, meId, deletionSettledPair) },
+                    )
                 }
                 show(group)
             }
@@ -361,17 +377,6 @@ class SplitBillViewModel(
         }
     }
 
-    private fun showSettledPairs(pairs: Pair<SettledPairChange?, SettledPairChange?>) {
-        val (editPair, deletionPair) = pairs
-        deletionSettledPair = deletionPair
-        uiState.update {
-            it.copy(
-                settledPair = editPair,
-                deletion = it.deletion?.copy(settledPair = deletionPair),
-            )
-        }
-    }
-
     private fun show(group: Group) {
         val people = group.members.map { it.toBillPerson() }
         val isAnotherGroup = shownGroupId != null && shownGroupId != group.id
@@ -423,7 +428,6 @@ class SplitBillViewModel(
         }
     }
 
-    // Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day.
     private fun changeSpentAt(epochMillis: Long) {
         uiState.update { it.withSpentAt(epochMillis, currentTimeMillis(), currentTimeZone()) }
     }
