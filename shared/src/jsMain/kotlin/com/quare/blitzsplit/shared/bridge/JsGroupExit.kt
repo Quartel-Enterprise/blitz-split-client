@@ -4,7 +4,7 @@ package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 
 // Why: the dialog of "Sair do grupo" or "Apagar grupo", flat; kind says which and which fields it fills.
 class JsGroupExitDialog(
@@ -40,7 +40,7 @@ class JsGroupExit(
     val deletedNotice: JsGroupDeletedNotice?,
 )
 
-internal fun toJsGroupExit(exit: GroupExitUiState): JsGroupExit = JsGroupExit(
+internal fun toJsGroupExit(exit: GroupExitState): JsGroupExit = JsGroupExit(
     isOnline = exit.isOnline,
     canLeaveOrDelete = exit.canLeaveOrDelete,
     dialog = exit.dialog?.let(::toJsGroupExitDialog),

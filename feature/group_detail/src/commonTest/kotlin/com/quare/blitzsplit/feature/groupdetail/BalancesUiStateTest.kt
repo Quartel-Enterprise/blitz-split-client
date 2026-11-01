@@ -2,7 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
@@ -171,7 +171,7 @@ class BalancesUiStateTest {
         otherDebts = otherDebts,
         hasBills = hasBills,
         recordedPayment = null,
-        exit = GroupExitUiState.idle,
+        exit = GroupExitState.idle,
         isLoaded = isLoaded,
     )
 }

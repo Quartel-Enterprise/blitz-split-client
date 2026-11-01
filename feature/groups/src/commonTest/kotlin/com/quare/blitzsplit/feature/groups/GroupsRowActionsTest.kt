@@ -2,16 +2,22 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
+import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -73,6 +79,7 @@ class GroupsRowActionsTest {
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupsViewModel
+    private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private val leftGroupIds = mutableListOf<String>()
     private val deletedGroupIds = mutableListOf<String>()
 
@@ -338,6 +345,113 @@ class GroupsRowActionsTest {
         assertNull(viewModel.uiState.value.exit.dialog)
     }
 
+    @Test
+    fun `GIVEN Acertar from a row WHEN Registrar pagamento closes after recording THEN the home shows the notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+            settleFromTheHome()
+            val settlementId = recordPierrePaidAna()
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(
+                PaymentNotice(
+                    settlementId = settlementId,
+                    fromName = "Pierre",
+                    fromIsMe = true,
+                    toName = "Ana",
+                ),
+                viewModel.uiState.value.recordedPayment,
+            )
+            // Why: consumed, so the group's screens never show it later.
+            assertNull(recordedPayments.observeRecorded().first())
+        }
+
+    @Test
+    fun `GIVEN Registrar pagamento still over the home WHEN a payment is recorded THEN the notice waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+            settleFromTheHome()
+
+            // When
+            val settlementId = recordPierrePaidAna()
+
+            // Then
+            assertNull(viewModel.uiState.value.recordedPayment)
+            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+        }
+
+    @Test
+    fun `GIVEN the payment notice on the home WHEN tapping Desfazer THEN deletes that payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+            settleFromTheHome()
+            val settlementId = recordPierrePaidAna()
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked)
+
+            // Then
+            assertEquals(listOf(settlementId), settlements.deletedIds)
+            assertNull(viewModel.uiState.value.recordedPayment)
+        }
+
+    @Test
+    fun `GIVEN the device fails to delete WHEN tapping Desfazer on the home THEN says so`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+        settleFromTheHome()
+        recordPierrePaidAna()
+        navigator.navigateBack()
+        settlements.deleteError = IllegalStateException("disk full")
+        var action: GroupsUiAction? = null
+        backgroundScope.launch { action = viewModel.uiAction.first() }
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked)
+
+        // Then
+        assertEquals(GroupsUiAction.ShowChangeError, action)
+    }
+
+    @Test
+    fun `GIVEN the payment notice on the home WHEN it goes away THEN clears it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(anaPaidForEveryone))
+        settleFromTheHome()
+        recordPierrePaidAna()
+        navigator.navigateBack()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnRecordedPaymentNoticeShown)
+
+        // Then
+        assertNull(viewModel.uiState.value.recordedPayment)
+    }
+
+    // Why: "Sair do grupo" says to settle first, and its "Acertar" opens Registrar pagamento over the home.
+    private fun settleFromTheHome() {
+        viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+        viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+    }
+
+    private suspend fun recordPierrePaidAna(): String =
+        RecordSettlementUseCase(settlements, recordedPayments) { 1_000L }
+            .invoke(
+                groupId = "trio",
+                fromMemberId = "member-Pierre",
+                toMemberId = "member-Ana",
+                amountMinor = 10000L,
+                method = SettlementMethod.PIX,
+                paidAt = 1_000L,
+            ).getOrThrow()
+
     private val trio = Group(
         id = "trio",
         name = "Apê 302",
@@ -411,6 +525,7 @@ class GroupsRowActionsTest {
         leftGroupIds.clear()
         deletedGroupIds.clear()
         val deletions = InMemoryGroupDeletionRepository()
+        recordedPayments = InMemoryRecordedPaymentRepository()
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.GREEN, null)),
@@ -438,6 +553,9 @@ class GroupsRowActionsTest {
             },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
+            observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
         )
     }
 }

@@ -3,7 +3,7 @@ package com.quare.blitzsplit.android.feature.groups
 import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupGridSize
@@ -40,9 +40,10 @@ private fun GroupsOfflinePreview() {
                 filterQuery = "",
                 isRefreshing = false,
                 deletedGroupNotice = null,
-                exit = GroupExitUiState.idle,
+                exit = GroupExitState.idle,
                 exitGroupId = null,
                 layout = GroupsLayout.initial,
+                recordedPayment = null,
             ),
             onEvent = {},
         )
@@ -136,9 +137,10 @@ private fun buildPreviewState(layout: GroupsLayout): GroupsUiState {
         filterQuery = "",
         isRefreshing = false,
         deletedGroupNotice = null,
-        exit = GroupExitUiState.idle,
+        exit = GroupExitState.idle,
         exitGroupId = null,
         layout = layout,
+        recordedPayment = null,
     )
 }
 

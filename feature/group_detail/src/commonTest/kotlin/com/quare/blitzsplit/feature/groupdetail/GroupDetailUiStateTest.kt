@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail
 
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -130,7 +130,7 @@ class GroupDetailUiStateTest {
         paymentToDelete = null,
         recordedPayment = null,
         showsBillDeletedNotice = false,
-        exit = GroupExitUiState.idle,
+        exit = GroupExitState.idle,
         isLoaded = isLoaded,
     )
 

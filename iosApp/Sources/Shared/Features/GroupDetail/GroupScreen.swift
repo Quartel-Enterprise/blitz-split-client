@@ -44,7 +44,7 @@ extension View {
         hasExpenses: Bool,
         showsSplitBill: Bool,
         showsInlineTitle: Bool,
-        exit: GroupExitUiState?,
+        exit: GroupExitState?,
         actions: GroupScreenActions,
     ) -> some View {
         modifier(

@@ -68,7 +68,7 @@ struct GroupsTable: View {
             TableColumn(String()) { item in
                 GroupRowMenuButton(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
             }
-            .width(32)
+            .width(44)
         }
         .contextMenu(forSelectionType: String.self) { groupIds in
             if let item = rows.first(where: { groupIds.contains($0.id) }) {

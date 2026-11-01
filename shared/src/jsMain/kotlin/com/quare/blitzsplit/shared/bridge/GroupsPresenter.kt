@@ -116,6 +116,8 @@ class JsGroupsState(
     // Why: the open groups as cards; Quitados stays the table or the list.
     val showsGrid: Boolean,
     val canPickGridSize: Boolean,
+    // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento opened by a row's Acertar closes.
+    val recordedPayment: JsPaymentNotice?,
 )
 
 class GroupsPresenter {
@@ -154,19 +156,21 @@ class GroupsPresenter {
                 gridSize = state.layout.gridSize.code,
                 showsGrid = state.showsGrid,
                 canPickGridSize = state.canPickGridSize,
+                recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon", "leave-error" and "delete-error", a toast in the page's words.
+    // Why: "coming-soon", "leave-error", "delete-error" and "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupsUiAction.ShowComingSoon -> "coming-soon"
                 GroupsUiAction.ShowLeaveError -> "leave-error"
                 GroupsUiAction.ShowDeleteError -> "delete-error"
+                GroupsUiAction.ShowChangeError -> "change-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -256,6 +260,15 @@ class GroupsPresenter {
 
     fun dismissGroupExit() {
         viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed)
+    }
+
+    // Why: "Desfazer" on the notice of a payment just recorded.
+    fun undoPayment() {
+        viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked)
+    }
+
+    fun recordedPaymentNoticeShown() {
+        viewModel.onEvent(GroupsUiEvent.OnRecordedPaymentNoticeShown)
     }
 
     fun deletedGroupNoticeShown() {

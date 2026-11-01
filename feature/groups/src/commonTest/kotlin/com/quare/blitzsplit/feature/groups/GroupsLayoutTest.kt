@@ -3,6 +3,9 @@ package com.quare.blitzsplit.feature.groups
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
@@ -216,6 +219,9 @@ class GroupsLayoutTest {
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             leaveGroup = LeaveGroup { Result.success(GroupExitOutcome.DONE) },
             deleteGroup = DeleteGroup { Result.success(GroupExitOutcome.DONE) },
+            observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
+            consumeRecordedPayment = ConsumeRecordedPayment {},
+            deleteSettlement = DeleteSettlement { Result.success(Unit) },
             observeGroupsLayout = observeGroupsLayout ?: ObserveGroupsLayout { storedLayout },
             updateGroupsLayout = UpdateGroupsLayout { layout ->
                 savedLayouts += layout

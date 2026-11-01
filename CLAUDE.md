@@ -74,7 +74,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group and your balance on Android, the context menu on iOS) and its right click (the Mac's and the web's table);
     the web's menu starts with "Abrir grupo". Convidar opens that group's `Route.Invite`, not as a new group. Sair and
     Apagar open the group's own dialogs, rules and errors (`GroupExitController`), and stay on the home: "Acertar"
-    opens Registrar pagamento and "Ver saldos" the group's Saldos over it. Offline both show disabled with "Precisa de
+    opens Registrar pagamento and "Ver saldos" the group's Saldos over it. Once that Registrar pagamento closes, the
+    home shows "Pagamento de Ana registrado." with "Desfazer", as the group's screens do, and consumes it, so the
+    group never shows it later (`GroupsUiState.recordedPayment`). Offline both show disabled with "Precisa de
     internet" (Android's sheet adds "Sair e apagar precisam de internet…"); online, "Acerte os R$ 98,00 antes" (what
     you owe, else what you're owed, `GroupRow.settleBeforeLeavingMinor`) and "Só quando todos tiverem acertado"
     (`GroupRow.hasOpenDebts`) say what blocks them before the tap, which still opens the dialog listing what is open.
@@ -173,7 +175,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     once nobody owes anything ("Ainda há saldo em aberto" lists the pairs, with "Ver saldos"), for everyone, with its
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
     even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
-    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitUiState.deletedNotice`), once on top again if
+    apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again if
     a bill covered them; any other screen of the group (Membros, Convidar) just closes, and the home says "Carla
     apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",

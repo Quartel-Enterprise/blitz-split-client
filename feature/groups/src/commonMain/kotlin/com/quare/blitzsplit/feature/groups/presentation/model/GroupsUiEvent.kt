@@ -77,4 +77,10 @@ sealed interface GroupsUiEvent : UiEvent {
 
     // Why: the snackbar of a deleted group went away, so the next one, if any, can show.
     data object OnDeletedGroupNoticeShown : GroupsUiEvent
+
+    // Why: "Desfazer" on the notice of a payment just recorded from a row's "Acertar".
+    data object OnUndoPaymentClicked : GroupsUiEvent
+
+    // Why: the notice went away without Desfazer.
+    data object OnRecordedPaymentNoticeShown : GroupsUiEvent
 }

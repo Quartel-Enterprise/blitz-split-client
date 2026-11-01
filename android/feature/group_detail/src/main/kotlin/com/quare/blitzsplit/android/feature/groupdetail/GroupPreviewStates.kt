@@ -2,7 +2,7 @@ package com.quare.blitzsplit.android.feature.groupdetail
 
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -47,7 +47,7 @@ internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupH
     isEveryoneSettled = false,
 )
 
-internal val previewGroupExit = GroupExitUiState(
+internal val previewGroupExit = GroupExitState(
     isOnline = true,
     dialog = null,
     isRunning = false,

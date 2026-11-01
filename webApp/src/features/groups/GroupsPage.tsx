@@ -22,17 +22,23 @@ import { cn } from '@/lib/utils'
 export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
   const groups = state.showsSettledGroups ? state.settledGroups : state.openGroups
   const showsNoGroups = state.showsSettledGroups ? state.showsNoSettledGroups : state.showsNoOpenGroups
-  // Why: one row's menu at a time, which its ⋯ or a right click on the row opens.
-  const [menuGroupId, setMenuGroupId] = useState<string | null>(null)
-  const menuOf = (group: JsGroupRow) => (
-    <GroupRowMenu
-      presenter={presenter}
-      group={group}
-      isOnline={state.exit.isOnline}
-      open={menuGroupId === group.id}
-      onOpenChange={(open) => setMenuGroupId(open ? group.id : null)}
-    />
-  )
+  /*
+   * Why: one row's menu at a time, which its ⋯ or a right click on the table's row or a card opens. The table and the
+   * phone's list are both rendered (CSS hides one), so the key says which, or the hidden twin's menu would open too.
+   */
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const menuOf = (group: JsGroupRow, surface: 'table' | 'cards' | 'grid') => {
+    const key = `${surface}:${group.id}`
+    return (
+      <GroupRowMenu
+        presenter={presenter}
+        group={group}
+        isOnline={state.exit.isOnline}
+        open={openMenu === key}
+        onOpenChange={(open) => setOpenMenu(open ? key : null)}
+      />
+    )
+  }
   const exitGroup = state.exitGroup
   return (
     <>
@@ -82,11 +88,22 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
         )
       ) : state.showsGrid && !state.showsSettledGroups ? (
         // Why: only the open groups go in the grid; the Quitados tab stays the table or the list.
-        <GroupsGrid presenter={presenter} groups={groups} gridSize={state.gridSize} menuOf={menuOf} onContextMenu={setMenuGroupId} />
+        <GroupsGrid
+          presenter={presenter}
+          groups={groups}
+          gridSize={state.gridSize}
+          menuOf={(group) => menuOf(group, 'grid')}
+          onContextMenu={(groupId) => setOpenMenu(`grid:${groupId}`)}
+        />
       ) : (
         <>
-          <GroupsTable presenter={presenter} groups={groups} menuOf={menuOf} onContextMenu={setMenuGroupId} />
-          <GroupsCardList presenter={presenter} groups={groups} menuOf={menuOf} />
+          <GroupsTable
+            presenter={presenter}
+            groups={groups}
+            menuOf={(group) => menuOf(group, 'table')}
+            onContextMenu={(groupId) => setOpenMenu(`table:${groupId}`)}
+          />
+          <GroupsCardList presenter={presenter} groups={groups} menuOf={(group) => menuOf(group, 'cards')} />
         </>
       )}
 
