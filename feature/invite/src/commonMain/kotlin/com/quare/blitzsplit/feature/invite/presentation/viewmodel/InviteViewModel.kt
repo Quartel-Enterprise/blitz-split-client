@@ -103,12 +103,12 @@ class InviteViewModel(
 
             InviteUiEvent.OnSeeWhoJoinedClicked -> navigator.openGroupTab(
                 from = route,
-                tab = Route.Members(route.groupId, joinedAs = null),
+                tab = Route.Members(route.groupId),
             )
 
             InviteUiEvent.OnGoToGroupClicked -> navigator.openGroupTab(
                 from = route,
-                tab = Route.GroupDetail(route.groupId),
+                tab = Route.GroupDetail(route.groupId, joinedAs = null),
             )
 
             InviteUiEvent.OnChangeLinkClicked -> askToChangeLink()

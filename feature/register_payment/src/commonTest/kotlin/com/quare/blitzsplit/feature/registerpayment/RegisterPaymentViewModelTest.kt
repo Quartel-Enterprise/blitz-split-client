@@ -94,7 +94,10 @@ class RegisterPaymentViewModelTest {
         assertNull(state.from)
         assertNull(state.to)
         assertFalse(state.canConfirm)
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -110,7 +113,10 @@ class RegisterPaymentViewModelTest {
         assertNull(state.from)
         assertNull(state.to)
         assertFalse(state.canConfirm)
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -124,7 +130,10 @@ class RegisterPaymentViewModelTest {
 
         // Then
         assertTrue(settlements.recordedSettlements.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -327,7 +336,10 @@ class RegisterPaymentViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(10_000L, state.debtMinor)
             assertEquals("100,00", state.amountText)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -565,7 +577,10 @@ class RegisterPaymentViewModelTest {
             // Then
             assertTrue(settlements.recordedSettlements.isEmpty())
             assertFalse(viewModel.uiState.value.isSaving)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -817,7 +832,7 @@ class RegisterPaymentViewModelTest {
         viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         assertTrue(actions.isEmpty())
     }
 
@@ -832,7 +847,7 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(1, settlements.recordedSettlements.size)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -864,7 +879,7 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(1, settlements.recordedSettlements.size)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -908,7 +923,10 @@ class RegisterPaymentViewModelTest {
             }
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
             assertEquals(16_230L, viewModel.uiState.value.debtMinor)
         }
 
@@ -925,7 +943,7 @@ class RegisterPaymentViewModelTest {
             gate.complete(Unit)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -976,7 +994,10 @@ class RegisterPaymentViewModelTest {
         assertEquals(listOf<RegisterPaymentUiAction>(RegisterPaymentUiAction.ShowSaveError), actions)
         assertFalse(viewModel.uiState.value.isSaving)
         assertTrue(viewModel.uiState.value.canConfirm)
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -992,7 +1013,7 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(1, settlements.recordedSettlements.size)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -1017,7 +1038,7 @@ class RegisterPaymentViewModelTest {
             gate.complete(Unit)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -1044,7 +1065,10 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(10_000L, viewModel.uiState.value.debtMinor)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -1059,7 +1083,7 @@ class RegisterPaymentViewModelTest {
         val backStack = navigator.backStack.value
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), backStack)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), backStack)
     }
 
     @Test
@@ -1078,7 +1102,7 @@ class RegisterPaymentViewModelTest {
             }
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -1097,7 +1121,7 @@ class RegisterPaymentViewModelTest {
         }
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -1110,7 +1134,10 @@ class RegisterPaymentViewModelTest {
             removeMember(ANA)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
             assertNull(viewModel.uiState.value.from)
         }
 
@@ -1127,7 +1154,10 @@ class RegisterPaymentViewModelTest {
             removeMember(BRUNO)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+                navigator.backStack.value,
+            )
             assertNull(viewModel.uiState.value.to)
         }
 
@@ -1140,7 +1170,7 @@ class RegisterPaymentViewModelTest {
         groups.groups.value = emptyList()
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -1148,7 +1178,7 @@ class RegisterPaymentViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+            navigator.navigate(Route.Members(GROUP_ID))
 
             // When
             settlements.settlements.update {
@@ -1161,7 +1191,7 @@ class RegisterPaymentViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route, Route.Members(GROUP_ID, joinedAs = null)),
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route, Route.Members(GROUP_ID)),
                 navigator.backStack.value,
             )
         }
@@ -1171,7 +1201,7 @@ class RegisterPaymentViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+            navigator.navigate(Route.Members(GROUP_ID))
             settlements.settlements.update {
                 it + settlement(
                     from = ANA,
@@ -1184,20 +1214,23 @@ class RegisterPaymentViewModelTest {
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
     fun `GIVEN the debt still open WHEN a screen on top closes THEN this one stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+        navigator.navigate(Route.Members(GROUP_ID))
 
         // When
         navigator.navigateBack()
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -1210,7 +1243,7 @@ class RegisterPaymentViewModelTest {
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         assertTrue(settlements.recordedSettlements.isEmpty())
     }
 
@@ -1225,24 +1258,27 @@ class RegisterPaymentViewModelTest {
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
         gate.complete(Unit)
         assertEquals(1, settlements.recordedSettlements.size)
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
     fun `GIVEN another screen on top WHEN tapping close THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+        navigator.navigate(Route.Members(GROUP_ID))
 
         // When
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route, Route.Members(GROUP_ID, joinedAs = null)),
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route, Route.Members(GROUP_ID)),
             navigator.backStack.value,
         )
     }
@@ -1386,7 +1422,7 @@ class RegisterPaymentViewModelTest {
         recordedPayments = InMemoryRecordedPaymentRepository()
         isOnline = MutableStateFlow(online)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
             it.navigate(route)
         }
         val groupNeverAnswers = MutableSharedFlow<Group?>()

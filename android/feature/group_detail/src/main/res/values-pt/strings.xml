@@ -55,4 +55,8 @@
     <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
     <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
     <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
+    <string name="group_detail_joined_title">Você entrou como %s</string>
+    <string name="group_detail_joined_message">Tudo que for lançado para você aparece aqui.</string>
+    <string name="group_detail_protect_title">Proteja seu acesso</string>
+    <string name="group_detail_protect_message">Você entrou sem conta. Guarde o código ou conecte Google ou Apple.</string>
 </resources>

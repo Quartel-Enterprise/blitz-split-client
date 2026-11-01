@@ -507,7 +507,7 @@ class InviteChangeLinkViewModelTest {
                 it.navigate(Route.CreateGroup)
                 it.replaceTop(route)
             } else {
-                it.navigate(Route.GroupDetail("group-1"))
+                it.navigate(Route.GroupDetail("group-1", joinedAs = null))
                 it.navigate(route)
             }
         }

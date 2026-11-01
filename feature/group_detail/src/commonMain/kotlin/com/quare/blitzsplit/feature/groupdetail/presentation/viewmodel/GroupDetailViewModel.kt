@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -12,6 +13,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotic
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -39,6 +41,7 @@ class GroupDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
+    observeAccount: ObserveAccount,
     useCases: GroupScreenUseCases,
 ) : ViewModel() {
     val uiState: StateFlow<GroupDetailUiState>
@@ -51,6 +54,8 @@ class GroupDetailViewModel(
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                joinedAs = route.joinedAs,
+                isAccountUnprotected = false,
             ),
         )
 
@@ -83,6 +88,12 @@ class GroupDetailViewModel(
         combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
             .launchIn(viewModelScope)
+        if (route.joinedAs != null) {
+            observeAccount()
+                .onEach { account ->
+                    uiState.update { it.copy(isAccountUnprotected = account.status !is AccountStatus.Connected) }
+                }.launchIn(viewModelScope)
+        }
     }
 
     fun onEvent(event: GroupDetailUiEvent) {
@@ -102,7 +113,7 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
-            GroupDetailUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId, joinedAs = null))
+            GroupDetailUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
 
             GroupDetailUiEvent.OnBalancesTabClicked -> screen.openTab(Route.Balances(route.groupId))
 
@@ -131,6 +142,8 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             GroupDetailUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
+
+            GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
         }
     }
 

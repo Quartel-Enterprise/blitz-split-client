@@ -38,9 +38,13 @@ sealed interface Route {
         val isNewGroup: Boolean,
     ) : Route
 
-    // Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens.
+    /*
+     * Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens. joinedAs is the name
+     * someone just joined the group as, for "Você entrou como Bruno" (3.3): joining lands here.
+     */
     data class GroupDetail(
         val groupId: String,
+        val joinedAs: String?,
     ) : Route
 
     /*
@@ -110,13 +114,9 @@ sealed interface Route {
         val currency: GroupCurrency,
     ) : Route
 
-    /*
-     * Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
-     * joinedAs is the name someone just joined the group as, for "Você entrou como Bruno".
-     */
+    // Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
     data class Members(
         val groupId: String,
-        val joinedAs: String?,
     ) : Route
 
     /*

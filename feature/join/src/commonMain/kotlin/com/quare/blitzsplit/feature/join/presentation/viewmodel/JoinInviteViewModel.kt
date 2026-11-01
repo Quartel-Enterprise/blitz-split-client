@@ -169,7 +169,7 @@ class JoinInviteViewModel(
         if (observeGroup(groupId).first() == null) {
             uiState.update { it.copy(status = JoinInviteStatus.OFFLINE) }
         } else if (isOnTop()) {
-            navigator.replaceTop(Route.GroupDetail(groupId))
+            navigator.replaceTop(Route.GroupDetail(groupId, joinedAs = null))
         }
     }
 
