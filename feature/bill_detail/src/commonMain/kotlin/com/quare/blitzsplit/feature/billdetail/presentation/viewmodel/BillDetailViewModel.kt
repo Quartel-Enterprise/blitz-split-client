@@ -36,10 +36,13 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -85,8 +88,17 @@ class BillDetailViewModel(
     private var expense: Expense? = null
     private var myMemberId: String? = null
 
-    // Why: the payment deleting the bill would unsettle (7.4b), which "Apagar esta conta?" says when it opens.
-    private var deletionSettledPair: SettledPairChange? = null
+    // Why: one read of the bill's group, shared by the bill and by what deleting it unsettles.
+    private val group: SharedFlow<Group?> = observeGroup(route.groupId)
+        .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+
+    // Why: the payment deleting the bill would unsettle (7.4b), the one source "Apagar esta conta?" says it from.
+    private val deletionSettledPair: StateFlow<SettledPairChange?> = combine(
+        group,
+        observeExpenses(route.groupId),
+        observeSettlements(route.groupId),
+        ::findDeletionSettledPairOrNull,
+    ).stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     /*
      * Why: the group or the bill went while "Editar conta" covered this screen, which then leaves as soon as it is on
@@ -97,15 +109,11 @@ class BillDetailViewModel(
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
-        combine(observeGroup(route.groupId), observeExpense(route.expenseId), ::Pair)
+        combine(group, observeExpense(route.expenseId), ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }
             .launchIn(viewModelScope)
-        combine(
-            observeGroup(route.groupId),
-            observeExpenses(route.groupId),
-            observeSettlements(route.groupId),
-            ::findDeletionSettledPairOrNull,
-        ).onEach(::showDeletionSettledPair)
+        deletionSettledPair
+            .onEach(::showDeletionSettledPair)
             .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
@@ -156,7 +164,6 @@ class BillDetailViewModel(
     ): SettledPairChange? = SettledPairChange.findDeletionOrNull(route.expenseId, group, expenses, settlements)
 
     private fun showDeletionSettledPair(settledPair: SettledPairChange?) {
-        deletionSettledPair = settledPair
         // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
         uiState.update { if (it.isDeleting) it else it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
     }
@@ -190,7 +197,7 @@ class BillDetailViewModel(
                 splitMode = expense.splitMode,
                 people = rowsOf(group, expense),
                 // Why: the dialog says what deleting it changes as the bill is now, after a sync changed it.
-                deletion = state.deletion?.let { BillDeletion.of(expense, me?.id, deletionSettledPair) },
+                deletion = state.deletion?.let { BillDeletion.of(expense, me?.id, deletionSettledPair.value) },
                 isLoaded = true,
             )
         }
@@ -292,7 +299,7 @@ class BillDetailViewModel(
     private fun askToDelete() {
         val expense = expense ?: return
         if (!uiState.value.areActionsEnabled) return
-        uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair)) }
+        uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair.value)) }
     }
 
     private fun delete() {

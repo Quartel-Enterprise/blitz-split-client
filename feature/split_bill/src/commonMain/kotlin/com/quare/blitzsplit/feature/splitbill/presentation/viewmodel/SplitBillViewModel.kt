@@ -37,12 +37,15 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -107,32 +110,54 @@ class SplitBillViewModel(
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
-    // Why: the payment deleting the bill would unsettle, which "Apagar esta conta?" says when it opens.
-    private var deletionSettledPair: SettledPairChange? = null
+    // Why: one read of the bill's group, shared by the form and by what a change to the bill unsettles.
+    private val group: SharedFlow<Group?> = groupId
+        .flatMapLatest { observeGroup(it) }
+        .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+
+    /*
+     * Why: the form as saving it would write the bill, refreshed after each change to the form; showing what it
+     * unsettles never writes it, so that never feeds back into itself.
+     */
+    private val billInputs = MutableStateFlow<BillInputs?>(null)
+
+    // Why: the group's bills and payments, read only while editing, since only a saved bill can unsettle a payment.
+    private val ledger: SharedFlow<GroupLedger> = combine(
+        group,
+        observeExpenses(route.groupId),
+        observeSettlements(route.groupId),
+        ::GroupLedger,
+    ).shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
+
+    // Why: the payment deleting the bill would unsettle (7.4b), the one source "Apagar esta conta?" says it from.
+    private val deletionSettledPair: StateFlow<SettledPairChange?> = route.expenseId
+        ?.let { expenseId -> observeDeletionSettledPair(expenseId, ledger) }
+        ?.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+        ?: MutableStateFlow(null)
 
     /*
      * Why: a sync may bring other members while the bill is being filled in, or remove the whole group. While editing,
-     * it may also bring someone else's edit of the bill, or its deletion.
+     * it may also bring someone else's edit of the bill, or its deletion, or a payment it unsettles.
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        combine(groupId.flatMapLatest { observeGroup(it) }, expenseFlow, ::Pair)
-            .onEach { (group, expense) -> handle(group, expense) }
-            .launchIn(viewModelScope)
+        combine(group, expenseFlow, ::Pair)
+            .onEach { (group, expense) ->
+                handle(group, expense)
+                refreshBillInputs()
+            }.launchIn(viewModelScope)
         val editedExpenseId = route.expenseId
         if (editedExpenseId == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
                 .launchIn(viewModelScope)
         } else {
-            observeSettledPairs(
-                expenseId = editedExpenseId,
-                groupId = route.groupId,
-                uiState = uiState,
-                observeGroup = observeGroup,
-                observeExpenses = observeExpenses,
-                observeSettlements = observeSettlements,
-            ).onEach(::showSettledPairs).launchIn(viewModelScope)
+            deletionSettledPair
+                .onEach(::showDeletionSettledPair)
+                .launchIn(viewModelScope)
+            observeEditSettledPair(editedExpenseId, billInputs, ledger)
+                .onEach(::showEditSettledPair)
+                .launchIn(viewModelScope)
         }
         navigator.backStack
             .onEach {
@@ -149,6 +174,11 @@ class SplitBillViewModel(
     }
 
     fun onEvent(event: SplitBillUiEvent) {
+        handleEvent(event)
+        refreshBillInputs()
+    }
+
+    private fun handleEvent(event: SplitBillUiEvent) {
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
@@ -235,6 +265,10 @@ class SplitBillViewModel(
         }
     }
 
+    private fun refreshBillInputs() {
+        billInputs.value = BillInputs.of(uiState.value)
+    }
+
     private fun showGroups(groups: List<Group>) {
         val asks = route.picksGroupFirst && !hasAskedForGroup && groups.size > 1
         hasAskedForGroup = true
@@ -275,7 +309,7 @@ class SplitBillViewModel(
                 // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
                 val meId = group.members.firstOrNull { it.isMe }?.id
                 uiState.update { state ->
-                    state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId, deletionSettledPair) })
+                    state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId, deletionSettledPair.value) })
                 }
                 show(group)
             }
@@ -363,16 +397,14 @@ class SplitBillViewModel(
         }
     }
 
-    private fun showSettledPairs(pairs: Pair<SettledPairChange?, SettledPairChange?>) {
-        val (editPair, deletionPair) = pairs
-        deletionSettledPair = deletionPair
-        // Why: the save or delete in flight changes Room, which must not reword what the form or the question says.
-        uiState.update {
-            it.copy(
-                settledPair = if (it.isSaving) it.settledPair else editPair,
-                deletion = if (it.isDeleting) it.deletion else it.deletion?.copy(settledPair = deletionPair),
-            )
-        }
+    // Why: the save in flight changes Room, which must not reword what the form says.
+    private fun showEditSettledPair(settledPair: SettledPairChange?) {
+        uiState.update { if (it.isSaving) it else it.copy(settledPair = settledPair) }
+    }
+
+    // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
+    private fun showDeletionSettledPair(settledPair: SettledPairChange?) {
+        uiState.update { if (it.isDeleting) it else it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
     }
 
     private fun show(group: Group) {
@@ -546,7 +578,7 @@ class SplitBillViewModel(
         val meId = uiState.value.people
             .firstOrNull { it.isMe }
             ?.id
-        uiState.update { it.copy(deletion = BillDeletion.of(expense, meId, deletionSettledPair)) }
+        uiState.update { it.copy(deletion = BillDeletion.of(expense, meId, deletionSettledPair.value)) }
     }
 
     private fun delete() {
