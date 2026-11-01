@@ -35,6 +35,7 @@ fun GroupDetailContent(
         ),
         snackbarHostState = snackbarHostState,
         onAction = onAction,
+        onHomeTabClick = { tab -> onEvent(GroupDetailUiEvent.OnHomeTabClicked(tab)) },
         modifier = modifier,
     ) {
         state.joinedAs?.let { name ->

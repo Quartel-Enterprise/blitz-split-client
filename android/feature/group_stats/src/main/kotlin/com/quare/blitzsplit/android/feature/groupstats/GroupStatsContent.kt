@@ -19,15 +19,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -42,15 +48,39 @@ private val twoColumnsMaxWidth = 1100.dp
 /*
  * Why: "Estatísticas" (6.6) under the medium flexible bar, with Back and no "Rachar conta". A phone upright, and a
  * tablet upright, scroll one column: the period, the total, Por pessoa, Ao longo do tempo and Maior despesa. Lying
- * down, the total and Por pessoa take the first column, and Ao longo do tempo and Maior despesa the second.
+ * down, the total and Por pessoa take the first column, and Ao longo do tempo and Maior despesa the second. Anywhere
+ * wider than a phone upright the home's rail stays beside it, as the canvas draws it (6.6).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupStatsContent(
     state: GroupStatsUiState,
     onEvent: (GroupStatsUiEvent) -> Unit,
     onPickDates: () -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
+    WithGroupNavigationRail(
+        onTabClick = { tab -> onEvent(GroupStatsUiEvent.OnHomeTabClicked(tab)) },
+        modifier = modifier,
+    ) { showsRail ->
+        GroupStatsScaffold(
+            state = state,
+            onEvent = onEvent,
+            onPickDates = onPickDates,
+            snackbarHostState = snackbarHostState,
+            showsRail = showsRail,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GroupStatsScaffold(
+    state: GroupStatsUiState,
+    onEvent: (GroupStatsUiEvent) -> Unit,
+    onPickDates: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    showsRail: Boolean,
 ) {
     val layout = rememberDeviceLayout()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -58,9 +88,11 @@ fun GroupStatsContent(
     val dates = rememberStatsTextFormatter()
     val times = rememberDateTimeTextFormatter()
     Scaffold(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
         topBar = {
             MediumFlexibleTopAppBar(
                 title = { Text(stringResource(R.string.group_stats_title)) },

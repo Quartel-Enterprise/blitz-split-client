@@ -20,6 +20,7 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
 fun MembersScreen(
@@ -32,12 +33,15 @@ fun MembersScreen(
     val resources = LocalResources.current
     val changeError = stringResource(R.string.members_change_error)
     val releaseError = stringResource(R.string.members_release_error)
+    val comingSoon = stringResource(DesignR.string.designsystem_coming_soon)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 MembersUiAction.ShowChangeError -> showReplacingSnackbar(snackbarHostState, changeError)
 
                 MembersUiAction.ShowReleaseError -> showReplacingSnackbar(snackbarHostState, releaseError)
+
+                MembersUiAction.ShowComingSoon -> showReplacingSnackbar(snackbarHostState, comingSoon)
 
                 is MembersUiAction.CopyLink -> context.copyLink(action.link)
 

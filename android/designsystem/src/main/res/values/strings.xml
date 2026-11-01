@@ -102,6 +102,8 @@
     <string name="designsystem_tab_balances">Balances</string>
     <string name="designsystem_tab_contacts">Contacts</string>
     <string name="designsystem_tab_activity">Activity</string>
+    <!-- Why: Atividade, on the home's rail beside a group, is not built yet. -->
+    <string name="designsystem_coming_soon">Coming soon</string>
     <string name="designsystem_person_you_owe">you owe</string>
     <string name="designsystem_person_owes_you">owes you</string>
     <string name="designsystem_person_net">Net, already offset</string>

@@ -28,6 +28,7 @@ fun BalancesScreen(
             BalancesUiAction.ShowLeaveError -> DesignR.string.designsystem_group_exit_leave_error
             BalancesUiAction.ShowDeleteError -> DesignR.string.designsystem_group_exit_delete_error
             BalancesUiAction.ShowChangeError -> R.string.group_detail_change_error
+            BalancesUiAction.ShowComingSoon -> DesignR.string.designsystem_coming_soon
         }
     }
     RecordedPaymentNoticeEffect(

@@ -48,6 +48,7 @@ fun BalancesContent(
         ),
         snackbarHostState = snackbarHostState,
         onAction = onAction,
+        onHomeTabClick = { tab -> onEvent(BalancesUiEvent.OnHomeTabClicked(tab)) },
         modifier = modifier,
     ) {
         when {
