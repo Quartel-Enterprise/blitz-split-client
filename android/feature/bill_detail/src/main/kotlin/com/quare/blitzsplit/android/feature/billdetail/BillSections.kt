@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.format.categoryPath
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +48,21 @@ internal fun BillSummaryColumn(
     dates: DateTimeTextFormatter,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Why: the bill's category over its title, "Alimentação › Mercado" (7.3).
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CategoryBadge(
+                category = state.category,
+                size = 28.dp,
+            )
+            Text(
+                text = categoryPath(state.category, state.categoryParent),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Text(
             text = state.description,
             modifier = Modifier.semantics { heading() },

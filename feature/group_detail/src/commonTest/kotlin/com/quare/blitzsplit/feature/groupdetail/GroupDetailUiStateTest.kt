@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -150,6 +151,7 @@ class GroupDetailUiStateTest {
                 ),
                 totalMinor = 12_000,
                 myBalanceMinor = -6_000,
+                category = CategoryTree.appOnly.other,
                 isPending = false,
             ),
         ),

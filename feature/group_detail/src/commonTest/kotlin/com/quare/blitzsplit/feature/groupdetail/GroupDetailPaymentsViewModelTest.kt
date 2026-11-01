@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -1254,6 +1256,7 @@ class GroupDetailPaymentsViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->

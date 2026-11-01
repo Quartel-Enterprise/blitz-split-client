@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
@@ -39,6 +41,7 @@ class GroupDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
+    observeCategoryTree: ObserveCategoryTree,
     useCases: GroupScreenUseCases,
 ) : ViewModel() {
     val uiState: StateFlow<GroupDetailUiState>
@@ -70,7 +73,16 @@ class GroupDetailViewModel(
         },
     )
 
+    // Why: the group's categories the rows' icons read from, and the last rows shown, redrawn when they change.
+    private var categoryTree = CategoryTree.appOnly
+    private var showAgain: (() -> Unit)? = null
+
     init {
+        observeCategoryTree(route.groupId)
+            .onEach { tree ->
+                categoryTree = tree
+                showAgain?.invoke()
+            }.launchIn(viewModelScope)
         screen.watch(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
@@ -140,6 +152,7 @@ class GroupDetailViewModel(
         settlements: List<Settlement>,
         balances: GroupBalances,
     ) {
+        showAgain = { show(group, expenses, settlements, balances) }
         val timeZone = currentTimeZone()
         val now = currentTimeMillis()
         val namesById = group.members.associate { it.id to it.name }
@@ -191,6 +204,7 @@ class GroupDetailViewModel(
             payers = payers,
             totalMinor = expense.amountMinor,
             myBalanceMinor = meId?.let(expense::balanceOf),
+            category = categoryTree.resolve(expense.categoryId),
             isPending = expense.isPending,
         )
     }

@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.feature.billdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -90,6 +93,20 @@ class BillDetailViewModelTest {
             assertFalse(state.isLoaded)
             assertFalse(state.areActionsEnabled)
             assertFalse(state.showsMyPart)
+        }
+
+    @Test
+    fun `GIVEN a bill in Mercado WHEN it opens THEN shows Alimentação › Mercado, and Outros without one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = expense().copy(categoryId = AppCategory.FOOD_MARKET.key))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(AppCategory.FOOD_MARKET.key, state.category.id)
+            assertEquals(AppCategory.FOOD.key, state.categoryParent?.id)
         }
 
     @Test
@@ -1550,6 +1567,7 @@ class BillDetailViewModelTest {
             },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = ObserveSettlementsUseCase(settlements),
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

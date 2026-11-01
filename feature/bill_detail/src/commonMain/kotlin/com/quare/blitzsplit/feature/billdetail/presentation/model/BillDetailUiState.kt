@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -16,6 +18,9 @@ data class BillDetailUiState(
     val spentDay: RelativeDay,
     // Why: who paid, this device's user first, then in the order they were added to the group, then who left it.
     val payers: List<BillPayer>,
+    // Why: the bill's category (7.7), resolved in the group's categories; null for none.
+    val categoryId: String?,
+    val categories: CategoryTree,
     // Why: "Na fila · sincroniza ao reconectar".
     val isPending: Boolean,
     // Why: "Sua parte", what the bill does to this device's user's balance; null when they aren't in it.
@@ -31,6 +36,13 @@ data class BillDetailUiState(
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
 ) {
+    // Why: "Alimentação › Mercado" under the bill's title, "Outros" for none.
+    val category: Category
+        get() = categories.resolve(categoryId)
+
+    val categoryParent: Category?
+        get() = category.parentId?.let { categories.findOrNull(it) }
+
     // Why: the count in "Igual entre 5".
     val participantCount: Int
         get() = people.count { it.shareMinor != null }

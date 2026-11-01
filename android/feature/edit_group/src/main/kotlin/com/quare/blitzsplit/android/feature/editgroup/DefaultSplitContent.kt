@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.android.feature.editgroup
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -101,6 +104,10 @@ fun DefaultSplitContent(
                 ExampleCard(
                     state = state,
                     money = money,
+                )
+                ExceptionsSection(
+                    state = state,
+                    onEvent = onEvent,
                 )
                 Text(
                     text = stringResource(findNoteRes(state.showsOfflineNotice)),
@@ -344,6 +351,15 @@ private fun createPreviewState(
         incomeFallback = emptyMap(),
         currency = GroupCurrency.BRL,
     ),
+    exceptions = listOf(
+        CategorySplit(
+            categoryId = AppCategory.FOOD_MARKET.key,
+            mode = DefaultSplitMode.EQUAL,
+            weights = people.associate { it.id to 1L },
+        ),
+    ),
+    categories = CategoryTree.appOnly,
+    exceptionEditor = null,
 )
 
 private fun createPreviewPerson(

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -115,6 +116,7 @@ private fun ExpenseEntryRow(
 ) {
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+        leading = { CategoryBadge(category = expense.category) },
         title = expense.description,
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnExpenseClicked(expense.id)) },
@@ -155,6 +157,8 @@ internal fun EntryFrameRow(
     onClick: () -> Unit,
     modifier: Modifier,
     meta: @Composable () -> Unit,
+    // Why: a bill's category badge in place of the icon (6.1); a payment keeps its icon.
+    leading: (@Composable () -> Unit)? = null,
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -171,7 +175,7 @@ internal fun EntryFrameRow(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            EntryIconTile(icon)
+            if (leading != null) leading() else EntryIconTile(icon)
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),

@@ -139,6 +139,11 @@ fun GroupStatsContent(
                             state = state,
                             money = money,
                         )
+                        StatsCategoriesSection(
+                            state = state,
+                            money = money,
+                            pieSize = 112.dp,
+                        )
                         StatsPeopleSection(
                             state = state,
                             money = money,
@@ -179,6 +184,12 @@ fun GroupStatsContent(
                     item(key = "period") { chip() }
                     item(key = "summary") {
                         StatsSummaryHero(
+                            state = state,
+                            money = money,
+                        )
+                    }
+                    item(key = "categories") {
+                        StatsCategoriesSection(
                             state = state,
                             money = money,
                         )

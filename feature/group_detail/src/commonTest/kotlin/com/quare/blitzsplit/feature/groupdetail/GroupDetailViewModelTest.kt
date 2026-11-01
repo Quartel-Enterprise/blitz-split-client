@@ -1,5 +1,9 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -91,6 +95,26 @@ class GroupDetailViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
+
+    @Test
+    fun `GIVEN bills with and without a category WHEN the screen opens THEN each row has the one it reads as`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(id = "market", spentAt = thisMorning, categoryId = AppCategory.FOOD_MARKET.key),
+                    expense(id = "raffle", spentAt = thisMorning - 1_000L),
+                ),
+            )
+
+            // When
+            val rows = viewModel.uiState.value.days
+                .flatMap { it.entries }
+                .filterIsInstance<ExpenseRow>()
+
+            // Then
+            assertEquals(listOf(AppCategory.FOOD_MARKET.key, AppCategory.OTHER.key), rows.map { it.category.id })
+        }
 
     @Test
     fun `GIVEN Room not read yet WHEN the screen opens THEN nothing is loaded`() = runTest(testDispatcher) {
@@ -374,6 +398,7 @@ class GroupDetailViewModelTest {
                     ),
                     totalMinor = 64_200,
                     myBalanceMinor = -16_050,
+                    category = CategoryTree.appOnly.other,
                     isPending = true,
                 ),
                 row,
@@ -1578,6 +1603,7 @@ class GroupDetailViewModelTest {
         payers: List<ExpensePayer> = listOf(ExpensePayer(ANA, amountMinor)),
         shares: List<ExpenseShare> = listOf(share(ANA, amountMinor / 2), share(PIERRE, amountMinor / 2)),
         isPending: Boolean = false,
+        categoryId: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
@@ -1587,7 +1613,7 @@ class GroupDetailViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
-        categoryId = null,
+        categoryId = categoryId,
         spentAt = spentAt,
         isPending = isPending,
         updatedAt = spentAt,
@@ -1620,6 +1646,7 @@ class GroupDetailViewModelTest {
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
