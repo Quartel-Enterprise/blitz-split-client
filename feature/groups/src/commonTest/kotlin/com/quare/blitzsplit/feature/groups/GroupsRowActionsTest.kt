@@ -52,6 +52,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -359,7 +360,7 @@ class GroupsRowActionsTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Pierre",
                     fromIsMe = true,
                     toName = "Ana",
@@ -382,7 +383,14 @@ class GroupsRowActionsTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -508,6 +516,7 @@ class GroupsRowActionsTest {
         avatarColor = AvatarColor.BLUE,
         isMe = isMe,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
 
@@ -556,6 +565,7 @@ class GroupsRowActionsTest {
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
+            observePeopleBalances = { emptyFlow() },
         )
     }
 }

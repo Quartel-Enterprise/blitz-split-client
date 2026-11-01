@@ -47,6 +47,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -497,6 +498,7 @@ class GroupsSearchTest {
                 avatarColor = AvatarColor.PEACH,
                 isMe = index == 0,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             )
         },
@@ -557,6 +559,7 @@ class GroupsSearchTest {
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },
+            observePeopleBalances = { emptyFlow() },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
         )

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.data
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import kotlinx.coroutines.flow.first
@@ -18,22 +19,22 @@ class InMemoryRecordedPaymentRepositoryTest {
         val recorded = repository.observeRecorded()
 
         // When
-        val settlement = recorded.first()
+        val payment = recorded.first()
 
         // Then
-        assertNull(settlement)
+        assertNull(payment)
     }
 
     @Test
     fun `GIVEN no notice WHEN posting a payment THEN it is owed the notice`() = runTest {
         // Given
-        val settlement = payment(PAYMENT_ID)
+        val payment = payment(PAYMENT_ID)
 
         // When
-        repository.post(settlement)
+        repository.post(payment)
 
         // Then
-        assertEquals(settlement, repository.observeRecorded().first())
+        assertEquals(payment, repository.observeRecorded().first())
     }
 
     @Test
@@ -45,7 +46,14 @@ class InMemoryRecordedPaymentRepositoryTest {
         repository.post(payment(OTHER_PAYMENT_ID))
 
         // Then
-        assertEquals(OTHER_PAYMENT_ID, repository.observeRecorded().first()?.id)
+        assertEquals(
+            OTHER_PAYMENT_ID,
+            repository
+                .observeRecorded()
+                .first()
+                ?.settlementIds
+                ?.single(),
+        )
     }
 
     @Test
@@ -69,19 +77,46 @@ class InMemoryRecordedPaymentRepositoryTest {
         repository.consume(OTHER_PAYMENT_ID)
 
         // Then
-        assertEquals(PAYMENT_ID, repository.observeRecorded().first()?.id)
+        assertEquals(
+            PAYMENT_ID,
+            repository
+                .observeRecorded()
+                .first()
+                ?.settlementIds
+                ?.single(),
+        )
     }
 
-    private fun payment(id: String): Settlement = Settlement(
-        id = id,
-        groupId = "group-1",
-        fromMemberId = "ana",
-        toMemberId = "bruno",
-        amountMinor = 5_000L,
-        method = SettlementMethod.PIX,
-        paidAt = 1_000L,
-        isPending = true,
-        updatedAt = 0L,
+    @Test
+    fun `GIVEN a settling up owed the notice WHEN consuming one of its payments THEN no screen owes one`() = runTest {
+        // Given
+        repository.post(
+            RecordedPayment.SettledUp(
+                settlementIds = listOf(PAYMENT_ID, OTHER_PAYMENT_ID),
+                personName = "Carla",
+                isPaidByMe = false,
+            ),
+        )
+
+        // When
+        repository.consume(OTHER_PAYMENT_ID)
+
+        // Then
+        assertNull(repository.observeRecorded().first())
+    }
+
+    private fun payment(id: String): RecordedPayment = RecordedPayment.InGroup(
+        Settlement(
+            id = id,
+            groupId = "group-1",
+            fromMemberId = "ana",
+            toMemberId = "bruno",
+            amountMinor = 5_000L,
+            method = SettlementMethod.PIX,
+            paidAt = 1_000L,
+            isPending = true,
+            updatedAt = 0L,
+        ),
     )
 
     private companion object {

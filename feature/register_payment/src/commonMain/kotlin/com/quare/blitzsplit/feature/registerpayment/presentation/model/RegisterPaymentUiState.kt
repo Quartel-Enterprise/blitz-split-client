@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.registerpayment.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
+import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -12,6 +13,11 @@ data class RegisterPaymentUiState(
     val to: PaymentPerson?,
     // Why: "Ana te deve R$ 162,30", what the pair owes now, which a payment never goes past.
     val debtMinor: Long,
+    /*
+     * Why: settling up with someone across groups from the global Saldos (Acertar, Recebi): what each group adds to
+     * the net, one payment each; empty for a pair of one group.
+     */
+    val groupParts: List<PersonGroupBalance>,
     // Why: the "Valor pago" field as typed, which opens with the whole debt.
     val amountText: String,
     // Why: once typed in, the field keeps what was typed when a sync changes the debt.
@@ -37,8 +43,15 @@ data class RegisterPaymentUiState(
     val amountMinor: Long?
         get() = AmountInput.parse(amountText, currency)
 
+    /*
+     * Why: across several groups only the whole net settles, since a part of it can't say which group it closes;
+     * "Toda a dívida" and the field stay as they are.
+     */
+    val isAmountLocked: Boolean
+        get() = groupParts.size > 1
+
     val isAmountValid: Boolean
-        get() = amountMinor?.let { it in 1..debtMinor } == true
+        get() = amountMinor?.let { if (isAmountLocked) it == debtMinor else it in 1..debtMinor } == true
 
     // Why: "Ana te deve R$ 162,30. Use até esse valor."
     val showsOverDebtError: Boolean

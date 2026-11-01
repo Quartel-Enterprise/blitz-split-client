@@ -21,6 +21,7 @@ import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
+import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.BalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
@@ -145,6 +146,17 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Balances> { route -> BalancesScreen(route) }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
             entry<Route.RegisterPayment>(
+                metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
+            ) { route ->
+                RegisterPaymentScreen(
+                    route = route,
+                    isDialog = usesBillDialog,
+                )
+            }
+            // Why: the home's Saldos tab, over the groups.
+            entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
+            // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
+            entry<Route.SettleUp>(
                 metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
             ) { route ->
                 RegisterPaymentScreen(

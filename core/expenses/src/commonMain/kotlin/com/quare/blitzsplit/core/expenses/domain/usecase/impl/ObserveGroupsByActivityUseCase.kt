@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
 import com.quare.blitzsplit.core.expenses.domain.model.GroupActivity
-import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -14,16 +13,9 @@ class ObserveGroupsByActivityUseCase(
     private val observeGroupsMoney: ObserveGroupsMoney,
 ) : ObserveGroupsByActivity {
     // Why: in the home's order (GroupActivity.compareMostRecentFirst), each group's activity read once per emission.
-    override fun invoke(): Flow<List<Group>> = combine(observeGroups(), observeGroupsMoney()) { groups, money ->
-        groups
-            .map { group ->
-                val ofGroup = money[group.id] ?: GroupMoney.NONE
-                group to GroupActivity.latestAtOf(
-                    groupUpdatedAt = group.updatedAt,
-                    expenses = ofGroup.expenses,
-                    settlements = ofGroup.settlements,
-                )
-            }.sortedWith(GroupActivity.compareMostRecentFirst { (_, activityAt) -> activityAt })
-            .map { (group, _) -> group }
-    }
+    override fun invoke(): Flow<List<Group>> = combine(
+        observeGroups(),
+        observeGroupsMoney(),
+        GroupActivity::sortMostRecentFirst,
+    )
 }

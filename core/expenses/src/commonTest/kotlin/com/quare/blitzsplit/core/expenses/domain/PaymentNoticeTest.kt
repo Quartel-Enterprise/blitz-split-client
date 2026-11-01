@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import kotlin.test.Test
@@ -25,7 +26,7 @@ class PaymentNoticeTest {
         // Then
         assertEquals(
             PaymentNotice(
-                settlementId = SETTLEMENT_ID,
+                settlementIds = listOf(SETTLEMENT_ID),
                 fromName = "Ana",
                 fromIsMe = false,
                 toName = "Bruno",
@@ -116,6 +117,49 @@ class PaymentNoticeTest {
         // Then
         assertEquals("Ana", notice.fromName)
         assertNull(notice.toName)
+    }
+
+    @Test
+    fun `GIVEN Carla paid this device user across groups WHEN reading the notice THEN names her as who paid`() {
+        // Given
+        val settledUp = RecordedPayment.SettledUp(
+            settlementIds = listOf("p1", "p2"),
+            personName = "Carla",
+            isPaidByMe = false,
+        )
+
+        // When
+        val notice = PaymentNotice.of(settledUp)
+
+        // Then
+        assertEquals(
+            PaymentNotice(
+                settlementIds = listOf("p1", "p2"),
+                fromName = "Carla",
+                fromIsMe = false,
+                toName = null,
+            ),
+            notice,
+        )
+        assertEquals("p1", notice.settlementId)
+    }
+
+    @Test
+    fun `GIVEN this device user paid Bruno across groups WHEN reading the notice THEN names him as who received`() {
+        // Given
+        val settledUp = RecordedPayment.SettledUp(
+            settlementIds = listOf("p1"),
+            personName = "Bruno",
+            isPaidByMe = true,
+        )
+
+        // When
+        val notice = PaymentNotice.of(settledUp)
+
+        // Then
+        assertTrue(notice.fromIsMe)
+        assertNull(notice.fromName)
+        assertEquals("Bruno", notice.toName)
     }
 
     private val names = mapOf(

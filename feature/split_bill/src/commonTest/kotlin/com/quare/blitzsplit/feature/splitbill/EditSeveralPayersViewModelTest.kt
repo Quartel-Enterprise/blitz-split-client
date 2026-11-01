@@ -415,6 +415,7 @@ class EditSeveralPayersViewModelTest {
         avatarColor = color,
         isMe = isMe,
         hasJoined = hasJoined,
+        userId = null,
         inviteCode = null,
     )
 

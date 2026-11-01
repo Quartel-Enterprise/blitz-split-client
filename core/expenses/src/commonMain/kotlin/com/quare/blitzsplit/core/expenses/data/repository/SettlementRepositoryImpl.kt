@@ -33,24 +33,26 @@ class SettlementRepositoryImpl(
 
     override fun observePendingVersions(): Flow<List<Long>> = local.observePendingVersions().distinctUntilChanged()
 
-    override suspend fun createSettlement(
-        settlement: Settlement,
+    override suspend fun createSettlements(
+        settlements: List<Settlement>,
         recordedAt: Long,
     ): Result<Unit> = suspendRunCatching {
-        local.insertSettlement(
-            mapper.toEntity(
-                settlement = settlement,
-                recordedAt = recordedAt,
-            ),
+        local.insertSettlements(
+            settlements.map { settlement ->
+                mapper.toEntity(
+                    settlement = settlement,
+                    recordedAt = recordedAt,
+                )
+            },
         )
     }
 
-    override suspend fun deleteSettlement(
-        id: String,
+    override suspend fun deleteSettlements(
+        ids: List<String>,
         deletedAt: Long,
     ): Result<Unit> = suspendRunCatching {
         local.markDeleted(
-            id = id,
+            ids = ids,
             now = deletedAt,
         )
     }

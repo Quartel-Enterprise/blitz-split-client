@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.core.navigation
 
+import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 
 /*
@@ -73,6 +75,23 @@ sealed interface Route {
         val groupId: String,
         val fromMemberId: String,
         val toMemberId: String,
+    ) : Route
+
+    /*
+     * Why: the home's second tab, "Saldos" (flow 8): each person once, netted across every group. Over the groups, so
+     * the Grupos tab and back return to them; "A receber" and "A pagar" open it already filtered.
+     */
+    data class GlobalBalances(
+        val filter: BalancesFilter,
+    ) : Route
+
+    /*
+     * Why: "Acertar" or "Recebi" of someone in the global Saldos: Registrar pagamento for the whole net with them in
+     * that currency, one payment in each group so each group closes right. personKey is PersonBalance.key.
+     */
+    data class SettleUp(
+        val personKey: String,
+        val currency: GroupCurrency,
     ) : Route
 
     /*

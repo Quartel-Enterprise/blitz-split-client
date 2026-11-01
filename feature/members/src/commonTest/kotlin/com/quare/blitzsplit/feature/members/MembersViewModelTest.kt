@@ -2646,7 +2646,7 @@ class MembersViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Ana",
                     fromIsMe = false,
                     toName = "Pierre",
@@ -2673,7 +2673,7 @@ class MembersViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Pierre",
                     fromIsMe = true,
                     toName = "Bruno",
@@ -2699,7 +2699,7 @@ class MembersViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = null,
                     fromIsMe = false,
                     toName = "Pierre",
@@ -2723,7 +2723,14 @@ class MembersViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -2740,7 +2747,14 @@ class MembersViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -2759,7 +2773,7 @@ class MembersViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Ana",
                     fromIsMe = false,
                     toName = "Pierre",
@@ -2784,7 +2798,14 @@ class MembersViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -3357,6 +3378,7 @@ class MembersViewModelTest {
         AvatarColor.BLUE,
         isMe = true,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
     private val ana = GroupMember(
@@ -3365,6 +3387,7 @@ class MembersViewModelTest {
         AvatarColor.PEACH,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
     private val bruno = GroupMember(
@@ -3373,6 +3396,7 @@ class MembersViewModelTest {
         AvatarColor.GREEN,
         isMe = false,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
     private val carla = GroupMember(
@@ -3381,6 +3405,7 @@ class MembersViewModelTest {
         AvatarColor.LILAC,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
     private val diego = GroupMember(
@@ -3389,6 +3414,7 @@ class MembersViewModelTest {
         AvatarColor.SAND,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
     private val anaP = GroupMember(
@@ -3397,6 +3423,7 @@ class MembersViewModelTest {
         AvatarColor.SAND,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
 

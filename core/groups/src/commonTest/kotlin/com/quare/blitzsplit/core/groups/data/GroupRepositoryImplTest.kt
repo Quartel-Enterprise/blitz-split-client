@@ -3469,6 +3469,7 @@ class GroupRepositoryImplTest {
         avatarColor = AvatarColor.SAND,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
 
@@ -3496,6 +3497,7 @@ class GroupRepositoryImplTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
             GroupMember(
@@ -3504,6 +3506,7 @@ class GroupRepositoryImplTest {
                 avatarColor = AvatarColor.GREEN,
                 isMe = false,
                 hasJoined = false,
+                userId = null,
                 inviteCode = null,
             ),
         ),

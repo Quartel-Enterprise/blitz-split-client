@@ -94,4 +94,13 @@
     <string name="designsystem_former_member">Former member</string>
     <string name="designsystem_you">You</string>
     <string name="designsystem_you_paid">You paid</string>
+    <string name="designsystem_tab_groups">Groups</string>
+    <string name="designsystem_tab_balances">Balances</string>
+    <string name="designsystem_tab_contacts">Contacts</string>
+    <string name="designsystem_tab_activity">Activity</string>
+    <string name="designsystem_person_you_owe">you owe</string>
+    <string name="designsystem_person_owes_you">owes you</string>
+    <string name="designsystem_person_net">Net, already offset</string>
+    <string name="designsystem_person_total">Total</string>
+    <string name="designsystem_person_by_group">By group</string>
 </resources>

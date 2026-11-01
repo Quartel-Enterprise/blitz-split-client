@@ -272,7 +272,7 @@ class MembersViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        notices.delete(viewModelScope, notice.settlementId) { uiAction.emit(MembersUiAction.ShowChangeError) }
+        notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(MembersUiAction.ShowChangeError) }
     }
 
     private fun personalInviteOf(

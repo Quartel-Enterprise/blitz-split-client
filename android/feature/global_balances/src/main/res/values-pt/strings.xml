@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldos</string>
+    <string name="global_balances_profile">Perfil</string>
+    <string name="global_balances_offline">Offline · saldos deste aparelho</string>
+    <string name="global_balances_filter">Mostrar</string>
+    <string name="global_balances_filter_all">Tudo</string>
+    <string name="global_balances_filter_you_owe">Você deve</string>
+    <string name="global_balances_filter_owes_you">Te devem</string>
+    <string name="global_balances_hint">Já compensado entre os grupos: cada pessoa aparece uma vez.</string>
+    <string name="global_balances_hint_empty">Somando todos os grupos deste aparelho.</string>
+    <string name="global_balances_section_you_owe">Você deve · %d</string>
+    <string name="global_balances_section_owes_you">Te devem · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grupo</item>
+        <item quantity="other">%d grupos</item>
+    </plurals>
+    <string name="global_balances_guest">%s · convidado</string>
+    <string name="global_balances_you_owe">você deve</string>
+    <string name="global_balances_owes_you">te deve</string>
+    <string name="global_balances_by_group_show">Ver %s por grupo</string>
+    <string name="global_balances_by_group_hide">Esconder %s por grupo</string>
+    <string name="global_balances_received">Recebi</string>
+    <string name="global_balances_received_from">Recebi de %s</string>
+    <string name="global_balances_settle">Acertar</string>
+    <string name="global_balances_settle_with">Acertar com %s</string>
+    <string name="global_balances_charge">Cobrar</string>
+    <string name="global_balances_charge_person">Cobrar %s</string>
+    <string name="global_balances_settled_title">Tudo acertado</string>
+    <string name="global_balances_settled_body">Ninguém te deve e você não deve a ninguém. Quando alguém lançar uma conta, o saldo aparece aqui.</string>
+    <string name="global_balances_settled_action">Ver grupos</string>
+    <string name="global_balances_nothing_to_pay_title">Você não deve nada</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Você já acertou com todo mundo. Ainda tem %2$s para receber de %1$d pessoa.</item>
+        <item quantity="other">Você já acertou com todo mundo. Ainda tem %2$s para receber de %1$d pessoas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Ver quem te deve</string>
+    <string name="global_balances_nothing_to_receive_title">Ninguém te deve</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Você ainda deve %2$s para %1$d pessoa.</item>
+        <item quantity="other">Você ainda deve %2$s para %1$d pessoas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Ver para quem você deve</string>
+    <string name="global_balances_coming_soon">Em breve</string>
+    <string name="global_balances_change_error">Não deu para salvar a mudança. Tente de novo.</string>
+    <string name="global_balances_copied">Copiado</string>
+    <string name="global_balances_charge_title">Cobrar %s</string>
+    <string name="global_balances_charge_owes">Te deve %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Fechar</string>
+    <string name="global_balances_charge_guest">%s é convidado e não tem o app. Só fica sabendo por esta mensagem, então ela já leva o que entrou na conta.</string>
+    <string name="global_balances_charge_message">Mensagem</string>
+    <string name="global_balances_charge_pix">Incluir minha chave Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copiar mensagem</string>
+    <string name="global_balances_charge_send">Enviar</string>
+    <string name="global_balances_message">Oi, %1$s! Pelas contas do Bora Rachar, ficou %2$s %3$s para você me pagar.</string>
+    <string name="global_balances_message_guest">Oi, %1$s! Ficou %2$s %3$s para você me pagar: sua parte de %4$s.</string>
+    <string name="global_balances_message_guest_paid">Oi, %1$s! Ficou %2$s %3$s para você me pagar: sua parte de %4$s, menos os %5$s que você já pagou.</string>
+    <string name="global_balances_message_group">do grupo %s</string>
+    <string name="global_balances_message_groups">dos grupos %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Celular</string>
+    <string name="global_balances_key_email">E-mail</string>
+    <string name="global_balances_key_random">Chave aleatória</string>
+</resources>

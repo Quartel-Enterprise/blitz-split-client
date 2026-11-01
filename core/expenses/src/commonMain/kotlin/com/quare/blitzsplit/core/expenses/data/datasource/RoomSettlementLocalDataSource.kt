@@ -20,16 +20,16 @@ class RoomSettlementLocalDataSource(
     override suspend fun getPendingSettlements(ownerUserId: String): List<SettlementEntity> =
         dao.getPendingSettlements(ownerUserId)
 
-    override suspend fun insertSettlement(entity: SettlementEntity) {
-        dao.insertSettlementIntoGroup(entity)
+    override suspend fun insertSettlements(entities: List<SettlementEntity>) {
+        dao.insertSettlementsIntoGroups(entities)
     }
 
     override suspend fun markDeleted(
-        id: String,
+        ids: List<String>,
         now: Long,
     ) {
-        dao.markDeleted(
-            id = id,
+        dao.markAllDeleted(
+            ids = ids,
             now = now,
         )
     }

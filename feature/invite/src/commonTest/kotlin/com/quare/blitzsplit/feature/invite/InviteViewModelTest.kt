@@ -882,6 +882,7 @@ class InviteViewModelTest {
         AvatarColor.BLUE,
         isMe = true,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
     private val ana = GroupMember(
@@ -890,6 +891,7 @@ class InviteViewModelTest {
         AvatarColor.PEACH,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
     private val bruno = GroupMember(
@@ -898,6 +900,7 @@ class InviteViewModelTest {
         AvatarColor.GREEN,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
     private val carla = GroupMember(
@@ -906,6 +909,7 @@ class InviteViewModelTest {
         AvatarColor.LILAC,
         isMe = false,
         hasJoined = false,
+        userId = null,
         inviteCode = null,
     )
 

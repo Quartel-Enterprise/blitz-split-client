@@ -23,6 +23,9 @@ class FakeSettlementRepository(
     val recordedAts = mutableListOf<Long>()
     val deletedIds = mutableListOf<String>()
     val deletedAts = mutableListOf<Long>()
+
+    // Why: the ids of each call, so a test can tell payments undone together from one by one.
+    val deleteCalls = mutableListOf<List<String>>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var recordError: Throwable? = null
@@ -49,29 +52,33 @@ class FakeSettlementRepository(
 
     override fun observePendingVersions(): Flow<List<Long>> = pendingVersions
 
-    override suspend fun createSettlement(
-        settlement: Settlement,
+    // Why: like Room, all or none.
+    override suspend fun createSettlements(
+        settlements: List<Settlement>,
         recordedAt: Long,
     ): Result<Unit> {
         recordGate?.await()
         recordError?.let { return Result.failure(it) }
-        recordedSettlements += settlement
-        recordedAts += recordedAt
-        settlements.update { it + settlement }
+        recordedSettlements += settlements
+        settlements.forEach { recordedAts += recordedAt }
+        this.settlements.update { it + settlements }
         return Result.success(Unit)
     }
 
-    override suspend fun deleteSettlement(
-        id: String,
+    // Why: like Room, all or none, and a payment already gone is what was asked.
+    override suspend fun deleteSettlements(
+        ids: List<String>,
         deletedAt: Long,
     ): Result<Unit> {
+        deleteCalls += ids
         deleteError?.let { return Result.failure(it) }
-        // Why: like Room, a payment already gone is what was asked.
-        val undone = settlements.value.firstOrNull { it.id == id } ?: return Result.success(Unit)
-        pendingDeletionGroupIds.update { it + undone.groupId }
-        deletedIds += id
-        deletedAts += deletedAt
-        settlements.update { list -> list.filterNot { it.id == id } }
+        val undone = settlements.value.filter { it.id in ids }
+        pendingDeletionGroupIds.update { it + undone.map(Settlement::groupId) }
+        undone.forEach {
+            deletedIds += it.id
+            deletedAts += deletedAt
+        }
+        settlements.update { list -> list.filterNot { it.id in ids } }
         return Result.success(Unit)
     }
 

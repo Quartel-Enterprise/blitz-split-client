@@ -10,8 +10,8 @@ final class RegisterPaymentModel {
     @ObservationIgnored private let holder: ViewModelHolder<RegisterPaymentViewModel>
     @ObservationIgnored private let watches = WatchBag()
 
-    init(route: RouteRegisterPayment) {
-        holder = BlitzSplitApple.shared.createRegisterPaymentViewModel(route: route)
+    init(holder: ViewModelHolder<RegisterPaymentViewModel>) {
+        self.holder = holder
         let viewModel = holder.viewModel
         state = viewModel.uiState.value as! RegisterPaymentUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
@@ -67,10 +67,20 @@ final class RegisterPaymentModel {
     }
 }
 
-/// "Record payment": a payment from one member to another made outside the app, which settles their debt. A sheet
-/// over the group on iPhone, iPad and Mac, as Split a bill is; it closes by itself once saved, or when the debt is gone.
+/// "Record payment": a payment from one member to another made outside the app, which settles their debt, or, from
+/// the home's Balances, settling up with someone across groups. A sheet over the group (or Balances) on iPhone, iPad
+/// and Mac, as Split a bill is; it closes by itself once saved, or when the debt is gone.
 struct RegisterPaymentView: View {
-    let route: RouteRegisterPayment
+    /// Its ViewModel, for a pair of one group or someone across groups.
+    private let makeHolder: () -> ViewModelHolder<RegisterPaymentViewModel>
+
+    init(route: RouteRegisterPayment) {
+        makeHolder = { BlitzSplitApple.shared.createRegisterPaymentViewModel(route: route) }
+    }
+
+    init(settleUp route: RouteSettleUp) {
+        makeHolder = { BlitzSplitApple.shared.createSettleUpViewModel(route: route) }
+    }
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: RegisterPaymentModel?
@@ -93,7 +103,7 @@ struct RegisterPaymentView: View {
         .interactiveDismissDisabled(model?.state.isSaving == true)
         .glassToast("Couldn't record the payment. Try again.", trigger: model?.saveErrorCount ?? 0)
         .onAppear {
-            if model == nil { model = RegisterPaymentModel(route: route) }
+            if model == nil { model = RegisterPaymentModel(holder: makeHolder()) }
         }
     }
 }
@@ -256,18 +266,30 @@ private struct PhoneRegisterPayment: View {
                 .frame(maxWidth: .infinity)
             }
             .listRowBackground(Color.clear)
-            Section {
-                AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
-                Button {
-                    model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
-                } label: {
-                    Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
+            if state.isAmountLocked {
+                // Across several groups only the whole net settles, so the groups it closes show instead of the field
+                Section {
+                    PersonGroupsList(groups: state.groupParts, currency: state.currency)
+                        .listRowInsets(EdgeInsets())
+                } header: {
+                    Text("By group")
+                } footer: {
+                    Text("The app records one payment in each group.")
                 }
-                .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
-            } header: {
-                Text("Amount paid")
-            } footer: {
-                PaymentAmountHelp(state: state)
+            } else {
+                Section {
+                    AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
+                    Button {
+                        model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
+                    } label: {
+                        Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
+                    }
+                    .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
+                } header: {
+                    Text("Amount paid")
+                } footer: {
+                    PaymentAmountHelp(state: state)
+                }
             }
             Section("How it was paid") {
                 MethodPicker(selection: model.method)
@@ -336,20 +358,32 @@ private struct MacRegisterPayment: View {
                 }
             }
             Form {
-                LabeledContent("Amount paid:") {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
-                            AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
-                                .focused($isAmountFocused)
-                            Button {
-                                model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
-                            } label: {
-                                Label("The whole debt", systemImage: state.isFullDebt ? "checkmark" : "arrow.uturn.backward")
-                            }
-                            .disabled(state.isFullDebt)
+                if state.isAmountLocked {
+                    // Across several groups only the whole net settles, so the groups it closes show instead of the field
+                    LabeledContent("By group:") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            PersonGroupsList(groups: state.groupParts, currency: state.currency)
+                            Text("The app records one payment in each group.")
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
                         }
-                        PaymentAmountHelp(state: state)
-                            .font(.callout)
+                    }
+                } else {
+                    LabeledContent("Amount paid:") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(spacing: 8) {
+                                AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
+                                    .focused($isAmountFocused)
+                                Button {
+                                    model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
+                                } label: {
+                                    Label("The whole debt", systemImage: state.isFullDebt ? "checkmark" : "arrow.uturn.backward")
+                                }
+                                .disabled(state.isFullDebt)
+                            }
+                            PaymentAmountHelp(state: state)
+                                .font(.callout)
+                        }
                     }
                 }
                 LabeledContent("How it was paid:") {
@@ -387,7 +421,7 @@ private struct MacRegisterPayment: View {
         }
         .padding(20)
         .frame(width: 480)
-        .onAppear { isAmountFocused = true }
+        .onAppear { isAmountFocused = !state.isAmountLocked }
     }
 }
 #endif

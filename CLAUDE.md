@@ -50,8 +50,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iPad); Google comes first on Android and in any other browser.
   - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
     symbol of the device's region, `$` when there is none.
-  - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the three not built yet
-    answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the two not built yet
+    (Contatos, Atividade) answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -63,7 +63,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and an empty Quitados tab "Nenhum grupo quitado" on the web and the Mac (`GroupsUiState.showsNoOpenGroups`,
     `showsNoSettledGroups`); a phone hides an empty Quitados. "Saldo geral" sums the nets per currency, never across
     two, the currency with the most groups first (`GroupsSummary`); "A receber" and "A pagar" sum the positive and the
-    negative nets, are disabled at zero and answer "Em breve" until the global Saldos (flow 8). "Rachar conta"
+    negative nets, are disabled at zero and open Saldos (flow 8) on Te devem and Você deve; "A pagar" goes straight to
+    settling up when only one person is in Você deve. "Rachar conta"
     (Android's FAB, iOS's +, the main button on the web and the Mac) opens Novo grupo while there's no group, and
     otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
@@ -123,6 +124,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and every personal link not used yet stop working (the "invite no longer valid" screen), whoever joined stays,
     and the other members' devices get the new code on their next sync. A failure says so and keeps the link shown
     until a sync brings the server's. Nobody may change it once the creator's account is deleted.
+  - "Saldos" (flow 8, `Route.GlobalBalances` over the groups) is the home's second tab: each person once, netted
+    across every group of one currency (`PeopleBalances`): someone who joined is their account in every group, a name
+    nobody joined as is the same person wherever it is written the same, and someone no longer in a group only
+    themselves ("Ex-membro"); someone with groups in two currencies shows once per currency. Tudo / Você deve / Te
+    devem filter it, each with its total (the net always matches the home's Saldo geral; "A receber" and "A pagar"
+    there count each group's net, so they can differ), "Por grupo" opens in the row (already open for someone alone
+    in Você deve or Te devem), and the empty "Você não deve nada" leads to Te devem, "Ninguém te deve" to Você deve and
+    "Tudo acertado" to Grupos. "Acertar" (you owe) and "Recebi" (owed to you) open Registrar pagamento for the net
+    (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
+    amount locked while more than one group is in it, then "Pagamento de Carla registrado." on Saldos, whose Desfazer
+    undoes them all in one go (never on a later Saldos, when the one it opened over closed while saving). "Cobrar"
+    moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
+    chave Pix" is on, which locks once the message is edited), "Enviar" opens the system share (a ShareLink on Apple,
+    `navigator.share` or a copy on the web) and "Copiar mensagem" copies; a bottom sheet on an Android phone and a
+    560 dp dialog on its tablets, a sheet on iOS and macOS, a 480 px dialog on the web (a drawer on a phone). It all
+    works offline on the device's data, and has no "Rachar conta". The canvas' list and detail (Android tablets lying
+    down, the web's desktop, the Mac's inspector) waits for the app to have that pattern: one column with "Por grupo"
+    in the row, the filter beside the list on Android lying down.
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so

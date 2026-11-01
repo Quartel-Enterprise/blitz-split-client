@@ -161,6 +161,7 @@ class PayerOrderTest {
         avatarColor = AvatarColor.BLUE,
         isMe = isMe,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
 }

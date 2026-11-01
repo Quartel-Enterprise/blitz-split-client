@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
@@ -12,6 +13,7 @@ class ObserveRecordedPaymentUseCase(
 ) : ObserveRecordedPayment {
     override fun invoke(groupId: String): Flow<Settlement?> = repository
         .observeRecorded()
-        .map { it?.takeIf { settlement -> settlement.groupId == groupId } }
-        .distinctUntilChanged()
+        .map { recorded ->
+            (recorded as? RecordedPayment.InGroup)?.settlement?.takeIf { settlement -> settlement.groupId == groupId }
+        }.distinctUntilChanged()
 }

@@ -96,4 +96,13 @@
     <string name="designsystem_former_member">Ex-membro</string>
     <string name="designsystem_you">Você</string>
     <string name="designsystem_you_paid">Você pagou</string>
+    <string name="designsystem_tab_groups">Grupos</string>
+    <string name="designsystem_tab_balances">Saldos</string>
+    <string name="designsystem_tab_contacts">Contatos</string>
+    <string name="designsystem_tab_activity">Atividade</string>
+    <string name="designsystem_person_you_owe">você deve</string>
+    <string name="designsystem_person_owes_you">te deve</string>
+    <string name="designsystem_person_net">Líquido, já compensado</string>
+    <string name="designsystem_person_total">Total</string>
+    <string name="designsystem_person_by_group">Por grupo</string>
 </resources>

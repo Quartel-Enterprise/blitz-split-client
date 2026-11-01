@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
@@ -75,8 +76,8 @@ class RecordSettlementUseCaseTest {
 
         // Then
         val notice = recordedPayments.observeRecorded().first()
-        assertEquals(id, notice?.id)
-        assertEquals(repository.recordedSettlements.single(), notice)
+        assertEquals(listOf(id), notice?.settlementIds)
+        assertEquals(RecordedPayment.InGroup(repository.recordedSettlements.single()), notice)
     }
 
     @Test

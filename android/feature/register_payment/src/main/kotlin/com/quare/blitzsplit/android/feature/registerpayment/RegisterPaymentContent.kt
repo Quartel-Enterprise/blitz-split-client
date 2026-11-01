@@ -178,6 +178,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
         isMe = true,
     ),
     debtMinor = 16_230L,
+    groupParts = emptyList(),
     amountText = "100,00",
     hasEditedAmount = true,
     method = SettlementMethod.PIX,

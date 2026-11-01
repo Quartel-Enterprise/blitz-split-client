@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
@@ -38,10 +39,10 @@ class RecordSettlementUseCase(
             updatedAt = recordedAt,
         )
         return repository
-            .createSettlement(
-                settlement = settlement,
+            .createSettlements(
+                settlements = listOf(settlement),
                 recordedAt = recordedAt,
-            ).onSuccess { recordedPayments.post(settlement) }
+            ).onSuccess { recordedPayments.post(RecordedPayment.InGroup(settlement)) }
             .map { settlement.id }
     }
 }

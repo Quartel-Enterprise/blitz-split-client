@@ -93,8 +93,8 @@ final class GroupsModel {
     }
 }
 
-/// The tabs of the canvas. Only Groups is built; the others answer "Coming soon". Search is the iPhone's and the
-/// iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
+/// The tabs of the canvas. Groups and Balances are built; the others answer "Coming soon". Search is the iPhone's and
+/// the iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
 enum MainTab: Hashable {
     case groups
     case balances
@@ -124,7 +124,18 @@ struct MainTabView: View {
                 .focusedSceneValue(\.groupsModel, path.isEmpty ? model : nil)
                 #endif
             }
-            Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
+            // The shared back stack holds Balances over the groups, so its tab shows while it is right above them
+            Tab("Balances", systemImage: "creditcard", value: MainTab.balances) {
+                NavigationStack(path: balancesPath) {
+                    if let route = balancesRoute {
+                        GlobalBalancesView(route: route)
+                            .id(route)
+                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
+                    } else {
+                        Color.clear
+                    }
+                }
+            }
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
             #if os(iOS)
@@ -165,10 +176,10 @@ struct MainTabView: View {
     }
 
     // Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
-    // and goes back to the groups, past what its results opened.
+    // and goes back to the groups, past what its results opened; leaving Balances goes back to the groups too.
     private var tabSelection: Binding<MainTab> {
         Binding(
-            get: { showsSearchTab ? .search : .groups },
+            get: { showsSearchTab ? .search : (balancesRoute != nil ? .balances : .groups) },
             set: { tab in
                 switch tab {
                 case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
@@ -176,8 +187,29 @@ struct MainTabView: View {
                 case .activity: model.send(GroupsUiEventOnActivityTabClicked.shared)
                 case .search: model.send(GroupsUiEventOnSearchOpened.shared)
                 case .groups:
-                    if showsSearchTab { model.send(GroupsUiEventOnSearchTabLeft.shared) }
+                    if showsSearchTab {
+                        model.send(GroupsUiEventOnSearchTabLeft.shared)
+                    } else if balancesRoute != nil {
+                        model.send(GroupsUiEventOnGroupsTabClicked.shared)
+                    }
                 }
+            },
+        )
+    }
+
+    /// Balances right above the groups, which its tab shows; nil while the Groups tab is in front.
+    private var balancesRoute: RouteGlobalBalances? {
+        if case let .globalBalances(route) = path.first { return route }
+        return nil
+    }
+
+    /// What Balances pushed over itself (the profile), shown in its own tab's stack.
+    private var balancesPath: Binding<[AppRoute]> {
+        Binding(
+            get: { balancesRoute != nil ? Array(path.dropFirst()) : [] },
+            set: { newValue in
+                guard balancesRoute != nil, let first = path.first else { return }
+                path = [first] + newValue
             },
         )
     }
@@ -192,13 +224,14 @@ struct MainTabView: View {
         #endif
     }
 
-    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, else Groups.
-    /// The other tab's stack stays at its root, so a screen never shows in both.
+    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, Balances while
+    /// it is right above the groups, else Groups. The other tabs' stacks stay at their root, so a screen never shows in
+    /// two.
     private func stackPath(isSearch: Bool) -> Binding<[AppRoute]> {
         Binding(
-            get: { showsSearchTab == isSearch ? path : [] },
+            get: { balancesRoute == nil && showsSearchTab == isSearch ? path : [] },
             set: { newValue in
-                guard showsSearchTab == isSearch else { return }
+                guard balancesRoute == nil, showsSearchTab == isSearch else { return }
                 path = newValue
             },
         )

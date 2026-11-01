@@ -9,10 +9,6 @@
     <string name="groups_empty_body">Create a group for the trip, the house or the barbecue. You can start even without internet.</string>
     <string name="groups_create">Create group</string>
     <string name="groups_join_with_link">Join with a link or QR code</string>
-    <string name="groups_tab_groups">Groups</string>
-    <string name="groups_tab_balances">Balances</string>
-    <string name="groups_tab_contacts">Contacts</string>
-    <string name="groups_tab_activity">Activity</string>
     <string name="groups_coming_soon">Coming soon</string>
     <string name="groups_change_error">Couldn\'t save the change. Try again.</string>
     <string name="groups_new_group">New group</string>

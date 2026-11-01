@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { AmountInput, WhenField } from '@/components/fields'
+import { PersonGroupsList } from '@/components/PersonGroupsList'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -44,7 +45,8 @@ const sentences: Record<string, { title: MessageKey; debt: MessageKey; remaining
 }
 
 /**
- * "Registrar pagamento", a payment made outside the app, over Saldos, Despesas do grupo or Membros: a dialog on
+ * "Registrar pagamento", a payment made outside the app, over Saldos, Despesas do grupo or Membros, or settling up with
+ * someone across groups over the home's Saldos ("settle-up"): a dialog on
  * desktop and tablet, a drawer on the phone, like "Rachar conta". Closing it any way is the ViewModel's close; it
  * closes by itself once saved, and when the debt is gone.
  */
@@ -145,6 +147,18 @@ function PaymentForm({
         presenter.confirm()
       }}
     >
+      {state.isAmountLocked ? (
+        // Why: across several groups only the whole net settles, so the groups it closes show instead of the field.
+        <div className="flex flex-col gap-1.5">
+          <PersonGroupsList
+            groups={state.groupParts}
+            netMinor={state.groupParts.reduce((sum, part) => sum + part.amountMinor, 0)}
+            currency={state.currency}
+            fractionDigits={state.fractionDigits}
+          />
+          <p className="text-[13px] text-muted-foreground">{t('globalBalances_oneMessagePerGroup')}</p>
+        </div>
+      ) : (
       <div className="flex flex-col gap-1.5">
         <Label htmlFor={amountId} className={cn(state.showsOverDebtError && 'text-destructive')}>
           {t('registerPayment_amount')}
@@ -168,6 +182,7 @@ function PaymentForm({
           {t('registerPayment_fullDebt')}
         </Chip>
       </div>
+      )}
 
       <div className="flex flex-col gap-1.5">
         <span id={methodId} className="text-sm font-medium">

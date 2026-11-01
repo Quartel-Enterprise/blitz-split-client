@@ -11,6 +11,11 @@ data class GroupMember(
     // Why: someone who opened the invite link and picked this member; the others are still just a name.
     val hasJoined: Boolean,
     /*
+     * Why: the account someone joined as, the same in every group they are in, so the global Saldos shows them once;
+     * null for a name nobody joined as, and for this device's user before the first sync gives it an account.
+     */
+    val userId: String?,
+    /*
      * Why: the code of the member's personal invite link, which the server makes; null for a member made on this
      * device until its first sync brings it.
      */

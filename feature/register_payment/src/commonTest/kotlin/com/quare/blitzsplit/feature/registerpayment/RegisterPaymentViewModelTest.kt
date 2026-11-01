@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -33,6 +34,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -58,6 +61,7 @@ class RegisterPaymentViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
+    private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var route: Route.RegisterPayment
@@ -925,6 +929,42 @@ class RegisterPaymentViewModelTest {
         }
 
     @Test
+    fun `GIVEN the screen under the form closed while saving WHEN the save finishes THEN no screen owes the notice`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(recordGate = gate)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            navigator.popTo(1)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(1, settlements.recordedSettlements.size)
+            assertNull(recordedPayments.observeRecorded().first())
+        }
+
+    @Test
+    fun `GIVEN a native back while saving WHEN the save finishes THEN the screen under owes the notice`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(recordGate = gate)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            navigator.navigateBack()
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(
+                settlements.recordedSettlements.map { it.id },
+                recordedPayments.observeRecorded().first()?.settlementIds,
+            )
+        }
+
+    @Test
     fun `GIVEN the device fails to save WHEN tapping confirm THEN says so and stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario(recordError = IllegalStateException("disk full"))
@@ -1276,6 +1316,7 @@ class RegisterPaymentViewModelTest {
         avatarColor = color,
         isMe = isMe,
         hasJoined = true,
+        userId = null,
         inviteCode = null,
     )
 
@@ -1341,6 +1382,7 @@ class RegisterPaymentViewModelTest {
             it.recordError = recordError
             it.recordGate = recordGate
         }
+        recordedPayments = InMemoryRecordedPaymentRepository()
         isOnline = MutableStateFlow(online)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.GroupDetail(GROUP_ID))
@@ -1353,8 +1395,10 @@ class RegisterPaymentViewModelTest {
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(
                 settlements,
-                InMemoryRecordedPaymentRepository(),
+                recordedPayments,
             ) { clockMillis },
+            settleUp = { _, _, _, _, _ -> error("unused") },
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             currentTimeMillis = { clockMillis },
             currentTimeZone = { timeZone },
             decimalSeparator = { decimalSeparator },
@@ -1364,6 +1408,7 @@ class RegisterPaymentViewModelTest {
             } else {
                 ObserveGroupBalances { balancesNeverAnswer }
             },
+            observePeopleBalances = { emptyFlow() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

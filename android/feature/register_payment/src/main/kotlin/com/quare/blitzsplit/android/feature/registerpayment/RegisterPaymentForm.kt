@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountTextField
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
+import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
@@ -167,6 +168,23 @@ private fun AmountSection(
     money: MoneyFormatter,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
+    // Why: across several groups only the whole net settles, so the groups it closes show instead of the field.
+    if (state.isAmountLocked) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            PersonGroupsCard(
+                groups = state.groupParts,
+                netMinor = state.groupParts.sumOf { it.amountMinor },
+                money = money,
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+            )
+            Text(
+                text = stringResource(R.string.register_payment_one_per_group),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        return
+    }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         AmountTextField(
             value = state.amountText,

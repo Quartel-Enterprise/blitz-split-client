@@ -30,10 +30,12 @@ class RoomSettlementLocalDataSourceTest {
         prepareScenario()
 
         // When
-        dataSource.insertSettlement(
-            settlement(
-                id = "payment-1",
-                pendingSync = true,
+        dataSource.insertSettlements(
+            listOf(
+                settlement(
+                    id = "payment-1",
+                    pendingSync = true,
+                ),
             ),
         )
 
@@ -55,12 +57,62 @@ class RoomSettlementLocalDataSourceTest {
         )
 
         // When
-        val result = runCatching { dataSource.insertSettlement(settlement) }
+        val result = runCatching { dataSource.insertSettlements(listOf(settlement)) }
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
         assertFalse(dataSource.observeHasPending().first())
     }
+
+    @Test
+    fun `GIVEN a settling up whose second group is gone WHEN recording its payments THEN none is stored`() = runTest {
+        // Given
+        prepareScenario()
+        val payments = listOf(
+            settlement(
+                id = "payment-1",
+                pendingSync = true,
+            ),
+            settlement(
+                id = "payment-2",
+                groupId = "gone",
+                pendingSync = true,
+            ),
+        )
+
+        // When
+        val result = runCatching { dataSource.insertSettlements(payments) }
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertTrue(dataSource.observeAllSettlements().first().isEmpty())
+        assertFalse(dataSource.observeHasPending().first())
+    }
+
+    @Test
+    fun `GIVEN a settling up across two groups WHEN undoing its payments THEN both leave as pending tombstones`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    settlement(id = "payment-1"),
+                    settlement(
+                        id = "payment-2",
+                        groupId = OTHER_USER_GROUP,
+                    ),
+                ),
+            )
+
+            // When
+            dataSource.markDeleted(listOf("payment-1", "payment-2"), now = 9_000L)
+
+            // Then
+            assertTrue(dataSource.observeAllSettlements().first().isEmpty())
+            assertEquals(
+                listOf(MY_GROUP, OTHER_USER_GROUP),
+                dataSource.observePendingDeletionGroupIds().first().sorted(),
+            )
+        }
 
     @Test
     fun `GIVEN payments of two groups and one undone WHEN observing a group THEN shows its own newest first`() =
@@ -147,7 +199,7 @@ class RoomSettlementLocalDataSourceTest {
                     ),
                 ),
             )
-            dataSource.markDeleted("payment-1", now = 9_000L)
+            dataSource.markDeleted(listOf("payment-1"), now = 9_000L)
 
             // When
             val groupIds = dataSource.observePendingDeletionGroupIds().first()
@@ -189,7 +241,7 @@ class RoomSettlementLocalDataSourceTest {
             prepareScenario(stored = listOf(settlement(id = "payment-1")))
 
             // When
-            dataSource.markDeleted("payment-1", now = 9_000L)
+            dataSource.markDeleted(listOf("payment-1"), now = 9_000L)
 
             // Then
             assertTrue(dataSource.observeSettlements(MY_GROUP).first().isEmpty())
@@ -213,7 +265,7 @@ class RoomSettlementLocalDataSourceTest {
             )
 
             // When
-            dataSource.markDeleted("payment-1", now = 9_000L)
+            dataSource.markDeleted(listOf("payment-1"), now = 9_000L)
 
             // Then
             val tombstone = dataSource.getPendingSettlements(ownerUserId = USER_ID).single()
@@ -226,7 +278,7 @@ class RoomSettlementLocalDataSourceTest {
         prepareScenario()
 
         // When
-        val result = runCatching { dataSource.markDeleted("payment-1", now = 9_000L) }
+        val result = runCatching { dataSource.markDeleted(listOf("payment-1"), now = 9_000L) }
 
         // Then
         assertTrue(result.isSuccess)
@@ -246,7 +298,7 @@ class RoomSettlementLocalDataSourceTest {
         )
 
         // When
-        val result = runCatching { dataSource.markDeleted("payment-1", now = 9_000L) }
+        val result = runCatching { dataSource.markDeleted(listOf("payment-1"), now = 9_000L) }
 
         // Then
         assertTrue(result.isSuccess)
@@ -582,7 +634,7 @@ class RoomSettlementLocalDataSourceTest {
             ),
         )
         dataSource = RoomSettlementLocalDataSource(database.settlementDao())
-        stored.forEach { dataSource.insertSettlement(it) }
+        dataSource.insertSettlements(stored)
     }
 
     private companion object {

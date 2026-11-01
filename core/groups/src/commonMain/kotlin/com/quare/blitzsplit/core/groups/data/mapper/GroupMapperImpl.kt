@@ -166,6 +166,7 @@ class GroupMapperImpl : GroupMapper {
         avatarColor = AvatarColor.fromCodeOrNull(entity.avatarColor) ?: AvatarColor.default,
         isMe = entity.isMe,
         hasJoined = entity.isMe || entity.userId != null,
+        userId = entity.userId,
         inviteCode = entity.inviteCode,
     )
 }

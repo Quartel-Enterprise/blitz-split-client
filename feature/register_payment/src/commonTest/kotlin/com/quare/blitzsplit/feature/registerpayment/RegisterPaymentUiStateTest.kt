@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.registerpayment
 
+import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -136,6 +137,50 @@ class RegisterPaymentUiStateTest {
     }
 
     @Test
+    fun `GIVEN a settling up across groups WHEN typing less than the net THEN the amount is not valid`() {
+        // Given
+        val state = state(
+            amountText = "100,00",
+            groupParts = twoGroups,
+        )
+
+        // When
+        val isValid = state.isAmountValid
+
+        // Then
+        assertTrue(state.isAmountLocked)
+        assertFalse(isValid)
+        assertFalse(state.canConfirm)
+    }
+
+    @Test
+    fun `GIVEN a settling up across groups WHEN the amount is the whole net THEN it can be confirmed`() {
+        // Given
+        val state = state(
+            amountText = "162,30",
+            groupParts = twoGroups,
+        )
+
+        // When
+        val canConfirm = state.canConfirm
+
+        // Then
+        assertTrue(canConfirm)
+    }
+
+    @Test
+    fun `GIVEN a pair of one group WHEN reading the amount THEN it is not locked`() {
+        // Given
+        val state = state()
+
+        // When
+        val isLocked = state.isAmountLocked
+
+        // Then
+        assertFalse(isLocked)
+    }
+
+    @Test
     fun `GIVEN a group in yen WHEN typing the debt with a thousands dot THEN it is the whole debt`() {
         // Given
         val state = state(
@@ -167,6 +212,18 @@ class RegisterPaymentUiStateTest {
 
     private val me = PaymentPerson("member-2", "Pierre", "PI", AvatarColor.BLUE, isMe = true)
     private val ana = PaymentPerson("member-1", "Ana", "AN", AvatarColor.PEACH, isMe = false)
+    private val twoGroups = listOf("floripa", "ape").map { groupId ->
+        PersonGroupBalance(
+            groupId = groupId,
+            groupName = groupId,
+            groupInitials = "GR",
+            groupColor = AvatarColor.BLUE,
+            memberId = "member-1",
+            meMemberId = "member-2",
+            amountMinor = 8_115L,
+        )
+    }
+
     private val diego = PaymentPerson("member-4", "Diego", "DI", AvatarColor.SAND, isMe = false)
 
     private fun state(
@@ -178,11 +235,13 @@ class RegisterPaymentUiStateTest {
         isOnline: Boolean = true,
         isSaving: Boolean = false,
         isLoaded: Boolean = true,
+        groupParts: List<PersonGroupBalance> = emptyList(),
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
         from = from,
         to = to,
         debtMinor = debtMinor,
+        groupParts = groupParts,
         amountText = amountText,
         hasEditedAmount = false,
         method = SettlementMethod.PIX,

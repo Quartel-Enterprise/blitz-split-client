@@ -168,6 +168,7 @@ class UpdateGroupUseCaseTest {
                 avatarColor = AvatarColor.LILAC,
                 isMe = true,
                 hasJoined = true,
+                userId = null,
                 inviteCode = null,
             ),
         ),
