@@ -46,8 +46,11 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupsOnHome
 import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.searchResultsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.summaryOf
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -113,6 +116,7 @@ class GroupsViewModel(
                 exitGroupId = null,
                 layout = GroupsLayout.initial,
                 recordedPayment = null,
+                search = GroupsSearch.closed,
             ),
         )
 
@@ -217,6 +221,8 @@ class GroupsViewModel(
                         hasLoadedGroups = true,
                         summary = summaryOf(home.rows),
                         pendingChangeCount = home.pendingChangeCount,
+                        // Why: what the search found changes with the device's data, a sync's included.
+                        search = searchedOf(it.search, home.rows),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -304,11 +310,66 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnGridSizeChanged -> changeGridSize(event.size)
 
+            GroupsUiEvent.OnSearchOpened -> openSearch()
+
+            GroupsUiEvent.OnSearchClosed -> closeSearch()
+
+            is GroupsUiEvent.OnSearchQueryChanged -> search { it.copy(query = event.query) }
+
+            is GroupsUiEvent.OnSearchScopeChanged -> search { it.copy(scope = event.scope) }
+
+            is GroupsUiEvent.OnSearchPersonClicked -> open(Route.Members(event.groupId, joinedAs = null))
+
+            is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
+
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
             -> showComingSoon()
         }
+    }
+
+    // Why: there is nothing to look in before the first group.
+    private fun openSearch() {
+        if (!uiState.value.canSearch) return
+        search { it.copy(isOpen = true) }
+    }
+
+    /*
+     * Why: closing forgets what was typed. iOS's search tab shows what its results opened, so leaving it goes back to
+     * the groups; elsewhere the search only closes with the groups on top.
+     */
+    private fun closeSearch() {
+        uiState.update { it.copy(search = GroupsSearch.closed) }
+        val stack = navigator.backStack.value
+        val groupsIndex = stack.indexOf(Route.Groups)
+        if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)
+    }
+
+    private fun search(change: (GroupsSearch) -> GroupsSearch) {
+        uiState.update { it.copy(search = searchedOf(change(it.search), it.groups)) }
+    }
+
+    private fun searchedOf(
+        search: GroupsSearch,
+        rows: List<GroupRow>,
+    ): GroupsSearch = search.copy(
+        results = searchResultsOf(
+            groups = groupsWithMoney,
+            rows = rows,
+            query = search.query,
+            scope = search.scope,
+        ),
+    )
+
+    // Why: as a group's Despesas opens it, over the group.
+    private fun openBill(
+        groupId: String,
+        expenseId: String,
+    ) {
+        if (!isOnTop()) return
+        navigator.navigate(Route.GroupDetail(groupId))
+        navigator.navigate(Route.BillDetail(groupId, expenseId))
     }
 
     private fun changeDisplay(display: GroupsDisplay) {

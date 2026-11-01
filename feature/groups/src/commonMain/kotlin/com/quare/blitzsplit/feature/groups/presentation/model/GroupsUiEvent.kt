@@ -83,4 +83,30 @@ sealed interface GroupsUiEvent : UiEvent {
 
     // Why: the notice went away without Desfazer.
     data object OnRecordedPaymentNoticeShown : GroupsUiEvent
+
+    // Why: Android's magnifier, iOS's search tab, the web's "Buscar…" or ⌘K, the Mac's toolbar field.
+    data object OnSearchOpened : GroupsUiEvent
+
+    // Why: back or ✕ on Android, another tab on iOS, Esc or a click outside on the web, the field cancelled on the Mac.
+    data object OnSearchClosed : GroupsUiEvent
+
+    data class OnSearchQueryChanged(
+        val query: String,
+    ) : GroupsUiEvent
+
+    // Why: "Tudo", "Grupos", "Pessoas" or "Despesas".
+    data class OnSearchScopeChanged(
+        val scope: SearchScope,
+    ) : GroupsUiEvent
+
+    // Why: a person found opens the members of the group they were found in; a group found is OnGroupClicked.
+    data class OnSearchPersonClicked(
+        val groupId: String,
+    ) : GroupsUiEvent
+
+    // Why: a bill found opens over its group, so back goes to the group's bills, as from Despesas.
+    data class OnSearchBillClicked(
+        val groupId: String,
+        val expenseId: String,
+    ) : GroupsUiEvent
 }

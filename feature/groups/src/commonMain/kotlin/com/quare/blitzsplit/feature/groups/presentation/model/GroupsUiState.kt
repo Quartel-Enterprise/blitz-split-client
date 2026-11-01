@@ -54,7 +54,16 @@ data class GroupsUiState(
      * home, closes; the home consumes it, so the group's screens never show it later.
      */
     val recordedPayment: PaymentNotice?,
+    val search: GroupsSearch,
 ) {
+    // Why: "Buscar" only shows once there is a group, as the empty home has nothing to look in.
+    val canSearch: Boolean
+        get() = groups.isNotEmpty()
+
+    // Why: the search drawn in the home's place: Android's search bar, iOS's tab, the web's dialog.
+    val isSearching: Boolean
+        get() = search.isOpen && canSearch
+
     // Why: only the open groups go in the grid; Quitados and the search stay a list.
     val showsGrid: Boolean
         get() = layout.display == GroupsDisplay.GRID
