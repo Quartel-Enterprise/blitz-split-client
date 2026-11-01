@@ -1,12 +1,6 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
-import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
-import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
-import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
-import com.quare.blitzsplit.core.groups.domain.model.IncomePercents
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 
@@ -30,21 +24,19 @@ data class DefaultSplitUiState(
     val showsSaveError: Boolean,
     // Why: Salvar stays off until the split differs from what the screen opened with, or someone new is in it.
     val hasChanges: Boolean,
+    /*
+     * Why: what the form gives (DefaultSplitFigures.of), worked out once per change of it with every such copy, not
+     * on each copy for the connection or a save going on, since every UI reads it on each keystroke.
+     */
+    val figures: DefaultSplitFigures,
 ) {
-    // Why: each one's weight as Salvar saves it; worked out once per state, since every UI reads it on each keystroke.
-    val weights: Map<String, Long> = people.associate { it.id to it.toWeightIn(mode) }.let { typed ->
-        if (mode != DefaultSplitMode.INCOME) return@let typed
-        val incomes = people.map { it.id to (AmountInput.parse(it.incomeText, currency) ?: 0L) }
-        if (incomes.any { (_, income) -> income > 0 }) {
-            IncomePercents.of(incomes)
-        } else {
-            people.associate { it.id to (incomeFallback[it.id] ?: 0L) }
-        }
-    }
+    // Why: each one's weight as Salvar saves it.
+    val weights: Map<String, Long>
+        get() = figures.weights
 
     // Why: "Porcentagem" and "Pela renda" add up to 100; the others don't count percentages.
     val usesPercent: Boolean
-        get() = mode == DefaultSplitMode.PERCENT || mode == DefaultSplitMode.INCOME
+        get() = DefaultSplitFigures.isPercentBased(mode)
 
     val includedCount: Int
         get() = weights.values.count { it > 0 }
@@ -68,17 +60,15 @@ data class DefaultSplitUiState(
      * Why: "Numa conta de R$ 100,00", or for "Igual" the first round amount everyone gets the same of ("Numa conta de
      * R$ 120,00: R$ 20,00 para cada um" among six).
      */
-    val exampleTotalMinor: Long = exampleTotalOf(
-        mode = mode,
-        count = weights.values.count { it > 0 },
-        currency = currency,
-    )
+    val exampleTotalMinor: Long
+        get() = figures.exampleTotalMinor
 
     // Why: "R$ 20,00 para cada um", Igual's example.
     val exampleEachMinor: Long
         get() = if (includedCount == 0) 0L else exampleTotalMinor / includedCount
 
-    val rows: List<DefaultSplitRow> = rowsOf(this)
+    val rows: List<DefaultSplitRow>
+        get() = figures.rows
 
     // Why: "Carla entrou no grupo. Ela começa com 1 parte; ajuste se precisar.", until someone saves.
     val joinedPeople: List<DefaultSplitPerson>
@@ -103,75 +93,5 @@ data class DefaultSplitUiState(
 
     // Why: the incomes typed, by member id in minor units, which stay on this device.
     val incomes: Map<String, Long>
-        get() = people
-            .mapNotNull { person -> AmountInput.parse(person.incomeText, currency)?.let { person.id to it } }
-            .toMap()
-
-    private companion object {
-        const val BASIS_POINTS = 10_000L
-        const val EXAMPLE_UNITS = 100L
-        const val ROUND_UNITS = 10L
-
-        fun DefaultSplitPerson.toWeightIn(mode: DefaultSplitMode): Long = when (mode) {
-            DefaultSplitMode.EQUAL -> if (isIncluded) 1L else 0L
-            DefaultSplitMode.SHARES -> parts
-            DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> AmountInput.parseWhole(percentText) ?: 0L
-        }
-
-        fun exampleTotalOf(
-            mode: DefaultSplitMode,
-            count: Int,
-            currency: GroupCurrency,
-        ): Long {
-            val unit = ExpenseRules.minorPerMajorFor(currency)
-            if (mode != DefaultSplitMode.EQUAL || count == 0) return EXAMPLE_UNITS * unit
-            val step = findLeastCommonMultiple(ROUND_UNITS, count.toLong())
-            return (EXAMPLE_UNITS + step - 1) / step * step * unit
-        }
-
-        fun findLeastCommonMultiple(
-            a: Long,
-            b: Long,
-        ): Long = a / findGreatestCommonDivisor(a, b) * b
-
-        tailrec fun findGreatestCommonDivisor(
-            a: Long,
-            b: Long,
-        ): Long = if (b == 0L) a else findGreatestCommonDivisor(b, a % b)
-
-        // Why: the cents a split can't share evenly go as in Rachar conta, to whoever pays: this device's user by default.
-        fun rowsOf(state: DefaultSplitUiState): List<DefaultSplitRow> {
-            val splitMode = SplitMode.of(state.mode)
-            val entries = state.people.map {
-                SplitEntry(
-                    memberId = it.id,
-                    value = state.weights[it.id] ?: 0L,
-                )
-            }
-            val payerIds = state.people.filter { it.isMe }.map { it.id }
-            val example = BillSplit
-                .split(state.exampleTotalMinor, splitMode, entries, payerIds)
-                ?.associate { it.memberId to it.amountMinor }
-            val points = if (state.usesPercent) {
-                entries.associate { it.memberId to it.value * (BASIS_POINTS / GroupDefaultSplit.FULL_PERCENT) }
-            } else {
-                BillSplit
-                    .split(BASIS_POINTS, splitMode, entries, payerIds)
-                    ?.associate { it.memberId to it.amountMinor }
-                    .orEmpty()
-            }
-            return state.people.zip(entries) { person, entry ->
-                DefaultSplitRow(
-                    person = person,
-                    weight = entry.value,
-                    basisPoints = points[person.id] ?: 0L,
-                    exampleMinor = example?.get(person.id) ?: if (state.usesPercent) {
-                        entry.value * state.exampleTotalMinor / GroupDefaultSplit.FULL_PERCENT
-                    } else {
-                        null
-                    },
-                )
-            }
-        }
-    }
+        get() = figures.incomes
 }

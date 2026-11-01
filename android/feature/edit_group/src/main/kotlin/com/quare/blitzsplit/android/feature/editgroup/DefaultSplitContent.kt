@@ -43,6 +43,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitFigures
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPerson
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
@@ -336,6 +337,12 @@ private fun createPreviewState(
     isSaving = false,
     showsSaveError = false,
     hasChanges = true,
+    figures = DefaultSplitFigures.of(
+        mode = mode,
+        people = people,
+        incomeFallback = emptyMap(),
+        currency = GroupCurrency.BRL,
+    ),
 )
 
 private fun createPreviewPerson(

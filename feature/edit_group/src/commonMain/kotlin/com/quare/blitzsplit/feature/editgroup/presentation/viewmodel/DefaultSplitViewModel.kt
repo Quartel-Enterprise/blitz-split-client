@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
+import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitFigures
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPerson
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
@@ -51,6 +52,12 @@ class DefaultSplitViewModel(
                 isSaving = false,
                 showsSaveError = false,
                 hasChanges = false,
+                figures = DefaultSplitFigures.of(
+                    mode = DefaultSplitMode.EQUAL,
+                    people = emptyList(),
+                    incomeFallback = emptyMap(),
+                    currency = GroupCurrency.fallback,
+                ),
             ),
         )
 
@@ -183,9 +190,8 @@ class DefaultSplitViewModel(
      * Why: another member may have saved other percentages for "Pela renda" since this device typed its incomes, which
      * then no longer give what the group keeps: the screen shows the group's, not the stale incomes'.
      */
-    private fun GroupDefaultSplit.isGivenBy(incomes: Map<String, Long>): Boolean =
-        mode != DefaultSplitMode.INCOME ||
-            IncomePercents.of(weights.keys.map { it to (incomes[it] ?: 0L) }) == weights
+    private fun GroupDefaultSplit.isGivenBy(incomes: Map<String, Long>): Boolean = mode != DefaultSplitMode.INCOME ||
+        IncomePercents.of(weights.keys.map { it to (incomes[it] ?: 0L) }) == weights
 
     // Why: someone the saved split has, or a newcomer as its way to split starts them.
     private fun personOf(
@@ -296,22 +302,32 @@ class DefaultSplitViewModel(
         }
     }
 
-    // Why: every change says whether the form still holds what it opened with, which enables Salvar.
+    /*
+     * Why: every change of the form works out what it gives once, in the same copy that says whether it still holds
+     * what it opened with, which enables Salvar.
+     */
     private fun updateForm(transform: (DefaultSplitUiState) -> DefaultSplitUiState) {
         uiState.update { state ->
             val next = transform(state)
-            next.copy(hasChanges = next.isChangedFrom(opened))
+            val figures = DefaultSplitFigures.of(next.mode, next.people, next.incomeFallback, next.currency)
+            next.copy(
+                figures = figures,
+                hasChanges = next.isChangedFrom(opened, figures),
+            )
         }
     }
 
     // Why: someone who joined since it was saved is a change too, so saving takes them in and the notice goes.
-    private fun DefaultSplitUiState.isChangedFrom(opened: Opened?): Boolean {
+    private fun DefaultSplitUiState.isChangedFrom(
+        opened: Opened?,
+        figures: DefaultSplitFigures,
+    ): Boolean {
         if (opened == null) return false
-        val split = defaultSplit
+        val split = GroupDefaultSplit(mode, figures.weights)
         return split.mode != opened.split.mode ||
             people.any { split.weightOf(it.id) != opened.split.weightOf(it.id) } ||
             people.any { it.isNew } ||
-            (mode == DefaultSplitMode.INCOME && incomes.filterValues { it > 0 } != opened.incomes)
+            (mode == DefaultSplitMode.INCOME && figures.incomes.filterValues { it > 0 } != opened.incomes)
     }
 
     private fun formatAmount(
