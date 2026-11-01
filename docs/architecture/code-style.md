@@ -327,12 +327,12 @@ The script runs the jscpd release `scripts/jscpd/package.json` pins, with every 
 needs Node.js 18 or later and nothing else.
 
 `.jscpd-baseline.json` holds how many lines of code of each file are copied today. A file with more fails the check:
-extract the copied code into one place the callers use (a use case or coordinator under the ViewModels, a component
-of `:android:designsystem`, `iosApp/Sources/Shared/DesignSystem` or `webApp/src/components`). A file with fewer fails
-too, until `--update-baseline` writes the new numbers, so the baseline only shrinks. Without `--allow-new` it refuses
-any file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved
-file: a new path with the name (the part before the first dot, so `Foo.android.kt` moved to `Foo.web.kt` counts)
-and copied lines of a listed path whose file is gone. A file renamed with its
-copied code needs `--allow-new`, like any new copy. `--allow-new` is for a copy on
-purpose (an `actual` per platform that happens to match): say why in the pull request, where CI raises one warning
-and lists each file whose copied lines grew against main in the job summary.
+extract the copied code into one place the callers use (a use case or coordinator under the ViewModels, a component of
+`:android:designsystem`, `iosApp/Sources/Shared/DesignSystem` or `webApp/src/components`). A file with fewer fails too,
+until `--update-baseline` writes the new numbers, so the baseline only shrinks. Without `--allow-new` it refuses any
+file whose copied lines grew, even when copies removed elsewhere keep the total down, and only takes a moved file: a new
+path with the name (the part before the first dot plus the extension, so `Foo.android.kt` moved to `Foo.web.kt` counts
+and `Foo.kt` to `Foo.swift` doesn't) and copied lines of a listed path whose file is gone. A file renamed with its
+copied code needs `--allow-new`, like any new copy. `--allow-new` is for a copy on purpose (an `actual` per platform
+that happens to match): say why in the pull request, where CI raises one warning and lists each file whose copied lines
+grew against main in the job summary.
