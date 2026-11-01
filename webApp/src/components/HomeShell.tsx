@@ -1,14 +1,15 @@
-import { ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
+import { House, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
-/** The home's four tabs, in the canvas' order; Grupos and Saldos are built, the others answer "Em breve". */
-export type HomeTab = 'groups' | 'balances' | 'contacts' | 'activity'
+/** The home's five tabs, in the canvas' order, all built: Início, Grupos, Saldos, Contatos and Atividade. */
+export type HomeTab = 'home' | 'groups' | 'balances' | 'contacts' | 'activity'
 
 const tabs: { tab: HomeTab; label: MessageKey; icon: ReactNode }[] = [
+  { tab: 'home', label: 'home_tab', icon: <House className="size-4" /> },
   { tab: 'groups', label: 'groups_tabGroups', icon: <Users className="size-4" /> },
   { tab: 'balances', label: 'groups_tabBalances', icon: <Wallet className="size-4" /> },
   { tab: 'contacts', label: 'groups_tabContacts', icon: <UserRound className="size-4" /> },
@@ -31,7 +32,7 @@ export interface HomeProfile {
 }
 
 /**
- * The home's frame around Grupos and Saldos: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and
+ * The home's frame around Início, Grupos, Saldos, Contatos and Atividade: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and
  * the phone a top bar with a bottom navigation, as the canvas draws them. The selected tab names the page.
  */
 export function HomeShell({
@@ -40,6 +41,7 @@ export function HomeShell({
   onTab,
   onProfile,
   search,
+  activityUnreadCount = 0,
   children,
   overlays,
 }: {
@@ -49,6 +51,8 @@ export function HomeShell({
   onProfile: () => void
   // Why: "Buscar" only on the groups, and once there is a group to look in.
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
+  // Why: Atividade's badge, in the primary color (never the destructive red), on every width.
+  activityUnreadCount?: number
   children: ReactNode
   overlays?: ReactNode
 }) {
@@ -56,6 +60,9 @@ export function HomeShell({
   const select = (tab: HomeTab) => {
     if (tab !== selected) onTab(tab)
   }
+  const unreadOf = (tab: HomeTab) => (tab === 'activity' ? activityUnreadCount : 0)
+  // Why: "Atividade, 3 não lidas": the badge is hidden from screen readers, so the tab's name says it.
+  const unreadLabel = (tab: HomeTab) => (unreadOf(tab) > 0 ? t('activity_tabUnread', { count: unreadOf(tab) }) : undefined)
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
@@ -78,15 +85,25 @@ export function HomeShell({
             <button
               key={tab}
               aria-current={tab === selected ? 'page' : undefined}
+              aria-label={unreadLabel(tab)}
               onClick={() => select(tab)}
               className={cn(
                 'flex flex-col items-center justify-center gap-1 rounded-md px-1 py-1.5 text-[11px] font-medium outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:h-9 lg:flex-row lg:justify-start lg:gap-2.5 lg:px-2.5 lg:py-0 lg:text-sm',
                 tab === selected ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground',
               )}
             >
-              {icon}
+              {/* Why: the rail has no room for the count, so it shows a dot on the icon. */}
+              <span className="relative">
+                {icon}
+                {unreadOf(tab) > 0 && <span aria-hidden className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary lg:hidden" />}
+              </span>
               {/* Why: the page has no visible title, so the selected tab's label names it at every width. */}
               <span>{t(label)}</span>
+              {unreadOf(tab) > 0 && (
+                <span aria-hidden className="ml-auto hidden h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground tabular-nums lg:flex">
+                  {unreadOf(tab)}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -124,15 +141,23 @@ export function HomeShell({
 
         {children}
 
-        <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-4 border-t bg-card md:hidden">
+        <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-5 border-t bg-card md:hidden">
           {tabs.map(({ tab, label, icon }) => (
             <button
               key={tab}
               aria-current={tab === selected ? 'page' : undefined}
+              aria-label={unreadLabel(tab)}
               onClick={() => select(tab)}
               className={cn('flex flex-col items-center justify-center gap-1 text-[11px] font-medium', tab === selected ? 'text-foreground' : 'text-muted-foreground')}
             >
-              {icon}
+              <span className="relative">
+                {icon}
+                {unreadOf(tab) > 0 && (
+                  <span aria-hidden className="absolute -top-1.5 left-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums">
+                    {unreadOf(tab)}
+                  </span>
+                )}
+              </span>
               {t(label)}
             </button>
           ))}

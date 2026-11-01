@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.utils.TextFold
+import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
  * Why: a group's categories in two levels, the app's fixed ones with the group's among them (7.7): the group's main
@@ -48,10 +48,10 @@ class CategoryTree private constructor(
         name: String,
         exceptId: String?,
     ): Boolean {
-        val folded = TextFold.toFolded(name.trim())
+        val folded = TextFolding.toFolded(name.trim())
         return all.any { category ->
             category.isGroupCategory && category.id != exceptId && category.parentId == parentId &&
-                category.name?.let { TextFold.toFolded(it) } == folded
+                category.name?.let { TextFolding.toFolded(it) } == folded
         }
     }
 

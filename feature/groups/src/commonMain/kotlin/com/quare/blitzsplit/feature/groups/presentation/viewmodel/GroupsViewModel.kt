@@ -3,11 +3,11 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
-import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -26,12 +26,12 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
-import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
 import com.quare.blitzsplit.core.navigation.openBesideGroups
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -50,6 +50,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupsOnHome
 import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.searchResultsOf
@@ -100,6 +101,7 @@ class GroupsViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
     observePeopleBalances: ObservePeopleBalances,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -125,6 +127,7 @@ class GroupsViewModel(
                 recordedPayment = null,
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -196,7 +199,7 @@ class GroupsViewModel(
                     avatarColor = profile?.avatarColor ?: AvatarColor.default,
                     photoUrl = profile?.photo?.toImageUrl(),
                     accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                    syncBadge = syncBadgeOf(
+                    syncBadge = SyncBadge.ofOrNull(
                         syncState = syncState,
                         isOnline = isOnline,
                     ),
@@ -213,29 +216,20 @@ class GroupsViewModel(
             )
         }
         // Why: each group's bills and payments, again whenever any of them changes here or through a sync.
-        combine(observeGroups(), observeGroupsMoney()) { groups, money ->
-            groups.map { group ->
-                val ofGroup = money[group.id] ?: GroupMoney.NONE
-                GroupWithMoney(
-                    group = group,
-                    expenses = ofGroup.expenses,
-                    settlements = ofGroup.settlements,
-                    pendingDeletionCount = ofGroup.pendingDeletionCount,
+        combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
+            .onEach { groups ->
+                groupsWithMoney = groups
+                // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
+                if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
+            }.map { groups ->
+                GroupsOnHome(
+                    rows = rowsOf(
+                        groups = groups,
+                        clock = activityClock(),
+                    ),
+                    pendingChangeCount = pendingChangeCountOf(groups),
                 )
             }
-        }.onEach { groups ->
-            groupsWithMoney = groups
-            // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
-            if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
-        }.map { groups ->
-            GroupsOnHome(
-                rows = rowsOf(
-                    groups = groups,
-                    clock = activityClock(),
-                ),
-                pendingChangeCount = pendingChangeCountOf(groups),
-            )
-        }
             // Why: the ages again each minute, not the balances, so a home left open says "ontem" after midnight.
             .combine(minuteTicks()) { home, _ -> home.copy(rows = agedRowsOf(home.rows, activityClock())) }
             .onEach { home ->
@@ -258,6 +252,9 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         observeGroupsLayout()
             .onEach { layout -> uiState.update { it.copy(layout = layout) } }
+            .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people -> peopleBalances = people }
@@ -309,7 +306,7 @@ class GroupsViewModel(
              * first's; beside the list, the group tapped takes the place of the one shown.
              */
             is GroupsUiEvent.OnGroupClicked -> if (isListShown()) {
-                navigator.openBesideGroups(Route.GroupDetail(event.groupId))
+                navigator.openBesideGroups(Route.GroupDetail(event.groupId, joinedAs = null))
             }
 
             GroupsUiEvent.OnJoinWithLinkClicked -> if (isListShown()) {
@@ -346,7 +343,7 @@ class GroupsViewModel(
 
             // Why: only from the groups on top, so a late tap never closes a screen over them, a half-typed bill's.
             GroupsUiEvent.OnToReceiveClicked -> if (isListShown() && uiState.value.summary.canOpenToReceive) {
-                openBalancesTab(BalancesFilter.OWES_YOU)
+                openTab(toBalancesTab(BalancesFilter.OWES_YOU))
             }
 
             GroupsUiEvent.OnToPayClicked -> if (uiState.value.summary.canOpenToPay) openToPay()
@@ -380,18 +377,23 @@ class GroupsViewModel(
 
             // Why: Membros is a tab of the group, which takes the place of the group beside the list.
             is GroupsUiEvent.OnSearchPersonClicked -> if (isListShown()) {
-                navigator.openBesideGroups(Route.Members(event.groupId, joinedAs = null))
+                navigator.openBesideGroups(Route.Members(event.groupId))
             }
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
 
-            GroupsUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
+            GroupsUiEvent.OnHomeTabClicked -> {
+                closeSearch()
+                navigator.openHomeTab(Route.Home)
+            }
+
+            GroupsUiEvent.OnBalancesTabClicked -> openTab(toBalancesTab(BalancesFilter.ALL))
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
-            GroupsUiEvent.OnContactsTabClicked,
-            GroupsUiEvent.OnActivityTabClicked,
-            -> showComingSoon()
+            GroupsUiEvent.OnContactsTabClicked -> openTab(Route.Contacts)
+
+            GroupsUiEvent.OnActivityTabClicked -> openTab(Route.Activity(personKey = null))
         }
     }
 
@@ -440,7 +442,7 @@ class GroupsViewModel(
         expenseId: String,
     ) {
         if (!isListShown()) return
-        navigator.openBesideGroups(Route.GroupDetail(groupId))
+        navigator.openBesideGroups(Route.GroupDetail(groupId, joinedAs = null))
         navigator.navigate(Route.BillDetail(groupId, expenseId))
     }
 
@@ -465,22 +467,22 @@ class GroupsViewModel(
     }
 
     /*
-     * Why: Saldos is the tab next to Grupos, drawn over the groups; from a screen the groups opened (iOS keeps the tab
-     * bar over it), it closes that screen first, as a tab bar does.
+     * Why: Saldos, Contatos and Atividade take Grupos' place above Início; from a screen the groups opened (iOS keeps
+     * the tab bar over it), they close that screen first, as a tab bar does.
      */
-    private fun openBalancesTab(filter: BalancesFilter) {
+    private fun openTab(tab: Route) {
         val stack = navigator.backStack.value
-        val groupsIndex = stack.indexOf(Route.Groups)
-        if (groupsIndex < 0 || stack.getOrNull(groupsIndex + 1) is Route.GlobalBalances) return
+        if (Route.Groups !in stack || stack.any { it::class == tab::class }) return
         closeSearch()
-        navigator.popToGroups()
-        navigator.navigate(Route.GlobalBalances(filter))
+        navigator.openHomeTab(tab)
     }
+
+    private fun toBalancesTab(filter: BalancesFilter): Route = Route.GlobalBalances(filter, charge = null)
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
     private fun openToPay() {
         if (!isListShown()) return
-        openBalancesTab(BalancesFilter.YOU_OWE)
+        openTab(toBalancesTab(BalancesFilter.YOU_OWE))
         val person = peopleBalances.people.singleOrNull { it.netMinor < 0 } ?: return
         navigator.navigate(
             Route.SettleUp(
@@ -488,10 +490,6 @@ class GroupsViewModel(
                 currency = person.currency,
             ),
         )
-    }
-
-    private fun showComingSoon() {
-        viewModelScope.launch { uiAction.emit(GroupsUiAction.ShowComingSoon) }
     }
 
     /*
@@ -584,16 +582,5 @@ class GroupsViewModel(
                 ),
             )
         }
-    }
-
-    // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
-    private fun syncBadgeOf(
-        syncState: SyncState,
-        isOnline: Boolean,
-    ): SyncBadge? = when {
-        syncState == SyncState.SYNCED -> null
-        !isOnline -> SyncBadge.OFFLINE
-        syncState == SyncState.FAILED -> SyncBadge.FAILED
-        else -> SyncBadge.SYNCING
     }
 }

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
@@ -34,7 +36,12 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
+import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -79,7 +86,9 @@ class GroupDetailViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
+    private lateinit var pins: FakeGroupPinRepository
     private lateinit var viewModel: GroupDetailViewModel
+    private lateinit var account: FakeAccountRepository
     private val actions = mutableListOf<GroupDetailUiAction>()
     private val deletedBills = InMemoryDeletedBillRepository()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
@@ -781,7 +790,7 @@ class GroupDetailViewModelTest {
         groups.groups.value = noGroups
 
         // Then
-        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -797,7 +806,7 @@ class GroupDetailViewModelTest {
             groups.groups.value = noGroups
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Profile), navigator.backStack.value)
         }
 
     @Test
@@ -814,6 +823,7 @@ class GroupDetailViewModelTest {
             // Then
             assertEquals(
                 listOf(
+                    Route.Home,
                     Route.Groups,
                     route,
                     Route.SplitBill(
@@ -838,7 +848,7 @@ class GroupDetailViewModelTest {
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
         }
 
     @Test
@@ -854,7 +864,7 @@ class GroupDetailViewModelTest {
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -867,7 +877,7 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -880,7 +890,10 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(GroupDetailUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -895,6 +908,7 @@ class GroupDetailViewModelTest {
         // Then
         assertEquals(
             listOf(
+                Route.Home,
                 Route.Groups,
                 route,
                 Route.SplitBill(
@@ -919,7 +933,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
                 navigator.backStack.value,
             )
         }
@@ -934,7 +948,10 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -948,7 +965,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
         }
 
     @Test
@@ -964,6 +981,7 @@ class GroupDetailViewModelTest {
             // Then
             assertEquals(
                 listOf(
+                    Route.Home,
                     Route.Groups,
                     route,
                     Route.SplitBill(
@@ -988,7 +1006,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)),
+                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID)),
                 navigator.backStack.value,
             )
         }
@@ -1005,6 +1023,7 @@ class GroupDetailViewModelTest {
         // Then
         assertEquals(
             listOf(
+                Route.Home,
                 Route.Groups,
                 route,
                 Route.SplitBill(
@@ -1027,7 +1046,7 @@ class GroupDetailViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -1041,7 +1060,10 @@ class GroupDetailViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -1098,7 +1120,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
         }
 
     @Test
@@ -1114,6 +1136,7 @@ class GroupDetailViewModelTest {
             // Then
             assertEquals(
                 listOf(
+                    Route.Home,
                     Route.Groups,
                     route,
                     Route.SplitBill(
@@ -1238,7 +1261,7 @@ class GroupDetailViewModelTest {
 
         // Then
         assertEquals(listOf(GROUP_ID), groups.leftGroupIds)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
         assertTrue(actions.isEmpty())
     }
 
@@ -1255,7 +1278,7 @@ class GroupDetailViewModelTest {
         assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowLeaveError), actions)
         assertNull(viewModel.uiState.value.exit.dialog)
         assertFalse(viewModel.uiState.value.exit.isRunning)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
     }
 
     @Test
@@ -1271,7 +1294,7 @@ class GroupDetailViewModelTest {
             // Then
             assertIs<GroupExitDialog.LeaveBlocked>(viewModel.uiState.value.exit.dialog)
             assertFalse(viewModel.uiState.value.exit.isRunning)
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -1346,7 +1369,7 @@ class GroupDetailViewModelTest {
             // Then
             assertNull(viewModel.uiState.value.exit.dialog)
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
                 navigator.backStack.value,
             )
         }
@@ -1392,7 +1415,7 @@ class GroupDetailViewModelTest {
             viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
             assertTrue(groups.deletedGroupIds.isEmpty())
         }
 
@@ -1435,7 +1458,7 @@ class GroupDetailViewModelTest {
 
         // Then
         assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -1449,7 +1472,7 @@ class GroupDetailViewModelTest {
 
         // Then
         assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowDeleteError), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
     }
 
     @Test
@@ -1476,7 +1499,7 @@ class GroupDetailViewModelTest {
                 ),
                 viewModel.uiState.value.exit.deletedNotice,
             )
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
             assertTrue(deletions.observeDeletions().first().isEmpty())
         }
 
@@ -1499,7 +1522,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.exit.deletedNotice)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
         }
 
     @Test
@@ -1530,9 +1553,229 @@ class GroupDetailViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a group nobody pinned WHEN the screen opens THEN the header is not pinned`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val header = viewModel.uiState.value.header
+
+        // Then
+        assertFalse(header.isPinned)
+    }
+
+    @Test
+    fun `GIVEN the group pinned to Inicio WHEN the screen opens THEN the header is pinned`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
+
+        // When
+        val header = viewModel.uiState.value.header
+
+        // Then
+        assertTrue(header.isPinned)
+    }
+
+    @Test
+    fun `GIVEN only another group pinned WHEN the screen opens THEN the header is not pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pinnedGroupIds = setOf("group-2"))
+
+            // When
+            val header = viewModel.uiState.value.header
+
+            // Then
+            assertFalse(header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN a sync brings a pin made on another device THEN the header is pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val pinnedElsewhere = setOf(GROUP_ID)
+
+            // When
+            pins.pinnedGroupIds.value = pinnedElsewhere
+
+            // Then
+            assertTrue(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN the group pinned WHEN a sync brings its unpin THEN the header is not pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
+            val unpinnedElsewhere = emptySet<String>()
+
+            // When
+            pins.pinnedGroupIds.value = unpinnedElsewhere
+
+            // Then
+            assertFalse(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio THEN pins it now and the header shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnPinToggled
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Triple(GROUP_ID, true, nowMillis)), pins.pinUpdates)
+            assertTrue(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN the group pinned WHEN tapping Desafixar da Inicio THEN unpins it now and the header shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pinnedGroupIds = setOf(GROUP_ID, "group-2"))
+            val event = GroupDetailUiEvent.OnPinToggled
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Triple(GROUP_ID, false, nowMillis)), pins.pinUpdates)
+            assertEquals(setOf("group-2"), pins.pinnedGroupIds.value)
+            assertFalse(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN the group just pinned WHEN tapping the item again THEN unpins it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+        // Then
+        assertEquals(listOf(true, false), pins.pinUpdates.map { it.second })
+        assertFalse(viewModel.uiState.value.header.isPinned)
+    }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping Fixar na Inicio THEN the back stack stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = GroupDetailUiEvent.OnPinToggled
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Fixar na Inicio THEN nothing is pinned`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+        val event = GroupDetailUiEvent.OnPinToggled
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(pins.pinUpdates.isEmpty())
+        assertTrue(pins.pinnedGroupIds.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the group gone while covered WHEN tapping Fixar na Inicio THEN nothing is pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+            // Then
+            assertTrue(pins.pinUpdates.isEmpty())
+            assertTrue(pins.pinnedGroupIds.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the device fails to save the pin WHEN tapping Fixar na Inicio THEN the header stays unpinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pins.updatePinnedError = IllegalStateException("disk full")
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+
+            // Then
+            assertEquals(listOf(Triple(GROUP_ID, true, nowMillis)), pins.pinUpdates)
+            assertFalse(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN the group opened from Inicio WHEN confirming Sair THEN goes back to Grupos above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(routesBelow = emptyList())
+            viewModel.onEvent(GroupDetailUiEvent.OnLeaveGroupClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groups.leftGroupIds)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the group opened from Inicio WHEN confirming Apagar THEN goes back to Grupos above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(routesBelow = emptyList())
+            viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Grupo apagado on a group opened from Inicio WHEN tapping Voltar para Grupos THEN opens Grupos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(routesBelow = emptyList())
+            deletions.post(
+                GroupDeletion(
+                    groupId = GROUP_ID,
+                    groupName = "Viagem de Floripa",
+                    deletedByName = "Ana",
+                ),
+            )
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
     private fun ExpenseDay.ids(): List<String> = entries.map { it.id }
 
-    private val route = Route.GroupDetail(GROUP_ID)
+    private var route = Route.GroupDetail(GROUP_ID, joinedAs = null)
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val thisMorning = Instant.parse("2026-10-30T09:00:00Z").toEpochMilliseconds()
@@ -1627,6 +1870,156 @@ class GroupDetailViewModelTest {
         updatedByMemberId = null,
     )
 
+    @Test
+    fun `GIVEN the group was just joined as Bruno WHEN the screen opens THEN says Bruno joined`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("Bruno", state.joinedAs)
+        }
+
+    @Test
+    fun `GIVEN the screen opened from the groups list WHEN it opens THEN there is no joined notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.joinedAs)
+        }
+
+    @Test
+    fun `GIVEN just joined with a local only account WHEN the screen opens THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.LocalOnly,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isAccountUnprotected)
+            assertTrue(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with an anonymous account WHEN the screen opens THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with Apple WHEN the screen opens THEN does not ask to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isAccountUnprotected)
+            assertFalse(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN asked to protect the access WHEN Google gets connected THEN stops asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            joinedAs = "Bruno",
+            accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+        )
+
+        // When
+        account.status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsProtectAccess)
+        assertEquals("Bruno", viewModel.uiState.value.joinedAs)
+    }
+
+    @Test
+    fun `GIVEN opened from the groups list with Google WHEN Google is removed THEN does not ask to protect`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = null,
+                accountStatus = AccountStatus.Connected(
+                    FakeAccountRepository.CONNECTED_USER_ID,
+                    AccountProvider.GOOGLE,
+                ),
+            )
+
+            // When
+            account.status = AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isAccountUnprotected)
+            assertFalse(viewModel.uiState.value.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN asked to protect the access WHEN tapping it THEN opens the profile over the expenses`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"), Route.Profile),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping protect the access THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+            navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"),
+                    Route.Invite(GROUP_ID, isNewGroup = false),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
@@ -1636,7 +2029,13 @@ class GroupDetailViewModelTest {
         exitOutcome: GroupExitOutcome = GroupExitOutcome.DONE,
         exitError: Throwable? = null,
         exitGate: CompletableDeferred<Unit>? = null,
+        pinnedGroupIds: Set<String> = emptySet(),
+        routesBelow: List<Route> = listOf(Route.Groups),
+        joinedAs: String? = null,
+        accountStatus: AccountStatus = AccountStatus.LocalOnly,
     ) {
+        route = Route.GroupDetail(GROUP_ID, joinedAs = joinedAs)
+        account = FakeAccountRepository(initialStatus = accountStatus)
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.exitOutcome = exitOutcome
             it.exitError = exitError
@@ -1644,7 +2043,11 @@ class GroupDetailViewModelTest {
         }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository()
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
+        pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
+            routesBelow.forEach(it::navigate)
+            it.navigate(route)
+        }
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expensesNeverAnswer = MutableSharedFlow<List<Expense>>()
         viewModel = GroupDetailViewModel(
@@ -1654,6 +2057,7 @@ class GroupDetailViewModelTest {
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeAccount = ObserveAccountUseCase(account),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
@@ -1671,6 +2075,8 @@ class GroupDetailViewModelTest {
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(isOnline) },
                 leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+                observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
+                setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

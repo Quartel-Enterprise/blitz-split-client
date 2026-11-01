@@ -162,7 +162,7 @@ private enum RegisterPaymentCopy {
 }
 
 /// Whoever paid, an arrow, whoever received.
-private struct PaymentFaces: View {
+struct PaymentFaces: View {
     let from: PaymentPerson?
     let to: PaymentPerson?
     let size: CGFloat

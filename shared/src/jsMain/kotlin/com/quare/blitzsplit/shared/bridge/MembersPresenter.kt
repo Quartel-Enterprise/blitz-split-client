@@ -77,9 +77,6 @@ class JsMembersState(
     // Why: the "Convite pessoal" sheet, null while closed.
     val personalInvite: JsPersonalInvite?,
     val isLoaded: Boolean,
-    // Why: "Você entrou como Bruno", null unless the group was just joined through its link.
-    val joinedAs: String?,
-    val showsProtectAccess: Boolean,
     // Why: "Seu saldo neste grupo" over the tabs, null while the group has no bill.
     val myBalance: JsMemberBalance?,
     val isEveryoneSettled: Boolean,
@@ -111,8 +108,6 @@ class MembersPresenter(
                 isReleasing = state.isReleasing,
                 personalInvite = state.personalInvite?.let(::toJsPersonalInvite),
                 isLoaded = state.isLoaded,
-                joinedAs = state.joinedAs,
-                showsProtectAccess = state.showsProtectAccess,
                 myBalance = state.myBalance?.let(::toJsMemberBalance),
                 isEveryoneSettled = state.isEveryoneSettled,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
@@ -218,10 +213,6 @@ class MembersPresenter(
 
     fun dismissEditor() {
         viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
-    }
-
-    fun protectAccess() {
-        viewModel.onEvent(MembersUiEvent.OnProtectAccessClicked)
     }
 
     // Why: the group's tabs, "Despesas" and "Saldos", beside "Membros".

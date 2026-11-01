@@ -1,4 +1,4 @@
-import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Pin, PinOff, Plus, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, GroupTabs, type GroupTab } from '@/components/common'
@@ -23,6 +23,7 @@ export interface GroupPageEvents extends GroupExitEvents {
   invite(): void
   stats(): void
   members(): void
+  togglePin(): void
   editGroup(): void
   leaveGroup(): void
   deleteGroup(): void
@@ -86,7 +87,7 @@ export function GroupPage({
         <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => events.invite()} className="md:hidden">
           <UserPlus />
         </Button>
-        <GroupMenu isOnline={exit.isOnline} events={events} />
+        <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} />
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
@@ -160,8 +161,11 @@ export function GroupPage({
   )
 }
 
-/** The ⋯ menu keeps only what changes the group itself (6.1i); offline, Sair and Apagar need the internet (6.1j). */
-function GroupMenu({ isOnline, events }: { isOnline: boolean; events: GroupPageEvents }) {
+/**
+ * The ⋯ menu keeps only what changes the group itself (6.1i); offline, Sair and Apagar need the internet (6.1j). "Fixar
+ * na Início" comes first and works offline: it puts the group first in Início's "Seus grupos".
+ */
+function GroupMenu({ isOnline, isPinned, events }: { isOnline: boolean; isPinned: boolean; events: GroupPageEvents }) {
   const needsInternet = !isOnline && <span className="ml-auto text-xs text-muted-foreground">{t('groupExit_needsInternet')}</span>
   return (
     <DropdownMenu>
@@ -171,6 +175,10 @@ function GroupMenu({ isOnline, events }: { isOnline: boolean; events: GroupPageE
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuItem onSelect={() => events.togglePin()}>
+          {isPinned ? <PinOff /> : <Pin />}
+          {t(isPinned ? 'groupDetail_unpin' : 'groupDetail_pin')}
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => events.editGroup()}>
           <Pencil />
           {t('groupDetail_editGroup')}

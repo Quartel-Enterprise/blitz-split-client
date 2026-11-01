@@ -16,7 +16,7 @@ fun Navigator.openGroupTab(
     when {
         belowGroupId == null || belowGroupId != tabGroupIdOrNull(tab) -> replaceTop(tab)
 
-        // Why: by the group alone, since the members just joined ("Você entrou como Bruno") are the same tab.
+        // Why: by the group alone, since the expenses just joined ("Você entrou como Bruno") are the same tab.
         below != null && below::class == tab::class -> navigateBack()
 
         else -> {

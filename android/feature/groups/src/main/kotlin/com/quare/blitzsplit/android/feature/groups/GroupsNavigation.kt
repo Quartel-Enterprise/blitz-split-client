@@ -15,6 +15,7 @@ import com.quare.blitzsplit.android.designsystem.component.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 
 private fun eventOf(tab: HomeTab): GroupsUiEvent? = when (tab) {
+    HomeTab.HOME -> GroupsUiEvent.OnHomeTabClicked
     HomeTab.GROUPS -> null
     HomeTab.BALANCES -> GroupsUiEvent.OnBalancesTabClicked
     HomeTab.CONTACTS -> GroupsUiEvent.OnContactsTabClicked
@@ -22,27 +23,53 @@ private fun eventOf(tab: HomeTab): GroupsUiEvent? = when (tab) {
 }
 
 @Composable
-internal fun GroupsNavigationBar(onEvent: (GroupsUiEvent) -> Unit) {
+internal fun GroupsNavigationBar(
+    activityBadgeCount: Int,
+    onEvent: (GroupsUiEvent) -> Unit,
+) {
     HomeNavigationBar(
         selected = HomeTab.GROUPS,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+        activityBadgeCount = activityBadgeCount,
     )
 }
 
 @Composable
-internal fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
-    HomeNavigationRail(
+internal fun GroupsNavigationRail(
+    activityBadgeCount: Int,
+    onEvent: (GroupsUiEvent) -> Unit,
+) {
+    SplitBillNavigationRail(
         selected = HomeTab.GROUPS,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+        activityBadgeCount = activityBadgeCount,
+        onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
+    )
+}
+
+// Why: Grupos and Início put "Rachar conta" at the top of the rail; Início's first use has none (null).
+@Composable
+internal fun SplitBillNavigationRail(
+    selected: HomeTab,
+    onTabClick: (HomeTab) -> Unit,
+    activityBadgeCount: Int,
+    onSplitBillClick: (() -> Unit)?,
+) {
+    HomeNavigationRail(
+        selected = selected,
+        onTabClick = onTabClick,
+        activityBadgeCount = activityBadgeCount,
         header = {
-            FloatingActionButton(
-                onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
-                modifier = Modifier.padding(top = 16.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = stringResource(R.string.groups_split_bill),
-                )
+            if (onSplitBillClick != null) {
+                FloatingActionButton(
+                    onClick = onSplitBillClick,
+                    modifier = Modifier.padding(top = 16.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = stringResource(R.string.groups_split_bill),
+                    )
+                }
             }
         },
     )

@@ -1420,7 +1420,7 @@ class BillDetailViewModelTest {
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
     )
-    private val groupRoute = Route.GroupDetail(GROUP_ID)
+    private val groupRoute = Route.GroupDetail(GROUP_ID, joinedAs = null)
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlierToday = Instant.parse("2026-10-30T12:00:00Z").toEpochMilliseconds()

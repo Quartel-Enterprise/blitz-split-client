@@ -75,11 +75,13 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
-            BalancesUiEvent.OnExpensesTabClicked -> screen.openTab(Route.GroupDetail(route.groupId))
+            BalancesUiEvent.OnExpensesTabClicked -> screen.openTab(Route.GroupDetail(route.groupId, joinedAs = null))
 
-            BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId, joinedAs = null))
+            BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
 
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
+
+            BalancesUiEvent.OnPinToggled -> screen.togglePin()
 
             BalancesUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
@@ -117,6 +119,7 @@ class BalancesViewModel(
                     group = group,
                     totalSpentMinor = expenses.sumOf { expense -> expense.amountMinor },
                     balances = balances,
+                    isPinned = screen.isPinned,
                 ),
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine

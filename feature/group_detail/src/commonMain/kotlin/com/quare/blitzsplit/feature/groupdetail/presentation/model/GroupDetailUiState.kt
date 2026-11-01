@@ -20,7 +20,14 @@ data class GroupDetailUiState(
     val exit: GroupExitState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: "Você entrou como Bruno", right after joining the group through its link (3.3).
+    val joinedAs: String?,
+    // Why: "Proteja seu acesso" under it, while the account has no Google or Apple.
+    val isAccountUnprotected: Boolean,
 ) {
+    val showsProtectAccess: Boolean
+        get() = joinedAs != null && isAccountUnprotected
+
     // Why: "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it.
     val isEmpty: Boolean
         get() = isLoaded && days.isEmpty()

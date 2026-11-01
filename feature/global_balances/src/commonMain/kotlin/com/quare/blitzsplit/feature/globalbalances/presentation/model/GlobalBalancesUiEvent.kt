@@ -59,6 +59,8 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
     // Why: the empty state's button: "Ver quem te deve", "Ver quem você deve" or "Ver grupos".
     data object OnEmptyActionClicked : GlobalBalancesUiEvent
 
+    data object OnHomeTabClicked : GlobalBalancesUiEvent
+
     data object OnGroupsTabClicked : GlobalBalancesUiEvent
 
     data object OnContactsTabClicked : GlobalBalancesUiEvent

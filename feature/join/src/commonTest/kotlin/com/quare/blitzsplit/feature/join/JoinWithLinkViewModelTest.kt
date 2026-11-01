@@ -189,7 +189,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupInvite), navigator.backStack.value)
         }
 
     @Test
@@ -203,7 +203,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaInvite), navigator.backStack.value)
         }
 
     @Test
@@ -219,7 +219,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = MEMBER_CODE,
@@ -242,7 +242,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupInvite), navigator.backStack.value)
         }
 
     @Test
@@ -257,21 +257,21 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test
     fun `GIVEN the reader over other screens WHEN reading the QR of a group THEN replaces only the reader`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(under = listOf(Route.Groups, Route.Profile))
+            prepareScenario(under = listOf(Route.Home, Route.Profile))
             val content = "https://blitzsplit.com/g/$CODE"
 
             // When
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Profile, groupInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Profile, groupInvite), navigator.backStack.value)
         }
 
     @Test
@@ -286,7 +286,7 @@ class JoinWithLinkViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isQrInvalid)
-            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
         }
 
     @Test
@@ -301,7 +301,7 @@ class JoinWithLinkViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isQrInvalid)
-            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
         }
 
     @Test
@@ -381,7 +381,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaInvite), navigator.backStack.value)
         }
 
     @Test
@@ -395,7 +395,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupInvite), navigator.backStack.value)
         }
 
     @Test
@@ -410,7 +410,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
 
             // Then
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test
@@ -426,7 +426,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals("https://example.com/menu", viewModel.uiState.value.link)
             assertTrue(viewModel.uiState.value.isLinkInvalid)
-            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
         }
 
     @Test
@@ -443,7 +443,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals("blitzsplit.com/g/AB", viewModel.uiState.value.link)
             assertFalse(viewModel.uiState.value.isLinkInvalid)
-            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
         }
 
     @Test
@@ -498,7 +498,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnOpenClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaInvite), navigator.backStack.value)
         }
 
     @Test
@@ -514,7 +514,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertTrue(viewModel.uiState.value.isLinkInvalid)
             assertEquals("blitzsplit.com/g/AB12", viewModel.uiState.value.link)
-            assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
         }
 
     @Test
@@ -528,7 +528,7 @@ class JoinWithLinkViewModelTest {
 
         // Then
         assertFalse(viewModel.uiState.value.isLinkInvalid)
-        assertEquals(listOf(Route.Groups, reader), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, reader), navigator.backStack.value)
     }
 
     @Test
@@ -543,7 +543,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnOpenClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test
@@ -571,7 +571,7 @@ class JoinWithLinkViewModelTest {
         viewModel.onEvent(JoinWithLinkUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
 
     @Test
@@ -584,7 +584,7 @@ class JoinWithLinkViewModelTest {
         viewModel.onEvent(JoinWithLinkUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, reader, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, reader, Route.Profile), navigator.backStack.value)
     }
 
     @Test
@@ -793,7 +793,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupSkippingReader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupSkippingReader), navigator.backStack.value)
             assertFalse(viewModel.uiState.value.isQrInvalid)
         }
 
@@ -808,7 +808,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaSkippingReader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaSkippingReader), navigator.backStack.value)
             assertFalse(viewModel.uiState.value.isQrInvalid)
         }
 
@@ -823,7 +823,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaSkippingReader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaSkippingReader), navigator.backStack.value)
             assertFalse(viewModel.uiState.value.isQrInvalid)
         }
 
@@ -838,7 +838,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupInvite), navigator.backStack.value)
         }
 
     @Test
@@ -854,7 +854,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = OTHER_MEMBER_CODE,
@@ -876,7 +876,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaInvite), navigator.backStack.value)
         }
 
     @Test
@@ -892,7 +892,7 @@ class JoinWithLinkViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         OTHER_CODE,
                         memberCode = null,
@@ -914,7 +914,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupInvite), navigator.backStack.value)
         }
 
     @Test
@@ -930,7 +930,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnOpenClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, carlaInvite), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, carlaInvite), navigator.backStack.value)
         }
 
     @Test
@@ -945,7 +945,7 @@ class JoinWithLinkViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isQrInvalid)
-            assertEquals(listOf(Route.Groups, groupSkippingReader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupSkippingReader), navigator.backStack.value)
         }
 
     @Test
@@ -960,7 +960,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, reader, Route.Profile), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader, Route.Profile), navigator.backStack.value)
         }
 
     @Test
@@ -975,7 +975,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnPasted(text))
 
             // Then
-            assertEquals(listOf(Route.Groups, reader, Route.Profile), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, reader, Route.Profile), navigator.backStack.value)
         }
 
     @Test
@@ -990,7 +990,7 @@ class JoinWithLinkViewModelTest {
             viewModel.onEvent(JoinWithLinkUiEvent.OnQrScanned(content))
 
             // Then
-            assertEquals(listOf(Route.Groups, groupSkippingReader), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, groupSkippingReader), navigator.backStack.value)
         }
 
     // Why: the reader "Escanear outro QR" reopens after the group link of CODE failed.
@@ -1025,7 +1025,7 @@ class JoinWithLinkViewModelTest {
     )
 
     private fun TestScope.prepareScenario(
-        under: List<Route> = listOf(Route.Groups),
+        under: List<Route> = listOf(Route.Home),
         route: Route.JoinWithLink = reader,
     ) {
         actions.clear()

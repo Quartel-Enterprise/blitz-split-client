@@ -2,7 +2,12 @@ package com.quare.blitzsplit.android.feature.invite
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.QrCode
@@ -71,7 +76,6 @@ private fun InviteContentPreview() {
     BlitzSplitTheme {
         InviteContent(
             state = createPreviewState(),
-            isDialog = false,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
@@ -84,7 +88,6 @@ private fun InviteContentChangeLinkPreview() {
     BlitzSplitTheme {
         InviteContent(
             state = createPreviewState().copy(isConfirmingLinkChange = true),
-            isDialog = false,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
@@ -101,9 +104,26 @@ private fun InviteContentPendingPreview() {
                 qrCode = null,
                 isOnline = false,
             ),
-            isDialog = false,
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )
+    }
+}
+
+// Why: a preview's window reports no fold, so the tabletop's hinge is handed in.
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun InviteContentTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            InviteContent(
+                state = createPreviewState().copy(isNewGroup = true),
+                snackbarHostState = SnackbarHostState(),
+                onEvent = {},
+            )
+        }
     }
 }

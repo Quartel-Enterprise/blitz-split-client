@@ -1,8 +1,10 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -35,6 +37,20 @@ fun GroupDetailContent(
         onAction = onAction,
         modifier = modifier,
     ) {
+        state.joinedAs?.let { name ->
+            item(key = "joined") {
+                JoinedBanner(
+                    name = name,
+                    showsProtectAccess = state.showsProtectAccess,
+                    onProtectAccessClick = { onEvent(GroupDetailUiEvent.OnProtectAccessClicked) },
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 16.dp,
+                    ),
+                )
+            }
+        }
         if (state.isEmpty) {
             item(key = "empty") { EmptyExpensesCard(onAction = onAction) }
         } else {
@@ -52,6 +68,7 @@ private fun eventOf(action: GroupAction): GroupDetailUiEvent? = when (action) {
     GroupAction.BACK -> GroupDetailUiEvent.OnBackClicked
     GroupAction.INVITE -> GroupDetailUiEvent.OnInviteClicked
     GroupAction.STATS -> GroupDetailUiEvent.OnStatsClicked
+    GroupAction.PIN -> GroupDetailUiEvent.OnPinToggled
     GroupAction.EDIT_GROUP -> GroupDetailUiEvent.OnEditGroupClicked
     GroupAction.LEAVE_GROUP -> GroupDetailUiEvent.OnLeaveGroupClicked
     GroupAction.DELETE_GROUP -> GroupDetailUiEvent.OnDeleteGroupClicked
@@ -80,6 +97,21 @@ private fun GroupDetailContentEmptyPreview() {
     BlitzSplitTheme {
         GroupDetailContent(
             state = createPreviewGroupDetailState(days = emptyList()),
+            snackbarHostState = SnackbarHostState(),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun GroupDetailContentJoinedPreview() {
+    BlitzSplitTheme {
+        GroupDetailContent(
+            state = createPreviewGroupDetailState(days = createPreviewDays()).copy(
+                joinedAs = "Bruno",
+                isAccountUnprotected = true,
+            ),
             snackbarHostState = SnackbarHostState(),
             onEvent = {},
         )

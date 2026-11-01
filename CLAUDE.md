@@ -50,8 +50,51 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iPad); Google comes first on Android and in any other browser.
   - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
     symbol of the device's region, `$` when there is none.
-  - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the two not built yet
-    (Contatos, Atividade) answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
+    Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
+    right above it, taking each other's place (`Navigator.openHomeTab`).
+  - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
+    with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,
+    the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net (`Route.SettleUp`),
+    and a guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego é convidado e não tem o
+    app…". "Saldo geral" as Grupos' (big in the first currency with a net, a line for each other one with a net,
+    `HomeSummary.main` and `others`), with "Te devem" and "Você deve", each in the first currency with something that
+    way (`HomeSummary.toReceive`, `toPay`), which open Saldos filtered (Você deve straight to settling up while only
+    one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal" ("Em breve" for now; offline disabled
+    with "Precisa de internet"),
+    "Registrar pagamento", which asks "Quem pagou a quem?" first (`Route.PickPayment`: every open pair of every
+    group, the most recent group first, pairs with you first; the pair opens Registrar pagamento in its place), and
+    "Novo grupo". "Seus grupos": up to three open groups, the pinned first, then the latest activity, as Grupos draws
+    them; "Ver todos" opens Grupos. "Últimas despesas": the five latest bills you paid or take part in, by day, with
+    your share; a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
+    "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
+    on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
+    first download (an account restored on a device with no profile, until its first sync settles, `FirstDownload`)
+    shows "Sincronizando…" with skeletons and "até agora · chegando o resto" while no group came down yet (no "3 de 7
+    grupos": the sync can't tell how many are coming), never on a relaunch; the sync chip as Grupos'; an account with
+    neither Google nor Apple shows "Guarde seu código de recuperação" once the code was snoozed ("Lembrar depois"), ✕
+    hiding it until the next launch. A Flip's cover screen shows only Saldo geral, the latest bill and "Abra o celular para ver tudo".
+  - "Fixar na Início" (the group's ⋮/⋯ menu on Despesas and Saldos, "Desafixar da Início" once pinned) is each
+    user's own, synced with their account and never shown to other members (`group_pins`, `GroupPinRepository`), works
+    offline, and only orders Início's "Seus grupos" (Grupos keeps its order). A settled group stays out of Início
+    even when pinned.
+  - "Atividade" (page 12, `Route.Activity` right above Início like Saldos, `ActivityViewModel`) is every group's feed and
+    the notification center: who split, edited or deleted a bill, recorded or undid a payment, created, edited or
+    deleted a group, changed its invite link, added, joined, left, was removed, released or renamed in it, and the
+    charges sent from Saldos, by day (Hoje, Ontem, the date), the most recent first. The server writes the events
+    (`activity_events`, by triggers); each keeps the names it had, so it still reads once its bill, group or person is
+    gone. Unread is someone else's event never opened and after the last "Marcar tudo como lido": a blue dot and bold
+    names, counted on the tab's badge in the primary color (`activityUnreadCount`), whatever the filters. Your own
+    events are born read, opening the tab marks nothing, tapping an item marks only it. A tap opens what it is about
+    (the bill's Conta over its Despesas, the group, its Membros, its Saldos for a charge); a deleted bill or group
+    keeps its row with the trash and says who deleted it and when instead. A bill's edit shows its first change,
+    "mais 2 mudanças" and "Ver mudanças". "Filtrar atividade": one group or all, and the types (Contas, Pagamentos e
+    acertos, Comentários, Pessoas e grupos, Cobranças), as removable chips with "Limpar"; a contact's history opens it
+    on that person (`Route.Activity.personKey`), a chip too. Offline it shows the device's last 90 days, the changes
+    not up yet on top of Hoje as "Aguardando envio", and says older ones load when the internet is back; a device that
+    never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
+    web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
+    other events). No push notifications nor comments yet: Comentários is a filter nothing fills.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -103,8 +146,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     groups' place once something is typed. "Tudo", "Grupos", "Pessoas" and "Despesas" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Quitado · despesa “Churros”", as the design draws it), and "Despesas"
-    lists it too. A group opens the group, a person the Membros of the group they were found in (Contatos isn't built
-    yet), a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
+    lists it too. A group opens the group, a person the Membros of the group they were found in, a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
     looks, nothing found says "Nada com “pizza”". Closing forgets the text; leaving iOS's search tab also goes back
     to the groups (`GroupsUiState.search`). The web's "Filtrar grupos" stays, as the board draws it. Where the home
     draws its list and detail, the first result opens beside the results as it is typed: a group or a bill's group
@@ -119,11 +161,24 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
     exists, while a book and an iPhone Duo open keep the half past the fold, saying "Nenhum grupo aberto"
     (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane: anything else above the groups
-    (Estatísticas, the profile, a joined invite) covers the whole window,
-    and a dialog or sheet (Convidar, Rachar conta, Conta) both panes, so the list never shows while it can't take
-    taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
+    (Estatísticas, the profile, a joined invite, Convidar on an Android tablet and an iPad) covers the whole window,
+    and a dialog or sheet (Rachar conta, Conta) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.
+  - "Perfil" (4.1, `Route.Profile`) opens from the avatar of each home tab (Início, Grupos…). It is one column on a
+    phone and upright (560 dp on an Android tablet or foldable, 520 pt with an iPad's room); lying down who you are,
+    your account and "Privacidade e sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
+    glass panel of a Settings split) and the keys and preferences on the right, with signing out on Android's right
+    and iOS's left, each column scrolling on its own; on a book (a tabletop lying down alike) a half each, the 72 dp
+    gap centered on the hinge, as Editar perfil and the keys do, and its dialogs ("Quem vê seu nome e foto", Sair,
+    Desconectar, "Apagar perfil e sair") and Excluir conta open in the right half. Editar perfil is full screen on
+    Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
+    name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Salvar (✓). The Mac's profile is
+    Ajustes (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Proteja seu
+    acesso", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
+    scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
+    on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
+    once no profile is left. The web's is a page.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
@@ -142,7 +197,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     the web. It asks "Trocar o link do convite?" first, then shows the new link and QR code right away; the old link
     and every personal link not used yet stop working (the "invite no longer valid" screen), whoever joined stays,
     and the other members' devices get the new code on their next sync. A failure says so and keeps the link shown
-    until a sync brings the server's. Nobody may change it once the creator's account is deleted.
+    until a sync brings the server's. Nobody may change it once the creator's account is deleted. Convidar is full
+    screen on Android at every size (2.2): one column on a phone; lying down the title, who picks and the buttons on
+    the left and the QR and link card on the right (380 dp, 420 dp in a tablet's 920 dp container); upright on a
+    tablet and a foldable one 560 dp column with the QR card first; on a book the text in the half before the hinge
+    and the QR card in the one after it; on a tabletop the QR and link in the top half, facing whoever scans, and the
+    title and buttons below. "Trocar o link?" takes a book's right half and a tabletop's top half. iOS opens it as a
+    sheet on an iPhone (two columns lying down) and pushes it full screen with an iPad's room (two columns lying
+    down, the QR card first upright); the Mac opens the new group's in a sheet and the group's as a popover on the
+    group's "Convidar pessoas" (or Membros' Compartilhar), with "Trocar link…" under its share button.
   - "Saldos" (flow 8, `Route.GlobalBalances` over the groups) is the home's second tab: each person once, netted
     across every group of one currency (`PeopleBalances`): someone who joined is their account in every group, a name
     nobody joined as is the same person wherever it is written the same, and someone no longer in a group only
@@ -165,6 +228,32 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     the web) and "O líquido já compensa os grupos: Cobrar e Recebi usam R$ 32,90. O app anota um pagamento em cada
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
     column with "Por grupo" in the row, the filter beside the list on a phone lying down.
+  - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
+    included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
+    net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's
+    name, under the card "Você deve / Te devem / Ver Saldos" (Saldos' totals). It all works offline on the device's
+    data ("Offline · contatos deste aparelho"). "Buscar" looks in the people (hidden ones too) and, on Android and
+    Apple, in the device's agenda when access was already given ("Na agenda", with Convidar). "Ocultos" holds whoever
+    was hidden ("Ocultar de Contatos", only while the balance with them is zero, asked first), synced to the user's
+    other devices (`hidden_contact`, the server's `hidden_contacts`), with "Mostrar"; someone hidden comes back by
+    themselves once a bill shared with them is saved later or the balance opens again. The profile
+    (`Route.ContactProfile`) shows the net ("Já compensado entre 3 grupos"), Cobrar (Saldos' charge, opened over
+    Saldos for that person), Recebi or Acertar (Registrar pagamento for the net, `Route.SettleUp`), "Adicionar a um
+    grupo" (an account goes straight in, joined, with no part in the old bills; a guest as a name; a group they're
+    in shows disabled), "Grupos em comum" and the latest four of "Histórico com Carla" (bills that move something
+    between the two and their payments); "Ver tudo" opens Atividade on that person. A guest's profile
+    offers "Convidar Diego" (their personal link) and "Juntar com uma conta" (online only): the server makes a
+    request and a single use personal link, and once the guest joins through it everything in that name, in every
+    group, passes to their account ("Aguardando Diego aceitar", Cancelar); "Pedir para quem já usa o app" answers
+    "Em breve". "Convidar da agenda" (`Route.ContactsAgenda`, Android and Apple; the web says the browser can't read
+    the agenda) explains before the system asks, leads to the settings once refused, and lists the agenda (only
+    the contacts picked under iOS's limited access); no phone number leaves the device, so nobody is shown as
+    already using the app. Every invite is a group's link: "Convidar com link ou QR" (`Route.ContactInvite`) picks
+    the group (chips, the most recent first, and "Novo grupo") and shows its QR and link, offline too once the
+    group has it. Wide windows (the same as Saldos') list the people beside the one picked
+    (`ContactsUiState.selectedKey`) or the agenda; the invite is a bottom sheet on an Android phone, a 560 dp dialog
+    on its tablets (the book's right half), a sheet on iOS and the Mac (540 pt on the iPad), a 480 px dialog on the
+    web (a drawer on a phone).
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
@@ -289,8 +378,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
     even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
     apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again if
-    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and the home says "Carla
-    apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
+    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and Grupos or Início, whichever is
+    on top first, says "Carla apagou o grupo X." (`GroupsUiState.deletedGroupNotice`, `HomeUiState.deletedGroupNotice`,
+    one shared queue); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",
     which opens "Várias pessoas pagaram" in its place: each person's amount, adding up to the total exactly ("R$
     312,00 de R$ 312,00. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does
@@ -369,8 +459,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     phone's drawer). Saving a bill from the home, or moved to a group other than the one it was split from, opens
     that group's Despesas in Rachar conta's place.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
-    Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
-    "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
+    Joining through it lands on the group's Despesas (3.3, `Route.GroupDetail` with `joinedAs`) with "Você entrou como
+    <nome>" over the bills and, while the account has no Google or Apple, "Proteja seu acesso", which opens the
+    Perfil. "Convite" (3.1) and "Quem é você no grupo?" (3.2) are one column on a phone and upright on a tablet; lying
+    down, on a tablet lying down (a 920 dp / 900 pt container) and on a book (one half each, 24 dp off the hinge's
+    band) the title, or the question with "Não estou na lista", on the left and the group with its buttons, or the
+    names with "Entrar como Bruno" always in sight, on the right; an Android tabletop puts the invite's title and
+    group on top and "Entrar no grupo" and "Agora não" below ("Quem é você" is drawn like the book there). "Não estou
+    na lista" is a bottom sheet on an Android phone, a 560 dp dialog on its tablets and foldables upright and in a
+    book's right half, a sheet on iOS, a dialog on the web (a drawer on a phone). The web's "Quem é você" heads the
+    names with the invite ("Convite de Pierre", "Entre no grupo Viagem Floripa"), beside the names from 1024 px, and pins
+    "Entrar como Bruno" at the bottom of a phone. The Mac opens the invite as one sheet over the window, "Quem é você"
+    pushed inside it. Joining with no profile on the device makes one from the name and
     color joined as. A member someone else already joined as says "Se era você, peça para <criador> liberar o nome em
     Membros" ("Se era você, fale com quem te chamou" once the creator's account is gone).
   - The home's "Entrar com link ou QR" opens the reader (`Route.JoinWithLink`) on every platform: the camera reads

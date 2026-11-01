@@ -28,14 +28,7 @@ data class MembersUiState(
     val recordedPayment: PaymentNotice?,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
-    // Why: "Você entrou como Bruno", right after joining the group through its link.
-    val joinedAs: String?,
-    // Why: "Proteja seu acesso" under it, while the account has no Google or Apple.
-    val isAccountUnprotected: Boolean,
 ) {
-    val showsProtectAccess: Boolean
-        get() = joinedAs != null && isAccountUnprotected
-
     // Why: "4 membros · 2 já entraram".
     val memberCount: Int
         get() = members.size

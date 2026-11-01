@@ -98,10 +98,10 @@ function personName(person: JsPaymentPerson | null | undefined): string {
   return nameOrFormer(person?.name)
 }
 
-/** A member's face, blank for someone no longer in the group, as Saldos draws them. */
-function PersonFace({ person }: { person: JsPaymentPerson | null | undefined }) {
-  if (!person) return <span className="size-10 rounded-full bg-muted" />
-  return <Avatar initial={person.initials} color={person.color} className="size-10 text-sm" />
+/** A member's face, blank for someone no longer in the group, as Saldos draws them; also "Quem pagou a quem?"'s. */
+export function PersonFace({ person, className = 'size-10 text-sm' }: { person: JsPaymentPerson | null | undefined; className?: string }) {
+  if (!person) return <span className={cn('rounded-full bg-muted', className)} />
+  return <Avatar initial={person.initials} color={person.color} className={className} />
 }
 
 /** Whoever paid → whoever received, at the top. */

@@ -31,7 +31,8 @@ final class JoinInviteModel {
     }
 }
 
-/// "Invite": a group's invite link opened, pushed over the groups, or over the welcome before there is a profile.
+/// "Invite": a group's invite link opened, pushed over the groups, or over the welcome before there is a profile; on
+/// the Mac one sheet over the window, "Who are you" pushed inside it (3.1, 3.2).
 /// Offline it keeps the link and opens the invite by itself once the device is online. A personal link joins straight
 /// in as the member it was made for, or goes on to the list with "I'm not Carla".
 struct JoinInviteView: View {
@@ -66,85 +67,121 @@ struct JoinInviteView: View {
             trigger: model?.joinErrorCount ?? 0,
             duration: .seconds(3)
         )
+        #if os(macOS)
+        .frame(minWidth: 460, idealWidth: 460, minHeight: 440, idealHeight: 560)
+        #endif
         .onAppear {
             if model == nil { model = JoinInviteModel(route: route) }
         }
     }
 }
 
+/// One column on an iPhone upright and with an iPad's room upright; lying down (an iPhone, an iPad, an iPhone Duo
+/// open) the title and what to expect on the left (290 pt, 360 pt with an iPad's room) and the group and its buttons
+/// on the right, in a 900 pt container (3.1). The Mac's sheet keeps one column.
 private struct JoinInviteContent: View {
     let model: JoinInviteModel
 
+    /// The screen's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
+
     var body: some View {
         let state = model.state
-        ScrollView {
-            Group {
-                switch state.status {
-                case .ready:
-                    if state.isPersonal, let member = state.personalMember {
-                        personalInvite(state, member: member)
-                    } else {
-                        invite(state)
+        Group {
+            if layout.usesTwoColumns, state.status != .loading {
+                TwoColumnsLayout(
+                    firstWidth: layout.isLarge ? 360 : 290,
+                    spacing: layout.isLarge ? 56 : 44,
+                    maxWidth: 900,
+                    alignment: .center,
+                ) {
+                    ScrollView {
+                        firstColumn(state)
+                            .padding(.vertical, 20)
                     }
-                case .invalid:
-                    problem(
-                        systemImage: "xmark.circle",
-                        title: "This invite is no longer valid",
-                        message: state.isPersonal
-                            ? "Someone already joined through this link, or it was changed. Ask whoever sent it for a new one."
-                            : "The link was changed or the group was deleted. Ask whoever invited you for a new link.",
-                        displayLink: nil,
-                    )
-                case .offline:
-                    problem(
-                        systemImage: "wifi.slash",
-                        title: "No internet to open the invite",
-                        message: "We kept the link. As soon as the device connects, the invite opens by itself.",
-                        displayLink: state.displayLink,
-                    )
-                default:
-                    ProgressView()
+                    .scrollBounceBehavior(.basedOnSize)
+                    .defaultScrollAnchor(.center, for: .alignment)
+                } second: {
+                    ScrollView {
+                        secondColumn(state)
+                            .padding(.vertical, 20)
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
+                    .defaultScrollAnchor(.center, for: .alignment)
+                }
+                .padding(.horizontal, layout.isLarge ? 64 : 20)
+            } else {
+                ScrollView {
+                    column(state)
+                        .padding(20)
+                        .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
                         .frame(maxWidth: .infinity)
-                        .padding(.top, 160)
                 }
             }
-            .padding(20)
-            .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
-            .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .measuringScreenLayout($layout)
+    }
+
+    @ViewBuilder
+    private func column(_ state: JoinInviteUiState) -> some View {
+        switch state.status {
+        case .ready:
+            VStack(alignment: .leading, spacing: 20) {
+                heading(state)
+                group(state)
+                personalRow(state)
+                hint(state)
+                buttons(state)
+            }
+        case .invalid, .offline:
+            VStack(spacing: 16) {
+                problemText(state, isCentered: true)
+                problemButtons(state)
+                    .padding(.top, 8)
+            }
+            .padding(.top, 48)
+        default:
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding(.top, 160)
         }
     }
 
-    private func invite(_ state: JoinInviteUiState) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            chip("Invite")
-            Group {
-                if let creatorName = state.creatorName {
-                    Text("\(creatorName) invited you to \(state.groupName)")
-                } else {
-                    Text("You're invited to \(state.groupName)")
-                }
+    /// Lying down: the title and what to expect, or what went wrong.
+    @ViewBuilder
+    private func firstColumn(_ state: JoinInviteUiState) -> some View {
+        if state.status == .ready {
+            VStack(alignment: .leading, spacing: 14) {
+                heading(state)
+                hint(state)
             }
-            .font(.largeTitle.bold())
-            group(state)
-            Text("No account needed. On the next screen you pick who you are.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            VStack(spacing: 8) {
-                PrimaryButton(title: "Join group") {
-                    model.send(JoinInviteUiEventOnJoinClicked.shared)
-                }
-                Button("Not now") {
-                    model.send(JoinInviteUiEventOnNotNowClicked.shared)
-                }
-                .controlSize(.large)
+        } else {
+            VStack(alignment: .leading, spacing: 16) {
+                problemText(state, isCentered: false)
             }
         }
     }
 
-    /// "Pierre invited you as Carla": a link made for one member, which joins straight in as them. The Mac shows
-    /// the member's row, the only one on its list.
-    private func personalInvite(_ state: JoinInviteUiState, member: JoinMember) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
+    /// Lying down: the group and its buttons, or the buttons of what went wrong.
+    @ViewBuilder
+    private func secondColumn(_ state: JoinInviteUiState) -> some View {
+        if state.status == .ready {
+            VStack(alignment: .leading, spacing: 16) {
+                group(state)
+                personalRow(state)
+                buttons(state)
+            }
+        } else {
+            problemButtons(state)
+        }
+    }
+
+    /// "Invite" and "Pierre invited you to Viagem Floripa", or for a link made for one member "Personal invite" and
+    /// "Pierre invited you as Carla".
+    @ViewBuilder
+    private func heading(_ state: JoinInviteUiState) -> some View {
+        if state.isPersonal, let member = state.personalMember {
             chip("Personal invite")
             Group {
                 if let inviterName = state.inviterName {
@@ -154,8 +191,37 @@ private struct JoinInviteContent: View {
                 }
             }
             .font(.largeTitle.bold())
-            group(state)
-            #if os(macOS)
+        } else {
+            chip("Invite")
+            Group {
+                if let creatorName = state.creatorName {
+                    Text("\(creatorName) invited you to \(state.groupName)")
+                } else {
+                    Text("You're invited to \(state.groupName)")
+                }
+            }
+            .font(.largeTitle.bold())
+        }
+    }
+
+    @ViewBuilder
+    private func hint(_ state: JoinInviteUiState) -> some View {
+        Group {
+            if state.isPersonal, let member = state.personalMember {
+                Text("This link is just for you. You join as \(member.name), without picking from the list.")
+            } else {
+                Text("No account needed. On the next screen you pick who you are.")
+            }
+        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+    }
+
+    /// The Mac shows the member a personal link joins as, the only row on its list.
+    @ViewBuilder
+    private func personalRow(_ state: JoinInviteUiState) -> some View {
+        #if os(macOS)
+        if state.isPersonal, let member = state.personalMember {
             GroupedCard {
                 HStack(spacing: 12) {
                     AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
@@ -165,11 +231,15 @@ private struct JoinInviteContent: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
             }
-            #endif
-            Text("This link is just for you. You join as \(member.name), without picking from the list.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            VStack(spacing: 8) {
+        }
+        #endif
+    }
+
+    /// "Join group" and "Not now", or for a personal link "Join as Carla", which joins straight in, and "I'm not Carla".
+    @ViewBuilder
+    private func buttons(_ state: JoinInviteUiState) -> some View {
+        VStack(spacing: 8) {
+            if state.isPersonal, let member = state.personalMember {
                 PrimaryButton(title: "Join as \(member.name)", isEnabled: !state.isJoining, isLoading: state.isJoining) {
                     model.send(JoinInviteUiEventOnJoinClicked.shared)
                 }
@@ -178,6 +248,14 @@ private struct JoinInviteContent: View {
                 }
                 .controlSize(.large)
                 .disabled(state.isJoining)
+            } else {
+                PrimaryButton(title: "Join group") {
+                    model.send(JoinInviteUiEventOnJoinClicked.shared)
+                }
+                Button("Not now") {
+                    model.send(JoinInviteUiEventOnNotNowClicked.shared)
+                }
+                .controlSize(.large)
             }
         }
     }
@@ -245,48 +323,61 @@ private struct JoinInviteContent: View {
         return names.count == 1 ? Text("\(list) is already in the group") : Text("\(list) are already in the group")
     }
 
-    private func problem(
-        systemImage: String,
-        title: LocalizedStringKey,
-        message: LocalizedStringKey,
-        displayLink: String?,
-    ) -> some View {
-        VStack(spacing: 16) {
-            Image(systemName: systemImage)
-                .font(.system(size: 44))
-                .foregroundStyle(Palette.accent)
-            Text(title)
-                .font(.title2.bold())
-                .multilineTextAlignment(.center)
-            Text(message)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            if let displayLink {
-                Text(verbatim: displayLink)
-                    .font(.callout.monospaced())
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Palette.card, in: .rect(cornerRadius: 10))
+    /// What went wrong: a link no longer valid, or no internet to read it (with the link kept).
+    @ViewBuilder
+    private func problemText(_ state: JoinInviteUiState, isCentered: Bool) -> some View {
+        let alignment: TextAlignment = isCentered ? .center : .leading
+        Image(systemName: state.status == .offline ? "wifi.slash" : "xmark.circle")
+            .font(.system(size: 44))
+            .foregroundStyle(Palette.accent)
+        Group {
+            if state.status == .offline {
+                Text("No internet to open the invite")
+            } else {
+                Text("This invite is no longer valid")
             }
-            VStack(spacing: 8) {
-                if displayLink != nil {
-                    PrimaryButton(title: "Try again") {
-                        model.send(JoinInviteUiEventOnRetryClicked.shared)
-                    }
-                }
-                TintedButton(title: "Go to home") {
-                    model.send(JoinInviteUiEventOnGoHomeClicked.shared)
-                }
-                if displayLink == nil {
-                    Button("Scan another QR code", systemImage: "qrcode.viewfinder") {
-                        model.send(JoinInviteUiEventOnScanAnotherClicked.shared)
-                    }
-                    .font(.headline)
-                    .frame(minHeight: 44)
-                }
-            }
-            .padding(.top, 8)
         }
-        .padding(.top, 48)
+        .font(.title2.bold())
+        .multilineTextAlignment(alignment)
+        Group {
+            if state.status == .offline {
+                Text("We kept the link. As soon as the device connects, the invite opens by itself.")
+            } else if state.isPersonal {
+                Text("Someone already joined through this link, or it was changed. Ask whoever sent it for a new one.")
+            } else {
+                Text("The link was changed or the group was deleted. Ask whoever invited you for a new link.")
+            }
+        }
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(alignment)
+        if state.status == .offline {
+            Text(verbatim: state.displayLink)
+                .font(.callout.monospaced())
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Palette.card, in: .rect(cornerRadius: 10))
+        }
+    }
+
+    /// "Try again" while offline, "Go to home", and "Scan another QR code" for a link no longer valid.
+    private func problemButtons(_ state: JoinInviteUiState) -> some View {
+        let isOffline = state.status == .offline
+        return VStack(spacing: 8) {
+            if isOffline {
+                PrimaryButton(title: "Try again") {
+                    model.send(JoinInviteUiEventOnRetryClicked.shared)
+                }
+            }
+            TintedButton(title: "Go to home") {
+                model.send(JoinInviteUiEventOnGoHomeClicked.shared)
+            }
+            if !isOffline {
+                Button("Scan another QR code", systemImage: "qrcode.viewfinder") {
+                    model.send(JoinInviteUiEventOnScanAnotherClicked.shared)
+                }
+                .font(.headline)
+                .frame(minHeight: 44)
+            }
+        }
     }
 }

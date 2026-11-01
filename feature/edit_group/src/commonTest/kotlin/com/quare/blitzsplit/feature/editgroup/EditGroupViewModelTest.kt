@@ -1197,7 +1197,7 @@ class EditGroupViewModelTest {
 
     private val editGroup = Route.EditGroup(GROUP_ID)
 
-    private val groupDetail = Route.GroupDetail(GROUP_ID)
+    private val groupDetail = Route.GroupDetail(GROUP_ID, joinedAs = null)
 
     private val trip = Group(
         id = GROUP_ID,

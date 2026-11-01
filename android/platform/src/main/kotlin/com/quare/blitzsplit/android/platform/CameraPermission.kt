@@ -38,13 +38,18 @@ class CameraPermissionAccess internal constructor(
     }
 
     fun openSettings() {
-        context.startActivity(
-            Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", context.packageName, null),
-            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
+        context.openAppSettings()
     }
+}
+
+// Why: the app's page in the system settings, the only way back to a permission refused for good.
+fun Context.openAppSettings() {
+    startActivity(
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", packageName, null),
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+    )
 }
 
 @Composable

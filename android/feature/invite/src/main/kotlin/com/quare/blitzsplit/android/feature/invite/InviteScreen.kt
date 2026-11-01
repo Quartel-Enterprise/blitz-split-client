@@ -23,8 +23,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun InviteScreen(
     route: Route.Invite,
-    // Why: a tablet opens the invite as a dialog over the home, as it did the new group.
-    isDialog: Boolean,
     viewModel: InviteViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -51,7 +49,6 @@ fun InviteScreen(
     BackHandler { viewModel.onEvent(InviteUiEvent.OnCloseClicked) }
     InviteContent(
         state = state,
-        isDialog = isDialog,
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )

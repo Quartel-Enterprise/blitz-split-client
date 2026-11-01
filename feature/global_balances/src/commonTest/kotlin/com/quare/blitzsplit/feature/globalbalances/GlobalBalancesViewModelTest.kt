@@ -1,7 +1,14 @@
 package com.quare.blitzsplit.feature.globalbalances
 
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
+import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
+import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityUnreadCountUseCase
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.RecordChargesUseCase
+import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -32,6 +39,7 @@ import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
+import com.quare.blitzsplit.core.navigation.BalancesCharge
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
@@ -44,6 +52,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBala
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -69,6 +78,7 @@ class GlobalBalancesViewModelTest {
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GlobalBalancesViewModel
+    private lateinit var activity: FakeActivityRepository
     private val actions = mutableListOf<GlobalBalancesUiAction>()
 
     @BeforeTest
@@ -464,7 +474,7 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN everything settled WHEN tapping Ver grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN everything settled WHEN tapping Ver grupos THEN opens the Grupos tab`() = runTest(testDispatcher) {
         // Given
         prepareScenario(bills = emptyList())
         val emptyState = viewModel.uiState.value.emptyState
@@ -475,7 +485,7 @@ class GlobalBalancesViewModelTest {
         // Then
         assertEquals(BalancesEmptyState.SETTLED, emptyState)
         assertEquals(0L, viewModel.uiState.value.primaryTotal.netMinor)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -735,6 +745,68 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN Cobrar from the profile of Carla WHEN Saldos opens THEN her message opens in the currency shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups + group(
+                    "usa",
+                    "Viagem EUA",
+                    me("me-usa"),
+                    joined("carla-usa", "Carla", "carla"),
+                    currency = GroupCurrency.USD,
+                ),
+                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                filter = BalancesFilter.OWES_YOU,
+                charge = BalancesCharge("user:carla", GroupCurrency.USD),
+            )
+
+            // When
+            val charge = viewModel.uiState.value.charge
+
+            // Then
+            assertEquals("Carla", charge?.name)
+            assertEquals(5_000L, charge?.amountMinor)
+            assertEquals(listOf("Viagem EUA"), charge?.groupNames)
+        }
+
+    @Test
+    fun `GIVEN Cobrar from a profile WHEN the person owes you nothing there THEN goes back to the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                filter = BalancesFilter.OWES_YOU,
+                charge = BalancesCharge("user:bruno", GroupCurrency.BRL),
+            )
+
+            // When
+            val stack = navigator.backStack.value
+
+            // Then
+            assertNull(viewModel.uiState.value.charge)
+            assertEquals(Route.ContactProfile("user:bruno"), stack.last())
+        }
+
+    @Test
+    fun `GIVEN the message Cobrar opened from a profile WHEN closing it THEN goes back to the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                filter = BalancesFilter.OWES_YOU,
+                charge = BalancesCharge("user:carla", GroupCurrency.BRL),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile("user:carla")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN Cobrar open WHEN closing it THEN it goes`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -763,7 +835,181 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping the Grupos tab THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN Cobrar open WHEN tapping Enviar THEN records a charge in each group where the person owes you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+
+            // Then
+            assertEquals(carlaCharges, activity.recordedCharges)
+        }
+
+    @Test
+    fun `GIVEN Cobrar open WHEN tapping Copiar mensagem THEN records a charge in each group where they owe you`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+            // Then
+            assertEquals(carlaCharges, activity.recordedCharges)
+        }
+
+    @Test
+    fun `GIVEN someone who owes you in a single group WHEN tapping Enviar THEN records one charge in that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val ana = viewModel.uiState.value.people
+                .single { it.name == "Ana" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(ana.id))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Ana!"))
+
+            // Then
+            assertEquals(listOf(ChargeSent(FLORIPA, ANA_FLORIPA, "Ana", 16_230L)), activity.recordedCharges)
+        }
+
+    @Test
+    fun `GIVEN the charge already sent WHEN tapping Copiar mensagem THEN records nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+            // Then
+            assertEquals(carlaCharges, activity.recordedCharges)
+            assertEquals(1, activity.chargeSentAts.size)
+        }
+
+    @Test
+    fun `GIVEN the charge sent then its message edited WHEN tapping Enviar again THEN records nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Carla, me paga!"))
+
+            // Then
+            assertEquals(carlaCharges, activity.recordedCharges)
+        }
+
+    @Test
+    fun `GIVEN the message edited before sending WHEN tapping Enviar THEN records the charge once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeMessageChanged("Carla, me paga!"))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Carla, me paga!"))
+
+            // Then
+            assertEquals(carlaCharges, activity.recordedCharges)
+        }
+
+    @Test
+    fun `GIVEN a charge sent and closed WHEN Cobrar opens again for the same person and is sent THEN records again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+            openChargeForCarla()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+            // Then
+            assertEquals(carlaCharges + carlaCharges, activity.recordedCharges)
+            assertEquals(2, activity.chargeSentAts.size)
+        }
+
+    @Test
+    fun `GIVEN a charge sent to Carla WHEN Cobrar opens for Ana and is sent THEN records Ana too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+            val ana = viewModel.uiState.value.people
+                .single { it.name == "Ana" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeClicked(ana.id))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Ana!"))
+
+            // Then
+            assertEquals(
+                carlaCharges + ChargeSent(FLORIPA, ANA_FLORIPA, "Ana", 16_230L),
+                activity.recordedCharges,
+            )
+        }
+
+    @Test
+    fun `GIVEN no Cobrar open WHEN Enviar arrives THEN records nothing in Atividade`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+
+        // Then
+        assertTrue(activity.recordedCharges.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Cobrar closed unsent WHEN a late Copiar mensagem arrives THEN records nothing in Atividade`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            openChargeForCarla()
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeDismissed)
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeCopyClicked("Oi, Carla!"))
+
+            // Then
+            assertTrue(activity.recordedCharges.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN tapping Enviar THEN still records the charge on the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+            openChargeForCarla()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnChargeShareClicked("Oi, Carla!"))
+
+            // Then
+            assertEquals(carlaCharges, activity.recordedCharges)
+        }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Grupos tab THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -771,21 +1017,58 @@ class GlobalBalancesViewModelTest {
         viewModel.onEvent(GlobalBalancesUiEvent.OnGroupsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN Saldos WHEN tapping a tab not built yet THEN says it is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN Saldos WHEN tapping the Atividade tab THEN opens it in place of Saldos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Saldos WHEN tapping the Contatos tab THEN opens Contatos in its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
         // When
         viewModel.onEvent(GlobalBalancesUiEvent.OnContactsTabClicked)
-        viewModel.onEvent(GlobalBalancesUiEvent.OnActivityTabClicked)
 
         // Then
-        assertEquals(List<GlobalBalancesUiAction>(2) { GlobalBalancesUiAction.ShowComingSoon }, actions)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN Saldos WHEN unread activity arrives THEN the Atividade tab counts it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        activity.events.value = listOf(activityEvent("event-1", seq = 1L), activityEvent("event-2", seq = 2L))
+
+        // Then
+        assertEquals(2, viewModel.uiState.value.activityUnreadCount)
+    }
+
+    @Test
+    fun `GIVEN unread activity WHEN it is all read THEN the Atividade tab count goes back to zero`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            activity.events.value = listOf(activityEvent("event-1", seq = 1L), activityEvent("event-2", seq = 2L))
+
+            // When
+            activity.readState.update { it.copy(readThroughSeq = 2L) }
+
+            // Then
+            assertEquals(0, viewModel.uiState.value.activityUnreadCount)
+        }
 
     @Test
     fun `GIVEN Saldos WHEN tapping the profile THEN opens it`() = runTest(testDispatcher) {
@@ -1056,7 +1339,37 @@ class GlobalBalancesViewModelTest {
         updatedAt = 0L,
     )
 
-    private val route = Route.GlobalBalances(BalancesFilter.ALL)
+    // Why: Carla owes you in Floripa and the Churrasco, while you owe her in the Apê.
+    private val carlaCharges = listOf(
+        ChargeSent(FLORIPA, CARLA_FLORIPA, "Carla", 9_840L),
+        ChargeSent(CHURRASCO, CARLA_CHURRASCO, "Carla", 3_250L),
+    )
+
+    // Why: something Ana did, which the server numbered seq.
+    private fun activityEvent(
+        id: String,
+        seq: Long,
+    ): ActivityEvent = ActivityEvent(
+        id = id,
+        seq = seq,
+        groupId = FLORIPA,
+        kind = ActivityKind.BILL_CREATED,
+        actorUserId = "ana",
+        actorMemberId = ANA_FLORIPA,
+        actorName = "Ana",
+        groupName = "Viagem Floripa",
+        targetId = "e2",
+        occurredAt = 0L,
+        subject = "Bill",
+        amountMinor = 16_230L,
+        code = null,
+        fromMemberId = null,
+        toMemberId = null,
+        changes = emptyList(),
+        isPending = false,
+    )
+
+    private val route = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
     private fun TestScope.prepareScenario(
         filter: BalancesFilter = BalancesFilter.ALL,
@@ -1065,6 +1378,7 @@ class GlobalBalancesViewModelTest {
         storedSettlements: List<Settlement> = emptyList(),
         storedKeys: List<PaymentKey> = listOf(bitcoinKey, pixKey),
         online: Boolean = true,
+        charge: BalancesCharge? = null,
     ) {
         val groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -1072,9 +1386,18 @@ class GlobalBalancesViewModelTest {
         recordedPayments = InMemoryRecordedPaymentRepository()
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
-        val opened = Route.GlobalBalances(filter)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(opened) }
+        val opened = Route.GlobalBalances(filter, charge = charge)
+        navigator = BackStackNavigator(startRoute = Route.Home).also { navigator ->
+            // Why: Contatos' "Cobrar" opens Saldos over the person's profile.
+            if (charge != null) {
+                navigator.navigate(Route.Contacts)
+                navigator.navigate(Route.ContactProfile(charge.personKey))
+            }
+            navigator.navigate(opened)
+        }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
+        activity = FakeActivityRepository()
+        val accountStatus = ObserveAccountStatus { flowOf(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)) }
         viewModel = GlobalBalancesViewModel(
             route = opened,
             navigator = navigator,
@@ -1093,6 +1416,8 @@ class GlobalBalancesViewModelTest {
             ),
             observePaymentKeys = ObservePaymentKeysUseCase(keys),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            observeActivityUnreadCount = ObserveActivityUnreadCountUseCase(activity, accountStatus),
+            recordCharges = RecordChargesUseCase(activity, accountStatus) { 0L },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

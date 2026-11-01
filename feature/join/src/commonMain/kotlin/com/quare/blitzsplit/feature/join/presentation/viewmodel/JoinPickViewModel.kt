@@ -36,6 +36,7 @@ class JoinPickViewModel(
         field = MutableStateFlow(
             JoinPickUiState(
                 isLoaded = false,
+                groupName = "",
                 members = emptyList(),
                 selectedMemberId = null,
                 takenName = null,
@@ -93,6 +94,7 @@ class JoinPickViewModel(
         uiState.update { state ->
             state.copy(
                 isLoaded = true,
+                groupName = invite.groupName,
                 members = members,
                 // Why: a member someone else joined as meanwhile can't stay picked.
                 selectedMemberId = state.selectedMemberId?.takeIf { id ->

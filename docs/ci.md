@@ -7,7 +7,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `:androidApp:assembleRelease`, `npm --prefix webApp run build` |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
-| `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config, baseline and scripts | `./scripts/cpd.sh`, warning about each file whose copied code the baseline takes in against main |
+| `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config, baseline and scripts | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against main, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
 | `claude-review` | A pull request opened, or a draft marked ready | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |

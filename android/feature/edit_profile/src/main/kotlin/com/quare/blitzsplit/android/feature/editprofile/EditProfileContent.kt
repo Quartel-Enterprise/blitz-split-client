@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,12 +51,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -64,6 +70,8 @@ import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUi
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
+// Why: the gap of flow 4's book, centered on the hinge: its 24dp band and 24dp on each side.
+private val bookGap = 72.dp
 private val contentMaxWidth = 560.dp
 private val avatarSize = 120.dp
 
@@ -103,8 +111,15 @@ fun EditProfileContent(
             )
         },
     ) { padding ->
+        val isBook = rememberFoldLayout().bookSplit != null
         AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
-            if (layout.usesTwoColumns) {
+            if (isBook) {
+                EditProfileBookLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    onPhotoClick = { isPhotoMenuOpen = true },
+                )
+            } else if (layout.usesTwoColumns) {
                 EditProfileTwoColumnLayout(
                     state = state,
                     onEvent = onEvent,
@@ -205,6 +220,56 @@ private fun EditProfileTwoColumnLayout(
             )
         }
     }
+}
+
+// Why: a book (and a tabletop lying down) splits on the hinge: the avatar in the half before it, the name after it.
+@Composable
+private fun EditProfileBookLayout(
+    state: EditProfileUiState,
+    onEvent: (EditProfileUiEvent) -> Unit,
+    onPhotoClick: () -> Unit,
+) {
+    TwoHalvesLayout(
+        start = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 32.dp,
+                        top = 16.dp,
+                        bottom = 24.dp,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                AvatarSection(
+                    state = state,
+                    onEvent = onEvent,
+                    onPhotoClick = onPhotoClick,
+                )
+            }
+        },
+        end = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        end = 32.dp,
+                        top = 16.dp,
+                        bottom = 24.dp,
+                    ),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                NameSection(
+                    state = state,
+                    onEvent = onEvent,
+                )
+            }
+        },
+        modifier = Modifier.fillMaxSize(),
+        gap = bookGap,
+    )
 }
 
 @Composable
@@ -406,28 +471,50 @@ private fun PhotoMenuItem(
     }
 }
 
+private fun createPreviewState(): EditProfileUiState = EditProfileUiState(
+    name = "Pierre Vieira",
+    avatarColor = AvatarColor.BLUE,
+    photo = null,
+    isPreparingPhoto = false,
+    showsPhotoError = false,
+    nameError = null,
+    isNameValid = true,
+    hasChanges = true,
+    isSaving = false,
+    accountProvider = AccountProvider.GOOGLE,
+    accountPhotoUrl = null,
+)
+
 @DevicePreviews
 @Composable
 private fun EditProfilePreview() {
     BlitzSplitTheme {
         EditProfileContent(
-            state = EditProfileUiState(
-                name = "Pierre Vieira",
-                avatarColor = AvatarColor.BLUE,
-                photo = null,
-                isPreparingPhoto = false,
-                showsPhotoError = false,
-                nameError = null,
-                isNameValid = true,
-                hasChanges = true,
-                isSaving = false,
-                accountProvider = AccountProvider.GOOGLE,
-                accountPhotoUrl = null,
-            ),
+            state = createPreviewState(),
             snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
             onTakePhotoClick = {},
             onChoosePhotoClick = {},
         )
+    }
+}
+
+// Why: a preview's window reports no fold, so the tabletop's hinge is handed in.
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun EditProfileTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            EditProfileContent(
+                state = createPreviewState(),
+                snackbarHostState = remember { SnackbarHostState() },
+                onEvent = {},
+                onTakePhotoClick = {},
+                onChoosePhotoClick = {},
+            )
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { HandCoins, ReceiptText } from 'lucide-react'
+import { ChevronRight, CircleCheck, HandCoins, ReceiptText, ShieldCheck } from 'lucide-react'
 import {
   GroupDetailPresenter,
   type JsExpenseDay,
@@ -57,6 +57,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
         else if (tab === 'members') presenter.members()
       }}
     >
+      {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} />}
       {state.isEmpty ? (
         <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
           <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -84,6 +85,31 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
         />
       )}
     </GroupPage>
+  )
+}
+
+/** Right after joining through the link (3.3): "Você entrou como Bruno", and "Proteja seu acesso" while the account has no Google or Apple. */
+function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: GroupDetailPresenter; name: string; showsProtectAccess: boolean }) {
+  return (
+    <>
+      <section role="status" className="flex gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4">
+        <CircleCheck className="mt-0.5 size-5 shrink-0 text-primary" />
+        <div>
+          <p className="font-semibold">{t('groupDetail_joinedTitle', { name })}</p>
+          <p className="text-sm text-muted-foreground">{t('groupDetail_joinedMessage')}</p>
+        </div>
+      </section>
+      {showsProtectAccess && (
+        <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left hover:bg-muted/60">
+          <ShieldCheck className="size-5 shrink-0 text-primary" />
+          <span className="flex-1">
+            <span className="block font-semibold">{t('groupDetail_protectTitle')}</span>
+            <span className="block text-sm text-muted-foreground">{t('groupDetail_protectMessage')}</span>
+          </span>
+          <ChevronRight className="size-5 text-muted-foreground" />
+        </button>
+      )}
+    </>
   )
 }
 

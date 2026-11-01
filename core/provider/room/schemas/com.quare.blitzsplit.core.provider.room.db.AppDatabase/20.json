@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 20,
-    "identityHash": "e432ad117607cc08afa0fd7dd6403ac3",
+    "identityHash": "72507b134ecc85f1404bf2bd1cc51d35",
     "entities": [
       {
         "tableName": "profile",
@@ -481,7 +481,7 @@
       },
       {
         "tableName": "expense",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `createdBy` TEXT, `description` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `splitMode` TEXT NOT NULL, `payersJson` TEXT NOT NULL, `sharesJson` TEXT NOT NULL, `itemsJson` TEXT, `categoryId` TEXT, `spentAt` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `updatedBy` TEXT, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`groupId`) REFERENCES `split_group`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `createdBy` TEXT, `description` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `splitMode` TEXT NOT NULL, `payersJson` TEXT NOT NULL, `sharesJson` TEXT NOT NULL, `itemsJson` TEXT, `spentAt` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `updatedBy` TEXT, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`groupId`) REFERENCES `split_group`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -533,11 +533,6 @@
           {
             "fieldPath": "itemsJson",
             "columnName": "itemsJson",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "categoryId",
-            "columnName": "categoryId",
             "affinity": "TEXT"
           },
           {
@@ -715,56 +710,24 @@
         ]
       },
       {
-        "tableName": "group_category",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `createdBy` TEXT, `createdByMemberId` TEXT, `parentId` TEXT, `name` TEXT NOT NULL, `icon` TEXT, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`groupId`) REFERENCES `split_group`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "hidden_contact",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`personKey` TEXT NOT NULL, `isHidden` INTEGER NOT NULL, `hiddenAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, PRIMARY KEY(`personKey`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "personKey",
+            "columnName": "personKey",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "createdBy",
-            "columnName": "createdBy",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "createdByMemberId",
-            "columnName": "createdByMemberId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "parentId",
-            "columnName": "parentId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "icon",
-            "columnName": "icon",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
+            "fieldPath": "isHidden",
+            "columnName": "isHidden",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "addedAt",
-            "columnName": "addedAt",
+            "fieldPath": "hiddenAt",
+            "columnName": "hiddenAt",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -779,43 +742,24 @@
             "columnName": "pendingSync",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "ownerUserId",
+            "columnName": "ownerUserId",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "personKey"
           ]
-        },
-        "indices": [
-          {
-            "name": "index_group_category_groupId",
-            "unique": false,
-            "columnNames": [
-              "groupId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_group_category_groupId` ON `${TABLE_NAME}` (`groupId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "split_group",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "groupId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e432ad117607cc08afa0fd7dd6403ac3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '72507b134ecc85f1404bf2bd1cc51d35')"
     ]
   }
 }

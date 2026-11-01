@@ -218,3 +218,20 @@ private fun bandOf(
         bandEnd = center + halfBand,
     )
 }
+
+/*
+ * Why: the longest side of the screen the app is on, not of its window: a Flip's cover screen is small as a whole,
+ * while a phone's split screen window is small on a large screen. A preview has no screen to measure: the window.
+ */
+@Composable
+fun rememberScreenLongestSide(): Dp {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    return remember(context, configuration, density) {
+        runCatching {
+            val bounds = WindowMetricsCalculator.getOrCreate().computeMaximumWindowMetrics(context).bounds
+            with(density) { maxOf(bounds.width(), bounds.height()).toDp() }
+        }.getOrDefault(maxOf(configuration.screenWidthDp, configuration.screenHeightDp).dp)
+    }
+}

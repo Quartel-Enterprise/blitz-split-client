@@ -27,6 +27,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -66,6 +69,7 @@ class BalancesViewModelTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var navigator: BackStackNavigator
+    private lateinit var pins: FakeGroupPinRepository
     private lateinit var recordSettlement: RecordSettlementUseCase
     private lateinit var viewModel: BalancesViewModel
     private val actions = mutableListOf<BalancesUiAction>()
@@ -638,7 +642,7 @@ class BalancesViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, CARLA, ANA)),
+            listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, CARLA, ANA)),
             navigator.backStack.value,
         )
     }
@@ -667,7 +671,10 @@ class BalancesViewModelTest {
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -697,7 +704,7 @@ class BalancesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, CARLA)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, CARLA)),
                 navigator.backStack.value,
             )
         }
@@ -722,7 +729,7 @@ class BalancesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -746,7 +753,7 @@ class BalancesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -759,7 +766,10 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -772,7 +782,7 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -786,7 +796,7 @@ class BalancesViewModelTest {
             viewModel.onEvent(BalancesUiEvent.OnExpensesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
         }
 
     @Test
@@ -799,7 +809,10 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -812,7 +825,7 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route, Route.GroupStats(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -825,7 +838,7 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -840,6 +853,7 @@ class BalancesViewModelTest {
         // Then
         assertEquals(
             listOf(
+                Route.Home,
                 Route.Groups,
                 route,
                 Route.SplitBill(
@@ -864,7 +878,7 @@ class BalancesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
                 navigator.backStack.value,
             )
         }
@@ -890,7 +904,7 @@ class BalancesViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.exit.dialog)
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
             assertTrue(groups.deletedGroupIds.isEmpty())
         }
 
@@ -906,7 +920,7 @@ class BalancesViewModelTest {
 
             // Then
             assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
         }
 
     @Test
@@ -920,7 +934,7 @@ class BalancesViewModelTest {
 
         // Then
         assertEquals(listOf<BalancesUiAction>(BalancesUiAction.ShowLeaveError), actions)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
     }
 
     @Test
@@ -933,7 +947,7 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -946,7 +960,10 @@ class BalancesViewModelTest {
         viewModel.onEvent(BalancesUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -959,7 +976,7 @@ class BalancesViewModelTest {
         groups.groups.value = noGroups
 
         // Then
-        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -975,7 +992,7 @@ class BalancesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
                 navigator.backStack.value,
             )
         }
@@ -991,7 +1008,7 @@ class BalancesViewModelTest {
         navigator.navigateBack()
 
         // Then
-        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -1226,6 +1243,134 @@ class BalancesViewModelTest {
         assertEquals(listOf("pay-1"), settlements.settlements.value.map { it.id })
     }
 
+    @Test
+    fun `GIVEN a group nobody pinned WHEN Saldos opens THEN the header is not pinned`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val header = viewModel.uiState.value.header
+
+        // Then
+        assertFalse(header.isPinned)
+    }
+
+    @Test
+    fun `GIVEN the group pinned to Inicio WHEN Saldos opens THEN the header is pinned`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
+
+        // When
+        val header = viewModel.uiState.value.header
+
+        // Then
+        assertTrue(header.isPinned)
+    }
+
+    @Test
+    fun `GIVEN Saldos open WHEN a sync brings a pin made on another device THEN the header is pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val pinnedElsewhere = setOf(GROUP_ID)
+
+            // When
+            pins.pinnedGroupIds.value = pinnedElsewhere
+
+            // Then
+            assertTrue(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio on Saldos THEN pins it now and stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = BalancesUiEvent.OnPinToggled
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Triple(GROUP_ID, true, nowMillis)), pins.pinUpdates)
+            assertTrue(viewModel.uiState.value.header.isPinned)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the group pinned WHEN tapping Desafixar da Inicio on Saldos THEN unpins it now`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
+            val event = BalancesUiEvent.OnPinToggled
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Triple(GROUP_ID, false, nowMillis)), pins.pinUpdates)
+            assertFalse(viewModel.uiState.value.header.isPinned)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Fixar na Inicio on Saldos THEN nothing is pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isRoomReadAtStart = false)
+            val event = BalancesUiEvent.OnPinToggled
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertTrue(pins.pinUpdates.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the group gone while covered WHEN tapping Fixar na Inicio on Saldos THEN nothing is pinned`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BalancesUiEvent.OnInviteClicked)
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(BalancesUiEvent.OnPinToggled)
+
+            // Then
+            assertTrue(pins.pinUpdates.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a settled balance on Saldos WHEN confirming Sair THEN leaves and goes back to Grupos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BalancesUiEvent.OnLeaveGroupClicked)
+
+            // When
+            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groups.leftGroupIds)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Saldos right above Inicio WHEN confirming Apagar grupo THEN goes back to Grupos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(routesBelow = emptyList())
+            viewModel.onEvent(BalancesUiEvent.OnDeleteGroupClicked)
+
+            // When
+            viewModel.onEvent(BalancesUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(listOf(GROUP_ID), groups.deletedGroupIds)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
     private suspend fun record(
         from: String,
         to: String,
@@ -1343,11 +1488,17 @@ class BalancesViewModelTest {
         storedSettlements: List<Settlement> = emptyList(),
         isRoomReadAtStart: Boolean = true,
         exitError: Throwable? = null,
+        pinnedGroupIds: Set<String> = emptySet(),
+        routesBelow: List<Route> = listOf(Route.Groups),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also { it.exitError = exitError }
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
+        pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
+            routesBelow.forEach(it::navigate)
+            it.navigate(route)
+        }
         isRoomRead.value = isRoomReadAtStart
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { nowMillis }
         val observeStoredGroup = ObserveGroupUseCase(groups)
@@ -1368,6 +1519,8 @@ class BalancesViewModelTest {
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+                observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
+                setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

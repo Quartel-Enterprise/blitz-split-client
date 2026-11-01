@@ -314,7 +314,7 @@ class PickGroupViewModelTest {
         groups.groups.value = listOf(soccer)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -347,7 +347,7 @@ class PickGroupViewModelTest {
 
             // Then
             assertEquals(TRIP_ID, expenses.createdExpenses.single().groupId)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -366,7 +366,7 @@ class PickGroupViewModelTest {
             val saved = expenses.createdExpenses.single()
             assertEquals(HOME_ID, saved.groupId)
             assertEquals(listOf(PIERRE_HOME), saved.payers.map { it.memberId })
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(HOME_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(HOME_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -384,7 +384,11 @@ class PickGroupViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(TRIP_ID), Route.GroupDetail(HOME_ID)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(TRIP_ID, joinedAs = null),
+                    Route.GroupDetail(HOME_ID, joinedAs = null),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -478,7 +482,7 @@ class PickGroupViewModelTest {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            if (!screen.picksGroupFirst) it.navigate(Route.GroupDetail(screen.groupId))
+            if (!screen.picksGroupFirst) it.navigate(Route.GroupDetail(screen.groupId, joinedAs = null))
             it.navigate(screen)
         }
         val deletedBills = InMemoryDeletedBillRepository()

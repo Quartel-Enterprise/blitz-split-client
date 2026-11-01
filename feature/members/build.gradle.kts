@@ -10,7 +10,6 @@ kotlin {
             api(projects.core.navigation)
             api(projects.core.expenses)
             implementation(projects.core.groups)
-            implementation(projects.core.account)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)
@@ -19,7 +18,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.utils)
             implementation(projects.core.groups.testing)
-            implementation(projects.core.account.testing)
             implementation(projects.core.expenses.testing)
         }
     }

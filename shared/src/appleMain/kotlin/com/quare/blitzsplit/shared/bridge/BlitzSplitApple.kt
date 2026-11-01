@@ -5,7 +5,12 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -15,6 +20,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.Global
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
@@ -26,6 +32,7 @@ import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
+import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.PickPaymentViewModel
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
@@ -76,6 +83,9 @@ object BlitzSplitApple : KoinComponent {
     fun createRecoveryCodeViewModel(): ViewModelHolder<RecoveryCodeViewModel> =
         ViewModelHolder(RecoveryCodeViewModel::class) { get() }
 
+    // Why: Início, the home's first tab and the root of the back stack.
+    fun createHomeViewModel(): ViewModelHolder<HomeViewModel> = ViewModelHolder(HomeViewModel::class) { get() }
+
     fun createGroupsViewModel(): ViewModelHolder<GroupsViewModel> = ViewModelHolder(GroupsViewModel::class) { get() }
 
     fun createCreateGroupViewModel(): ViewModelHolder<CreateGroupViewModel> =
@@ -108,12 +118,33 @@ object BlitzSplitApple : KoinComponent {
     fun createRegisterPaymentViewModel(route: Route.RegisterPayment): ViewModelHolder<RegisterPaymentViewModel> =
         ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }
 
+    // Why: Início's "Registrar pagamento" asks "Quem pagou a quem?" first, across every group.
+    fun createPickPaymentViewModel(): ViewModelHolder<PickPaymentViewModel> =
+        ViewModelHolder(PickPaymentViewModel::class) { get() }
+
     // Why: "Acertar" or "Recebi" of the global Saldos open Registrar pagamento across the person's groups.
     fun createSettleUpViewModel(route: Route.SettleUp): ViewModelHolder<RegisterPaymentViewModel> =
         ViewModelHolder(RegisterPaymentViewModel::class) { get { parametersOf(route) } }
 
     fun createGlobalBalancesViewModel(route: Route.GlobalBalances): ViewModelHolder<GlobalBalancesViewModel> =
         ViewModelHolder(GlobalBalancesViewModel::class) { get { parametersOf(route) } }
+
+    // Why: the home's Atividade tab, on one person when a contact's history opens it.
+    fun createActivityViewModel(route: Route.Activity): ViewModelHolder<ActivityViewModel> =
+        ViewModelHolder(ActivityViewModel::class) { get { parametersOf(route) } }
+
+    fun createContactsViewModel(): ViewModelHolder<ContactsViewModel> =
+        ViewModelHolder(ContactsViewModel::class) { get() }
+
+    // Why: each person opens their own profile, which reads them from its route (beside Contatos too).
+    fun createContactProfileViewModel(route: Route.ContactProfile): ViewModelHolder<ContactProfileViewModel> =
+        ViewModelHolder(ContactProfileViewModel::class) { get { parametersOf(route) } }
+
+    fun createAgendaViewModel(): ViewModelHolder<AgendaViewModel> = ViewModelHolder(AgendaViewModel::class) { get() }
+
+    // Why: the invite reads whom it is for (an agenda's name, a guest's personal link) from its route.
+    fun createContactInviteViewModel(route: Route.ContactInvite): ViewModelHolder<ContactInviteViewModel> =
+        ViewModelHolder(ContactInviteViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
         ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }

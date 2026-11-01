@@ -28,7 +28,7 @@ internal class SplitBillExits(
         if (below != null && (tabGroupIdOrNull(below) == groupId || below == Route.GroupStats(groupId))) {
             navigator.navigateBack()
         } else {
-            navigator.replaceTop(Route.GroupDetail(groupId))
+            navigator.replaceTop(Route.GroupDetail(groupId, joinedAs = null))
         }
     }
 

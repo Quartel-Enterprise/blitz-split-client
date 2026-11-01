@@ -478,7 +478,7 @@ class InviteViewModelTest {
             viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
         }
 
     @Test
@@ -491,7 +491,7 @@ class InviteViewModelTest {
             viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -499,14 +499,14 @@ class InviteViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = trip.copy(inviteCode = null))
-            navigator.replaceTop(Route.GroupDetail("group-1"))
+            navigator.replaceTop(Route.GroupDetail("group-1", joinedAs = null))
             navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
             viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -514,29 +514,32 @@ class InviteViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.replaceTop(Route.Members("group-1", joinedAs = null))
+            navigator.replaceTop(Route.Members("group-1"))
             navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
             viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
         }
 
     @Test
-    fun `GIVEN the screen opened from the members just joined WHEN see who joined is tapped THEN goes back to them`() =
+    fun `GIVEN opened over the expenses just joined WHEN going to the group THEN goes back to them`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.replaceTop(Route.Members("group-1", joinedAs = "Bruno"))
+            navigator.replaceTop(Route.GroupDetail("group-1", joinedAs = "Bruno"))
             navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
-            viewModel.onEvent(InviteUiEvent.OnSeeWhoJoinedClicked)
+            viewModel.onEvent(InviteUiEvent.OnGoToGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno")), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = "Bruno")),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -950,7 +953,7 @@ class InviteViewModelTest {
                 it.navigate(Route.CreateGroup)
                 it.replaceTop(route)
             } else {
-                it.navigate(Route.GroupDetail("group-1"))
+                it.navigate(Route.GroupDetail("group-1", joinedAs = null))
                 it.navigate(route)
             }
         }

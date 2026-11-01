@@ -1251,6 +1251,21 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile off the back stack WHEN choosing Google in the browser THEN it leaves from the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            // The Mac's Ajustes, a window of its own
+            navigator.popTo(size = 1)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // Then
+            assertEquals(listOf(true), account.browserConnectionsFromProfile)
+        }
+
+    @Test
     fun `GIVEN no internet WHEN choosing a provider THEN does nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -3658,7 +3673,7 @@ class ProfileViewModelTest {
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),
-                connectWithBrowser = ConnectWithBrowserUseCase(account, navigator),
+                connectWithBrowser = ConnectWithBrowserUseCase(account),
                 completeSignIn = {
                     completedSignIns++
                     Result.success(SignInOutcome.PROFILE_RESTORED)

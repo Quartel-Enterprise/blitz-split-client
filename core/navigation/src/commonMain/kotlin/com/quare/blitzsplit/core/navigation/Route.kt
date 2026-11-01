@@ -16,6 +16,13 @@ sealed interface Route {
 
     data object Restore : Route
 
+    /*
+     * Why: "Início" (flow 10), the home's first tab and where the app opens once there is a profile: the root of the
+     * back stack under every other tab of the home.
+     */
+    data object Home : Route
+
+    // Why: "Grupos", the home's second tab, right above Início.
     data object Groups : Route
 
     data object Profile : Route
@@ -38,9 +45,13 @@ sealed interface Route {
         val isNewGroup: Boolean,
     ) : Route
 
-    // Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens.
+    /*
+     * Why: "Despesas do grupo", the group's own screen, where a group tapped on the home opens. joinedAs is the name
+     * someone just joined the group as, for "Você entrou como Bruno" (3.3): joining lands here.
+     */
     data class GroupDetail(
         val groupId: String,
+        val joinedAs: String?,
     ) : Route
 
     /*
@@ -94,11 +105,55 @@ sealed interface Route {
     ) : Route
 
     /*
-     * Why: the home's second tab, "Saldos" (flow 8): each person once, netted across every group. Over the groups, so
-     * the Grupos tab and back return to them; "A receber" and "A pagar" open it already filtered.
+     * Why: Início's "Registrar pagamento", which asks who paid whom first: every open pair of every group, the most
+     * recently used group first, one of which opens Registrar pagamento in its place.
+     */
+    data object PickPayment : Route
+
+    /*
+     * Why: the home's third tab, "Saldos" (flow 8): each person once, netted across every group. Right above Início,
+     * in the place of the other tabs, so back returns to Início; "A receber" and "A pagar" open it already filtered.
      */
     data class GlobalBalances(
         val filter: BalancesFilter,
+        // Why: Contatos' "Cobrar" opens the message right away; closing it goes back. Null from the home's tabs and cards.
+        val charge: BalancesCharge?,
+    ) : Route
+
+    /*
+     * Why: the home's fourth tab, "Contatos" (flow 11): everyone in the user's groups, guests included, with the net of
+     * each. Over the groups like Saldos, so the Grupos tab and back return to them.
+     */
+    data object Contacts : Route
+
+    /*
+     * Why: "Perfil do contato" (11.2), a person's net, groups in common and history with them, from Contatos and its
+     * search. personKey is PeopleBalances.keyOf, the same person Saldos nets. A wide window draws it beside Contatos
+     * instead (ContactsUiState.selectedKey).
+     */
+    data class ContactProfile(
+        val personKey: String,
+    ) : Route
+
+    // Why: "Convidar da agenda" (11.3): the device's contacts, each invited with a group's link. Not on the web.
+    data object ContactsAgenda : Route
+
+    /*
+     * Why: "Convidar" (11.4), a group's link and QR code, the group picked in the sheet ("Novo grupo" included), for
+     * name from the agenda or for nobody in particular ("Convidar com link ou QR"). For a guest (personKey of a name
+     * nobody joined as), their personal link in the groups they are in instead.
+     */
+    data class ContactInvite(
+        val personKey: String?,
+        val name: String?,
+    ) : Route
+
+    /*
+     * Why: the home's "Atividade" tab (page 12), the feed and notification center of every group, over the groups like
+     * Saldos. personKey (PeopleBalances.keyOf) opens it on one person, from a contact's history, as a removable chip.
+     */
+    data class Activity(
+        val personKey: String?,
     ) : Route
 
     /*
@@ -110,13 +165,9 @@ sealed interface Route {
         val currency: GroupCurrency,
     ) : Route
 
-    /*
-     * Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
-     * joinedAs is the name someone just joined the group as, for "Você entrou como Bruno".
-     */
+    // Why: "Membros", who is in the group and who joined: the group's tab next to Despesas, which takes its place.
     data class Members(
         val groupId: String,
-        val joinedAs: String?,
     ) : Route
 
     /*
