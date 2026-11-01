@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Ellipsis, LogOut, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Plus, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, GroupTabs, type GroupTab } from '@/components/common'
@@ -21,6 +21,7 @@ import { GroupExitDialog, type GroupExitEvents } from './GroupExitDialog'
 export interface GroupPageEvents extends GroupExitEvents {
   back(): void
   invite(): void
+  stats(): void
   members(): void
   editGroup(): void
   leaveGroup(): void
@@ -31,7 +32,7 @@ export interface GroupPageEvents extends GroupExitEvents {
 
 /**
  * The group's page around a tab, Despesas or Saldos: the top bar with the ⋯ menu, the group's name, total and faces,
- * "Convidar" and "Rachar conta" beside them (at the bottom on the phone), "Seu saldo neste grupo" and the tabs.
+ * "Estatísticas", "Convidar" and "Rachar conta" beside them (at the bottom on the phone), "Seu saldo neste grupo" and the tabs.
  */
 export function GroupPage({
   header,
@@ -79,6 +80,9 @@ export function GroupPage({
             {header.groupName}
           </span>
         </nav>
+        <Button variant="ghost" size="icon" aria-label={t('stats_title')} onClick={() => events.stats()} className="md:hidden">
+          <BarChart3 />
+        </Button>
         <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => events.invite()} className="md:hidden">
           <UserPlus />
         </Button>
@@ -111,6 +115,10 @@ export function GroupPage({
             </button>
           </div>
           <div className="hidden items-center gap-2 md:flex">
+            <Button variant="outline" onClick={() => events.stats()}>
+              <BarChart3 />
+              {t('stats_title')}
+            </Button>
             <Button variant="outline" onClick={() => events.invite()}>
               <UserPlus />
               {t('groupDetail_invite')}

@@ -95,6 +95,10 @@ class BalancesPresenter(
         viewModel.onEvent(BalancesUiEvent.OnInviteClicked)
     }
 
+    fun stats() {
+        viewModel.onEvent(BalancesUiEvent.OnStatsClicked)
+    }
+
     // Why: the group's tabs, "Despesas" and "Membros" (also the faces under the name), beside "Saldos".
     fun expensesTab() {
         viewModel.onEvent(BalancesUiEvent.OnExpensesTabClicked)
