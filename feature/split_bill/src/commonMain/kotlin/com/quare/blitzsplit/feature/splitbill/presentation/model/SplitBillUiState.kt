@@ -49,6 +49,14 @@ data class SplitBillUiState(
     val defaultSplit: BillDefaultSplit?,
     // Why: "Dividir", open while not null; it changes the bill's split only on "Pronto".
     val splitEditor: SplitEditor?,
+    // Why: "Itens da conta" (7.5), Dividir's fifth mode, open in its place while not null; the bill changes on "Pronto".
+    val itemsEditor: ItemsEditor?,
+    // Why: "Item" (7.6), open over "Itens da conta" while not null; the items change on its "Pronto".
+    val itemEditor: ItemEditor?,
+    // Why: "Apagar este item?" (7.6h), open while not null.
+    val itemDeletion: ItemDeletion?,
+    // Why: the service's percentage or the couvert per person, open over "Itens da conta" while not null.
+    val feeEditor: FeeEditor?,
     // Why: someone else saved the bill while it was being edited here.
     val conflict: BillConflict?,
     // Why: a payment made after the bill whose pair's balance the change being typed moves (7.4b), said before saving.

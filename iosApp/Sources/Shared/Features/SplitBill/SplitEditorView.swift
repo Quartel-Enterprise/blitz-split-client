@@ -76,6 +76,7 @@ private struct DefaultSplitNotice: View {
         case .amount: String(localized: "This bill splits by amounts.")
         case .percent: String(localized: "This bill splits by percentage.")
         case .shares: String(localized: "This bill splits by shares.")
+        case .items: String(localized: "This bill splits by items.")
         default: String(localized: "This bill splits equally.")
         }
         return "\(base) \(now)"
@@ -254,6 +255,34 @@ private struct SplitListHeader: View {
     }
 }
 
+/// Over Split and Bill items: what the bill is, who paid it, and the total being split.
+struct SplitLeadHeader: View {
+    let systemImage: String
+    let lead: String
+    let total: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.title3)
+                .foregroundStyle(Palette.accent)
+                .frame(width: 44, height: 44)
+                .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 13))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(verbatim: lead)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Text(verbatim: total)
+                    .font(.largeTitle.bold())
+                    .monospacedDigit()
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
 #if os(iOS)
 /// Pushed inside the bill's sheet. Lying down and on iPad: the summary, the modes and the status on the left, the
 /// people on the right.
@@ -291,29 +320,29 @@ struct PhoneSplitEditor: View {
                 .disabled(model.state.splitEditor?.addsUp != true)
             }
         }
+        .navigationDestination(isPresented: itemsShown) {
+            PhoneItemsEditor(model: model)
+        }
+    }
+
+    /// Items (Dividir's fifth mode) pushes "Bill items"; its back goes back to Split.
+    private var itemsShown: Binding<Bool> {
+        Binding(
+            get: { model.state.itemsEditor != nil },
+            set: { shown in
+                if !shown, model.current.itemsEditor != nil { model.send(SplitBillUiEventOnItemsDismissed.shared) }
+            },
+        )
     }
 
     @ViewBuilder
     private func overview(_ editor: SplitEditor) -> some View {
         Section {
-            HStack(spacing: 12) {
-                Image(systemName: "receipt")
-                    .font(.title3)
-                    .foregroundStyle(Palette.accent)
-                    .frame(width: 44, height: 44)
-                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 13))
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: SplitBillCopy.paidBy(model.state.description_, state: model.state))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    Text(verbatim: editor.currency.format(editor.totalMinor))
-                        .font(.largeTitle.bold())
-                        .monospacedDigit()
-                }
-            }
-            .accessibilityElement(children: .combine)
+            SplitLeadHeader(
+                systemImage: "receipt",
+                lead: SplitBillCopy.paidBy(model.state.description_, state: model.state),
+                total: editor.currency.format(editor.totalMinor),
+            )
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))

@@ -77,6 +77,7 @@ internal fun splitTitleOf(
         SplitMode.AMOUNT -> R.plurals.bill_detail_mode_amount
         SplitMode.PERCENT -> R.plurals.bill_detail_mode_percent
         SplitMode.SHARES -> R.plurals.bill_detail_mode_shares
+        SplitMode.ITEMS -> R.plurals.bill_detail_mode_items
     }
     return pluralStringResource(plural, count, count)
 }

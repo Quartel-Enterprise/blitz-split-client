@@ -238,6 +238,7 @@ class SettleUpViewModelTest {
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(toMemberId, amountMinor)),
         shares = listOf(ExpenseShare(fromMemberId, amountMinor, amountMinor)),
+        items = null,
         spentAt = 0L,
         isPending = false,
         updatedAt = 0L,

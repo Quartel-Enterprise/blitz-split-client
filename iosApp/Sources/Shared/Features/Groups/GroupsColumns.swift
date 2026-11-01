@@ -7,7 +7,9 @@ import SwiftUI
 /// of them roots a second stack beside it, and with no group open yet it holds the canvas' shapes. Anything else the
 /// group or the list opens (Statistics, the profile, a joined invite) covers the whole tab, as upright and as
 /// Android's scene does, since the ViewModel ignores the list's taps under it; a sheet keeps the columns under it. The
-/// list's stack stays the first view either way, so turning the iPad keeps its scroll.
+/// home with no group at all is one pane on an iPad until the first group exists, while an iPhone Duo open keeps the
+/// fold's other side for the group, saying so (decision 5, each size's board). The list's stack stays the first view
+/// either way, so turning the iPad keeps its scroll.
 struct GroupsColumns<ListContent: View>: View {
     let model: GroupsModel
     /// The shared back stack above the groups, as this tab shows it.
@@ -18,11 +20,18 @@ struct GroupsColumns<ListContent: View>: View {
 
     /// The whole tab, the column beside the list included, so showing it never changes what decides it.
     @State private var layout = ScreenLayout()
+    /// The iPhone Duo's fold, whose halves the empty home keeps (iOS 27.1).
+    @State private var division: FoldDivision?
 
     /// The column beside the list: lying down with an iPad's room (`showsListDetail`), with only the group's tabs
     /// above the groups (sheets aside, which the path leaves out).
     private var showsDetail: Bool {
-        layout.showsListDetail && path.allSatisfy(Self.isGroupTab)
+        layout.showsListDetail && path.allSatisfy(Self.isGroupTab) && !showsEmptyHomeAlone
+    }
+
+    /// No group yet and no fold down the window: the empty home takes the whole tab, as the iPad's board draws it.
+    private var showsEmptyHomeAlone: Bool {
+        model.state.showsEmptyState && division?.isVertical != true
     }
 
     /// What this tab tells the ViewModel, nil while another tab is in front or before the first layout, whose zero
@@ -50,6 +59,7 @@ struct GroupsColumns<ListContent: View>: View {
         }
         .environment(\.showsGroupBesideList, showsDetail)
         .measuringScreenLayout($layout)
+        .readingFoldDivision($division)
         // The ViewModel then lets the list replace the group beside it and opens the search's first result there
         .onChange(of: reportedDetail, initial: true) { _, isShown in
             guard let isShown else { return }
@@ -97,8 +107,30 @@ struct GroupsColumns<ListContent: View>: View {
         if let paneRoute {
             MainTabView.destination(paneRoute)
                 .id(paneRoute)
+        } else if model.state.showsEmptyState {
+            NoGroupOpenPlaceholder()
         } else {
             GroupPanePlaceholder()
+        }
+    }
+}
+
+/// The fold's other side on an iPhone Duo open while there is no group at all: where the group will show.
+private struct NoGroupOpenPlaceholder: View {
+    var body: some View {
+        ZStack {
+            Palette.groupedBackground
+                .ignoresSafeArea()
+            VStack(spacing: 10) {
+                Text("No group open")
+                    .font(.title3.weight(.semibold))
+                Text("Once you create or join a group, its expenses and balances show on this side of the fold.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: 300)
+            }
+            .multilineTextAlignment(.center)
+            .padding(24)
         }
     }
 }

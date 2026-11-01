@@ -36,6 +36,7 @@ enum BillCopy {
         case .amount: String(localized: "By amount among \(count)")
         case .percent: String(localized: "By % among \(count)")
         case .shares: String(localized: "By shares among \(count)")
+        case .items: String(localized: "By items among \(count)")
         default: String(localized: "Split equally among \(count)")
         }
     }

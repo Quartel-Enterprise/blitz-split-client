@@ -405,6 +405,7 @@ class SettledPairChangeTest {
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(payerId, shares.sumOf { it.amountMinor })),
         shares = shares,
+        items = null,
         spentAt = BILL_AT,
         isPending = false,
         updatedAt = BILL_AT,

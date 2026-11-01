@@ -6,8 +6,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -15,6 +18,8 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
@@ -46,6 +51,7 @@ import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -67,31 +73,54 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         ) {}
         return
     }
+    // Why: every dialog route keeps what was typed on a stray tap outside and sizes itself.
+    val dialogProperties = DialogProperties(
+        dismissOnClickOutside = false,
+        usePlatformDefaultWidth = false,
+    )
     val usesFormDialog = rememberUsesFormDialog()
     val formDialogMetadata = if (usesFormDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
+    /*
+     * Why: the canvas draws Novo grupo as a dialog over the home on anything wider than a phone: 560dp on a tablet and
+     * a foldable upright, in a book's right half and in a tabletop's top half, never over the hinge.
+     */
+    val formFactor = rememberFoldLayout().formFactor
+    val usesCreateGroupDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val createGroupMetadata = if (usesCreateGroupDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
+            properties = dialogProperties,
+            isTopHalfOnTabletop = true,
         )
     } else {
         emptyMap()
     }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
-        FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        )
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
     }
-    val listDetail = rememberListDetailLayout()
+    /*
+     * Why: the home says whether it has no group at all, which only the book draws beside an empty detail. It can't
+     * say so while a route covers it, so a group's tab on the stack (one just joined) counts as a group already.
+     */
+    var isGroupsScreenEmpty by rememberSaveable { mutableStateOf(false) }
+    val isHomeEmpty = isGroupsScreenEmpty && backStack.none { tabGroupIdOrNull(it) != null }
+    val listDetail = homeListDetailOf(
+        listDetail = rememberListDetailLayout(),
+        isHomeEmpty = isHomeEmpty,
+    )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
-    val groupsMetadata = remember(listDetail) { homeListPaneMetadataOf(listDetail) }
+    val groupsMetadata = remember(listDetail, isHomeEmpty) {
+        homeListPaneMetadataOf(
+            listDetail = listDetail,
+            isHomeEmpty = isHomeEmpty,
+        )
+    }
     NavDisplay(
         backStack = backStack,
         onBack = { appViewModel.navigator.navigateBack() },
@@ -109,7 +138,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Home> { HomeScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
-                GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() })
+                GroupsScreen(
+                    recoveryCodeSheet = { RecoveryCodeSheet() },
+                    onEmptyChanged = { isGroupsScreenEmpty = it },
+                )
             }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             entry<Route.EditProfile> { EditProfileScreen() }
@@ -125,11 +157,11 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.DeleteAccount>(metadata = formDialogMetadata) {
                 DeleteAccountScreen(isDialog = usesFormDialog)
             }
-            // Why: a tablet keeps the home behind the new group; elsewhere it opens full screen.
-            entry<Route.CreateGroup>(metadata = formDialogMetadata) {
-                CreateGroupScreen(isDialog = usesFormDialog)
+            // Why: a dialog over the home wider than a phone; a phone opens it full screen, in two columns lying down.
+            entry<Route.CreateGroup>(metadata = createGroupMetadata) {
+                CreateGroupScreen(isDialog = usesCreateGroupDialog)
             }
-            // Why: it takes the new group's place, so it opens the same way.
+            // Why: it takes the new group's place; a tablet keeps the home behind it, elsewhere it opens full screen.
             entry<Route.Invite>(metadata = formDialogMetadata) { route ->
                 InviteScreen(
                     route = route,
@@ -140,7 +172,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane { GroupDetailScreen(route) }
             }
-            // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
+            // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
                 EditGroupScreen(
                     route = route,

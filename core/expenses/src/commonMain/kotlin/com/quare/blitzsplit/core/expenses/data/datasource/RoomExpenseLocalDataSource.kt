@@ -38,6 +38,7 @@ class RoomExpenseLocalDataSource(
             splitMode = entity.splitMode,
             payersJson = entity.payersJson,
             sharesJson = entity.sharesJson,
+            itemsJson = entity.itemsJson,
             spentAt = entity.spentAt,
             now = now,
         )

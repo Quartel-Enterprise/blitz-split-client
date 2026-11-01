@@ -20,6 +20,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -66,13 +67,15 @@ internal fun SplitEditorContent(
             onConfirm = { onEvent(SplitBillUiEvent.OnSplitDone) },
             cancelLabel = stringResource(R.string.split_bill_cancel),
             isNavigationAtEndInDialog = false,
+            iconAction = null,
         ),
         isDialog = isDialog,
         snackbarHostState = snackbarHostState,
         first = {
             SplitSummaryRow(
                 state = state,
-                editor = editor,
+                totalMinor = editor.totalMinor,
+                icon = Icons.AutoMirrored.Outlined.ReceiptLong,
                 money = money,
             )
             val default = state.defaultSplit
@@ -130,6 +133,7 @@ private fun modeHintOf(
     SplitMode.AMOUNT -> stringResource(R.string.split_bill_hint_amount, money.toText(0L))
     SplitMode.PERCENT -> stringResource(R.string.split_bill_hint_percent)
     SplitMode.SHARES -> stringResource(R.string.split_bill_hint_shares)
+    SplitMode.ITEMS -> stringResource(R.string.split_bill_item_hint_equal)
 }
 
 private val SplitMode.labelRes: Int
@@ -138,13 +142,15 @@ private val SplitMode.labelRes: Int
         SplitMode.AMOUNT -> R.string.split_bill_mode_amount
         SplitMode.PERCENT -> R.string.split_bill_mode_percent
         SplitMode.SHARES -> R.string.split_bill_mode_shares
+        SplitMode.ITEMS -> R.string.split_bill_mode_items
     }
 
-// Why: "Mercado · você pagou" over the total being split.
+// Why: "Mercado · você pagou" over the total being split, Dividir's and Itens da conta's.
 @Composable
-private fun SplitSummaryRow(
+internal fun SplitSummaryRow(
     state: SplitBillUiState,
-    editor: SplitEditor,
+    totalMinor: Long,
+    icon: ImageVector,
     money: MoneyFormatter,
 ) {
     val several = state.severalPayers
@@ -169,7 +175,7 @@ private fun SplitSummaryRow(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ReceiptLong,
+                imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -189,7 +195,7 @@ private fun SplitSummaryRow(
                 )
             }
             Text(
-                text = money.toText(editor.totalMinor),
+                text = money.toText(totalMinor),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
             )
@@ -221,6 +227,7 @@ private fun SplitPeopleList(
                     SplitMode.AMOUNT -> R.string.split_bill_list_amount
                     SplitMode.PERCENT -> R.string.split_bill_list_percent
                     SplitMode.SHARES -> R.string.split_bill_list_shares
+                    SplitMode.ITEMS -> R.string.split_bill_list_amount
                 },
             ),
             modifier = Modifier

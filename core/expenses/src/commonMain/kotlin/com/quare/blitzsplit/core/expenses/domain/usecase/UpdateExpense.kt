@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -17,6 +18,7 @@ fun interface UpdateExpense {
         payers: List<ExpensePayer>,
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
+        items: BillItems?,
         spentAt: Long,
     ): Result<Unit>
 }

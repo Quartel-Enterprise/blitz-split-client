@@ -23,6 +23,7 @@ const splitTitles: Record<string, MessageKey> = {
   amount: 'billDetail_splitAmount',
   percent: 'billDetail_splitPercent',
   shares: 'billDetail_splitShares',
+  items: 'billDetail_splitItems',
 }
 
 /**

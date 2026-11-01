@@ -115,6 +115,7 @@ class ExpenseBalanceTest {
             ),
         ),
         shares = shares,
+        items = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 1L,

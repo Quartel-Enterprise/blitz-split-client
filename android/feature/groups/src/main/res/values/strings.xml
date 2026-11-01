@@ -7,6 +7,8 @@
     <string name="groups_sync_failed">No response from the server · try again</string>
     <string name="groups_empty_title">No groups yet</string>
     <string name="groups_empty_body">Create a group for the trip, the house or the barbecue. You can start even without internet.</string>
+    <string name="groups_no_group_open_title">No group open</string>
+    <string name="groups_no_group_open_body">Once you create or join a group, its expenses and balances show in this half, beside the list.</string>
     <string name="groups_create">Create group</string>
     <string name="groups_join_with_link">Join with a link or QR code</string>
     <string name="groups_coming_soon">Coming soon</string>

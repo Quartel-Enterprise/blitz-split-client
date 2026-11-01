@@ -3,7 +3,6 @@ package com.quare.blitzsplit.android.feature.creategroup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -54,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -65,14 +65,19 @@ import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUi
 internal val listEndRadius = 20.dp
 internal val listInnerRadius = 6.dp
 
+/*
+ * Why: full screen on a phone, in two columns lying down (who the group is on the left, "Quem participa" on the
+ * right); anything wider draws it as a dialog over the home.
+ */
 @Composable
 fun CreateGroupContent(
     state: CreateGroupUiState,
-    // Why: a tablet draws the new group as a 560dp dialog over the home.
+    // Why: anything wider than a phone draws the new group as a dialog over the home.
     isDialog: Boolean,
     onEvent: (CreateGroupUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val usesTwoColumns = !isDialog && rememberDeviceLayout().usesTwoColumns
     FormLayout(
         isDialog = isDialog,
         topBar = { isInDialog ->
@@ -83,12 +88,66 @@ fun CreateGroupContent(
             )
         },
         modifier = modifier,
+        secondColumn = if (usesTwoColumns) {
+            {
+                MembersColumn(
+                    state = state,
+                    onEvent = onEvent,
+                )
+            }
+        } else {
+            null
+        },
     ) {
-        CreateGroupFormColumn(
-            state = state,
-            onEvent = onEvent,
-        )
+        if (usesTwoColumns) {
+            IdentityColumn(
+                state = state,
+                onEvent = onEvent,
+            )
+        } else {
+            CreateGroupFormColumn(
+                state = state,
+                onEvent = onEvent,
+            )
+        }
     }
+}
+
+// Why: lying down, the group itself (name, type, currency) on the left.
+@Composable
+private fun IdentityColumn(
+    state: CreateGroupUiState,
+    onEvent: (CreateGroupUiEvent) -> Unit,
+) {
+    CreateErrorText(state)
+    IdentitySection(
+        state = state,
+        onEvent = onEvent,
+    )
+    TypeChipRow(
+        state = state,
+        onEvent = onEvent,
+    )
+    CurrencyRow(
+        state = state,
+        onEvent = onEvent,
+    )
+}
+
+// Why: lying down, who takes part on the right, with what the names say under them.
+@Composable
+private fun MembersColumn(
+    state: CreateGroupUiState,
+    onEvent: (CreateGroupUiEvent) -> Unit,
+) {
+    MembersSection(
+        state = state,
+        onEvent = onEvent,
+    )
+    MembersNoticesSection(
+        state = state,
+        onEvent = onEvent,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,10 +187,31 @@ private fun CreateGroupTopBar(
 }
 
 @Composable
-private fun ColumnScope.CreateGroupFormColumn(
+private fun CreateGroupFormColumn(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
 ) {
+    CreateErrorText(state)
+    IdentitySection(
+        state = state,
+        onEvent = onEvent,
+    )
+    TypeChipRow(
+        state = state,
+        onEvent = onEvent,
+    )
+    MembersColumn(
+        state = state,
+        onEvent = onEvent,
+    )
+    CurrencyRow(
+        state = state,
+        onEvent = onEvent,
+    )
+}
+
+@Composable
+private fun CreateErrorText(state: CreateGroupUiState) {
     if (state.showsCreateError) {
         Text(
             text = stringResource(R.string.create_group_save_error),
@@ -145,18 +225,13 @@ private fun ColumnScope.CreateGroupFormColumn(
             color = MaterialTheme.colorScheme.error,
         )
     }
-    IdentitySection(
-        state = state,
-        onEvent = onEvent,
-    )
-    TypeChipRow(
-        state = state,
-        onEvent = onEvent,
-    )
-    MembersSection(
-        state = state,
-        onEvent = onEvent,
-    )
+}
+
+@Composable
+private fun MembersNoticesSection(
+    state: CreateGroupUiState,
+    onEvent: (CreateGroupUiEvent) -> Unit,
+) {
     if (state.takenName != null) {
         TakenNameMessage(
             takenName = state.takenName.orEmpty(),
@@ -176,10 +251,6 @@ private fun ColumnScope.CreateGroupFormColumn(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
-    CurrencyRow(
-        state = state,
-        onEvent = onEvent,
-    )
 }
 
 @Composable

@@ -44,6 +44,8 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.profilesetup.presentation.model.NameError
@@ -66,6 +68,7 @@ fun ProfileSetupContent(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surface,
     ) {
+        val isBook = rememberFoldLayout().bookSplit != null
         AdaptiveScreen(
             modifier = Modifier
                 .fillMaxSize()
@@ -73,6 +76,12 @@ fun ProfileSetupContent(
                 .imePadding(),
         ) { layout ->
             when {
+                isBook -> ProfileSetupBookLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    onAddPhotoClick = onAddPhotoClick,
+                )
+
                 layout.isTablet && layout.isLandscape -> ProfileSetupTabletLandscapeLayout(
                     state = state,
                     onEvent = onEvent,
@@ -276,6 +285,84 @@ private fun ProfileSetupTabletLandscapeLayout(
                 }
             }
         }
+    }
+}
+
+// Why: a book (and a tabletop lying down) splits on the hinge: the avatar in the half before it, the name after it.
+@Composable
+private fun ProfileSetupBookLayout(
+    state: ProfileSetupUiState,
+    onEvent: (ProfileSetupUiEvent) -> Unit,
+    onAddPhotoClick: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        BackButton(
+            onEvent = onEvent,
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp,
+            ),
+        )
+        TwoHalvesLayout(
+            start = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 32.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Surface(
+                        modifier = Modifier.widthIn(max = tabletAvatarCardWidth).fillMaxWidth(),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    ) {
+                        AvatarSection(
+                            state = state,
+                            onEvent = onEvent,
+                            onAddPhotoClick = onAddPhotoClick,
+                            avatarSize = 120.dp,
+                            swatchSpacing = 12.dp,
+                            modifier = Modifier.padding(
+                                horizontal = 24.dp,
+                                vertical = 32.dp,
+                            ),
+                        )
+                    }
+                }
+            },
+            end = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 32.dp),
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    ProfileSetupTitle(isLarge = false)
+                    NameField(
+                        state = state,
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(top = 20.dp),
+                    )
+                    Column(
+                        modifier = Modifier.padding(top = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        SavedLocallyLabel()
+                        ContinueButton(
+                            state = state,
+                            onEvent = onEvent,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+            },
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+        )
     }
 }
 

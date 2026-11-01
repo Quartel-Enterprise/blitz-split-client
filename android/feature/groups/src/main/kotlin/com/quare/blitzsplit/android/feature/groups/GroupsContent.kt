@@ -167,6 +167,7 @@ fun GroupsContent(
                             showsCard = state.showsEmptyState,
                             onCreateGroup = { onEvent(GroupsUiEvent.OnCreateGroupClicked) },
                             onJoinWithLink = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) },
+                            isInBookHalf = listDetail?.isBook == true,
                         ) {
                             SyncBadgeChip(
                                 badge = state.syncBadge,
@@ -330,6 +331,8 @@ internal fun EmptyGroupsPane(
     onCreateGroup: () -> Unit,
     onJoinWithLink: () -> Unit,
     @StringRes body: Int = R.string.groups_empty_body,
+    // Why: a book's half keeps the large card's tighter padding and stacks its two actions.
+    isInBookHalf: Boolean = false,
     syncChip: @Composable () -> Unit,
 ) {
     /*
@@ -343,6 +346,7 @@ internal fun EmptyGroupsPane(
             body = body,
             onCreateGroup = onCreateGroup,
             onJoinWithLink = onJoinWithLink,
+            isInBookHalf = isInBookHalf,
             syncChip = syncChip,
             modifier = Modifier
                 .fillMaxWidth()
@@ -359,12 +363,13 @@ private fun EmptyGroupsColumn(
     @StringRes body: Int,
     onCreateGroup: () -> Unit,
     onJoinWithLink: () -> Unit,
+    isInBookHalf: Boolean,
     syncChip: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.padding(
-            horizontal = horizontalPaddingOf(layout),
+            horizontal = if (isInBookHalf) 16.dp else horizontalPaddingOf(layout),
             vertical = 4.dp,
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -383,6 +388,7 @@ private fun EmptyGroupsColumn(
                     isHorizontal = false,
                     isLarge = true,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    isInBookHalf = isInBookHalf,
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }

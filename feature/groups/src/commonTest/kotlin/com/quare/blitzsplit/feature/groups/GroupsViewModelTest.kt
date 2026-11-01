@@ -2512,6 +2512,7 @@ class GroupsViewModelTest {
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer("member-$paidBy", amountMinor)),
         shares = splitOver.map { ExpenseShare("member-$it", amountMinor / splitOver.size, 1L) },
+        items = null,
         spentAt = updatedAt,
         isPending = isPending,
         updatedAt = updatedAt,

@@ -1213,6 +1213,7 @@ class GroupDetailPaymentsViewModelTest {
         splitMode = SplitMode.EQUAL,
         payers = payers,
         shares = shares,
+        items = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = spentAt,

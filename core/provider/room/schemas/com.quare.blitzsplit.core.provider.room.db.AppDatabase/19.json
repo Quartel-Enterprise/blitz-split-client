@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 19,
-    "identityHash": "cefcc3774109edcf4556ef910dfe3ef1",
+    "identityHash": "5edc12f681aaa1970ee2d99b9b6b26ec",
     "entities": [
       {
         "tableName": "profile",
@@ -481,7 +481,7 @@
       },
       {
         "tableName": "expense",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `createdBy` TEXT, `description` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `splitMode` TEXT NOT NULL, `payersJson` TEXT NOT NULL, `sharesJson` TEXT NOT NULL, `spentAt` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `updatedBy` TEXT, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`groupId`) REFERENCES `split_group`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `createdBy` TEXT, `description` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `splitMode` TEXT NOT NULL, `payersJson` TEXT NOT NULL, `sharesJson` TEXT NOT NULL, `itemsJson` TEXT, `spentAt` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `updatedBy` TEXT, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`groupId`) REFERENCES `split_group`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -529,6 +529,11 @@
             "columnName": "sharesJson",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "itemsJson",
+            "columnName": "itemsJson",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "spentAt",
@@ -703,60 +708,11 @@
             ]
           }
         ]
-      },
-      {
-        "tableName": "group_pin",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` TEXT NOT NULL, `isPinned` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`groupId`), FOREIGN KEY(`groupId`) REFERENCES `split_group`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isPinned",
-            "columnName": "isPinned",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pendingSync",
-            "columnName": "pendingSync",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "groupId"
-          ]
-        },
-        "foreignKeys": [
-          {
-            "table": "split_group",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "groupId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cefcc3774109edcf4556ef910dfe3ef1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5edc12f681aaa1970ee2d99b9b6b26ec')"
     ]
   }
 }

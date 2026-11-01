@@ -10,12 +10,13 @@ import { cn } from '@/lib/utils'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { defaultSplitText, personName, splitStatus, type Money } from './splitText'
 
-// Why: Itens isn't built yet, so the four modes of the shared SplitMode.
+// Why: the five modes of the shared SplitMode; Itens opens "Itens da conta" in Dividir's place.
 const modes: { mode: string; label: MessageKey }[] = [
   { mode: 'equal', label: 'split_modeEqual' },
   { mode: 'amount', label: 'split_modeAmount' },
   { mode: 'percent', label: 'split_modePercent' },
   { mode: 'shares', label: 'split_modeShares' },
+  { mode: 'items', label: 'split_modeItems' },
 ]
 
 const listLabels: Record<string, MessageKey> = {
@@ -39,22 +40,9 @@ const maxParts = 99
  * ViewModel keeps until "Pronto", which only works once it adds up; "Voltar" leaves the bill's split as it was.
  */
 export function splitPane(presenter: SplitBillPresenter, state: JsSplitBillState, editor: JsSplitEditor, money: Money): PaneParts {
-  const several = state.severalPayers
-  const payerNames = several?.paying.map((row) => (row.person ? personName(row.person) : t('splitBill_formerMember'))) ?? []
-  // Why: "Ana pagou" once the other payers of a new bill left the group and only one is left paying part of it.
-  const paid = several
-    ? payerNames.length === 1
-      ? t('split_paid', { name: payerNames[0] })
-      : t('split_paidSeveral', { names: payerNamesText(payerNames) })
-    : state.payer == null
-      ? null
-      : state.payer.isMe
-        ? t('split_youPaid')
-        : t('split_paid', { name: state.payer.name })
-  const lead = [state.description.trim(), paid, money(editor.totalMinor)].filter(Boolean).join(' · ')
   return {
     title: t('split_title'),
-    description: lead,
+    description: splitLead(state, editor.totalMinor, money),
     body: <SplitBody presenter={presenter} state={state} editor={editor} money={money} />,
     footer: (
       <>
@@ -69,6 +57,23 @@ export function splitPane(presenter: SplitBillPresenter, state: JsSplitBillState
   }
 }
 
+/** "Mercado · você pagou · R$ 312,00", under Dividir's and Itens da conta's titles. */
+export function splitLead(state: JsSplitBillState, totalMinor: number, money: Money): string {
+  const several = state.severalPayers
+  const payerNames = several?.paying.map((row) => (row.person ? personName(row.person) : t('splitBill_formerMember'))) ?? []
+  // Why: "Ana pagou" once the other payers of a new bill left the group and only one is left paying part of it.
+  const paid = several
+    ? payerNames.length === 1
+      ? t('split_paid', { name: payerNames[0] })
+      : t('split_paidSeveral', { names: payerNamesText(payerNames) })
+    : state.payer == null
+      ? null
+      : state.payer.isMe
+        ? t('split_youPaid')
+        : t('split_paid', { name: state.payer.name })
+  return [state.description.trim(), paid, money(totalMinor)].filter(Boolean).join(' · ')
+}
+
 function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; editor: JsSplitEditor; money: Money }) {
   const status = splitStatus(editor, money)
   const excludedIds = new Set(editor.excluded.map((person) => person.id))
@@ -76,7 +81,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
   return (
     <div className="flex flex-col gap-4">
       {state.showsDefaultSplitNotice && state.defaultSplit && <DefaultSplitNotice presenter={presenter} state={state} editor={editor} />}
-      <div role="radiogroup" aria-label={t('split_modes')} className="grid h-9 grid-cols-4 rounded-lg bg-muted p-[3px] text-muted-foreground">
+      <div role="radiogroup" aria-label={t('split_modes')} className="grid h-9 grid-cols-5 rounded-lg bg-muted p-[3px] text-muted-foreground">
         {modes.map(({ mode, label }) => (
           <button
             key={mode}
@@ -143,6 +148,7 @@ const nowKeys: Record<string, MessageKey> = {
   amount: 'split_defaultNowAmount',
   percent: 'split_defaultNowPercent',
   shares: 'split_defaultNowShares',
+  items: 'split_defaultNowItems',
 }
 
 /**
