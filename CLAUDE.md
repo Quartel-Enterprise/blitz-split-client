@@ -122,6 +122,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and a dialog or sheet (Rachar conta, Conta) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.
+  - "Perfil" (4.1, `Route.Profile`) opens from the home's avatar. It is one column on a phone and upright (560 dp on an
+    Android tablet or foldable, 520 pt with an iPad's room); lying down who you are, your account and "Privacidade e
+    sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
+    glass panel of a Settings split) and the keys and preferences on the right, with signing out on Android's right
+    and iOS's left, each column scrolling on its own; on a book (a tabletop lying down alike) a half each, the 72 dp
+    gap centered on the hinge, as Editar perfil and the keys do, and its dialogs ("Quem vê seu nome e foto", Sair,
+    Desconectar, "Apagar perfil e sair") and Excluir conta open in the right half. Editar perfil is full screen on
+    Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
+    name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Salvar (✓). The Mac's profile is
+    Ajustes (⌘,), the app's Settings window, never pushed: whatever opens the profile (the avatar, "Proteja seu
+    acesso") opens it instead; its sidebar lists the sections and scrolls the form to the one picked (hidden under 700
+    pt), a key and Excluir conta open as sheets on it, and it closes once no profile is left. The web's is a page.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
