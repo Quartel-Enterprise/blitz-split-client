@@ -102,28 +102,30 @@ const grown = Object.keys(current).filter((path) => current[path] > (baseline[pa
 const shrunk = Object.keys(baseline).filter((path) => (current[path] ?? 0) < baseline[path]);
 
 /*
- * Why: a moved file shows up as a new path with the file name and copied lines of a listed path whose file is gone.
- * The count alone would let unrelated new copied code stand in for a deleted file; a file renamed with its copied
- * code is new copied code under that rule too, and takes --allow-new.
+ * Why: a moved file shows up as a new path with the name and copied lines of a listed path whose file is gone. The
+ * count alone would let unrelated new copied code stand in for a deleted file. The name is the part before the first
+ * dot, so moving Foo.android.kt to another source set as Foo.nonIos.kt is a move; a file renamed with its copied
+ * code is new copied code under that rule, and takes --allow-new.
  */
+const nameOf = (path) => basename(path).split(".")[0];
 const listings = new Map();
 const vanished = Object.keys(baseline).filter((path) => !(path in current) && !isOnDisk(path));
-const renamedFrom = new Map();
+const movedFrom = new Map();
 for (const path of grown.filter((path) => !(path in baseline))) {
-    const from = vanished.find((old) => baseline[old] === current[path] && basename(old) === basename(path));
+    const from = vanished.find((old) => baseline[old] === current[path] && nameOf(old) === nameOf(path));
     if (from === undefined) continue;
     vanished.splice(vanished.indexOf(from), 1);
-    renamedFrom.set(path, from);
+    movedFrom.set(path, from);
 }
-const renamed = [...renamedFrom.keys()];
-const copied = grown.filter((path) => !renamedFrom.has(path));
-const removed = shrunk.filter((path) => ![...renamedFrom.values()].includes(path));
+const moved = [...movedFrom.keys()];
+const copied = grown.filter((path) => !movedFrom.has(path));
+const removed = shrunk.filter((path) => ![...movedFrom.values()].includes(path));
 
 const total = (pairs) => Object.values(pairs).reduce((sum, lines) => sum + lines, 0);
 
 if (options.update) {
-    // Why: a renamed or moved file takes its copied lines along, which is no new copied code. Anything else that grew
-    // is, even when copies removed elsewhere keep the total down.
+    // Why: a moved file takes its copied lines along, which is no new copied code. Anything else that grew is, a
+    // renamed file included, even when copies removed elsewhere keep the total down.
     if (copied.length > 0 && !options.allowNew) {
         reportGrown(copied);
         fail("The baseline only takes more copied code in with --allow-new, when the copy is on purpose.");
@@ -133,11 +135,11 @@ if (options.update) {
     process.exit(0);
 }
 
-if (options.base) warnAboutGrowth(readBaseline(options.base));
+if (options.base) warnAboutGrowth(JSON.parse(readFileSync(options.base, "utf8")));
 
 reportGrown(copied);
-for (const [path, from] of renamedFrom) {
-    console.log(`❌ Renamed or moved with its copied code (${current[path]} lines): ${from} → ${path}`);
+for (const [path, from] of movedFrom) {
+    console.log(`❌ Moved with its copied code (${current[path]} lines): ${from} → ${path}`);
 }
 for (const path of removed) {
     console.log(`❌ Less copied code than the baseline lists (${current[path] ?? 0} of ${baseline[path]} lines): ${path}`);
@@ -146,10 +148,10 @@ if (copied.length > 0) {
     console.log("Extract the copied code into one place the callers share. Only when the copy is on purpose,");
     console.log("run ./scripts/cpd.sh --update-baseline --allow-new and say why in the pull request.");
 }
-if (copied.length === 0 && (renamed.length > 0 || removed.length > 0)) {
-    console.log("Run ./scripts/cpd.sh --update-baseline to write the renamed files and the removed copied code to the baseline.");
+if (copied.length === 0 && (moved.length > 0 || removed.length > 0)) {
+    console.log("Run ./scripts/cpd.sh --update-baseline to write the moved files and the removed copied code to the baseline.");
 }
-if (copied.length > 0 || renamed.length > 0 || removed.length > 0) process.exit(1);
+if (copied.length > 0 || moved.length > 0 || removed.length > 0) process.exit(1);
 
 console.log(`✅ No new copied code (${total(current)} copied lines in ${Object.keys(current).length} files, as the baseline lists)`);
 
