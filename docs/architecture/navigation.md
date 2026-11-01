@@ -135,8 +135,9 @@ fills (features never see each other), SwiftUI with `.sheet(isPresented:)` in `M
 `RecoveryCodeDialog`. Closing it without "Já guardei" sends `OnRemindLaterClicked`, so it comes back on the next
 launch.
 
-The tabs Saldos, Contatos and Atividade are drawn on every platform but not built yet: their events emit
-`GroupsUiAction.ShowComingSoon` and the selection stays on Grupos.
+Saldos, the home's second tab, is a route over the groups (`Route.GlobalBalances`): the Grupos tab and back return
+to them, and on Apple the `TabView` selects Balances while it is right above the groups. Contatos and Atividade are
+drawn on every platform but not built yet: their events emit `ShowComingSoon` and the selection stays where it was.
 
 ### Adding a route
 
