@@ -60,6 +60,7 @@ final class GroupDetailModel {
         GroupScreenActions(
             select: { [weak self] in self?.select($0) },
             invite: { [weak self] in self?.send(GroupDetailUiEventOnInviteClicked.shared) },
+            stats: { [weak self] in self?.send(GroupDetailUiEventOnStatsClicked.shared) },
             members: { [weak self] in self?.send(GroupDetailUiEventOnMembersClicked.shared) },
             editGroup: { [weak self] in self?.send(GroupDetailUiEventOnEditGroupClicked.shared) },
             leaveGroup: { [weak self] in self?.send(GroupDetailUiEventOnLeaveGroupClicked.shared) },

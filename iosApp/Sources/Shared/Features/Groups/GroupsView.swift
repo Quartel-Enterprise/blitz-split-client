@@ -237,8 +237,8 @@ struct MainTabView: View {
         )
     }
 
-    /// What the groups and the search push over themselves: a group's expenses, balances or members, a bill, an
-    /// invite opened from its link, the profile, its editor and, on iPhone, a key.
+    /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
+    /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key.
     @ViewBuilder
     private static func destination(_ route: AppRoute) -> some View {
         switch route {
@@ -249,6 +249,7 @@ struct MainTabView: View {
         case let .groupDetail(route): GroupDetailView(route: route)
         case let .balances(route): BalancesView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
+        case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
         default: ProfileView()

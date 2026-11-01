@@ -6,6 +6,7 @@ import SwiftUI
 struct GroupScreenActions {
     let select: (GroupTab) -> Void
     let invite: () -> Void
+    let stats: () -> Void
     let members: () -> Void
     let editGroup: () -> Void
     let leaveGroup: () -> Void
@@ -21,6 +22,7 @@ struct GroupScreenActions {
     static let disabled = GroupScreenActions(
         select: { _ in },
         invite: {},
+        stats: {},
         members: {},
         editGroup: {},
         leaveGroup: {},
@@ -34,7 +36,7 @@ struct GroupScreenActions {
 }
 
 extension View {
-    /// The bars of a group's tab: its name, "Invite people", the "⋯" menu and "Split a bill" (the bottom toolbar's
+    /// The bars of a group's tab: its name, "Statistics", "Invite people", the "⋯" menu and "Split a bill" (the bottom toolbar's
     /// prominent glass item on iPhone, iOS has no FAB; the window toolbar's primary button on the Mac, with the tabs
     /// in the toolbar). `header` is nil until the screen is loaded, which disables the buttons. Offline, the menu's
     /// Leave and Delete need the internet; the dialogs they open come with the bars.
@@ -110,6 +112,10 @@ private struct GroupScreenBars: ViewModifier {
                 .disabled(!isLoaded)
         }
         #endif
+        ToolbarItem(placement: .primaryAction) {
+            Button("Statistics", systemImage: "chart.bar", action: actions.stats)
+                .disabled(!isLoaded)
+        }
         ToolbarItem(placement: .primaryAction) {
             Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
                 .disabled(!isLoaded)

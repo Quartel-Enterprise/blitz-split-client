@@ -8611,6 +8611,702 @@
           }
         }
       }
+    },
+    "Statistics" : {
+      "comment" : "The group's statistics: the toolbar button and the screen's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estatísticas"
+          }
+        }
+      }
+    },
+    "Period" : {
+      "comment" : "The group statistics: the period picker, and the x axis of the chart",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Período"
+          }
+        }
+      }
+    },
+    "The whole trip" : {
+      "comment" : "The group statistics: the period of a trip, from its first to its last bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toda a viagem"
+          }
+        }
+      }
+    },
+    "All time" : {
+      "comment" : "The group statistics: the period of a group that isn't a trip, from its first to its last bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo o período"
+          }
+        }
+      }
+    },
+    "This year" : {
+      "comment" : "The group statistics: a period",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este ano"
+          }
+        }
+      }
+    },
+    "This month" : {
+      "comment" : "The group statistics: a period",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este mês"
+          }
+        }
+      }
+    },
+    "Last month" : {
+      "comment" : "The group statistics: a period",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mês passado"
+          }
+        }
+      }
+    },
+    "Pick dates…" : {
+      "comment" : "The group statistics: the period of days picked by hand",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher datas…"
+          }
+        }
+      }
+    },
+    "From one day to another" : {
+      "comment" : "The group statistics: under Pick dates in the period menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De um dia até outro"
+          }
+        }
+      }
+    },
+    "Statistics without expenses" : {
+      "comment" : "The group statistics: how many bills a period has, when it has none",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "no expenses"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nenhuma despesa"
+          }
+        }
+      }
+    },
+    "%lld waiting to be sent" : {
+      "comment" : "The group statistics: how many of the period's bills wait for the server",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld aguardando envio"
+          }
+        }
+      }
+    },
+    "Total spent" : {
+      "comment" : "The group statistics: the period's total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total gasto"
+          }
+        }
+      }
+    },
+    "%@ · average of %@ per person" : {
+      "comment" : "The group statistics: how many bills, then the total divided by every member",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · média de %2$@ por pessoa"
+          }
+        }
+      }
+    },
+    "%lld%% of the total" : {
+      "comment" : "The group statistics: your share as a part of the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%% do total"
+          }
+        }
+      }
+    },
+    "%lld%% of the total · you paid %@" : {
+      "comment" : "The group statistics: your share as a part of the total, then what you paid, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld%% do total · você pagou %2$@"
+          }
+        }
+      }
+    },
+    "settle-ups don't count" : {
+      "comment" : "The group statistics: payments recorded in Balances aren't counted",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "acertos não entram"
+          }
+        }
+      }
+    },
+    "Average per person" : {
+      "comment" : "The group statistics: the total divided by every member, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Média por pessoa"
+          }
+        }
+      }
+    },
+    "By person" : {
+      "comment" : "The group statistics: section of each person's spending",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por pessoa"
+          }
+        }
+      }
+    },
+    "Show by person" : {
+      "comment" : "The group statistics: the picker between Consumed and Paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar por pessoa"
+          }
+        }
+      }
+    },
+    "Consumed" : {
+      "comment" : "The group statistics: each person's share of the bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consumo"
+          }
+        }
+      }
+    },
+    "Paid" : {
+      "comment" : "The group statistics: what each person paid at the time",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagou"
+          }
+        }
+      }
+    },
+    "Consumed is each one's share of the expenses, as each bill was split." : {
+      "comment" : "The group statistics: under By person with Consumed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consumo é a parte de cada um nas despesas, como foi dividida em cada conta."
+          }
+        }
+      }
+    },
+    "What each one paid at the time. The difference between what they paid and what they consumed becomes a balance, in Balances." : {
+      "comment" : "The group statistics: under By person with Paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quanto cada um pagou na hora. A diferença entre o que pagou e o que consumiu vira saldo, em Saldos."
+          }
+        }
+      }
+    },
+    "Over time" : {
+      "comment" : "The group statistics: section of the chart",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao longo do tempo"
+          }
+        }
+      }
+    },
+    "Chart type" : {
+      "comment" : "The group statistics: the picker between bars and a line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo de gráfico"
+          }
+        }
+      }
+    },
+    "Bars" : {
+      "comment" : "The group statistics: the chart as bars",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barras"
+          }
+        }
+      }
+    },
+    "Line" : {
+      "comment" : "The group statistics: the chart as a line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linha"
+          }
+        }
+      }
+    },
+    "Group by" : {
+      "comment" : "The group statistics: the picker of day, week, month or year",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agrupar por"
+          }
+        }
+      }
+    },
+    "Day" : {
+      "comment" : "The group statistics: the chart by day",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dia"
+          }
+        }
+      }
+    },
+    "Week" : {
+      "comment" : "The group statistics: the chart by week",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semana"
+          }
+        }
+      }
+    },
+    "Month" : {
+      "comment" : "The group statistics: the chart by month",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mês"
+          }
+        }
+      }
+    },
+    "Year" : {
+      "comment" : "The group statistics: the chart by year",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ano"
+          }
+        }
+      }
+    },
+    "Most expensive day: %@," : {
+      "comment" : "The group statistics: before its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dia mais caro: %@,"
+          }
+        }
+      }
+    },
+    "Most expensive week: %@," : {
+      "comment" : "The group statistics: before its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semana mais cara: %@,"
+          }
+        }
+      }
+    },
+    "Most expensive month: %@," : {
+      "comment" : "The group statistics: before its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mês mais caro: %@,"
+          }
+        }
+      }
+    },
+    "Most expensive year: %@," : {
+      "comment" : "The group statistics: before its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ano mais caro: %@,"
+          }
+        }
+      }
+    },
+    "nothing" : {
+      "comment" : "The group statistics: a day of the chart without bills, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nada"
+          }
+        }
+      }
+    },
+    "Spending by day: %@" : {
+      "comment" : "The group statistics: the chart for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastos por dia: %@"
+          }
+        }
+      }
+    },
+    "Spending by week: %@" : {
+      "comment" : "The group statistics: the chart for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastos por semana: %@"
+          }
+        }
+      }
+    },
+    "Spending by month: %@" : {
+      "comment" : "The group statistics: the chart for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastos por mês: %@"
+          }
+        }
+      }
+    },
+    "Spending by year: %@" : {
+      "comment" : "The group statistics: the chart for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastos por ano: %@"
+          }
+        }
+      }
+    },
+    "Day works for periods of up to 3 months." : {
+      "comment" : "The group statistics: why Day is off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dia vale para períodos de até 3 meses."
+          }
+        }
+      }
+    },
+    "Week, Month and Year show up in periods longer than a week." : {
+      "comment" : "The group statistics: why Week, Month and Year are off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semana, Mês e Ano aparecem em períodos mais longos que uma semana."
+          }
+        }
+      }
+    },
+    "Month and Year show up in periods longer than a month." : {
+      "comment" : "The group statistics: why Month and Year are off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mês e Ano aparecem em períodos mais longos que um mês."
+          }
+        }
+      }
+    },
+    "Year shows up in periods longer than a year." : {
+      "comment" : "The group statistics: why Year is off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ano aparece em períodos mais longos que um ano."
+          }
+        }
+      }
+    },
+    "To compare years, pick Year: the period becomes All time." : {
+      "comment" : "The group statistics: what picking Year does",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para comparar anos, escolha Ano: o período vira Todo o período."
+          }
+        }
+      }
+    },
+    "To compare years, pick Year: the period becomes The whole trip." : {
+      "comment" : "The group statistics: what picking Year does in a trip",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para comparar anos, escolha Ano: o período vira Toda a viagem."
+          }
+        }
+      }
+    },
+    "Biggest expense" : {
+      "comment" : "The group statistics: the period's biggest bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maior despesa"
+          }
+        }
+      }
+    },
+    "Nothing to show yet" : {
+      "comment" : "The group statistics: a group without bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada para mostrar ainda"
+          }
+        }
+      }
+    },
+    "The statistics show up once the first expense is added." : {
+      "comment" : "The group statistics: a group without bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As estatísticas aparecem quando a primeira despesa for lançada."
+          }
+        }
+      }
+    },
+    "No expenses in %@" : {
+      "comment" : "The group statistics: a period without bills; %@ is its month or year",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa em %@"
+          }
+        }
+      }
+    },
+    "No expenses in that period" : {
+      "comment" : "The group statistics: a period without bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa nesse período"
+          }
+        }
+      }
+    },
+    "All of this group's expenses are from %@." : {
+      "comment" : "The group statistics: a period without bills; %@ is when the group's bills are",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas as despesas deste grupo são de %@."
+          }
+        }
+      }
+    },
+    "See the whole trip" : {
+      "comment" : "The group statistics: goes back to the whole trip",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver toda a viagem"
+          }
+        }
+      }
+    },
+    "See all time" : {
+      "comment" : "The group statistics: goes back to the whole period",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todo o período"
+          }
+        }
+      }
+    },
+    "Pick dates" : {
+      "comment" : "The group statistics: title of the sheet that picks the days",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher datas"
+          }
+        }
+      }
+    },
+    "From" : {
+      "comment" : "The group statistics: the first day picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De"
+          }
+        }
+      }
+    },
+    "To" : {
+      "comment" : "The group statistics: the last day picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Até"
+          }
+        }
+      }
+    },
+    "Apply" : {
+      "comment" : "The group statistics: uses the days picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplicar"
+          }
+        }
+      }
+    },
+    "%lld expenses" : {
+      "comment" : "The group statistics: how many bills a period has",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld expenses"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld despesa"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld despesas"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
