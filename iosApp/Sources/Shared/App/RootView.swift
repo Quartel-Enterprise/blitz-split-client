@@ -37,8 +37,11 @@ struct RootView: View {
             }
             // A bill open as a sheet (iPad, Mac) is edited in a sheet over it
             .sheet(item: $app.stackedSheet) { route in
-                NavigationStack {
+                NavigationStack(path: $app.stackedSheetPath) {
                     screen(for: route)
+                        .navigationDestination(for: AppRoute.self) { route in
+                            screen(for: route)
+                        }
                 }
             }
         }
