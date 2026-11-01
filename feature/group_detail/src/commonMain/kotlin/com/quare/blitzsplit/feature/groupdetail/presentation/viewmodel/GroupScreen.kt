@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.faceOf
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -15,7 +16,6 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
-import com.quare.blitzsplit.core.sync.exit.faceOf
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

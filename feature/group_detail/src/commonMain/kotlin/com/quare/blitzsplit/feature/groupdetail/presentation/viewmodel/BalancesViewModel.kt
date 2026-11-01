@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitUiState
+import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.sync.exit.debtRowOf
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
