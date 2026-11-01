@@ -357,7 +357,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group on top and "Entrar no grupo" and "Agora não" below ("Quem é você" is drawn like the book there). "Não estou
     na lista" is a bottom sheet on an Android phone, a 560 dp dialog on its tablets and foldables upright and in a
     book's right half, a sheet on iOS, a dialog on the web (a drawer on a phone). The web's "Quem é você" heads the
-    names with the invite ("Convite de Pierre", "Entre na Viagem Floripa"), beside the names from 1024 px, and pins
+    names with the invite ("Convite de Pierre", "Entre no grupo Viagem Floripa"), beside the names from 1024 px, and pins
     "Entrar como Bruno" at the bottom of a phone. The Mac opens the invite as one sheet over the window, "Quem é você"
     pushed inside it. Joining with no profile on the device makes one from the name and
     color joined as. A member someone else already joined as says "Se era você, peça para <criador> liberar o nome em

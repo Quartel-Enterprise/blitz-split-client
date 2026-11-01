@@ -541,7 +541,7 @@ export const pt: Record<MessageKey, string> = {
   join_personalNotMe: 'Não sou {name}',
   join_pickTitle: 'Quem é você no grupo?',
   join_pickSummaryChip: 'Convite de {name}',
-  join_pickSummaryTitle: 'Entre na {group}',
+  join_pickSummaryTitle: 'Entre no grupo {group}',
   join_pickSummaryBody: 'Não precisa criar conta. Escolha quem você é e veja na hora quanto já foi gasto por você.',
   join_pickFootnote: 'Sem conta, seus dados ficam neste navegador. Dá para conectar Google ou Apple depois, em Perfil.',
   join_pickSubtitle: 'Escolha seu nome. Você vai ver os gastos que já foram lançados para essa pessoa.',
