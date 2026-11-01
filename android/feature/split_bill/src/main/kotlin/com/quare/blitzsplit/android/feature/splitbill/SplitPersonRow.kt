@@ -152,7 +152,7 @@ internal fun SplitPersonRow(
                 )
             }
             when (mode) {
-                SplitMode.EQUAL -> Text(
+                SplitMode.EQUAL, SplitMode.ITEMS -> Text(
                     text = row.shareMinor?.let(money::toText) ?: stringResource(R.string.split_bill_no_share),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
@@ -218,7 +218,7 @@ private fun rowSubtitleOf(
         },
     )
 
-    SplitMode.PERCENT, SplitMode.SHARES -> row.shareMinor?.let(money::toText)
+    SplitMode.PERCENT, SplitMode.SHARES, SplitMode.ITEMS -> row.shareMinor?.let(money::toText)
         ?: stringResource(if (isIn) R.string.split_bill_no_share else R.string.split_bill_row_out)
 }
 
@@ -306,36 +306,63 @@ private fun PartsStepperRow(
     name: String,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val label = stringResource(R.string.split_bill_person_parts, name)
+    CountStepperRow(
+        count = row.parts,
+        label = stringResource(R.string.split_bill_person_parts, name),
+        decreaseLabel = stringResource(R.string.split_bill_parts_decrease),
+        increaseLabel = stringResource(R.string.split_bill_parts_increase),
+        canDecrease = row.parts > 0,
+        canIncrease = true,
+        isError = false,
+        onDecrease = { onEvent(SplitBillUiEvent.OnPartsDecreased(row.person.id)) },
+        onIncrease = { onEvent(SplitBillUiEvent.OnPartsIncreased(row.person.id)) },
+    )
+}
+
+// Why: "−  2  +", Partes' stepper and the item's quantity, units and parts, read out as one control.
+@Composable
+internal fun CountStepperRow(
+    count: Long,
+    label: String,
+    decreaseLabel: String,
+    increaseLabel: String,
+    canDecrease: Boolean,
+    canIncrease: Boolean,
+    isError: Boolean,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
+) {
     Row(
         modifier = Modifier.semantics { contentDescription = label },
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FilledTonalIconButton(
-            onClick = { onEvent(SplitBillUiEvent.OnPartsDecreased(row.person.id)) },
+            onClick = onDecrease,
             modifier = Modifier.size(36.dp),
-            enabled = row.parts > 0,
+            enabled = canDecrease,
         ) {
             Icon(
                 imageVector = Icons.Outlined.Remove,
-                contentDescription = stringResource(R.string.split_bill_parts_decrease),
+                contentDescription = decreaseLabel,
             )
         }
         Text(
-            text = row.parts.toString(),
+            text = count.toString(),
             modifier = Modifier.width(28.dp),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
+            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
         )
         FilledTonalIconButton(
-            onClick = { onEvent(SplitBillUiEvent.OnPartsIncreased(row.person.id)) },
+            onClick = onIncrease,
             modifier = Modifier.size(36.dp),
+            enabled = canIncrease,
         ) {
             Icon(
                 imageVector = Icons.Outlined.Add,
-                contentDescription = stringResource(R.string.split_bill_parts_increase),
+                contentDescription = increaseLabel,
             )
         }
     }

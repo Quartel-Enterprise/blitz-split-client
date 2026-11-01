@@ -64,11 +64,13 @@ struct RestoreView: View {
     var body: some View {
         Group {
             if layout.usesTwoColumns {
-                HStack(alignment: .top, spacing: 48) {
+                // An iPhone Duo open splits on its fold: the accounts on one side, the code on the other
+                TwoColumnsLayout {
                     ScrollView {
                         RestoreIntro(model: model, isLarge: layout.isLarge)
                     }
                     .scrollBounceBehavior(.basedOnSize)
+                } second: {
                     VStack(spacing: 16) {
                         ScrollView {
                             RestoreCodeSection(model: model)
@@ -77,7 +79,6 @@ struct RestoreView: View {
                         RestoreActions(model: model)
                     }
                 }
-                .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
                 .padding(.horizontal, 32)
                 .padding(.bottom, 12)
             } else {

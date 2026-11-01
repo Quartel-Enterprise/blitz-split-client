@@ -1,11 +1,19 @@
 package com.quare.blitzsplit.core.expenses.data.mapper
 
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseDto
+import com.quare.blitzsplit.core.expenses.data.dto.ExpenseItemDto
+import com.quare.blitzsplit.core.expenses.data.dto.ExpenseItemEntryDto
+import com.quare.blitzsplit.core.expenses.data.dto.ExpenseItemsDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpensePayerDto
 import com.quare.blitzsplit.core.expenses.data.dto.ExpenseShareDto
+import com.quare.blitzsplit.core.expenses.domain.model.BillItem
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
+import com.quare.blitzsplit.core.expenses.domain.model.BillItemsSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
@@ -15,31 +23,44 @@ import kotlinx.serialization.json.Json
 class ExpenseMapperImpl : ExpenseMapper {
     private val json = Json { ignoreUnknownKeys = true }
 
-    // Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips.
+    /*
+     * Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips.
+     * Items that don't give the stored shares (malformed, beyond what this version can save, or a mode it doesn't
+     * know) leave the bill split by amounts, which its shares still are.
+     */
     override fun toDomain(row: ExpenseWithEditor): Expense? {
         val entity = row.expense
-        val splitMode = SplitMode.fromCodeOrNull(entity.splitMode) ?: return null
-        val payers = decodeOrNull { decodePayers(entity.payersJson) } ?: return null
-        val shares = decodeOrNull { decodeShares(entity.sharesJson) } ?: return null
+        val storedMode = SplitMode.fromCodeOrNull(entity.splitMode)?.takeIf { it != SplitMode.ITEMS } ?: return null
+        val payerDtos = decodeOrNull { decodePayers(entity.payersJson) } ?: return null
+        val shareDtos = decodeOrNull { decodeShares(entity.sharesJson) } ?: return null
+        val payers = payerDtos.map {
+            ExpensePayer(
+                memberId = it.memberId,
+                amountMinor = it.amountMinor,
+            )
+        }
+        val shares = shareDtos.map {
+            ExpenseShare(
+                memberId = it.memberId,
+                amountMinor = it.amountMinor,
+                weight = it.weight,
+            )
+        }
+        val items = entity.itemsJson
+            ?.takeIf { storedMode == SplitMode.AMOUNT }
+            ?.let { text -> decodeOrNull { decodeItems(text) } }
+            ?.let(::toDomainOrNull)
+            ?.takeIf { BillItemsSplit.isWellFormed(it) }
+            ?.takeIf { BillItemsSplit.sharesOf(it, payers.map { payer -> payer.memberId }) == shares }
         return Expense(
             id = entity.id,
             groupId = entity.groupId,
             description = entity.description,
             amountMinor = entity.amountMinor,
-            splitMode = splitMode,
-            payers = payers.map {
-                ExpensePayer(
-                    memberId = it.memberId,
-                    amountMinor = it.amountMinor,
-                )
-            },
-            shares = shares.map {
-                ExpenseShare(
-                    memberId = it.memberId,
-                    amountMinor = it.amountMinor,
-                    weight = it.weight,
-                )
-            },
+            splitMode = if (items != null) SplitMode.ITEMS else storedMode,
+            payers = payers,
+            shares = shares,
+            items = items,
             spentAt = entity.spentAt,
             isPending = entity.pendingSync,
             updatedAt = entity.updatedAt,
@@ -56,7 +77,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         createdBy = null,
         description = expense.description,
         amountMinor = expense.amountMinor,
-        splitMode = expense.splitMode.code,
+        splitMode = SplitMode.storedCodeOf(expense.splitMode),
         payersJson = json.encodeToString(
             expense.payers.map {
                 ExpensePayerDto(
@@ -74,6 +95,7 @@ class ExpenseMapperImpl : ExpenseMapper {
                 )
             },
         ),
+        itemsJson = expense.items?.let { json.encodeToString(toDto(it, updatedAt = createdAt)) },
         spentAt = expense.spentAt,
         isDeleted = false,
         addedAt = createdAt,
@@ -91,6 +113,8 @@ class ExpenseMapperImpl : ExpenseMapper {
         splitMode = dto.splitMode,
         payersJson = json.encodeToString(dto.payers),
         sharesJson = json.encodeToString(dto.shares),
+        // Why: items another version saved the bill without (an older updated_at) no longer give its shares.
+        itemsJson = dto.items?.takeIf { it.updatedAt == dto.updatedAt }?.let { json.encodeToString(it) },
         spentAt = dto.spentAt,
         isDeleted = dto.isDeleted,
         addedAt = dto.addedAt,
@@ -115,6 +139,10 @@ class ExpenseMapperImpl : ExpenseMapper {
         splitMode = entity.splitMode,
         payers = decodePayers(entity.payersJson),
         shares = decodeShares(entity.sharesJson),
+        // Why: stamped with the version they go up with, which tells the server they come with these shares.
+        items = entity.itemsJson
+            ?.let { text -> decodeOrNull { decodeItems(text) } }
+            ?.copy(updatedAt = entity.updatedAt),
         spentAt = entity.spentAt,
         isDeleted = entity.isDeleted,
         addedAt = entity.addedAt,
@@ -132,4 +160,59 @@ class ExpenseMapperImpl : ExpenseMapper {
     private fun decodePayers(text: String): List<ExpensePayerDto> = json.decodeFromString(text)
 
     private fun decodeShares(text: String): List<ExpenseShareDto> = json.decodeFromString(text)
+
+    private fun decodeItems(text: String): ExpenseItemsDto = json.decodeFromString(text)
+
+    private fun toDomainOrNull(dto: ExpenseItemsDto): BillItems? {
+        val items = dto.items.map { item ->
+            BillItem(
+                id = item.id,
+                name = item.name,
+                quantity = item.quantity,
+                unitPriceMinor = item.unitPriceMinor,
+                mode = ItemSplitMode.fromCodeOrNull(item.mode) ?: return null,
+                entries = item.entries.map {
+                    SplitEntry(
+                        memberId = it.memberId,
+                        value = it.value,
+                    )
+                },
+            )
+        }
+        return BillItems(
+            items = items,
+            servicePercent = dto.servicePercent,
+            couvertMinor = dto.couvertMinor,
+            couvertMemberIds = dto.couvertMemberIds,
+            extraMinor = dto.extraMinor,
+            isFromReceipt = dto.fromReceipt,
+        )
+    }
+
+    private fun toDto(
+        split: BillItems,
+        updatedAt: Long,
+    ): ExpenseItemsDto = ExpenseItemsDto(
+        updatedAt = updatedAt,
+        items = split.items.map { item ->
+            ExpenseItemDto(
+                id = item.id,
+                name = item.name,
+                quantity = item.quantity,
+                unitPriceMinor = item.unitPriceMinor,
+                mode = item.mode.code,
+                entries = item.entries.map {
+                    ExpenseItemEntryDto(
+                        memberId = it.memberId,
+                        value = it.value,
+                    )
+                },
+            )
+        },
+        servicePercent = split.servicePercent,
+        couvertMinor = split.couvertMinor,
+        couvertMemberIds = split.couvertMemberIds,
+        extraMinor = split.extraMinor,
+        fromReceipt = split.isFromReceipt,
+    )
 }

@@ -145,10 +145,128 @@
     <string name="split_bill_default_now_amount">por valores</string>
     <string name="split_bill_default_now_percent">por porcentagem</string>
     <string name="split_bill_default_now_shares">por partes</string>
+    <string name="split_bill_default_now_items">por itens</string>
     <string name="split_bill_default_reset">Voltar ao padrão</string>
     <string name="split_bill_default_description">%1$s, %2$s</string>
     <string name="split_bill_default_without">sem %s</string>
     <string name="split_bill_default_shares_two">%1$d para %2$d</string>
     <string name="split_bill_default_percent">%d%%</string>
     <string name="split_bill_hint_default">O padrão fica em Editar grupo › Divisão padrão. As contas já lançadas não mudam.</string>
+    <!-- Itens da conta (7.5) e Item (7.6) -->
+    <string name="split_bill_mode_items">Itens</string>
+    <plurals name="split_bill_mode_items_among">
+        <item quantity="one">Por itens entre %d</item>
+        <item quantity="other">Por itens entre %d</item>
+    </plurals>
+    <plurals name="split_bill_fact_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d itens</item>
+    </plurals>
+    <plurals name="split_bill_items_loose">
+        <item quantity="one">%d item sem ninguém</item>
+        <item quantity="other">%d itens sem ninguém</item>
+    </plurals>
+    <string name="split_bill_items_title">Itens da conta</string>
+    <string name="split_bill_items_count">Itens · %d</string>
+    <string name="split_bill_items_add">Adicionar item</string>
+    <string name="split_bill_items_add_difference">Adicionar item de %s</string>
+    <string name="split_bill_items_split_difference">Dividir a diferença</string>
+    <string name="split_bill_items_people">Quanto fica para cada um</string>
+    <string name="split_bill_items_fees">Serviço e couvert</string>
+    <string name="split_bill_items_service">Serviço (%d%%)</string>
+    <string name="split_bill_items_service_sub">Proporcional ao que cada um consumiu</string>
+    <string name="split_bill_items_couvert">Couvert</string>
+    <string name="split_bill_items_couvert_sub">%s por pessoa · igual para todos</string>
+    <string name="split_bill_items_extra">Diferença</string>
+    <string name="split_bill_items_extra_remove">Tirar a diferença</string>
+    <string name="split_bill_items_person_sub">%1$s em itens + %2$s de serviço e couvert</string>
+    <string name="split_bill_items_person_couvert_only">Só o couvert, por enquanto</string>
+    <string name="split_bill_items_person_nothing">Nada por enquanto</string>
+    <string name="split_bill_items_row_sub">%1$d × %2$s · %3$s</string>
+    <plurals name="split_bill_items_row_equal">
+        <item quantity="one">Igual entre %d</item>
+        <item quantity="other">Igual entre %d</item>
+    </plurals>
+    <string name="split_bill_items_row_units">Por unidade</string>
+    <string name="split_bill_items_row_shares">Por partes</string>
+    <string name="split_bill_items_row_amount">Por valor</string>
+    <string name="split_bill_items_row_percent">Por porcentagem</string>
+    <string name="split_bill_items_row_nobody">Sem ninguém</string>
+    <string name="split_bill_items_loose_all">Toque em cada item e marque quem consumiu. Pronto libera quando todos tiverem dono.</string>
+    <plurals name="split_bill_items_loose_some">
+        <item quantity="one">%1$s ainda não tem dono: %2$s fora da divisão.</item>
+        <item quantity="other">%1$s ainda não têm dono: %2$s fora da divisão.</item>
+    </plurals>
+    <string name="split_bill_items_sum_receipt">Itens, serviço e couvert somam %1$s, mas o cupom diz %2$s.</string>
+    <string name="split_bill_items_sum">Itens, serviço e couvert somam %1$s, mas o total é %2$s.</string>
+    <string name="split_bill_items_closed">%1$s em itens, %2$s de serviço e %3$s de couvert.</string>
+    <string name="split_bill_items_closed_extra">%1$s em itens, %2$s de serviço, %3$s de couvert e %4$s de diferença.</string>
+    <string name="split_bill_items_offline">Sem internet: dá para marcar tudo. A conta fica salva neste aparelho e sincroniza ao reconectar.</string>
+    <string name="split_bill_item_title">Item</string>
+    <string name="split_bill_item_name">Item</string>
+    <string name="split_bill_item_quantity">Quantidade</string>
+    <string name="split_bill_item_less">Menos um</string>
+    <string name="split_bill_item_more">Mais um</string>
+    <string name="split_bill_item_price">Preço de cada</string>
+    <string name="split_bill_item_total">Total do item</string>
+    <string name="split_bill_item_modes">Como dividir o item</string>
+    <string name="split_bill_item_mode_equal">Igual</string>
+    <string name="split_bill_item_mode_units">Unidades</string>
+    <string name="split_bill_item_mode_shares">Partes</string>
+    <string name="split_bill_item_mode_amount">Valor</string>
+    <string name="split_bill_item_mode_percent">%</string>
+    <string name="split_bill_item_delete">Apagar item</string>
+    <string name="split_bill_item_nobody">Ninguém marcado</string>
+    <string name="split_bill_item_nobody_sub">Marque quem consumiu este item. Pronto libera quando ele tiver dono.</string>
+    <plurals name="split_bill_item_units_closed">
+        <item quantity="one">%1$d de %2$d unidade</item>
+        <item quantity="other">%1$d de %2$d unidades</item>
+    </plurals>
+    <string name="split_bill_item_units_price">Cada unidade custa %s.</string>
+    <plurals name="split_bill_item_units_left">
+        <item quantity="one">Falta %d unidade</item>
+        <item quantity="other">Faltam %d unidades</item>
+    </plurals>
+    <plurals name="split_bill_item_units_left_sub">
+        <item quantity="one">%1$d de %2$d marcadas. Diga quem ficou com a outra.</item>
+        <item quantity="other">%1$d de %2$d marcadas. Diga quem ficou com as outras.</item>
+    </plurals>
+    <plurals name="split_bill_item_units_over">
+        <item quantity="one">Passou %d unidade</item>
+        <item quantity="other">Passou %d unidades</item>
+    </plurals>
+    <string name="split_bill_item_units_marked">%1$d de %2$d marcadas.</string>
+    <plurals name="split_bill_item_person_parts">
+        <item quantity="one">%1$s ficou com %2$d parte.</item>
+        <item quantity="other">%1$s ficou com %2$d partes.</item>
+    </plurals>
+    <plurals name="split_bill_item_my_parts">
+        <item quantity="one">Você ficou com %d parte.</item>
+        <item quantity="other">Você ficou com %d partes.</item>
+    </plurals>
+    <string name="split_bill_item_amount_closed">A soma das partes é igual ao item.</string>
+    <string name="split_bill_item_percent_progress">Já foram %1$d%% de 100%%.</string>
+    <string name="split_bill_item_list_equal">Quem dividiu</string>
+    <string name="split_bill_item_list_units">Quantas cada um consumiu</string>
+    <string name="split_bill_item_list_shares">Partes de cada um</string>
+    <string name="split_bill_item_list_amount">Quanto cada um consumiu</string>
+    <string name="split_bill_item_list_percent">Porcentagem de cada um</string>
+    <string name="split_bill_item_hint_units">Unidades só aparece quando o item tem mais de uma.</string>
+    <string name="split_bill_item_hint_equal">Os centavos que sobram ficam com quem pagou.</string>
+    <string name="split_bill_item_hint_shares">Use partes quando alguém come mais do mesmo prato.</string>
+    <string name="split_bill_item_hint_amount">Quem fica com %s sai do item.</string>
+    <string name="split_bill_item_hint_percent">Só números inteiros.</string>
+    <string name="split_bill_item_person_had">%s consumiu</string>
+    <string name="split_bill_item_person_units">Unidades de %s</string>
+    <string name="split_bill_item_delete_title">Apagar este item?</string>
+    <string name="split_bill_item_delete_text">“%1$s” (%2$s) sai da conta.</string>
+    <string name="split_bill_item_delete_text_service">“%1$s” (%2$s) sai da conta e o serviço é refeito.</string>
+    <string name="split_bill_item_delete_left">Os itens deixam de fechar com o total: falta dividir %s.</string>
+    <string name="split_bill_item_delete_confirm">Apagar</string>
+    <string name="split_bill_fee_service_title">Serviço</string>
+    <string name="split_bill_fee_service_field">Porcentagem do serviço</string>
+    <string name="split_bill_fee_service_help">0 para uma conta sem serviço.</string>
+    <string name="split_bill_fee_couvert_title">Couvert</string>
+    <string name="split_bill_fee_couvert_field">Couvert por pessoa</string>
+    <string name="split_bill_fee_couvert_help">Igual para todos da mesa. 0 para nenhum.</string>
 </resources>

@@ -38,6 +38,8 @@ data class ExpenseEntity(
      */
     val payersJson: String,
     val sharesJson: String,
+    // Why: "Itens da conta" the shares come from, as the server's jsonb; null for a bill split any other way.
+    val itemsJson: String?,
     // Why: "Quando", which the group's list sorts and groups by day.
     val spentAt: Long,
     // Why: "Apagar conta" keeps a tombstone, so every device drops the bill.

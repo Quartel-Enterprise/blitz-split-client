@@ -1013,6 +1013,7 @@ class EditBillViewModelTest {
         splitMode = splitMode,
         payers = listOf(ExpensePayer(ANA, 31_200L)),
         shares = shares,
+        items = null,
         spentAt = yesterdayMillis,
         isPending = false,
         updatedAt = SAVED_VERSION,

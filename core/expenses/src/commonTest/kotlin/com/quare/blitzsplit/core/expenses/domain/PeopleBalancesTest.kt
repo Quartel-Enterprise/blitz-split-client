@@ -486,6 +486,7 @@ class PeopleBalancesTest {
         splitMode = SplitMode.AMOUNT,
         payers = payers,
         shares = shares,
+        items = null,
         spentAt = spentAt,
         isPending = false,
         updatedAt = 0L,

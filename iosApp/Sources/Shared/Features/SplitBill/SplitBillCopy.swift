@@ -4,7 +4,7 @@ import SwiftUI
 /// The words of "Split a bill" and "Split", composed from the state: the shared code hands over people, modes and
 /// amounts, and each platform writes its own sentences.
 enum SplitBillCopy {
-    static let modes: [SplitMode] = [.equal, .amount, .percent, .shares]
+    static let modes: [SplitMode] = [.equal, .amount, .percent, .shares, .items]
 
     /// "Split" names both the bill's row ("Divisão") and the screen that edits it ("Dividir"): the screen's title
     /// has a key of its own.
@@ -25,6 +25,7 @@ enum SplitBillCopy {
         case .amount: Text("Amounts")
         case .percent: Text(verbatim: "%")
         case .shares: Text("Shares")
+        case .items: Text("Items")
         default: Text("Equal")
         }
     }
@@ -35,6 +36,7 @@ enum SplitBillCopy {
         case .amount: String(localized: "By amount")
         case .percent: String(localized: "By percentage")
         case .shares: String(localized: "By shares")
+        case .items: String(localized: "By items")
         default: String(localized: "Equally")
         }
     }
@@ -45,6 +47,7 @@ enum SplitBillCopy {
         case .amount: "How much each one had"
         case .percent: "Each one's percentage"
         case .shares: "Each one's shares"
+        case .items: "How much each one had"
         default: "Who's in"
         }
     }
@@ -220,6 +223,11 @@ enum SplitBillCopy {
             return String(localized: "\(Int(fact.count)) shares of \(currency.format(fact.partMinor))")
         case is SplitFactGroupDefault:
             return String(localized: "Group default")
+        case let fact as SplitFactItems:
+            let count = Int(fact.count)
+            return count == 1 ? String(localized: "1 item") : String(localized: "\(count) items")
+        case let fact as SplitFactLooseItems:
+            return ItemsCopy.looseCount(Int(fact.count))
         case let fact as SplitFactPersonParts:
             let parts = Int(fact.parts)
             return fact.person.isMe
@@ -268,7 +276,7 @@ enum SplitBillCopy {
             }
             if !person.hasJoined { return (String(localized: "Hasn't joined yet"), false) }
             return (String(localized: "Their part"), false)
-        case .percent, .shares:
+        case .percent, .shares, .items:
             if isOut { return (String(localized: "Out"), false) }
             return (share ?? "—", false)
         default:

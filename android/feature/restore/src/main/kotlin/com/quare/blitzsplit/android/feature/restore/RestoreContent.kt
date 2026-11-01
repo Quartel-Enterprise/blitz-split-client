@@ -53,6 +53,8 @@ import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreError
@@ -73,6 +75,7 @@ fun RestoreContent(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surface,
     ) {
+        val isBook = rememberFoldLayout().bookSplit != null
         AdaptiveScreen(modifier = Modifier.fillMaxSize()) { layout ->
             Column(
                 modifier = Modifier
@@ -88,7 +91,13 @@ fun RestoreContent(
                         modifier = Modifier.padding(8.dp),
                     )
                 }
-                if (layout.usesTwoColumns) {
+                if (isBook) {
+                    RestoreBookLayout(
+                        state = state,
+                        onEvent = onEvent,
+                        layout = layout,
+                    )
+                } else if (layout.usesTwoColumns) {
                     RestoreTwoColumnsLayout(
                         state = state,
                         onEvent = onEvent,
@@ -246,6 +255,65 @@ private fun ColumnScope.RestoreTwoColumnsLayout(
             }
         }
     }
+}
+
+// Why: a book (and a tabletop lying down) splits on the hinge: the accounts in the half before it, the code after it.
+@Composable
+private fun ColumnScope.RestoreBookLayout(
+    state: RestoreUiState,
+    onEvent: (RestoreUiEvent) -> Unit,
+    layout: DeviceLayout,
+) {
+    TwoHalvesLayout(
+        start = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 32.dp,
+                        end = 24.dp,
+                    ),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                RestoreIntroSection(
+                    state = state,
+                    onEvent = onEvent,
+                    layout = layout,
+                )
+            }
+        },
+        end = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        RestoreCodeSection(
+                            state = state,
+                            onEvent = onEvent,
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        RestoreActionsSection(
+                            state = state,
+                            onEvent = onEvent,
+                        )
+                    }
+                }
+            }
+        },
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
+            .padding(bottom = 32.dp),
+    )
 }
 
 @Composable

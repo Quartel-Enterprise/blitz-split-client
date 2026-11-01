@@ -1074,6 +1074,7 @@ class SplitEditorTest {
         rows = rows.toList(),
         totalMinor = totalMinor,
         payerIds = listOf(PIERRE),
+        items = null,
         currency = GroupCurrency.BRL,
     )
 

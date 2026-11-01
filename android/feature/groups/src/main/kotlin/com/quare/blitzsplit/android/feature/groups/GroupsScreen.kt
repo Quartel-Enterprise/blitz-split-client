@@ -25,9 +25,12 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 @Composable
 fun GroupsScreen(
     recoveryCodeSheet: @Composable () -> Unit,
+    // Why: the app draws the empty home in one pane on a tablet lying down, beside an empty detail on a book.
+    onEmptyChanged: (Boolean) -> Unit = {},
     viewModel: GroupsViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(state.showsEmptyState) { onEmptyChanged(state.showsEmptyState) }
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             GroupsUiAction.ShowComingSoon -> R.string.groups_coming_soon
@@ -57,9 +60,11 @@ fun GroupsScreen(
     )
     /*
      * Why: the window decides whether the group opens beside the list, which the ViewModel needs for taps and search.
-     * Once the home leaves the screen (turned upright with a group open, the list no longer drawn) it draws no pane.
+     * Once the home leaves the screen (turned upright with a group open, the list no longer drawn) it draws no pane,
+     * nor on a tablet lying down while there is no group at all, which the app draws in one pane (a book keeps both).
      */
-    val showsDetailPane = rememberListDetailLayout() != null
+    val listDetail = rememberListDetailLayout()
+    val showsDetailPane = listDetail != null && (listDetail.isBook || !state.showsEmptyState)
     DisposableEffect(showsDetailPane) {
         viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(showsDetailPane))
         onDispose { viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = false)) }

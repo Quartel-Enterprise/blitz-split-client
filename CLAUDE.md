@@ -114,8 +114,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Membros taking each other's place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
     tapped beside another takes its place; Convidar, Sair, Apagar and "Ver saldos" work from the list with the group
     beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
-    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). Only the group's tabs go
-    in the pane: anything else above the groups (Estatísticas, the profile, a joined invite) covers the whole window,
+    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). With no group at all
+    (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
+    exists, while a book and an iPhone Duo open keep the half past the fold, saying "Nenhum grupo aberto"
+    (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane: anything else above the groups
+    (Estatísticas, the profile, a joined invite) covers the whole window,
     and a dialog or sheet (Convidar, Rachar conta, Conta) both panes, so the list never shows while it can't take
     taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
@@ -124,8 +127,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
-  - "Novo grupo": tapping the group's avatar cycles its color through the palette (no shapes yet), and Moeda starts
-    in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+  - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
+    participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
+    right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
+    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar cycles its
+    color through the palette (no shapes yet), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
     grupo") and "Ana 2".
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
@@ -309,7 +315,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
-    Valores, % (whole numbers adding up to 100) or Partes, and only changes the bill on "Pronto". A new bill starts
+    Valores, % (whole numbers adding up to 100), Partes or Itens, and only changes the bill on "Pronto". A new bill starts
     from the group's "Divisão padrão" (Pela renda as its percentages) and follows it, and a sync's change of it,
     until "Pronto" picks its own (another group picked starts over from that one's); percentages someone who left
     took part of start Igual among everyone. Someone who joins while Dividir is open and still on the default gets
@@ -324,6 +330,26 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     user first, `PayerOrder`) and count more ("3 pessoas pagaram"), and Dividir marks each of several payers "Pagou
     parte da conta"; Conta's "Sua parte" names whom the bill puts it on, as Saldos does
     (`GroupBalances.findDebtsWithin`).
+  - "Itens da conta" (7.5, `SplitBillUiState.itemsEditor`) is Dividir's fifth mode, "Itens": it opens in Dividir's
+    place (pushed on iOS, the sheet's next page on the Mac, a 920 px dialog on the web, 640 px on a tablet, a drawer on
+    a phone), and a bill already split by its items opens Dividir straight on it. Each item has a name (1 to 60
+    letters), a quantity (1 to 999) and a price of each, and "Item" (7.6, `itemEditor`) splits it among who consumed
+    it by Igual, Unidades (only above one unit), Partes, Valor or %, its own leftover cents to whoever paid while they
+    had some (`BillItemsSplit`); its Pronto waits for a name, a price and someone, and while Unidades, Valor or % don't
+    close it says what is missing next to whoever changed last (`ItemPersonLine.isError`). "Serviço" is a whole
+    percentage of the items (10% to start, 0 for none) shared in proportion to what each one consumed, and the
+    "Couvert" a value per person (none to start) for everyone in the group when the items were split
+    (`BillItems.couvertMemberIds`); tapping either row opens its field. Pronto waits until every item has someone
+    ("2 itens sem ninguém", in red) and the items, service and couvert close with the total ("Faltam R$ 15,00" or
+    "Passou", "o cupom diz" for items a receipt gave), offering "Adicionar item de R$ 15,00" (a new item at that price)
+    and "Dividir a diferença" (shared in proportion to what each one consumed, a "Diferença" row that can be taken
+    off). Apagar item asks first, saying what is left to split once it goes. Back keeps the items typed for Itens to
+    open with again until Dividir closes or another mode's Pronto. The bill keeps its items inside its row
+    (`expenses.items`, stamped with the bill's `updated_at`) beside shares holding each one's total, stored as
+    "amount": an older version reads it by Valores, and items another version saved the bill without are dropped,
+    on the server too. Lying down and on tablets the status and what each one pays sit beside the items; a phone,
+    lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. Items from a
+    receipt read (7.1e) come later.
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
@@ -358,8 +384,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     `FoldingFeature`, read as `FormFactor`; iOS 27.1's division region, `FoldDivision`), so a Galaxy Z Fold held as a
     book is a book: two halves meet on the hinge band (24 dp on Android) and a dialog the book draws opens in its
     right half with the other half under the scrim (`FoldDialog`), as the recovery code does on a book and on a
-    tabletop lying down (there above its hinge, which runs across the right half too). Every Apple layout rule is
-    the window's size (`ScreenLayout`), never the idiom, so an iPhone Duo open gets an iPad's list and detail and
+    tabletop lying down (there above its hinge, which runs across the right half too). First access splits there
+    too: Boas-vindas' pitch, Seu perfil's avatar and Recuperar's accounts before the fold, what to tap after it, on
+    a book, a tabletop lying down and an iPhone Duo open; the Duo closed drops Boas-vindas' benefits. Every Apple
+    layout rule is the window's size (`ScreenLayout`), never the idiom, so an iPhone Duo open gets an iPad's list and
+    detail and
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
     [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
@@ -15,6 +16,7 @@ internal fun pendingExpenseOf(
     payers: List<ExpensePayer>,
     splitMode: SplitMode,
     shares: List<ExpenseShare>,
+    items: BillItems?,
     spentAt: Long,
     now: Long,
 ): Expense = Expense(
@@ -26,6 +28,7 @@ internal fun pendingExpenseOf(
     splitMode = splitMode,
     payers = payers,
     shares = shares,
+    items = items,
     spentAt = spentAt,
     isPending = true,
     updatedAt = now,

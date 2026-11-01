@@ -209,6 +209,7 @@ class ExpenseDaoTest {
             splitMode = "equal",
             payersJson = "[]",
             sharesJson = "[]",
+            itemsJson = null,
             spentAt = 1_000L,
             now = 9L,
         )
@@ -217,6 +218,44 @@ class ExpenseDaoTest {
         val stored = dao.observeExpense("bill-1").first()?.expense
         assertEquals(null to true, stored?.updatedBy to stored?.pendingSync)
     }
+
+    @Test
+    fun `GIVEN a bill split by its items WHEN edited by amounts and a newer server row comes THEN its items follow`() =
+        runTest {
+            // Given
+            prepareScenario(expenses = listOf(expense(id = "bill-1")))
+            dao.updateExpense(
+                id = "bill-1",
+                description = "Jantar",
+                amountMinor = 1_000L,
+                splitMode = "amount",
+                payersJson = "[]",
+                sharesJson = "[]",
+                itemsJson = "{\"items\":[]}",
+                spentAt = 1_000L,
+                now = 9L,
+            )
+            val edited = dao.observeExpense("bill-1").first()?.expense
+
+            // When
+            dao.applyRemote(
+                expense(
+                    id = "bill-1",
+                    updatedAt = 20L,
+                ),
+            )
+
+            // Then
+            assertEquals("{\"items\":[]}", edited?.itemsJson)
+            assertEquals(
+                null,
+                dao
+                    .observeExpense("bill-1")
+                    .first()
+                    ?.expense
+                    ?.itemsJson,
+            )
+        }
 
     @Test
     fun `GIVEN a bill another user saved WHEN deleted here THEN nobody is its editor until it syncs`() = runTest {
@@ -307,6 +346,7 @@ class ExpenseDaoTest {
         splitMode = "equal",
         payersJson = "[]",
         sharesJson = "[]",
+        itemsJson = null,
         spentAt = spentAt,
         isDeleted = isDeleted,
         addedAt = 1L,

@@ -1312,6 +1312,7 @@ class BalancesViewModelTest {
                 weight = 1,
             ),
         ),
+        items = null,
         spentAt = paidAt,
         isPending = false,
         updatedAt = paidAt,
