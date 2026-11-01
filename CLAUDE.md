@@ -305,7 +305,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     a pasted link opens.
   - Android's "Tirar foto" asks for the camera first. Once it is refused for good, a snackbar "Permita a câmera nas
     configurações" offers "Configurações", which opens the app's settings page.
-  - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.
+  - Foldables and the iPhone Duo follow the fold the device reports, never the window alone (decision 8: Android's
+    `FoldingFeature`, read as `FormFactor`; iOS 27.1's division region, `FoldDivision`), so a Galaxy Z Fold held as a
+    book is a book: two halves meet on the hinge band (24 dp on Android) and a dialog the book draws opens in its
+    right half with the other half under the scrim (`FoldDialog`), as the recovery code does on a book and on a
+    tabletop lying down. Every Apple layout rule is the window's size (`ScreenLayout`), never the idiom, so an
+    iPhone Duo open gets an iPad's list and detail and opens a key and a bill as sheets; its copy still says
+    "iPhone". How each screen picks its layout: [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
+  - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
+    SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
