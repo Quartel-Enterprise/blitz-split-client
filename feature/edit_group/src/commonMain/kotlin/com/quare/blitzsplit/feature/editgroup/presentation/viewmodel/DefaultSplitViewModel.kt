@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
@@ -37,6 +39,7 @@ class DefaultSplitViewModel(
     private val getSplitIncomes: GetSplitIncomes,
     private val decimalSeparator: DeviceDecimalSeparator,
     observeGroup: ObserveGroup,
+    observeCategoryTree: ObserveCategoryTree,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<DefaultSplitUiState>
@@ -58,6 +61,9 @@ class DefaultSplitViewModel(
                     incomeFallback = emptyMap(),
                     currency = GroupCurrency.fallback,
                 ),
+                exceptions = emptyList(),
+                categories = CategoryTree.appOnly,
+                exceptionEditor = null,
             ),
         )
 
@@ -79,6 +85,9 @@ class DefaultSplitViewModel(
                 isGroupGone = group == null
                 if (group == null) leave() else show(group)
             }.launchIn(viewModelScope)
+        observeCategoryTree(route.groupId)
+            .onEach { tree -> uiState.update { it.copy(categories = tree) } }
+            .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
@@ -116,6 +125,40 @@ class DefaultSplitViewModel(
             }
 
             DefaultSplitUiEvent.OnSaveClicked -> save()
+
+            DefaultSplitUiEvent.OnAddExceptionClicked -> uiState.update { it.withExceptionOpened(null) }
+
+            is DefaultSplitUiEvent.OnExceptionClicked -> uiState.update { it.withExceptionOpened(event.categoryId) }
+
+            is DefaultSplitUiEvent.OnExceptionCategoryPicked -> uiState.update {
+                it.withExceptionCategory(event.categoryId)
+            }
+
+            is DefaultSplitUiEvent.OnExceptionModeSelected -> uiState.update { it.withExceptionMode(event.mode) }
+
+            is DefaultSplitUiEvent.OnExceptionPersonToggled -> uiState.update { state ->
+                state.withExceptionPerson(event.memberId) { it.copy(isIncluded = !it.isIncluded) }
+            }
+
+            is DefaultSplitUiEvent.OnExceptionPartsIncreased -> uiState.update { state ->
+                state.withExceptionPerson(event.memberId) {
+                    it.copy(parts = (it.parts + 1).coerceAtMost(GroupDefaultSplit.MAX_WEIGHT))
+                }
+            }
+
+            is DefaultSplitUiEvent.OnExceptionPartsDecreased -> uiState.update { state ->
+                state.withExceptionPerson(event.memberId) { it.copy(parts = (it.parts - 1).coerceAtLeast(0L)) }
+            }
+
+            is DefaultSplitUiEvent.OnExceptionPercentChanged -> uiState.update { state ->
+                state.withExceptionPerson(event.memberId) { it.copy(percentText = TypedText.toPercentText(event.text)) }
+            }
+
+            DefaultSplitUiEvent.OnExceptionSaveClicked -> updateForm { it.withExceptionSaved() }
+
+            DefaultSplitUiEvent.OnExceptionRemoveClicked -> updateForm { it.withExceptionRemoved() }
+
+            DefaultSplitUiEvent.OnExceptionDismissed -> uiState.update { it.copy(exceptionEditor = null) }
         }
     }
 
@@ -134,7 +177,7 @@ class DefaultSplitViewModel(
                 people = group.members.map { member ->
                     byId[member.id]?.withMember(member) ?: personOf(
                         member = member,
-                        saved = GroupDefaultSplit(state.mode, emptyMap()),
+                        saved = GroupDefaultSplit(state.mode, emptyMap(), emptyList()),
                     ).copy(isNew = saved != null)
                 },
             )
@@ -147,6 +190,7 @@ class DefaultSplitViewModel(
         val split = GroupDefaultSplit(
             mode = saved?.mode ?: DefaultSplitMode.EQUAL,
             weights = group.members.associate { it.id to (saved?.weightOf(it.id) ?: 1L) },
+            exceptions = saved?.exceptions.orEmpty(),
         )
         opened = Opened(
             split = split,
@@ -164,6 +208,7 @@ class DefaultSplitViewModel(
                     ).copy(isNew = saved?.isNewcomer(member.id) == true)
                 },
                 incomeFallback = if (split.mode == DefaultSplitMode.INCOME) split.weights else emptyMap(),
+                exceptions = split.exceptions,
                 isLoaded = true,
             )
         }
@@ -323,10 +368,11 @@ class DefaultSplitViewModel(
         figures: DefaultSplitFigures,
     ): Boolean {
         if (opened == null) return false
-        val split = GroupDefaultSplit(mode, figures.weights)
+        val split = GroupDefaultSplit(mode, figures.weights, exceptions)
         return split.mode != opened.split.mode ||
             people.any { split.weightOf(it.id) != opened.split.weightOf(it.id) } ||
             people.any { it.isNew } ||
+            exceptions != opened.split.exceptions ||
             (mode == DefaultSplitMode.INCOME && figures.incomes.filterValues { it > 0 } != opened.incomes)
     }
 
