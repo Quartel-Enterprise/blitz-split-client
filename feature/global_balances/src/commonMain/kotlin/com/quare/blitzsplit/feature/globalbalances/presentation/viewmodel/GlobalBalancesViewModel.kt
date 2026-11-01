@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
@@ -181,6 +182,8 @@ class GlobalBalancesViewModel(
             GlobalBalancesUiEvent.OnChargeDismissed -> uiState.update { it.copy(charge = null) }
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
+
+            GlobalBalancesUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
 
             GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 

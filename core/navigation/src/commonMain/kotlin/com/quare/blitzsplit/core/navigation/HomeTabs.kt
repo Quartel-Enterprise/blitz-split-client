@@ -1,11 +1,25 @@
 package com.quare.blitzsplit.core.navigation
 
 /*
- * Why: Grupos is the home's root tab, under Saldos and whatever either opened. Going back to it closes all of them, as
- * a tab bar does; nothing changes while the groups are on top or gone from the back stack.
+ * Why: Início is the root of the home, where the app opens; every other tab of the home (Grupos, Saldos, Contatos,
+ * Atividade) is a route right above it, and the tabs take each other's place there, as a tab bar does. Opening a
+ * tab already in the back stack goes back to it, closing whatever it opened; any other tab replaces whatever is
+ * above Início. Without Início in the back stack (the welcome, the restore) nothing changes: there is no home yet.
+ */
+fun Navigator.openHomeTab(tab: Route) {
+    val stack = backStack.value
+    val tabIndex = stack.indexOf(tab)
+    val homeIndex = stack.indexOf(Route.Home)
+    when {
+        tabIndex >= 0 -> popTo(tabIndex + 1)
+        homeIndex >= 0 -> replaceAbove(homeIndex + 1, tab)
+    }
+}
+
+/*
+ * Why: Grupos is the home tab under what a group's row opened. Going back to it closes all of them, as a tab bar
+ * does; nothing changes while the groups are on top.
  */
 fun Navigator.popToGroups() {
-    val stack = backStack.value
-    val groupsIndex = stack.indexOf(Route.Groups)
-    if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) popTo(groupsIndex + 1)
+    if (backStack.value.lastOrNull() != Route.Groups) openHomeTab(Route.Groups)
 }

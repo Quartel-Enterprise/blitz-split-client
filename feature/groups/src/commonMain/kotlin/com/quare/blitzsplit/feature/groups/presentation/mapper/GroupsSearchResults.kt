@@ -110,7 +110,7 @@ private fun billHitsOf(
     }.sortedByDescending { it.spentAt }
 
 // Why: the group's names and payer order, built once per group rather than once per bill found.
-private class PayersOfGroup(
+internal class PayersOfGroup(
     group: Group,
 ) {
     private val namesById = group.members.associate { it.id to it.name }

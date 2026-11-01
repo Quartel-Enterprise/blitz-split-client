@@ -56,7 +56,7 @@ class AppViewModel(
     private fun resolveStartRoute() {
         viewModelScope.launch {
             val hasProfile = observeProfile().first() != null
-            navigator.replaceAll(if (hasProfile) Route.Groups else Route.Welcome)
+            navigator.replaceAll(if (hasProfile) Route.Home else Route.Welcome)
             isThemeKnown.await()
             uiState.value = AppUiState.READY
         }
@@ -72,7 +72,7 @@ class AppViewModel(
     }
 
     /*
-     * Why: a browser callback that starts the app again (the web reloads the page) lands on the groups,
+     * Why: a browser callback that starts the app again (the web reloads the page) lands on Início,
      * so a link left from the profile goes back there to show it under way and how it ends.
      */
     private fun returnToProfileOnBrowserSignIn() {
@@ -80,7 +80,7 @@ class AppViewModel(
             .filterNotNull()
             .onEach {
                 uiState.first { it == AppUiState.READY }
-                if (navigator.backStack.value.lastOrNull() == Route.Groups) navigator.navigate(Route.Profile)
+                if (navigator.backStack.value.lastOrNull() == Route.Home) navigator.navigate(Route.Profile)
             }.launchIn(viewModelScope)
     }
 

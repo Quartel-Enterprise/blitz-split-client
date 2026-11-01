@@ -166,7 +166,7 @@ class ProfileSetupViewModelTest {
 
             // Then
             assertEquals(listOf(UserProfile("Pierre", AvatarColor.SAND, null)), profiles.savedProfiles)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test
@@ -468,7 +468,7 @@ class ProfileSetupViewModelTest {
             // Then
             val expected = UserProfile("Pierre", AvatarColor.SAND, ProfilePhoto.Pending(jpegOf(photoSource)))
             assertEquals(listOf(expected), profiles.savedProfiles)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test
@@ -505,7 +505,7 @@ class ProfileSetupViewModelTest {
 
             // Then
             assertEquals(ProfilePhoto.Remote(GOOGLE_PHOTO_URL), profiles.savedProfiles.single().photo)
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test
@@ -557,7 +557,7 @@ class ProfileSetupViewModelTest {
         // Then
         val expected = UserProfile("Pierre", AvatarColor.default, ProfilePhoto.Pending(jpegOf(photoSource)))
         assertEquals(listOf(expected), profiles.savedProfiles)
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
 
     @Test

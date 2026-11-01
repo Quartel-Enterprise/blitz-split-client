@@ -125,6 +125,7 @@ class GroupDetailUiStateTest {
             totalSpentMinor = if (hasBills) 12_000 else 0,
             myBalance = null,
             isEveryoneSettled = false,
+            isPinned = false,
         ),
         days = if (hasBills) listOf(day) else emptyList(),
         paymentToDelete = null,

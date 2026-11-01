@@ -52,6 +52,7 @@ val syncModule = module {
             paymentKeyRepository = get(),
             notificationPreferencesRepository = get(),
             groupRepository = get(),
+            groupPinRepository = get(),
             expenseRepository = get(),
             settlementRepository = get(),
             connectivityObserver = get(),

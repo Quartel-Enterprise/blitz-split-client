@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
 import com.quare.blitzsplit.core.navigation.openBesideGroups
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -385,6 +386,8 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
 
+            GroupsUiEvent.OnHomeTabClicked -> closeSearch().also { navigator.openHomeTab(Route.Home) }
+
             GroupsUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
@@ -465,16 +468,14 @@ class GroupsViewModel(
     }
 
     /*
-     * Why: Saldos is the tab next to Grupos, drawn over the groups; from a screen the groups opened (iOS keeps the tab
-     * bar over it), it closes that screen first, as a tab bar does.
+     * Why: Saldos is the tab next to Grupos, in its place above Início; from a screen the groups opened (iOS keeps the
+     * tab bar over it), it closes that screen first, as a tab bar does.
      */
     private fun openBalancesTab(filter: BalancesFilter) {
         val stack = navigator.backStack.value
-        val groupsIndex = stack.indexOf(Route.Groups)
-        if (groupsIndex < 0 || stack.getOrNull(groupsIndex + 1) is Route.GlobalBalances) return
+        if (Route.Groups !in stack || stack.any { it is Route.GlobalBalances }) return
         closeSearch()
-        navigator.popToGroups()
-        navigator.navigate(Route.GlobalBalances(filter))
+        navigator.openHomeTab(Route.GlobalBalances(filter))
     }
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.

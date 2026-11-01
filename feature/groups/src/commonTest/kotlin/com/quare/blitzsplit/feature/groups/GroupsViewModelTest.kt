@@ -210,7 +210,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
         }
 
     @Test
@@ -224,7 +224,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
         }
 
     @Test
@@ -237,7 +237,7 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnGroupsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
@@ -250,7 +250,10 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -382,6 +385,7 @@ class GroupsViewModelTest {
         // Then
         assertEquals(
             listOf(
+                Route.Home,
                 Route.Groups,
                 Route.JoinWithLink(
                     skippedCode = null,
@@ -401,7 +405,7 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, Route.Profile), navigator.backStack.value)
     }
 
     @Test
@@ -1206,7 +1210,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, Route.CreateGroup), navigator.backStack.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -1222,7 +1226,7 @@ class GroupsViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
     }
 
     @Test
@@ -1236,7 +1240,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
         }
 
     @Test
@@ -1913,7 +1917,7 @@ class GroupsViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.GlobalBalances(BalancesFilter.YOU_OWE),
                     Route.SettleUp(
                         personKey = "name:ana",
@@ -1949,7 +1953,7 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnToPayClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
     }
 
     @Test
@@ -1971,7 +1975,7 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.OWES_YOU)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU)), navigator.backStack.value)
     }
 
     @Test
@@ -2000,7 +2004,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, splitBill), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, splitBill), navigator.backStack.value)
         }
 
     @Test
@@ -2035,6 +2039,7 @@ class GroupsViewModelTest {
             // Then
             assertEquals(
                 listOf(
+                    Route.Home,
                     Route.Groups,
                     Route.SplitBill(
                         groupId = "recent",
@@ -2519,7 +2524,7 @@ class GroupsViewModelTest {
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
         syncRequests = 0
-        navigator = BackStackNavigator(startRoute = Route.Groups)
+        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.Groups) }
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccount = ObserveAccountUseCase(account),

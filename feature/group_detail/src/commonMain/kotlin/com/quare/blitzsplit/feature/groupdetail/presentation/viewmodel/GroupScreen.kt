@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 // Why: the faces under the group's name; the rest is "+N".
 private const val MAX_FACES = 4
@@ -38,6 +40,7 @@ internal val emptyGroupHeader = GroupHeader(
     totalSpentMinor = 0L,
     myBalance = null,
     isEveryoneSettled = false,
+    isPinned = false,
 )
 
 /*
@@ -75,6 +78,10 @@ internal class GroupScreen(
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
 
+    // Why: "Fixar na Início" or "Desafixar da Início", as the header last showed it.
+    var isPinned = false
+        private set
+
     /*
      * Why: a sync may bring other members' bills and payments while the screen is open, or remove the whole group.
      * show gets the balances too, already worked out, and showNotice the payment Registrar pagamento just recorded.
@@ -88,8 +95,11 @@ internal class GroupScreen(
             useCases.observeGroup(groupId),
             useCases.observeExpenses(groupId),
             useCases.observeSettlements(groupId),
-            ::Triple,
-        ).onEach { (group, expenses, settlements) ->
+            useCases.observePinnedGroupIds(),
+        ) { group, expenses, settlements, pinnedIds ->
+            isPinned = groupId in pinnedIds
+            Triple(group, expenses, settlements)
+        }.onEach { (group, expenses, settlements) ->
             this.group = group
             isGroupGone = group == null
             if (group == null) {
@@ -194,6 +204,13 @@ internal class GroupScreen(
         )
     }
 
+    // Why: "Fixar na Início" pins the group to the top of Início's "Seus grupos"; the same item unpins it.
+    fun togglePin() {
+        if (group == null) return
+        val pin = !isPinned
+        scope.launch { useCases.setGroupPinned(groupId, pin) }
+    }
+
     // Why: "Voltar para Grupos" on "Grupo apagado".
     fun closeDeletedNotice() {
         exit.clearDeletedNotice()
@@ -236,9 +253,7 @@ internal class GroupScreen(
     }
 
     private fun backToGroups() {
-        val home = useCases.navigator.backStack.value
-            .indexOf(Route.Groups)
-        if (home >= 0) useCases.navigator.popTo(home + 1) else useCases.navigator.replaceAll(Route.Groups)
+        useCases.navigator.openHomeTab(Route.Groups)
     }
 }
 
@@ -246,6 +261,7 @@ internal fun groupHeaderOf(
     group: Group,
     totalSpentMinor: Long,
     balances: GroupBalances,
+    isPinned: Boolean,
 ): GroupHeader {
     val meId = group.members.firstOrNull { it.isMe }?.id
     return GroupHeader(
@@ -259,5 +275,6 @@ internal fun groupHeaderOf(
         totalSpentMinor = totalSpentMinor,
         myBalance = balances.balanceOrNull(meId),
         isEveryoneSettled = balances.isEveryoneSettled,
+        isPinned = isPinned,
     )
 }

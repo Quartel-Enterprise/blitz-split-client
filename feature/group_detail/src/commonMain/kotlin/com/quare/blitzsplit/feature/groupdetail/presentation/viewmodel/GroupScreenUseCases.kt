@@ -8,6 +8,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
+import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
+import com.quare.blitzsplit.core.groups.domain.usecase.SetGroupPinned
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
@@ -27,4 +29,6 @@ class GroupScreenUseCases(
     internal val connectivityObserver: NetworkConnectivityObserver,
     internal val leaveGroup: LeaveGroup,
     internal val deleteGroup: DeleteGroup,
+    internal val observePinnedGroupIds: ObservePinnedGroupIds,
+    internal val setGroupPinned: SetGroupPinned,
 )

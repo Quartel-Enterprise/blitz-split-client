@@ -27,6 +27,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -1242,6 +1245,8 @@ class BalancesViewModelTest {
 
     private val route = Route.Balances(GROUP_ID)
 
+    private val pins = FakeGroupPinRepository()
+
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val paidAt = Instant.parse("2026-10-30T13:00:00Z").toEpochMilliseconds()
 
@@ -1366,6 +1371,8 @@ class BalancesViewModelTest {
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+                observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
+                setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

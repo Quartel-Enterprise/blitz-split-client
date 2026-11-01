@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -4556,6 +4557,7 @@ class SyncCoordinatorTest {
                 delegate = if (groupQueuedDuringFirstPush) GroupDuringFirstPushGroupRepository(groups) else groups,
                 calls = calls,
             ),
+            groupPinRepository = FakeGroupPinRepository(),
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             connectivityObserver = NetworkConnectivityObserver { isOnline },

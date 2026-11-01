@@ -117,7 +117,7 @@ class JoinPickViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = null,
@@ -139,7 +139,7 @@ class JoinPickViewModelTest {
         // Then
         assertEquals(
             listOf(
-                Route.Groups,
+                Route.Home,
                 Route.JoinInvite(
                     CODE,
                     memberCode = null,
@@ -167,7 +167,7 @@ class JoinPickViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = null,
@@ -219,7 +219,7 @@ class JoinPickViewModelTest {
             assertEquals(listOf(JoinChoice.AsMember(BRUNO_ID)), invites.joins.map { it.choice })
             assertEquals(listOf(CODE), invites.joins.map { it.code })
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
+                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
                 navigator.backStack.value,
             )
         }
@@ -239,7 +239,7 @@ class JoinPickViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
+                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
                 navigator.backStack.value,
             )
         }
@@ -256,7 +256,7 @@ class JoinPickViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
+                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
                 navigator.backStack.value,
             )
         }
@@ -273,7 +273,7 @@ class JoinPickViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
+                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")),
                 navigator.backStack.value,
             )
         }
@@ -299,7 +299,7 @@ class JoinPickViewModelTest {
             assertEquals(2, invites.fetchedCodes.size)
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = null,
@@ -346,7 +346,7 @@ class JoinPickViewModelTest {
             assertEquals(2, invites.fetchedCodes.size)
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = null,
@@ -371,7 +371,7 @@ class JoinPickViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = null,
@@ -398,7 +398,7 @@ class JoinPickViewModelTest {
         assertTrue(viewModel.uiState.value.canJoin)
         assertEquals(
             listOf(
-                Route.Groups,
+                Route.Home,
                 Route.JoinInvite(
                     CODE,
                     memberCode = null,
@@ -484,7 +484,7 @@ class JoinPickViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.JoinInvite(
                         CODE,
                         memberCode = null,
@@ -601,7 +601,7 @@ class JoinPickViewModelTest {
             // Then
             assertEquals(listOf(JoinChoice.AsNewMember("Daniel")), invites.joins.map { it.choice })
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Daniel")),
+                listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID, joinedAs = "Daniel")),
                 navigator.backStack.value,
             )
         }
@@ -696,7 +696,7 @@ class JoinPickViewModelTest {
         // Then
         assertEquals(
             listOf(
-                Route.Groups,
+                Route.Home,
                 Route.JoinInvite(
                     CODE,
                     memberCode = null,
@@ -733,7 +733,7 @@ class JoinPickViewModelTest {
         joinOutcome: JoinOutcome = JoinOutcome.Joined(GROUP_ID),
         joinError: Throwable? = null,
         joinGate: CompletableDeferred<Unit>? = null,
-        root: Route = Route.Groups,
+        root: Route = Route.Home,
     ) {
         invites = FakeInviteRepository(
             invite = invite,

@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -105,6 +106,7 @@ class GroupExitUseCaseTest {
             paymentKeyRepository = FakePaymentKeyRepository(),
             notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             groupRepository = groups,
+            groupPinRepository = FakeGroupPinRepository(),
             expenseRepository = FakeExpenseRepository(),
             settlementRepository = FakeSettlementRepository(),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

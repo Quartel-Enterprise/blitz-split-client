@@ -16,6 +16,13 @@ sealed interface Route {
 
     data object Restore : Route
 
+    /*
+     * Why: "Início" (flow 10), the home's first tab and where the app opens once there is a profile: the root of the
+     * back stack under every other tab of the home.
+     */
+    data object Home : Route
+
+    // Why: "Grupos", the home's second tab, right above Início.
     data object Groups : Route
 
     data object Profile : Route
@@ -92,6 +99,12 @@ sealed interface Route {
         val fromMemberId: String,
         val toMemberId: String,
     ) : Route
+
+    /*
+     * Why: Início's "Registrar pagamento", which asks who paid whom first: every open pair of every group, the most
+     * recently used group first, one of which opens Registrar pagamento in its place.
+     */
+    data object PickPayment : Route
 
     /*
      * Why: the home's second tab, "Saldos" (flow 8): each person once, netted across every group. Over the groups, so

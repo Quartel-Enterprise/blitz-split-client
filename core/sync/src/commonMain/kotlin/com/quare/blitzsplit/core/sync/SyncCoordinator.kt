@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
+import com.quare.blitzsplit.core.groups.domain.repository.GroupPinRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -36,6 +37,7 @@ class SyncCoordinator(
     private val paymentKeyRepository: PaymentKeyRepository,
     private val notificationPreferencesRepository: NotificationPreferencesRepository,
     private val groupRepository: GroupRepository,
+    private val groupPinRepository: GroupPinRepository,
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
@@ -120,12 +122,14 @@ class SyncCoordinator(
             notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
         }
         /*
-         * Why: the bills and the payments after their groups, which they need on the device to come
-         * down and on the server to go up.
+         * Why: the pins, the bills and the payments after their groups, which they need on the device to
+         * come down and on the server to go up.
          */
         val groupsSynced = suspendRunCatching {
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
+            groupPinRepository.downloadPins(userId).getOrThrow()
+            groupPinRepository.uploadPendingPins(userId).getOrThrow()
             expenseRepository.downloadExpenses(userId).getOrThrow()
             expenseRepository.uploadPendingExpenses(userId).getOrThrow()
             settlementRepository.downloadSettlements(userId).getOrThrow()
@@ -269,7 +273,10 @@ class SyncCoordinator(
         combine(
             expenseRepository.observeHasPendingChanges(),
             settlementRepository.observeHasPendingChanges(),
-        ) { hasPendingExpenses, hasPendingSettlements -> hasPendingExpenses || hasPendingSettlements },
+            groupPinRepository.observeHasPendingChanges(),
+        ) { hasPendingExpenses, hasPendingSettlements, hasPendingPins ->
+            hasPendingExpenses || hasPendingSettlements || hasPendingPins
+        },
     ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingMoney ->
         hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney
     }.distinctUntilChanged()
