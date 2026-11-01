@@ -338,7 +338,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     the Mac). Until it is picked by hand, the description's words choose it (the 60 default terms of flow 9, whole
     words ignoring case and accents, the longest term winning, ties to the first in the text, `CategoryMatcher`), else
     Outros, and the line under the description says why ("Alimentação › Mercado pela palavra “mercado”…", "3
-    palavras do mapa casaram…", "Nenhuma palavra…", "Você escolheu…"). The picker (pushed on iOS, in the form's
+    palavras do mapa casaram…", "Nenhuma palavra…", "Você escolheu… Ao salvar, perguntamos se o mapa aprende."). The
+    words are the person's map (flow 9) once it has changes, and a card "Mapa de categorias" between Sugeridas and
+    Todas as categorias names the word that chose and opens the map over the bill (a menu item opening Ajustes on the
+    Mac). The picker (pushed on iOS, in the form's
     place on Android and the web) has "Buscar categoria" (by name, accents ignored, "Criar “Pet”" when nothing is
     found), up to four "Sugeridas" (the description's, the group's most used, the group's own) and every main
     category opening its subcategories ("Só Alimentação" keeps the main one; beside the list lying down and on
@@ -353,6 +356,31 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     use it; deleting asks "Apagar “X”?" saying where its bills go: they move to its parent, or Outros, at read time,
     since a deleted category stays as a tombstone (`CategoryTree.resolve`), its subcategories going with it. A new
     category is picked for the bill at once.
+  - "Mapa de categorias" (flow 9, `Route.CategoryMap`, `:feature:category_map`): each person's map of words to
+    categories, valid in every group, on the device and offline first (`category_term`, the server's
+    `category_terms`), synced to the person's other devices under their account and cleared on sign out; while the
+    account has no Google or Apple it says "Seu mapa fica só neste aparelho" with "Abrir Perfil". It starts as the
+    app's 60 terms (`DefaultCategoryTerms`) and stores only the person's changes over them (`CategoryMap`): a term
+    added or moved (one category per term, so a word another category has turns Salvar into "Mover para X"), a
+    term removed (no confirmation, "“café” saiu do mapa" with Desfazer), and "Restaurar padrão" (⋮/⋯), which brings
+    the 60 back as they came and keeps the person's own terms. A term may send titles to a group's category, which
+    counts only in that group's bills ("só no Viagem Floripa"). Terms have 2 to 30 letters, digits and spaces.
+    "Buscar termo" finds words starting with what is typed, accents ignored ("2 termos com “uber”"), else offers
+    "Adicionar “pizzaria”"; an empty map offers Adicionar termo and Restaurar padrão; offline with changes queued it
+    says "Offline · 2 alterações na fila" and each queued term has the orange dot. It opens from Perfil ›
+    Preferências › Mapa de categorias (Ajustes › Categorias on the Mac, ⌘,) and from Categoria (9.0). A phone shows
+    one card per main category with its terms by subcategory; lying down, a tablet lying down (in 920 dp), a book
+    (split on the hinge), an iPad lying down, an iPhone Duo open and the web from 768 px list the categories beside
+    the picked one's terms; a tablet or a foldable upright one 560 dp column. "Novo termo" and "Editar termo" (9.2)
+    are a bottom sheet on an Android phone (640 dp lying down), a 560 dp dialog on its tablets and the book's right
+    half, a sheet on iOS (a form sheet with an iPad's room) and the Mac, a Dialog on the web (a Drawer on a phone).
+    The Mac's Ajustes has the categories, a table of terms with + and −, and the search.
+  - "Ensinar ao mapa?" (9.3e, 9.3f): once a new bill is saved in a category picked by hand that the map wouldn't
+    pick (never Outros), the group's Despesas asks "Conta salva em Lazer › Esportes, e não em Casa › Aluguel, que o
+    mapa sugeriu. Ensinar ao mapa?" once (`CategoryTeachOffer`, only while the app runs): a snackbar on Android, a
+    glass banner on Apple, a toast on the web, with Ensinar and Agora não. Ensinar asks which word of the title
+    ("Nova no mapa…", "Sai de Casa › Aluguel…"; words under 3 letters only when the map has them) and saves it in the
+    map; the bills already saved don't change.
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones

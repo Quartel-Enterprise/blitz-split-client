@@ -182,5 +182,4 @@ internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
     recordedPayment = null,
     exit = previewGroupExit,
     isLoaded = true,
-    teach = null,
 )
