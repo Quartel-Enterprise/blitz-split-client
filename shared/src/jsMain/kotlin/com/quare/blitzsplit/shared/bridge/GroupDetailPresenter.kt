@@ -114,8 +114,11 @@ class GroupDetailPresenter(
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
+
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
+
                 GroupDetailUiAction.ShowChangeError -> "change-error"
+
                 // Why: only Android's rail asks for Atividade; the web has no rail beside a group.
                 GroupDetailUiAction.ShowComingSoon -> "coming-soon"
             }
