@@ -346,7 +346,9 @@ class GroupsViewModel(
         if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)
     }
 
+    // Why: what is typed or picked only counts while the search shows, so a late keystroke can't reopen it.
     private fun search(change: (GroupsSearch) -> GroupsSearch) {
+        if (!uiState.value.search.isOpen) return
         uiState.update { it.copy(search = searchedOf(change(it.search), it.groups)) }
     }
 

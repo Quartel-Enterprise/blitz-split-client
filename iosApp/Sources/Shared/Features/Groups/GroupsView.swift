@@ -58,6 +58,12 @@ final class GroupsModel {
         }
     }
 
+    /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: the search field reads
+    /// its text back at once, so the caret never jumps.
+    var current: GroupsUiState {
+        (holder.viewModel.uiState.value as? GroupsUiState) ?? state
+    }
+
     func send(_ event: any GroupsUiEvent) {
         holder.viewModel.onEvent(event: event)
     }
@@ -87,12 +93,14 @@ final class GroupsModel {
     }
 }
 
-/// The tabs of the canvas. Only Groups is built; the others answer "Coming soon".
+/// The tabs of the canvas. Only Groups is built; the others answer "Coming soon". Search is the iPhone's and the
+/// iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
 enum MainTab: Hashable {
     case groups
     case balances
     case contacts
     case activity
+    case search
 }
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable).
@@ -107,27 +115,25 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: tabSelection) {
             Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
-                NavigationStack(path: $path) {
+                NavigationStack(path: stackPath(isSearch: false)) {
                     GroupsView(model: model)
-                        .navigationDestination(for: AppRoute.self) { route in
-                            switch route {
-                            case .editProfile: EditProfileView()
-                            case .notificationSettings: NotificationSettingsView()
-                            case let .paymentKey(route): PaymentKeyView(route: route)
-                            case let .members(route): MembersView(route: route)
-                            case let .groupDetail(route): GroupDetailView(route: route)
-                            case let .balances(route): BalancesView(route: route)
-                            case let .billDetail(route): BillDetailView(route: route)
-                            case let .joinInvite(route): JoinInviteView(route: route)
-                            case let .joinPick(route): JoinPickView(route: route)
-                            default: ProfileView()
-                            }
-                        }
+                        .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
             }
             Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
+            #if os(iOS)
+            // Nothing to look in before the first group
+            if model.state.canSearch {
+                Tab(value: MainTab.search, role: .search) {
+                    NavigationStack(path: stackPath(isSearch: true)) {
+                        GroupsSearchView(model: model)
+                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
+                    }
+                }
+            }
+            #endif
         }
         .tabViewStyle(.sidebarAdaptable)
         .glassToast(
@@ -154,19 +160,62 @@ struct MainTabView: View {
         }
     }
 
-    // Selecting a tab that is not built yet keeps Groups and says "Coming soon".
+    // Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
+    // and goes back to the groups, past what its results opened.
     private var tabSelection: Binding<MainTab> {
         Binding(
-            get: { .groups },
+            get: { showsSearchTab ? .search : .groups },
             set: { tab in
                 switch tab {
                 case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
                 case .contacts: model.send(GroupsUiEventOnContactsTabClicked.shared)
                 case .activity: model.send(GroupsUiEventOnActivityTabClicked.shared)
-                case .groups: break
+                case .search: model.send(GroupsUiEventOnSearchOpened.shared)
+                case .groups:
+                    if showsSearchTab { model.send(GroupsUiEventOnSearchClosed.shared) }
                 }
             },
         )
+    }
+
+    /// The search tab is selected: only the iPhone and the iPad have one, the Mac searches in the groups' toolbar. Read
+    /// from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups until the watcher catches up.
+    private var showsSearchTab: Bool {
+        #if os(iOS)
+        model.current.isSearching
+        #else
+        false
+        #endif
+    }
+
+    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, else Groups.
+    /// The other tab's stack stays at its root, so a screen never shows in both.
+    private func stackPath(isSearch: Bool) -> Binding<[AppRoute]> {
+        Binding(
+            get: { showsSearchTab == isSearch ? path : [] },
+            set: { newValue in
+                guard showsSearchTab == isSearch else { return }
+                path = newValue
+            },
+        )
+    }
+
+    /// What the groups and the search push over themselves: a group's expenses, balances or members, a bill, an
+    /// invite opened from its link, the profile, its editor and, on iPhone, a key.
+    @ViewBuilder
+    private static func destination(_ route: AppRoute) -> some View {
+        switch route {
+        case .editProfile: EditProfileView()
+        case .notificationSettings: NotificationSettingsView()
+        case let .paymentKey(route): PaymentKeyView(route: route)
+        case let .members(route): MembersView(route: route)
+        case let .groupDetail(route): GroupDetailView(route: route)
+        case let .balances(route): BalancesView(route: route)
+        case let .billDetail(route): BillDetailView(route: route)
+        case let .joinInvite(route): JoinInviteView(route: route)
+        case let .joinPick(route): JoinPickView(route: route)
+        default: ProfileView()
+        }
     }
 }
 
@@ -180,7 +229,23 @@ struct GroupsView: View {
                 #if os(iOS)
                 GroupsList(model: model)
                 #else
-                GroupsTable(model: model)
+                // The toolbar's field: the results take the groups' place once something is typed
+                if state.isSearching, state.search.hasQuery {
+                    VStack(spacing: 0) {
+                        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
+                            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
+                                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .fixedSize()
+                        .padding(.vertical, 8)
+                        GroupsSearchResultsList(model: model)
+                    }
+                } else {
+                    GroupsTable(model: model)
+                }
                 #endif
             } else if state.showsEmptyState {
                 emptyState
@@ -245,6 +310,8 @@ struct GroupsView: View {
         // What the View menu's Grid Size reads and changes while this window shows the groups
         .focusedSceneValue(\.groupsModel, model)
         .navigationSubtitle(macSubtitle)
+        // Nothing to look in before the first group
+        .toolbarSearch(macSearchBinding, isShown: !state.groups.isEmpty)
         .toolbar {
             if !state.groups.isEmpty {
                 ToolbarItem(placement: .principal) {
@@ -254,14 +321,17 @@ struct GroupsView: View {
                     }
                     .pickerStyle(.segmented)
                 }
-                // List or Grid, as in the Finder; the size is the slider under the grid and View › Grid Size
-                ToolbarItem(placement: .principal) {
-                    Picker("View", selection: displayBinding) {
-                        Label("List", systemImage: GroupsDisplayCopy.displayIcon(.list)).tag(GroupsDisplay.list)
-                        Label("Grid", systemImage: GroupsDisplayCopy.displayIcon(.grid)).tag(GroupsDisplay.grid)
+                // List or Grid, as in the Finder; the size is the slider under the grid and View › Grid Size. The
+                // search's results stay a list
+                if !state.isSearching {
+                    ToolbarItem(placement: .principal) {
+                        Picker("View", selection: displayBinding) {
+                            Label("List", systemImage: GroupsDisplayCopy.displayIcon(.list)).tag(GroupsDisplay.list)
+                            Label("Grid", systemImage: GroupsDisplayCopy.displayIcon(.grid)).tag(GroupsDisplay.grid)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelStyle(.iconOnly)
                     }
-                    .pickerStyle(.segmented)
-                    .labelStyle(.iconOnly)
                 }
             }
             if state.canRetrySync {
@@ -333,9 +403,28 @@ struct GroupsView: View {
         )
     }
 
-    /// "Offline · 1 change queued · 4 open", "4 open" or "1 settled up".
+    /// The toolbar's field: typing opens the search, clearing it closes it. Only with the groups on top, where the
+    /// field shows, so closing it never leaves a screen.
+    private var macSearchBinding: Binding<String> {
+        Binding(
+            get: { model.current.search.query },
+            set: { query in
+                if query.isEmpty {
+                    if model.state.search.isOpen { model.send(GroupsUiEventOnSearchClosed.shared) }
+                    return
+                }
+                if !model.current.search.isOpen { model.send(GroupsUiEventOnSearchOpened.shared) }
+                model.send(GroupsUiEventOnSearchQueryChanged(query: query))
+            },
+        )
+    }
+
+    /// "Offline · 1 change queued · 4 open", "4 open", "1 settled up", or "Searching groups, people and expenses".
     private var macSubtitle: Text {
         let state = model.state
+        if state.isSearching, state.search.hasQuery {
+            return Text("Searching groups, people and expenses")
+        }
         guard !state.groups.isEmpty else {
             return Text(verbatim: GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) ?? "")
         }
@@ -367,3 +456,17 @@ struct GroupsView: View {
         }
     }
 }
+
+#if os(macOS)
+private extension View {
+    /// The Mac's toolbar search field, only while there is something to look in.
+    @ViewBuilder
+    func toolbarSearch(_ text: Binding<String>, isShown: Bool) -> some View {
+        if isShown {
+            searchable(text: text, placement: .toolbar, prompt: Text("Search"))
+        } else {
+            self
+        }
+    }
+}
+#endif
