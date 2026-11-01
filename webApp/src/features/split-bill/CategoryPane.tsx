@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronUp, CloudOff, MoreHorizontal, Plus, Search, SearchX, Users, X } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, ChevronUp, CloudOff, MoreHorizontal, Plus, Search, SearchX, Tag, Users, X } from 'lucide-react'
 import type {
   JsBillCategories,
   JsCategory,
@@ -128,6 +128,7 @@ function CategoryPicker({ presenter, state, isWide }: { presenter: SplitCategori
         ) : (
           <>
             <Suggestions presenter={presenter} state={state} />
+            <CategoryMapCard presenter={presenter} state={state} />
             <SectionLabel>{t('splitBill_categoryAll')}</SectionLabel>
             <ul className="flex flex-col gap-0.5">
               {categories.branches.map((branch, index) => (
@@ -556,5 +557,23 @@ export function CategoryDeleteDialog({ presenter, state, deletion }: { presenter
       onConfirm={() => presenter.confirmDelete()}
       onDismiss={() => presenter.dismissDelete()}
     />
+  )
+}
+
+/** "Mapa de categorias" between Sugeridas and Todas as categorias (9.0): which word chose the category, and the way to the map. */
+function CategoryMapCard({ presenter, state }: { presenter: SplitCategoriesPresenter; state: JsSplitBillState }) {
+  const match = state.categories.matches[0]
+  const mapCategory = state.categories.mapCategory
+  return (
+    <button type="button" onClick={() => presenter.openMap()} className="flex items-center gap-3 rounded-lg border bg-card p-3 text-left hover:bg-accent">
+      <Tag aria-hidden className="size-5 shrink-0 text-primary" />
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="text-sm font-medium">{t('splitBill_categoryMap')}</span>
+        <span className="text-xs text-muted-foreground">
+          {match && mapCategory ? t('splitBill_categoryMapByTerm', { name: categoryName(mapCategory), term: match.term }) : t('splitBill_categoryMapDetail')}
+        </span>
+      </span>
+      <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
+    </button>
   )
 }

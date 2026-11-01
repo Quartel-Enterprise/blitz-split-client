@@ -66,6 +66,26 @@ class JsExpenseDay(
     val entries: Array<JsDayEntry>,
 )
 
+// Why: a word of the bill's title "Ensinar ao mapa" offers; currentCategory null for one new in the map.
+class JsTeachWord(
+    val term: String,
+    val key: String,
+    val currentCategory: JsCategory?,
+)
+
+// Why: "Ensinar ao mapa?" (9.3e) and, while isPickingWord, "Ensinar ao mapa" (9.3f).
+class JsCategoryTeach(
+    val title: String,
+    val category: JsCategory,
+    val categoryParent: JsCategory?,
+    val mapCategory: JsCategory?,
+    val mapCategoryParent: JsCategory?,
+    val words: Array<JsTeachWord>,
+    val selectedKey: String?,
+    val isPickingWord: Boolean,
+    val isSaving: Boolean,
+)
+
 class JsGroupDetailState(
     val header: JsGroupHeader,
     val days: Array<JsExpenseDay>,
@@ -77,6 +97,7 @@ class JsGroupDetailState(
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
+    val teach: JsCategoryTeach?,
 )
 
 class GroupDetailPresenter(
@@ -100,6 +121,21 @@ class GroupDetailPresenter(
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
+                teach = state.teach?.let { teach ->
+                    JsCategoryTeach(
+                        title = teach.title,
+                        category = toJsCategory(teach.category),
+                        categoryParent = teach.categoryParent?.let(::toJsCategory),
+                        mapCategory = teach.mapCategory?.let(::toJsCategory),
+                        mapCategoryParent = teach.mapCategoryParent?.let(::toJsCategory),
+                        words = teach.words
+                            .map { JsTeachWord(it.term, it.key, it.currentCategory?.let(::toJsCategory)) }
+                            .toTypedArray(),
+                        selectedKey = teach.selectedKey,
+                        isPickingWord = teach.isPickingWord,
+                        isSaving = teach.isSaving,
+                    )
+                },
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -113,6 +149,7 @@ class GroupDetailPresenter(
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
+                GroupDetailUiAction.ShowTeachError -> "teach-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -200,6 +237,22 @@ class GroupDetailPresenter(
 
     fun recordedPaymentNoticeShown() {
         viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown)
+    }
+
+    fun teach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+    }
+
+    fun dismissTeach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+    }
+
+    fun pickTeachWord(key: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked(key))
+    }
+
+    fun confirmTeach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
     }
 
     fun dispose() {
