@@ -34,7 +34,7 @@ private val tabletopActionsMaxWidth = 560.dp
 internal fun JoinColumnsLayout(
     layout: JoinLayout,
     start: @Composable ColumnScope.() -> Unit,
-    end: @Composable ColumnScope.() -> Unit,
+    end: (@Composable ColumnScope.() -> Unit)?,
     actions: @Composable (isRow: Boolean) -> Unit,
 ) {
     when (layout) {
@@ -43,7 +43,7 @@ internal fun JoinColumnsLayout(
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             start()
-            end()
+            end?.invoke(this)
             actions(false)
         }
 
@@ -67,7 +67,7 @@ internal fun JoinColumnsLayout(
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(if (isTablet) 20.dp else 12.dp),
                 ) {
-                    end()
+                    end?.invoke(this)
                     actions(!isTablet)
                 }
             }
@@ -98,7 +98,7 @@ internal fun JoinColumnsLayout(
                         ),
                     verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
                 ) {
-                    end()
+                    end?.invoke(this)
                     actions(false)
                 }
             },
@@ -122,13 +122,16 @@ internal fun JoinColumnsLayout(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         content = start,
                     )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        content = end,
-                    )
+                    // Why: with nothing to put beside it (what went wrong), the top half is one column.
+                    if (end != null) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            content = end,
+                        )
+                    }
                 }
             },
             bottom = {

@@ -221,7 +221,7 @@ private fun PickColumnsLayout(
             )
         }
     }
-    // rememberJoinLayout(hasTabletop = false) draws a tabletop lying down as the book, so it never says TABLETOP.
+    // Why: rememberJoinLayout(hasTabletop = false) draws a tabletop lying down as the book, never as TABLETOP.
     if (layout == JoinLayout.BOOK) {
         TwoHalvesLayout(
             start = {
