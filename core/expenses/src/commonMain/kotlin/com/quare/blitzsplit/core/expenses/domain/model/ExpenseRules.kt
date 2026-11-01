@@ -28,7 +28,9 @@ object ExpenseRules {
         splitMode: SplitMode,
         payers: List<ExpensePayer>,
         shares: List<ExpenseShare>,
-    ): Boolean = payers.isNotEmpty() &&
+        items: BillItems?,
+    ): Boolean = areItemsValid(splitMode, payers, shares, items) &&
+        payers.isNotEmpty() &&
         shares.isNotEmpty() &&
         payers.distinctBy { it.memberId }.size == payers.size &&
         shares.distinctBy { it.memberId }.size == shares.size &&
@@ -38,9 +40,27 @@ object ExpenseRules {
         shares.sumOf { it.amountMinor } == amountMinor &&
         (splitMode != SplitMode.PERCENT || shares.sumOf { it.weight } == BillSplit.FULL_PERCENT)
 
+    // Why: a bill split by its items holds them well formed, with the very shares they give; any other holds none.
+    private fun areItemsValid(
+        splitMode: SplitMode,
+        payers: List<ExpensePayer>,
+        shares: List<ExpenseShare>,
+        items: BillItems?,
+    ): Boolean {
+        if (splitMode != SplitMode.ITEMS) return items == null
+        if (items == null || !BillItemsSplit.isWellFormed(items)) return false
+        return BillItemsSplit.sharesOf(items, payers.map { it.memberId }) == shares
+    }
+
     // Why: never ends on half of an emoji, which would leave a lone surrogate on the way to JSON and Postgres.
-    fun toCapped(description: String): String {
-        val capped = description.take(DESCRIPTION_MAX_LENGTH)
+    fun toCapped(description: String): String = toCapped(description, DESCRIPTION_MAX_LENGTH)
+
+    // Why: the same for any text the bill keeps, such as an item's name.
+    fun toCapped(
+        text: String,
+        maxLength: Int,
+    ): String {
+        val capped = text.take(maxLength)
         return if (capped.lastOrNull()?.isHighSurrogate() == true) capped.dropLast(1) else capped
     }
 

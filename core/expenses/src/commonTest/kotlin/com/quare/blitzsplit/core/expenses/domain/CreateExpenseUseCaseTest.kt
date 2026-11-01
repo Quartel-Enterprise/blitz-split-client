@@ -35,6 +35,7 @@ class CreateExpenseUseCaseTest {
             ),
             splitMode = SplitMode.PERCENT,
             shares = shares,
+            items = null,
             spentAt = 5_000L,
         )
 
@@ -116,6 +117,7 @@ class CreateExpenseUseCaseTest {
             payers = payers,
             splitMode = SplitMode.EQUAL,
             shares = shares,
+            items = null,
             spentAt = 5_000L,
         )
 
@@ -335,6 +337,7 @@ class CreateExpenseUseCaseTest {
         payers = payers,
         splitMode = splitMode,
         shares = shares,
+        items = null,
         spentAt = 5_000L,
     )
 

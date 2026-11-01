@@ -561,6 +561,7 @@ class RoomExpenseLocalDataSourceTest {
         splitMode = "equal",
         payersJson = "[]",
         sharesJson = "[]",
+        itemsJson = null,
         spentAt = 1_000L,
         isDeleted = isDeleted,
         addedAt = addedAt,
