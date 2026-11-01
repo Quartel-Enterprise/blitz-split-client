@@ -13,9 +13,9 @@ import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t } from '@/i18n'
 
 interface DeletedGroupNoticeState {
-  deletedGroupId: string | null
-  deletedGroupName: string | null
-  deletedGroupByName: string | null
+  deletedGroupId?: string | null
+  deletedGroupName?: string | null
+  deletedGroupByName?: string | null
 }
 
 /**
