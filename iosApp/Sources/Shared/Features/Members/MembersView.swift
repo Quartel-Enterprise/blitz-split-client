@@ -224,11 +224,7 @@ private struct MembersList: View {
                 .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
             }
             #if os(iOS)
-            Section {
-                GroupTabsPicker(selected: .members) { model.select($0) }
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets())
+            GroupTabsSection(selected: .members) { model.select($0) }
             #endif
             Section {
                 HStack(spacing: 12) {

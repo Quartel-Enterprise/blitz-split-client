@@ -432,11 +432,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
                 .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                 .listRowSeparator(.hidden)
             }
-            Section {
-                GroupTabsPicker(selected: tab, onSelect: actions.select)
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets())
+            GroupTabsSection(selected: tab, onSelect: actions.select)
             sections
         }
         .listStyle(.insetGrouped)
