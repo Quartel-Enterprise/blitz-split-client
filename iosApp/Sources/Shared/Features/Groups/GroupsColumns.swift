@@ -136,7 +136,7 @@ private struct NoGroupOpenPlaceholder: View {
 }
 
 /// Before a group is picked, or once it closed, the column beside the list holds the canvas' shapes, with no words.
-private struct GroupPanePlaceholder: View {
+struct GroupPanePlaceholder: View {
     var body: some View {
         ZStack {
             Palette.groupedBackground
