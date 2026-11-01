@@ -1,0 +1,39 @@
+import type { JsSettledPair } from 'blitzsplit-shared'
+import { t } from '@/i18n'
+
+/**
+ * "Elisa já acertou com Bruno depois desta conta", "Você já acertou com Bruno…" or "Elisa já acertou com você…": a
+ * payment made after the bill that editing or deleting it unsettles (7.4b).
+ */
+export function settledPairLead(change: JsSettledPair): string {
+  const payer = change.payerName ?? t('settledPair_formerMember')
+  const receiver = change.receiverName ?? t('settledPair_formerMember')
+  if (change.payerIsMe) return t('settledPair_iPaid', { receiver })
+  if (change.receiverIsMe) return t('settledPair_paidMe', { payer })
+  return t('settledPair_paid', { payer, receiver })
+}
+
+/** "O acerto continua valendo e o saldo é refeito: com a mudança, Elisa volta a dever R$ 20,00 a Bruno." */
+export function settledPairDetail(change: JsSettledPair, money: (minor: number) => string): string {
+  return t('settledPair_redone', { outcome: outcomeOf(change, money) })
+}
+
+/** The lead and the detail in one go, as "Apagar esta conta?" says them. */
+export function settledPairSentence(change: JsSettledPair, money: (minor: number) => string): string {
+  return `${settledPairLead(change)}. ${settledPairDetail(change, money)}`
+}
+
+function outcomeOf(change: JsSettledPair, money: (minor: number) => string): string {
+  const debtor = change.debtorName ?? t('settledPair_formerMember')
+  const creditor = change.creditorName ?? t('settledPair_formerMember')
+  const amount = money(change.amountMinor)
+  if (change.outcome === 'even') {
+    if (change.debtorIsMe) return t('settledPair_evenWithMe', { other: creditor })
+    if (change.creditorIsMe) return t('settledPair_evenWithMe', { other: debtor })
+    return t('settledPair_even', { debtor, creditor })
+  }
+  const again = change.outcome === 'owes-again'
+  if (change.debtorIsMe) return t(again ? 'settledPair_iOweAgain' : 'settledPair_iOwe', { creditor, amount })
+  if (change.creditorIsMe) return t(again ? 'settledPair_owesMeAgain' : 'settledPair_owesMe', { debtor, amount })
+  return t(again ? 'settledPair_owesAgain' : 'settledPair_owes', { debtor, creditor, amount })
+}

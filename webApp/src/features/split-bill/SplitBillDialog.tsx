@@ -1,10 +1,11 @@
-import { ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
+import { Banknote, ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
 import {
   SplitBillPresenter,
   type JsBillConflict,
   type JsPayerAmountRow,
   type JsPayerAmounts,
   type JsRoute,
+  type JsSettledPair,
   type JsSplitBillState,
   type JsSplitEditor,
 } from 'blitzsplit-shared'
@@ -18,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
+import { settledPairDetail, settledPairLead } from '@/features/bill-detail/settledPairText'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -173,6 +175,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       }}
     >
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
+      {state.settledPair && <SettledPairBanner change={state.settledPair} money={money} />}
       <div className="grid gap-x-6 gap-y-4 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-4">
           <GroupField presenter={presenter} state={state} />
@@ -403,6 +406,22 @@ function ConflictBanner({ conflict }: { conflict: JsBillConflict }) {
       <p className="flex flex-col gap-1">
         <strong className="font-semibold">{title}</strong>
         <span>{t('splitBill_conflictBody')}</span>
+      </p>
+    </div>
+  )
+}
+
+/**
+ * The change being typed unsettles a payment made after the bill: "Elisa já acertou com Bruno depois desta conta",
+ * and how the pair ends up once it is saved (7.4b).
+ */
+function SettledPairBanner({ change, money }: { change: JsSettledPair; money: Money }) {
+  return (
+    <div role="status" className="flex gap-3 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm leading-5">
+      <Banknote aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+      <p className="flex flex-col gap-1">
+        <strong className="font-semibold">{settledPairLead(change)}</strong>
+        <span>{settledPairDetail(change, money)}</span>
       </p>
     </div>
   )

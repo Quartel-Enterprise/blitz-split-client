@@ -153,6 +153,7 @@ class JsSplitBillState(
     val isSaving: Boolean,
     val showsOfflineNotice: Boolean,
     val conflict: JsBillConflict?,
+    val settledPair: JsSettledPair?,
     val showsAnyoneCanEditHint: Boolean,
     val showsProportionalAmountHint: Boolean,
     val deletion: JsBillDeletion?,
@@ -224,6 +225,7 @@ class SplitBillPresenter(
                         changedAt = it.changedAt.toDouble(),
                     )
                 },
+                settledPair = state.settledPair?.let(::toJsSettledPair),
                 showsAnyoneCanEditHint = state.showsAnyoneCanEditHint,
                 showsProportionalAmountHint = state.showsProportionalAmountHint,
                 deletion = state.deletion?.let(::toJsBillDeletion),
