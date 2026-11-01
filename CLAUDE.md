@@ -115,10 +115,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Membros taking each other's place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
     tapped beside another takes its place; Convidar, Sair, Apagar and "Ver saldos" work from the list with the group
     beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
-    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). In the pane the group has
-    no back arrow and, on Android, no "Rachar conta": the rail's opens it with that group marked. A phone, a phone
-    lying down, anything upright, the Mac and the web keep the group over the list; turning the device upright leaves
-    the group open, drawn over it.
+    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). Only the group's tabs go
+    in the pane: anything else above the groups (Estatísticas, the profile, a joined invite) covers the whole window,
+    and a dialog or sheet (Convidar, Rachar conta, Conta) both panes, so the list never shows while it can't take
+    taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
+    group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
+    turning the device upright leaves the group open, drawn over it.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
