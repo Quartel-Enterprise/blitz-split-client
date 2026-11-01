@@ -134,8 +134,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Tudo acertado" to Grupos. "Acertar" (you owe) and "Recebi" (owed to you) open Registrar pagamento for the net
     (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
     amount locked while more than one group is in it, then "Pagamento de Carla registrado." on Saldos, whose Desfazer
-    undoes them all. "Cobrar" moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a
-    guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
+    undoes them all in one go (never on a later Saldos, when the one it opened over closed while saving). "Cobrar"
+    moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
     chave Pix" is on, which locks once the message is edited), "Enviar" opens the system share (a ShareLink on Apple,
     `navigator.share` or a copy on the web) and "Copiar mensagem" copies; a bottom sheet on an Android phone and a
     560 dp dialog on its tablets, a sheet on iOS and macOS, a 480 px dialog on the web (a drawer on a phone). It all

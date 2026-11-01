@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
-import com.quare.blitzsplit.core.expenses.data.repository.InMemorySettledUpRepository
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 
 class SettleUpUseCaseTest {
     private lateinit var settlements: FakeSettlementRepository
-    private lateinit var settledUps: InMemorySettledUpRepository
+    private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private lateinit var useCase: SettleUpUseCase
 
     @Test
@@ -60,12 +60,12 @@ class SettleUpUseCaseTest {
 
         // Then
         assertEquals(
-            SettledUp(
+            RecordedPayment.SettledUp(
                 settlementIds = ids,
                 personName = "Bruno",
                 isPaidByMe = true,
             ),
-            settledUps.observeSettledUp().first(),
+            recordedPayments.observeRecorded().first(),
         )
     }
 
@@ -88,7 +88,7 @@ class SettleUpUseCaseTest {
         assertTrue(settlements.settlements.value.isEmpty())
         assertTrue(settlements.deletedIds.isEmpty())
         assertTrue(settlements.pendingDeletionGroupIds.value.isEmpty())
-        assertNull(settledUps.observeSettledUp().first())
+        assertNull(recordedPayments.observeRecorded().first())
     }
 
     private val legs = listOf(
@@ -108,10 +108,10 @@ class SettleUpUseCaseTest {
 
     private fun prepareScenario(recordError: Throwable? = null) {
         settlements = FakeSettlementRepository().also { it.recordError = recordError }
-        settledUps = InMemorySettledUpRepository()
+        recordedPayments = InMemoryRecordedPaymentRepository()
         useCase = SettleUpUseCase(
             repository = settlements,
-            settledUps = settledUps,
+            recordedPayments = recordedPayments,
             currentTimeMillis = { NOW },
         )
     }

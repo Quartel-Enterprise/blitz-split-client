@@ -3,12 +3,11 @@ package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
-import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeSettledUp
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
@@ -48,8 +47,8 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GlobalBalancesViewModel(
     private val route: Route.GlobalBalances,
     private val navigator: Navigator,
-    private val consumeSettledUp: ConsumeSettledUp,
-    private val deleteSettlement: DeleteSettlement,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     observePeopleBalances: ObservePeopleBalances,
     observeSettledUp: ObserveSettledUp,
     observeProfile: ObserveProfile,
@@ -92,8 +91,7 @@ class GlobalBalancesViewModel(
     // Why: the rows whose "Por grupo" differs from how they open.
     private var toggledIds = emptySet<String>()
 
-    // Why: the payments the notice on screen undoes together.
-    private var noticeSettlementIds = emptyList<String>()
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
     init {
         combine(observeProfile(), observeAccount()) { profile, account ->
@@ -122,11 +120,14 @@ class GlobalBalancesViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        // Why: the notice waits until Saldos is on top again, under Registrar pagamento, and Room is read.
-        combine(observeSettledUp(), navigator.backStack, uiState.map { it.isLoaded }.distinctUntilChanged(), ::Triple)
-            .onEach { (settledUp, _, isLoaded) ->
-                if (settledUp != null && isLoaded && isOnTop()) showSettledUp(settledUp)
-            }.launchIn(viewModelScope)
+        notices.watchSettledUp(
+            scope = viewModelScope,
+            recorded = observeSettledUp(),
+            backStack = navigator.backStack,
+            isLoaded = uiState.map { it.isLoaded },
+            isOnTop = ::isOnTop,
+            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+        )
     }
 
     fun onEvent(event: GlobalBalancesUiEvent) {
@@ -279,30 +280,11 @@ class GlobalBalancesViewModel(
         if (groupsIndex >= 0) navigator.popTo(groupsIndex + 1)
     }
 
-    private fun showSettledUp(settledUp: SettledUp) {
-        consumeSettledUp(settledUp)
-        noticeSettlementIds = settledUp.settlementIds
-        uiState.update {
-            it.copy(
-                recordedPayment = PaymentNotice(
-                    settlementId = settledUp.settlementIds.firstOrNull().orEmpty(),
-                    fromName = settledUp.personName.takeUnless { settledUp.isPaidByMe },
-                    fromIsMe = settledUp.isPaidByMe,
-                    toName = settledUp.personName.takeIf { settledUp.isPaidByMe },
-                ),
-            )
-        }
-    }
-
     // Why: the payments of the settling up go back together, all or none; a failure keeps them all, which it says.
     private fun undoSettledUp() {
-        if (uiState.value.recordedPayment == null) return
-        val ids = noticeSettlementIds
-        noticeSettlementIds = emptyList()
+        val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        viewModelScope.launch {
-            deleteSettlement(ids).onFailure { uiAction.emit(GlobalBalancesUiAction.ShowChangeError) }
-        }
+        notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(GlobalBalancesUiAction.ShowChangeError) }
     }
 
     private fun personOrNull(personId: String): PersonBalance? = balances.people.firstOrNull { idOf(it) == personId }

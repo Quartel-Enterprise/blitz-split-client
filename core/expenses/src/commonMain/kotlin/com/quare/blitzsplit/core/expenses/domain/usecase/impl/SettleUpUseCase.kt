@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
-import com.quare.blitzsplit.core.expenses.domain.repository.SettledUpRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
  */
 class SettleUpUseCase(
     private val repository: SettlementRepository,
-    private val settledUps: SettledUpRepository,
+    private val recordedPayments: RecordedPaymentRepository,
     private val currentTimeMillis: CurrentTimeMillis,
 ) : SettleUp {
     override suspend fun invoke(
@@ -46,8 +46,8 @@ class SettleUpUseCase(
                 settlements = settlements,
                 recordedAt = recordedAt,
             ).onSuccess {
-                settledUps.post(
-                    SettledUp(
+                recordedPayments.post(
+                    RecordedPayment.SettledUp(
                         settlementIds = ids,
                         personName = personName,
                         isPaidByMe = isPaidByMe,

@@ -3,16 +3,15 @@ package com.quare.blitzsplit.feature.globalbalances
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
-import com.quare.blitzsplit.core.expenses.data.repository.InMemorySettledUpRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
-import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeSettledUpUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
@@ -65,7 +64,7 @@ class GlobalBalancesViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
-    private lateinit var settledUps: InMemorySettledUpRepository
+    private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private lateinit var keys: FakePaymentKeyRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var navigator: BackStackNavigator
@@ -580,8 +579,8 @@ class GlobalBalancesViewModelTest {
         // Given
         prepareScenario()
         navigator.navigate(Route.SettleUp("user:carla", GroupCurrency.BRL))
-        settledUps.post(
-            SettledUp(
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
                 listOf("p1", "p2"),
                 personName = "Carla",
                 isPaidByMe = false,
@@ -594,7 +593,7 @@ class GlobalBalancesViewModelTest {
         // Then
         assertEquals(
             PaymentNotice(
-                settlementId = "p1",
+                settlementIds = listOf("p1", "p2"),
                 fromName = "Carla",
                 fromIsMe = false,
                 toName = null,
@@ -610,8 +609,8 @@ class GlobalBalancesViewModelTest {
             prepareScenario(
                 storedSettlements = listOf(payment("p1", FLORIPA), payment("p2", APE)),
             )
-            settledUps.post(
-                SettledUp(
+            recordedPayments.post(
+                RecordedPayment.SettledUp(
                     listOf("p1", "p2"),
                     personName = "Bruno",
                     isPaidByMe = true,
@@ -632,8 +631,8 @@ class GlobalBalancesViewModelTest {
     fun `GIVEN undoing fails WHEN tapping Desfazer THEN says so`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        settledUps.post(
-            SettledUp(
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
                 listOf("p1"),
                 personName = "Bruno",
                 isPaidByMe = true,
@@ -652,8 +651,8 @@ class GlobalBalancesViewModelTest {
     fun `GIVEN the notice shown WHEN it goes away THEN it is not shown again`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        settledUps.post(
-            SettledUp(
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
                 listOf("p1"),
                 personName = "Bruno",
                 isPaidByMe = true,
@@ -825,7 +824,7 @@ class GlobalBalancesViewModelTest {
         val groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
-        settledUps = InMemorySettledUpRepository()
+        recordedPayments = InMemoryRecordedPaymentRepository()
         keys = FakePaymentKeyRepository(initialKeys = storedKeys)
         isOnline = MutableStateFlow(online)
         val opened = Route.GlobalBalances(filter)
@@ -834,13 +833,13 @@ class GlobalBalancesViewModelTest {
         viewModel = GlobalBalancesViewModel(
             route = opened,
             navigator = navigator,
-            consumeSettledUp = ConsumeSettledUpUseCase(settledUps),
-            deleteSettlement = DeleteSettlementUseCase(settlements, InMemoryRecordedPaymentRepository()) { 0L },
+            consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
+            deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 0L },
             observePeopleBalances = ObservePeopleBalancesUseCase(
                 observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,
             ),
-            observeSettledUp = ObserveSettledUpUseCase(settledUps),
+            observeSettledUp = ObserveSettledUpUseCase(recordedPayments),
             observeProfile = ObserveProfileUseCase(
                 FakeProfileRepository(UserProfile("Pierre", AvatarColor.BLUE, null)),
             ),

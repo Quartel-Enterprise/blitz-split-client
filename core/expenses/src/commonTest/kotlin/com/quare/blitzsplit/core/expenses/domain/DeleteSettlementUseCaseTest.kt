@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
@@ -71,7 +72,14 @@ class DeleteSettlementUseCaseTest {
         useCase(listOf(PAYMENT_ID))
 
         // Then
-        assertEquals(OTHER_PAYMENT_ID, recordedPayments.observeRecorded().first()?.id)
+        assertEquals(
+            OTHER_PAYMENT_ID,
+            recordedPayments
+                .observeRecorded()
+                .first()
+                ?.settlementIds
+                ?.single(),
+        )
     }
 
     @Test
@@ -104,7 +112,14 @@ class DeleteSettlementUseCaseTest {
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
         assertEquals(listOf(PAYMENT_ID), repository.settlements.value.map { it.id })
-        assertEquals(PAYMENT_ID, recordedPayments.observeRecorded().first()?.id)
+        assertEquals(
+            PAYMENT_ID,
+            recordedPayments
+                .observeRecorded()
+                .first()
+                ?.settlementIds
+                ?.single(),
+        )
     }
 
     private fun payment(id: String): Settlement = Settlement(
@@ -129,7 +144,7 @@ class DeleteSettlementUseCaseTest {
             it.deleteError = deleteError
         }
         recordedPayments = InMemoryRecordedPaymentRepository().also { notices ->
-            noticed?.let(notices::post)
+            noticed?.let { notices.post(RecordedPayment.InGroup(it)) }
         }
         useCase = DeleteSettlementUseCase(
             repository = repository,

@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
@@ -55,6 +56,7 @@ class RegisterPaymentViewModel(
     private val navigator: Navigator,
     private val recordSettlement: RecordSettlement,
     private val settleUp: SettleUp,
+    private val consumeRecordedPayment: ConsumeRecordedPayment,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val decimalSeparator: DeviceDecimalSeparator,
@@ -82,6 +84,14 @@ class RegisterPaymentViewModel(
 
     // Why: a save that fails before Room answered has nothing to show again.
     private var hasRead = false
+
+    /*
+     * Why: the screen under the form, owed the notice of what it records. The entry itself, not an equal route: a
+     * Saldos opened again after this one left is a later screen.
+     */
+    private val opener: Route? = navigator.backStack.value.let { stack ->
+        stack.getOrNull(stack.indexOfLast { it == route } - 1)
+    }
 
     /*
      * Why: a sync may bring a payment or a bill that changes the debt while the form is open, settle it, or remove
@@ -290,7 +300,7 @@ class RegisterPaymentViewModel(
                     paidAt = state.paidAt,
                     personName = (if (state.kind == PaymentKind.PAID) state.to else state.from)?.name,
                     isPaidByMe = state.kind == PaymentKind.PAID,
-                ).map {}
+                )
             } else {
                 val leg = target.legs.first()
                 recordSettlement(
@@ -300,10 +310,11 @@ class RegisterPaymentViewModel(
                     amountMinor = amountMinor,
                     method = state.method,
                     paidAt = state.paidAt,
-                ).map {}
+                ).map { listOf(it) }
             }
             result
-                .onSuccess {
+                .onSuccess { settlementIds ->
+                    dropNoticeOfGoneOpener(settlementIds)
                     leave()
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }
@@ -337,6 +348,16 @@ class RegisterPaymentViewModel(
         nowMillis = currentTimeMillis(),
         timeZone = currentTimeZone(),
     )
+
+    /*
+     * Why: a tab or a native back may have closed the screen under the form while it saved, which leaves nobody to
+     * show the notice; a later screen must never offer to undo it.
+     */
+    private fun dropNoticeOfGoneOpener(settlementIds: List<String>) {
+        val opener = opener ?: return
+        val settlementId = settlementIds.firstOrNull() ?: return
+        if (navigator.backStack.value.none { it === opener }) consumeRecordedPayment(settlementId)
+    }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     private fun leave() {

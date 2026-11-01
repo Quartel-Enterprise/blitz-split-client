@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
@@ -32,7 +33,7 @@ class ObserveRecordedPaymentUseCaseTest {
     @Test
     fun `GIVEN a payment recorded in the group WHEN observing it THEN the group owes its notice`() = runTest {
         // Given
-        recordedPayments.post(payment(groupId = GROUP_ID))
+        recordedPayments.post(RecordedPayment.InGroup(payment(groupId = GROUP_ID)))
 
         // When
         val recorded = useCase(GROUP_ID).first()
@@ -44,7 +45,25 @@ class ObserveRecordedPaymentUseCaseTest {
     @Test
     fun `GIVEN a payment recorded in another group WHEN observing this group THEN it owes no notice`() = runTest {
         // Given
-        recordedPayments.post(payment(groupId = OTHER_GROUP_ID))
+        recordedPayments.post(RecordedPayment.InGroup(payment(groupId = OTHER_GROUP_ID)))
+
+        // When
+        val recorded = useCase(GROUP_ID).first()
+
+        // Then
+        assertNull(recorded)
+    }
+
+    @Test
+    fun `GIVEN a settling up across groups WHEN observing one of its groups THEN it owes no notice`() = runTest {
+        // Given
+        recordedPayments.post(
+            RecordedPayment.SettledUp(
+                settlementIds = listOf(PAYMENT_ID),
+                personName = "Ana",
+                isPaidByMe = true,
+            ),
+        )
 
         // When
         val recorded = useCase(GROUP_ID).first()
@@ -60,7 +79,7 @@ class ObserveRecordedPaymentUseCaseTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { useCase(GROUP_ID).toList(seen) }
 
         // When
-        recordedPayments.post(payment(groupId = OTHER_GROUP_ID))
+        recordedPayments.post(RecordedPayment.InGroup(payment(groupId = OTHER_GROUP_ID)))
 
         // Then
         assertEquals(listOf<Settlement?>(null), seen)
@@ -69,7 +88,7 @@ class ObserveRecordedPaymentUseCaseTest {
     @Test
     fun `GIVEN the group owes a notice WHEN the notice is consumed THEN it owes none`() = runTest {
         // Given
-        recordedPayments.post(payment(groupId = GROUP_ID))
+        recordedPayments.post(RecordedPayment.InGroup(payment(groupId = GROUP_ID)))
 
         // When
         recordedPayments.consume(PAYMENT_ID)

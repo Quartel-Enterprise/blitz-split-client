@@ -853,7 +853,7 @@ class GroupDetailPaymentsViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Ana",
                     fromIsMe = false,
                     toName = "Pierre",
@@ -880,7 +880,7 @@ class GroupDetailPaymentsViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Pierre",
                     fromIsMe = true,
                     toName = "Bruno",
@@ -904,7 +904,14 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -921,7 +928,14 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
@@ -940,7 +954,7 @@ class GroupDetailPaymentsViewModelTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Ana",
                     fromIsMe = false,
                     toName = "Pierre",
@@ -965,7 +979,14 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test

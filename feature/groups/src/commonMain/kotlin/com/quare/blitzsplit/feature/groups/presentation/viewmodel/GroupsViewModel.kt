@@ -510,7 +510,7 @@ class GroupsViewModel(
     private fun undoRecordedPayment() {
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
-        notices.delete(viewModelScope, listOf(notice.settlementId)) { uiAction.emit(GroupsUiAction.ShowChangeError) }
+        notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(GroupsUiAction.ShowChangeError) }
     }
 
     private fun exitGroupOrNull(): Group? = groupsWithMoney

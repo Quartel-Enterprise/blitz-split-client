@@ -359,7 +359,7 @@ class GroupsRowActionsTest {
             // Then
             assertEquals(
                 PaymentNotice(
-                    settlementId = settlementId,
+                    settlementIds = listOf(settlementId),
                     fromName = "Pierre",
                     fromIsMe = true,
                     toName = "Ana",
@@ -382,7 +382,14 @@ class GroupsRowActionsTest {
 
             // Then
             assertNull(viewModel.uiState.value.recordedPayment)
-            assertEquals(settlementId, recordedPayments.observeRecorded().first()?.id)
+            assertEquals(
+                settlementId,
+                recordedPayments
+                    .observeRecorded()
+                    .first()
+                    ?.settlementIds
+                    ?.single(),
+            )
         }
 
     @Test
