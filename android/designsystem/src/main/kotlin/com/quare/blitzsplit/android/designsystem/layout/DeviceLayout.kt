@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.unit.width
 
 private val formDialogFormFactors = setOf(FormFactor.TabletPortrait, FormFactor.TabletLandscape)
 private val groupDialogFormFactors = formDialogFormFactors + FormFactor.FoldableUpright
@@ -89,18 +89,22 @@ fun rememberUsesFormDialog(): Boolean = rememberFoldLayout().formFactor in formD
 @Composable
 fun rememberUsesGroupDialog(): Boolean = rememberFoldLayout().formFactor in groupDialogFormFactors
 
-// Why: in the pane beside the home's list, a group's screen takes the one column of a tablet upright.
+/*
+ * Why: the activity's window, the one FoldLayout reads, so a screen inside a dialog's window still sizes itself by
+ * what it opened over and agrees with rememberFoldLayout() on whether it is a tablet. In the pane beside the home's
+ * list, a group's screen takes the one column of a tablet upright.
+ */
 @Composable
 fun rememberDeviceLayout(): DeviceLayout {
-    val size = LocalWindowInfo.current.containerSize
-    val density = LocalDensity.current
+    val window = rememberFoldLayout().windowBounds
     val isInDetailPane = LocalInDetailPane.current
-    return remember(size, density, isInDetailPane) {
-        if (isInDetailPane) return@remember DeviceLayout.TabletPortrait
-        with(density) {
+    return remember(window, isInDetailPane) {
+        if (isInDetailPane) {
+            DeviceLayout.TabletPortrait
+        } else {
             deviceLayoutOf(
-                width = size.width.toDp(),
-                height = size.height.toDp(),
+                width = window.width,
+                height = window.height,
             )
         }
     }
