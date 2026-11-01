@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
@@ -95,6 +96,7 @@ class GroupsViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
+    observePeopleBalances: ObservePeopleBalances,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -133,6 +135,13 @@ class GroupsViewModel(
 
     // Why: what the dialogs of "Sair do grupo" and "Apagar grupo" read of the group asked for, as Room has it now.
     private var groupsWithMoney = emptyList<GroupWithMoney>()
+
+    // Why: whom "A pagar" settles up with straight away, as the global Saldos has them.
+    private var peopleBalances = PeopleBalances(
+        people = emptyList(),
+        totals = emptyList(),
+        me = null,
+    )
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
@@ -236,6 +245,9 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         observeGroupsLayout()
             .onEach { layout -> uiState.update { it.copy(layout = layout) } }
+            .launchIn(viewModelScope)
+        observePeopleBalances()
+            .onEach { people -> peopleBalances = people }
             .launchIn(viewModelScope)
         // Why: only the group a row's "Acertar" was about can owe the home a notice; a group's own screens show theirs.
         notices.watch(
@@ -431,19 +443,7 @@ class GroupsViewModel(
     private fun openToPay() {
         if (!isOnTop()) return
         openBalancesTab(BalancesFilter.YOU_OWE)
-        val toPay = PeopleBalances
-            .of(
-                groups = groupsWithMoney.map { it.group },
-                money = groupsWithMoney.associate { item ->
-                    item.group.id to GroupMoney(
-                        expenses = item.expenses,
-                        settlements = item.settlements,
-                        pendingDeletionCount = item.pendingDeletionCount,
-                    )
-                },
-            ).people
-            .filter { it.netMinor < 0 }
-        val person = toPay.singleOrNull() ?: return
+        val person = peopleBalances.people.singleOrNull { it.netMinor < 0 } ?: return
         navigator.navigate(
             Route.SettleUp(
                 personKey = person.key,

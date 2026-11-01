@@ -39,6 +39,7 @@ import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -259,6 +260,7 @@ class GroupsLayoutTest {
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },
+            observePeopleBalances = { emptyFlow() },
             observeGroupsLayout = observeGroupsLayout ?: ObserveGroupsLayout { storedLayout },
             updateGroupsLayout = UpdateGroupsLayout { layout ->
                 savedLayouts += layout

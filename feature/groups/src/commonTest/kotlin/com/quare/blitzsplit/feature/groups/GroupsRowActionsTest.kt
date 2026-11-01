@@ -52,6 +52,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -564,6 +565,7 @@ class GroupsRowActionsTest {
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
+            observePeopleBalances = { emptyFlow() },
         )
     }
 }
