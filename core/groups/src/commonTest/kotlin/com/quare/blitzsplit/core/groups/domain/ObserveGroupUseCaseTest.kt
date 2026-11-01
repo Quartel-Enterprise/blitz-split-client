@@ -99,6 +99,7 @@ class ObserveGroupUseCaseTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
     private val home = Group(
@@ -111,6 +112,7 @@ class ObserveGroupUseCaseTest {
         isPending = false,
         inviteCode = "Zx9Yw8Vu",
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 

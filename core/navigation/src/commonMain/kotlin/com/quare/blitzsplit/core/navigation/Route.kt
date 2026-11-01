@@ -56,6 +56,14 @@ sealed interface Route {
         val groupId: String,
     ) : Route
 
+    /*
+     * Why: "Divisão padrão" (6.7), from Editar grupo's row: how the group's new bills split. Back and Salvar go back to
+     * Editar grupo, which stays under it (pushed inside its sheet on iOS and macOS, in its dialog's place on the web).
+     */
+    data class DefaultSplit(
+        val groupId: String,
+    ) : Route
+
     // Why: "Rachar conta", a new bill in the group, or "Editar conta" for expenseId, with "Dividir" drawn over it.
     data class SplitBill(
         val groupId: String,

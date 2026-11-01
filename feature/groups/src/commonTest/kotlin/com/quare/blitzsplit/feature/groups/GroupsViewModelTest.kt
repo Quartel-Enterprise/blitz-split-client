@@ -2386,6 +2386,7 @@ class GroupsViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 
@@ -2406,6 +2407,7 @@ class GroupsViewModelTest {
         isPending = isPending,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = updatedAt,
     )
 

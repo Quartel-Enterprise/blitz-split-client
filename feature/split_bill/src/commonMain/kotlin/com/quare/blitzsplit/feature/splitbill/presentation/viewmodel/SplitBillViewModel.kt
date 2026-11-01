@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
@@ -20,6 +21,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -80,8 +82,6 @@ class SplitBillViewModel(
     val stateWatcher: FlowWatcher<SplitBillUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<SplitBillUiAction> = FlowWatcher(uiAction)
 
-    private val amountSeparators = setOf(',', '.')
-
     private val exits = SplitBillExits(navigator, route)
 
     // Why: the group the bill goes to, which "Rachar em qual grupo?" may change for a new bill.
@@ -105,6 +105,12 @@ class SplitBillViewModel(
      * from them rather than from the last rescale, so typing "312" through "3" and "31" loses nothing.
      */
     private var amountAnchor: Pair<Long, List<SplitEntry>>? = null
+
+    /*
+     * Why: a new bill follows the group's "Divisão padrão" (and the people a sync brings) until "Pronto" on Dividir
+     * picks its own split; another group picked starts it over from that group's.
+     */
+    private var hasPickedSplit = false
 
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
@@ -222,13 +228,15 @@ class SplitBillViewModel(
             }
 
             is SplitBillUiEvent.OnPersonValueChanged -> editSplit { editor ->
-                val text = valueTextOf(event.text, editor.mode)
+                val text = TypedText.toSplitValueText(event.text, editor.mode)
                 editor.withRows { row -> if (row.person.id == event.memberId) row.copy(valueText = text) else row }
             }
 
             is SplitBillUiEvent.OnPartsIncreased -> changeParts(event.memberId, +1)
 
             is SplitBillUiEvent.OnPartsDecreased -> changeParts(event.memberId, -1)
+
+            SplitBillUiEvent.OnSplitResetToDefault -> uiState.update { it.withSplitEditorReset() }
 
             SplitBillUiEvent.OnSplitDone -> confirmSplit()
 
@@ -381,7 +389,10 @@ class SplitBillViewModel(
         val people = group.members.map { it.toBillPerson() }
         val isAnotherGroup = shownGroupId != null && shownGroupId != group.id
         shownGroupId = group.id
-        if (isAnotherGroup) amountAnchor = null
+        if (isAnotherGroup) {
+            amountAnchor = null
+            hasPickedSplit = false
+        }
         // Why: a member who left takes their part of "Valores" along, so a new total rescales only the ones who stay.
         amountAnchor = amountAnchor?.let { (total, entries) ->
             total to entries.filter { entry -> people.any { it.id == entry.memberId } }
@@ -419,9 +430,10 @@ class SplitBillViewModel(
                 payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
                 isLoaded = true,
             )
-            val withSplit = shown.copy(
-                split = state.split.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
-                splitEditor = state.splitEditor?.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
+            val withSplit = shown.withSplitAmong(
+                people = people,
+                defaultSplit = group.defaultSplit,
+                followsDefault = !state.isEditing && !hasPickedSplit,
             )
             // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
             withSplit.withBillTotal()
@@ -433,7 +445,7 @@ class SplitBillViewModel(
     }
 
     private fun changeAmount(text: String) {
-        val capped = toAmountText(text)
+        val capped = TypedText.toAmountText(text)
         uiState.update { state ->
             state
                 .copy(
@@ -465,7 +477,7 @@ class SplitBillViewModel(
         memberId: String,
         text: String,
     ) {
-        val amountText = toAmountText(text)
+        val amountText = TypedText.toAmountText(text)
         uiState.update { state ->
             state.copy(payerAmounts = state.payerAmounts?.withAmountText(memberId, amountText))
         }
@@ -490,6 +502,7 @@ class SplitBillViewModel(
 
     private fun confirmSplit() {
         val editor = uiState.value.splitEditor?.takeIf { it.addsUp } ?: return
+        hasPickedSplit = true
         amountAnchor = if (editor.mode == SplitMode.AMOUNT) editor.totalMinor to editor.entries else null
         uiState.update {
             it.copy(
@@ -572,27 +585,11 @@ class SplitBillViewModel(
         }
     }
 
-    // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
     private val separator: Char
-        get() = decimalSeparator().takeIf { it in amountSeparators } ?: '.'
-
-    private fun valueTextOf(
-        text: String,
-        mode: SplitMode,
-    ): String = if (mode == SplitMode.AMOUNT) {
-        toAmountText(text)
-    } else {
-        text.filter { it.isDigit() }.take(PERCENT_MAX_LENGTH)
-    }
-
-    // Why: what an amount field keeps of what was typed, the bill's and each of Valores'.
-    private fun toAmountText(text: String): String =
-        text.filter { it.isDigit() || it in amountSeparators }.take(AMOUNT_MAX_LENGTH)
+        get() = TypedText.amountSeparatorOf(decimalSeparator())
 
     private companion object {
-        // Why: "100.000.000,00" with room for the separators someone types.
-        const val AMOUNT_MAX_LENGTH = 16
-        const val PERCENT_MAX_LENGTH = 3
-        const val MAX_PARTS = 99L
+        // Why: the same cap as the group's "Divisão padrão", which a new bill opens with.
+        const val MAX_PARTS = GroupDefaultSplit.MAX_WEIGHT
     }
 }

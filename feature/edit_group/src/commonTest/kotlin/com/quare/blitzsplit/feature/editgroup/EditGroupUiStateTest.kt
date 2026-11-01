@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
@@ -212,6 +213,7 @@ class EditGroupUiStateTest {
         type = GroupType.TRIP,
         currency = GroupCurrency.BRL,
         isCurrencyLocked = false,
+        defaultSplitMode = DefaultSplitMode.EQUAL,
         isOnline = isOnline,
         isLoaded = isLoaded,
         isSaving = isSaving,

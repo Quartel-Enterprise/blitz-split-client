@@ -8,6 +8,7 @@ import {
   type JsSettledPair,
   type JsSplitBillState,
   type JsSplitEditor,
+  type JsSplitFact,
 } from 'blitzsplit-shared'
 import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -239,7 +240,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
           />
           <div className="flex flex-col gap-1.5">
             <span className="text-sm font-medium">{t('splitBill_split')}</span>
-            <SplitSummary presenter={presenter} split={state.split} money={money} />
+            <SplitSummary presenter={presenter} split={state.split} summary={state.splitSummary} money={money} />
           </div>
         </div>
       </div>
@@ -455,9 +456,9 @@ function useNow(intervalMs: number): number {
 }
 
 /** "Divisão": the faces of who is in, "Igual entre 5" and "R$ 62,40 cada · Diego não participa"; opens "Dividir". */
-function SplitSummary({ presenter, split, money }: { presenter: SplitBillPresenter; split: JsSplitEditor; money: Money }) {
+function SplitSummary({ presenter, split, summary, money }: { presenter: SplitBillPresenter; split: JsSplitEditor; summary: JsSplitFact[]; money: Money }) {
   const title = t(splitTitles[split.mode] ?? 'splitBill_splitEqual', { count: split.includedCount })
-  const details = splitSummary(split, money)
+  const details = splitSummary(summary, money)
   const faces = split.included.slice(0, 3)
   const extra = split.included.length - faces.length
   return (

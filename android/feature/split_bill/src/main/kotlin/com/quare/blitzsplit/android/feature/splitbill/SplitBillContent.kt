@@ -8,7 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormChrome
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -31,9 +33,10 @@ fun SplitBillContent(
 ) {
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
-    SplitBillFormLayout(
+    ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(if (state.isEditing) R.string.split_bill_edit_title else R.string.split_bill_title),
+            subtitle = null,
             navigationIcon = Icons.Outlined.Close,
             navigationLabel = stringResource(R.string.split_bill_close),
             onNavigate = { onEvent(SplitBillUiEvent.OnCloseClicked) },

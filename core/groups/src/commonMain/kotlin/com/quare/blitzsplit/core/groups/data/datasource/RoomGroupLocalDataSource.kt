@@ -55,6 +55,24 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun updateDefaultSplit(
+        id: String,
+        defaultSplit: String?,
+        splitIncomes: String?,
+        updatedAt: Long,
+    ) {
+        dao.updateDefaultSplit(
+            id = id,
+            defaultSplit = defaultSplit,
+            splitIncomes = splitIncomes,
+            updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun getSplitIncomes(id: String): String? = dao.getSplitIncomes(id)
+
+    override suspend fun getDefaultSplit(id: String): String? = dao.getDefaultSplit(id)
+
     override suspend fun removeMember(
         id: String,
         removedAt: Long,

@@ -87,4 +87,7 @@ sealed interface SplitFact {
         val person: BillPerson,
         val parts: Long,
     ) : SplitFact
+
+    // Why: Rachar conta's "Divisão" opened with the group's "Divisão padrão" and still follows it, "Padrão do grupo".
+    data object GroupDefault : SplitFact
 }

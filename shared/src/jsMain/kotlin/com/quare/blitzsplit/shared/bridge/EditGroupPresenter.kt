@@ -24,6 +24,8 @@ class JsEditGroupState(
     val currency: String,
     val currencies: Array<String>,
     val isCurrencyLocked: Boolean,
+    // Why: the DefaultSplitMode's code ("shares"), the value of the "Divisão padrão" row.
+    val defaultSplitMode: String,
     val nameLength: Int,
     val maxNameLength: Int,
     val isLoaded: Boolean,
@@ -54,6 +56,7 @@ class EditGroupPresenter(
                 currency = state.currency.code,
                 currencies = state.currencies.toCurrencyCodes(),
                 isCurrencyLocked = state.isCurrencyLocked,
+                defaultSplitMode = state.defaultSplitMode.code,
                 nameLength = state.nameLength,
                 maxNameLength = state.maxNameLength,
                 isLoaded = state.isLoaded,
@@ -91,6 +94,10 @@ class EditGroupPresenter(
     fun selectCurrency(code: String) {
         val currency = GroupCurrency.fromCodeOrNull(code) ?: return
         viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(currency))
+    }
+
+    fun openDefaultSplit() {
+        viewModel.onEvent(EditGroupUiEvent.OnDefaultSplitClicked)
     }
 
     fun save() {

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -60,12 +62,14 @@ import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 
 private val listEndRadius = 20.dp
+private val listInnerRadius = 6.dp
 
 @Composable
 fun EditGroupContent(
@@ -162,6 +166,10 @@ private fun ColumnScope.EditGroupFormColumn(
         onEvent = onEvent,
     )
     CurrencyRow(
+        state = state,
+        onEvent = onEvent,
+    )
+    DefaultSplitRow(
         state = state,
         onEvent = onEvent,
     )
@@ -311,57 +319,16 @@ private fun CurrencyRow(
             top = 24.dp,
         ),
     ) {
-        Surface(
+        SettingRow(
+            title = stringResource(R.string.edit_group_currency),
+            subtitle = stringResource(R.string.edit_group_currency_lock),
+            value = groupCurrencyLabel(state.currency, locale),
+            icon = if (state.isCurrencyLocked) Icons.Outlined.Lock else Icons.Outlined.KeyboardArrowDown,
+            iconLabel = lockedLabel.takeIf { state.isCurrencyLocked },
+            isTop = true,
+            isEnabled = !state.isCurrencyLocked,
             onClick = { isMenuOpen = true },
-            enabled = !state.isCurrencyLocked,
-            shape = RoundedCornerShape(listEndRadius),
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 64.dp)
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp,
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.edit_group_currency),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Text(
-                        text = stringResource(R.string.edit_group_currency_lock),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Text(
-                    text = groupCurrencyLabel(state.currency, locale),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                if (state.isCurrencyLocked) {
-                    Icon(
-                        imageVector = Icons.Outlined.Lock,
-                        contentDescription = lockedLabel,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Outlined.KeyboardArrowDown,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-        }
+        )
         DropdownMenu(
             expanded = isMenuOpen && !state.isCurrencyLocked,
             onDismissRequest = { isMenuOpen = false },
@@ -385,6 +352,95 @@ private fun CurrencyRow(
                     },
                 )
             }
+        }
+    }
+}
+
+// Why: "Divisão padrão" under Moeda, with the way the group splits now; it opens over the form, which keeps what is typed.
+@Composable
+private fun DefaultSplitRow(
+    state: EditGroupUiState,
+    onEvent: (EditGroupUiEvent) -> Unit,
+) {
+    SettingRow(
+        title = stringResource(R.string.edit_group_default_split),
+        subtitle = stringResource(R.string.edit_group_default_split_help),
+        value = stringResource(state.defaultSplitMode.labelRes),
+        icon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+        iconLabel = null,
+        isTop = false,
+        isEnabled = !state.isSaving,
+        onClick = { onEvent(EditGroupUiEvent.OnDefaultSplitClicked) },
+        modifier = Modifier.padding(
+            start = 16.dp,
+            end = 16.dp,
+            top = 2.dp,
+        ),
+    )
+}
+
+// Why: Moeda and Divisão padrão, one grouped list: the first with the top corners round, the last the bottom ones.
+@Composable
+private fun SettingRow(
+    title: String,
+    subtitle: String,
+    value: String,
+    icon: ImageVector,
+    iconLabel: String?,
+    isTop: Boolean,
+    isEnabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val top = if (isTop) listEndRadius else listInnerRadius
+    val bottom = if (isTop) listInnerRadius else listEndRadius
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = isEnabled,
+        shape = RoundedCornerShape(
+            topStart = top,
+            topEnd = top,
+            bottomStart = bottom,
+            bottomEnd = bottom,
+        ),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 64.dp)
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp,
+                ),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Icon(
+                imageVector = icon,
+                contentDescription = iconLabel,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -429,6 +485,7 @@ private fun buildPreviewState(
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     isCurrencyLocked = true,
+    defaultSplitMode = DefaultSplitMode.SHARES,
     isOnline = isOnline,
     isLoaded = true,
     isSaving = false,

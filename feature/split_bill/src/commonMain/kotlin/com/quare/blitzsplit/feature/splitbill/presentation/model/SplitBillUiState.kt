@@ -45,6 +45,8 @@ data class SplitBillUiState(
     // Why: a bill is spent by now, so "Quando" picks nothing later; the time of the last change, which pickers cap at.
     val latestSpentAt: Long,
     val split: SplitEditor,
+    // Why: the group's "Divisão padrão" a new bill opens with; null while editing a saved bill or for a group without one.
+    val defaultSplit: BillDefaultSplit?,
     // Why: "Dividir", open while not null; it changes the bill's split only on "Pronto".
     val splitEditor: SplitEditor?,
     // Why: someone else saved the bill while it was being edited here.
@@ -140,6 +142,25 @@ data class SplitBillUiState(
     // Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays.
     val canChangeGroup: Boolean
         get() = !isEditing && isLoaded && groups.size > 1 && !isSaving
+
+    // Why: "Padrão do grupo" under Rachar conta's "Divisão" while the bill keeps the group's default split.
+    val splitFollowsDefault: Boolean
+        get() = defaultSplit?.isFollowedBy(split) == true
+
+    // Why: what Rachar conta's "Divisão" says under its title, "Padrão do grupo" first while it follows the default.
+    val splitSummary: List<SplitFact>
+        get() = listOfNotNull(SplitFact.GroupDefault.takeIf { splitFollowsDefault }) + split.summary
+
+    // Why: Dividir's notice above the modes, "Padrão do Apê 302: Partes, 3 para 1", for a group with a default.
+    val showsDefaultSplitNotice: Boolean
+        get() = defaultSplit != null && splitEditor != null
+
+    // Why: "Diferente do padrão do grupo" with "Voltar ao padrão", once Dividir changed it for this bill.
+    val isSplitEditorOffDefault: Boolean
+        get() {
+            val editor = splitEditor ?: return false
+            return defaultSplit?.isFollowedBy(editor) == false
+        }
 
     // Why: "Apagar conta" only when editing, and not while saving or deleting.
     val canDelete: Boolean

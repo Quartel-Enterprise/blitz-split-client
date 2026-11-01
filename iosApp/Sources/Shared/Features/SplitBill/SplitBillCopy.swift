@@ -49,7 +49,11 @@ enum SplitBillCopy {
         }
     }
 
-    static func hint(_ editor: SplitEditor) -> String {
+    /// Under the modes: what the mode does, or where the group's default split lives once there is one.
+    static func hint(_ editor: SplitEditor, state: SplitBillUiState) -> String {
+        if state.defaultSplit != nil {
+            return String(localized: "The default lives in Edit group › Default split. Bills already added don't change.")
+        }
         switch editor.mode {
         case .amount:
             let zero = editor.currency.format(0)
@@ -94,13 +98,13 @@ enum SplitBillCopy {
         return payer.isMe ? String(localized: "\(lead) · you paid") : String(localized: "\(lead) · \(payer.name) paid")
     }
 
-    /// The split row's second line: "Among 5 · $62.40 each · Diego is out", "Among 6 · $84.00 left" or "Among 5"
-    /// once nothing more needs saying. The shared code picks the facts; the row's title only names the mode.
+    /// The split row's second line: "Among 5 · $62.40 each · Diego is out", "Among 6 · $84.00 left", "Among 2 · Group
+    /// default" while the bill keeps the group's default split, or "Among 5" once nothing more needs saying. The shared code picks the facts; the row's title only names the mode.
     static func splitSubtitle(_ state: SplitBillUiState) -> String {
         let split = state.split
         let count = Int(split.includedCount)
         guard count > 0 else { return String(localized: "Nobody is in yet") }
-        let facts = split.summary.map { text($0, currency: split.currency) }
+        let facts = state.splitSummary.map { text($0, currency: split.currency) }
         return ([String(localized: "Among \(count)")] + facts).joined(separator: " · ")
     }
 
@@ -214,6 +218,8 @@ enum SplitBillCopy {
             return String(localized: "Adds up: \(percent(100))")
         case let fact as SplitFactParts:
             return String(localized: "\(Int(fact.count)) shares of \(currency.format(fact.partMinor))")
+        case is SplitFactGroupDefault:
+            return String(localized: "Group default")
         case let fact as SplitFactPersonParts:
             let parts = Int(fact.parts)
             return fact.person.isMe

@@ -25,8 +25,12 @@ struct RootView: View {
             }
         }
         .sheet(item: $app.sheet) { route in
-            NavigationStack {
+            // Edit group pushes its default split inside its own sheet
+            NavigationStack(path: $app.sheetPath) {
                 screen(for: route)
+                    .navigationDestination(for: AppRoute.self) { route in
+                        screen(for: route)
+                    }
             }
             // A bill open as a sheet (iPad, Mac) is edited in a sheet over it
             .sheet(item: $app.stackedSheet) { route in
@@ -67,6 +71,7 @@ struct RootView: View {
         case let .splitBill(route): SplitBillView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
         case let .editGroup(route): EditGroupView(route: route)
+        case let .defaultSplit(route): DefaultSplitView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)

@@ -355,6 +355,7 @@ class SettledPairChangeTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 

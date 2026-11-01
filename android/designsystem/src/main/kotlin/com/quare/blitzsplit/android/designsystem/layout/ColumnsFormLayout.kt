@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.android.feature.splitbill
+package com.quare.blitzsplit.android.designsystem.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,14 +33,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
-import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 
 private val singleColumnMaxWidth = 592.dp
 private val columnSpacing = 20.dp
 
-// Why: what the top bar (or the dialog's header and actions) of Rachar conta and Dividir hold.
-internal class FormChrome(
+// Why: what the top bar (or the dialog's header and actions) of Rachar conta, Dividir and Divisão padrão hold.
+class FormChrome(
     val title: String,
+    // Why: "Apê 302 · para as despesas novas" under Divisão padrão's title; null for none.
+    val subtitle: String?,
     val navigationIcon: ImageVector,
     val navigationLabel: String,
     val onNavigate: () -> Unit,
@@ -53,13 +54,13 @@ internal class FormChrome(
 )
 
 /*
- * Why: the canvas opens Rachar conta and Dividir full screen on a phone, lying down and on the tabletop, in two
- * columns when lying down; on a tablet and the upright foldable they are a dialog over the group, two columns wide
- * on a tablet lying down.
+ * Why: the canvas opens Rachar conta, Dividir and Divisão padrão full screen on a phone, lying down and on the
+ * tabletop, in two columns when lying down; as a dialog (where the caller says so) they sit over the group, two
+ * columns wide on a tablet lying down.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SplitBillFormLayout(
+fun ColumnsFormLayout(
     chrome: FormChrome,
     isDialog: Boolean,
     snackbarHostState: SnackbarHostState,
@@ -95,7 +96,7 @@ internal fun SplitBillFormLayout(
             modifier = modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
-                    title = { Text(chrome.title) },
+                    title = { FormTitleColumn(chrome) },
                     navigationIcon = {
                         IconButton(onClick = chrome.onNavigate) {
                             Icon(
@@ -201,14 +202,15 @@ private fun DialogHeader(chrome: FormChrome) {
         if (!chrome.isNavigationAtEndInDialog) {
             NavigationButton(chrome)
         }
-        Text(
-            text = chrome.title,
-            modifier = Modifier
-                .weight(1f)
-                .semantics { heading() },
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold,
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = chrome.title,
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            chrome.subtitle?.let { FormSubtitleText(it) }
+        }
         if (chrome.isNavigationAtEndInDialog) {
             NavigationButton(chrome)
         }
@@ -240,4 +242,21 @@ private fun DialogActionsRow(chrome: FormChrome) {
             enabled = chrome.isConfirmEnabled,
         ) { Text(chrome.confirmLabel) }
     }
+}
+
+@Composable
+private fun FormTitleColumn(chrome: FormChrome) {
+    Column {
+        Text(chrome.title)
+        chrome.subtitle?.let { FormSubtitleText(it) }
+    }
+}
+
+@Composable
+private fun FormSubtitleText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }

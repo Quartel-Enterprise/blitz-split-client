@@ -80,6 +80,7 @@ interface GroupDao {
             type = entity.type,
             color = entity.color,
             currency = entity.currency,
+            defaultSplit = entity.defaultSplit,
             createdBy = entity.createdBy,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
@@ -166,6 +167,27 @@ interface GroupDao {
         updatedAt: Long,
     )
 
+    /*
+     * Why: "Divisão padrão" saves only itself, so the rest of the group stays as this device last read it, and the
+     * incomes "Pela renda" was typed with stay here. Stamped after the row like "Editar grupo".
+     */
+    @Query(
+        "UPDATE split_group SET defaultSplit = :defaultSplit, splitIncomes = :splitIncomes, " +
+            "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
+    )
+    suspend fun updateDefaultSplit(
+        id: String,
+        defaultSplit: String?,
+        splitIncomes: String?,
+        updatedAt: Long,
+    )
+
+    @Query("SELECT splitIncomes FROM split_group WHERE id = :id")
+    suspend fun getSplitIncomes(id: String): String?
+
+    @Query("SELECT defaultSplit FROM split_group WHERE id = :id")
+    suspend fun getDefaultSplit(id: String): String?
+
     // Why: someone who joined sees the group too, so only a member nobody is yet can be removed.
     @Query(
         "UPDATE group_member SET isRemoved = 1, updatedAt = :removedAt, pendingSync = 1 " +
@@ -243,7 +265,8 @@ interface GroupDao {
      */
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
-            "createdBy = :createdBy, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "defaultSplit = :defaultSplit, createdBy = :createdBy, addedAt = :addedAt, " +
+            "updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = :id AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun updateGroupFromRemote(
@@ -252,6 +275,7 @@ interface GroupDao {
         type: String,
         color: String,
         currency: String,
+        defaultSplit: String?,
         createdBy: String?,
         addedAt: Long,
         remoteUpdatedAt: Long,
