@@ -580,6 +580,7 @@ class SplitBillUiStateTest {
             currency = GroupCurrency.BRL,
         ),
         splitEditor = null,
+        defaultSplit = null,
         conflict = conflict,
         settledPair = settledPair,
         deletion = null,

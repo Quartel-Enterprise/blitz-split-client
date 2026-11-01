@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.data.mapper
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
@@ -51,4 +52,13 @@ interface GroupMapper {
         dto: GroupMemberDto,
         userId: String,
     ): GroupMemberEntity
+
+    // Why: the JSON Room keeps "Divisão padrão" in, the same the server keeps.
+    fun encode(defaultSplit: GroupDefaultSplit): String
+
+    // Why: the incomes "Pela renda" was typed with, which only this device keeps; null when there are none.
+    fun encodeIncomes(incomes: Map<String, Long>): String?
+
+    // Why: empty for none, or for what this version can't read.
+    fun decodeIncomes(text: String?): Map<String, Long>
 }

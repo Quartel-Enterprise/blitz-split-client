@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -76,6 +77,24 @@ class GroupRepositoryImpl(
             currency = currency.code,
             updatedAt = updatedAt,
         )
+    }
+
+    override suspend fun updateDefaultSplit(
+        groupId: String,
+        defaultSplit: GroupDefaultSplit?,
+        incomes: Map<String, Long>,
+        updatedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.updateDefaultSplit(
+            id = groupId,
+            defaultSplit = defaultSplit?.let(mapper::encode),
+            splitIncomes = mapper.encodeIncomes(incomes),
+            updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>> = suspendRunCatching {
+        mapper.decodeIncomes(local.getSplitIncomes(groupId))
     }
 
     override suspend fun addMember(

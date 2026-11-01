@@ -106,6 +106,12 @@ class SplitBillViewModel(
      */
     private var amountAnchor: Pair<Long, List<SplitEntry>>? = null
 
+    /*
+     * Why: a new bill follows the group's "Divisão padrão" (and the people a sync brings) until "Pronto" on Dividir
+     * picks its own split; another group picked starts it over from that group's.
+     */
+    private var hasPickedSplit = false
+
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
@@ -229,6 +235,8 @@ class SplitBillViewModel(
             is SplitBillUiEvent.OnPartsIncreased -> changeParts(event.memberId, +1)
 
             is SplitBillUiEvent.OnPartsDecreased -> changeParts(event.memberId, -1)
+
+            SplitBillUiEvent.OnSplitResetToDefault -> resetSplitToDefault()
 
             SplitBillUiEvent.OnSplitDone -> confirmSplit()
 
@@ -381,7 +389,10 @@ class SplitBillViewModel(
         val people = group.members.map { it.toBillPerson() }
         val isAnotherGroup = shownGroupId != null && shownGroupId != group.id
         shownGroupId = group.id
-        if (isAnotherGroup) amountAnchor = null
+        if (isAnotherGroup) {
+            amountAnchor = null
+            hasPickedSplit = false
+        }
         // Why: a member who left takes their part of "Valores" along, so a new total rescales only the ones who stay.
         amountAnchor = amountAnchor?.let { (total, entries) ->
             total to entries.filter { entry -> people.any { it.id == entry.memberId } }
@@ -419,9 +430,25 @@ class SplitBillViewModel(
                 payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
                 isLoaded = true,
             )
+            val defaultSplit = if (state.isEditing) {
+                null
+            } else {
+                billDefaultSplitOf(group.defaultSplit, people, group.currency, shown.payerIds, state.split.totalMinor)
+            }
+            val split = if (state.isEditing || hasPickedSplit) {
+                state.split.withPeople(people, group.currency, shown.payerIds, !state.isEditing)
+            } else {
+                defaultSplit?.editor ?: createEmptySplit(group.currency).withPeople(
+                    people = people,
+                    currency = group.currency,
+                    payerIds = shown.payerIds,
+                    includesNewcomers = true,
+                )
+            }
             val withSplit = shown.copy(
-                split = state.split.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
+                split = split,
                 splitEditor = state.splitEditor?.withPeople(people, group.currency, shown.payerIds, !state.isEditing),
+                defaultSplit = defaultSplit,
             )
             // Why: another currency reads the typed amount in its own minor unit, which the split must add up to.
             withSplit.withBillTotal()
@@ -488,8 +515,28 @@ class SplitBillViewModel(
         }
     }
 
+    // Why: only Dividir's split goes back; the bill's own changes only on "Pronto", as any other change there.
+    private fun resetSplitToDefault() {
+        uiState.update { state ->
+            val default = state.defaultSplit
+            val editor = state.splitEditor
+            if (default == null || editor == null) {
+                state
+            } else {
+                state.copy(
+                    splitEditor = default.editor
+                        .copy(
+                            totalMinor = editor.totalMinor,
+                            payerIds = editor.payerIds,
+                        ).withShares(),
+                )
+            }
+        }
+    }
+
     private fun confirmSplit() {
         val editor = uiState.value.splitEditor?.takeIf { it.addsUp } ?: return
+        hasPickedSplit = true
         amountAnchor = if (editor.mode == SplitMode.AMOUNT) editor.totalMinor to editor.entries else null
         uiState.update {
             it.copy(

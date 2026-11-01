@@ -175,6 +175,7 @@ class UpdateGroupUseCaseTest {
         isPending = false,
         inviteCode = "Xy7kQ2",
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 

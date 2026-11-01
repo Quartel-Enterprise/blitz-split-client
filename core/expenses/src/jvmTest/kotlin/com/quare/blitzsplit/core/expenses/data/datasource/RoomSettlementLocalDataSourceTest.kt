@@ -593,6 +593,8 @@ class RoomSettlementLocalDataSourceTest {
         pendingSync = false,
         ownerUserId = ownerUserId,
         inviteCode = null,
+        defaultSplit = null,
+        splitIncomes = null,
     )
 
     private fun settlement(

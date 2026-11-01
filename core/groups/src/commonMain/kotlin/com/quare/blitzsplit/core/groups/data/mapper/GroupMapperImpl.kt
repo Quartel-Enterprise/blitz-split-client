@@ -1,20 +1,27 @@
 package com.quare.blitzsplit.core.groups.data.mapper
 
+import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitDto
+import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import kotlinx.serialization.json.Json
 
 /*
  * Why: a type, color or currency a newer app wrote reads as the closest one this version knows, so nobody loses
  * sight of a group because of it.
  */
 class GroupMapperImpl : GroupMapper {
+    private val json = Json { ignoreUnknownKeys = true }
+
     override fun toDomain(
         groups: List<GroupEntity>,
         members: List<GroupMemberEntity>,
@@ -34,6 +41,7 @@ class GroupMapperImpl : GroupMapper {
                 inviteCode = group.inviteCode,
                 // Why: both are null for a group made here before any account, which the first sync gives this one.
                 isCreatedByMe = group.createdBy == group.ownerUserId,
+                defaultSplit = defaultSplitOf(group.defaultSplit),
                 updatedAt = group.updatedAt,
             )
         }
@@ -55,6 +63,8 @@ class GroupMapperImpl : GroupMapper {
         pendingSync = true,
         ownerUserId = ownerUserId,
         inviteCode = group.inviteCode,
+        defaultSplit = group.defaultSplit?.let(::encode),
+        splitIncomes = null,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -109,6 +119,7 @@ class GroupMapperImpl : GroupMapper {
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
         inviteCode = null,
+        defaultSplit = decodeOrNull(entity.defaultSplit),
     )
 
     /*
@@ -141,6 +152,9 @@ class GroupMapperImpl : GroupMapper {
         pendingSync = false,
         ownerUserId = ownerUserId,
         inviteCode = dto.inviteCode,
+        defaultSplit = dto.defaultSplit?.let { json.encodeToString(it) },
+        // Why: never on the server; applyRemoteGroup leaves the ones this device has alone.
+        splitIncomes = null,
     )
 
     override fun toEntity(
@@ -169,4 +183,38 @@ class GroupMapperImpl : GroupMapper {
         userId = entity.userId,
         inviteCode = entity.inviteCode,
     )
+
+    override fun encode(defaultSplit: GroupDefaultSplit): String = json.encodeToString(
+        DefaultSplitDto(
+            mode = defaultSplit.mode.code,
+            weights = defaultSplit.weights.map { (memberId, weight) ->
+                DefaultSplitWeightDto(
+                    memberId = memberId,
+                    weight = weight,
+                )
+            },
+        ),
+    )
+
+    override fun encodeIncomes(incomes: Map<String, Long>): String? = incomes.takeIf { it.isNotEmpty() }?.let {
+        json.encodeToString(it)
+    }
+
+    override fun decodeIncomes(text: String?): Map<String, Long> = text
+        ?.let { runCatching { json.decodeFromString<Map<String, Long>>(it) }.getOrNull() }
+        .orEmpty()
+
+    // Why: a split a newer app wrote in a mode this version doesn't know splits equally, as a group without one.
+    private fun defaultSplitOf(text: String?): GroupDefaultSplit? {
+        val dto = decodeOrNull(text) ?: return null
+        val mode = DefaultSplitMode.fromCodeOrNull(dto.mode) ?: return null
+        return GroupDefaultSplit(
+            mode = mode,
+            weights = dto.weights.associate { it.memberId to it.weight },
+        )
+    }
+
+    private fun decodeOrNull(text: String?): DefaultSplitDto? = text?.let {
+        runCatching { json.decodeFromString<DefaultSplitDto>(it) }.getOrNull()
+    }
 }

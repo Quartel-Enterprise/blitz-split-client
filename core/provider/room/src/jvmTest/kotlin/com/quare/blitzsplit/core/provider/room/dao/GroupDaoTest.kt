@@ -817,6 +817,42 @@ class GroupDaoTest {
         assertEquals(listOf("ana"), dao.observeMembers().first().map { it.id })
     }
 
+    @Test
+    fun `GIVEN a group WHEN saving its default split THEN only the split and the incomes change, pending`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L))
+
+        // When
+        dao.updateDefaultSplit(
+            id = "group-1",
+            defaultSplit = SHARES_JSON,
+            splitIncomes = INCOMES_JSON,
+            updatedAt = 3L,
+        )
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertEquals(SHARES_JSON, group.defaultSplit)
+        assertEquals(INCOMES_JSON, dao.getSplitIncomes("group-1"))
+        assertEquals("Viagem Floripa", group.name)
+        assertEquals(6L, group.updatedAt)
+        assertTrue(group.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN incomes typed here WHEN a newer server row comes THEN takes its split and keeps the incomes`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(splitIncomes = INCOMES_JSON))
+
+        // When
+        dao.applyRemoteGroup(entity(updatedAt = 9L).copy(defaultSplit = SHARES_JSON))
+
+        // Then
+        val group = dao.observeGroups().first().single()
+        assertEquals(SHARES_JSON, group.defaultSplit)
+        assertEquals(INCOMES_JSON, group.splitIncomes)
+    }
+
     private fun entity(
         id: String = "group-1",
         name: String = "Viagem Floripa",
@@ -836,6 +872,8 @@ class GroupDaoTest {
         pendingSync = pendingSync,
         ownerUserId = ownerUserId,
         inviteCode = inviteCode,
+        defaultSplit = null,
+        splitIncomes = null,
     )
 
     private fun member(
@@ -913,5 +951,10 @@ class GroupDaoTest {
         dao.upsertMembers(members)
         expenses.forEach { database.expenseDao().insertExpenseIntoGroup(it) }
         database.settlementDao().insertSettlementsIntoGroups(settlements)
+    }
+
+    private companion object {
+        const val SHARES_JSON = """{"mode":"shares","weights":[{"member_id":"ana","weight":3}]}"""
+        const val INCOMES_JSON = """{"ana":900000}"""
     }
 }

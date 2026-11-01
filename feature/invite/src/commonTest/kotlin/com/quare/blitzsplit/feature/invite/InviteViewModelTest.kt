@@ -923,6 +923,7 @@ class InviteViewModelTest {
         isPending = true,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 

@@ -478,6 +478,7 @@ class InviteChangeLinkViewModelTest {
         isPending = false,
         inviteCode = OLD_CODE,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 

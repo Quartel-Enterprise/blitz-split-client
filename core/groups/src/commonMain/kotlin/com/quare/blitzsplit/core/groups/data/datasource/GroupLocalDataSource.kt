@@ -37,6 +37,16 @@ interface GroupLocalDataSource {
         updatedAt: Long,
     )
 
+    // Why: "Divisão padrão" and the incomes "Pela renda" was typed with, which only this device keeps.
+    suspend fun updateDefaultSplit(
+        id: String,
+        defaultSplit: String?,
+        splitIncomes: String?,
+        updatedAt: Long,
+    )
+
+    suspend fun getSplitIncomes(id: String): String?
+
     // Why: a member who joined, or this device's user, is left as it is.
     suspend fun removeMember(
         id: String,

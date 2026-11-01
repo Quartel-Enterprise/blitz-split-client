@@ -107,6 +107,7 @@ class ObserveGroupsByActivityUseCaseTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = updatedAt,
     )
 

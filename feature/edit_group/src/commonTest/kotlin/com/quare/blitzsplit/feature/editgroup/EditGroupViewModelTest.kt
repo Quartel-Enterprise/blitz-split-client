@@ -7,12 +7,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -1126,6 +1128,73 @@ class EditGroupViewModelTest {
             assertFalse(state.canSave)
         }
 
+    @Test
+    fun `GIVEN a group splitting by parts WHEN the form opens THEN the default split row says Partes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(defaultSplit = threeToOne))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(DefaultSplitMode.SHARES, state.defaultSplitMode)
+        }
+
+    @Test
+    fun `GIVEN the form open WHEN the default split is saved under it THEN the row follows without a change to save`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            groups.groups.value = listOf(trip.copy(defaultSplit = threeToOne))
+
+            // Then
+            assertEquals(DefaultSplitMode.SHARES, viewModel.uiState.value.defaultSplitMode)
+            assertFalse(viewModel.uiState.value.hasChanges)
+        }
+
+    @Test
+    fun `GIVEN the form on top WHEN tapping Divisao padrao THEN it opens over the form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnDefaultSplitClicked)
+
+        // Then
+        assertEquals(Route.DefaultSplit(GROUP_ID), navigator.backStack.value.last())
+        assertEquals(editGroup, navigator.backStack.value[navigator.backStack.value.size - 2])
+    }
+
+    @Test
+    fun `GIVEN Divisao padrao already open WHEN tapping its row again THEN nothing stacks`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnDefaultSplitClicked)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnDefaultSplitClicked)
+
+        // Then
+        assertEquals(1, navigator.backStack.value.count { it is Route.DefaultSplit })
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN tapping Divisao padrao THEN it stays on the form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isSaveHeld = true)
+        viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
+        viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnDefaultSplitClicked)
+
+        // Then
+        assertEquals(editGroup, navigator.backStack.value.last())
+    }
+
     private val editGroup = Route.EditGroup(GROUP_ID)
 
     private val groupDetail = Route.GroupDetail(GROUP_ID)
@@ -1159,7 +1228,13 @@ class EditGroupViewModelTest {
         isPending = false,
         inviteCode = "AB12CD",
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
+    )
+
+    private val threeToOne = GroupDefaultSplit(
+        mode = DefaultSplitMode.SHARES,
+        weights = mapOf(PIERRE to 3L, ANA to 1L),
     )
 
     private val dinner = Expense(

@@ -1,0 +1,420 @@
+package com.quare.blitzsplit.feature.editgroup
+
+import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
+import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
+import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.navigation.BackStackNavigator
+import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
+import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import software.quare.connectivity.NetworkConnectivityObserver
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class DefaultSplitViewModelTest {
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private lateinit var groups: FakeGroupRepository
+    private lateinit var navigator: BackStackNavigator
+    private lateinit var viewModel: DefaultSplitViewModel
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `GIVEN a group without a default WHEN the screen opens THEN it splits equally among everyone with nothing to save`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertEquals(DefaultSplitMode.EQUAL, state.mode)
+            assertTrue(state.people.all { it.isIncluded })
+            assertEquals(10_000L, state.exampleTotalMinor)
+            assertEquals(5_000L, state.exampleEachMinor)
+            assertTrue(state.newcomers.isEmpty())
+            assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN six people in Igual WHEN reading the example THEN it is the first round bill everyone gets the same of`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(members = (1..6).map { member("member-$it", "Pessoa $it") }))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(12_000L, state.exampleTotalMinor)
+            assertEquals(2_000L, state.exampleEachMinor)
+        }
+
+    @Test
+    fun `GIVEN a group splitting 3 to 1 WHEN the screen opens THEN each one has their parts and part of a bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+
+            // When
+            val rows = viewModel.uiState.value.rows
+
+            // Then
+            assertEquals(DefaultSplitMode.SHARES, viewModel.uiState.value.mode)
+            assertEquals(listOf(3L, 1L), rows.map { it.weight })
+            assertEquals(listOf(7_500L, 2_500L), rows.map { it.basisPoints })
+            assertEquals(listOf(7_500L, 2_500L), rows.map { it.exampleMinor })
+        }
+
+    @Test
+    fun `GIVEN percentages adding up to 90 WHEN reading the state THEN it says what is missing and Salvar is disabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = percent(75L, 25L)))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnPercentChanged(ANA, "15"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsPercentError)
+            assertEquals(90L, state.percentSum)
+            assertEquals(10L, state.remainingPercent)
+            assertEquals(1_500L, state.rows.last().exampleMinor)
+            assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN Pela renda WHEN typing each income and saving THEN the group gets only the percentages`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.INCOME))
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "9.000,00"))
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(ANA, "3.000,00"))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L)),
+                groups.savedDefaultSplits.single(),
+            )
+            assertEquals(mapOf(PIERRE to 900_000L, ANA to 300_000L), groups.savedIncomes[GROUP_ID])
+            assertEquals(editGroup, navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN Pela renda saved on another device WHEN the screen opens THEN it shows the saved percentages with no income`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = percent(75L, 25L).copy(mode = DefaultSplitMode.INCOME)))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.people.all { it.incomeText.isEmpty() })
+            assertEquals(mapOf(PIERRE to 75L, ANA to 25L), state.weights)
+            assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN incomes this device typed WHEN the screen opens THEN they fill the fields`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroup = home.copy(defaultSplit = percent(75L, 25L).copy(mode = DefaultSplitMode.INCOME)),
+            storedIncomes = mapOf(PIERRE to 900_000L, ANA to 300_000L),
+        )
+
+        // When
+        val people = viewModel.uiState.value.people
+
+        // Then
+        assertEquals(listOf("9000,00", "3000,00"), people.map { it.incomeText })
+        assertFalse(viewModel.uiState.value.hasChanges)
+    }
+
+    @Test
+    fun `GIVEN someone who joined after the split was saved WHEN the screen opens THEN they start with 1 part until it is saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne, members = home.members + member(CARLA, "Carla")))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(CARLA), state.newcomers.map { it.id })
+            assertEquals(1L, state.weights[CARLA])
+            assertTrue(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN someone new WHEN saving THEN they are in the saved split and the notice goes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne, members = home.members + member(CARLA, "Carla")))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(mapOf(PIERRE to 3L, ANA to 1L, CARLA to 1L), groups.savedDefaultSplits.single().second?.weights)
+        assertTrue(viewModel.uiState.value.newcomers.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Porcentagem WHEN someone joins while the screen is open THEN they come in at 0 percent as new`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = percent(75L, 25L)))
+
+            // When
+            groups.groups.value = listOf(home.copy(defaultSplit = percent(75L, 25L), members = home.members + member(CARLA, "Carla")))
+
+            // Then
+            val carla = viewModel.uiState.value.people.last()
+            assertTrue(carla.isNew)
+            assertEquals(0L, viewModel.uiState.value.weights[CARLA])
+            assertFalse(viewModel.uiState.value.showsPercentError)
+        }
+
+    @Test
+    fun `GIVEN Igual WHEN leaving Ana out and saving THEN Ana stays out of the default`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(
+            GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L)),
+            groups.savedDefaultSplits.single().second,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group splitting 3 to 1 WHEN going back to Igual and saving THEN the group has no default anymore`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.EQUAL))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+            // Then
+            assertNull(groups.savedDefaultSplits.single().second)
+            assertNull(groups.groups.value.single().defaultSplit)
+        }
+
+    @Test
+    fun `GIVEN Partes WHEN switching to Porcentagem THEN 100 is shared evenly among who was in`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.PERCENT))
+
+        // Then
+        assertEquals(listOf("50", "50"), viewModel.uiState.value.people.map { it.percentText })
+        assertTrue(viewModel.uiState.value.canSave)
+    }
+
+    @Test
+    fun `GIVEN one part WHEN taking it away and adding two THEN the parts never go under 0`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+        viewModel.onEvent(DefaultSplitUiEvent.OnPartsDecreased(ANA))
+        viewModel.onEvent(DefaultSplitUiEvent.OnPartsDecreased(ANA))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnPartsIncreased(ANA))
+
+        // Then
+        assertEquals(1L, viewModel.uiState.value.weights[ANA])
+        assertFalse(viewModel.uiState.value.hasChanges)
+    }
+
+    @Test
+    fun `GIVEN the device can't save WHEN tapping Salvar THEN it says so and stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        groups.defaultSplitError = IllegalStateException("disk full")
+        viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.showsSaveError)
+        assertFalse(viewModel.uiState.value.isSaving)
+        assertEquals(defaultSplit, navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN tapping back THEN it stays until the save ends`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        groups.defaultSplitGate = CompletableDeferred()
+        viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+        viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(defaultSplit, navigator.backStack.value.last())
+        assertFalse(viewModel.uiState.value.canSave)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping back THEN Editar grupo is on top with nothing saved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(DefaultSplitUiEvent.OnPersonToggled(ANA))
+
+        // When
+        viewModel.onEvent(DefaultSplitUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(editGroup, navigator.backStack.value.last())
+        assertTrue(groups.savedDefaultSplits.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the group deleted elsewhere WHEN a sync takes it off THEN the screen closes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        assertEquals(editGroup, navigator.backStack.value.last())
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN reading the state THEN it says the split holds on this device for now`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsOfflineNotice)
+        }
+
+    private val editGroup = Route.EditGroup(GROUP_ID)
+
+    private val defaultSplit = Route.DefaultSplit(GROUP_ID)
+
+    private val threeToOne = GroupDefaultSplit(
+        mode = DefaultSplitMode.SHARES,
+        weights = mapOf(PIERRE to 3L, ANA to 1L),
+    )
+
+    private fun percent(
+        pierre: Long,
+        ana: Long,
+    ) = GroupDefaultSplit(
+        mode = DefaultSplitMode.PERCENT,
+        weights = mapOf(PIERRE to pierre, ANA to ana),
+    )
+
+    private fun member(
+        id: String,
+        name: String,
+    ) = GroupMember(
+        id = id,
+        name = name,
+        avatarColor = AvatarColor.GREEN,
+        isMe = false,
+        hasJoined = false,
+        userId = null,
+        inviteCode = null,
+    )
+
+    private val home = Group(
+        id = GROUP_ID,
+        name = "Apê 302",
+        type = GroupType.HOME,
+        color = AvatarColor.BLUE,
+        currency = GroupCurrency.BRL,
+        members = listOf(
+            member(PIERRE, "Pierre").copy(isMe = true, hasJoined = true),
+            member(ANA, "Ana"),
+        ),
+        isPending = false,
+        inviteCode = "AB12CD",
+        isCreatedByMe = true,
+        defaultSplit = null,
+        updatedAt = 0L,
+    )
+
+    private fun prepareScenario(
+        storedGroup: Group = home,
+        storedIncomes: Map<String, Long> = emptyMap(),
+        online: Boolean = true,
+    ) {
+        groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
+            if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
+        }
+        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(editGroup)
+            it.navigate(defaultSplit)
+        }
+        viewModel = DefaultSplitViewModel(
+            route = defaultSplit,
+            navigator = navigator,
+            updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { 1_000L },
+            getSplitIncomes = GetSplitIncomesUseCase(groups),
+            decimalSeparator = { ',' },
+            observeGroup = ObserveGroupUseCase(groups),
+            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
+        )
+    }
+
+    private companion object {
+        const val GROUP_ID = "group-1"
+        const val PIERRE = "member-1"
+        const val ANA = "member-2"
+        const val CARLA = "member-3"
+    }
+}

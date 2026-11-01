@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain.repository
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -29,6 +30,20 @@ interface GroupRepository {
         currency: GroupCurrency,
         updatedAt: Long,
     ): Result<Unit>
+
+    /*
+     * Why: "Divisão padrão" (6.7), by any member, offline too: only the split changes, null back to splitting equally
+     * among everyone. The incomes "Pela renda" was typed with, by member id in minor units, stay on this device.
+     */
+    suspend fun updateDefaultSplit(
+        groupId: String,
+        defaultSplit: GroupDefaultSplit?,
+        incomes: Map<String, Long>,
+        updatedAt: Long,
+    ): Result<Unit>
+
+    // Why: the incomes this device typed for "Pela renda", empty when it typed none.
+    suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>>
 
     suspend fun addMember(
         groupId: String,

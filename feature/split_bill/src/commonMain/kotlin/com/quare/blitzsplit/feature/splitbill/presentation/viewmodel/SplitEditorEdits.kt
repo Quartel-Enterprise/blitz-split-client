@@ -5,9 +5,12 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillDefaultSplit
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
@@ -181,3 +184,49 @@ private fun SplitEditor.splitEvenly(
         payerIds = payerIds,
     )?.associate { it.memberId to it.amountMinor }
     .orEmpty()
+
+/*
+ * Why: the group's "Divisão padrão" (6.7) as a new bill's split among its people now: who joined after it was saved
+ * comes in as the rules start them (in, 1 part, 0%). Percentages that no longer add up to 100, once someone holding
+ * part of them left the group, start the bill equally among everyone instead, as a group without one does.
+ */
+internal fun billDefaultSplitOf(
+    default: GroupDefaultSplit?,
+    people: List<BillPerson>,
+    currency: GroupCurrency,
+    payerIds: List<String>,
+    totalMinor: Long,
+): BillDefaultSplit? {
+    if (default == null || people.isEmpty()) return null
+    val weights = people.associate { it.id to default.weightOf(it.id) }
+    val mode = when (default.mode) {
+        DefaultSplitMode.EQUAL -> SplitMode.EQUAL
+        DefaultSplitMode.SHARES -> SplitMode.SHARES
+        DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> SplitMode.PERCENT
+    }
+    val isValid = weights.values.any { it > 0 } &&
+        (mode != SplitMode.PERCENT || weights.values.sum() == BillSplit.FULL_PERCENT)
+    if (!isValid) return null
+    val editor = SplitEditor(
+        mode = mode,
+        rows = people.map { person ->
+            val weight = weights.getValue(person.id)
+            SplitRow(
+                person = person,
+                isIncluded = weight > 0,
+                valueText = if (mode == SplitMode.PERCENT && weight > 0) weight.toString() else "",
+                parts = if (mode == SplitMode.SHARES) weight else 0L,
+                shareMinor = null,
+            )
+        },
+        totalMinor = totalMinor,
+        payerIds = payerIds,
+        currency = currency,
+    ).withShares()
+    return BillDefaultSplit(
+        mode = default.mode,
+        editor = editor,
+        values = people.mapNotNull { person -> weights.getValue(person.id).takeIf { it > 0 } },
+        excluded = people.filter { weights.getValue(it.id) <= 0 },
+    )
+}
