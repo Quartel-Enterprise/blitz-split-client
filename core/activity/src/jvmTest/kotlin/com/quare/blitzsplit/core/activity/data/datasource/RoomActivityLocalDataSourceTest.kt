@@ -693,6 +693,7 @@ class RoomActivityLocalDataSourceTest {
         splitMode = "equal",
         payersJson = "[]",
         sharesJson = "[]",
+        itemsJson = null,
         spentAt = 1L,
         isDeleted = isDeleted,
         addedAt = 1L,

@@ -242,11 +242,12 @@ internal fun changeValueTextOf(
     } ?: empty
 }
 
+// Why: a split by items is stored as its amounts, so the server never sends "items".
 @Composable
 private fun splitLabelOf(mode: SplitMode): String = stringResource(
     when (mode) {
         SplitMode.EQUAL -> R.string.activity_split_equal
-        SplitMode.AMOUNT -> R.string.activity_split_amount
+        SplitMode.AMOUNT, SplitMode.ITEMS -> R.string.activity_split_amount
         SplitMode.PERCENT -> R.string.activity_split_percent
         SplitMode.SHARES -> R.string.activity_split_shares
     },
