@@ -1,4 +1,5 @@
 import type { JsSettledPair } from 'blitzsplit-shared'
+import type { Money } from '@/features/split-bill/splitText'
 import { t } from '@/i18n'
 
 /**
@@ -6,26 +7,26 @@ import { t } from '@/i18n'
  * payment made after the bill that editing or deleting it unsettles (7.4b).
  */
 export function settledPairLead(change: JsSettledPair): string {
-  const payer = change.payerName ?? t('settledPair_formerMember')
-  const receiver = change.receiverName ?? t('settledPair_formerMember')
+  const payer = change.payerName ?? t('billDetail_formerMember')
+  const receiver = change.receiverName ?? t('billDetail_formerMember')
   if (change.payerIsMe) return t('settledPair_iPaid', { receiver })
   if (change.receiverIsMe) return t('settledPair_paidMe', { payer })
   return t('settledPair_paid', { payer, receiver })
 }
 
 /** "O acerto continua valendo e o saldo é refeito: com a mudança, Elisa volta a dever R$ 20,00 a Bruno." */
-export function settledPairDetail(change: JsSettledPair, money: (minor: number) => string): string {
+export function settledPairDetail(change: JsSettledPair, money: Money): string {
   return t('settledPair_redone', { outcome: outcomeOf(change, money) })
 }
 
 /** The lead and the detail in one go, as "Apagar esta conta?" says them. */
-export function settledPairSentence(change: JsSettledPair, money: (minor: number) => string): string {
+export function settledPairSentence(change: JsSettledPair, money: Money): string {
   return `${settledPairLead(change)}. ${settledPairDetail(change, money)}`
 }
 
-function outcomeOf(change: JsSettledPair, money: (minor: number) => string): string {
-  const debtor = change.debtorName ?? t('settledPair_formerMember')
-  const creditor = change.creditorName ?? t('settledPair_formerMember')
+function outcomeOf(change: JsSettledPair, money: Money): string {
+  const debtor = change.debtorName ?? t('billDetail_formerMember')
+  const creditor = change.creditorName ?? t('billDetail_formerMember')
   const amount = money(change.amountMinor)
   if (change.outcome === 'even') {
     if (change.debtorIsMe) return t('settledPair_evenWithMe', { other: creditor })

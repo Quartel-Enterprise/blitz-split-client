@@ -188,7 +188,9 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSeveralPayersDismissed -> uiState.update { it.copy(payerAmounts = null) }
 
-            SplitBillUiEvent.OnSpentAtOpened -> changeSpentAt(uiState.value.spentAt)
+            SplitBillUiEvent.OnSpentAtOpened -> uiState.update {
+                it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone())
+            }
 
             is SplitBillUiEvent.OnSpentAtChanged -> changeSpentAt(event.epochMillis)
 
@@ -364,10 +366,11 @@ class SplitBillViewModel(
     private fun showSettledPairs(pairs: Pair<SettledPairChange?, SettledPairChange?>) {
         val (editPair, deletionPair) = pairs
         deletionSettledPair = deletionPair
+        // Why: the save or delete in flight changes Room, which must not reword what the form or the question says.
         uiState.update {
             it.copy(
-                settledPair = editPair,
-                deletion = it.deletion?.copy(settledPair = deletionPair),
+                settledPair = if (it.isSaving) it.settledPair else editPair,
+                deletion = if (it.isDeleting) it.deletion else it.deletion?.copy(settledPair = deletionPair),
             )
         }
     }
@@ -423,7 +426,6 @@ class SplitBillViewModel(
         }
     }
 
-    // Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day.
     private fun changeSpentAt(epochMillis: Long) {
         uiState.update { it.withSpentAt(epochMillis, currentTimeMillis(), currentTimeZone()) }
     }

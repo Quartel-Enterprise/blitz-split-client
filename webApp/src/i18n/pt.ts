@@ -351,7 +351,6 @@ export const pt: Record<MessageKey, string> = {
   settledPair_owesMe: 'com a mudança, {debtor} passa a te dever {amount}.',
   settledPair_even: 'com a mudança, {debtor} e {creditor} ficam quitados.',
   settledPair_evenWithMe: 'com a mudança, você e {other} ficam quitados.',
-  settledPair_formerMember: 'Ex-membro',
   groupDetail_moreOptions: 'Mais opções do grupo',
   groupDetail_editGroup: 'Editar grupo',
   groupDetail_leaveGroup: 'Sair do grupo',

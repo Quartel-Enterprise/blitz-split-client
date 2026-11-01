@@ -350,7 +350,6 @@ export const en = {
   settledPair_owesMe: 'with the change, {debtor} now owes you {amount}.',
   settledPair_even: 'with the change, {debtor} and {creditor} are settled up.',
   settledPair_evenWithMe: 'with the change, you and {other} are settled up.',
-  settledPair_formerMember: 'Former member',
   groupDetail_moreOptions: 'More group options',
   groupDetail_editGroup: 'Edit group',
   groupDetail_leaveGroup: 'Leave group',

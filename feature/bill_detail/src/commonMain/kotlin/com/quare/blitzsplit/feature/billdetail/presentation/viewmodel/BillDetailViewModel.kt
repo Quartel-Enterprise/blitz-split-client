@@ -157,7 +157,8 @@ class BillDetailViewModel(
 
     private fun showDeletionSettledPair(settledPair: SettledPairChange?) {
         deletionSettledPair = settledPair
-        uiState.update { it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
+        // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
+        uiState.update { if (it.isDeleting) it else it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
     }
 
     private fun markGone(isBillGoneAfterShowing: Boolean) {
