@@ -165,16 +165,16 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and a dialog or sheet (Rachar conta, Conta) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.
-  - "Perfil" (4.1, `Route.Profile`) opens from the home's avatar. It is one column on a phone and upright (560 dp on an
-    Android tablet or foldable, 520 pt with an iPad's room); lying down who you are, your account and "Privacidade e
-    sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
+  - "Perfil" (4.1, `Route.Profile`) opens from the avatar of each home tab (Início, Grupos…). It is one column on a
+    phone and upright (560 dp on an Android tablet or foldable, 520 pt with an iPad's room); lying down who you are,
+    your account and "Privacidade e sobre" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
     glass panel of a Settings split) and the keys and preferences on the right, with signing out on Android's right
     and iOS's left, each column scrolling on its own; on a book (a tabletop lying down alike) a half each, the 72 dp
     gap centered on the hinge, as Editar perfil and the keys do, and its dialogs ("Quem vê seu nome e foto", Sair,
     Desconectar, "Apagar perfil e sair") and Excluir conta open in the right half. Editar perfil is full screen on
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
     name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Salvar (✓). The Mac's profile is
-    Ajustes (⌘,), the app's Settings window, never pushed: whatever opens the profile (the avatar, "Proteja seu
+    Ajustes (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Proteja seu
     acesso", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
