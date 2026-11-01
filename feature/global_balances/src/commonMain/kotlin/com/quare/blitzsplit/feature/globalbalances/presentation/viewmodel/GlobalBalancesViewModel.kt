@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -172,7 +173,7 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
 
-            GlobalBalancesUiEvent.OnGroupsTabClicked -> backToGroups()
+            GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GlobalBalancesUiEvent.OnContactsTabClicked,
             GlobalBalancesUiEvent.OnActivityTabClicked,
@@ -281,17 +282,11 @@ class GlobalBalancesViewModel(
 
     private fun handleEmptyAction() {
         when (uiState.value.emptyState) {
-            BalancesEmptyState.SETTLED -> backToGroups()
+            BalancesEmptyState.SETTLED -> navigator.popToGroups()
             BalancesEmptyState.NOTHING_TO_PAY -> changeFilter(BalancesFilter.OWES_YOU)
             BalancesEmptyState.NOTHING_TO_RECEIVE -> changeFilter(BalancesFilter.YOU_OWE)
             null -> Unit
         }
-    }
-
-    // Why: Grupos is the tab under Saldos, so going back to it also closes whatever Saldos opened over itself.
-    private fun backToGroups() {
-        val groupsIndex = navigator.backStack.value.indexOf(Route.Groups)
-        if (groupsIndex >= 0) navigator.popTo(groupsIndex + 1)
     }
 
     // Why: the payments of the settling up go back together, all or none; a failure keeps them all, which it says.

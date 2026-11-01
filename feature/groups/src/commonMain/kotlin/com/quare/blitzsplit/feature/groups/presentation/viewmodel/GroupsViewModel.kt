@@ -30,6 +30,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
@@ -345,7 +346,7 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
 
-            GroupsUiEvent.OnGroupsTabClicked -> popToGroups()
+            GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
@@ -370,13 +371,7 @@ class GroupsViewModel(
     // Why: what iOS's search tab opened goes with it, back to the groups.
     private fun leaveSearchTab() {
         closeSearch()
-        popToGroups()
-    }
-
-    private fun popToGroups() {
-        val stack = navigator.backStack.value
-        val groupsIndex = stack.indexOf(Route.Groups)
-        if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)
+        navigator.popToGroups()
     }
 
     // Why: what is typed or picked only counts while the search shows, so a late keystroke can't reopen it.
@@ -436,7 +431,7 @@ class GroupsViewModel(
         val groupsIndex = stack.indexOf(Route.Groups)
         if (groupsIndex < 0 || stack.getOrNull(groupsIndex + 1) is Route.GlobalBalances) return
         closeSearch()
-        navigator.popTo(groupsIndex + 1)
+        navigator.popToGroups()
         navigator.navigate(Route.GlobalBalances(filter))
     }
 
