@@ -40,6 +40,8 @@ data class HomeUiState(
     val showsRecoveryCodePrompt: Boolean,
     // Why: "Pagamento de Ana registrado." with "Desfazer", once Registrar pagamento closed over Início.
     val recordedPayment: PaymentNotice?,
+    // Why: "Carla apagou o grupo X.", for a group someone else deleted while Início was on top or under it.
+    val deletedGroupNotice: DeletedGroupNotice?,
     // Why: a pull to refresh waits for the sync it asked for.
     val isRefreshing: Boolean,
 ) {
@@ -54,6 +56,10 @@ data class HomeUiState(
     // Why: everyone settled: the row of faces goes without leaving a gap, and the card says "tudo acertado".
     val showsPeople: Boolean
         get() = people.isNotEmpty()
+
+    // Why: "Você deve" goes straight to settling up with them ("Acertar com Ana") while only they are owed.
+    val onlyPersonToPay: HomePerson?
+        get() = people.singleOrNull { it.netMinor < 0 }
 
     val showsSplitBillButton: Boolean
         get() = isLoaded && groupCount > 0

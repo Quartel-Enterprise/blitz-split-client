@@ -1,14 +1,15 @@
-import { ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
+import { House, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
-/** The home's four tabs, in the canvas' order; Grupos and Saldos are built, the others answer "Em breve". */
-export type HomeTab = 'groups' | 'balances' | 'contacts' | 'activity'
+/** The home's five tabs, in the canvas' order; Início, Grupos and Saldos are built, the others answer "Em breve". */
+export type HomeTab = 'home' | 'groups' | 'balances' | 'contacts' | 'activity'
 
 const tabs: { tab: HomeTab; label: MessageKey; icon: ReactNode }[] = [
+  { tab: 'home', label: 'home_tab', icon: <House className="size-4" /> },
   { tab: 'groups', label: 'groups_tabGroups', icon: <Users className="size-4" /> },
   { tab: 'balances', label: 'groups_tabBalances', icon: <Wallet className="size-4" /> },
   { tab: 'contacts', label: 'groups_tabContacts', icon: <UserRound className="size-4" /> },
@@ -31,7 +32,7 @@ export interface HomeProfile {
 }
 
 /**
- * The home's frame around Grupos and Saldos: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and
+ * The home's frame around Início, Grupos and Saldos: desktop (1024+) has the full sidebar, tablet (768–1023) an icon rail and
  * the phone a top bar with a bottom navigation, as the canvas draws them. The selected tab names the page.
  */
 export function HomeShell({
@@ -124,7 +125,7 @@ export function HomeShell({
 
         {children}
 
-        <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-4 border-t bg-card md:hidden">
+        <nav aria-label={t('groups_mainNavigation')} className="sticky bottom-0 grid h-16 grid-cols-5 border-t bg-card md:hidden">
           {tabs.map(({ tab, label, icon }) => (
             <button
               key={tab}

@@ -28,6 +28,7 @@ import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.BalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
+import com.quare.blitzsplit.android.feature.groups.HomeScreen
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
@@ -39,6 +40,7 @@ import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
+import com.quare.blitzsplit.android.feature.registerpayment.PickPaymentScreen
 import com.quare.blitzsplit.android.feature.registerpayment.RegisterPaymentScreen
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
@@ -103,6 +105,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Welcome> { WelcomeScreen() }
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
+            // Why: Início, the root of the home; the other tabs open right above it.
+            entry<Route.Home> { HomeScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
                 GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() })
@@ -178,7 +182,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesBillDialog,
                 )
             }
-            // Why: the home's Saldos tab, over the groups.
+            // Why: "Quem pagou a quem?" from Início, opened the way Registrar pagamento opens, whose place it gives.
+            entry<Route.PickPayment>(
+                metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,
+            ) {
+                PickPaymentScreen(isDialog = usesBillDialog)
+            }
+            // Why: the home's Saldos tab, over Início.
             entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(

@@ -257,6 +257,63 @@ class GroupsViewModelTest {
     }
 
     @Test
+    fun `GIVEN the groups WHEN tapping the Inicio tab THEN goes back to Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group open over the groups WHEN tapping the Inicio tab THEN closes both and goes back to Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.GroupDetail("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search open WHEN tapping the Inicio tab THEN closes the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("apê"))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.search.isOpen)
+        assertEquals("", viewModel.uiState.value.search.query)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the search open WHEN tapping the Saldos tab THEN closes the search and opens Saldos above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.search.isOpen)
+            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a group someone else deleted WHEN the home is on top THEN says so once`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

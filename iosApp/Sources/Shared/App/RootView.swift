@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack
-/// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac) and push the
-/// profile inside the Groups tab. A route that opens as a sheet (a key or a bill with an iPad's room and on the Mac,
+/// is replaced by Início, which brings the tabs (or the sidebar on iPad and Mac): every other tab is the entry right
+/// above it, and each tab pushes what it opens (the profile, a group) inside its own stack. A route that opens as a sheet (a key or a bill with an iPad's room and on the Mac,
 /// deleting the account, a new group, its invite, editing a group, a new or edited bill, recording a payment) shows
 /// over the whole window, and a sheet opened from a sheet stacks over it. The root measures the window, which every
 /// screen reads as `windowLayout`; only crossing an iPad's room changes what opens as a sheet and redraws the root.
@@ -15,7 +15,7 @@ struct RootView: View {
                 // The start route depends on whether a profile exists, read from Room in a moment, and what opens
                 // as a sheet on the window's size, measured on the first layout pass
                 Color.clear
-            } else if app.root == .groups {
+            } else if app.root == .home {
                 MainTabView(path: $app.path)
             } else {
                 NavigationStack(path: $app.path) {
@@ -63,7 +63,8 @@ struct RootView: View {
         case .welcome: WelcomeView()
         case .profileSetup: ProfileSetupView()
         case .restore: RestoreView()
-        case .groups: MainTabView(path: $app.path)
+        // Grupos is never the root now; a stack that starts there still draws the tabs
+        case .home, .groups: MainTabView(path: $app.path)
         case .createGroup: CreateGroupView()
         case let .invite(route): InviteView(route: route)
         case let .members(route): MembersView(route: route)
@@ -72,6 +73,7 @@ struct RootView: View {
         case let .registerPayment(route): RegisterPaymentView(route: route)
         case let .globalBalances(route): GlobalBalancesView(route: route)
         case let .settleUp(route): RegisterPaymentView(settleUp: route)
+        case .pickPayment: PickPaymentView()
         case let .splitBill(route): SplitBillView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
         case let .editGroup(route): EditGroupView(route: route)

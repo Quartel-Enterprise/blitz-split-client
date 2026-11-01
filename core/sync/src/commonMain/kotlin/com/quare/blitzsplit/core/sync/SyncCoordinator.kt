@@ -122,24 +122,34 @@ class SyncCoordinator(
             notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
         }
         /*
-         * Why: the pins, the bills and the payments after their groups, which they need on the device to
-         * come down and on the server to go up.
+         * Why: the bills and the payments after their groups, which they need on the device to come
+         * down and on the server to go up.
          */
+        var areGroupsSynced = false
         val groupsSynced = suspendRunCatching {
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
-            groupPinRepository.downloadPins(userId).getOrThrow()
-            groupPinRepository.uploadPendingPins(userId).getOrThrow()
+            areGroupsSynced = true
             expenseRepository.downloadExpenses(userId).getOrThrow()
             expenseRepository.uploadPendingExpenses(userId).getOrThrow()
             settlementRepository.downloadSettlements(userId).getOrThrow()
             settlementRepository.uploadPendingSettlements(userId).getOrThrow()
+        }
+        // Why: the pins need their groups too, but only order Início, so one that fails never holds the money back.
+        val pinsSynced = if (areGroupsSynced) {
+            suspendRunCatching {
+                groupPinRepository.downloadPins(userId).getOrThrow()
+                groupPinRepository.uploadPendingPins(userId).getOrThrow()
+            }
+        } else {
+            Result.success(Unit)
         }
         offerRecoveryCodeIfDue()
         signOutIfScheduledAndSynced()
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
         groupsSynced.getOrThrow()
+        pinsSynced.getOrThrow()
     }.also { result -> lastSyncFailed.value = result.isFailure }
 
     /*

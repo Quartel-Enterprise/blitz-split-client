@@ -68,6 +68,8 @@ sealed interface HomeUiEvent : UiEvent {
 
     data object OnRecordedPaymentNoticeShown : HomeUiEvent
 
+    data object OnDeletedGroupNoticeShown : HomeUiEvent
+
     data object OnGroupsTabClicked : HomeUiEvent
 
     data object OnBalancesTabClicked : HomeUiEvent

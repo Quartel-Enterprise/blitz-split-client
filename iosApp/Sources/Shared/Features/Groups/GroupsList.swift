@@ -1,7 +1,7 @@
-#if os(iOS)
 import Shared
 import SwiftUI
 
+#if os(iOS)
 /// The home's list on iPhone and iPad: the sync status while it asks for attention, "Overall balance", the open
 /// groups by their latest activity, as rows or as the grid's cards, and, collapsed, the settled ones, always rows.
 /// Pulling down syncs. A row opens the group; its ⋯ menu and its long press hold the group's actions. The search
@@ -116,29 +116,6 @@ struct GroupsList: View {
     }
 }
 
-/// "Offline · 1 change queued", "Syncing…", or "No response from the server" with "Try again".
-private struct SyncStatusRow: View {
-    let status: String
-    let badge: SyncBadge?
-    let canRetry: Bool
-    let onRetry: () -> Void
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud")
-                .accessibilityHidden(true)
-            Text(verbatim: status)
-                .font(.subheadline)
-            Spacer(minLength: 8)
-            if canRetry {
-                Button("Try again", action: onRetry)
-                    .font(.subheadline.weight(.semibold))
-            }
-        }
-        .foregroundStyle(.secondary)
-    }
-}
-
 /// "Overall balance": the sum of your net in each group, one line per currency. "To get back" and "To pay" will
 /// open the global Balances already filtered, and stay disabled while there is nothing in them.
 private struct GroupsSummaryCard: View {
@@ -188,46 +165,6 @@ private struct GroupsSummaryCard: View {
         }
         .padding(20)
         .background(Palette.card, in: .rect(cornerRadius: 28))
-    }
-}
-
-private struct SummaryButton: View {
-    let label: LocalizedStringKey
-    let amounts: [String]
-    let color: Color
-    let isEnabled: Bool
-    let hint: LocalizedStringKey
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(label)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    ForEach(amounts, id: \.self) { amount in
-                        Text(verbatim: amount)
-                            .font(.subheadline.bold())
-                            .monospacedDigit()
-                            .foregroundStyle(isEnabled ? color : .secondary)
-                    }
-                }
-                Spacer(minLength: 4)
-                if isEnabled {
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .frame(minHeight: 44)
-            .background(Palette.groupedBackground, in: .rect(cornerRadius: 16))
-        }
-        .buttonStyle(.plain)
-        .disabled(!isEnabled)
-        .accessibilityHint(isEnabled ? Text(hint) : Text(verbatim: ""))
     }
 }
 
@@ -281,5 +218,70 @@ struct PendingIndicator: View {
             .fill(.orange)
             .frame(width: 8, height: 8)
             .accessibilityHidden(true)
+    }
+}
+
+/// "Offline · 1 change queued", "Syncing…", or "No response from the server" with "Try again".
+struct SyncStatusRow: View {
+    let status: String
+    let badge: SyncBadge?
+    let canRetry: Bool
+    let onRetry: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud")
+                .accessibilityHidden(true)
+            Text(verbatim: status)
+                .font(.subheadline)
+            Spacer(minLength: 8)
+            if canRetry {
+                Button("Try again", action: onRetry)
+                    .font(.subheadline.weight(.semibold))
+            }
+        }
+        .foregroundStyle(.secondary)
+    }
+}
+
+/// "To get back" or "To pay" beside an overall balance (Groups' and Home's): the amount in its color and a chevron,
+/// disabled while there is nothing in it.
+struct SummaryButton: View {
+    let label: LocalizedStringKey
+    let amounts: [String]
+    let color: Color
+    let isEnabled: Bool
+    let hint: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(label)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    ForEach(amounts, id: \.self) { amount in
+                        Text(verbatim: amount)
+                            .font(.subheadline.bold())
+                            .monospacedDigit()
+                            .foregroundStyle(isEnabled ? color : .secondary)
+                    }
+                }
+                Spacer(minLength: 4)
+                if isEnabled {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(minHeight: 44)
+            .background(Palette.groupedBackground, in: .rect(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
+        .accessibilityHint(isEnabled ? Text(hint) : Text(verbatim: ""))
     }
 }

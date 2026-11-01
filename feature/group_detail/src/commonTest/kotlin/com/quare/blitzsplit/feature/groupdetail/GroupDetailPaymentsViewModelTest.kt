@@ -606,7 +606,7 @@ class GroupDetailPaymentsViewModelTest {
 
         // Then
         assertEquals(paymentRows().single(), viewModel.uiState.value.paymentToDelete)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
     }
 
     @Test
@@ -730,7 +730,7 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO)),
                 navigator.backStack.value,
             )
         }
@@ -757,7 +757,7 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
                 navigator.backStack.value,
             )
         }
@@ -783,7 +783,7 @@ class GroupDetailPaymentsViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -806,7 +806,7 @@ class GroupDetailPaymentsViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -819,7 +819,10 @@ class GroupDetailPaymentsViewModelTest {
         viewModel.onEvent(GroupDetailUiEvent.OnSettleClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -834,7 +837,7 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
                 navigator.backStack.value,
             )
         }
@@ -1246,7 +1249,10 @@ class GroupDetailPaymentsViewModelTest {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
+            it.navigate(Route.Groups)
+            it.navigate(route)
+        }
         isRoomRead.value = isRoomReadAtStart
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { nowMillis }
         val deletedBills = InMemoryDeletedBillRepository()

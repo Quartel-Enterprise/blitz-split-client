@@ -52,6 +52,7 @@ private fun eventOf(action: GroupAction): GroupDetailUiEvent? = when (action) {
     GroupAction.BACK -> GroupDetailUiEvent.OnBackClicked
     GroupAction.INVITE -> GroupDetailUiEvent.OnInviteClicked
     GroupAction.STATS -> GroupDetailUiEvent.OnStatsClicked
+    GroupAction.PIN -> GroupDetailUiEvent.OnPinToggled
     GroupAction.EDIT_GROUP -> GroupDetailUiEvent.OnEditGroupClicked
     GroupAction.LEAVE_GROUP -> GroupDetailUiEvent.OnLeaveGroupClicked
     GroupAction.DELETE_GROUP -> GroupDetailUiEvent.OnDeleteGroupClicked

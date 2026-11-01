@@ -55,6 +55,7 @@ class SyncCoordinatorTest {
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var groups: FakeGroupRepository
+    private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
@@ -2770,6 +2771,89 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a Google account WHEN syncing THEN pulls and pushes the pins under its user id`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pins.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pins.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a group pinned offline WHEN observing the sync state THEN it is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        pins.updatePinned(
+            groupId = "floripa",
+            isPinned = true,
+            updatedAt = 1L,
+        )
+        runCurrent()
+
+        // When
+        val state = coordinator.observeState().first()
+
+        // Then
+        assertEquals(SyncState.PENDING, state)
+    }
+
+    @Test
+    fun `GIVEN the pins fail to come down WHEN syncing THEN fails and pushes no pin`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        pins.downloadError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(emptyList(), pins.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the pins fail to go up WHEN syncing THEN still pulls and pushes the bills and the payments`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        pins.uploadError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), settlements.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN neither pulls nor pushes the pins`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        groups.pullError = IllegalStateException("offline")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), pins.downloadedUserIds)
+        assertEquals(emptyList(), pins.uploadedUserIds)
+    }
+
+    @Test
     fun `GIVEN no profile and pending groups WHEN syncing THEN neither pulls nor pushes the groups`() = runTest {
         // Given
         prepareScenario(
@@ -4557,7 +4641,7 @@ class SyncCoordinatorTest {
                 delegate = if (groupQueuedDuringFirstPush) GroupDuringFirstPushGroupRepository(groups) else groups,
                 calls = calls,
             ),
-            groupPinRepository = FakeGroupPinRepository(),
+            groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             connectivityObserver = NetworkConnectivityObserver { isOnline },

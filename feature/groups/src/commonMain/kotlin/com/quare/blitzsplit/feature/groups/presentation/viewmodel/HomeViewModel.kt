@@ -6,7 +6,6 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
-import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -15,7 +14,10 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -36,12 +38,16 @@ import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
-import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
-import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillDaysOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.HomeData
+import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.billDaysOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeGroupsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homePeopleOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.latestBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
+import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
@@ -69,6 +75,8 @@ class HomeViewModel(
     private val retrySync: RetrySync,
     private val syncNow: SyncNow,
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
+    private val consumeGroupDeletion: ConsumeGroupDeletion,
+    private val recoveryCodeCardDismissal: RecoveryCodeCardDismissal,
     observeRecordedPayment: ObserveRecordedPayment,
     observeSettledUp: ObserveSettledUp,
     consumeRecordedPayment: ConsumeRecordedPayment,
@@ -83,6 +91,7 @@ class HomeViewModel(
     observeGroupsMoney: ObserveGroupsMoney,
     observePeopleBalances: ObservePeopleBalances,
     observePinnedGroupIds: ObservePinnedGroupIds,
+    observeGroupDeletions: ObserveGroupDeletions,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState>
@@ -106,6 +115,7 @@ class HomeViewModel(
                 showsRecoveryCodeCard = false,
                 showsRecoveryCodePrompt = false,
                 recordedPayment = null,
+                deletedGroupNotice = null,
                 isRefreshing = false,
             ),
         )
@@ -127,14 +137,19 @@ class HomeViewModel(
         me = null,
     )
 
-    // Why: ✕ on the recovery code's card hides it until the next launch, when the code itself shows again.
-    private val isRecoveryCardDismissed = MutableStateFlow(false)
+    // Why: the deletions no notice showed yet, so the next one shows once the current snackbar goes.
+    private var pendingDeletions = emptyList<GroupDeletion>()
 
     /*
-     * Why: once a sync settled since Início opened, a later one with no group is no first download: the account just
-     * has none, and the first use's card shows.
+     * Why: a first download only fills a device that had no group when Início first read it, for an account that
+     * was already on the server then (a sign in, the recovery code), until its first sync settles. A profile just
+     * made on this device starts local only and has nothing to download; a relaunch with groups shows them as they
+     * are. Once a sync settled, a later one with no group is the first use: the account just has none.
      */
     private var hasSyncSettled = false
+    private var isSyncing = false
+    private var wasOnServer: Boolean? = null
+    private var startedEmpty: Boolean? = null
 
     // Why: the group of the Registrar pagamento opened right over Início, whose notice Início shows once it closes.
     private val paymentGroupId = MutableStateFlow<String?>(null)
@@ -147,9 +162,11 @@ class HomeViewModel(
             observeAccount(),
             observeSyncState(),
             connectivityObserver.observe(),
-            isRecoveryCardDismissed,
+            recoveryCodeCardDismissal.isDismissed,
         ) { profile, account, syncState, isOnline, isCardDismissed ->
             if (syncState != SyncState.SYNCING) hasSyncSettled = true
+            isSyncing = syncState == SyncState.SYNCING
+            if (wasOnServer == null) wasOnServer = account.status != AccountStatus.LocalOnly
             val displayName = profile?.displayName?.trim().orEmpty()
             val isAnonymous = account.status is AccountStatus.Anonymous
             uiState.update { state ->
@@ -161,9 +178,7 @@ class HomeViewModel(
                     accountProvider = (account.status as? AccountStatus.Connected)?.provider,
                     syncBadge = syncBadgeOf(syncState, isOnline),
                     isOnline = isOnline,
-                    isFirstDownload = syncState == SyncState.SYNCING &&
-                        !hasSyncSettled &&
-                        account.status != AccountStatus.LocalOnly,
+                    isFirstDownload = isFirstDownload(),
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
                         !isCardDismissed,
@@ -177,37 +192,33 @@ class HomeViewModel(
                 timeZone = currentTimeZone(),
             )
         }
-        // Why: the ages and the days again each minute, so an Início left open says "ontem" after midnight.
-        combine(
-            observeGroups(),
-            observeGroupsMoney(),
-            observePinnedGroupIds(),
-            minuteTicks(),
-        ) { groups, money, pinnedIds, _ ->
-            val items = groups.map { group ->
-                val ofGroup = money[group.id] ?: GroupMoney.NONE
-                GroupWithMoney(
-                    group = group,
-                    expenses = ofGroup.expenses,
-                    settlements = ofGroup.settlements,
-                    pendingDeletionCount = ofGroup.pendingDeletionCount,
-                )
-            }
-            val clock = activityClock()
-            this.groups = groups
-            rows = rowsOf(items, clock)
-            uiState.update {
-                it.copy(
-                    isLoaded = true,
-                    groupCount = rows.size,
-                    groups = homeGroupsOf(rows, pinnedIds),
-                    billDays = homeBillDaysOf(items, clock),
+        combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
+            .map { items ->
+                HomeData(
+                    groups = items.map { it.group },
+                    rows = rowsOf(items, activityClock()),
+                    latestBills = latestBillsOf(items),
                     pendingChangeCount = pendingChangeCountOf(items),
-                    // Why: the first group to arrive ends the first download's card; the bar stays while it syncs.
-                    isFirstDownload = it.isFirstDownload && (rows.isEmpty() || it.syncBadge == SyncBadge.SYNCING),
                 )
-            }
-        }.launchIn(viewModelScope)
+            }.combine(observePinnedGroupIds(), ::Pair)
+            // Why: the ages and the days again each minute, not the balances, so Início says "ontem" after midnight.
+            .combine(minuteTicks()) { dataAndPins, _ -> dataAndPins }
+            .onEach { (data, pinnedIds) ->
+                val clock = activityClock()
+                groups = data.groups
+                rows = agedRowsOf(data.rows, clock)
+                if (startedEmpty == null) startedEmpty = rows.isEmpty()
+                uiState.update {
+                    it.copy(
+                        isLoaded = true,
+                        groupCount = rows.size,
+                        groups = homeGroupsOf(rows, pinnedIds),
+                        billDays = billDaysOf(data.latestBills, clock),
+                        pendingChangeCount = data.pendingChangeCount,
+                        isFirstDownload = isFirstDownload(),
+                    )
+                }
+            }.launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people ->
                 peopleBalances = people
@@ -239,6 +250,12 @@ class HomeViewModel(
             nameOf = { id -> paymentGroupOrNull()?.members?.firstOrNull { it.id == id }?.name },
             show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
+        // Why: a group someone else deleted, while Início is on top; a group's own screen shows its "Grupo apagado".
+        combine(observeGroupDeletions(), navigator.backStack, ::Pair)
+            .onEach { (deletions, _) ->
+                pendingDeletions = deletions
+                showNextDeletion()
+            }.launchIn(viewModelScope)
         // Why: a face's settling up across groups, which closed over Início.
         notices.watchSettledUp(
             scope = viewModelScope,
@@ -260,9 +277,9 @@ class HomeViewModel(
 
             is HomeUiEvent.OnPersonClicked -> openSettleUp(event.key, event.currency)
 
-            HomeUiEvent.OnSeeBalancesClicked -> openBalancesTab(BalancesFilter.ALL)
+            HomeUiEvent.OnSeeBalancesClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
 
-            HomeUiEvent.OnToReceiveClicked -> if (uiState.value.summary.canOpenToReceive) {
+            HomeUiEvent.OnToReceiveClicked -> if (isOnTop() && uiState.value.summary.canOpenToReceive) {
                 openBalancesTab(BalancesFilter.OWES_YOU)
             }
 
@@ -285,9 +302,10 @@ class HomeViewModel(
 
             is HomeUiEvent.OnGroupClicked -> open(Route.GroupDetail(event.groupId))
 
-            HomeUiEvent.OnSeeAllGroupsClicked,
-            HomeUiEvent.OnGroupsTabClicked,
-            -> navigator.openHomeTab(Route.Groups)
+            HomeUiEvent.OnSeeAllGroupsClicked -> if (isOnTop()) navigator.openHomeTab(Route.Groups)
+
+            // Why: a tab works from any screen Início opened (iOS keeps the tab bar over them), closing it first.
+            HomeUiEvent.OnGroupsTabClicked -> navigator.openHomeTab(Route.Groups)
 
             // Why: over its group, so back goes to the group's bills, as from Despesas.
             is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
@@ -311,13 +329,20 @@ class HomeViewModel(
             // Why: the profile holds "Conectar Google" and "Conectar Apple".
             HomeUiEvent.OnConnectAccountClicked -> open(Route.Profile)
 
-            HomeUiEvent.OnRecoveryCodeCardDismissed -> isRecoveryCardDismissed.value = true
+            HomeUiEvent.OnRecoveryCodeCardDismissed -> recoveryCodeCardDismissal.isDismissed.value = true
 
             HomeUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             HomeUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
+
+            HomeUiEvent.OnDeletedGroupNoticeShown -> {
+                uiState.update { it.copy(deletedGroupNotice = null) }
+                showNextDeletion()
+            }
         }
     }
+
+    private fun isFirstDownload(): Boolean = isSyncing && !hasSyncSettled && wasOnServer == true && startedEmpty == true
 
     // Why: only from Início on top, so a late tap never opens a screen over another one.
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Home
@@ -341,14 +366,14 @@ class HomeViewModel(
     }
 
     private fun openBalancesTab(filter: BalancesFilter) {
-        if (isOnTop()) navigator.openHomeTab(Route.GlobalBalances(filter))
+        navigator.openHomeTab(Route.GlobalBalances(filter))
     }
 
     // Why: "Você deve" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
     private fun openToPay() {
         if (!isOnTop()) return
         openBalancesTab(BalancesFilter.YOU_OWE)
-        val person = peopleBalances.people.singleOrNull { it.netMinor < 0 } ?: return
+        val person = uiState.value.onlyPersonToPay ?: return
         navigator.navigate(
             Route.SettleUp(
                 personKey = person.key,
@@ -397,6 +422,22 @@ class HomeViewModel(
         val notice = uiState.value.recordedPayment ?: return
         uiState.update { it.copy(recordedPayment = null) }
         notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(HomeUiAction.ShowChangeError) }
+    }
+
+    private fun showNextDeletion() {
+        val deletion = pendingDeletions.firstOrNull() ?: return
+        if (!isOnTop() || uiState.value.deletedGroupNotice != null) return
+        consumeGroupDeletion(deletion.groupId)
+        pendingDeletions = pendingDeletions - deletion
+        uiState.update {
+            it.copy(
+                deletedGroupNotice = DeletedGroupNotice(
+                    groupId = deletion.groupId,
+                    groupName = deletion.groupName,
+                    deletedByName = deletion.deletedByName,
+                ),
+            )
+        }
     }
 
     private fun paymentGroupOrNull(): Group? = groups.firstOrNull { it.id == paymentGroupId.value }

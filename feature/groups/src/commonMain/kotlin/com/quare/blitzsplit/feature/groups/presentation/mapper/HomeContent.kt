@@ -59,7 +59,10 @@ internal fun homeGroupsOf(
 internal fun homeBillDaysOf(
     groups: List<GroupWithMoney>,
     clock: ActivityClock,
-): List<HomeBillDay> = groups
+): List<HomeBillDay> = billDaysOf(latestBillsOf(groups), clock)
+
+// Why: read again only when the bills change; the minute's tick just puts them in their days again.
+internal fun latestBillsOf(groups: List<GroupWithMoney>): List<DatedHomeBill> = groups
     .flatMap { item ->
         val meId = item.group.members
             .firstOrNull { it.isMe }
@@ -67,25 +70,33 @@ internal fun homeBillDaysOf(
         val payersOf = PayersOfGroup(item.group)
         item.expenses.mapNotNull { expense ->
             val myBalance = expense.balanceOf(meId) ?: return@mapNotNull null
-            expense.spentAt to HomeBill(
-                id = expense.id,
-                groupId = item.group.id,
-                groupName = item.group.name,
-                description = expense.description,
-                totalMinor = expense.amountMinor,
-                currency = item.group.currency,
-                payers = payersOf.of(expense),
-                myBalanceMinor = myBalance,
-                isPending = expense.isPending,
+            DatedHomeBill(
+                spentAt = expense.spentAt,
+                bill = HomeBill(
+                    id = expense.id,
+                    groupId = item.group.id,
+                    groupName = item.group.name,
+                    description = expense.description,
+                    totalMinor = expense.amountMinor,
+                    currency = item.group.currency,
+                    payers = payersOf.of(expense),
+                    myBalanceMinor = myBalance,
+                    isPending = expense.isPending,
+                ),
             )
         }
-    }.sortedByDescending { (spentAt, _) -> spentAt }
+    }.sortedByDescending { it.spentAt }
     .take(MAX_BILLS)
-    .groupBy { (spentAt, _) -> SpentDay.dateOf(spentAt, clock.timeZone) }
-    .map { (date, bills) ->
+
+internal fun billDaysOf(
+    bills: List<DatedHomeBill>,
+    clock: ActivityClock,
+): List<HomeBillDay> = bills
+    .groupBy { SpentDay.dateOf(it.spentAt, clock.timeZone) }
+    .map { (date, dated) ->
         HomeBillDay(
             dayStartMillis = SpentDay.startOf(date, clock.timeZone),
             relativeDay = SpentDay.relativeDayOf(date, clock.nowMillis, clock.timeZone),
-            bills = bills.map { (_, bill) -> bill },
+            bills = dated.map { it.bill },
         )
     }

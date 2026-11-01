@@ -4,6 +4,8 @@
     <string name="group_detail_stats">Statistics</string>
     <string name="group_detail_invite">Invite people</string>
     <string name="group_detail_more">More group options</string>
+    <string name="group_detail_pin">Pin to Home</string>
+    <string name="group_detail_unpin">Unpin from Home</string>
     <string name="group_detail_edit_group">Edit group</string>
     <string name="group_detail_leave_group">Leave group</string>
     <string name="group_detail_delete_group">Delete group</string>

@@ -27,6 +27,28 @@
         }
       }
     },
+    "%@ is a guest without the app. Click to note what they paid you; they get no notice." : {
+      "comment" : "Home on the Mac: a guest's hover; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Clique para anotar o que ele te pagou; ele não recebe aviso."
+          }
+        }
+      }
+    },
+    "%@ is a guest without the app. Tap to note what they paid you; they get no notice." : {
+      "comment" : "Home: a guest's long press; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ é convidado e não tem o app. Toque para anotar o que ele te pagou; ele não recebe aviso."
+          }
+        }
+      }
+    },
     "%@ · everyone settled up on %@" : {
       "comment" : "A settled group of the home: its members, then the day of its last activity",
       "localizations" : {
@@ -45,6 +67,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · convidado sem app"
+          }
+        }
+      }
+    },
+    "%@, guest without the app" : {
+      "comment" : "Home: VoiceOver's label of a guest's face; %@ is what they owe or are owed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, convidado sem app"
+          }
+        }
+      }
+    },
+    "%@, pinned: %@" : {
+      "comment" : "Home: VoiceOver's label of a pinned group; the group's name, then its balance",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, fixado: %2$@"
           }
         }
       }
@@ -389,6 +433,17 @@
         }
       }
     },
+    "all settled up" : {
+      "comment" : "Home: under the overall balance when nobody owes anything",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tudo acertado"
+          }
+        }
+      }
+    },
     "Anyone in the group can change the name, the icon and the type." : {
       "comment" : "The note at the end of edit group",
       "localizations" : {
@@ -444,6 +499,28 @@
         }
       }
     },
+    "Balances with people" : {
+      "comment" : "Home: the row of faces of whom you owe and who owes you",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldos com pessoas"
+          }
+        }
+      }
+    },
+    "Balances with people · %lld" : {
+      "comment" : "Home: the row of faces, once it runs past the screen; %lld is how many people",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldos com pessoas · %lld"
+          }
+        }
+      }
+    },
     "Change color" : {
       "comment" : "The edit group button under the avatar, which changes its color",
       "localizations" : {
@@ -476,6 +553,17 @@
         }
       }
     },
+    "Connect account" : {
+      "comment" : "Home: the recovery code card's button, which opens the profile",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar conta"
+          }
+        }
+      }
+    },
     "Couldn't delete the group. Check your connection and try again." : {
       "comment" : "Deleting the group failed: no sync or no answer from the server",
       "localizations" : {
@@ -504,6 +592,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para liberar o nome. Confira a internet e tente de novo."
+          }
+        }
+      }
+    },
+    "Create a group to split the first bill, or join one through the link or QR code someone sent you. Everything is saved on this %@, even without internet." : {
+      "comment" : "Home's first use; %@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crie um grupo para rachar a primeira conta, ou entre num grupo pelo link ou QR que alguém te mandou. Tudo fica salvo neste %@, mesmo sem internet."
           }
         }
       }
@@ -592,6 +691,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ para cada um"
+          }
+        }
+      }
+    },
+    "Dismiss" : {
+      "comment" : "Closes a card",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispensar"
           }
         }
       }
@@ -734,6 +844,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grupos, pessoas e despesas"
+          }
+        }
+      }
+    },
+    "Home tab" : {
+      "comment" : "The home's first tab and its title (Início); \"Home\" alone is the group type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Início"
           }
         }
       }
@@ -915,6 +1042,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Última atividade"
+          }
+        }
+      }
+    },
+    "Latest expenses" : {
+      "comment" : "Home: the latest bills you paid or take part in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Últimas despesas"
           }
         }
       }
@@ -1136,6 +1274,17 @@
         }
       }
     },
+    "Nobody owes anything right now" : {
+      "comment" : "Who paid whom?: no open pair",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém deve nada agora"
+          }
+        }
+      }
+    },
     "Nothing for “%@”" : {
       "comment" : "The search found nothing; %@ is what was typed",
       "localizations" : {
@@ -1143,6 +1292,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nada com “%@”"
+          }
+        }
+      }
+    },
+    "Nothing to get back" : {
+      "comment" : "Home: the disabled \"Owe you\" button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada a receber"
+          }
+        }
+      }
+    },
+    "Nothing to pay" : {
+      "comment" : "Home: the disabled \"You owe\" button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada a pagar"
           }
         }
       }
@@ -1242,6 +1413,17 @@
         }
       }
     },
+    "Pin to Home" : {
+      "comment" : "The group's ⋯ menu: shows the group first on Home",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixar na Início"
+          }
+        }
+      }
+    },
     "queued · %@" : {
       "comment" : "A home group with a bill not on the server yet; %@ is the bill",
       "localizations" : {
@@ -1249,6 +1431,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "na fila · %@"
+          }
+        }
+      }
+    },
+    "Scan a receipt" : {
+      "comment" : "Home: a shortcut",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler cupom fiscal"
+          }
+        }
+      }
+    },
+    "Scan a receipt · needs internet" : {
+      "comment" : "Home on the Mac: the disabled shortcut's tooltip",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ler cupom fiscal · precisa de internet"
           }
         }
       }
@@ -1297,6 +1501,17 @@
         }
       }
     },
+    "See all" : {
+      "comment" : "Home: opens the Groups tab",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todos"
+          }
+        }
+      }
+    },
     "See balances" : {
       "comment" : "A button that opens the group's Balances tab",
       "localizations" : {
@@ -1304,6 +1519,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ver saldos"
+          }
+        }
+      }
+    },
+    "See code" : {
+      "comment" : "Home: the recovery code card's button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver código"
+          }
+        }
+      }
+    },
+    "See everything" : {
+      "comment" : "Home: opens Activity, every bill and payment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver tudo"
           }
         }
       }
@@ -1368,6 +1605,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quitado · despesa “%@”"
+          }
+        }
+      }
+    },
+    "so far · the rest is on its way" : {
+      "comment" : "Home: under the overall balance while the first download fills the device",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "até agora · chegando o resto"
+          }
+        }
+      }
+    },
+    "Split a bill (⌘N)" : {
+      "comment" : "Home on the Mac: the toolbar button's tooltip",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rachar conta (⌘N)"
           }
         }
       }
@@ -1514,6 +1773,17 @@
         }
       }
     },
+    "to get back, already offset" : {
+      "comment" : "Home: under the overall balance",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a receber, já compensado"
+          }
+        }
+      }
+    },
     "To pay" : {
       "comment" : "The home's button with what you owe, across the groups",
       "localizations" : {
@@ -1535,6 +1805,17 @@
         }
       }
     },
+    "to pay, already offset" : {
+      "comment" : "Home: under the overall balance",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a pagar, já compensado"
+          }
+        }
+      }
+    },
     "today" : {
       "comment" : "A group's last activity, under its name on the home",
       "localizations" : {
@@ -1546,6 +1827,17 @@
         }
       }
     },
+    "Unpin from Home" : {
+      "comment" : "The group's ⋯ menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desafixar da Início"
+          }
+        }
+      }
+    },
     "We searched the groups, people and expenses on this %@, settled groups included." : {
       "comment" : "The search found nothing; %@ is iPhone, iPad or Mac",
       "localizations" : {
@@ -1553,6 +1845,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Procuramos em grupos, pessoas e despesas deste %@, inclusive nos grupos quitados."
+          }
+        }
+      }
+    },
+    "When someone owes, just pick here who paid." : {
+      "comment" : "Who paid whom?: no open pair",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando alguém dever, é só escolher aqui quem pagou."
+          }
+        }
+      }
+    },
+    "Who paid whom?" : {
+      "comment" : "Home's Record payment: the sheet that picks the pair first",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem pagou a quem?"
           }
         }
       }
@@ -1718,6 +2032,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você ainda tem saldo em aberto em “%@”. Sair agora deixaria a conta sem fechar para os outros."
+          }
+        }
+      }
+    },
+    "You use the app without an account. If you switch %@s, this code is what brings your groups back." : {
+      "comment" : "Home: the recovery code card; %@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você usa sem conta. Se trocar de %@, é esse código que traz seus grupos de volta."
           }
         }
       }
@@ -7074,6 +7399,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você está usando sem conta. Este código recupera seus grupos se você trocar ou perder o %@."
+          }
+        }
+      }
+    },
+    "Your groups" : {
+      "comment" : "Home: up to three groups, the pinned first",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus grupos"
           }
         }
       }

@@ -141,6 +141,11 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
     }
 
+    // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
+    fun togglePin() {
+        viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
+    }
+
     fun editGroup() {
         viewModel.onEvent(GroupDetailUiEvent.OnEditGroupClicked)
     }

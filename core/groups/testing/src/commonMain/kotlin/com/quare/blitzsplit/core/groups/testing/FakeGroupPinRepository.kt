@@ -13,6 +13,7 @@ class FakeGroupPinRepository(
     val hasPendingChanges = MutableStateFlow(false)
     val downloadedUserIds = mutableListOf<String>()
     val uploadedUserIds = mutableListOf<String>()
+    val pinUpdates = mutableListOf<Triple<String, Boolean, Long>>()
     var updatePinnedError: Throwable? = null
     var downloadError: Throwable? = null
     var uploadError: Throwable? = null
@@ -26,6 +27,7 @@ class FakeGroupPinRepository(
         isPinned: Boolean,
         updatedAt: Long,
     ): Result<Unit> {
+        pinUpdates += Triple(groupId, isPinned, updatedAt)
         updatePinnedError?.let { return Result.failure(it) }
         pinnedGroupIds.update { if (isPinned) it + groupId else it - groupId }
         hasPendingChanges.value = true

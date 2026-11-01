@@ -234,6 +234,11 @@ class GlobalBalancesPresenter(
         viewModel.onEvent(GlobalBalancesUiEvent.OnEmptyActionClicked)
     }
 
+    // Why: Início, the home's first tab.
+    fun openHome() {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnHomeTabClicked)
+    }
+
     fun openGroups() {
         viewModel.onEvent(GlobalBalancesUiEvent.OnGroupsTabClicked)
     }

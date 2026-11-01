@@ -14,8 +14,9 @@ import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { ChargeDialog, copyChargeMessage, shareChargeMessage } from './ChargeDialog'
 
-// Grupos goes back to the groups; Contatos and Atividade are not built yet and answer "Coming soon".
+// Início and Grupos take Saldos' place; Contatos and Atividade are not built yet and answer "Coming soon".
 const tabEvents: Partial<Record<HomeTab, (presenter: GlobalBalancesPresenter) => void>> = {
+  home: (p) => p.openHome(),
   groups: (p) => p.openGroups(),
   contacts: (p) => p.openContacts(),
   activity: (p) => p.openActivity(),

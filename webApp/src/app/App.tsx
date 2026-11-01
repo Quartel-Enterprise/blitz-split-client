@@ -12,6 +12,7 @@ import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesS
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
+import { HomeScreen } from '@/features/home/HomeScreen'
 import { InviteDialog } from '@/features/invite/InviteDialog'
 import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
@@ -20,6 +21,7 @@ import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
+import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog'
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
@@ -60,15 +62,17 @@ export function App() {
   const editGroup = isEditGroup ? top : isDefaultSplit && backStack[backStack.length - 2]?.name === 'edit-group' ? backStack[backStack.length - 2] : undefined
   // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
+  // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
+  const isPickPayment = top.name === 'pick-payment'
   const isDialog =
-    isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPaymentKey || isDeleteAccount
+    isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
   let pageIndex = backStack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
   const bill = backStack[pageIndex]?.name === 'bill-detail' ? backStack[pageIndex] : undefined
   if (bill) pageIndex -= 1
   const page = backStack[pageIndex]
-  const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'groups')
+  const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'home')
   return (
     <>
       <Screen name={pageName} route={page} />
@@ -81,6 +85,7 @@ export function App() {
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
       {isDefaultSplit && <DefaultSplitDialog key={top.groupId} route={top} />}
+      {isPickPayment && <PickPaymentDialog />}
       {isRegisterPayment && (
         <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
       )}
@@ -95,6 +100,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <ProfileSetupScreen />
     case 'restore':
       return <RestoreScreen />
+    case 'home':
+      return <HomeScreen />
     case 'groups':
       return <GroupsScreen />
     case 'members':

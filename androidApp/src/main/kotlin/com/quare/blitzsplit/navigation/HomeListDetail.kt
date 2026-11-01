@@ -19,6 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.get
+import androidx.navigation3.runtime.metadata
+import androidx.navigation3.scene.Scene
+import androidx.navigation3.scene.SceneStrategy
+import androidx.navigation3.scene.SceneStrategyScope
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
@@ -32,11 +39,32 @@ import com.quare.blitzsplit.core.navigation.Route
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-internal fun rememberHomeListDetailStrategy(listDetail: ListDetailLayout?): ListDetailSceneStrategy<Route> {
+internal fun rememberHomeListDetailStrategy(listDetail: ListDetailLayout?): SceneStrategy<Route> {
     val windowDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
     val directive = remember(windowDirective, listDetail) { homeDirectiveOf(windowDirective, listDetail) }
-    return rememberListDetailSceneStrategy(directive = directive)
+    val listDetailStrategy = rememberListDetailSceneStrategy<Route>(directive = directive)
+    return remember(listDetailStrategy) { BesideGroupsSceneStrategy(listDetailStrategy) }
 }
+
+/*
+ * Why: a group's tab opened from Início has no Grupos under it, and Material's scene would still draw it beside an
+ * empty list pane. Only the group's tabs right above Grupos go in the list and detail; anything else covers the
+ * window, as the group does over Início.
+ */
+private class BesideGroupsSceneStrategy(
+    private val delegate: SceneStrategy<Route>,
+) : SceneStrategy<Route> {
+    override fun SceneStrategyScope<Route>.calculateScene(entries: List<NavEntry<Route>>): Scene<Route>? {
+        val underTabs = entries.dropLastWhile { it.metadata[HomeDetailPaneKey] == true }.lastOrNull()
+        if (underTabs == null || underTabs.metadata[HomeListPaneKey] != true) return null
+        return with(delegate) { calculateScene(entries) }
+    }
+}
+
+// Why: marks Grupos and the group's tabs, telling a group above Grupos from one above Início.
+private object HomeListPaneKey : NavMetadataKey<Boolean>
+
+private object HomeDetailPaneKey : NavMetadataKey<Boolean>
 
 /*
  * Why: two panes side by side only where the canvas draws them, never three on the widest tablet nor stacked on a
@@ -56,13 +84,15 @@ private fun homeDirectiveOf(
 // Why: the groups in the list pane, 520dp on a tablet and the half before the hinge on a book.
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal fun homeListPaneMetadataOf(listDetail: ListDetailLayout?): Map<String, Any> {
-    val listPane = ListDetailSceneStrategy.listPane(detailPlaceholder = { GroupPanePlaceholderBox() })
+    val listPane = ListDetailSceneStrategy.listPane(detailPlaceholder = { GroupPanePlaceholderBox() }) +
+        metadata { put(HomeListPaneKey, true) }
     if (listDetail == null) return listPane
     return listPane + ListDetailSceneStrategy.preferredPaneSize(width = listDetail.listPaneWidth)
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal val homeDetailPaneMetadata: Map<String, Any> = ListDetailSceneStrategy.detailPane()
+internal val homeDetailPaneMetadata: Map<String, Any> =
+    ListDetailSceneStrategy.detailPane() + metadata { put(HomeDetailPaneKey, true) }
 
 /*
  * Why: a group's tab tells its layout it is in the pane beside the list. Only Material's list-detail scene says so: it
