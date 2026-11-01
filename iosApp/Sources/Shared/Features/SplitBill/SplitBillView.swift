@@ -198,6 +198,21 @@ private struct ConflictText: View {
     }
 }
 
+/// The Mac's alert: "Elisa already settled up with Bruno after this bill" in bold, then what the change does (7.4b).
+private struct SettledPairText: View {
+    let change: SettledPairChange
+    let currency: GroupCurrency
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(verbatim: BillCopy.settledPairLead(change))
+                .fontWeight(.semibold)
+            Text(verbatim: BillCopy.settledPairDetail(change, currency: currency))
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 /// Up to four faces of who is in the split.
 private struct SplitFaces: View {
     let people: [BillPerson]
@@ -246,6 +261,7 @@ private struct PhoneSplitBill: View {
                     Form { whatSections }
                     Form {
                         detailsSection
+                        settledPairSection
                         deleteSection
                     }
                 }
@@ -253,6 +269,7 @@ private struct PhoneSplitBill: View {
                 Form {
                     whatSections
                     detailsSection
+                    settledPairSection
                     deleteSection
                 }
             }
@@ -433,6 +450,19 @@ private struct PhoneSplitBill: View {
                     Text("Anyone in the group can edit or delete it.")
                 }
             }
+        }
+    }
+
+    /// "Elisa already settled up with Bruno after this bill. …", while the change unsettles a payment (7.4b).
+    @ViewBuilder
+    private var settledPairSection: some View {
+        if let settledPair = state.settledPair {
+            Section {
+                Text(verbatim: BillCopy.settledPair(settledPair, currency: state.currency))
+                    .font(.subheadline)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .listRowBackground(Palette.accent.opacity(0.12))
         }
     }
 
@@ -810,6 +840,14 @@ private struct MacBillForm: View {
             }
             if let conflict = state.conflict {
                 ConflictText(conflict: conflict, boldsLead: true)
+                    .font(.callout)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            }
+            if let settledPair = state.settledPair {
+                SettledPairText(change: settledPair, currency: state.currency)
                     .font(.callout)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)

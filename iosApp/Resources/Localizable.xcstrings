@@ -5,6 +5,28 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ already settled up with %@ after this bill" : {
+      "comment" : "Edit bill and Delete this bill?: the first %@ paid the second after the bill, which the change unsettles",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ já acertou com %2$@ depois desta conta"
+          }
+        }
+      }
+    },
+    "%@ already settled up with you after this bill" : {
+      "comment" : "Edit bill and Delete this bill?: %@ paid this user after the bill, which the change unsettles",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ já acertou com você depois desta conta"
+          }
+        }
+      }
+    },
     "%@ · everyone settled up on %@" : {
       "comment" : "A settled group of the home: its members, then the day of its last activity",
       "localizations" : {
@@ -1394,6 +1416,17 @@
         }
       }
     },
+    "The payment still counts and the balance is worked out again: %@" : {
+      "comment" : "Edit bill and Delete this bill?, after who settled up; %@ is how the pair ends up (with the change, …)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acerto continua valendo e o saldo é refeito: %@"
+          }
+        }
+      }
+    },
     "There are still open balances" : {
       "comment" : "The title of the dialog when someone tries to delete a group where someone still owes",
       "localizations" : {
@@ -1469,6 +1502,94 @@
         }
       }
     },
+    "with the change, %@ and %@ are settled up." : {
+      "comment" : "How a pair that settled up ends up: the two people owe each other nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ e %2$@ ficam quitados."
+          }
+        }
+      }
+    },
+    "with the change, %@ now owes %@ %@." : {
+      "comment" : "How a pair that settled up ends up: the first %@ now owes the second (names) the third (an amount)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ passa a dever %3$@ a %2$@."
+          }
+        }
+      }
+    },
+    "with the change, %@ now owes you %@." : {
+      "comment" : "How a pair that settled up ends up: the first %@ (a name) now owes this user the second (an amount)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ passa a te dever %2$@."
+          }
+        }
+      }
+    },
+    "with the change, %@ owes %@ %@ again." : {
+      "comment" : "How a pair that settled up ends up: the first %@ owes the second (names) the third (an amount) again",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ volta a dever %3$@ a %2$@."
+          }
+        }
+      }
+    },
+    "with the change, %@ owes you %@ again." : {
+      "comment" : "How a pair that settled up ends up: the first %@ (a name) owes this user the second (an amount) again",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, %1$@ volta a te dever %2$@."
+          }
+        }
+      }
+    },
+    "with the change, you and %@ are settled up." : {
+      "comment" : "How a pair that settled up ends up: this user and %@ owe each other nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, você e %@ ficam quitados."
+          }
+        }
+      }
+    },
+    "with the change, you now owe %@ %@." : {
+      "comment" : "How a pair that settled up ends up: this user now owes the first %@ (a name) the second (an amount)",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, você passa a dever %2$@ a %1$@."
+          }
+        }
+      }
+    },
+    "with the change, you owe %@ %@ again." : {
+      "comment" : "How a pair that settled up ends up: this user owes the first %@ (a name) the second (an amount) again",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "com a mudança, você volta a dever %2$@ a %1$@."
+          }
+        }
+      }
+    },
     "yesterday" : {
       "comment" : "A group's last activity, under its name on the home",
       "localizations" : {
@@ -1476,6 +1597,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ontem"
+          }
+        }
+      }
+    },
+    "You already settled up with %@ after this bill" : {
+      "comment" : "Edit bill and Delete this bill?: this user paid %@ after the bill, which the change unsettles",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você já acertou com %@ depois desta conta"
           }
         }
       }
