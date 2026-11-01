@@ -34,6 +34,7 @@ half opened, bounds, separating) once, and hands it down as `LocalFoldLayout`. R
 | `bookSplit` | Where the halves side by side meet, on screen: the vertical hinge (or the middle without one) on a book, the middle on a tabletop lying down, null elsewhere |
 | `tabletopSplit` | Where the top and bottom meet on a tabletop (half opened, hinge across), null elsewhere |
 | `hinge` | The raw fold (`FoldHinge`), for anything the above doesn't answer |
+| `isOnCoverScreen` | A Flip's cover screen: the whole display (the largest window it allows) is under 480 dp on its long side, so a phone's split screen half never counts. `formFactor` stays `Phone` there; only Grupos draws a cover |
 
 How `formFactor` is decided: under 600 dp on the short side is a phone, whatever it reports (a Flip open is a phone);
 a vertical hinge is a book in any posture; a half opened horizontal one a tabletop; with no fold, 960 dp or more on
@@ -52,7 +53,8 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `rememberUsesFormDialog()` | Editar grupo, the keys, Excluir conta: a dialog on a tablet, full screen on any foldable |
 | `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento, Cobrar: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
-| `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)` |
+| `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)`, a cover screen one `coverFoldLayoutOf(360.dp, 374.dp)` |
+| `HomeNavigationRail` / `WithGroupNavigationRail` | The home's rail (no labels on a phone lying down), and the same rail with Grupos selected beside a group's screen drawn alone wider than a phone upright, never on a tabletop nor in the pane beside the list; its content's Scaffold leaves out the start inset (`toGroupRailInsets`) |
 
 A confirmation that keeps off the hinge is `ConfirmDialog(placement = rememberDialogPlacement(...))`, and any other
 alert `FoldAlertDialog(..., placement = rememberDialogPlacement(...))` (the icon, title, text and buttons of Material's
@@ -60,7 +62,7 @@ alert `FoldAlertDialog(..., placement = rememberDialogPlacement(...))` (the icon
 drawn like it (Convidar's "Trocar o link?" in a book's right half and a tabletop's top half, the profile's sign out
 dialogs in a book's right half).
 
-Not checked on a device yet: `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
+Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
 Perfil, Editar perfil and the keys on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
 "Não estou na lista", the profile's dialogs and Excluir conta),
 `TopBottomHalvesLayout` (Convidar and Convite on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
