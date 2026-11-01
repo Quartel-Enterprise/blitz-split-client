@@ -64,7 +64,7 @@ internal val fullLine: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan
 /*
  * Why: the home's list: "Saldo geral", the open groups by their latest activity, as rows or as the grid's cards, and,
  * collapsed, the settled ones, always rows. A row or a card opens the group; its ⋮ menu and its long press hold the
- * group's actions. The search comes with its own flow.
+ * group's actions. "Buscar" takes the list's place (GroupsSearchPane).
  */
 internal fun LazyGridScope.groupsListItems(
     state: GroupsUiState,

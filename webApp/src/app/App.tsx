@@ -112,7 +112,8 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
   useEffect(() => {
     if (!app || !backStack) return
     if (backStack.length > size.current && size.current > 0) {
-      window.history.pushState({ size: backStack.length }, '')
+      // Why: one entry per screen pushed, so a bill opened over its group at once still goes back to the group.
+      for (let next = size.current + 1; next <= backStack.length; next++) window.history.pushState({ size: next }, '')
     } else {
       window.history.replaceState({ size: backStack.length }, '')
     }

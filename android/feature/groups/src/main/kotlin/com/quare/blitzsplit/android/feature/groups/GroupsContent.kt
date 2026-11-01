@@ -32,6 +32,7 @@ import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -103,15 +104,23 @@ fun GroupsContent(
                     .weight(1f)
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
-                    GroupsTopBar(
-                        state = state,
-                        onEvent = onEvent,
-                        scrollBehavior = scrollBehavior,
-                    )
+                    if (state.isSearching) {
+                        GroupsSearchBar(
+                            search = state.search,
+                            onEvent = onEvent,
+                            layout = layout,
+                        )
+                    } else {
+                        GroupsTopBar(
+                            state = state,
+                            onEvent = onEvent,
+                            scrollBehavior = scrollBehavior,
+                        )
+                    }
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
-                    if (!layout.usesNavigationRail) {
+                    if (!layout.usesNavigationRail && !state.isSearching) {
                         ExtendedFloatingActionButton(
                             onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
                             icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
@@ -130,6 +139,17 @@ fun GroupsContent(
                     WindowInsets.safeDrawing
                 },
             ) { padding ->
+                if (state.isSearching) {
+                    GroupsSearchPane(
+                        search = state.search,
+                        onEvent = onEvent,
+                        layout = layout,
+                        modifier = Modifier
+                            .padding(padding)
+                            .consumeWindowInsets(padding),
+                    )
+                    return@Scaffold
+                }
                 PullToRefreshBox(
                     isRefreshing = state.isRefreshing,
                     onRefresh = { onEvent(GroupsUiEvent.OnRefresh) },
@@ -181,6 +201,15 @@ private fun GroupsTopBar(
                     imageVector = Icons.Outlined.QrCode2,
                     contentDescription = stringResource(R.string.groups_join_with_link),
                 )
+            }
+            // Why: only once there is a group to look in.
+            if (state.canSearch) {
+                IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchOpened) }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = stringResource(R.string.groups_search),
+                    )
+                }
             }
             IconButton(
                 onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },

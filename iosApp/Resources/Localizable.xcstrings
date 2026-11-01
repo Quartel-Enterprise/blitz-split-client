@@ -243,6 +243,17 @@
         }
       }
     },
+    "All" : {
+      "comment" : "A search scope: everything",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo"
+          }
+        }
+      }
+    },
     "all %lld members" : {
       "comment" : "Who a deleted group is gone for, in “gone for all 5 members”",
       "localizations" : {
@@ -672,6 +683,17 @@
         }
       }
     },
+    "Groups, people and expenses" : {
+      "comment" : "The search field's prompt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupos, pessoas e despesas"
+          }
+        }
+      }
+    },
     "If it was you, talk to %@." : {
       "comment" : "The group's creator, who can sort out a member taken by someone else",
       "localizations" : {
@@ -1070,6 +1092,17 @@
         }
       }
     },
+    "Nothing for “%@”" : {
+      "comment" : "The search found nothing; %@ is what was typed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada com “%@”"
+          }
+        }
+      }
+    },
     "Offline · %lld changes queued" : {
       "localizations" : {
         "en" : {
@@ -1165,6 +1198,50 @@
         }
       }
     },
+    "Search" : {
+      "comment" : "The search tab, its title and the Mac toolbar field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar"
+          }
+        }
+      }
+    },
+    "Search in" : {
+      "comment" : "The search scopes: All, Groups, People, Expenses",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procurar em"
+          }
+        }
+      }
+    },
+    "Searches the groups, people and expenses on this %@, settled groups included, even without internet." : {
+      "comment" : "The search before anything is typed; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procura em grupos, pessoas e despesas deste %@, inclusive nos grupos quitados, sem precisar de internet."
+          }
+        }
+      }
+    },
+    "Searching groups, people and expenses" : {
+      "comment" : "The Mac window's subtitle while searching",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscando em grupos, pessoas e despesas"
+          }
+        }
+      }
+    },
     "See balances" : {
       "comment" : "A button that opens the group's Balances tab",
       "localizations" : {
@@ -1225,6 +1302,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quitados · %lld"
+          }
+        }
+      }
+    },
+    "Settled up · expense “%@”" : {
+      "comment" : "A settled group the search found by one of its bills; %@ is the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitado · despesa “%@”"
           }
         }
       }
@@ -1333,6 +1421,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "hoje"
+          }
+        }
+      }
+    },
+    "We searched the groups, people and expenses on this %@, settled groups included." : {
+      "comment" : "The search found nothing; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procuramos em grupos, pessoas e despesas deste %@, inclusive nos grupos quitados."
           }
         }
       }

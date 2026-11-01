@@ -5,7 +5,7 @@ import SwiftUI
 /// The home's list on iPhone and iPad: the sync status while it asks for attention, "Overall balance", the open
 /// groups by their latest activity, as rows or as the grid's cards, and, collapsed, the settled ones, always rows.
 /// Pulling down syncs. A row opens the group; its ⋯ menu and its long press hold the group's actions. The search
-/// comes with its own flow.
+/// is its own tab (GroupsSearchView).
 struct GroupsList: View {
     let model: GroupsModel
 

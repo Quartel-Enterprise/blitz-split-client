@@ -13,11 +13,18 @@ import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearchResults
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 
 @DevicePreviews
 @Composable
@@ -44,6 +51,7 @@ private fun GroupsOfflinePreview() {
                 exitGroupId = null,
                 layout = GroupsLayout.initial,
                 recordedPayment = null,
+                search = GroupsSearch.closed,
             ),
             onEvent = {},
         )
@@ -83,7 +91,58 @@ private fun GroupsCompactGridPreview() {
     }
 }
 
-private fun buildPreviewState(layout: GroupsLayout): GroupsUiState {
+@DevicePreviews
+@Composable
+private fun GroupsSearchPreview() {
+    val churrasco = buildPreviewRow(
+        id = "4",
+        name = "Churrasco de sábado",
+        color = AvatarColor.BLUE,
+        kind = GroupBalanceKind.TO_RECEIVE,
+        receivesMinor = 9_750L,
+        owesMinor = 0L,
+    )
+    val search = GroupsSearch(
+        isOpen = true,
+        query = "chur",
+        scope = SearchScope.ALL,
+        results = GroupsSearchResults(
+            groups = listOf(
+                SearchGroupHit(
+                    group = churrasco,
+                    nameMatch = TextMatch(0, 4),
+                    billDescription = null,
+                    billMatch = null,
+                ),
+            ),
+            people = emptyList(),
+            bills = listOf(
+                SearchBillHit(
+                    id = "b",
+                    groupId = "4",
+                    groupName = churrasco.name,
+                    description = "Carne e carvão do churrasco",
+                    descriptionMatch = TextMatch(18, 22),
+                    totalMinor = 48_600L,
+                    currency = GroupCurrency.BRL,
+                    payers = listOf(SearchBillPayer("Bruno", isMe = false)),
+                    spentAt = 0L,
+                ),
+            ),
+        ),
+    )
+    BlitzSplitTheme {
+        GroupsContent(
+            state = buildPreviewState(GroupsLayout.initial, search),
+            onEvent = {},
+        )
+    }
+}
+
+private fun buildPreviewState(
+    layout: GroupsLayout,
+    search: GroupsSearch = GroupsSearch.closed,
+): GroupsUiState {
     val rows = listOf(
         buildPreviewRow(
             id = "1",
@@ -141,6 +200,7 @@ private fun buildPreviewState(layout: GroupsLayout): GroupsUiState {
         exitGroupId = null,
         layout = layout,
         recordedPayment = null,
+        search = search,
     )
 }
 
