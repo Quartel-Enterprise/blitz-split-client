@@ -130,15 +130,7 @@ data class ItemEditor(
         }
 
     val isStatusError: Boolean
-        get() = status.let {
-            it == ItemStatus.Nobody ||
-                it is ItemStatus.UnitsLeft ||
-                it is ItemStatus.UnitsOver ||
-                it is ItemStatus.AmountLeft ||
-                it is ItemStatus.AmountOver ||
-                it is ItemStatus.PercentLeft ||
-                it is ItemStatus.PercentOver
-        }
+        get() = status.isError
 
     // Why: the bar under the status by Unidades, Valor and %, how much of the item is marked; null in the other modes.
     val progress: Float?

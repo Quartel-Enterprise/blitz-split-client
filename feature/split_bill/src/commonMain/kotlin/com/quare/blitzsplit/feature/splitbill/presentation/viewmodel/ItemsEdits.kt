@@ -263,11 +263,14 @@ internal fun SplitBillUiState.withItemsAmong(people: List<BillPerson>): SplitBil
         it.copy(
             split = it.split.toItemsAmong(people, isWholeGroupAtTable = !isEditing),
             people = people,
+            // Why: a payer who left gives way to who pays now, whom the saved shares' cents must follow.
+            payerIds = payerIds,
         )
     },
     itemEditor = itemEditor?.let { editor ->
         val byId = editor.rows.associateBy { it.person.id }
         editor.copy(
+            payerIds = payerIds,
             rows = people.map { person ->
                 byId[person.id]?.copy(person = person) ?: ItemPersonRow(
                     person = person,

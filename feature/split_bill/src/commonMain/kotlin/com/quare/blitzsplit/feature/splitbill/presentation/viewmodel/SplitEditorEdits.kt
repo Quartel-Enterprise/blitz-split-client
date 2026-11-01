@@ -91,7 +91,8 @@ internal fun SplitEditor.withPeople(
         rows = rows,
         currency = currency,
         payerIds = payerIds,
-        items = items?.toItemsAmong(people, isWholeGroupAtTable = includesNewcomers),
+        // Why: the couvert's table is the group when the items were split, so whoever joins after never pays it.
+        items = items?.toItemsAmong(people, isWholeGroupAtTable = false),
     ).withShares()
 }
 

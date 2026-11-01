@@ -116,7 +116,8 @@ internal class ItemsEditing(
 
             SplitBillUiEvent.OnItemQuantityDecreased -> changeQuantity { it - 1 }
 
-            is SplitBillUiEvent.OnItemQuantityChanged -> changeQuantity { AmountInput.parseWhole(event.text) ?: 1L }
+            // Why: a field emptied to type another number keeps the quantity until a number comes.
+            is SplitBillUiEvent.OnItemQuantityChanged -> changeQuantity { AmountInput.parseWhole(event.text) ?: it }
 
             is SplitBillUiEvent.OnItemPriceChanged -> editItem {
                 it.withTotal(it.quantity, TypedText.toAmountText(event.text), separator())

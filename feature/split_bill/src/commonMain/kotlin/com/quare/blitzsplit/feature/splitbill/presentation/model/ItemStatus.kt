@@ -2,8 +2,15 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 // Why: whether an item's split closes (7.6), the card under its modes; each UI words it.
 sealed interface ItemStatus {
+    // Why: a status the item editor draws in red, as Pronto waits until it is fixed.
+    val isError: Boolean
+        get() = false
+
     // Why: "Ninguém marcado" (7.6g): "Marque quem consumiu este item. Pronto libera quando ele tiver dono."
-    data object Nobody : ItemStatus
+    data object Nobody : ItemStatus {
+        override val isError: Boolean
+            get() = true
+    }
 
     // Why: "6 de 6 unidades": "Cada unidade custa R$ 14,00."
     data class UnitsAddUp(
@@ -16,6 +23,9 @@ sealed interface ItemStatus {
         val marked: Long,
         val quantity: Long,
     ) : ItemStatus {
+        override val isError: Boolean
+            get() = true
+
         val missing: Long
             get() = quantity - marked
     }
@@ -25,6 +35,9 @@ sealed interface ItemStatus {
         val marked: Long,
         val quantity: Long,
     ) : ItemStatus {
+        override val isError: Boolean
+            get() = true
+
         val over: Long
             get() = marked - quantity
     }
@@ -55,14 +68,20 @@ sealed interface ItemStatus {
         val amountMinor: Long,
         val assignedMinor: Long,
         val totalMinor: Long,
-    ) : ItemStatus
+    ) : ItemStatus {
+        override val isError: Boolean
+            get() = true
+    }
 
     // Why: "Passou R$ 10,00": "Já foram R$ 70,00 de R$ 60,00."
     data class AmountOver(
         val amountMinor: Long,
         val assignedMinor: Long,
         val totalMinor: Long,
-    ) : ItemStatus
+    ) : ItemStatus {
+        override val isError: Boolean
+            get() = true
+    }
 
     // Why: "Fechou: 100%": "R$ 60,00 entre 2 pessoas."
     data class PercentAddsUp(
@@ -74,11 +93,17 @@ sealed interface ItemStatus {
     data class PercentLeft(
         val percent: Long,
         val sum: Long,
-    ) : ItemStatus
+    ) : ItemStatus {
+        override val isError: Boolean
+            get() = true
+    }
 
     // Why: "Passou 10%": "Já foram 110% de 100%."
     data class PercentOver(
         val percent: Long,
         val sum: Long,
-    ) : ItemStatus
+    ) : ItemStatus {
+        override val isError: Boolean
+            get() = true
+    }
 }
