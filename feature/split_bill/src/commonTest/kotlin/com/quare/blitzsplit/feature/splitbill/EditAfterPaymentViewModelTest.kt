@@ -155,18 +155,17 @@ class EditAfterPaymentViewModelTest {
         }
 
     @Test
-    fun `GIVEN the total doubled WHEN Quando moves past the payment THEN the warning goes`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("624,00"))
+    fun `GIVEN the total doubled WHEN Quando moves past the payment THEN the warning goes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("624,00"))
 
-            // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(afterThePaymentMillis))
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(afterThePaymentMillis))
 
-            // Then
-            assertNull(viewModel.uiState.value.settledPair)
-        }
+        // Then
+        assertNull(viewModel.uiState.value.settledPair)
+    }
 
     @Test
     fun `GIVEN a payment dated before the bill WHEN Quando moves before it THEN the warning shows`() =
