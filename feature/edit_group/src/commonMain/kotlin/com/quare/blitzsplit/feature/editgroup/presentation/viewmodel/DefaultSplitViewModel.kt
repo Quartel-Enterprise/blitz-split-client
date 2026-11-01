@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -55,8 +56,6 @@ class DefaultSplitViewModel(
 
     val stateWatcher: FlowWatcher<DefaultSplitUiState> = FlowWatcher(uiState)
 
-    private val amountSeparators = setOf(',', '.')
-
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
 
@@ -102,16 +101,11 @@ class DefaultSplitViewModel(
             }
 
             is DefaultSplitUiEvent.OnPercentChanged -> updatePerson(event.memberId) {
-                it.copy(percentText = event.text.filter(Char::isDigit).take(PERCENT_MAX_LENGTH))
+                it.copy(percentText = TypedText.toPercentText(event.text))
             }
 
             is DefaultSplitUiEvent.OnIncomeChanged -> updatePerson(event.memberId) {
-                it.copy(
-                    incomeText = event.text
-                        .filter { char ->
-                            char.isDigit() || char in amountSeparators
-                        }.take(AMOUNT_MAX_LENGTH),
-                )
+                it.copy(incomeText = TypedText.toAmountText(event.text))
             }
 
             DefaultSplitUiEvent.OnSaveClicked -> save()
@@ -326,7 +320,7 @@ class DefaultSplitViewModel(
     ): String = AmountInput.format(
         amountMinor = amountMinor,
         currency = currency,
-        decimalSeparator = decimalSeparator().takeIf { it in amountSeparators } ?: '.',
+        decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
     )
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
@@ -338,11 +332,4 @@ class DefaultSplitViewModel(
         val split: GroupDefaultSplit,
         val incomes: Map<String, Long>,
     )
-
-    private companion object {
-        const val PERCENT_MAX_LENGTH = 3
-
-        // Why: "100.000.000,00" with room for the separators someone types.
-        const val AMOUNT_MAX_LENGTH = 16
-    }
 }

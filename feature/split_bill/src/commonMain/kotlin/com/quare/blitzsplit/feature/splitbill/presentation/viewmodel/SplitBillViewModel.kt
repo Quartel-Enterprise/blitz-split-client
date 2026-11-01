@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
@@ -584,9 +585,8 @@ class SplitBillViewModel(
         }
     }
 
-    // Why: a language whose separator is neither (Arabic's "٫") would fill in text AmountInput can't read back.
     private val separator: Char
-        get() = decimalSeparator().takeIf { it in TypedText.amountSeparators } ?: '.'
+        get() = TypedText.amountSeparatorOf(decimalSeparator())
 
     private companion object {
         // Why: the same cap as the group's "Divisão padrão", which a new bill opens with.
