@@ -157,7 +157,7 @@ private struct GroupsSearchField: View {
                 .focused($isFocused)
                 .submitLabel(.search)
                 .autocorrectionDisabled()
-            if !query.wrappedValue.isEmpty {
+            if !model.state.search.query.isEmpty {
                 Button("Clear", systemImage: "xmark.circle.fill") {
                     query.wrappedValue = ""
                 }
