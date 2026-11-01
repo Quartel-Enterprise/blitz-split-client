@@ -106,6 +106,20 @@ class HomePaneTest {
         assertFalse(showsOnlyPane)
     }
 
+    @Test
+    fun `GIVEN a group stacked on the one beside the groups WHEN reading the pane THEN shows the last`() {
+        // Given
+        prepareScenario(Route.Groups, Route.GroupDetail("trip"), Route.GroupDetail("flat"))
+
+        // When
+        val groupId = navigator.backStack.value.groupBesideGroupsOrNull()
+        val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
+
+        // Then
+        assertEquals("flat", groupId)
+        assertTrue(showsOnlyPane)
+    }
+
     private fun prepareScenario(vararg stack: Route) {
         navigator = BackStackNavigator(startRoute = stack.first()).also { navigator ->
             stack.drop(1).forEach(navigator::navigate)

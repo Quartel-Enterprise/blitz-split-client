@@ -296,7 +296,11 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnProfileClicked -> navigator.navigate(Route.Profile)
 
-            is GroupsUiEvent.OnDetailPaneChanged -> detailPane.change(event.isShown, uiState.value.search)
+            // Why: the list may just have come in sight, so a deletion waiting for it shows now.
+            is GroupsUiEvent.OnDetailPaneChanged -> {
+                detailPane.change(event.isShown, uiState.value.search)
+                showNextDeletion()
+            }
 
             GroupsUiEvent.OnCreateGroupClicked -> navigator.navigate(Route.CreateGroup)
 

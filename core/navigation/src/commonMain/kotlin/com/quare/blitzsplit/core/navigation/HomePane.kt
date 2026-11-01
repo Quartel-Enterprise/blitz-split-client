@@ -6,17 +6,23 @@ package com.quare.blitzsplit.core.navigation
  * whether it draws that route in the pane beside the list or over it, as a phone does.
  */
 
-// Why: the group whose tab (Despesas, Saldos or Membros) is right above the groups, which the pane beside them shows.
-fun List<Route>.groupBesideGroupsOrNull(): String? {
+/*
+ * Why: the group tabs (Despesas, Saldos or Membros) right above the groups. Another group's tab may stack on the one a
+ * row opened (a bill saved in another group, Convidar's "Ir para o grupo"), and the pane shows the last of them.
+ */
+private fun List<Route>.tabsAboveGroups(): List<Route> {
     val groupsIndex = indexOf(Route.Groups)
-    if (groupsIndex < 0) return null
-    return getOrNull(groupsIndex + 1)?.let(::tabGroupIdOrNull)
+    if (groupsIndex < 0) return emptyList()
+    return drop(groupsIndex + 1).takeWhile { tabGroupIdOrNull(it) != null }
 }
 
-// Why: nothing but the pane is above the groups, so the list beside it is in sight and can be tapped.
+// Why: the group whose tab the pane beside the groups shows.
+fun List<Route>.groupBesideGroupsOrNull(): String? = tabsAboveGroups().lastOrNull()?.let(::tabGroupIdOrNull)
+
+// Why: nothing but the pane's tabs is above the groups, so the list beside it is in sight and can be tapped.
 fun List<Route>.showsOnlyPaneAboveGroups(): Boolean {
     val groupsIndex = indexOf(Route.Groups)
-    return groupsIndex >= 0 && groupsIndex == lastIndex - 1 && tabGroupIdOrNull(last()) != null
+    return groupsIndex in 0 until lastIndex && tabsAboveGroups().size == lastIndex - groupsIndex
 }
 
 /*

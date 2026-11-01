@@ -34,8 +34,9 @@ internal class GroupsDetailPane(
         get() = if (isShown) navigator.backStack.value.groupBesideGroupsOrNull() else null
 
     /*
-     * Why: drawing the group beside the list starts with the search's first result, if it is open; stopping leaves
-     * what is open, which the narrower window draws over the list, as a phone would.
+     * Why: drawing the group beside the list starts with the search's first result, if it is open and not the one
+     * already previewed, so turning the device back never replaces a result tapped since; stopping leaves what is
+     * open, which the narrower window draws over the list, as a phone would.
      */
     fun change(
         isShown: Boolean,
@@ -43,7 +44,6 @@ internal class GroupsDetailPane(
     ) {
         if (isShown == this.isShown) return
         this.isShown = isShown
-        previewedRoute = null
         preview(search)
     }
 

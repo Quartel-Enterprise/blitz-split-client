@@ -39,7 +39,8 @@ fun rememberListDetailLayout(): ListDetailLayout? {
         with(density) {
             val width = size.width.toDp()
             val height = size.height.toDp()
-            if (width < expandedWidth || height < compactHeight) return@remember null
+            // Why: a large tablet upright can pass 840dp of width, and still keeps its one centered column.
+            if (width < expandedWidth || height < compactHeight || width <= height) return@remember null
             val isBook = width < bookLongestSide
             ListDetailLayout(
                 listPaneWidth = if (isBook) (width - ListDetailPaneSpacing) / 2 else tabletListPaneWidth,

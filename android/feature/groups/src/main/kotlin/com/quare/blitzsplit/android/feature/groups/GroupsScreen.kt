@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.groups
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -54,9 +55,15 @@ fun GroupsScreen(
         onUndo = { viewModel.onEvent(GroupsUiEvent.OnUndoPaymentClicked) },
         onShown = { viewModel.onEvent(GroupsUiEvent.OnRecordedPaymentNoticeShown) },
     )
-    // Why: the window decides whether the group opens beside the list, which the ViewModel needs for taps and search.
+    /*
+     * Why: the window decides whether the group opens beside the list, which the ViewModel needs for taps and search.
+     * Once the home leaves the screen (turned upright with a group open, the list no longer drawn) it draws no pane.
+     */
     val showsDetailPane = rememberListDetailLayout() != null
-    LaunchedEffect(showsDetailPane) { viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(showsDetailPane)) }
+    DisposableEffect(showsDetailPane) {
+        viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(showsDetailPane))
+        onDispose { viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = false)) }
+    }
     // Why: back closes the search before it leaves the home.
     BackHandler(enabled = state.isSearching) { viewModel.onEvent(GroupsUiEvent.OnSearchClosed) }
     GroupsContent(

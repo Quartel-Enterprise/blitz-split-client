@@ -26,13 +26,9 @@ extension EnvironmentValues {
 }
 
 extension View {
-    /// The row of what shows beside the list takes a tint of the accent, as a selected row does.
-    @ViewBuilder
+    /// The row of what shows beside the list takes a tint of the accent, as a selected row does. One view either way,
+    /// so picking a row never rebuilds it.
     func selectedRowBackground(_ isSelected: Bool) -> some View {
-        if isSelected {
-            listRowBackground(Palette.accent.opacity(0.16))
-        } else {
-            self
-        }
+        listRowBackground(isSelected ? Palette.accent.opacity(0.16) : nil)
     }
 }

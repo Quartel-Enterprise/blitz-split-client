@@ -289,6 +289,42 @@ class GroupsDetailPaneTest {
         }
 
     @Test
+    fun `GIVEN another result tapped WHEN the device turns upright and back THEN the tapped one stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("aniversario"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = false))
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("aniversario")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another group stacked beside the list WHEN tapping a row THEN it replaces both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
+            navigator.navigate(Route.GroupDetail("ape"))
+
+            // When
+            val selectedBefore = viewModel.uiState.value.selectedGroupId
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("aniversario"))
+
+            // Then
+            assertEquals("ape", selectedBefore)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("aniversario")), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a phone WHEN typing in the search THEN nothing opens by itself`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
