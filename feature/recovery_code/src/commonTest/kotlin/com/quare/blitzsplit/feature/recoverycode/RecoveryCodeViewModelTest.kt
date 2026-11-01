@@ -12,8 +12,6 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodeP
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
-import com.quare.blitzsplit.core.navigation.BackStackNavigator
-import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
@@ -213,6 +211,7 @@ class RecoveryCodeViewModelTest {
 
             // Then
             assertEquals(listOf(AccountProvider.GOOGLE), account.browserConnections)
+            assertEquals(listOf(false), account.browserConnectionsFromProfile)
         }
 
     @Test
@@ -424,7 +423,7 @@ class RecoveryCodeViewModelTest {
             providerConnector = ProviderConnectorImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),
-                connectWithBrowser = ConnectWithBrowserUseCase(account, BackStackNavigator(startRoute = Route.Groups)),
+                connectWithBrowser = ConnectWithBrowserUseCase(account),
                 completeSignIn = {
                     completedSignIns++
                     Result.success(SignInOutcome.PROFILE_RESTORED)
