@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.android.designsystem.component
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
@@ -33,7 +36,12 @@ fun ConfirmDialog(
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             ) { Text(confirmLabel) }
         },
-        text = { Text(message) },
+        text = {
+            Text(
+                text = message,
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+            )
+        },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_confirm_cancel)) }
         },
