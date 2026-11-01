@@ -6,9 +6,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -62,13 +65,19 @@ internal fun homeListPaneMetadataOf(listDetail: ListDetailLayout?): Map<String, 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal val homeDetailPaneMetadata: Map<String, Any> = ListDetailSceneStrategy.detailPane()
 
-// Why: a group's tab tells its layout it is in the pane beside the list, which only a list and detail draws.
+/*
+ * Why: a group's tab tells its layout it is in the pane beside the list. Only Material's list-detail scene says so: it
+ * provides its scope to the panes it draws, and only while the list shows beside them, so a tab the scene leaves out
+ * (drawn alone, full screen) keeps its back arrow and "Rachar conta" whatever the window's size.
+ */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-internal fun InGroupPane(
-    listDetail: ListDetailLayout?,
-    content: @Composable () -> Unit,
-) {
-    CompositionLocalProvider(LocalInDetailPane provides (listDetail != null), content = content)
+internal fun InGroupPane(content: @Composable () -> Unit) {
+    val sceneScope = LocalListDetailSceneScope.current
+    val isBesideList = sceneScope != null &&
+        sceneScope.scaffoldTransitionScope.scaffoldStateTransition.targetState[ListDetailPaneScaffoldRole.List] ==
+        PaneAdaptedValue.Expanded
+    CompositionLocalProvider(LocalInDetailPane provides isBesideList, content = content)
 }
 
 // Why: before a group is tapped, or once it closed, the pane holds the canvas' shapes; it has no words of its own.

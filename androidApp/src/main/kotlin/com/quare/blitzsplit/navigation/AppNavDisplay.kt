@@ -134,7 +134,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: the group's tabs go in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
-                InGroupPane(listDetail) { GroupDetailScreen(route) }
+                InGroupPane { GroupDetailScreen(route) }
             }
             // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
@@ -159,7 +159,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: a tab of the group, which takes Despesas' or Membros' place, beside the groups too.
             entry<Route.Balances>(metadata = homeDetailPaneMetadata) { route ->
-                InGroupPane(listDetail) { BalancesScreen(route) }
+                InGroupPane { BalancesScreen(route) }
             }
             entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
@@ -183,7 +183,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 )
             }
             entry<Route.Members>(metadata = homeDetailPaneMetadata) { route ->
-                InGroupPane(listDetail) { MembersScreen(route) }
+                InGroupPane { MembersScreen(route) }
             }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }
             entry<Route.JoinPick> { route -> JoinPickScreen(route) }
