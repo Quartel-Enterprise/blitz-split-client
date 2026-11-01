@@ -119,9 +119,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
     exists, while a book and an iPhone Duo open keep the half past the fold, saying "Nenhum grupo aberto"
     (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane: anything else above the groups
-    (Estatísticas, the profile, a joined invite) covers the whole window,
-    and a dialog or sheet (Convidar, Rachar conta, Conta) both panes, so the list never shows while it can't take
-    taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
+    (Estatísticas, the profile, a joined invite, Convidar on an Android tablet and an iPad) covers the whole window,
+    and a dialog or sheet (Rachar conta, Conta) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
@@ -142,7 +141,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     the web. It asks "Trocar o link do convite?" first, then shows the new link and QR code right away; the old link
     and every personal link not used yet stop working (the "invite no longer valid" screen), whoever joined stays,
     and the other members' devices get the new code on their next sync. A failure says so and keeps the link shown
-    until a sync brings the server's. Nobody may change it once the creator's account is deleted.
+    until a sync brings the server's. Nobody may change it once the creator's account is deleted. Convidar is full
+    screen on Android at every size (2.2): one column on a phone; lying down the title, who picks and the buttons on
+    the left and the QR and link card on the right (380 dp, 420 dp in a tablet's 920 dp container); upright on a
+    tablet and a foldable one 560 dp column with the QR card first; on a book the text in the half before the hinge
+    and the QR card in the one after it; on a tabletop the QR and link in the top half, facing whoever scans, and the
+    title and buttons below. "Trocar o link?" takes a book's right half and a tabletop's top half. iOS opens it as a
+    sheet on an iPhone (two columns lying down) and pushes it full screen with an iPad's room (two columns lying
+    down, the QR card first upright); the Mac opens the new group's in a sheet and the group's as a popover on the
+    group's "Convidar pessoas" (or Membros' Compartilhar), with "Trocar link…" under its share button.
   - "Saldos" (flow 8, `Route.GlobalBalances` over the groups) is the home's second tab: each person once, netted
     across every group of one currency (`PeopleBalances`): someone who joined is their account in every group, a name
     nobody joined as is the same person wherever it is written the same, and someone no longer in a group only
@@ -341,8 +348,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     phone's drawer). Saving a bill from the home, or moved to a group other than the one it was split from, opens
     that group's Despesas in Rachar conta's place.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
-    Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
-    "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and
+    Joining through it lands on the group's Despesas (3.3, `Route.GroupDetail` with `joinedAs`) with "Você entrou como
+    <nome>" over the bills and, while the account has no Google or Apple, "Proteja seu acesso", which opens the
+    Perfil. "Convite" (3.1) and "Quem é você no grupo?" (3.2) are one column on a phone and upright on a tablet; lying
+    down, on a tablet lying down (a 920 dp / 900 pt container) and on a book (one half each, 24 dp off the hinge's
+    band) the title, or the question with "Não estou na lista", on the left and the group with its buttons, or the
+    names with "Entrar como Bruno" always in sight, on the right; an Android tabletop puts the invite's title and
+    group on top and "Entrar no grupo" and "Agora não" below ("Quem é você" is drawn like the book there). "Não estou
+    na lista" is a bottom sheet on an Android phone, a 560 dp dialog on its tablets and foldables upright and in a
+    book's right half, a sheet on iOS, a dialog on the web (a drawer on a phone). The web's "Quem é você" heads the
+    names with the invite ("Convite de Pierre", "Entre na Viagem Floripa"), beside the names from 1024 px, and pins
+    "Entrar como Bruno" at the bottom of a phone. The Mac opens the invite as one sheet over the window, "Quem é você"
+    pushed inside it. Joining with no profile on the device makes one from the name and
     color joined as. A member someone else already joined as says "Se era você, peça para <criador> liberar o nome em
     Membros" ("Se era você, fale com quem te chamou" once the creator's account is gone).
   - The home's "Entrar com link ou QR" opens the reader (`Route.JoinWithLink`) on every platform: the camera reads
