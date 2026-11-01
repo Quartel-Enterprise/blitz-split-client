@@ -12,8 +12,34 @@ import { GroupsSearchDialog, searchShortcut } from '@/features/groups/GroupsSear
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t } from '@/i18n'
 
-// Contatos is not built yet and answers "Coming soon".
+interface DeletedGroupNoticeState {
+  deletedGroupId?: string | null
+  deletedGroupName?: string | null
+  deletedGroupByName?: string | null
+}
+
+/**
+ * "Carla apagou o grupo X." once someone else deleted a group, on Grupos and Início. State, not an action, so it waits
+ * until the screen is on top; the next deleted group follows once this one shows.
+ */
+export function useDeletedGroupNotice(presenter: { deletedGroupNoticeShown(): void } | null, state: DeletedGroupNoticeState | null | undefined) {
+  const deletedGroupId = state?.deletedGroupId ?? null
+  const deletedGroupName = state?.deletedGroupName ?? null
+  const deletedGroupByName = state?.deletedGroupByName ?? null
+  useEffect(() => {
+    if (!deletedGroupId || !deletedGroupName) return
+    toast(
+      deletedGroupByName
+        ? t('groups_deletedBy', { name: deletedGroupByName, group: deletedGroupName })
+        : t('groups_deleted', { group: deletedGroupName }),
+    )
+    presenter?.deletedGroupNoticeShown()
+  }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
+}
+
+// Início, Saldos, Contatos and Atividade take Grupos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: GroupsPresenter) => void>> = {
+  home: (p) => p.openHome(),
   balances: (p) => p.openBalances(),
   contacts: (p) => p.openContacts(),
   activity: (p) => p.openActivity(),
@@ -31,19 +57,7 @@ export function GroupsScreen() {
     (p, onAction: (action: string) => void) => p.observeActions(onAction),
     (action) => (action === 'coming-soon' ? toast(t('groups_comingSoon')) : toastGroupAction(action)),
   )
-  // Why: state, not an action, so it waits until the home is on top; the next deleted group follows once this shows.
-  const deletedGroupId = state?.deletedGroupId ?? null
-  const deletedGroupName = state?.deletedGroupName ?? null
-  const deletedGroupByName = state?.deletedGroupByName ?? null
-  useEffect(() => {
-    if (!deletedGroupId || !deletedGroupName) return
-    toast(
-      deletedGroupByName
-        ? t('groups_deletedBy', { name: deletedGroupByName, group: deletedGroupName })
-        : t('groups_deleted', { group: deletedGroupName }),
-    )
-    presenter?.deletedGroupNoticeShown()
-  }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
+  useDeletedGroupNotice(presenter, state)
   // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   // Why: ⌘K (Ctrl+K off Apple devices) opens "Buscar" from anywhere on the home, once there is a group to look in.

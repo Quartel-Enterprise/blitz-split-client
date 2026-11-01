@@ -25,4 +25,8 @@
     <string name="register_payment_save_error">Não deu para registrar o pagamento. Tente de novo.</string>
     <string name="register_payment_former_member">Ex-membro</string>
     <string name="register_payment_one_per_group">O app anota um pagamento em cada grupo.</string>
+    <string name="register_payment_pick_title">Quem pagou a quem?</string>
+    <string name="register_payment_pick_pair">%1$s → %2$s</string>
+    <string name="register_payment_pick_empty_title">Ninguém deve nada agora</string>
+    <string name="register_payment_pick_empty_body">Quando alguém dever, é só escolher aqui quem pagou.</string>
 </resources>

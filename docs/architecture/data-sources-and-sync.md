@@ -100,20 +100,32 @@ suspend fun syncNow(): Result<Unit> {
                     paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
                 }
                 val preferencesSynced = suspendRunCatching { /* download, then upload */ }
+                var areGroupsSynced = false
                 val groupsSynced = suspendRunCatching {
                     groupRepository.downloadGroups(userId).getOrThrow()
                     groupRepository.uploadPendingGroups(userId).getOrThrow()
+                    areGroupsSynced = true
                     // A bill needs its group and members on both sides first
                     expenseRepository.downloadExpenses(userId).getOrThrow()
                     expenseRepository.uploadPendingExpenses(userId).getOrThrow()
                     settlementRepository.downloadSettlements(userId).getOrThrow()
                     settlementRepository.uploadPendingSettlements(userId).getOrThrow()
                 }
+                // A pin needs its group on both sides too, but only orders Início, so it never holds the money back
+                val pinsSynced = if (areGroupsSynced) {
+                    suspendRunCatching {
+                        groupPinRepository.downloadPins(userId).getOrThrow()
+                        groupPinRepository.uploadPendingPins(userId).getOrThrow()
+                    }
+                } else {
+                    Result.success(Unit)
+                }
                 offerRecoveryCodeIfDue()
                 signOutIfScheduledAndSynced()
                 keysSynced.getOrThrow()
                 preferencesSynced.getOrThrow()
                 groupsSynced.getOrThrow()
+                pinsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
         }
     } finally {
@@ -124,8 +136,8 @@ suspend fun syncNow(): Result<Unit> {
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet
-(`ProfileRepository`, `PaymentKeyRepository`, `NotificationPreferencesRepository` or
-`GroupRepository.observeHasPendingChanges()`),
+(`ProfileRepository`, `PaymentKeyRepository`, `NotificationPreferencesRepository`,
+`GroupRepository.observeHasPendingChanges()` or `GroupPinRepository`),
 and `SYNCED` otherwise. The home draws a badge only for the states that ask for attention, and its "try again" goes
 through `RetrySync`, which runs in the coordinator's scope so it outlives the screen.
 
@@ -222,6 +234,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
     group's screen open on it shows "Grupo apagado" instead of just closing, or the home says so when no group screen
     is on top. A failed read only skips the notices.
+- **Pins** (`:core:groups`): "Fixar na Início" is a row of `group_pin` per group (`GroupPinRepository`), this
+  user's own and never another member's, synced to `group_pins` (one row per user and group) by `updatedAt` like the
+  keys, the server's `keep_newer_group_pin` trigger keeping the newer one too. Unpinning keeps the row with
+  `isPinned` false, so an unpin on one device wins over an older pin of another. A pin is kept apart from the group's
+  row so it never meets the group's Last-Write-Wins; a remote pin for a group not on the device yet waits for the
+  next sync, and the pin goes with its group (`ON DELETE CASCADE` on both sides). Pins sync in their own step
+  once the groups did, after the bills and payments, so a pin that fails to sync never holds the money back (the sync
+  still reports the failure).
 - **Bills** (`:core:expenses`): a bill (`expense`) is one Last-Write-Wins row, its payers and shares inside it as
   JSON (jsonb on the server), so an edit never mixes two versions of a split. It belongs to its group through a
   foreign key with `ON DELETE CASCADE`: whatever deletes a group on the device (a sign out, an account switch, the

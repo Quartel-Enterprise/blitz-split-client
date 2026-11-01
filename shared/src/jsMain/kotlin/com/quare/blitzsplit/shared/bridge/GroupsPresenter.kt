@@ -204,6 +204,11 @@ class GroupsPresenter {
         viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
     }
 
+    // Why: Início, the home's first tab.
+    fun openHome() {
+        viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+    }
+
     fun openBalances() {
         viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
     }

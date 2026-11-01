@@ -53,6 +53,8 @@ sealed interface ContactsUiEvent : UiEvent {
         val contacts: List<AgendaContact>,
     ) : ContactsUiEvent
 
+    data object OnHomeTabClicked : ContactsUiEvent
+
     data object OnGroupsTabClicked : ContactsUiEvent
 
     data object OnBalancesTabClicked : ContactsUiEvent

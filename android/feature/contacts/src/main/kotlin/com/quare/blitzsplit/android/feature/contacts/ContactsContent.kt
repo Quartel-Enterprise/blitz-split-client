@@ -50,6 +50,7 @@ private val columnMaxWidth = 640.dp
 private val tabletColumnMaxWidth = 560.dp
 
 private fun eventOf(tab: HomeTab): ContactsUiEvent? = when (tab) {
+    HomeTab.HOME -> ContactsUiEvent.OnHomeTabClicked
     HomeTab.GROUPS -> ContactsUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> ContactsUiEvent.OnBalancesTabClicked
     HomeTab.CONTACTS -> null

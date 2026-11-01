@@ -119,6 +119,8 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
+            GroupDetailUiEvent.OnPinToggled -> screen.togglePin()
+
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
             GroupDetailUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
@@ -176,6 +178,7 @@ class GroupDetailViewModel(
                     group = group,
                     totalSpentMinor = expenses.sumOf { expense -> expense.amountMinor },
                     balances = balances,
+                    isPinned = screen.isPinned,
                 ),
                 days = days,
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.

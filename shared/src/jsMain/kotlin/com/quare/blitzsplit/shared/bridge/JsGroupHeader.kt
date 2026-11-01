@@ -44,6 +44,8 @@ class JsGroupHeader(
     val totalSpentMinor: Double,
     val myBalance: JsMemberBalance?,
     val isEveryoneSettled: Boolean,
+    // Why: the ⋯ menu's "Fixar na Início" or "Desafixar da Início".
+    val isPinned: Boolean,
 )
 
 internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader(
@@ -59,6 +61,7 @@ internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader
     totalSpentMinor = header.totalSpentMinor.toDouble(),
     myBalance = header.myBalance?.let(::toJsMemberBalance),
     isEveryoneSettled = header.isEveryoneSettled,
+    isPinned = header.isPinned,
 )
 
 internal fun toJsGroupFace(face: GroupFace): JsGroupFace = JsGroupFace(face.initials, face.color.code)

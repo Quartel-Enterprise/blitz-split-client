@@ -8,9 +8,13 @@ import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CompleteSignInUseCase
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CompleteSignInUseCaseTest {
@@ -24,6 +28,7 @@ class CompleteSignInUseCaseTest {
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
     private lateinit var account: FakeAccountRepository
     private lateinit var profile: FakeProfileRepository
+    private lateinit var firstDownload: FirstDownload
     private lateinit var useCase: CompleteSignInUseCase
 
     @Test
@@ -90,16 +95,132 @@ class CompleteSignInUseCaseTest {
         assertTrue(profile.downloadedUserIds.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a device with no profile WHEN the sign in brings the profile down THEN the first download is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = null,
+                serverProfile = pierre,
+            )
+
+            // When
+            val outcome = useCase()
+
+            // Then
+            assertEquals(Result.success(SignInOutcome.PROFILE_RESTORED), outcome)
+            assertTrue(firstDownload.observeIsPending().value)
+        }
+
+    @Test
+    fun `GIVEN a device with no profile WHEN the profile reaches it THEN the first download is already pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = null,
+                serverProfile = pierre,
+            )
+            val pendingWhenProfileArrived = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                profile.profile.filterNotNull().collect {
+                    pendingWhenProfileArrived += firstDownload.observeIsPending().value
+                }
+            }
+
+            // When
+            useCase()
+
+            // Then
+            assertEquals(listOf(true), pendingWhenProfileArrived)
+        }
+
+    @Test
+    fun `GIVEN a device with no profile WHEN the account has none on the server THEN no first download is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                sessionUser = googleUser,
+                storedProfile = null,
+            )
+
+            // When
+            val outcome = useCase()
+
+            // Then
+            assertEquals(Result.success(SignInOutcome.NEEDS_PROFILE), outcome)
+            assertFalse(firstDownload.observeIsPending().value)
+        }
+
+    @Test
+    fun `GIVEN a device that has a profile WHEN completing the sign in THEN no first download is pending`() = runTest {
+        // Given
+        prepareScenario(
+            sessionUser = googleUser,
+            storedProfile = pierre,
+            serverProfile = pierre,
+        )
+
+        // When
+        val outcome = useCase()
+
+        // Then
+        assertEquals(Result.success(SignInOutcome.PROFILE_RESTORED), outcome)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN no profile and the profile pull fails WHEN signing in THEN no first download is pending`() = runTest {
+        // Given
+        val error = IllegalStateException("offline")
+        prepareScenario(
+            sessionUser = googleUser,
+            storedProfile = null,
+            serverProfile = pierre,
+            pullError = error,
+        )
+
+        // When
+        val outcome = useCase()
+
+        // Then
+        assertEquals(Result.failure(error), outcome)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN no profile and no session WHEN completing the sign in THEN no first download is pending`() = runTest {
+        // Given
+        prepareScenario(
+            sessionUser = null,
+            storedProfile = null,
+        )
+
+        // When
+        val outcome = useCase()
+
+        // Then
+        assertEquals(Result.success(SignInOutcome.NEEDS_PROFILE), outcome)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
     private fun prepareScenario(
         sessionUser: SessionUser?,
         storedProfile: UserProfile?,
+        serverProfile: UserProfile? = null,
         pullError: Throwable? = null,
     ) {
         account = FakeAccountRepository().also { it.sessionUser = sessionUser }
-        profile = FakeProfileRepository(storedProfile).also { it.pullError = pullError }
+        profile = FakeProfileRepository(storedProfile).also {
+            it.serverProfile = serverProfile
+            it.pullError = pullError
+        }
+        firstDownload = FirstDownload()
         useCase = CompleteSignInUseCase(
             accountRepository = account,
             profileRepository = profile,
+            firstDownload = firstDownload,
         )
     }
 }

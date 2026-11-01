@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -56,11 +57,13 @@ class SyncCoordinatorTest {
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
     private lateinit var groups: FakeGroupRepository
+    private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
+    private lateinit var firstDownload: FirstDownload
     private lateinit var coordinator: SyncCoordinator
     private lateinit var pullGate: CompletableDeferred<Unit>
 
@@ -522,6 +525,71 @@ class SyncCoordinatorTest {
         // Then
         assertTrue(result.isSuccess)
         assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN the sync with the restored profile succeeds THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN a first download pending and the groups fail to come down WHEN syncing THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+        groups.pullError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN a first download pending and the server cannot be reached WHEN syncing THEN it ends`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+        account.registerError = IllegalStateException("no connection")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertFalse(firstDownload.observeIsPending().value)
+    }
+
+    @Test
+    fun `GIVEN a first download pending and no profile on the device WHEN syncing THEN it stays pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = null,
+            firstDownloadPending = true,
+        )
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertTrue(firstDownload.observeIsPending().value)
     }
 
     @Test
@@ -2772,6 +2840,89 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a Google account WHEN syncing THEN pulls and pushes the pins under its user id`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pins.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pins.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a group pinned offline WHEN observing the sync state THEN it is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        pins.updatePinned(
+            groupId = "floripa",
+            isPinned = true,
+            updatedAt = 1L,
+        )
+        runCurrent()
+
+        // When
+        val state = coordinator.observeState().first()
+
+        // Then
+        assertEquals(SyncState.PENDING, state)
+    }
+
+    @Test
+    fun `GIVEN the pins fail to come down WHEN syncing THEN fails and pushes no pin`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        pins.downloadError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(emptyList(), pins.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the pins fail to go up WHEN syncing THEN still pulls and pushes the bills and the payments`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        pins.uploadError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), expenses.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), settlements.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN neither pulls nor pushes the pins`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        groups.pullError = IllegalStateException("offline")
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(emptyList(), pins.downloadedUserIds)
+        assertEquals(emptyList(), pins.uploadedUserIds)
+    }
+
+    @Test
     fun `GIVEN no profile and pending groups WHEN syncing THEN neither pulls nor pushes the groups`() = runTest {
         // Given
         prepareScenario(
@@ -4596,7 +4747,9 @@ class SyncCoordinatorTest {
         groupQueuedDuringFirstPush: Boolean = false,
         pendingBills: Boolean = false,
         pendingPayments: Boolean = false,
+        firstDownloadPending: Boolean = false,
     ) {
+        firstDownload = FirstDownload().also { if (firstDownloadPending) it.start() }
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
             it.signOutWhenSynced = signOutScheduled
@@ -4647,10 +4800,12 @@ class SyncCoordinatorTest {
                 delegate = if (groupQueuedDuringFirstPush) GroupDuringFirstPushGroupRepository(groups) else groups,
                 calls = calls,
             ),
+            groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             activityRepository = activity,
             hiddenContactRepository = FakeHiddenContactRepository(),
+            firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,
         )

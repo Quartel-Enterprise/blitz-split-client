@@ -5,6 +5,9 @@ enum AppRoute: Hashable, Identifiable {
     case welcome
     case profileSetup
     case restore
+    /// Início, the home's first tab and the root of the back stack once there is a profile.
+    case home
+    /// Grupos, the home's tab right above Início.
     case groups
     case createGroup
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
@@ -17,6 +20,8 @@ enum AppRoute: Hashable, Identifiable {
     case balances(RouteBalances)
     /// Holds the Kotlin route itself, which its ViewModel reads the group and the pair from.
     case registerPayment(RouteRegisterPayment)
+    /// Início's "Who paid whom?", before Record payment takes its place.
+    case pickPayment
     /// The home's Balances tab; holds the Kotlin route itself, which its ViewModel reads the filter from.
     case globalBalances(RouteGlobalBalances)
     /// The home's Activity tab; holds the Kotlin route itself, which its ViewModel reads the person it filters by from.
@@ -60,6 +65,7 @@ enum AppRoute: Hashable, Identifiable {
         switch route {
         case is RouteProfileSetup: self = .profileSetup
         case is RouteRestore: self = .restore
+        case is RouteHome: self = .home
         case is RouteGroups: self = .groups
         case is RouteCreateGroup: self = .createGroup
         case let invite as RouteInvite: self = .invite(invite)
@@ -67,6 +73,7 @@ enum AppRoute: Hashable, Identifiable {
         case let groupDetail as RouteGroupDetail: self = .groupDetail(groupDetail)
         case let balances as RouteBalances: self = .balances(balances)
         case let registerPayment as RouteRegisterPayment: self = .registerPayment(registerPayment)
+        case is RoutePickPayment: self = .pickPayment
         case let globalBalances as RouteGlobalBalances: self = .globalBalances(globalBalances)
         case let activity as RouteActivity: self = .activity(activity)
         case let settleUp as RouteSettleUp: self = .settleUp(settleUp)
@@ -95,14 +102,16 @@ enum AppRoute: Hashable, Identifiable {
 
     /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
     /// and a bill open as a form sheet and on the Mac as a sheet on its window, as the canvas draws them; an iPhone,
-    /// lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill and
-    /// recording a payment (settling up across groups included) and Contacts' invite are sheets everywhere. The invite is a sheet on an
-    /// iPhone and is pushed full screen with an iPad's room (decision 1); on the Mac it is a sheet, or the popover of
-    /// the group behind it (`AppModel.invitePopover`). The invite reader is a sheet on the Mac, and covers the whole
-    /// screen on iPhone and iPad. An invite opened from its link is one sheet on the Mac, "Who are you" pushed inside it.
+    /// lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill,
+    /// recording a payment (settling up across groups and Início's "Who paid whom?" included) and Contacts' invite are
+    /// sheets everywhere. The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
+    /// on the Mac it is a sheet, or the popover of the group behind it (`AppModel.invitePopover`). The invite reader is
+    /// a sheet on the Mac, and covers the whole screen on iPhone and iPad. An invite opened from its link is one sheet
+    /// on the Mac, "Who are you" pushed inside it.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
-        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .contactInvite:
+        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .pickPayment,
+             .contactInvite:
             return true
         case .invite:
             #if os(macOS)

@@ -8,7 +8,6 @@ import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
-import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -51,6 +50,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupsOnHome
 import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.searchResultsOf
@@ -216,29 +216,20 @@ class GroupsViewModel(
             )
         }
         // Why: each group's bills and payments, again whenever any of them changes here or through a sync.
-        combine(observeGroups(), observeGroupsMoney()) { groups, money ->
-            groups.map { group ->
-                val ofGroup = money[group.id] ?: GroupMoney.NONE
-                GroupWithMoney(
-                    group = group,
-                    expenses = ofGroup.expenses,
-                    settlements = ofGroup.settlements,
-                    pendingDeletionCount = ofGroup.pendingDeletionCount,
+        combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
+            .onEach { groups ->
+                groupsWithMoney = groups
+                // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
+                if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
+            }.map { groups ->
+                GroupsOnHome(
+                    rows = rowsOf(
+                        groups = groups,
+                        clock = activityClock(),
+                    ),
+                    pendingChangeCount = pendingChangeCountOf(groups),
                 )
             }
-        }.onEach { groups ->
-            groupsWithMoney = groups
-            // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
-            if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
-        }.map { groups ->
-            GroupsOnHome(
-                rows = rowsOf(
-                    groups = groups,
-                    clock = activityClock(),
-                ),
-                pendingChangeCount = pendingChangeCountOf(groups),
-            )
-        }
             // Why: the ages again each minute, not the balances, so a home left open says "ontem" after midnight.
             .combine(minuteTicks()) { home, _ -> home.copy(rows = agedRowsOf(home.rows, activityClock())) }
             .onEach { home ->
@@ -391,6 +382,11 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
 
+            GroupsUiEvent.OnHomeTabClicked -> {
+                closeSearch()
+                navigator.openHomeTab(Route.Home)
+            }
+
             GroupsUiEvent.OnBalancesTabClicked -> openTab(toBalancesTab(BalancesFilter.ALL))
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
@@ -470,9 +466,13 @@ class GroupsViewModel(
         viewModelScope.launch { updateGroupsLayout(layout) }
     }
 
-    // Why: Saldos, Contatos and Atividade, drawn over the groups, first close a screen the groups opened, as a tab bar does.
+    /*
+     * Why: Saldos, Contatos and Atividade take Grupos' place above Início; from a screen the groups opened (iOS keeps
+     * the tab bar over it), they close that screen first, as a tab bar does.
+     */
     private fun openTab(tab: Route) {
-        if (Route.Groups !in navigator.backStack.value) return
+        val stack = navigator.backStack.value
+        if (Route.Groups !in stack || stack.any { it::class == tab::class }) return
         closeSearch()
         navigator.openHomeTab(tab)
     }

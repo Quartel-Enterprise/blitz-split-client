@@ -14,8 +14,9 @@ import { cn } from '@/lib/utils'
 import { ActiveFilters, ActivityFilterButton } from './ActivityFilter'
 import { deletionText, detailLine, fieldLabel, headline, headlineText, openLabel, valueText } from './activityText'
 
-// Grupos and Saldos take Atividade's place; Contatos is not built yet and answers "Coming soon".
+// Início, Grupos, Saldos and Contatos take Atividade's place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: ActivityPresenter) => void>> = {
+  home: (p) => p.openHome(),
   groups: (p) => p.openGroups(),
   balances: (p) => p.openBalances(),
   contacts: (p) => p.openContacts(),

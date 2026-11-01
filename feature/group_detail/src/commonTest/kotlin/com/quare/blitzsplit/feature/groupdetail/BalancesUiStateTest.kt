@@ -166,6 +166,7 @@ class BalancesUiStateTest {
             totalSpentMinor = 0L,
             myBalance = null,
             isEveryoneSettled = false,
+            isPinned = false,
         ),
         myDebts = myDebts,
         otherDebts = otherDebts,

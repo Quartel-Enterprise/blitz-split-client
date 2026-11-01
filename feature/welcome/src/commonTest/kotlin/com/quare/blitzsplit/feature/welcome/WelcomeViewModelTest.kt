@@ -199,7 +199,7 @@ class WelcomeViewModelTest {
             viewModel.onEvent(WelcomeUiEvent.OnIdTokenReceived(AccountProvider.APPLE, "token", null, null, null))
 
             // Then
-            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
         }
 
     @Test

@@ -32,7 +32,7 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | `navigate(route)` | Pushes `route` | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
 | `navigateBack()` | Pops the top entry, never the last one | `OnBackClicked -> navigator.navigateBack()` |
 | `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo", and the group's tabs (Despesas, Saldos, Membros), go through `openGroupTab`, which treats the three tabs as one group screen: it goes back to the tab asked for when it is right below, puts it in the other tab's place, or replaces the top |
-| `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Groups)` after a profile is saved or restored |
+| `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Home)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
 
 A flow two screens share takes the ViewModel's `Navigator` along: `ProviderSignInController` (`:core:sync`),
@@ -42,14 +42,14 @@ created by the Welcome and Restore ViewModels, opens the next screen once a Goog
 is SignInStep.SignedIn -> {
     showConnecting(null, false)
     when (step.outcome) {
-        SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Groups)
+        SignInOutcome.PROFILE_RESTORED -> navigator.replaceAll(Route.Home)
         SignInOutcome.NEEDS_PROFILE -> navigator.navigate(Route.ProfileSetup)
     }
 }
 ```
 
 `BackStackNavigator(startRoute = Route.Welcome)` is the single implementation (`navigationModule`). On launch,
-`AppViewModel` starts the sync and replaces the stack with `Route.Groups` when Room already holds a profile, or
+`AppViewModel` starts the sync and replaces the stack with `Route.Home` (Início) when Room already holds a profile, or
 `Route.Welcome` otherwise; until then its `uiState` is `AppUiState.LOADING` and every UI draws an empty surface.
 
 ### Links opened from outside: `LinkInbox`
@@ -131,19 +131,26 @@ longer stack `pushState`s an entry holding its size, and a `popstate` (the brows
 
 ### Sheets and tabs are state, not routes
 
-The recovery code is not a route. `GroupsUiState.showsRecoveryCodePrompt` says when it is due, and each UI shows
-the recovery code feature over the groups: Android through the `recoveryCodeSheet` slot that `AppNavDisplay`
+The recovery code is not a route. `HomeUiState.showsRecoveryCodePrompt` and `GroupsUiState.showsRecoveryCodePrompt`
+say when it is due, and each UI shows the recovery code feature over Início and the groups: Android through the `recoveryCodeSheet` slot that `AppNavDisplay`
 fills (features never see each other), SwiftUI with `.sheet(isPresented:)` in `MainTabView`, the web with
 `RecoveryCodeDialog`. Closing it without "Já guardei" sends `OnRemindLaterClicked`, so it comes back on the next
 launch.
 
-Saldos, the home's second tab, is a route over the groups (`Route.GlobalBalances`): the Grupos tab
-(`Navigator.popToGroups`, which also closes whatever either tab opened) and back return to them, and on Apple the `TabView` selects Balances while it is right above the groups. Contatos
-(`Route.Contacts`) is a tab the same way: `Navigator.openHomeTab` puts a tab right above the groups in place of the
-other one, and the profile (`Route.ContactProfile`), the agenda (`Route.ContactsAgenda`) and the invite
+The home has five tabs: Início, Grupos, Saldos, Contatos and Atividade. Início (`Route.Home`) is the root of the
+back stack and where the app opens; every other tab is one route right above it, and the tabs take each other's place
+there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`,
+`[Home, Activity(personKey)]`. `Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in
+the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the
+welcome, the restore) it does nothing. `popToGroups()` is `openHomeTab(Route.Groups)`. Each tab's ViewModel has an
+`OnHomeTabClicked`, and on Apple the `TabView` selects the tab from the route right above Início. Back from any tab
+returns to Início. Contatos' profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite
 (`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
-Saldos). Atividade
-(`Route.Activity`) is a tab the same way, opened on a person from a contact's history ("Ver tudo").
+Saldos). Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
+
+Início's "Registrar pagamento" belongs to no group, so it asks who paid whom first: `Route.PickPayment` lists every
+open pair of every group, and the pair tapped opens `Route.RegisterPayment` in its place (`replaceTop`), so closing
+the form returns to Início, which shows its notice.
 
 ### List and detail on wide windows
 

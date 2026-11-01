@@ -148,6 +148,10 @@ class ContactsPresenter {
         viewModel.onEvent(ContactsUiEvent.OnInviteWithLinkClicked)
     }
 
+    fun openHome() {
+        viewModel.onEvent(ContactsUiEvent.OnHomeTabClicked)
+    }
+
     fun openGroups() {
         viewModel.onEvent(ContactsUiEvent.OnGroupsTabClicked)
     }

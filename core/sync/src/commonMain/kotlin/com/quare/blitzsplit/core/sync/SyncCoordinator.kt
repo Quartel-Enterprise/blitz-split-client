@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactReposit
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
+import com.quare.blitzsplit.core.groups.domain.repository.GroupPinRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -38,10 +39,12 @@ class SyncCoordinator(
     private val paymentKeyRepository: PaymentKeyRepository,
     private val notificationPreferencesRepository: NotificationPreferencesRepository,
     private val groupRepository: GroupRepository,
+    private val groupPinRepository: GroupPinRepository,
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
+    private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
 ) {
@@ -107,6 +110,15 @@ class SyncCoordinator(
 
     private suspend fun syncLocked(): Result<Unit> = suspendRunCatching {
         profileRepository.observeProfile().first() ?: return@suspendRunCatching
+        // Why: the first sync with a profile restored here settles the first download, failed or not.
+        try {
+            syncSteps()
+        } finally {
+            firstDownload.end()
+        }
+    }.also { result -> lastSyncFailed.value = result.isFailure }
+
+    private suspend fun syncSteps() {
         val userId = accountRepository.ensureRegistered().getOrThrow()
         profileRepository.downloadProfile(userId).getOrThrow()
         profileRepository.uploadPendingProfile(userId).getOrThrow()
@@ -127,13 +139,24 @@ class SyncCoordinator(
          * Why: the bills and the payments after their groups, which they need on the device to come
          * down and on the server to go up.
          */
+        var areGroupsSynced = false
         val groupsSynced = suspendRunCatching {
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
+            areGroupsSynced = true
             expenseRepository.downloadExpenses(userId).getOrThrow()
             expenseRepository.uploadPendingExpenses(userId).getOrThrow()
             settlementRepository.downloadSettlements(userId).getOrThrow()
             settlementRepository.uploadPendingSettlements(userId).getOrThrow()
+        }
+        // Why: the pins need their groups too, but only order Início, so one that fails never holds the money back.
+        val pinsSynced = if (areGroupsSynced) {
+            suspendRunCatching {
+                groupPinRepository.downloadPins(userId).getOrThrow()
+                groupPinRepository.uploadPendingPins(userId).getOrThrow()
+            }
+        } else {
+            Result.success(Unit)
         }
         /*
          * Why: after every push, whose events the server records as they arrive, so the feed comes down with them; up
@@ -153,9 +176,10 @@ class SyncCoordinator(
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
         groupsSynced.getOrThrow()
+        pinsSynced.getOrThrow()
         activitySynced.getOrThrow()
         hiddenContactsSynced.getOrThrow()
-    }.also { result -> lastSyncFailed.value = result.isFailure }
+    }
 
     /*
      * Why: under the sync lock, so a push in flight ends before the copy it reads is gone. In the app's
@@ -225,8 +249,8 @@ class SyncCoordinator(
     /*
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
-     * on the profile, the keys, the preferences, the groups and the pending bills' and payments' versions makes each new change
-     * count, while one going out triggers nothing.
+     * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions, the hidden
+     * contacts and the pins makes each new change count, while one going out triggers nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
@@ -236,7 +260,8 @@ class SyncCoordinator(
             groupRepository.observeGroups(),
             observePendingMoneyVersions(),
             hiddenContactRepository.observeHidden(),
-        ) { keys, preferences, groups, pendingMoney, hidden -> listOf(keys, preferences, groups, pendingMoney, hidden) }
+            groupPinRepository.observePinnedGroupIds(),
+        ) { lists -> lists.toList() }
         combine(
             connectivityObserver.observe(),
             profileRepository.observeProfile(),
@@ -293,9 +318,10 @@ class SyncCoordinator(
         combine(
             expenseRepository.observeHasPendingChanges(),
             settlementRepository.observeHasPendingChanges(),
+            groupPinRepository.observeHasPendingChanges(),
             hiddenContactRepository.observeHasPendingChanges(),
-        ) { hasPendingExpenses, hasPendingSettlements, hasPendingHidden ->
-            hasPendingExpenses || hasPendingSettlements || hasPendingHidden
+        ) { hasPendingExpenses, hasPendingSettlements, hasPendingPins, hasPendingHidden ->
+            hasPendingExpenses || hasPendingSettlements || hasPendingPins || hasPendingHidden
         },
     ) { hasPendingProfile, hasPendingKeys, hasPendingPreferences, hasPendingGroups, hasPendingMoney ->
         hasPendingProfile || hasPendingKeys || hasPendingPreferences || hasPendingGroups || hasPendingMoney

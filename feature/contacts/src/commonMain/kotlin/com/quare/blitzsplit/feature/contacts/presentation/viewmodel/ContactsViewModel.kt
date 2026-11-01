@@ -176,6 +176,8 @@ class ContactsViewModel(
 
             is ContactsUiEvent.OnAgendaLoaded -> uiState.update { it.copy(agenda = event.contacts) }
 
+            ContactsUiEvent.OnHomeTabClicked -> if (isTabShown()) navigator.openHomeTab(Route.Home)
+
             ContactsUiEvent.OnGroupsTabClicked -> if (isTabShown()) navigator.popToGroups()
 
             ContactsUiEvent.OnBalancesTabClicked -> if (isTabShown()) {
@@ -253,7 +255,7 @@ class ContactsViewModel(
      */
     private fun isTabShown(): Boolean {
         val stack = navigator.backStack.value
-        return stack.getOrNull(stack.indexOf(Route.Groups) + 1) == Route.Contacts && Route.Groups in stack
+        return stack.getOrNull(stack.indexOf(Route.Home) + 1) == Route.Contacts && Route.Home in stack
     }
 
     private fun closeOverTab() {

@@ -208,7 +208,7 @@ private fun buildPreviewState(
     )
 }
 
-private fun buildPreviewRow(
+internal fun buildPreviewRow(
     id: String,
     name: String,
     color: AvatarColor,

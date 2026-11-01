@@ -54,6 +54,7 @@ private val sideColumnWidth = 320.dp
 private val railWidth = 80.dp
 
 private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
+    HomeTab.HOME -> GlobalBalancesUiEvent.OnHomeTabClicked
     HomeTab.GROUPS -> GlobalBalancesUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> null
     HomeTab.CONTACTS -> GlobalBalancesUiEvent.OnContactsTabClicked

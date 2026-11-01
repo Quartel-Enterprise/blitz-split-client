@@ -24,6 +24,8 @@ sealed interface GroupsUiEvent : UiEvent {
         val isShown: Boolean,
     ) : GroupsUiEvent
 
+    data object OnHomeTabClicked : GroupsUiEvent
+
     data object OnBalancesTabClicked : GroupsUiEvent
 
     // Why: the tab bar of iOS and the Mac's sidebar stay over what the groups opened, Saldos included.

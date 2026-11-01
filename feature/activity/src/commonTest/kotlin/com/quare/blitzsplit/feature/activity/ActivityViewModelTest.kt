@@ -379,7 +379,7 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, route, Route.GroupDetail(APE), Route.BillDetail(APE, BILL_JANTAR)),
+            listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null), Route.BillDetail(APE, BILL_JANTAR)),
             navigator.backStack.value,
         )
     }
@@ -393,7 +393,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.GroupDetail(APE)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -414,7 +414,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked("group-edited"))
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.GroupDetail(FLORIPA)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -427,7 +427,7 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, route, Route.Members(FLORIPA, joinedAs = null)),
+            listOf(Route.Home, route, Route.Members(FLORIPA)),
             navigator.backStack.value,
         )
     }
@@ -441,7 +441,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(CHARGE_CARLA))
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Balances(APE)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.Balances(APE)), navigator.backStack.value)
     }
 
     @Test
@@ -454,7 +454,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(EDIT_JANTAR))
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
     }
 
     @Test
@@ -477,7 +477,7 @@ class ActivityViewModelTest {
                 ),
                 viewModel.uiState.value.deletedNotice,
             )
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
         }
 
     @Test
@@ -525,7 +525,7 @@ class ActivityViewModelTest {
             assertEquals(true, notice?.isGroup)
             assertEquals("Ana", notice?.byName)
             assertEquals(NOW - 10 * MINUTE, notice?.atMillis)
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
         }
 
     @Test
@@ -551,7 +551,7 @@ class ActivityViewModelTest {
             assertEquals(true, notice?.byMe)
             assertEquals("Pierre", notice?.byName)
             assertEquals(NOW - 10 * MINUTE, notice?.atMillis)
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
         }
 
     // endregion
@@ -576,7 +576,7 @@ class ActivityViewModelTest {
                     ?.id,
             )
             assertEquals(setOf(PAYMENT_ANA), activity.readState.value.readEventIds)
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
         }
 
     @Test
@@ -606,7 +606,7 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.GroupDetail(APE), Route.BillDetail(APE, BILL_MERCADO)),
+                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null), Route.BillDetail(APE, BILL_MERCADO)),
                 navigator.backStack.value,
             )
         }
@@ -628,7 +628,7 @@ class ActivityViewModelTest {
                 viewModel.uiState.value.deletedNotice
                     ?.byName,
             )
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
         }
 
     @Test
@@ -680,7 +680,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnItemClicked(PAYMENT_ANA))
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.GroupDetail(APE)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null)), navigator.backStack.value)
     }
 
     // endregion
@@ -1028,7 +1028,7 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `GIVEN nothing here yet WHEN tapping Ver grupos THEN goes back to Grupos`() = runTest(testDispatcher) {
+    fun `GIVEN nothing here yet WHEN tapping Ver grupos THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedEvents = emptyList())
 
@@ -1036,7 +1036,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnEmptyActionClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     // endregion
@@ -1389,7 +1389,7 @@ class ActivityViewModelTest {
     // region Tabs and bar
 
     @Test
-    fun `GIVEN Atividade WHEN tapping Grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN Atividade WHEN tapping Grupos THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -1397,11 +1397,11 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN Atividade WHEN going back THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN Atividade WHEN going back THEN goes back to Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -1409,7 +1409,19 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Atividade WHEN tapping Inicio THEN goes back to Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
     }
 
     @Test
@@ -1422,7 +1434,7 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -1436,7 +1448,7 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnContactsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -1448,20 +1460,20 @@ class ActivityViewModelTest {
         viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
     }
 
     @Test
     fun `GIVEN a group opened over Atividade WHEN tapping the profile THEN opens nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(APE))
+        navigator.navigate(Route.GroupDetail(APE, joinedAs = null))
 
         // When
         viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.GroupDetail(APE)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null)), navigator.backStack.value)
     }
 
     // endregion
@@ -1739,7 +1751,7 @@ class ActivityViewModelTest {
         }
         val account = FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE))
         route = Route.Activity(personKey)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
+        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
         viewModel = ActivityViewModel(
             route = route,
             navigator = navigator,

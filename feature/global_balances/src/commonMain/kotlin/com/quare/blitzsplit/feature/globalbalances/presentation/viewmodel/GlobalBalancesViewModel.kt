@@ -198,6 +198,8 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
 
+            GlobalBalancesUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
+
             GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             GlobalBalancesUiEvent.OnContactsTabClicked -> if (isOnTop()) navigator.openHomeTab(Route.Contacts)

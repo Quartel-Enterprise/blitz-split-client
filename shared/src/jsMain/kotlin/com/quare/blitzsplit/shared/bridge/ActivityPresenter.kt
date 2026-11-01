@@ -313,6 +313,10 @@ class ActivityPresenter(
         viewModel.onEvent(ActivityUiEvent.OnProfileClicked)
     }
 
+    fun openHome() {
+        viewModel.onEvent(ActivityUiEvent.OnHomeTabClicked)
+    }
+
     fun openGroups() {
         viewModel.onEvent(ActivityUiEvent.OnGroupsTabClicked)
     }

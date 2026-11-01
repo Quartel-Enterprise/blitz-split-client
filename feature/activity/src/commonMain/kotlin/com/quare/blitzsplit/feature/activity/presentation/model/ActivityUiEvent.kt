@@ -72,6 +72,8 @@ sealed interface ActivityUiEvent : UiEvent {
 
     data object OnProfileClicked : ActivityUiEvent
 
+    data object OnHomeTabClicked : ActivityUiEvent
+
     data object OnGroupsTabClicked : ActivityUiEvent
 
     data object OnBalancesTabClicked : ActivityUiEvent

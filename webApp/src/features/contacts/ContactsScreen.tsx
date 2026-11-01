@@ -16,8 +16,9 @@ import { cn } from '@/lib/utils'
 import { ContactProfileView, useContactProfile } from './ContactProfile'
 import { netWord, rowMeta } from './contactWords'
 
-// Grupos and Saldos are the other tabs; Atividade is not built yet and answers "Coming soon".
+// Início, Grupos, Saldos and Atividade take Contatos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>> = {
+  home: (p) => p.openHome(),
   groups: (p) => p.openGroups(),
   balances: (p) => p.openBalances(),
   activity: (p) => p.openActivity(),

@@ -206,13 +206,16 @@ class ActivityViewModel(
 
             ActivityUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 
+            ActivityUiEvent.OnHomeTabClicked -> navigator.openHomeTab(Route.Home)
+
             ActivityUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
             ActivityUiEvent.OnBalancesTabClicked -> openBalancesTab()
 
             ActivityUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
-            ActivityUiEvent.OnBackClicked -> navigator.popToGroups()
+            // Why: Atividade is a tab right above Início, so back goes to Início, as from the other tabs.
+            ActivityUiEvent.OnBackClicked -> navigator.openHomeTab(Route.Home)
         }
     }
 
@@ -269,13 +272,13 @@ class ActivityViewModel(
         when (item.target) {
             ActivityTarget.BILL -> {
                 val billId = item.targetId ?: return
-                navigator.navigate(Route.GroupDetail(item.groupId))
+                navigator.navigate(Route.GroupDetail(item.groupId, joinedAs = null))
                 navigator.navigate(Route.BillDetail(item.groupId, billId))
             }
 
-            ActivityTarget.GROUP -> navigator.navigate(Route.GroupDetail(item.groupId))
+            ActivityTarget.GROUP -> navigator.navigate(Route.GroupDetail(item.groupId, joinedAs = null))
 
-            ActivityTarget.MEMBERS -> navigator.navigate(Route.Members(item.groupId, joinedAs = null))
+            ActivityTarget.MEMBERS -> navigator.navigate(Route.Members(item.groupId))
 
             ActivityTarget.BALANCES -> navigator.navigate(Route.Balances(item.groupId))
         }
