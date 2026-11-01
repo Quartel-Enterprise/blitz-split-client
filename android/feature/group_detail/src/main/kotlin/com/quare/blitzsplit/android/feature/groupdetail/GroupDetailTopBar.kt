@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -107,6 +109,7 @@ internal fun GroupTopBar(
                 )
             }
             GroupMenu(
+                isPinned = header.isPinned,
                 isOnline = isOnline,
                 onAction = onAction,
             )
@@ -115,9 +118,13 @@ internal fun GroupTopBar(
     )
 }
 
-// Why: the ⋮ menu keeps only what changes the group itself (6.1i); offline, Sair and Apagar need the internet (6.1j).
+/*
+ * Why: the ⋮ menu keeps only what changes the group itself (6.1i), with "Fixar na Início" first, which works offline;
+ * offline, Sair and Apagar need the internet (6.1j).
+ */
 @Composable
 private fun GroupMenu(
+    isPinned: Boolean,
     isOnline: Boolean,
     onAction: (GroupAction) -> Unit,
 ) {
@@ -133,6 +140,21 @@ private fun GroupMenu(
             expanded = isOpen,
             onDismissRequest = { isOpen = false },
         ) {
+            DropdownMenuItem(
+                text = {
+                    Text(stringResource(if (isPinned) R.string.group_detail_unpin else R.string.group_detail_pin))
+                },
+                onClick = {
+                    isOpen = false
+                    onAction(GroupAction.PIN)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                        contentDescription = null,
+                    )
+                },
+            )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.group_detail_edit_group)) },
                 onClick = {

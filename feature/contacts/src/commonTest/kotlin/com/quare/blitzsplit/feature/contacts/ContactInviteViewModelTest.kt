@@ -212,7 +212,7 @@ class ContactInviteViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Contacts, Route.ContactProfile(DIEGO_KEY)),
+            listOf(Route.Home, Route.Contacts, Route.ContactProfile(DIEGO_KEY)),
             navigator.backStack.value,
         )
     }
@@ -226,7 +226,7 @@ class ContactInviteViewModelTest {
         viewModel.onEvent(ContactInviteUiEvent.OnNewGroupClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts, Route.CreateGroup), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.CreateGroup), navigator.backStack.value)
     }
 
     @Test
@@ -240,7 +240,7 @@ class ContactInviteViewModelTest {
             viewModel.onEvent(ContactInviteUiEvent.OnNewGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -403,7 +403,7 @@ class ContactInviteViewModelTest {
         viewModel.onEvent(ContactInviteUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -417,7 +417,7 @@ class ContactInviteViewModelTest {
             viewModel.onEvent(ContactInviteUiEvent.OnCloseClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     // Why: a QR code that differs per text, so a case can tell which link was encoded.
@@ -437,7 +437,7 @@ class ContactInviteViewModelTest {
             personKey = personKey,
             name = name,
         )
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
             it.navigate(Route.Contacts)
             if (personKey != null) it.navigate(Route.ContactProfile(personKey))
             it.navigate(route)

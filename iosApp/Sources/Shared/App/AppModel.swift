@@ -72,9 +72,10 @@ final class AppModel {
     }
     #endif
 
-    /// A profile exists once the groups are the root, which is when the Mac's Ajustes have something to show.
+    /// A profile exists once Início is the root (or the groups, which still draw the tabs), which is when the Mac's
+    /// Ajustes have something to show.
     var hasProfile: Bool {
-        isReady && root == .groups
+        isReady && (root == .home || root == .groups)
     }
 
     /// Whether the root measured the window yet: until then it draws nothing, as while the start route loads.

@@ -5,7 +5,6 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
-import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import kotlinx.coroutines.flow.map
@@ -53,6 +52,8 @@ class JsContactsState(
     val showsOfflineNotice: Boolean,
     // Why: the person the desktop's pane beside the list shows, null for its placeholder.
     val selectedKey: String?,
+    // Why: the Atividade tab's badge.
+    val activityUnreadCount: Int,
 )
 
 class ContactsPresenter {
@@ -86,20 +87,16 @@ class ContactsPresenter {
                 showsSummary = state.showsSummary,
                 showsOfflineNotice = state.showsOfflineNotice,
                 selectedKey = state.selectedKey,
+                activityUnreadCount = state.activityUnreadCount,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon" or "change-error", a toast in the page's words.
+    // Why: "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
-        val actions = viewModel.uiAction.map { action ->
-            when (action) {
-                ContactsUiAction.ShowComingSoon -> "coming-soon"
-                ContactsUiAction.ShowChangeError -> "change-error"
-            }
-        }
+        val actions = viewModel.uiAction.map { "change-error" }
         val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
     }
@@ -149,6 +146,10 @@ class ContactsPresenter {
 
     fun inviteWithLink() {
         viewModel.onEvent(ContactsUiEvent.OnInviteWithLinkClicked)
+    }
+
+    fun openHome() {
+        viewModel.onEvent(ContactsUiEvent.OnHomeTabClicked)
     }
 
     fun openGroups() {

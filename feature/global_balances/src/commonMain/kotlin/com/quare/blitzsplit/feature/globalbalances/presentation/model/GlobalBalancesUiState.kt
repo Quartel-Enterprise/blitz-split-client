@@ -36,6 +36,8 @@ data class GlobalBalancesUiState(
      * inspector) shows beside the list, as last picked; null until someone is picked.
      */
     val pickedPersonId: String?,
+    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    val activityUnreadCount: Int,
 ) {
     // Why: once per state, since the JS presenter and each SwiftUI body pass read it many times.
     val sections: List<PeopleSection> by lazy {

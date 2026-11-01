@@ -17,6 +17,9 @@ class FakeProfileRepository(
     val downloadedUserIds = mutableListOf<String>()
     var pushError: Throwable? = null
     var pullError: Throwable? = null
+
+    // The profile the server holds for the user: a successful download writes it to the device.
+    var serverProfile: UserProfile? = null
     var clearCount = 0
 
     override fun observeProfile(): Flow<UserProfile?> = profile
@@ -44,6 +47,8 @@ class FakeProfileRepository(
 
     override suspend fun downloadProfile(userId: String): Result<Unit> {
         downloadedUserIds += userId
-        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
+        pullError?.let { return Result.failure(it) }
+        serverProfile?.let { profile.value = it }
+        return Result.success(Unit)
     }
 }

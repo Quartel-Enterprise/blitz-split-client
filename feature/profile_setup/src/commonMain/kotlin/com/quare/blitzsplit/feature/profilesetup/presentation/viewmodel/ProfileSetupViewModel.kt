@@ -160,7 +160,7 @@ class ProfileSetupViewModel(
                     photo = state.photo,
                 ),
             )
-            navigator.replaceAll(Route.Groups)
+            navigator.replaceAll(Route.Home)
         }
     }
 }

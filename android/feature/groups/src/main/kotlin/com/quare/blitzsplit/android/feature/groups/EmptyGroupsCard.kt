@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,15 +25,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
-import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 
 /*
- * Why: "Crie seu primeiro grupo", in a row on a phone in landscape and larger on a tablet; in a book's half the
+ * Why: "Nenhum grupo ainda", in a row on a phone in landscape and larger on a tablet; in a book's half the
  * large card keeps the canvas' tighter padding and stacks its two actions, which don't fit side by side there.
+ * Grupos and Início's first use each say it with their own body.
  */
 @Composable
 internal fun EmptyGroupsCard(
-    onEvent: (GroupsUiEvent) -> Unit,
+    @StringRes body: Int,
+    onCreateGroup: () -> Unit,
+    onJoinWithLink: () -> Unit,
     isHorizontal: Boolean,
     isLarge: Boolean,
     modifier: Modifier = Modifier,
@@ -61,6 +64,7 @@ internal fun EmptyGroupsCard(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     EmptyGroupsText(
+                        body = body,
                         textAlign = TextAlign.Start,
                         isLarge = false,
                     )
@@ -68,8 +72,8 @@ internal fun EmptyGroupsCard(
                         modifier = Modifier.padding(top = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        CreateGroupButton(onEvent = onEvent)
-                        JoinWithLinkButton(onEvent = onEvent)
+                        CreateGroupButton(onClick = onCreateGroup)
+                        JoinWithLinkButton(onClick = onJoinWithLink)
                     }
                 }
             }
@@ -92,6 +96,7 @@ internal fun EmptyGroupsCard(
             ) {
                 EmptyGroupsImage(scale = if (isWide) 1.18f else 1f)
                 EmptyGroupsText(
+                    body = body,
                     textAlign = TextAlign.Center,
                     isLarge = isLarge,
                 )
@@ -100,8 +105,8 @@ internal fun EmptyGroupsCard(
                         modifier = Modifier.padding(top = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        CreateGroupButton(onEvent = onEvent)
-                        JoinWithLinkButton(onEvent = onEvent)
+                        CreateGroupButton(onClick = onCreateGroup)
+                        JoinWithLinkButton(onClick = onJoinWithLink)
                     }
                 } else {
                     Column(
@@ -109,11 +114,11 @@ internal fun EmptyGroupsCard(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         CreateGroupButton(
-                            onEvent = onEvent,
+                            onClick = onCreateGroup,
                             modifier = Modifier.fillMaxWidth(),
                         )
                         JoinWithLinkButton(
-                            onEvent = onEvent,
+                            onClick = onJoinWithLink,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
@@ -125,6 +130,7 @@ internal fun EmptyGroupsCard(
 
 @Composable
 private fun EmptyGroupsText(
+    @StringRes body: Int,
     textAlign: TextAlign,
     isLarge: Boolean,
 ) {
@@ -136,7 +142,7 @@ private fun EmptyGroupsText(
         fontWeight = FontWeight.Bold,
     )
     Text(
-        text = stringResource(R.string.groups_empty_body),
+        text = stringResource(body),
         modifier = Modifier.fillMaxWidth(),
         textAlign = textAlign,
         style = MaterialTheme.typography.bodyLarge,
@@ -146,11 +152,11 @@ private fun EmptyGroupsText(
 
 @Composable
 private fun CreateGroupButton(
-    onEvent: (GroupsUiEvent) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Button(
-        onClick = { onEvent(GroupsUiEvent.OnCreateGroupClicked) },
+        onClick = onClick,
         modifier = modifier.height(56.dp),
     ) {
         Icon(
@@ -166,11 +172,11 @@ private fun CreateGroupButton(
 
 @Composable
 private fun JoinWithLinkButton(
-    onEvent: (GroupsUiEvent) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FilledTonalButton(
-        onClick = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) },
+        onClick = onClick,
         modifier = modifier.height(56.dp),
     ) {
         Icon(

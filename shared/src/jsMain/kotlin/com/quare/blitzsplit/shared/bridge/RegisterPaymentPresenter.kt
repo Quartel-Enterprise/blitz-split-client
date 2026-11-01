@@ -150,7 +150,7 @@ class RegisterPaymentPresenter(
     }
 }
 
-private fun toJsPaymentPerson(person: PaymentPerson): JsPaymentPerson = JsPaymentPerson(
+internal fun toJsPaymentPerson(person: PaymentPerson): JsPaymentPerson = JsPaymentPerson(
     id = person.id,
     name = person.name,
     initials = person.initials,

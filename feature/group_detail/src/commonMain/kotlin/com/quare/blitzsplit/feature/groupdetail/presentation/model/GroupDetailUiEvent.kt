@@ -23,6 +23,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : GroupDetailUiEvent
 
+    // Why: "Fixar na Início" or "Desafixar da Início" in the ⋮ menu.
+    data object OnPinToggled : GroupDetailUiEvent
+
     // Why: "Sair do grupo" in the ⋮ menu.
     data object OnLeaveGroupClicked : GroupDetailUiEvent
 

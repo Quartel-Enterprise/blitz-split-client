@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.contacts
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
@@ -55,6 +56,7 @@ class ContactsViewModelTest {
     private lateinit var hidden: FakeHiddenContactRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ContactsViewModel
+    private val activityUnread = MutableStateFlow(0)
     private val actions = mutableListOf<ContactsUiAction>()
 
     @BeforeTest
@@ -439,7 +441,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
                 navigator.backStack.value,
             )
             assertNull(viewModel.uiState.value.pickedKey)
@@ -459,7 +461,7 @@ class ContactsViewModelTest {
             assertEquals(CARLA_KEY, viewModel.uiState.value.pickedKey)
             assertEquals(CARLA_KEY, viewModel.uiState.value.selectedKey)
             assertFalse(viewModel.uiState.value.isAgendaPicked)
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -526,7 +528,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile(CARLA_KEY)),
                 navigator.backStack.value,
             )
         }
@@ -540,7 +542,7 @@ class ContactsViewModelTest {
         viewModel.onEvent(ContactsUiEvent.OnContactClicked("user:nobody"))
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -553,7 +555,7 @@ class ContactsViewModelTest {
             viewModel.onEvent(ContactsUiEvent.OnAgendaClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
         }
 
     @Test
@@ -570,7 +572,7 @@ class ContactsViewModelTest {
             // Then
             assertTrue(viewModel.uiState.value.isAgendaPicked)
             assertNull(viewModel.uiState.value.pickedKey)
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -587,7 +589,7 @@ class ContactsViewModelTest {
             // Then
             assertNull(viewModel.uiState.value.pickedKey)
             assertFalse(viewModel.uiState.value.isAgendaPicked)
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -602,7 +604,7 @@ class ContactsViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.Contacts,
                     Route.ContactInvite(
                         personKey = null,
@@ -626,7 +628,7 @@ class ContactsViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
+                    Route.Home,
                     Route.Contacts,
                     Route.ContactInvite(
                         personKey = null,
@@ -647,11 +649,11 @@ class ContactsViewModelTest {
             viewModel.onEvent(ContactsUiEvent.OnAgendaContactInviteClicked("agenda-carlos"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
-    fun `GIVEN the summary WHEN Ver Saldos is tapped THEN Saldos takes the place of Contatos over the groups`() =
+    fun `GIVEN the summary WHEN Ver Saldos is tapped THEN Saldos takes the place of Contatos over Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -661,7 +663,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }
@@ -676,7 +678,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -690,7 +692,7 @@ class ContactsViewModelTest {
         viewModel.onEvent(ContactsUiEvent.OnYouOweClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
@@ -703,7 +705,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -717,11 +719,23 @@ class ContactsViewModelTest {
         viewModel.onEvent(ContactsUiEvent.OnOwedToYouClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN Contatos WHEN the Grupos tab is tapped THEN goes back to the groups`() = runTest(testDispatcher) {
+    fun `GIVEN Contatos WHEN the Inicio tab is tapped THEN goes back to Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN Contatos WHEN the Grupos tab is tapped THEN Grupos takes its place`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -729,11 +743,11 @@ class ContactsViewModelTest {
         viewModel.onEvent(ContactsUiEvent.OnGroupsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN Contatos WHEN the Saldos tab is tapped THEN opens Saldos over the groups`() = runTest(testDispatcher) {
+    fun `GIVEN Contatos WHEN the Saldos tab is tapped THEN opens Saldos over Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -742,7 +756,7 @@ class ContactsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -759,7 +773,7 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }
@@ -775,7 +789,7 @@ class ContactsViewModelTest {
             viewModel.onEvent(ContactsUiEvent.OnProfileClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.Contacts, Route.Profile), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.Profile), navigator.backStack.value)
         }
 
     @Test
@@ -790,22 +804,34 @@ class ContactsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
                 navigator.backStack.value,
             )
         }
 
     @Test
-    fun `GIVEN Contatos WHEN the Atividade tab is tapped THEN says it is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN Contatos WHEN the Atividade tab is tapped THEN opens Atividade in its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnActivityTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN unread events WHEN Contatos shows THEN its Atividade tab counts them`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
         // When
-        viewModel.onEvent(ContactsUiEvent.OnActivityTabClicked)
+        activityUnread.value = 4
 
         // Then
-        assertEquals(listOf<ContactsUiAction>(ContactsUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(4, viewModel.uiState.value.activityUnreadCount)
     }
 
     @Test
@@ -817,7 +843,7 @@ class ContactsViewModelTest {
         viewModel.onEvent(ContactsUiEvent.OnProfileClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Contacts, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.Profile), navigator.backStack.value)
     }
 
     private val agenda = listOf(
@@ -852,7 +878,7 @@ class ContactsViewModelTest {
             now = { 20L },
             initialHidden = storedHidden,
         )
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Contacts) }
+        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.Contacts) }
         val roomNeverAnswers = MutableSharedFlow<ContactBookSnapshot>()
         viewModel = ContactsViewModel(
             navigator = navigator,
@@ -873,6 +899,7 @@ class ContactsViewModelTest {
                 FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)),
             ),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

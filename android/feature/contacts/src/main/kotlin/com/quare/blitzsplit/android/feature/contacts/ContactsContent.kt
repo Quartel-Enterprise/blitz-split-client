@@ -50,6 +50,7 @@ private val columnMaxWidth = 640.dp
 private val tabletColumnMaxWidth = 560.dp
 
 private fun eventOf(tab: HomeTab): ContactsUiEvent? = when (tab) {
+    HomeTab.HOME -> ContactsUiEvent.OnHomeTabClicked
     HomeTab.GROUPS -> ContactsUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> ContactsUiEvent.OnBalancesTabClicked
     HomeTab.CONTACTS -> null
@@ -81,6 +82,7 @@ fun ContactsContent(
                 HomeNavigationRail(
                     selected = HomeTab.CONTACTS,
                     onTabClick = onTabClick,
+                    activityBadgeCount = state.activityUnreadCount,
                 )
             }
             Scaffold(
@@ -106,6 +108,7 @@ fun ContactsContent(
                         HomeNavigationBar(
                             selected = HomeTab.CONTACTS,
                             onTabClick = onTabClick,
+                            activityBadgeCount = state.activityUnreadCount,
                         )
                     }
                 },

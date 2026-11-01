@@ -100,6 +100,7 @@
     <string name="designsystem_former_member">Ex-membro</string>
     <string name="designsystem_you">Você</string>
     <string name="designsystem_you_paid">Você pagou</string>
+    <string name="designsystem_tab_home">Início</string>
     <string name="designsystem_tab_groups">Grupos</string>
     <string name="designsystem_tab_balances">Saldos</string>
     <string name="designsystem_tab_contacts">Contatos</string>
@@ -124,4 +125,8 @@
     <string name="designsystem_settled_pair_owes_me_less">com a mudança, %1$s fica te devendo %2$s.</string>
     <string name="designsystem_settled_pair_even">com a mudança, %1$s e %2$s ficam quitados.</string>
     <string name="designsystem_settled_pair_even_with_me">com a mudança, você e %s ficam quitados.</string>
+    <plurals name="designsystem_tab_unread">
+        <item quantity="one">%d não lida</item>
+        <item quantity="other">%d não lidas</item>
+    </plurals>
 </resources>

@@ -50,8 +50,51 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iPad); Google comes first on Android and in any other browser.
   - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
     symbol of the device's region, `$` when there is none.
-  - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the one not built yet
-    (Atividade) answers "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
+    Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
+    right above it, taking each other's place (`Navigator.openHomeTab`).
+  - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
+    with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,
+    the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net (`Route.SettleUp`),
+    and a guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego é convidado e não tem o
+    app…". "Saldo geral" as Grupos' (big in the first currency with a net, a line for each other one with a net,
+    `HomeSummary.main` and `others`), with "Te devem" and "Você deve", each in the first currency with something that
+    way (`HomeSummary.toReceive`, `toPay`), which open Saldos filtered (Você deve straight to settling up while only
+    one person is in it), disabled at zero. Three shortcuts: "Ler cupom fiscal" ("Em breve" for now; offline disabled
+    with "Precisa de internet"),
+    "Registrar pagamento", which asks "Quem pagou a quem?" first (`Route.PickPayment`: every open pair of every
+    group, the most recent group first, pairs with you first; the pair opens Registrar pagamento in its place), and
+    "Novo grupo". "Seus grupos": up to three open groups, the pinned first, then the latest activity, as Grupos draws
+    them; "Ver todos" opens Grupos. "Últimas despesas": the five latest bills you paid or take part in, by day, with
+    your share; a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
+    "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
+    on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
+    first download (an account restored on a device with no profile, until its first sync settles, `FirstDownload`)
+    shows "Sincronizando…" with skeletons and "até agora · chegando o resto" while no group came down yet (no "3 de 7
+    grupos": the sync can't tell how many are coming), never on a relaunch; the sync chip as Grupos'; an account with
+    neither Google nor Apple shows "Guarde seu código de recuperação" once the code was snoozed ("Lembrar depois"), ✕
+    hiding it until the next launch. A Flip's cover screen shows only Saldo geral, the latest bill and "Abra o celular para ver tudo".
+  - "Fixar na Início" (the group's ⋮/⋯ menu on Despesas and Saldos, "Desafixar da Início" once pinned) is each
+    user's own, synced with their account and never shown to other members (`group_pins`, `GroupPinRepository`), works
+    offline, and only orders Início's "Seus grupos" (Grupos keeps its order). A settled group stays out of Início
+    even when pinned.
+  - "Atividade" (page 12, `Route.Activity` right above Início like Saldos, `ActivityViewModel`) is every group's feed and
+    the notification center: who split, edited or deleted a bill, recorded or undid a payment, created, edited or
+    deleted a group, changed its invite link, added, joined, left, was removed, released or renamed in it, and the
+    charges sent from Saldos, by day (Hoje, Ontem, the date), the most recent first. The server writes the events
+    (`activity_events`, by triggers); each keeps the names it had, so it still reads once its bill, group or person is
+    gone. Unread is someone else's event never opened and after the last "Marcar tudo como lido": a blue dot and bold
+    names, counted on the tab's badge in the primary color (`activityUnreadCount`), whatever the filters. Your own
+    events are born read, opening the tab marks nothing, tapping an item marks only it. A tap opens what it is about
+    (the bill's Conta over its Despesas, the group, its Membros, its Saldos for a charge); a deleted bill or group
+    keeps its row with the trash and says who deleted it and when instead. A bill's edit shows its first change,
+    "mais 2 mudanças" and "Ver mudanças". "Filtrar atividade": one group or all, and the types (Contas, Pagamentos e
+    acertos, Comentários, Pessoas e grupos, Cobranças), as removable chips with "Limpar"; a contact's history opens it
+    on that person (`Route.Activity.personKey`), a chip too. Offline it shows the device's last 90 days, the changes
+    not up yet on top of Hoje as "Aguardando envio", and says older ones load when the internet is back; a device that
+    never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
+    web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
+    other events). No push notifications nor comments yet: Comentários is a filter nothing fills.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -198,7 +241,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Saldos for that person), Recebi or Acertar (Registrar pagamento for the net, `Route.SettleUp`), "Adicionar a um
     grupo" (an account goes straight in, joined, with no part in the old bills; a guest as a name; a group they're
     in shows disabled), "Grupos em comum" and the latest four of "Histórico com Carla" (bills that move something
-    between the two and their payments); "Ver tudo" answers "Em breve" until Atividade exists. A guest's profile
+    between the two and their payments); "Ver tudo" opens Atividade on that person. A guest's profile
     offers "Convidar Diego" (their personal link) and "Juntar com uma conta" (online only): the server makes a
     request and a single use personal link, and once the guest joins through it everything in that name, in every
     group, passes to their account ("Aguardando Diego aceitar", Cancelar); "Pedir para quem já usa o app" answers
@@ -326,8 +369,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     bills and payments, after "Apagar “X”?" ("Apagar para todos", no undo). On the other devices a sync takes it off,
     even with a change not pushed yet (the server's `removed_groups`): Despesas or Saldos open on it say "Grupo
     apagado" with who deleted it and "Voltar para Grupos" (`GroupExitState.deletedNotice`), once on top again if
-    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and the home says "Carla
-    apagou o grupo X." (`GroupsUiState.deletedGroupNotice`); never on the device that deleted it.
+    a bill covered them; any other screen of the group (Membros, Convidar) just closes, and Grupos or Início, whichever is
+    on top first, says "Carla apagou o grupo X." (`GroupsUiState.deletedGroupNotice`, `HomeUiState.deletedGroupNotice`,
+    one shared queue); never on the device that deleted it.
   - "Rachar conta" (`Route.SplitBill`): "Quem pagou" picks one person, who paid the whole bill, or "Várias pessoas",
     which opens "Várias pessoas pagaram" in its place: each person's amount, adding up to the total exactly ("R$
     312,00 de R$ 312,00. Fechou.", else "Faltam R$ X" / "Passou R$ X"), and Pronto waits until it does

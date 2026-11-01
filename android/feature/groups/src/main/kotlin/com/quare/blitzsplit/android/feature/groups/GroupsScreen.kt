@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
@@ -39,18 +38,11 @@ fun GroupsScreen(
             GroupsUiAction.ShowChangeError -> R.string.groups_change_error
         }
     }
-    // Why: state, not an action, so it waits until the home is drawn; the next deleted group follows once it goes.
-    val deletedNotice = state.deletedGroupNotice
-    val deletedMessage = deletedNotice?.let { notice ->
-        notice.deletedByName?.let { stringResource(R.string.groups_deleted_by, it, notice.groupName) }
-            ?: stringResource(R.string.groups_deleted, notice.groupName)
-    }
-    LaunchedEffect(deletedNotice) {
-        if (deletedMessage != null) {
-            snackbarHostState.showSnackbar(deletedMessage)
-            viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
-        }
-    }
+    DeletedGroupNoticeEffect(
+        notice = state.deletedGroupNotice,
+        snackbarHostState = snackbarHostState,
+        onShown = { viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown) },
+    )
     // Why: Registrar pagamento, which a row's "Acertar" opened over the home, just closed.
     RecordedPaymentNoticeEffect(
         notice = state.recordedPayment,

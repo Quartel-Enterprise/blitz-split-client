@@ -45,6 +45,7 @@ internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupH
         null
     },
     isEveryoneSettled = false,
+    isPinned = true,
 )
 
 internal val previewGroupExit = GroupExitState(

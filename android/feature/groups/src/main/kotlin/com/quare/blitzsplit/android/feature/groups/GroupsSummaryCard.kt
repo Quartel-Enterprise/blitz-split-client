@@ -125,8 +125,9 @@ internal fun GroupsSummaryCard(
     }
 }
 
+// Why: one of the buttons beside the balance, Grupos' "A receber" and "A pagar", Início's "Te devem" and "Você deve".
 @Composable
-private fun SummaryButton(
+internal fun SummaryButton(
     label: String,
     descriptionOf: @Composable (String) -> String,
     amounts: List<String>,

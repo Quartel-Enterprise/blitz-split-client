@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,7 +68,6 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -102,7 +102,12 @@ fun GroupsContent(
          * the rail already takes.
          */
         Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) GroupsNavigationRail(onEvent = onEvent)
+            if (layout.usesNavigationRail) {
+                GroupsNavigationRail(
+                    activityBadgeCount = state.activityUnreadCount,
+                    onEvent = onEvent,
+                )
+            }
             Scaffold(
                 modifier = Modifier
                     .weight(1f)
@@ -134,7 +139,12 @@ fun GroupsContent(
                     }
                 },
                 bottomBar = {
-                    if (!layout.usesNavigationRail) GroupsNavigationBar(onEvent = onEvent)
+                    if (!layout.usesNavigationRail) {
+                        GroupsNavigationBar(
+                            activityBadgeCount = state.activityUnreadCount,
+                            onEvent = onEvent,
+                        )
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentWindowInsets = if (layout.usesNavigationRail) {
@@ -163,11 +173,19 @@ fun GroupsContent(
                 ) {
                     if (state.groups.isEmpty()) {
                         EmptyGroupsPane(
-                            state = state,
-                            onEvent = onEvent,
                             layout = layout,
+                            showsCard = state.showsEmptyState,
+                            onCreateGroup = { onEvent(GroupsUiEvent.OnCreateGroupClicked) },
+                            onJoinWithLink = { onEvent(GroupsUiEvent.OnJoinWithLinkClicked) },
                             isInBookHalf = listDetail?.isBook == true,
-                        )
+                        ) {
+                            SyncBadgeChip(
+                                badge = state.syncBadge,
+                                pendingChangeCount = state.pendingChangeCount,
+                                canRetry = state.canRetrySync,
+                                onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
+                            )
+                        }
                     } else {
                         GroupsListPane(
                             state = state,
@@ -217,18 +235,12 @@ private fun GroupsTopBar(
                     )
                 }
             }
-            IconButton(
+            ProfileAvatarButton(
+                initial = state.avatarInitial,
+                color = state.avatarColor,
+                photoUrl = state.photoUrl,
                 onClick = { onEvent(GroupsUiEvent.OnProfileClicked) },
-                modifier = Modifier.size(48.dp),
-            ) {
-                val profileLabel = stringResource(R.string.groups_profile)
-                AvatarBadge(
-                    initial = state.avatarInitial,
-                    color = state.avatarColor,
-                    modifier = Modifier.semantics { contentDescription = profileLabel },
-                    photoUrl = state.photoUrl,
-                )
-            }
+            )
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -317,12 +329,21 @@ private fun horizontalPaddingOf(
     16.dp
 }
 
+/*
+ * Why: Grupos without a group, and Início's first use, which says the same with its own words (body): the sync chip
+ * on top, then the card with "Criar grupo" and "Entrar com link ou QR".
+ */
 @Composable
-private fun EmptyGroupsPane(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
+internal fun EmptyGroupsPane(
     layout: DeviceLayout,
-    isInBookHalf: Boolean,
+    // Why: nothing until the groups are read, so the empty card never flashes before the list.
+    showsCard: Boolean,
+    onCreateGroup: () -> Unit,
+    onJoinWithLink: () -> Unit,
+    @StringRes body: Int = R.string.groups_empty_body,
+    // Why: a book's half keeps the large card's tighter padding and stacks its two actions.
+    isInBookHalf: Boolean = false,
+    syncChip: @Composable () -> Unit,
 ) {
     /*
      * Why: always scrollable, so a pull feeds PullToRefreshBox's nested scroll on every layout and before the groups
@@ -330,10 +351,13 @@ private fun EmptyGroupsPane(
      */
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         EmptyGroupsColumn(
-            state = state,
-            onEvent = onEvent,
             layout = layout,
+            showsCard = showsCard,
+            body = body,
+            onCreateGroup = onCreateGroup,
+            onJoinWithLink = onJoinWithLink,
             isInBookHalf = isInBookHalf,
+            syncChip = syncChip,
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -344,10 +368,13 @@ private fun EmptyGroupsPane(
 
 @Composable
 private fun EmptyGroupsColumn(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
+    showsCard: Boolean,
+    @StringRes body: Int,
+    onCreateGroup: () -> Unit,
+    onJoinWithLink: () -> Unit,
     isInBookHalf: Boolean,
+    syncChip: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -357,21 +384,17 @@ private fun EmptyGroupsColumn(
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        SyncBadgeChip(
-            badge = state.syncBadge,
-            pendingChangeCount = state.pendingChangeCount,
-            canRetry = state.canRetrySync,
-            onRetry = { onEvent(GroupsUiEvent.OnRetrySyncClicked) },
-        )
+        syncChip()
         when {
-            // Why: nothing until the groups are read, so the empty card never flashes before the list.
-            !state.showsEmptyState -> Unit
+            !showsCard -> Unit
 
             // Why: the spacers split what the card leaves, and shrink to nothing once it needs the scroll.
             layout.isTablet -> {
                 Spacer(modifier = Modifier.weight(1f))
                 EmptyGroupsCard(
-                    onEvent = onEvent,
+                    body = body,
+                    onCreateGroup = onCreateGroup,
+                    onJoinWithLink = onJoinWithLink,
                     isHorizontal = false,
                     isLarge = true,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -381,13 +404,17 @@ private fun EmptyGroupsColumn(
             }
 
             layout.isLandscape -> EmptyGroupsCard(
-                onEvent = onEvent,
+                body = body,
+                onCreateGroup = onCreateGroup,
+                onJoinWithLink = onJoinWithLink,
                 isHorizontal = true,
                 isLarge = false,
             )
 
             else -> EmptyGroupsCard(
-                onEvent = onEvent,
+                body = body,
+                onCreateGroup = onCreateGroup,
+                onJoinWithLink = onJoinWithLink,
                 isHorizontal = false,
                 isLarge = false,
                 modifier = Modifier.padding(top = 24.dp),
@@ -396,8 +423,9 @@ private fun EmptyGroupsColumn(
     }
 }
 
+// Why: the chip only shows while the sync asks for attention; Grupos and Início draw it alike.
 @Composable
-private fun SyncBadgeChip(
+internal fun SyncBadgeChip(
     badge: SyncBadge?,
     pendingChangeCount: Int,
     canRetry: Boolean,

@@ -188,6 +188,7 @@ private fun eventOf(action: GroupAction): BalancesUiEvent? = when (action) {
     GroupAction.BACK -> BalancesUiEvent.OnBackClicked
     GroupAction.INVITE -> BalancesUiEvent.OnInviteClicked
     GroupAction.STATS -> BalancesUiEvent.OnStatsClicked
+    GroupAction.PIN -> BalancesUiEvent.OnPinToggled
     GroupAction.EDIT_GROUP -> BalancesUiEvent.OnEditGroupClicked
     GroupAction.LEAVE_GROUP -> BalancesUiEvent.OnLeaveGroupClicked
     GroupAction.DELETE_GROUP -> BalancesUiEvent.OnDeleteGroupClicked
