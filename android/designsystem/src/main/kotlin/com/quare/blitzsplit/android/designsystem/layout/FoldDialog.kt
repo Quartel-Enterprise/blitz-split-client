@@ -20,8 +20,9 @@ private val halfPaneMargin = 16.dp
 /*
  * Why: a dialog that keeps off the hinge. Centered it is a plain Dialog, as before; in a half its window covers the
  * screen, so the platform's scrim dims both halves, and the content sits centered in its half, at most the half minus
- * 16dp each side (the canvas' book dialog). Tapping outside it still dismisses, when the properties say so. The
- * content brings its own surface and width, as in a centered dialog.
+ * 16dp each side (the canvas' book dialog). On a tabletop lying down the end half stops above the hinge across it,
+ * so nothing crosses either. Tapping outside it still dismisses, when the properties say so. The content brings its
+ * own surface and width, as in a centered dialog.
  */
 @Composable
 fun FoldDialog(
@@ -67,8 +68,6 @@ private fun FoldHalfPane(
     content: @Composable () -> Unit,
 ) {
     val fold = rememberFoldLayout()
-    val isTopHalf = placement == DialogPlacement.TopHalf
-    val split = if (isTopHalf) fold.tabletopSplit else fold.bookSplit
     val hingeGap = rememberLayoutHingeGap()
     Box(modifier = Modifier.fillMaxSize()) {
         if (onScrimClick != null) {
@@ -88,32 +87,31 @@ private fun FoldHalfPane(
         ) { measurables, constraints ->
             val width = constraints.maxWidth
             val height = constraints.maxHeight
-            val gapRange = hingeGap.gapOf(
+            val topHalfBottom = hingeGap.gapOf(
                 density = this,
-                split = split,
-                isSideBySide = !isTopHalf,
-                length = if (isTopHalf) height else width,
-            )
-            val half = when {
-                isTopHalf -> IntRect(
+                split = fold.tabletopSplit,
+                isSideBySide = false,
+                length = height,
+            ).first
+            val half = if (placement == DialogPlacement.TopHalf) {
+                IntRect(
                     left = 0,
                     top = 0,
                     right = width,
-                    bottom = gapRange.first,
+                    bottom = topHalfBottom,
                 )
-
-                layoutDirection == LayoutDirection.Ltr -> IntRect(
-                    left = gapRange.last,
-                    top = 0,
-                    right = width,
-                    bottom = height,
-                )
-
-                else -> IntRect(
-                    left = 0,
-                    top = 0,
-                    right = gapRange.first,
-                    bottom = height,
+            } else {
+                endHalfOf(
+                    sideGap = hingeGap.gapOf(
+                        density = this,
+                        split = fold.bookSplit,
+                        isSideBySide = true,
+                        length = width,
+                    ),
+                    width = width,
+                    // Why: a tabletop lying down has the book's halves and its own hinge across them too.
+                    bottom = if (fold.tabletopSplit != null) topHalfBottom else height,
+                    layoutDirection = layoutDirection,
                 )
             }
             val margin = halfPaneMargin.roundToPx()
@@ -131,4 +129,26 @@ private fun FoldHalfPane(
             }
         }
     }
+}
+
+// Why: the half after the hinge (right in English and Portuguese), down to `bottom`.
+private fun endHalfOf(
+    sideGap: IntRange,
+    width: Int,
+    bottom: Int,
+    layoutDirection: LayoutDirection,
+): IntRect = if (layoutDirection == LayoutDirection.Ltr) {
+    IntRect(
+        left = sideGap.last,
+        top = 0,
+        right = width,
+        bottom = bottom,
+    )
+} else {
+    IntRect(
+        left = 0,
+        top = 0,
+        right = sideGap.first,
+        bottom = bottom,
+    )
 }

@@ -40,8 +40,9 @@ private val tabletDialogWidth = 560.dp
 /*
  * Why: shown over the groups once the first sync issued a code. A phone gets a bottom sheet (at
  * most 640dp wide when lying down) and a tablet a centred dialog; a book and a tabletop lying down
- * get it in the right half, never over the hinge, with the groups under the scrim (1.4). Dismissing
- * it counts as "Lembrar depois", so the code comes back on the next launch.
+ * get it in the right half (on the tabletop, above its hinge), never over the hinge, with the groups
+ * under the scrim (1.4). Dismissing it counts as "Lembrar depois", so the code comes back on the
+ * next launch.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
