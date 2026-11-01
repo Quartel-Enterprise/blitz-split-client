@@ -15,13 +15,14 @@ class BillDeletionTest {
         val myMemberId = ANA
 
         // When
-        val deletion = BillDeletion.of(mercado, myMemberId)
+        val deletion = BillDeletion.of(mercado, myMemberId, null)
 
         // Then
         assertEquals(
             BillDeletion(
                 description = "Mercado",
                 myBalanceMinor = -400L,
+                settledPair = null,
             ),
             deletion,
         )
@@ -33,7 +34,7 @@ class BillDeletionTest {
         val myMemberId = PIERRE
 
         // When
-        val deletion = BillDeletion.of(mercado, myMemberId)
+        val deletion = BillDeletion.of(mercado, myMemberId, null)
 
         // Then
         assertEquals(400L, deletion.myBalanceMinor)
@@ -53,7 +54,7 @@ class BillDeletionTest {
         )
 
         // When
-        val deletion = BillDeletion.of(onlyMine, PIERRE)
+        val deletion = BillDeletion.of(onlyMine, PIERRE, null)
 
         // Then
         assertEquals(0L, deletion.myBalanceMinor)
@@ -65,13 +66,14 @@ class BillDeletionTest {
         val myMemberId = "carla"
 
         // When
-        val deletion = BillDeletion.of(mercado, myMemberId)
+        val deletion = BillDeletion.of(mercado, myMemberId, null)
 
         // Then
         assertEquals(
             BillDeletion(
                 description = "Mercado",
                 myBalanceMinor = null,
+                settledPair = null,
             ),
             deletion,
         )
@@ -83,13 +85,14 @@ class BillDeletionTest {
         val myMemberId: String? = null
 
         // When
-        val deletion = BillDeletion.of(mercado, myMemberId)
+        val deletion = BillDeletion.of(mercado, myMemberId, null)
 
         // Then
         assertEquals(
             BillDeletion(
                 description = "Mercado",
                 myBalanceMinor = null,
+                settledPair = null,
             ),
             deletion,
         )

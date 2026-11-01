@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -23,6 +24,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEven
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -490,6 +492,8 @@ class PickGroupViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
+            observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = { flowOf(emptyList()) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

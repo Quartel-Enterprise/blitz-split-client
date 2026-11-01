@@ -6,12 +6,19 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -54,6 +61,7 @@ class BillDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
+    private lateinit var settlements: FakeSettlementRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var deletedBills: InMemoryDeletedBillRepository
     private lateinit var viewModel: BillDetailViewModel
@@ -1026,10 +1034,71 @@ class BillDetailViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = -16_000,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
             assertTrue(expenses.deletedIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Bruno paid Ana after the bill WHEN tapping Apagar THEN says Ana comes to owe him the payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(BRUNO, ANA, 16_000, laterToday)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(
+                SettledPairChange(
+                    payerName = "Bruno",
+                    payerIsMe = false,
+                    receiverName = "Ana",
+                    receiverIsMe = false,
+                    outcome = SettledPairOutcome.OWES,
+                    debtorIsPayer = false,
+                    amountMinor = 16_000,
+                ),
+                viewModel.uiState.value.deletion
+                    ?.settledPair,
+            )
+        }
+
+    @Test
+    fun `GIVEN a payment dated before the bill WHEN tapping Apagar THEN says nothing about it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(BRUNO, ANA, 16_000, lastWeek)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+            // Then
+            assertNull(
+                viewModel.uiState.value.deletion
+                    ?.settledPair,
+            )
+        }
+
+    @Test
+    fun `GIVEN Apagar open WHEN a payment after the bill syncs THEN the question says it at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+
+            // When
+            settlements.settlements.value = listOf(settlement(BRUNO, ANA, 16_000, laterToday))
+
+            // Then
+            assertEquals(
+                "Bruno",
+                viewModel.uiState.value.deletion
+                    ?.settledPair
+                    ?.payerName,
+            )
         }
 
     @Test
@@ -1051,6 +1120,7 @@ class BillDetailViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = null,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
@@ -1190,6 +1260,7 @@ class BillDetailViewModelTest {
                 BillDeletion(
                     description = "Feira",
                     myBalanceMinor = -10_000,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
@@ -1336,6 +1407,7 @@ class BillDetailViewModelTest {
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlierToday = Instant.parse("2026-10-30T12:00:00Z").toEpochMilliseconds()
+    private val laterToday = Instant.parse("2026-10-30T13:00:00Z").toEpochMilliseconds()
     private val yesterdayEvening = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()
     private val lastWeek = Instant.parse("2026-10-20T12:00:00Z").toEpochMilliseconds()
 
@@ -1377,6 +1449,23 @@ class BillDetailViewModelTest {
         hasJoined = hasJoined,
         userId = null,
         inviteCode = null,
+    )
+
+    private fun settlement(
+        fromMemberId: String,
+        toMemberId: String,
+        amountMinor: Long,
+        paidAt: Long,
+    ): Settlement = Settlement(
+        id = "settlement-1",
+        groupId = GROUP_ID,
+        fromMemberId = fromMemberId,
+        toMemberId = toMemberId,
+        amountMinor = amountMinor,
+        method = SettlementMethod.PIX,
+        paidAt = paidAt,
+        isPending = false,
+        updatedAt = paidAt,
     )
 
     private fun share(
@@ -1426,8 +1515,10 @@ class BillDetailViewModelTest {
         timeZone: TimeZone = TimeZone.UTC,
         deleteError: Throwable? = null,
         deleteGate: CompletableDeferred<Unit>? = null,
+        storedSettlements: List<Settlement> = emptyList(),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(trip))
+        settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense)).also {
             it.deleteError = deleteError
             it.deleteGate = deleteGate
@@ -1454,6 +1545,8 @@ class BillDetailViewModelTest {
             } else {
                 ObserveExpense { expenseNeverAnswers }
             },
+            observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = ObserveSettlementsUseCase(settlements),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

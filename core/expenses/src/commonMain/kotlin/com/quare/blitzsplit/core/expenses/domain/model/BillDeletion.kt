@@ -8,14 +8,18 @@ data class BillDeletion(
     val description: String,
     // Why: Expense.balanceOf for this device's user, null when they aren't in the bill.
     val myBalanceMinor: Long?,
+    // Why: a payment made after the bill that deleting it unsettles (7.4b), null when there is none.
+    val settledPair: SettledPairChange?,
 ) {
     companion object {
         fun of(
             expense: Expense,
             myMemberId: String?,
+            settledPair: SettledPairChange?,
         ): BillDeletion = BillDeletion(
             description = expense.description,
             myBalanceMinor = myMemberId?.let(expense::balanceOf),
+            settledPair = settledPair,
         )
     }
 }

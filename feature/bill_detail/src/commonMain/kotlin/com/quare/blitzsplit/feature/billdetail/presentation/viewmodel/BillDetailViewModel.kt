@@ -7,11 +7,15 @@ import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -48,6 +52,8 @@ class BillDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
+    observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
 ) : ViewModel() {
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
@@ -79,6 +85,9 @@ class BillDetailViewModel(
     private var expense: Expense? = null
     private var myMemberId: String? = null
 
+    // Why: the payment deleting the bill would unsettle (7.4b), which "Apagar esta conta?" says when it opens.
+    private var deletionSettledPair: SettledPairChange? = null
+
     /*
      * Why: the group or the bill went while "Editar conta" covered this screen, which then leaves as soon as it is on
      * top again. A bill that went after it showed says so on Despesas do grupo, unless this device deleted it.
@@ -90,6 +99,13 @@ class BillDetailViewModel(
     init {
         combine(observeGroup(route.groupId), observeExpense(route.expenseId), ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }
+            .launchIn(viewModelScope)
+        combine(
+            observeGroup(route.groupId),
+            observeExpenses(route.groupId),
+            observeSettlements(route.groupId),
+            ::findDeletionSettledPairOrNull,
+        ).onEach(::showDeletionSettledPair)
             .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
@@ -133,6 +149,17 @@ class BillDetailViewModel(
         }
     }
 
+    private fun findDeletionSettledPairOrNull(
+        group: Group?,
+        expenses: List<Expense>,
+        settlements: List<Settlement>,
+    ): SettledPairChange? = SettledPairChange.findDeletionOrNull(route.expenseId, group, expenses, settlements)
+
+    private fun showDeletionSettledPair(settledPair: SettledPairChange?) {
+        deletionSettledPair = settledPair
+        uiState.update { it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
+    }
+
     private fun markGone(isBillGoneAfterShowing: Boolean) {
         isGone = true
         this.isBillGoneAfterShowing = isBillGoneAfterShowing
@@ -162,7 +189,7 @@ class BillDetailViewModel(
                 splitMode = expense.splitMode,
                 people = rowsOf(group, expense),
                 // Why: the dialog says what deleting it changes as the bill is now, after a sync changed it.
-                deletion = state.deletion?.let { BillDeletion.of(expense, me?.id) },
+                deletion = state.deletion?.let { BillDeletion.of(expense, me?.id, deletionSettledPair) },
                 isLoaded = true,
             )
         }
@@ -264,7 +291,7 @@ class BillDetailViewModel(
     private fun askToDelete() {
         val expense = expense ?: return
         if (!uiState.value.areActionsEnabled) return
-        uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId)) }
+        uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair)) }
     }
 
     private fun delete() {

@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -165,6 +167,30 @@ class SplitBillUiStateTest {
         // Then
         assertFalse(showsHint)
         assertTrue(state.canDelete)
+        assertTrue(state.canSave)
+    }
+
+    @Test
+    fun `GIVEN the change unsettles a payment WHEN reading the hint THEN the warning takes its place`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            settledPair = SettledPairChange(
+                payerName = "Elisa",
+                payerIsMe = false,
+                receiverName = "Bruno",
+                receiverIsMe = false,
+                outcome = SettledPairOutcome.OWES_AGAIN,
+                debtorIsPayer = true,
+                amountMinor = 2_000L,
+            ),
+        )
+
+        // When
+        val showsHint = state.showsAnyoneCanEditHint
+
+        // Then
+        assertFalse(showsHint)
         assertTrue(state.canSave)
     }
 
@@ -513,6 +539,7 @@ class SplitBillUiStateTest {
         isEditing: Boolean = false,
         isDeleting: Boolean = false,
         conflict: BillConflict? = null,
+        settledPair: SettledPairChange? = null,
         amountText: String = "100,00",
         severalPayers: PayerAmounts? = null,
         groups: List<BillGroup> = emptyList(),
@@ -554,6 +581,7 @@ class SplitBillUiStateTest {
         ),
         splitEditor = null,
         conflict = conflict,
+        settledPair = settledPair,
         deletion = null,
         isOnline = isOnline,
         isSaving = isSaving,
