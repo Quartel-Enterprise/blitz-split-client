@@ -80,8 +80,9 @@ struct CreateGroupView: View {
     }
 }
 
-/// One grouped form, or two lying down (an iPhone's sheet, an iPhone Duo open's): the group itself in a 300 pt column
-/// and who takes part beside it, each scrolling on its own.
+/// One grouped form, or two in an iPhone's sheet lying down: the group itself in a 300 pt column and who takes part
+/// beside it, each scrolling on its own. An iPad's room (an iPhone Duo open too) opens the 540 pt form sheet, one
+/// column, and the Mac's sheet stays one column whatever it is resized to.
 private struct CreateGroupForm: View {
     let model: CreateGroupModel
 
@@ -92,9 +93,17 @@ private struct CreateGroupForm: View {
         model.state
     }
 
+    private var usesTwoColumns: Bool {
+        #if os(iOS)
+        layout.usesTwoColumns
+        #else
+        false
+        #endif
+    }
+
     var body: some View {
         Group {
-            if layout.usesTwoColumns {
+            if usesTwoColumns {
                 TwoColumnsLayout(firstWidth: 300, spacing: 28) {
                     Form { groupSections }
                         .formStyle(.grouped)

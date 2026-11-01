@@ -70,14 +70,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         ) {}
         return
     }
+    // Why: every dialog route keeps what was typed on a stray tap outside and sizes itself.
+    val dialogProperties = DialogProperties(
+        dismissOnClickOutside = false,
+        usePlatformDefaultWidth = false,
+    )
     val usesFormDialog = rememberUsesFormDialog()
     val formDialogMetadata = if (usesFormDialog) {
-        FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        )
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
     }
@@ -89,10 +89,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val usesCreateGroupDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
     val createGroupMetadata = if (usesCreateGroupDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(
-            properties = DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
+            properties = dialogProperties,
             isTopHalfOnTabletop = true,
         )
     } else {
@@ -100,12 +97,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
-        FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        )
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
     }
@@ -171,7 +163,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane { GroupDetailScreen(route) }
             }
-            // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
+            // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
                 EditGroupScreen(
                     route = route,
