@@ -1,11 +1,8 @@
 package com.quare.blitzsplit.android.feature.invite
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -28,9 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
@@ -43,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.core.model.QrCode
+import com.quare.blitzsplit.android.designsystem.component.QrCodeImage
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiEvent
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiState
 
@@ -156,41 +150,6 @@ private fun LinkRow(
                 text = stringResource(if (state.isLinkCopied) R.string.invite_copied else R.string.invite_copy),
                 modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
             )
-        }
-    }
-}
-
-// Why: black on white in both themes, as scanners read it best, with the quiet zone drawn around the modules.
-@Composable
-private fun QrCodeImage(
-    qrCode: QrCode,
-    modifier: Modifier = Modifier,
-) {
-    Canvas(
-        modifier = modifier
-            .aspectRatio(1f)
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(16.dp),
-            ),
-    ) {
-        // Why: the blank border a scanner needs around the code, in modules.
-        val quietZone = 2
-        val cells = qrCode.size + quietZone * 2
-        val module = size.minDimension / cells
-        for (row in 0 until qrCode.size) {
-            for (column in 0 until qrCode.size) {
-                if (!qrCode.isDark(row, column)) continue
-                drawRect(
-                    color = Color.Black,
-                    topLeft = Offset(
-                        x = (column + quietZone) * module,
-                        y = (row + quietZone) * module,
-                    ),
-                    // Why: a hair wider than the module, so no seam shows between two dark ones.
-                    size = Size(module + 0.5f, module + 0.5f),
-                )
-            }
         }
     }
 }

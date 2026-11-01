@@ -138,8 +138,12 @@ fills (features never see each other), SwiftUI with `.sheet(isPresented:)` in `M
 launch.
 
 Saldos, the home's second tab, is a route over the groups (`Route.GlobalBalances`): the Grupos tab
-(`Navigator.popToGroups`, which also closes whatever either tab opened) and back return to them, and on Apple the `TabView` selects Balances while it is right above the groups. Contatos and Atividade are
-drawn on every platform but not built yet: their events emit `ShowComingSoon` and the selection stays where it was.
+(`Navigator.popToGroups`, which also closes whatever either tab opened) and back return to them, and on Apple the `TabView` selects Balances while it is right above the groups. Contatos
+(`Route.Contacts`) is a tab the same way: `Navigator.openHomeTab` puts a tab right above the groups in place of the
+other one, and the profile (`Route.ContactProfile`), the agenda (`Route.ContactsAgenda`) and the invite
+(`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
+Saldos). Atividade is drawn on every platform but not built yet: its event emits `ShowComingSoon` and the selection
+stays where it was.
 
 ### List and detail on wide windows
 

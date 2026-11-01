@@ -4,8 +4,9 @@ import SwiftUI
 /// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac) and push the
 /// profile inside the Groups tab. A route that opens as a sheet (a key or a bill with an iPad's room and on the Mac,
 /// deleting the account, a new group, its invite on an iPhone and the Mac, editing a group, a new or edited bill,
-/// recording a payment, the Mac's invite opened from its link) shows over the whole window, and a sheet opened from a
-/// sheet stacks over it; the Mac's invite from a group is a popover on the group's own button. The root measures the window, which every
+/// recording a payment, Contacts' invite, the Mac's invite opened from its link) shows over the whole window, and a
+/// sheet opened from a sheet stacks over it; the Mac's invite from a group is a popover on the group's own button. The
+/// root measures the window, which every
 /// screen reads as `windowLayout`; only crossing an iPad's room changes what opens as a sheet and redraws the root.
 struct RootView: View {
     @State private var app = AppModel()
@@ -87,6 +88,11 @@ struct RootView: View {
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
         case let .joinWithLink(route): JoinWithLinkView(route: route)
+        // Contacts is never the root nor a sheet: the tabs draw it
+        case .contacts: MainTabView(path: $app.path)
+        case let .contactProfile(route): ContactProfileView(route: route)
+        case .contactsAgenda: AgendaView()
+        case let .contactInvite(route): ContactInviteView(route: route)
         case .profile: ProfileView()
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()
