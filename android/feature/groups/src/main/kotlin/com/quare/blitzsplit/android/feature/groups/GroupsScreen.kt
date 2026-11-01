@@ -60,9 +60,11 @@ fun GroupsScreen(
     )
     /*
      * Why: the window decides whether the group opens beside the list, which the ViewModel needs for taps and search.
-     * Once the home leaves the screen (turned upright with a group open, the list no longer drawn) it draws no pane.
+     * Once the home leaves the screen (turned upright with a group open, the list no longer drawn) it draws no pane,
+     * nor on a tablet lying down while there is no group at all, which the app draws in one pane (a book keeps both).
      */
-    val showsDetailPane = rememberListDetailLayout() != null
+    val listDetail = rememberListDetailLayout()
+    val showsDetailPane = listDetail != null && (listDetail.isBook || !state.showsEmptyState)
     DisposableEffect(showsDetailPane) {
         viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(showsDetailPane))
         onDispose { viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = false)) }

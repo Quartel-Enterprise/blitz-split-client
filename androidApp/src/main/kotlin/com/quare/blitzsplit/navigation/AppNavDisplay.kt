@@ -49,6 +49,7 @@ import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.tabGroupIdOrNull
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,14 +71,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         ) {}
         return
     }
+    // Why: every dialog route keeps what was typed on a stray tap outside and sizes itself.
+    val dialogProperties = DialogProperties(
+        dismissOnClickOutside = false,
+        usePlatformDefaultWidth = false,
+    )
     val usesFormDialog = rememberUsesFormDialog()
     val formDialogMetadata = if (usesFormDialog) {
-        FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        )
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
     }
@@ -89,10 +90,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val usesCreateGroupDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
     val createGroupMetadata = if (usesCreateGroupDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(
-            properties = DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
+            properties = dialogProperties,
             isTopHalfOnTabletop = true,
         )
     } else {
@@ -100,17 +98,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
-        FoldDialogSceneStrategy.dialogMetadataOf(
-            DialogProperties(
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false,
-            ),
-        )
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
     }
-    // Why: the home says whether it has no group at all, which only the book draws beside an empty detail.
-    var isHomeEmpty by rememberSaveable { mutableStateOf(false) }
+    /*
+     * Why: the home says whether it has no group at all, which only the book draws beside an empty detail. It can't
+     * say so while a route covers it, so a group's tab on the stack (one just joined) counts as a group already.
+     */
+    var isGroupsScreenEmpty by rememberSaveable { mutableStateOf(false) }
+    val isHomeEmpty = isGroupsScreenEmpty && backStack.none { tabGroupIdOrNull(it) != null }
     val listDetail = homeListDetailOf(
         listDetail = rememberListDetailLayout(),
         isHomeEmpty = isHomeEmpty,
@@ -139,7 +136,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Groups>(metadata = groupsMetadata) {
                 GroupsScreen(
                     recoveryCodeSheet = { RecoveryCodeSheet() },
-                    onEmptyChanged = { isHomeEmpty = it },
+                    onEmptyChanged = { isGroupsScreenEmpty = it },
                 )
             }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
@@ -166,7 +163,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane { GroupDetailScreen(route) }
             }
-            // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
+            // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
                 EditGroupScreen(
                     route = route,

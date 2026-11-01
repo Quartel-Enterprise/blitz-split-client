@@ -200,11 +200,7 @@ private fun CreateGroupFormColumn(
         state = state,
         onEvent = onEvent,
     )
-    MembersSection(
-        state = state,
-        onEvent = onEvent,
-    )
-    MembersNoticesSection(
+    MembersColumn(
         state = state,
         onEvent = onEvent,
     )

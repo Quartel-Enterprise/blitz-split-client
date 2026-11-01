@@ -48,13 +48,16 @@ fun FormLayout(
         ) {
             Column {
                 topBar(true)
+                // Why: a dialog has one column, so a second one follows the first instead of being dropped.
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .imePadding()
                         .padding(bottom = 24.dp),
-                    content = content,
-                )
+                ) {
+                    content()
+                    secondColumn?.invoke(this)
+                }
             }
         }
     } else {
