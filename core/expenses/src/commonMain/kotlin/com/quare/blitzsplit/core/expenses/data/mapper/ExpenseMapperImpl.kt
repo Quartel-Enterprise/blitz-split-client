@@ -25,8 +25,8 @@ class ExpenseMapperImpl : ExpenseMapper {
 
     /*
      * Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips.
-     * Items that don't give the stored shares (malformed, or a mode this version doesn't know) leave the bill split by
-     * amounts, which its shares still are.
+     * Items that don't give the stored shares (malformed, beyond what this version can save, or a mode it doesn't
+     * know) leave the bill split by amounts, which its shares still are.
      */
     override fun toDomain(row: ExpenseWithEditor): Expense? {
         val entity = row.expense
@@ -50,6 +50,7 @@ class ExpenseMapperImpl : ExpenseMapper {
             ?.takeIf { storedMode == SplitMode.AMOUNT }
             ?.let { text -> decodeOrNull { decodeItems(text) } }
             ?.let(::toDomainOrNull)
+            ?.takeIf { BillItemsSplit.isWellFormed(it) }
             ?.takeIf { BillItemsSplit.sharesOf(it, payers.map { payer -> payer.memberId }) == shares }
         return Expense(
             id = entity.id,
