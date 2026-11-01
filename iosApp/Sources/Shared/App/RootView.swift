@@ -9,7 +9,8 @@ import SwiftUI
 /// and a sheet opened from a sheet stacks over it; the Mac's invite from a group is a popover on the group's own button.
 /// The root measures the window, which every screen reads as `windowLayout`; only crossing an iPad's room changes what
 /// opens as a sheet and redraws the root. The Mac never draws the profile here: opening it opens Ajustes (⌘,), the
-/// app's Settings window (`SettingsView`), where its key and account deletion show as sheets.
+/// app's Settings window (`SettingsView`), where its key and account deletion show as sheets; while one is open this
+/// window takes no clicks, since both draw the one back stack.
 struct RootView: View {
     /// Owned by the app, which the Mac's Settings window shares.
     @Bindable var app: AppModel
@@ -69,6 +70,8 @@ struct RootView: View {
         .onChange(of: app.settingsRequestCount) {
             openSettings()
         }
+        // Ajustes' key or Excluir conta sits on top of the back stack this window also draws
+        .disabled(app.settingsSheet != nil)
         .frame(minWidth: 520, minHeight: 560)
         #endif
         // Outermost, so the sheets inherit the window the root measured

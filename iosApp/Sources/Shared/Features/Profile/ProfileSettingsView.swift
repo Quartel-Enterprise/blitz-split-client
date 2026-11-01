@@ -77,6 +77,8 @@ struct SettingsView: View {
             }
         }
         .tint(Palette.accent)
+        // Closing the window closes its sheet, which the main window waits on
+        .onDisappear { app.settingsSheet = nil }
         .onChange(of: app.hasProfile, initial: true) { _, hasProfile in
             if !hasProfile { dismiss() }
         }
