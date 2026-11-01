@@ -1,9 +1,5 @@
 package com.quare.blitzsplit.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -16,10 +12,8 @@ import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneSt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
+import com.quare.blitzsplit.android.designsystem.component.DetailPlaceholderPane
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.core.navigation.Route
@@ -56,7 +50,7 @@ private fun homeDirectiveOf(
 // Why: the groups in the list pane, 520dp on a tablet and the half before the hinge on a book.
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal fun homeListPaneMetadataOf(listDetail: ListDetailLayout?): Map<String, Any> {
-    val listPane = ListDetailSceneStrategy.listPane(detailPlaceholder = { GroupPanePlaceholderBox() })
+    val listPane = ListDetailSceneStrategy.listPane(detailPlaceholder = { DetailPlaceholderPane() })
     if (listDetail == null) return listPane
     return listPane + ListDetailSceneStrategy.preferredPaneSize(width = listDetail.listPaneWidth)
 }
@@ -77,18 +71,4 @@ internal fun InGroupPane(content: @Composable () -> Unit) {
         sceneScope.scaffoldTransitionScope.scaffoldStateTransition.targetState[ListDetailPaneScaffoldRole.List] ==
         PaneAdaptedValue.Expanded
     CompositionLocalProvider(LocalInDetailPane provides isBesideList, content = content)
-}
-
-// Why: before a group is tapped, or once it closed, the pane holds the canvas' shapes; it has no words of its own.
-@Composable
-private fun GroupPanePlaceholderBox() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            EmptyGroupsImage(scale = 1.25f)
-        }
-    }
 }
