@@ -26,10 +26,11 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatTimeAgo } from '@/lib/dates'
-import { amountPlaceholder, currencySymbol, formatMoney } from '@/lib/money'
+import { amountPlaceholder, currencySymbol, formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
-import { splitPane } from './SplitPane'
+import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
+import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
 
 const formId = 'split-bill-form'
@@ -49,6 +50,7 @@ const splitTitles: Record<string, MessageKey> = {
   amount: 'splitBill_splitAmount',
   percent: 'splitBill_splitPercent',
   shares: 'splitBill_splitShares',
+  items: 'splitBill_splitItems',
 }
 
 /**
@@ -71,12 +73,17 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
   const editor = state.splitEditor
+  const items = state.itemsEditor
+  const signed: Money = (minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)
   const isPayerOpen = state.isPayerOpen
   const isGroupOpen = state.groupSelection != null
   const payerAmounts = state.payerAmounts
   const onOpenChange = (open: boolean) => {
     if (open) return
-    if (editor) presenter.dismissSplit()
+    if (items && !isDesktop && state.itemEditor) presenter.items.dismissItem()
+    else if (items && !isDesktop && state.feeEditor) presenter.items.dismissFee()
+    else if (items) presenter.items.dismiss()
+    else if (editor) presenter.dismissSplit()
     else if (isGroupOpen) presenter.dismissGroup()
     else if (isPayerOpen) presenter.dismissPayer()
     else if (payerAmounts) presenter.dismissSeveralPayers()
@@ -84,7 +91,10 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
   }
 
   let pane: PaneParts
-  if (editor) pane = splitPane(presenter, state, editor, money)
+  if (items && state.itemEditor && !isDesktop) pane = itemPane(presenter.items, state, state.itemEditor, money)
+  else if (items && state.feeEditor && !isDesktop) pane = feePane(presenter.items, state, state.feeEditor)
+  else if (items) pane = itemsPane(presenter.items, state, items, splitLead(state, items.totalMinor, money), money, signed)
+  else if (editor) pane = splitPane(presenter, state, editor, money)
   else if (isGroupOpen && !isDesktop) pane = groupPane(presenter, state)
   else if (isPayerOpen && !isDesktop) pane = payerPane(presenter, state, money)
   else if (payerAmounts && !isDesktop) pane = severalPayersPane(presenter, state, payerAmounts, money)
@@ -105,8 +115,10 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
         isDesktop={isDesktop}
         pane={pane}
         onOpenChange={onOpenChange}
-        className={cn('gap-5', editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
+        className={cn('gap-5', items ? 'sm:max-w-[640px] lg:max-w-[920px]' : editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
       />
+      {isDesktop && items && <ItemsOverlayDialogs presenter={presenter.items} state={state} money={money} />}
+      {items && <ItemDeleteDialog presenter={presenter.items} state={state} money={money} />}
       {isDesktop && !editor && isGroupOpen && <GroupDialog presenter={presenter} state={state} />}
       {isDesktop && !editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
       {isDesktop && !editor && payerAmounts && <SeveralPayersDialog presenter={presenter} state={state} amounts={payerAmounts} money={money} />}
