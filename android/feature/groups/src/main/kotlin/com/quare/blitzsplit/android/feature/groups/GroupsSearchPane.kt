@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
+import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -50,11 +50,9 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
-import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: "Buscar" in the list's place: "Grupos", "Pessoas" and "Despesas" with what was found marked, or "Nada com
@@ -239,7 +237,11 @@ private fun SearchBillRow(
     onClick: () -> Unit,
 ) {
     val money = rememberMoneyFormatter(hit.currency)
-    val paidBy = paidByTextOf(hit.payers)
+    val paidBy = paidTextOrNull(
+        hit.payers,
+        isMe = { it.isMe },
+        nameOf = { it.name },
+    )
     SearchResultRow(
         shape = shape,
         onClick = onClick,
@@ -418,18 +420,4 @@ private fun templatedTextOf(
     append(parts.first())
     append(value)
     if (parts.size > 1) append(parts[1])
-}
-
-// Why: "Bruno pagou", "Você pagou", "Ana e Bruno pagaram" or "3 pessoas pagaram"; null when nobody in it paid.
-@Composable
-private fun paidByTextOf(payers: List<SearchBillPayer>): String? {
-    val you = stringResource(R.string.groups_search_you)
-    val formerMember = stringResource(DesignR.string.designsystem_former_member)
-    val lonePayer = payers.singleOrNull()
-    return when {
-        payers.isEmpty() -> null
-        lonePayer?.isMe == true -> stringResource(R.string.groups_search_you_paid)
-        lonePayer != null -> lonePayer.name?.let { stringResource(DesignR.string.designsystem_paid_by_one, it) }
-        else -> paidBySeveralOf(payers.map { if (it.isMe) you else it.name ?: formerMember })
-    }
 }

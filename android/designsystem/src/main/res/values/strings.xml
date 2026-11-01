@@ -92,4 +92,6 @@
     <string name="designsystem_debt_owes_you">%s owes you</string>
     <string name="designsystem_debt_owes">%1$s owes %2$s</string>
     <string name="designsystem_former_member">Former member</string>
+    <string name="designsystem_you">You</string>
+    <string name="designsystem_you_paid">You paid</string>
 </resources>

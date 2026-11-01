@@ -93,8 +93,6 @@
     <string name="groups_search_group_meta">%1$s · %2$s</string>
     <string name="groups_search_settled_bill">Quitado · despesa “%s”</string>
     <string name="groups_search_bill_meta">%1$s · %2$s</string>
-    <string name="groups_search_you">Você</string>
-    <string name="groups_search_you_paid">Você pagou</string>
     <string name="groups_search_hint">Procura em grupos, pessoas e despesas deste aparelho, inclusive nos grupos quitados, sem precisar de internet.</string>
     <string name="groups_search_none_title">Nada com “%s”</string>
     <string name="groups_search_none_body">Procuramos em grupos, pessoas e despesas deste aparelho, inclusive nos grupos quitados.</string>

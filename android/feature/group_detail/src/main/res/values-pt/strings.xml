@@ -25,8 +25,6 @@
     <string name="group_detail_today">Hoje</string>
     <string name="group_detail_yesterday">Ontem</string>
     <string name="group_detail_queued">na fila</string>
-    <string name="group_detail_you_paid">Você pagou</string>
-    <string name="group_detail_someone_paid">%s pagou</string>
     <string name="group_detail_empty_title">Nenhuma despesa ainda</string>
     <string name="group_detail_empty_message">Lance a primeira despesa ou chame quem vai dividir com você. Quem ainda não tem o app também entra na conta.</string>
     <string name="group_detail_split_bill">Rachar conta</string>
@@ -56,5 +54,4 @@
     <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for lançada.</string>
     <string name="group_detail_balances_settled_title">Todo mundo acertou</string>
     <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, dá para apagar o grupo para todos.</string>
-    <string name="group_detail_you">Você</string>
 </resources>
