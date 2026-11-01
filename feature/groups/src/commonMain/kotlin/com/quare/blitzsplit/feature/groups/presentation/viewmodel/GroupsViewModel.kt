@@ -51,6 +51,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupWithMoney
 import com.quare.blitzsplit.feature.groups.presentation.mapper.GroupsOnHome
 import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.latestBillOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.searchResultsOf
@@ -126,6 +127,7 @@ class GroupsViewModel(
                 recordedPayment = null,
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
+                latestBill = null,
             ),
         )
 
@@ -235,6 +237,7 @@ class GroupsViewModel(
                     clock = activityClock(),
                 ),
                 pendingChangeCount = pendingChangeCountOf(groups),
+                latestBill = latestBillOf(groups),
             )
         }
             // Why: the ages again each minute, not the balances, so a home left open says "ontem" after midnight.
@@ -246,6 +249,7 @@ class GroupsViewModel(
                         hasLoadedGroups = true,
                         summary = summaryOf(home.rows),
                         pendingChangeCount = home.pendingChangeCount,
+                        latestBill = home.latestBill,
                         /*
                          * Why: what the search found changes with the device's data, a sync's included. Once the last
                          * group goes the search closes, so the next group doesn't bring back a forgotten search.
