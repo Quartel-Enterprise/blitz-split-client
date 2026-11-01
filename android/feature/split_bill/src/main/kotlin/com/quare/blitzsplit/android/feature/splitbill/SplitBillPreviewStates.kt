@@ -1,7 +1,11 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillItem
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
+import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
+import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -9,6 +13,9 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemPersonRow
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -115,6 +122,10 @@ internal fun createPreviewBillState(
         isAnyoneIn = true,
     ),
     splitEditor = splitEditor,
+    itemsEditor = null,
+    itemEditor = null,
+    itemDeletion = null,
+    feeEditor = null,
     defaultSplit = null,
     conflict = conflict,
     settledPair = settledPair,
@@ -227,6 +238,7 @@ private fun createPreviewEditor(
     totalMinor = totalMinor,
     payerIds = listOf(payerId),
     currency = GroupCurrency.BRL,
+    items = null,
 )
 
 // Why: "Várias pessoas pagaram" once it adds up, as the canvas draws it: Você R$ 200,00 and Ana R$ 112,00.
@@ -242,5 +254,102 @@ internal fun createPreviewPayerAmounts(): PayerAmounts {
         },
         totalMinor = PREVIEW_TOTAL_MINOR,
         currency = GroupCurrency.BRL,
+    )
+}
+
+/*
+ * Why: "Jantar no Ostradamus" as the canvas draws 7.5, Bruno paying R$ 642,00: the items with who had them, or a
+ * receipt just read with nobody marked yet (7.5b).
+ */
+internal fun createPreviewItemsState(hasOwners: Boolean): SplitBillUiState {
+    fun createItem(
+        id: String,
+        name: String,
+        quantity: Long,
+        unitMinor: Long,
+        mode: ItemSplitMode,
+        vararg who: Pair<String, Long>,
+    ): BillItem = BillItem(
+        id = id,
+        name = name,
+        quantity = quantity,
+        unitPriceMinor = unitMinor,
+        mode = mode,
+        entries = if (hasOwners) who.map { SplitEntry(it.first, it.second) } else emptyList(),
+    )
+    val items = listOf(
+        createItem(
+            "ost",
+            "Ostras gratinadas (dúzia)",
+            2,
+            8_900,
+            ItemSplitMode.EQUAL,
+            "pv" to 1,
+            "an" to 1,
+            "br" to 1,
+            "ca" to 1,
+        ),
+        createItem("seq", "Sequência de camarão", 1, 16_800, ItemSplitMode.SHARES, "br" to 2, "el" to 1, "di" to 1),
+        createItem(
+            "cer",
+            "Cerveja long neck",
+            6,
+            1_400,
+            ItemSplitMode.UNITS,
+            "pv" to 2,
+            "an" to 1,
+            "br" to 2,
+            "di" to 1,
+        ),
+        createItem("cai", "Caipirinha", 3, 2_200, ItemSplitMode.UNITS, "an" to 1, "ca" to 1, "el" to 1),
+        createItem("agu", "Água com gás", 2, 700, ItemSplitMode.EQUAL, "ca" to 1, "el" to 1),
+        createItem("moq", "Moqueca de peixe (meia)", 1, 6_000, ItemSplitMode.AMOUNT, "pv" to 4_000, "ca" to 2_000),
+    )
+    val state = createPreviewBillState(
+        amountText = "642,00",
+        description = "Jantar no Ostradamus",
+    ).copy(payerId = PREVIEW_BRUNO_ID)
+    return state.copy(
+        itemsEditor = ItemsEditor(
+            split = BillItems(
+                items = items,
+                servicePercent = 10L,
+                couvertMinor = 250L,
+                couvertMemberIds = previewPeople.map { it.id },
+                extraMinor = 0L,
+                isFromReceipt = !hasOwners,
+            ),
+            people = previewPeople,
+            totalMinor = PREVIEW_DINNER_TOTAL_MINOR,
+            payerIds = listOf(PREVIEW_BRUNO_ID),
+            currency = GroupCurrency.BRL,
+        ),
+    )
+}
+
+// Why: 7.6, "Cerveja long neck" by units as the canvas draws it, or by value with the moqueca.
+internal fun createPreviewItemState(mode: ItemSplitMode): SplitBillUiState {
+    val units = mapOf(PREVIEW_ME_ID to 2L, PREVIEW_ANA_ID to 1L, PREVIEW_BRUNO_ID to 2L, PREVIEW_DIEGO_ID to 1L)
+    val amounts = mapOf(PREVIEW_ME_ID to "40,00", "ca" to "20,00")
+    val isUnits = mode == ItemSplitMode.UNITS
+    return createPreviewItemsState(hasOwners = true).copy(
+        itemEditor = ItemEditor(
+            itemId = "cer",
+            name = if (isUnits) "Cerveja long neck" else "Moqueca de peixe (meia)",
+            quantity = if (isUnits) 6L else 1L,
+            unitPriceText = if (isUnits) "14,00" else "60,00",
+            mode = mode,
+            rows = previewPeople.map { person ->
+                ItemPersonRow(
+                    person = person,
+                    isIncluded = person.id in units,
+                    count = if (isUnits) units[person.id] ?: 0L else 0L,
+                    valueText = if (isUnits) "" else amounts[person.id].orEmpty(),
+                )
+            },
+            lastEditedMemberId = null,
+            payerIds = listOf(PREVIEW_BRUNO_ID),
+            currency = GroupCurrency.BRL,
+        ),
     )
 }

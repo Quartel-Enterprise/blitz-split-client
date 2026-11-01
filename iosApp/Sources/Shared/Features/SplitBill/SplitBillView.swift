@@ -11,6 +11,9 @@ final class SplitBillModel {
     /// "Several people paid" as last open, kept after "Done" or "Close" so it still draws while the sheet slides
     /// away; "Who paid" opening again forgets it.
     private(set) var shownPayerAmounts: PayerAmounts?
+    /// "Bill items" and "Item" as last open, kept after "Done" or "Back" so they still draw while they slide away.
+    private(set) var shownItems: ItemsEditor?
+    private(set) var shownItem: ItemEditor?
     private(set) var saveErrorCount = 0
     private(set) var deleteErrorCount = 0
 
@@ -24,6 +27,8 @@ final class SplitBillModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
             if let editor = state.splitEditor { self?.shownEditor = editor }
+            if let items = state.itemsEditor { self?.shownItems = items }
+            if let item = state.itemEditor { self?.shownItem = item }
             if let amounts = state.payerAmounts {
                 self?.shownPayerAmounts = amounts
             } else if state.payerSelection != nil {
@@ -804,13 +809,21 @@ private struct MacSplitBill: View {
 
     var body: some View {
         Group {
-            if model.state.splitEditor != nil {
+            if model.state.itemsEditor != nil {
+                MacItemsEditor(model: model)
+            } else if model.state.splitEditor != nil {
                 MacSplitEditor(model: model)
             } else {
                 MacBillForm(model: model)
             }
         }
-        .frame(width: 520)
+        .frame(width: model.state.itemsEditor != nil ? itemsWidth : 520)
+    }
+
+    /// "Bill Items" is 860 pt wide, 700 in a window too narrow for it.
+    private var itemsWidth: CGFloat {
+        let window = NSApplication.shared.keyWindow?.frame.width ?? .infinity
+        return window < 900 ? 700 : 860
     }
 }
 

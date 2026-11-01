@@ -528,6 +528,7 @@ class GroupsSearchTest {
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer("$groupId-$paidBy", 600L)),
         shares = splitOver.map { ExpenseShare("$groupId-$it", 600L / splitOver.size, 1L) },
+        items = null,
         spentAt = updatedAt,
         isPending = false,
         updatedAt = updatedAt,

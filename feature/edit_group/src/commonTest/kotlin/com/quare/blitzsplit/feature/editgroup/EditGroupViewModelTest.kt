@@ -1256,6 +1256,7 @@ class EditGroupViewModelTest {
                 weight = 1,
             ),
         ),
+        items = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,

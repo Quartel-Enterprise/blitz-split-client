@@ -145,10 +145,128 @@
     <string name="split_bill_default_now_amount">by amounts</string>
     <string name="split_bill_default_now_percent">by percentage</string>
     <string name="split_bill_default_now_shares">by shares</string>
+    <string name="split_bill_default_now_items">by items</string>
     <string name="split_bill_default_reset">Back to default</string>
     <string name="split_bill_default_description">%1$s, %2$s</string>
     <string name="split_bill_default_without">without %s</string>
     <string name="split_bill_default_shares_two">%1$d to %2$d</string>
     <string name="split_bill_default_percent">%d%%</string>
     <string name="split_bill_hint_default">The default lives in Edit group › Default split. Bills already added don\'t change.</string>
+    <!-- Itens da conta (7.5) and Item (7.6) -->
+    <string name="split_bill_mode_items">Items</string>
+    <plurals name="split_bill_mode_items_among">
+        <item quantity="one">By items for %d</item>
+        <item quantity="other">By items among %d</item>
+    </plurals>
+    <plurals name="split_bill_fact_items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <plurals name="split_bill_items_loose">
+        <item quantity="one">%d item with nobody</item>
+        <item quantity="other">%d items with nobody</item>
+    </plurals>
+    <string name="split_bill_items_title">Bill items</string>
+    <string name="split_bill_items_count">Items · %d</string>
+    <string name="split_bill_items_add">Add item</string>
+    <string name="split_bill_items_add_difference">Add an item of %s</string>
+    <string name="split_bill_items_split_difference">Split the difference</string>
+    <string name="split_bill_items_people">What each one pays</string>
+    <string name="split_bill_items_fees">Service and cover</string>
+    <string name="split_bill_items_service">Service (%d%%)</string>
+    <string name="split_bill_items_service_sub">In proportion to what each one had</string>
+    <string name="split_bill_items_couvert">Cover</string>
+    <string name="split_bill_items_couvert_sub">%s per person · the same for everyone</string>
+    <string name="split_bill_items_extra">Difference</string>
+    <string name="split_bill_items_extra_remove">Remove the difference</string>
+    <string name="split_bill_items_person_sub">%1$s in items + %2$s of service and cover</string>
+    <string name="split_bill_items_person_couvert_only">Only the cover, for now</string>
+    <string name="split_bill_items_person_nothing">Nothing yet</string>
+    <string name="split_bill_items_row_sub">%1$d × %2$s · %3$s</string>
+    <plurals name="split_bill_items_row_equal">
+        <item quantity="one">Equal for %d</item>
+        <item quantity="other">Equal among %d</item>
+    </plurals>
+    <string name="split_bill_items_row_units">By unit</string>
+    <string name="split_bill_items_row_shares">By shares</string>
+    <string name="split_bill_items_row_amount">By amount</string>
+    <string name="split_bill_items_row_percent">By percentage</string>
+    <string name="split_bill_items_row_nobody">Nobody yet</string>
+    <string name="split_bill_items_loose_all">Tap each item and check who had it. Done unlocks once every item has someone.</string>
+    <plurals name="split_bill_items_loose_some">
+        <item quantity="one">%1$s has nobody yet: %2$s out of the split.</item>
+        <item quantity="other">%1$s have nobody yet: %2$s out of the split.</item>
+    </plurals>
+    <string name="split_bill_items_sum_receipt">Items, service and cover add up to %1$s, but the receipt says %2$s.</string>
+    <string name="split_bill_items_sum">Items, service and cover add up to %1$s, but the total is %2$s.</string>
+    <string name="split_bill_items_closed">%1$s in items, %2$s of service and %3$s of cover.</string>
+    <string name="split_bill_items_closed_extra">%1$s in items, %2$s of service, %3$s of cover and %4$s of difference.</string>
+    <string name="split_bill_items_offline">No internet: you can still check everything. The bill stays saved on this device and syncs when you reconnect.</string>
+    <string name="split_bill_item_title">Item</string>
+    <string name="split_bill_item_name">Item</string>
+    <string name="split_bill_item_quantity">Quantity</string>
+    <string name="split_bill_item_less">One less</string>
+    <string name="split_bill_item_more">One more</string>
+    <string name="split_bill_item_price">Price of each</string>
+    <string name="split_bill_item_total">Item total</string>
+    <string name="split_bill_item_modes">How to split the item</string>
+    <string name="split_bill_item_mode_equal">Equal</string>
+    <string name="split_bill_item_mode_units">Units</string>
+    <string name="split_bill_item_mode_shares">Shares</string>
+    <string name="split_bill_item_mode_amount">Amount</string>
+    <string name="split_bill_item_mode_percent">%</string>
+    <string name="split_bill_item_delete">Delete item</string>
+    <string name="split_bill_item_nobody">Nobody checked</string>
+    <string name="split_bill_item_nobody_sub">Check who had this item. Done unlocks once it has someone.</string>
+    <plurals name="split_bill_item_units_closed">
+        <item quantity="one">%1$d of %2$d unit</item>
+        <item quantity="other">%1$d of %2$d units</item>
+    </plurals>
+    <string name="split_bill_item_units_price">Each unit costs %s.</string>
+    <plurals name="split_bill_item_units_left">
+        <item quantity="one">%d unit left</item>
+        <item quantity="other">%d units left</item>
+    </plurals>
+    <plurals name="split_bill_item_units_left_sub">
+        <item quantity="one">%1$d of %2$d checked. Say who had the other one.</item>
+        <item quantity="other">%1$d of %2$d checked. Say who had the others.</item>
+    </plurals>
+    <plurals name="split_bill_item_units_over">
+        <item quantity="one">%d unit over</item>
+        <item quantity="other">%d units over</item>
+    </plurals>
+    <string name="split_bill_item_units_marked">%1$d of %2$d checked.</string>
+    <plurals name="split_bill_item_person_parts">
+        <item quantity="one">%1$s had %2$d share.</item>
+        <item quantity="other">%1$s had %2$d shares.</item>
+    </plurals>
+    <plurals name="split_bill_item_my_parts">
+        <item quantity="one">You had %d share.</item>
+        <item quantity="other">You had %d shares.</item>
+    </plurals>
+    <string name="split_bill_item_amount_closed">The parts add up to the item.</string>
+    <string name="split_bill_item_percent_progress">%1$d%% of 100%% so far.</string>
+    <string name="split_bill_item_list_equal">Who shared it</string>
+    <string name="split_bill_item_list_units">How many each one had</string>
+    <string name="split_bill_item_list_shares">Shares of each one</string>
+    <string name="split_bill_item_list_amount">How much each one had</string>
+    <string name="split_bill_item_list_percent">Percentage of each one</string>
+    <string name="split_bill_item_hint_units">Units only shows when the item has more than one.</string>
+    <string name="split_bill_item_hint_equal">The cents left over go to whoever paid.</string>
+    <string name="split_bill_item_hint_shares">Use shares when someone eats more of the same dish.</string>
+    <string name="split_bill_item_hint_amount">Whoever is left at %s is out of the item.</string>
+    <string name="split_bill_item_hint_percent">Whole numbers only.</string>
+    <string name="split_bill_item_person_had">%s had it</string>
+    <string name="split_bill_item_person_units">%s\'s units</string>
+    <string name="split_bill_item_delete_title">Delete this item?</string>
+    <string name="split_bill_item_delete_text">“%1$s” (%2$s) leaves the bill.</string>
+    <string name="split_bill_item_delete_text_service">“%1$s” (%2$s) leaves the bill and the service is redone.</string>
+    <string name="split_bill_item_delete_left">The items no longer add up to the total: %s is left to split.</string>
+    <string name="split_bill_item_delete_confirm">Delete</string>
+    <string name="split_bill_fee_service_title">Service</string>
+    <string name="split_bill_fee_service_field">Service percentage</string>
+    <string name="split_bill_fee_service_help">0 for a bill without service.</string>
+    <string name="split_bill_fee_couvert_title">Cover</string>
+    <string name="split_bill_fee_couvert_field">Cover per person</string>
+    <string name="split_bill_fee_couvert_help">The same for everyone at the table. 0 for none.</string>
 </resources>

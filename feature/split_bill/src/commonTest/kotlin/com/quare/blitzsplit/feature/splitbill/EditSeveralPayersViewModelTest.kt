@@ -367,6 +367,7 @@ class EditSeveralPayersViewModelTest {
             ExpenseShare(PIERRE, 10_400L, weight = 1L),
             ExpenseShare(BRUNO, 10_400L, weight = 1L),
         ),
+        items = null,
         spentAt = yesterdayMillis,
         isPending = false,
         updatedAt = SAVED_VERSION,

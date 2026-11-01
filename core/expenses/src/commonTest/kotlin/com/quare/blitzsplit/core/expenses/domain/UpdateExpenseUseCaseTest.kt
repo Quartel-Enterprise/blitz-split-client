@@ -36,6 +36,7 @@ class UpdateExpenseUseCaseTest {
             ),
             splitMode = SplitMode.AMOUNT,
             shares = editedShares,
+            items = null,
             spentAt = 6_000L,
         )
 
@@ -311,6 +312,7 @@ class UpdateExpenseUseCaseTest {
         payers = payers,
         splitMode = SplitMode.EQUAL,
         shares = shares,
+        items = null,
         spentAt = 5_000L,
     )
 
@@ -351,6 +353,7 @@ class UpdateExpenseUseCaseTest {
                 weight = 1L,
             ),
         ),
+        items = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 2_000L,

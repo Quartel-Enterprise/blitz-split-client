@@ -297,7 +297,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
-    Valores, % (whole numbers adding up to 100) or Partes, and only changes the bill on "Pronto". A new bill starts
+    Valores, % (whole numbers adding up to 100), Partes or Itens, and only changes the bill on "Pronto". A new bill starts
     from the group's "Divisão padrão" (Pela renda as its percentages) and follows it, and a sync's change of it,
     until "Pronto" picks its own (another group picked starts over from that one's); percentages someone who left
     took part of start Igual among everyone. Someone who joins while Dividir is open and still on the default gets
@@ -312,6 +312,26 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     user first, `PayerOrder`) and count more ("3 pessoas pagaram"), and Dividir marks each of several payers "Pagou
     parte da conta"; Conta's "Sua parte" names whom the bill puts it on, as Saldos does
     (`GroupBalances.findDebtsWithin`).
+  - "Itens da conta" (7.5, `SplitBillUiState.itemsEditor`) is Dividir's fifth mode, "Itens": it opens in Dividir's
+    place (pushed on iOS, the sheet's next page on the Mac, a 920 px dialog on the web, 640 px on a tablet, a drawer on
+    a phone), and a bill already split by its items opens Dividir straight on it. Each item has a name (1 to 60
+    letters), a quantity (1 to 999) and a price of each, and "Item" (7.6, `itemEditor`) splits it among who consumed
+    it by Igual, Unidades (only above one unit), Partes, Valor or %, its own leftover cents to whoever paid while they
+    had some (`BillItemsSplit`); its Pronto waits for a name, a price and someone, and while Unidades, Valor or % don't
+    close it says what is missing next to whoever changed last (`ItemPersonLine.isError`). "Serviço" is a whole
+    percentage of the items (10% to start, 0 for none) shared in proportion to what each one consumed, and the
+    "Couvert" a value per person (none to start) for everyone in the group when the items were split
+    (`BillItems.couvertMemberIds`); tapping either row opens its field. Pronto waits until every item has someone
+    ("2 itens sem ninguém", in red) and the items, service and couvert close with the total ("Faltam R$ 15,00" or
+    "Passou", "o cupom diz" for items a receipt gave), offering "Adicionar item de R$ 15,00" (a new item at that price)
+    and "Dividir a diferença" (shared in proportion to what each one consumed, a "Diferença" row that can be taken
+    off). Apagar item asks first, saying what is left to split once it goes. Back keeps the items typed for Itens to
+    open with again until Dividir closes or another mode's Pronto. The bill keeps its items inside its row
+    (`expenses.items`, stamped with the bill's `updated_at`) beside shares holding each one's total, stored as
+    "amount": an older version reads it by Valores, and items another version saved the bill without are dropped,
+    on the server too. Lying down and on tablets the status and what each one pays sit beside the items; a phone,
+    lying down and the Duo show each one's total as a strip of chips, a tablet and the web as a list. Items from a
+    receipt read (7.1e) come later.
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones

@@ -1591,6 +1591,7 @@ class GroupDetailViewModelTest {
         splitMode = SplitMode.EQUAL,
         payers = payers,
         shares = shares,
+        items = null,
         spentAt = spentAt,
         isPending = isPending,
         updatedAt = spentAt,
