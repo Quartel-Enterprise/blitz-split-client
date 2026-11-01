@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -55,18 +58,22 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 
+// Why: what isn't a card of the grid takes the whole line, so the list is a grid of one column.
+internal val fullLine: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
+
 /*
- * Why: the home's list: "Saldo geral", the open groups by their latest activity and, collapsed, the settled ones. A
- * row opens the group; its ⋮ menu and its long press hold the group's actions. The grid and the search come with their
- * own flows.
+ * Why: the home's list: "Saldo geral", the open groups by their latest activity, as rows or as the grid's cards, and,
+ * collapsed, the settled ones, always rows. A row or a card opens the group; its ⋮ menu and its long press hold the
+ * group's actions. The search comes with its own flow.
  */
-internal fun LazyListScope.groupsListItems(
+internal fun LazyGridScope.groupsListItems(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     onLongPress: (GroupRow) -> Unit,
 ) {
     item(
         key = "summary",
+        span = fullLine,
         contentType = "summary",
     ) {
         GroupsSummaryCard(
@@ -78,16 +85,19 @@ internal fun LazyListScope.groupsListItems(
     val open = state.openGroups
     item(
         key = "open-header",
+        span = fullLine,
         contentType = "header",
     ) {
         OpenHeader(
             count = open.size,
+            state = state,
             onEvent = onEvent,
         )
     }
     if (state.showsNoOpenGroups) {
         item(
             key = "no-open",
+            span = fullLine,
             contentType = "empty",
         ) {
             Text(
@@ -101,24 +111,43 @@ internal fun LazyListScope.groupsListItems(
             )
         }
     }
-    itemsIndexed(
-        open,
-        key = { _, group -> group.id },
-        contentType = { _, _ -> "group" },
-    ) { index, group ->
-        GroupListRow(
-            group = group,
-            shape = groupedRowShapeOf(index, open.size),
-            isOnline = state.exit.isOnline,
-            onEvent = onEvent,
-            onLongPress = { onLongPress(group) },
-            modifier = Modifier.padding(bottom = 2.dp),
-        )
+    if (state.showsGrid) {
+        items(
+            open,
+            key = { group -> group.id },
+            contentType = { "card" },
+        ) { group ->
+            GroupGridCard(
+                group = group,
+                size = state.layout.gridSize,
+                isOnline = state.exit.isOnline,
+                onEvent = onEvent,
+                onLongPress = { onLongPress(group) },
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
+    } else {
+        itemsIndexed(
+            open,
+            key = { _, group -> group.id },
+            span = { _, _ -> fullLine() },
+            contentType = { _, _ -> "group" },
+        ) { index, group ->
+            GroupListRow(
+                group = group,
+                shape = groupedRowShapeOf(index, open.size),
+                isOnline = state.exit.isOnline,
+                onEvent = onEvent,
+                onLongPress = { onLongPress(group) },
+                modifier = Modifier.padding(bottom = 2.dp),
+            )
+        }
     }
     val settled = state.settledGroups
     if (settled.isEmpty()) return
     item(
         key = "settled-header",
+        span = fullLine,
         contentType = "header",
     ) {
         SettledToggle(
@@ -131,6 +160,7 @@ internal fun LazyListScope.groupsListItems(
     itemsIndexed(
         settled,
         key = { _, group -> group.id },
+        span = { _, _ -> fullLine() },
         contentType = { _, _ -> "group" },
     ) { index, group ->
         GroupListRow(
@@ -147,6 +177,7 @@ internal fun LazyListScope.groupsListItems(
 @Composable
 private fun OpenHeader(
     count: Int,
+    state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
 ) {
     Row(
@@ -166,6 +197,11 @@ private fun OpenHeader(
                 .semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        GroupsDisplayMenu(
+            layout = state.layout,
+            canPickGridSize = state.canPickGridSize,
+            onEvent = onEvent,
         )
         FilledTonalButton(onClick = { onEvent(GroupsUiEvent.OnCreateGroupClicked) }) {
             Icon(
@@ -295,7 +331,7 @@ private fun GroupListRow(
 }
 
 @Composable
-private fun SettledLabel() {
+internal fun SettledLabel() {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -319,40 +355,12 @@ private fun GroupMetaRow(
     group: GroupRow,
     detail: String,
 ) {
-    val members = membersTextOf(group.memberCount)
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Why: the faces only show who is in it; TalkBack reads the member count instead.
-        Row(
-            modifier = Modifier.clearAndSetSemantics { contentDescription = members },
-            horizontalArrangement = Arrangement.spacedBy((-6).dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            group.faces.forEach { face ->
-                AvatarBadge(
-                    initial = face.initial,
-                    color = face.color,
-                    size = 22.dp,
-                )
-            }
-            if (group.extraMemberCount > 0) {
-                Text(
-                    text = stringResource(R.string.groups_extra_members, group.extraMemberCount),
-                    modifier = Modifier.padding(start = 10.dp),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-        if (group.isPending) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
-            )
-        }
+        MemberFacesRow(group = group)
+        if (group.isPending) PendingIndicator()
         Text(
             text = detail,
             style = MaterialTheme.typography.bodyMedium,
@@ -361,6 +369,43 @@ private fun GroupMetaRow(
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+// Why: the faces only show who is in it; TalkBack reads the member count instead.
+@Composable
+internal fun MemberFacesRow(group: GroupRow) {
+    val members = membersTextOf(group.memberCount)
+    Row(
+        modifier = Modifier.clearAndSetSemantics { contentDescription = members },
+        horizontalArrangement = Arrangement.spacedBy((-6).dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        group.faces.forEach { face ->
+            AvatarBadge(
+                initial = face.initial,
+                color = face.color,
+                size = 22.dp,
+            )
+        }
+        if (group.extraMemberCount > 0) {
+            Text(
+                text = stringResource(R.string.groups_extra_members, group.extraMemberCount),
+                modifier = Modifier.padding(start = 10.dp),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+// Why: the orange dot of a group with a change waiting to go up.
+@Composable
+internal fun PendingIndicator() {
+    Box(
+        modifier = Modifier
+            .size(8.dp)
+            .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+    )
 }
 
 @Composable
@@ -372,7 +417,7 @@ internal fun membersTextOf(count: Int): String = if (count == 1) {
 
 // Why: "na fila · Mercado", "você recebe 120,00 e deve 218,00", "outros ainda acertam" or the last activity.
 @Composable
-private fun detailTextOf(
+internal fun detailTextOf(
     group: GroupRow,
     amountText: (Long) -> String,
     dates: DateTimeTextFormatter,

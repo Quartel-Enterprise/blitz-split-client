@@ -3,8 +3,9 @@ import Shared
 import SwiftUI
 
 /// The home's list on iPhone and iPad: the sync status while it asks for attention, "Overall balance", the open
-/// groups by their latest activity and, collapsed, the settled ones. Pulling down syncs. A row opens the group; its
-/// ⋯ menu and its long press hold the group's actions. The grid and the search come with their own flows.
+/// groups by their latest activity, as rows or as the grid's cards, and, collapsed, the settled ones, always rows.
+/// Pulling down syncs. A row opens the group; its ⋯ menu and its long press hold the group's actions. The search
+/// comes with its own flow.
 struct GroupsList: View {
     let model: GroupsModel
 
@@ -30,13 +31,29 @@ struct GroupsList: View {
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity)
                 }
-                ForEach(state.openGroups, id: \.id) { group in
-                    row(group)
+                if state.showsGrid {
+                    // One row holds the whole grid, drawn straight on the background
+                    if !state.openGroups.isEmpty {
+                        GroupsGrid(
+                            groups: state.openGroups,
+                            size: state.layout.gridSize,
+                            isOnline: state.exit.isOnline,
+                            send: { model.send($0) },
+                        )
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                    }
+                } else {
+                    ForEach(state.openGroups, id: \.id) { group in
+                        row(group)
+                    }
                 }
             } header: {
                 HStack {
                     Text("Open · \(state.openGroups.count)")
                     Spacer()
+                    GroupsDisplayMenu(state: state, send: { model.send($0) })
+                        .textCase(nil)
                     Button("New group", systemImage: "plus") {
                         model.send(GroupsUiEventOnCreateGroupClicked.shared)
                     }
@@ -216,23 +233,9 @@ private struct GroupListRow: View {
                     .font(.body.weight(.semibold))
                     .lineLimit(group.usesTwoNameLines ? 2 : 1)
                 HStack(spacing: 6) {
-                    HStack(spacing: -6) {
-                        ForEach(Array(group.faces.enumerated()), id: \.offset) { _, face in
-                            AvatarPhoto(initial: face.initial, color: face.color, photoUrl: nil, size: 20)
-                        }
-                        if group.extraMemberCount > 0 {
-                            Text(verbatim: "+\(group.extraMemberCount)")
-                                .font(.caption2.weight(.semibold))
-                                .padding(.leading, 10)
-                        }
-                    }
-                    .accessibilityElement()
-                    .accessibilityLabel(Text(verbatim: GroupsCopy.members(group.memberCount)))
+                    MemberFaces(group: group)
                     if group.isPending {
-                        Circle()
-                            .fill(.orange)
-                            .frame(width: 8, height: 8)
-                            .accessibilityHidden(true)
+                        PendingIndicator()
                     }
                     Text(verbatim: GroupsCopy.detail(group))
                         .lineLimit(1)
@@ -261,3 +264,13 @@ private struct GroupListRow: View {
     }
 }
 #endif
+
+/// The orange dot of a group with a change waiting to go up ("na fila"), on its row and its card.
+struct PendingIndicator: View {
+    var body: some View {
+        Circle()
+            .fill(.orange)
+            .frame(width: 8, height: 8)
+            .accessibilityHidden(true)
+    }
+}

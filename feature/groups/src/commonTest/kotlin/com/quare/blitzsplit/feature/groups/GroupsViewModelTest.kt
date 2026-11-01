@@ -30,6 +30,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
@@ -38,6 +39,8 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -2404,6 +2407,8 @@ class GroupsViewModelTest {
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             leaveGroup = LeaveGroup { Result.success(GroupExitOutcome.DONE) },
             deleteGroup = DeleteGroup { Result.success(GroupExitOutcome.DONE) },
+            observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
+            updateGroupsLayout = UpdateGroupsLayout {},
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },

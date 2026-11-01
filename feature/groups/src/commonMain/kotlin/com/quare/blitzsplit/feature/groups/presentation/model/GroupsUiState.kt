@@ -4,6 +4,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupsDisplay
+import com.quare.blitzsplit.core.model.GroupsLayout
 
 data class GroupsUiState(
     val displayName: String,
@@ -45,12 +47,25 @@ data class GroupsUiState(
     val exit: GroupExitState,
     // Why: the group of the last of those asked for, whose currency the dialog's amounts are in.
     val exitGroupId: String?,
+    // Why: "Lista" or "Grade" and the grid's size, as picked on this device; the list until one is read.
+    val layout: GroupsLayout,
     /*
      * Why: "Pagamento de Ana registrado." with "Desfazer", once Registrar pagamento, which "Acertar" opened over the
      * home, closes; the home consumes it, so the group's screens never show it later.
      */
     val recordedPayment: PaymentNotice?,
 ) {
+    // Why: only the open groups go in the grid; Quitados and what a filter finds stay a list.
+    val showsGrid: Boolean
+        get() = canPickGridSize && filterQuery.isBlank()
+
+    /*
+     * Why: "Tamanho da grade" is disabled while the list is picked, but not while a filter shows its matches as a list:
+     * the grid comes back as it was once the filter is cleared.
+     */
+    val canPickGridSize: Boolean
+        get() = layout.display == GroupsDisplay.GRID
+
     val exitGroup: GroupRow?
         get() = exitGroupId?.let { id -> groups.firstOrNull { it.id == id } }
 

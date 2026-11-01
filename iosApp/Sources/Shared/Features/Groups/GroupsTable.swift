@@ -3,8 +3,9 @@ import Shared
 import SwiftUI
 
 /// The Mac's home: "Overall balance", "To get back" and "To pay" over a zebra table of the groups that the
-/// toolbar's Open / Settled up segments pick. Clicking a row opens the group; its ⋯ and its right click hold the
-/// group's actions. The grid comes with its own flow.
+/// toolbar's Open / Settled up segments pick, or the open groups as the grid's cards, with the size slider below
+/// them as in the Finder. Clicking a row or a card opens the group; its ⋯ and its right click hold the group's
+/// actions. Settled up stays a table.
 struct GroupsTable: View {
     let model: GroupsModel
 
@@ -15,72 +16,136 @@ struct GroupsTable: View {
         let rows = (state.showsSettledGroups ? state.settledGroups : state.openGroups).map(GroupItem.init)
         VStack(alignment: .leading, spacing: 16) {
             GroupsSummaryCards(summary: state.summary, send: { model.send($0) })
-            Table(rows, selection: $selection) {
-                TableColumn("Group") { item in
-                    HStack(spacing: 8) {
-                        GroupAvatar(initials: item.row.initials, color: item.row.color, size: 22)
-                        Text(verbatim: item.row.name)
-                            .fontWeight(.medium)
-                            .lineLimit(1)
-                        if item.row.isPending {
-                            Text("queued")
-                                .font(.caption)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 1)
-                                .background(.orange.opacity(0.18), in: .rect(cornerRadius: 5))
-                                .foregroundStyle(.orange)
-                        }
+            if state.showsGrid, !state.showsSettledGroups {
+                GroupsGridPane(model: model)
+            } else {
+                table(rows)
+            }
+        }
+        .padding(20)
+    }
+
+    private func table(_ rows: [GroupItem]) -> some View {
+        let state = model.state
+        return Table(rows, selection: $selection) {
+            TableColumn("Group") { item in
+                HStack(spacing: 8) {
+                    GroupAvatar(initials: item.row.initials, color: item.row.color, size: 22)
+                    Text(verbatim: item.row.name)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                    if item.row.isPending {
+                        Text("queued")
+                            .font(.caption)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 1)
+                            .background(.orange.opacity(0.18), in: .rect(cornerRadius: 5))
+                            .foregroundStyle(.orange)
                     }
                 }
-                .width(min: 180, ideal: 260)
-                TableColumn("Members") { item in
-                    Text(verbatim: GroupsCopy.memberNames(item.row))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                .width(min: 120, ideal: 200)
-                TableColumn("Last activity") { item in
-                    Text(verbatim: GroupsCopy.activityColumn(item.row))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                .width(min: 120, ideal: 220)
-                TableColumn("Your balance") { item in
-                    Text(verbatim: item.balance)
-                        .fontWeight(.semibold)
-                        .monospacedDigit()
-                        .foregroundStyle(Palette.balance(item.row.isSettled ? 0 : item.row.netMinor))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-                .width(min: 110, ideal: 130)
-                TableColumn(String()) { item in
-                    GroupRowMenuButton(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
-                }
-                .width(44)
             }
-            .contextMenu(forSelectionType: String.self) { groupIds in
-                if let item = rows.first(where: { groupIds.contains($0.id) }) {
-                    GroupRowActions(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
-                }
+            .width(min: 180, ideal: 260)
+            TableColumn("Members") { item in
+                Text(verbatim: GroupsCopy.memberNames(item.row))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-            .alternatingRowBackgrounds(.enabled)
-            // The selected segment with no group, once every group is on the other one
+            .width(min: 120, ideal: 200)
+            TableColumn("Last activity") { item in
+                Text(verbatim: GroupsCopy.activityColumn(item.row))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            .width(min: 120, ideal: 220)
+            TableColumn("Your balance") { item in
+                Text(verbatim: item.balance)
+                    .fontWeight(.semibold)
+                    .monospacedDigit()
+                    .foregroundStyle(Palette.balance(item.row.isSettled ? 0 : item.row.netMinor))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+            .width(min: 110, ideal: 130)
+            TableColumn(String()) { item in
+                GroupRowMenuButton(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
+            }
+            .width(44)
+        }
+        .contextMenu(forSelectionType: String.self) { groupIds in
+            if let item = rows.first(where: { groupIds.contains($0.id) }) {
+                GroupRowActions(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
+            }
+        }
+        .alternatingRowBackgrounds(.enabled)
+        // The selected segment with no group, once every group is on the other one
+        .overlay {
+            if state.showsSettledGroups, state.showsNoSettledGroups {
+                Text("No settled groups")
+                    .foregroundStyle(.secondary)
+            } else if !state.showsSettledGroups, state.showsNoOpenGroups {
+                Text("No open groups")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .onChange(of: selection) { _, groupId in
+            guard let groupId else { return }
+            model.send(GroupsUiEventOnGroupClicked(groupId: groupId))
+            selection = nil
+        }
+    }
+}
+
+/// The open groups as cards, and under them the count and the grid's size slider: Compact at the small grid, Large at
+/// the big square.
+private struct GroupsGridPane: View {
+    let model: GroupsModel
+
+    var body: some View {
+        let state = model.state
+        VStack(spacing: 0) {
+            ScrollView {
+                GroupsGrid(
+                    groups: state.openGroups,
+                    size: state.layout.gridSize,
+                    isOnline: state.exit.isOnline,
+                    send: { model.send($0) },
+                )
+            }
             .overlay {
-                if state.showsSettledGroups, state.showsNoSettledGroups {
-                    Text("No settled groups")
-                        .foregroundStyle(.secondary)
-                } else if !state.showsSettledGroups, state.showsNoOpenGroups {
+                if state.showsNoOpenGroups {
                     Text("No open groups")
                         .foregroundStyle(.secondary)
                 }
             }
-            .onChange(of: selection) { _, groupId in
-                guard let groupId else { return }
-                model.send(GroupsUiEventOnGroupClicked(groupId: groupId))
-                selection = nil
+            HStack(spacing: 8) {
+                Text("\(state.openGroups.count) groups")
+                Spacer()
+                Image(systemName: "square.grid.3x3")
+                    .imageScale(.small)
+                    .accessibilityHidden(true)
+                Slider(value: sizeIndex, in: 0 ... 2, step: 1)
+                    .controlSize(.mini)
+                    .frame(width: 96)
+                    .accessibilityLabel(Text("Grid size"))
+                    .accessibilityValue(Text(GroupsDisplayCopy.gridSizeName(state.layout.gridSize)))
+                Image(systemName: "square")
+                    .accessibilityHidden(true)
             }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .frame(height: 28)
+            .padding(.horizontal, 6)
         }
-        .padding(20)
+    }
+
+    /// 0 for Compact, 1 for Standard and 2 for Large.
+    private var sizeIndex: Binding<Double> {
+        Binding(
+            get: { Double(GroupsDisplayCopy.gridSizes.firstIndex(of: model.state.layout.gridSize) ?? 1) },
+            set: { value in
+                let index = min(max(Int(value.rounded()), 0), GroupsDisplayCopy.gridSizes.count - 1)
+                model.send(GroupsUiEventOnGridSizeChanged(size: GroupsDisplayCopy.gridSizes[index]))
+            },
+        )
     }
 }
 

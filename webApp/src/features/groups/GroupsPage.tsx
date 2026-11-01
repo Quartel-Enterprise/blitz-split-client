@@ -1,32 +1,33 @@
-import { Check, ChevronRight, CloudOff, ListFilter, Plus, QrCode, RefreshCw, SquarePlus } from 'lucide-react'
+import { ChevronRight, CloudOff, ListFilter, Plus, QrCode, RefreshCw, SquarePlus } from 'lucide-react'
 import type { GroupsPresenter, JsBalanceTotal, JsGroupRow, JsGroupsState } from 'blitzsplit-shared'
 import { useState, type ReactNode } from 'react'
 import { useDraft } from '@/hooks/useDraft'
-import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupExitDialog } from '@/features/group-detail/GroupExitDialog'
+import { Faces, GroupBalance, QueuedBadge, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { GroupRowMenu } from '@/features/groups/GroupRowMenu'
+import { GroupsDisplayControls, GroupsGrid } from '@/features/groups/GroupsGrid'
 import { t, type MessageKey } from '@/i18n'
-import { formatShortDate } from '@/lib/dates'
-import { formatMoney, formatPlainMoney, formatSignedMoney } from '@/lib/money'
+import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
 /**
  * The groups page: "Saldo geral", "A receber" and "A pagar", the tabs Em aberto / Quitados with "Filtrar grupos", and
  * the groups as a table (desktop and tablet, which drops the activity column) or a list (phone). A row opens the
- * group; its ⋯ menu (or a right click on the table) holds the group's actions. The grid comes with its own flow.
+ * group; its ⋯ menu (or a right click on the table) holds the group's actions. The open groups can be a grid of cards
+ * instead, picked with "Lista" / "Grade" next to the filter.
  */
 export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
   const groups = state.showsSettledGroups ? state.settledGroups : state.openGroups
   const showsNoGroups = state.showsSettledGroups ? state.showsNoSettledGroups : state.showsNoOpenGroups
   /*
-   * Why: one row's menu at a time, which its ⋯ or a right click on the table's row opens. The table and the phone's
-   * list are both rendered (CSS hides one), so the key says which, or the hidden twin's menu would open too.
+   * Why: one row's menu at a time, which its ⋯ or a right click on the table's row or a card opens. The table and the
+   * phone's list are both rendered (CSS hides one), so the key says which, or the hidden twin's menu would open too.
    */
   const [openMenu, setOpenMenu] = useState<string | null>(null)
-  const menuOf = (group: JsGroupRow, surface: 'table' | 'cards') => {
+  const menuOf = (group: JsGroupRow, surface: 'table' | 'cards' | 'grid') => {
     const key = `${surface}:${group.id}`
     return (
       <GroupRowMenu
@@ -76,6 +77,7 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
           </StatusTab>
         </div>
         <GroupsFilter presenter={presenter} query={state.filterQuery} />
+        <GroupsDisplayControls presenter={presenter} state={state} />
       </div>
 
       {groups.length === 0 ? (
@@ -84,6 +86,15 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
         ) : (
           state.filterQuery.trim() && <p className="py-6 text-center text-sm text-muted-foreground">{t('groups_noMatch', { query: state.filterQuery.trim() })}</p>
         )
+      ) : state.showsGrid && !state.showsSettledGroups ? (
+        // Why: only the open groups go in the grid; the Quitados tab stays the table or the list.
+        <GroupsGrid
+          presenter={presenter}
+          groups={groups}
+          gridSize={state.gridSize}
+          menuOf={(group) => menuOf(group, 'grid')}
+          onContextMenu={(groupId) => setOpenMenu(`grid:${groupId}`)}
+        />
       ) : (
         <>
           <GroupsTable
@@ -260,94 +271,6 @@ function GroupsFilter({ presenter, query }: { presenter: GroupsPresenter; query:
       />
     </label>
   )
-}
-
-/** "Hoje", "Ontem", "Há 3 dias", "Há 1 semana" or "3 de out.". */
-function activityText(group: JsGroupRow): string {
-  const count = group.activityCount
-  switch (group.activityAge) {
-    case 'TODAY':
-      return t('groups_activityToday')
-    case 'YESTERDAY':
-      return t('groups_activityYesterday')
-    case 'DAYS':
-      return t(count === 1 ? 'groups_activityDaysOne' : 'groups_activityDaysOther', { count })
-    case 'WEEKS':
-      return t(count === 1 ? 'groups_activityWeeksOne' : 'groups_activityWeeksOther', { count })
-    default:
-      return formatShortDate(group.lastActivityMillis)
-  }
-}
-
-/** The Última atividade column: when, then what else the row has to say ("Ontem · você recebe 120,00 e deve 218,00"). */
-function lastActivityText(group: JsGroupRow): string {
-  const when = activityText(group)
-  switch (group.detail) {
-    case 'EVERYONE_SETTLED':
-      return t('groups_metaEveryoneSettled', { date: formatShortDate(group.lastActivityMillis) })
-    case 'QUEUED':
-      return group.pendingBillDescription ? `${when} · ${t('groups_metaQueuedBill', { bill: group.pendingBillDescription })}` : when
-    case 'MIXED':
-      return `${when} · ${t('groups_metaMixed', { receives: formatPlainMoney(group.receivesMinor, group.fractionDigits), owes: formatPlainMoney(group.owesMinor, group.fractionDigits) })}`
-    case 'OTHERS_STILL_SETTLING':
-      return `${when} · ${t('groups_metaOthersSettling')}`
-    case 'INVITE_SOMEONE':
-      return `${t('groups_onlyYou')} · ${t('groups_metaInvite')}`
-    default:
-      return when
-  }
-}
-
-const balanceLabels: Record<string, MessageKey> = {
-  TO_RECEIVE: 'groups_balanceToReceive',
-  YOU_OWE: 'groups_balanceYouOwe',
-  YOU_ARE_SETTLED: 'groups_balanceYouAreSettled',
-  NO_EXPENSES: 'groups_noExpenses',
-}
-
-/** "+R$ 214,90 a receber", "−R$ 98,00 você deve", "R$ 0,00 sem despesas", or "Quitado". */
-function GroupBalance({ group }: { group: JsGroupRow }) {
-  if (group.isSettled) {
-    return (
-      <span className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground">
-        <Check aria-hidden className="size-4" /> {t('groups_balanceEveryoneSettled')}
-      </span>
-    )
-  }
-  return (
-    <span className="flex flex-col items-end">
-      <span className={cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(group.netMinor))}>{formatSignedMoney(group.netMinor, group.currency, group.fractionDigits)}</span>
-      <span className="text-xs text-muted-foreground">{t(balanceLabels[group.balanceKind] ?? 'groups_noExpenses')}</span>
-    </span>
-  )
-}
-
-function QueuedBadge() {
-  return (
-    <span className="inline-flex h-5 shrink-0 items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 text-[11px] font-medium text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300">
-      {t('groups_queued')}
-    </span>
-  )
-}
-
-function Faces({ group }: { group: JsGroupRow }) {
-  return (
-    <span className="flex items-center -space-x-1.5">
-      {group.faces.map((face, index) => (
-        <Avatar key={index} initial={face.initial} color={face.color} className="size-6 text-[10px] ring-2 ring-card" />
-      ))}
-      {group.extraMemberCount > 0 && (
-        <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-semibold text-muted-foreground ring-2 ring-card">
-          +{group.extraMemberCount}
-        </span>
-      )}
-    </span>
-  )
-}
-
-function membersText(count: number): string {
-  // Why: a group of one is "Just you", so the count is always plural.
-  return count === 1 ? t('groups_onlyYou') : t('groups_memberCount', { count })
 }
 
 interface GroupRowsProps {

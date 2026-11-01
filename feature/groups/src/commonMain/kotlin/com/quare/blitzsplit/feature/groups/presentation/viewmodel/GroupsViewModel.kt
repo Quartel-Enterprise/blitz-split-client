@@ -20,12 +20,17 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupsDisplay
+import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -68,6 +73,7 @@ class GroupsViewModel(
     private val syncNow: SyncNow,
     private val navigator: Navigator,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
+    private val updateGroupsLayout: UpdateGroupsLayout,
     leaveGroup: LeaveGroup,
     deleteGroup: DeleteGroup,
     observeRecordedPayment: ObserveRecordedPayment,
@@ -83,6 +89,7 @@ class GroupsViewModel(
     observeGroupsMoney: ObserveGroupsMoney,
     connectivityObserver: NetworkConnectivityObserver,
     observeGroupDeletions: ObserveGroupDeletions,
+    observeGroupsLayout: ObserveGroupsLayout,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -104,6 +111,7 @@ class GroupsViewModel(
                 deletedGroupNotice = null,
                 exit = GroupExitState.idle,
                 exitGroupId = null,
+                layout = GroupsLayout.initial,
                 recordedPayment = null,
             ),
         )
@@ -215,6 +223,9 @@ class GroupsViewModel(
         exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
+        observeGroupsLayout()
+            .onEach { layout -> uiState.update { it.copy(layout = layout) } }
+            .launchIn(viewModelScope)
         // Why: only the group a row's "Acertar" was about can owe the home a notice; a group's own screens show theirs.
         notices.watch(
             scope = viewModelScope,
@@ -289,11 +300,35 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnFilterChanged -> uiState.update { it.copy(filterQuery = event.query) }
 
+            is GroupsUiEvent.OnDisplayChanged -> changeDisplay(event.display)
+
+            is GroupsUiEvent.OnGridSizeChanged -> changeGridSize(event.size)
+
             GroupsUiEvent.OnBalancesTabClicked,
             GroupsUiEvent.OnContactsTabClicked,
             GroupsUiEvent.OnActivityTabClicked,
             -> showComingSoon()
         }
+    }
+
+    private fun changeDisplay(display: GroupsDisplay) {
+        saveLayout(uiState.value.layout.copy(display = display))
+    }
+
+    // Why: the size is disabled while the list is picked, so a late tap on it doesn't change the grid unseen.
+    private fun changeGridSize(size: GroupGridSize) {
+        if (!uiState.value.canPickGridSize) return
+        saveLayout(uiState.value.layout.copy(gridSize = size))
+    }
+
+    /*
+     * Why: the state takes the pick at once, so a second pick before the device stored the first (the Mac's slider
+     * dragged back and forth) builds on it instead of on the stale layout; the stored layout then confirms it.
+     */
+    private fun saveLayout(layout: GroupsLayout) {
+        if (layout == uiState.value.layout) return
+        uiState.update { it.copy(layout = layout) }
+        viewModelScope.launch { updateGroupsLayout(layout) }
     }
 
     private fun showComingSoon() {

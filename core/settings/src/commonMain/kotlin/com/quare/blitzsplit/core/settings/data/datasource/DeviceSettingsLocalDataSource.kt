@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface DeviceSettingsLocalDataSource {
     fun observe(): Flow<DeviceSettingsEntity?>
 
-    suspend fun upsert(entity: DeviceSettingsEntity)
+    // Why: each setting changes only its own column, so picking the grid never resets the theme.
+    suspend fun update(transform: (DeviceSettingsEntity) -> DeviceSettingsEntity)
 }

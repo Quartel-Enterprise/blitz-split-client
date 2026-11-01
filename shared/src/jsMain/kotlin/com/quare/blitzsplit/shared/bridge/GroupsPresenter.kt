@@ -2,6 +2,8 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
@@ -108,6 +110,12 @@ class JsGroupsState(
     val exit: JsGroupExit,
     // Why: the group those dialogs are about, whose currency their amounts are in.
     val exitGroup: JsGroupRow?,
+    // Why: GroupsDisplay's code ("list" or "grid") and GroupGridSize's ("compact", "standard" or "large").
+    val display: String,
+    val gridSize: String,
+    // Why: the open groups as cards; Quitados stays the table or the list.
+    val showsGrid: Boolean,
+    val canPickGridSize: Boolean,
     // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento opened by a row's Acertar closes.
     val recordedPayment: JsPaymentNotice?,
 )
@@ -144,6 +152,10 @@ class GroupsPresenter {
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
                 exit = toJsGroupExit(state.exit),
                 exitGroup = state.exitGroup?.let(::toJsGroupRow),
+                display = state.layout.display.code,
+                gridSize = state.layout.gridSize.code,
+                showsGrid = state.showsGrid,
+                canPickGridSize = state.canPickGridSize,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
             )
         }
@@ -216,6 +228,16 @@ class GroupsPresenter {
 
     fun filter(query: String) {
         viewModel.onEvent(GroupsUiEvent.OnFilterChanged(query))
+    }
+
+    // Why: the toggle "Lista" / "Grade", by GroupsDisplay's code; a code this version doesn't know does nothing.
+    fun changeDisplay(display: String) {
+        GroupsDisplay.fromCodeOrNull(display)?.let { viewModel.onEvent(GroupsUiEvent.OnDisplayChanged(it)) }
+    }
+
+    // Why: the Select "Tamanho", by GroupGridSize's code.
+    fun changeGridSize(size: String) {
+        GroupGridSize.fromCodeOrNull(size)?.let { viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(it)) }
     }
 
     // Why: a row's ⋯ menu or its right click.

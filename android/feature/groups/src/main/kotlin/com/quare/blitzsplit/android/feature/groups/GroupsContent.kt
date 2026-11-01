@@ -20,9 +20,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -86,7 +87,7 @@ fun GroupsContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val title = stringResource(R.string.groups_title)
-    val listState = rememberLazyListState()
+    val listState = rememberLazyGridState()
     // Why: the row whose long press opened the actions sheet; it closes once its group leaves the list.
     var actionsGroupId by rememberSaveable { mutableStateOf<String?>(null) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -202,20 +203,30 @@ private fun GroupsTopBar(
     )
 }
 
-// Why: a tablet keeps the list in one centered column, 560dp at most.
+/*
+ * Why: a tablet keeps the list in one centered column, 560dp at most. One grid holds the list and the grid, so
+ * switching keeps the scroll: everything but the grid's cards takes the whole line.
+ */
 @Composable
 private fun GroupsListPane(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
-    listState: LazyListState,
+    listState: LazyGridState,
     onLongPress: (GroupRow) -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter,
     ) {
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = if (state.showsGrid) {
+                GridCells.Adaptive(
+                    minCardWidthOf(state.layout.gridSize),
+                )
+            } else {
+                GridCells.Fixed(1)
+            },
             state = listState,
             // Why: the cap comes before fillMaxSize, which would otherwise fix the width to the whole pane.
             modifier = Modifier
@@ -228,10 +239,12 @@ private fun GroupsListPane(
                 // Why: room for the FAB over the last row.
                 bottom = 96.dp,
             ),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (state.syncBadge != null) {
                 item(
                     key = "sync",
+                    span = fullLine,
                     contentType = "sync",
                 ) {
                     Box(modifier = Modifier.padding(bottom = 12.dp)) {

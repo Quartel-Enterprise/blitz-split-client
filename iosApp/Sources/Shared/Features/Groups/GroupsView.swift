@@ -124,6 +124,10 @@ struct MainTabView: View {
                             }
                         }
                 }
+                #if os(macOS)
+                // What the View menu's Grid Size reads and changes, only while the groups are in front
+                .focusedSceneValue(\.groupsModel, path.isEmpty ? model : nil)
+                #endif
             }
             Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
@@ -252,6 +256,15 @@ struct GroupsView: View {
                     }
                     .pickerStyle(.segmented)
                 }
+                // List or Grid, as in the Finder; the size is the slider under the grid and View › Grid Size
+                ToolbarItem(placement: .principal) {
+                    Picker("View", selection: displayBinding) {
+                        Label("List", systemImage: GroupsDisplayCopy.displayIcon(.list)).tag(GroupsDisplay.list)
+                        Label("Grid", systemImage: GroupsDisplayCopy.displayIcon(.grid)).tag(GroupsDisplay.grid)
+                    }
+                    .pickerStyle(.segmented)
+                    .labelStyle(.iconOnly)
+                }
             }
             if state.canRetrySync {
                 ToolbarItem(placement: .primaryAction) {
@@ -306,6 +319,14 @@ struct GroupsView: View {
     }
 
     #if os(macOS)
+    /// List or Grid, the toolbar's other segments.
+    private var displayBinding: Binding<GroupsDisplay> {
+        Binding(
+            get: { model.state.layout.display },
+            set: { model.send(GroupsUiEventOnDisplayChanged(display: $0)) },
+        )
+    }
+
     /// Open or Settled up, the toolbar's segments.
     private var settledBinding: Binding<Bool> {
         Binding(

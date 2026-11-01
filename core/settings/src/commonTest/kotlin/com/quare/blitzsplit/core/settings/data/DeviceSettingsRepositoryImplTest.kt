@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.core.settings.data
 
+import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupsDisplay
+import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
@@ -18,6 +21,7 @@ class DeviceSettingsRepositoryImplTest {
     private lateinit var local: FakeDeviceSettingsLocalDataSource
     private lateinit var repository: DeviceSettingsRepositoryImpl
     private lateinit var observed: MutableList<ThemePreference>
+    private lateinit var observedLayouts: MutableList<GroupsLayout>
 
     @Test
     fun `GIVEN a fresh install with no theme stored WHEN observing the theme THEN follows the system`() = runTest {
@@ -143,17 +147,131 @@ class DeviceSettingsRepositoryImplTest {
             assertEquals(listOf(ThemePreference.SYSTEM), observed)
         }
 
-    private fun settings(theme: String): DeviceSettingsEntity = DeviceSettingsEntity(
+    @Test
+    fun `GIVEN nothing picked on this device WHEN observing the layout THEN is the list with the standard grid`() =
+        runTest {
+            // Given
+            prepareScenario(stored = null)
+
+            // When
+            val layouts = observedLayouts.toList()
+
+            // Then
+            assertEquals(listOf(GroupsLayout.initial), layouts)
+        }
+
+    @Test
+    fun `GIVEN the large grid picked on this device WHEN observing the layout THEN is the large grid`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                groupsDisplay = "grid",
+                groupGridSize = "large",
+            ),
+        )
+
+        // When
+        val layouts = observedLayouts.toList()
+
+        // Then
+        assertEquals(listOf(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)), layouts)
+    }
+
+    @Test
+    fun `GIVEN layout codes this version does not know WHEN observing the layout THEN each falls back on its own`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "light",
+                    groupsDisplay = "map",
+                    groupGridSize = "compact",
+                ),
+            )
+
+            // When
+            val layouts = observedLayouts.toList()
+
+            // Then
+            assertEquals(listOf(GroupsLayout(GroupsDisplay.LIST, GroupGridSize.COMPACT)), layouts)
+        }
+
+    @Test
+    fun `GIVEN dark picked WHEN picking the compact grid THEN stores it and keeps dark`() = runTest {
+        // Given
+        prepareScenario(stored = settings(theme = "dark"))
+
+        // When
+        repository.updateGroupsLayout(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.COMPACT))
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    groupsDisplay = "grid",
+                    groupGridSize = "compact",
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(ThemePreference.DARK), observed)
+        assertEquals(
+            listOf(GroupsLayout.initial, GroupsLayout(GroupsDisplay.GRID, GroupGridSize.COMPACT)),
+            observedLayouts,
+        )
+    }
+
+    @Test
+    fun `GIVEN the grid picked WHEN picking dark THEN keeps the grid`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                groupsDisplay = "grid",
+                groupGridSize = "large",
+            ),
+        )
+
+        // When
+        repository.updateTheme(ThemePreference.DARK)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    groupsDisplay = "grid",
+                    groupGridSize = "large",
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)), observedLayouts)
+    }
+
+    private fun settings(
+        theme: String,
+        groupsDisplay: String? = null,
+        groupGridSize: String? = null,
+    ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
+        groupsDisplay = groupsDisplay,
+        groupGridSize = groupGridSize,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
         local = FakeDeviceSettingsLocalDataSource(stored)
         repository = DeviceSettingsRepositoryImpl(local = local)
         observed = mutableListOf()
+        observedLayouts = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeTheme().collect(observed::add)
+        }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeGroupsLayout().collect(observedLayouts::add)
         }
     }
 }
@@ -175,8 +293,14 @@ private class FakeDeviceSettingsLocalDataSource(
 
     override fun observe(): Flow<DeviceSettingsEntity?> = emissions
 
-    override suspend fun upsert(entity: DeviceSettingsEntity) {
-        rows[entity.id] = entity
+    override suspend fun update(transform: (DeviceSettingsEntity) -> DeviceSettingsEntity) {
+        val current = rows[SINGLE_ROW_ID] ?: DeviceSettingsEntity(
+            id = SINGLE_ROW_ID,
+            theme = "system",
+            groupsDisplay = null,
+            groupGridSize = null,
+        )
+        rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()
     }
 

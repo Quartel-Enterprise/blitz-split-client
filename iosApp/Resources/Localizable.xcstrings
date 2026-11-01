@@ -7806,6 +7806,157 @@
           }
         }
       }
+    },
+    "View" : {
+      "comment" : "The home's menu (iPhone) or toolbar segments (Mac) that pick the list or the grid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exibição"
+          }
+        }
+      }
+    },
+    "List" : {
+      "comment" : "The home's groups as a list, in the View menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista"
+          }
+        }
+      }
+    },
+    "Grid" : {
+      "comment" : "The home's groups as a grid of cards, in the View menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade"
+          }
+        }
+      }
+    },
+    "Grid size" : {
+      "comment" : "The size of the home's grid cards: the menu's section and the Mac's slider",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamanho da grade"
+          }
+        }
+      }
+    },
+    "Grid Size" : {
+      "comment" : "The Mac's View menu item that picks the size of the home's grid cards",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamanho da grade"
+          }
+        }
+      }
+    },
+    "Compact" : {
+      "comment" : "The smallest grid cards on the home",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compacto"
+          }
+        }
+      }
+    },
+    "Standard" : {
+      "comment" : "The middle size of the home's grid cards",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padrão"
+          }
+        }
+      }
+    },
+    "Large" : {
+      "comment" : "The biggest grid cards on the home",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grande"
+          }
+        }
+      }
+    },
+    "View: list" : {
+      "comment" : "The home's View button while the groups show as a list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exibição: lista"
+          }
+        }
+      }
+    },
+    "View: grid" : {
+      "comment" : "The home's View button while the groups show as a grid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exibição: grade"
+          }
+        }
+      }
+    },
+    "%lld groups" : {
+      "comment" : "Under the Mac's grid: how many groups it shows",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld group"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld groups"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld grupo"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld grupos"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

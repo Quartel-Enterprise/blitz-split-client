@@ -34,6 +34,9 @@ struct BoraRacharApp: App {
         #if os(macOS)
         .defaultSize(width: 960, height: 680)
         .windowResizability(.contentMinSize)
+        .commands {
+            GroupsCommands()
+        }
         #endif
     }
 }

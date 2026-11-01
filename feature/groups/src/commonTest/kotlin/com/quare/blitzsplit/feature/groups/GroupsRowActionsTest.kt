@@ -31,12 +31,15 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -548,6 +551,8 @@ class GroupsRowActionsTest {
                 deletedGroupIds += groupId
                 deleteResult
             },
+            observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
+            updateGroupsLayout = UpdateGroupsLayout {},
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },

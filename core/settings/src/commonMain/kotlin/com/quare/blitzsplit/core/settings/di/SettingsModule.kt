@@ -4,9 +4,13 @@ import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDat
 import com.quare.blitzsplit.core.settings.data.datasource.RoomDeviceSettingsLocalDataSource
 import com.quare.blitzsplit.core.settings.data.repository.DeviceSettingsRepositoryImpl
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePreferenceUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateThemePreferenceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -18,4 +22,6 @@ val settingsModule = module {
     singleOf(::DeviceSettingsRepositoryImpl).bind<DeviceSettingsRepository>()
     factoryOf(::ObserveThemePreferenceUseCase).bind<ObserveThemePreference>()
     factoryOf(::UpdateThemePreferenceUseCase).bind<UpdateThemePreference>()
+    factoryOf(::ObserveGroupsLayoutUseCase).bind<ObserveGroupsLayout>()
+    factoryOf(::UpdateGroupsLayoutUseCase).bind<UpdateGroupsLayout>()
 }
