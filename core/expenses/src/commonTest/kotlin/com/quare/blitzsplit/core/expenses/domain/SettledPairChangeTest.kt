@@ -138,6 +138,35 @@ class SettledPairChangeTest {
     }
 
     @Test
+    fun `GIVEN a payment after the bill WHEN Quando moves past it THEN says nothing`() {
+        // Given
+        val changed = jantar
+            .withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+            .copy(spentAt = PAID_AT + 1L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(elisaPaidBruno))
+
+        // Then
+        assertNull(change)
+    }
+
+    @Test
+    fun `GIVEN a payment dated before the bill WHEN Quando moves before it THEN warns of it`() {
+        // Given
+        val earlier = elisaPaidBruno.copy(paidAt = BILL_AT - 1L)
+        val changed = jantar
+            .withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+            .copy(spentAt = BILL_AT - 2L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(earlier))
+
+        // Then
+        assertEquals(SettledPairOutcome.OWES_AGAIN, change?.outcome)
+    }
+
+    @Test
     fun `GIVEN two pairs settled after the bill WHEN both change THEN names the latest payment which is mine`() {
         // Given
         val iPaidBruno = elisaPaidBruno.copy(

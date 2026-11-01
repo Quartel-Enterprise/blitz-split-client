@@ -37,7 +37,8 @@ data class SettledPairChange(
         /*
          * Why: the latest payment dated at or after the bill ("depois desta conta") between two people whose balance
          * the change moves, comparing the group's balances with the saved bill and with its change; a null change
-         * deletes it. Null when no such payment is there, so nothing is said.
+         * deletes it. "After the bill" follows the Quando being typed, since once saved that is the bill's date.
+         * Null when no such payment is there, so nothing is said.
          */
         fun findOrNull(
             saved: Expense,
@@ -49,8 +50,9 @@ data class SettledPairChange(
             val others = expenses.filter { it.id != saved.id }
             val before = GroupBalances.of(others + saved, settlements)
             val after = GroupBalances.of(others + listOfNotNull(changed), settlements)
+            val spentAt = changed?.spentAt ?: saved.spentAt
             val settlement = settlements
-                .filter { it.paidAt >= saved.spentAt }
+                .filter { it.paidAt >= spentAt }
                 .sortedByDescending { it.paidAt }
                 .firstOrNull { before.owedOf(it) != after.owedOf(it) }
                 ?: return null

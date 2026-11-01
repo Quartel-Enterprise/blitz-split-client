@@ -155,6 +155,38 @@ class EditAfterPaymentViewModelTest {
         }
 
     @Test
+    fun `GIVEN the total doubled WHEN Quando moves past the payment THEN the warning goes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("624,00"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(afterThePaymentMillis))
+
+            // Then
+            assertNull(viewModel.uiState.value.settledPair)
+        }
+
+    @Test
+    fun `GIVEN a payment dated before the bill WHEN Quando moves before it THEN the warning shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(brunoPaidAna.copy(paidAt = beforeTheBillMillis)))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("624,00"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(beforeThePaymentMillis))
+
+            // Then
+            assertEquals(
+                "Bruno",
+                viewModel.uiState.value.settledPair
+                    ?.payerName,
+            )
+        }
+
+    @Test
     fun `GIVEN no payment in the group WHEN the total doubles THEN warns of nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedSettlements = emptyList())
@@ -204,6 +236,13 @@ class EditAfterPaymentViewModelTest {
     private val route = Route.SplitBill(GROUP_ID, EXPENSE_ID, picksGroupFirst = false)
 
     private val yesterdayMillis = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()
+
+    // Why: Quando moved past Bruno's payment this morning, still before now.
+    private val afterThePaymentMillis = Instant.parse("2026-10-30T12:00:00Z").toEpochMilliseconds()
+
+    // Why: a payment two hours before the bill, and a Quando moved before it.
+    private val beforeTheBillMillis = Instant.parse("2026-10-29T18:00:00Z").toEpochMilliseconds()
+    private val beforeThePaymentMillis = Instant.parse("2026-10-29T10:00:00Z").toEpochMilliseconds()
 
     // Why: "Mercado", R$ 312,00 Ana paid yesterday, split equally among Ana, Pierre and Bruno.
     private val savedBill = Expense(

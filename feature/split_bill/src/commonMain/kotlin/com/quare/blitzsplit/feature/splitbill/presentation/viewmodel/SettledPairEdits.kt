@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.map
 
 /*
  * Why: what saving the form as it is typed and deleting the bill would each unsettle (7.4b), the first null while
- * the form can't be saved. Only who paid and the parts move a balance, so typing the description reads nothing.
+ * the form can't be saved. Only who paid, the parts and "Quando" move a balance or a payment's place after the bill,
+ * so typing the description reads nothing.
  */
 internal fun observeSettledPairs(
     expenseId: String,
@@ -31,21 +32,22 @@ internal fun observeSettledPairs(
 ) { change, group, expenses, settlements ->
     val saved = expenses.firstOrNull { it.id == expenseId }
     if (group == null || saved == null) return@combine null to null
-    val changed = change?.let { (payers, shares) ->
+    val changed = change?.let { (payers, shares, spentAt) ->
         saved.copy(
             amountMinor = shares.sumOf { it.amountMinor },
             payers = payers,
             shares = shares,
+            spentAt = spentAt,
         )
     }
     val editPair = changed?.let { SettledPairChange.findOrNull(saved, it, group, expenses, settlements) }
     editPair to SettledPairChange.findDeletionOrNull(expenseId, group, expenses, settlements)
 }
 
-private fun billChangeOf(state: SplitBillUiState): Pair<List<ExpensePayer>, List<ExpenseShare>>? {
+private fun billChangeOf(state: SplitBillUiState): Triple<List<ExpensePayer>, List<ExpenseShare>, Long>? {
     val shares = state.split.shares
     return if (state.isLoaded && state.isAmountValid && state.isPayerValid && shares != null) {
-        state.payersToSave to shares
+        Triple(state.payersToSave, shares, state.spentAt)
     } else {
         null
     }
