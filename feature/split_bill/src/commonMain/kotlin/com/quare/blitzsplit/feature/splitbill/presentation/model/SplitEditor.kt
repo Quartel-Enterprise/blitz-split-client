@@ -1,8 +1,11 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
+import com.quare.blitzsplit.core.expenses.domain.model.BillItemsSplit
 import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.ItemsBreakdown
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -16,7 +19,12 @@ data class SplitEditor(
     // Why: who paid the bill, who keep the cents a split can't share evenly while they are in it.
     val payerIds: List<String>,
     val currency: GroupCurrency,
+    // Why: "Itens da conta" while the bill splits by its items, null in any other mode.
+    val items: BillItems?,
 ) {
+    // Why: what the items give each one, worked out once per state like the shares.
+    val itemsBreakdown: ItemsBreakdown? = items?.let { BillItemsSplit.breakdownOf(it, payerIds) }
+
     /*
      * Why: what each row puts in the split in this mode; a row at 0 is out of it. Worked out once per state, like
      * shares, since every UI reads them many times on each keystroke.
@@ -27,6 +35,7 @@ data class SplitEditor(
             SplitMode.AMOUNT -> AmountInput.parse(row.valueText, currency) ?: 0L
             SplitMode.PERCENT -> AmountInput.parseWhole(row.valueText) ?: 0L
             SplitMode.SHARES -> row.parts
+            SplitMode.ITEMS -> itemsBreakdown?.people?.firstOrNull { it.memberId == row.person.id }?.totalMinor ?: 0L
         }
         SplitEntry(
             memberId = row.person.id,
@@ -35,12 +44,16 @@ data class SplitEditor(
     }
 
     // Why: each member's part, null while the split doesn't add up to the total or has nobody in it.
-    val shares: List<ExpenseShare>? = BillSplit.split(
-        totalMinor = totalMinor,
-        mode = mode,
-        entries = entries,
-        payerIds = payerIds,
-    )
+    val shares: List<ExpenseShare>? = if (mode == SplitMode.ITEMS) {
+        itemsBreakdown?.shares?.takeIf { shares -> shares.sumOf { it.amountMinor } == totalMinor && totalMinor > 0 }
+    } else {
+        BillSplit.split(
+            totalMinor = totalMinor,
+            mode = mode,
+            entries = entries,
+            payerIds = payerIds,
+        )
+    }
 
     // Why: "Pronto" only once it adds up.
     val addsUp: Boolean
@@ -66,7 +79,11 @@ data class SplitEditor(
 
     // Why: "Já foram R$ 558,00 de R$ 642,00".
     val assignedMinor: Long
-        get() = if (mode == SplitMode.AMOUNT) entries.sumOf { it.value } else totalMinor
+        get() = when (mode) {
+            SplitMode.AMOUNT -> entries.sumOf { it.value }
+            SplitMode.ITEMS -> itemsBreakdown?.totalMinor ?: 0L
+            else -> totalMinor
+        }
 
     // Why: "Faltam R$ 84,00" while positive, too much while negative.
     val remainingMinor: Long
@@ -99,6 +116,8 @@ data class SplitEditor(
 
             SplitMode.PERCENT -> percentLeftOrNull ?: SplitFact.PercentAddsUp
 
+            SplitMode.ITEMS -> amountLeftOrNull ?: SplitFact.AmountAddsUp(totalMinor)
+
             SplitMode.SHARES -> if (totalParts == 0L) {
                 SplitFact.Nobody
             } else {
@@ -130,7 +149,7 @@ data class SplitEditor(
                 )
             }
 
-            SplitMode.PERCENT -> listOfNotNull(among, out)
+            SplitMode.PERCENT, SplitMode.ITEMS -> listOfNotNull(among, out)
 
             SplitMode.SHARES -> sharesDetails
         }
@@ -146,8 +165,14 @@ data class SplitEditor(
                 SplitMode.AMOUNT -> amountLeftOrNull
                 SplitMode.PERCENT -> percentLeftOrNull
                 SplitMode.SHARES -> null
+                SplitMode.ITEMS -> looseItemsOrNull ?: amountLeftOrNull
             }
-            return listOfNotNull(progress, out)
+            val count = items
+                ?.items
+                ?.size
+                ?.takeIf { mode == SplitMode.ITEMS }
+                ?.let(SplitFact::Items)
+            return listOfNotNull(count, progress, out)
         }
 
     private val amountLeftOrNull: SplitFact?
@@ -156,6 +181,14 @@ data class SplitEditor(
             remainingMinor < 0 -> SplitFact.AmountOver(-remainingMinor)
             else -> null
         }
+
+    // Why: "2 itens sem ninguém", once the only people in some items left the group.
+    private val looseItemsOrNull: SplitFact?
+        get() = itemsBreakdown
+            ?.looseItemIds
+            ?.size
+            ?.takeIf { it > 0 }
+            ?.let(SplitFact::LooseItems)
 
     private val percentLeftOrNull: SplitFact?
         get() = when {

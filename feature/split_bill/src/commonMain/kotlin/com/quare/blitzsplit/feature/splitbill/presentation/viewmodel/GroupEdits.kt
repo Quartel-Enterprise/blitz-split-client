@@ -41,6 +41,10 @@ internal fun createInitialBillState(
         latestSpentAt = now,
         split = createEmptySplit(currency),
         splitEditor = null,
+        itemsEditor = null,
+        itemEditor = null,
+        itemDeletion = null,
+        feeEditor = null,
         defaultSplit = null,
         conflict = null,
         settledPair = null,
@@ -59,6 +63,7 @@ internal fun createEmptySplit(currency: GroupCurrency): SplitEditor = SplitEdito
     totalMinor = 0L,
     payerIds = emptyList(),
     currency = currency,
+    items = null,
 )
 
 internal fun toBillGroup(group: Group): BillGroup = BillGroup(
@@ -103,5 +108,9 @@ internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
     payerAmounts = null,
     split = createEmptySplit(currency),
     splitEditor = null,
+    itemsEditor = null,
+    itemEditor = null,
+    itemDeletion = null,
+    feeEditor = null,
     defaultSplit = null,
 )

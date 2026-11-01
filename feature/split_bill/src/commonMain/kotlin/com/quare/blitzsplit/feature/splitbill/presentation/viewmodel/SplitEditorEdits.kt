@@ -15,6 +15,9 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 
+// Why: the modes whose rows keep no text: Igual's checkbox, Partes' stepper and Itens, which the items give.
+private val modesWithoutText = setOf(SplitMode.EQUAL, SplitMode.SHARES, SplitMode.ITEMS)
+
 // Why: "Editar conta" opens the split as it was typed: who was in it, each one's value, percent or parts.
 internal fun splitEditorOf(
     expense: Expense,
@@ -29,7 +32,7 @@ internal fun splitEditorOf(
             person = person,
             isIncluded = weight > 0,
             valueText = when {
-                weight <= 0 || expense.splitMode == SplitMode.EQUAL || expense.splitMode == SplitMode.SHARES -> ""
+                weight <= 0 || expense.splitMode in modesWithoutText -> ""
 
                 expense.splitMode == SplitMode.AMOUNT -> AmountInput.format(
                     amountMinor = weight,
@@ -49,6 +52,7 @@ internal fun splitEditorOf(
         totalMinor = expense.amountMinor,
         payerIds = expense.payers.map { it.memberId },
         currency = currency,
+        items = expense.items?.toItemsAmong(people, isWholeGroupAtTable = false),
     )
 }
 
@@ -87,6 +91,7 @@ internal fun SplitEditor.withPeople(
         rows = rows,
         currency = currency,
         payerIds = payerIds,
+        items = items?.toItemsAmong(people, isWholeGroupAtTable = includesNewcomers),
     ).withShares()
 }
 
@@ -141,10 +146,18 @@ internal fun SplitEditor.toMode(
     }
     val values: Map<String, Long> = when (mode) {
         SplitMode.EQUAL, SplitMode.SHARES -> equalEntries.associate { it.memberId to it.value }
+
         SplitMode.AMOUNT -> splitEvenly(totalMinor, equalEntries)
+
         SplitMode.PERCENT -> splitEvenly(BillSplit.FULL_PERCENT, equalEntries)
+
+        // Why: Itens opens "Itens da conta" instead, whose "Pronto" sets the split.
+        SplitMode.ITEMS -> return this
     }
-    return copy(mode = mode).withRows { row ->
+    return copy(
+        mode = mode,
+        items = null,
+    ).withRows { row ->
         val value = values[row.person.id] ?: 0L
         row.copy(
             isIncluded = row.person.id in inSplit,
@@ -159,6 +172,25 @@ internal fun SplitEditor.toMode(
 }
 
 internal fun SplitEditor.withRows(change: (SplitRow) -> SplitRow): SplitEditor = copy(rows = rows.map(change))
+
+/*
+ * Why: Dividir under "Itens da conta" for a bill split by its items, by "Valores" with each one's total, so going
+ * back to it from the items starts from what they give.
+ */
+internal fun SplitEditor.toAmountsOfItems(decimalSeparator: Char): SplitEditor {
+    if (mode != SplitMode.ITEMS) return this
+    val totals = entries.associate { it.memberId to it.value }
+    return copy(
+        mode = SplitMode.AMOUNT,
+        items = null,
+    ).withRows { row ->
+        val value = totals[row.person.id] ?: 0L
+        row.copy(
+            isIncluded = value > 0,
+            valueText = if (value > 0) formatAmount(value, decimalSeparator) else "",
+        )
+    }.withShares()
+}
 
 // Why: each row's part, as "Dividir" shows it under or beside the name, while the split adds up.
 internal fun SplitEditor.withShares(): SplitEditor {
@@ -220,6 +252,7 @@ internal fun billDefaultSplitOf(
         totalMinor = totalMinor,
         payerIds = payerIds,
         currency = currency,
+        items = null,
     ).withShares()
     return BillDefaultSplit(
         mode = default.mode,
