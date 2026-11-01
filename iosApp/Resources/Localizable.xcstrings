@@ -287,6 +287,28 @@
         }
       }
     },
+    "No group open" : {
+      "comment" : "The column beside the empty home on an iPhone Duo open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum grupo aberto"
+          }
+        }
+      }
+    },
+    "Once you create or join a group, its expenses and balances show on this side of the fold." : {
+      "comment" : "The column beside the empty home on an iPhone Duo open, across the fold from the list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando você criar ou entrar num grupo, as despesas e os saldos aparecem deste lado da dobra."
+          }
+        }
+      }
+    },
     "all %lld members" : {
       "comment" : "Who a deleted group is gone for, in “gone for all 5 members”",
       "localizations" : {

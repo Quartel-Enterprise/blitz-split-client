@@ -115,8 +115,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Membros taking each other's place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
     tapped beside another takes its place; Convidar, Sair, Apagar and "Ver saldos" work from the list with the group
     beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
-    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). Only the group's tabs go
-    in the pane: anything else above the groups (Estatísticas, the profile, a joined invite) covers the whole window,
+    closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). With no group at all
+    (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
+    exists, while a book and an iPhone Duo open keep the half past the fold, saying "Nenhum grupo aberto"
+    (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane: anything else above the groups
+    (Estatísticas, the profile, a joined invite) covers the whole window,
     and a dialog or sheet (Convidar, Rachar conta, Conta) both panes, so the list never shows while it can't take
     taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
@@ -125,8 +128,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
-  - "Novo grupo": tapping the group's avatar cycles its color through the palette (no shapes yet), and Moeda starts
-    in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+  - "Novo grupo" opens full screen on an Android phone, in two columns lying down (the group, then "Quem
+    participa"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
+    right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
+    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar cycles its
+    color through the palette (no shapes yet), and Moeda starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "Novo
     grupo") and "Ana 2".
   - "Convidar" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
@@ -349,7 +355,19 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     a pasted link opens.
   - Android's "Tirar foto" asks for the camera first. Once it is refused for good, a snackbar "Permita a câmera nas
     configurações" offers "Configurações", which opens the app's settings page.
-  - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks.
+  - Foldables and the iPhone Duo follow the fold the device reports, never the window alone (decision 8: Android's
+    `FoldingFeature`, read as `FormFactor`; iOS 27.1's division region, `FoldDivision`), so a Galaxy Z Fold held as a
+    book is a book: two halves meet on the hinge band (24 dp on Android) and a dialog the book draws opens in its
+    right half with the other half under the scrim (`FoldDialog`), as the recovery code does on a book and on a
+    tabletop lying down (there above its hinge, which runs across the right half too). First access splits there
+    too: Boas-vindas' pitch, Seu perfil's avatar and Recuperar's accounts before the fold, what to tap after it, on
+    a book, a tabletop lying down and an iPhone Duo open; the Duo closed drops Boas-vindas' benefits. Every Apple
+    layout rule is the window's size (`ScreenLayout`), never the idiom, so an iPhone Duo open gets an iPad's list and
+    detail and
+    opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
+    [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
+  - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
+    SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.

@@ -44,7 +44,8 @@ struct ProfileSetupView: View {
     private var content: some View {
         Group {
             if layout.usesTwoColumns {
-                HStack(alignment: .center, spacing: 48) {
+                // An iPhone Duo open splits on its fold: the avatar on one side, the name on the other
+                TwoColumnsLayout(firstWidth: 340) {
                     ScrollView {
                         AvatarSection(model: model, avatarSize: layout.isLarge ? 144 : 104)
                             .padding(.vertical, 24)
@@ -53,6 +54,7 @@ struct ProfileSetupView: View {
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .frame(maxWidth: 340)
+                } second: {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             ProfileTitle(isLarge: layout.isLarge)
@@ -61,7 +63,6 @@ struct ProfileSetupView: View {
                     }
                     .scrollBounceBehavior(.basedOnSize)
                 }
-                .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
                 .padding(.horizontal, 32)
             } else {
                 ScrollViewReader { proxy in

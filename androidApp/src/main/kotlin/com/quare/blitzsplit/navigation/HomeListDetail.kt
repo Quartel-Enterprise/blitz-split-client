@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
-import com.quare.blitzsplit.android.designsystem.layout.ListDetailPaneSpacing
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
+import com.quare.blitzsplit.android.feature.groups.NoGroupOpenPane
 import com.quare.blitzsplit.core.navigation.Route
 
 /*
@@ -49,15 +49,31 @@ private fun homeDirectiveOf(
     listDetail: ListDetailLayout?,
 ): PaneScaffoldDirective = windowDirective.copy(
     maxHorizontalPartitions = if (listDetail != null) 2 else 1,
-    horizontalPartitionSpacerSize = if (listDetail != null) ListDetailPaneSpacing else 0.dp,
+    horizontalPartitionSpacerSize = listDetail?.paneSpacing ?: 0.dp,
     maxVerticalPartitions = 1,
     verticalPartitionSpacerSize = 0.dp,
 )
 
+/*
+ * Why: a tablet lying down draws the empty home in one pane, the detail only once the first group exists; a book
+ * keeps its halves, the empty detail in the one after the hinge (decision 5, each size's board).
+ */
+internal fun homeListDetailOf(
+    listDetail: ListDetailLayout?,
+    isHomeEmpty: Boolean,
+): ListDetailLayout? = listDetail?.takeUnless { isHomeEmpty && !it.isBook }
+
 // Why: the groups in the list pane, 520dp on a tablet and the half before the hinge on a book.
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal fun homeListPaneMetadataOf(listDetail: ListDetailLayout?): Map<String, Any> {
-    val listPane = ListDetailSceneStrategy.listPane(detailPlaceholder = { GroupPanePlaceholderBox() })
+internal fun homeListPaneMetadataOf(
+    listDetail: ListDetailLayout?,
+    isHomeEmpty: Boolean,
+): Map<String, Any> {
+    val listPane = ListDetailSceneStrategy.listPane(
+        detailPlaceholder = {
+            if (isHomeEmpty) NoGroupOpenPane() else GroupPanePlaceholderBox()
+        },
+    )
     if (listDetail == null) return listPane
     return listPane + ListDetailSceneStrategy.preferredPaneSize(width = listDetail.listPaneWidth)
 }

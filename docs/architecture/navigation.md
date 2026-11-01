@@ -150,16 +150,16 @@ above `Route.Groups`. Each UI decides from its own window whether it draws that 
 - Android: `AppNavDisplay` adds Material's `ListDetailSceneStrategy` (`adaptive-navigation3`) after the dialog and
   sheet strategies. `Route.Groups` carries `listPane` metadata (with its width and a placeholder), the group's tabs
   `detailPane`. `rememberHomeListDetailStrategy` caps the directive at two panes only where `rememberListDetailLayout`
-  says so (expanded width, not a phone lying down: a tablet lying down and an unfolded book, the hinge kept out),
-  else at one, which leaves the strategy out and the screens as on a phone. The strategy only claims the pane entries
+  says so (a tablet lying down and a book, the halves split on the hinge the device reports: see
+  [responsive-layouts.md](responsive-layouts.md)), else at one, which leaves the strategy out and the screens as on a phone. The strategy only claims the pane entries
   on top, so any other route above the groups (Estatísticas, the profile) is a scene of its own, full screen, and a
   dialog or sheet over the group keeps the scene drawn under it. `LocalInDetailPane` tells a screen it sits in the
   pane: `InGroupPane` reads it from the scene itself (`LocalListDetailSceneScope`, which Material provides to the
   panes it draws, while the list pane shows), never from the window, so a tab drawn alone keeps its back arrow.
   `rememberDeviceLayout` gives it a tablet's upright column, and it drops its back arrow and "Rachar conta", which
   the list's rail has.
-- Apple: `GroupsColumns` (the Groups and Search tabs) keeps the list's `NavigationStack` and, on an iPad lying down
-  (`ScreenLayout.showsListDetailOnPad`) while the path holds nothing but the group's tabs (or nothing), roots a second
+- Apple: `GroupsColumns` (the Groups and Search tabs) keeps the list's `NavigationStack` and, lying down with an
+  iPad's room (`ScreenLayout.showsListDetail`: an iPad, an iPhone Duo open) while the path holds nothing but the group's tabs (or nothing), roots a second
   one beside it with the first of them (else a placeholder). Any other route above the groups goes back to the one
   stack, which pushes the whole path over the list as upright, the way Android's strategy decides; the sheets, which
   the path leaves out, keep the columns under them. Only the tab in front reports the pane, once it has a size. The

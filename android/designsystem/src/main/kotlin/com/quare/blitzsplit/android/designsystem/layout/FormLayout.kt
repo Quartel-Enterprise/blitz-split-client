@@ -3,6 +3,8 @@ package com.quare.blitzsplit.android.designsystem.layout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -24,12 +26,15 @@ private val dialogWidth = 560.dp
 /*
  * Why: "Novo grupo" and "Editar grupo" open as a 560dp dialog over the screen behind them on a tablet, and full screen
  * with a single scrolling column elsewhere. The top bar is told which, so it can drop its insets and color in a dialog.
+ * Full screen, a form that hands a `secondColumn` (Novo grupo on a phone lying down) splits into two columns, each
+ * scrolling on its own, `content` first; the form decides when, since its one column orders the fields differently.
  */
 @Composable
 fun FormLayout(
     isDialog: Boolean,
     topBar: @Composable (isDialog: Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    secondColumn: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     if (isDialog) {
@@ -43,13 +48,16 @@ fun FormLayout(
         ) {
             Column {
                 topBar(true)
+                // Why: a dialog has one column, so a second one follows the first instead of being dropped.
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .imePadding()
                         .padding(bottom = 24.dp),
-                    content = content,
-                )
+                ) {
+                    content()
+                    secondColumn?.invoke(this)
+                }
             }
         }
     } else {
@@ -57,6 +65,14 @@ fun FormLayout(
             modifier = modifier.fillMaxSize(),
             topBar = { topBar(false) },
         ) { padding ->
+            if (secondColumn != null) {
+                FormColumnsRow(
+                    padding = padding,
+                    first = content,
+                    second = secondColumn,
+                )
+                return@Scaffold
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -74,5 +90,39 @@ fun FormLayout(
                 )
             }
         }
+    }
+}
+
+// Why: the fields bring their own side padding, so the row only adds what the canvas' margins and gap leave.
+@Composable
+private fun FormColumnsRow(
+    padding: PaddingValues,
+    first: @Composable ColumnScope.() -> Unit,
+    second: @Composable ColumnScope.() -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .imePadding()
+            .padding(
+                start = 24.dp,
+                end = 12.dp,
+            ),
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 24.dp),
+            content = first,
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 24.dp),
+            content = second,
+        )
     }
 }

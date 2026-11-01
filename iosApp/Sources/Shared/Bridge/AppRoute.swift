@@ -1,9 +1,5 @@
 import Shared
 
-#if os(iOS)
-import UIKit
-#endif
-
 /// Swift's view of the shared back stack entries: Hashable, so a NavigationStack path can hold it.
 enum AppRoute: Hashable, Identifiable {
     case welcome
@@ -81,11 +77,12 @@ enum AppRoute: Hashable, Identifiable {
 
     var id: Self { self }
 
-    /// iPad opens a key and a bill as a form sheet and the Mac as a sheet on its window, as the canvas draws
-    /// them; the iPhone pushes them. Deleting the account, a new group, its invite, editing a group, a new or
-    /// edited bill and recording a payment (settling up across groups included) are sheets everywhere.
-    /// The invite reader is a sheet on the Mac, and covers the whole screen on iPhone and iPad.
-    var presentsAsSheet: Bool {
+    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
+    /// and a bill open as a form sheet and on the Mac as a sheet on its window, as the canvas draws them; an iPhone,
+    /// lying down too, pushes them. Deleting the account, a new group, its invite, editing a group, a new or edited bill and recording a
+    /// payment (settling up across groups included) are sheets everywhere. The invite reader is a sheet on the Mac,
+    /// and covers the whole screen on iPhone and iPad.
+    func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         switch self {
         case .deleteAccount, .createGroup, .invite, .splitBill, .editGroup, .registerPayment, .settleUp:
             return true
@@ -99,7 +96,7 @@ enum AppRoute: Hashable, Identifiable {
             #if os(macOS)
             return true
             #else
-            return UIDevice.current.userInterfaceIdiom == .pad
+            return isLargeWindow
             #endif
         default:
             return false

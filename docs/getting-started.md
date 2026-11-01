@@ -4,8 +4,10 @@
 
 - JDK 21 or higher
 - Android Studio, with the Android SDK, for the Android app
-- macOS with Xcode 27 and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`), for the iOS,
-  iPadOS and macOS app
+- macOS Tahoe 26.6 or later with [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`) and an
+  Xcode with the iOS 27.1 SDK or newer, Xcode 27.1 at the least, for the iOS, iPadOS and macOS app. That SDK has the
+  iPhone Duo APIs (`reservedRegions(kind: .division)`), which the app uses behind `#available(iOS 27.1, *)` while
+  still running on iOS 26, and its Xcode the iPhone Duo simulator
 - Node.js with npm (a current LTS release), for the web app
 
 ## Local configuration
@@ -64,7 +66,8 @@ The Xcode project is generated, not versioned. Generate it, then open it:
 open iosApp/BoraRachar.xcodeproj
 ```
 
-Run the `BoraRachar-iOS` scheme on an iPhone or iPad simulator or the `BoraRachar-macOS` scheme on the Mac. A
+Run the `BoraRachar-iOS` scheme on an iPhone, iPad or iPhone Duo simulator or the `BoraRachar-macOS` scheme on the
+Mac. A
 pre-build phase runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode`, so the first build also compiles the
 Kotlin framework and takes a while. Rerun `generate-project.sh` after adding or removing Swift files, or after
 changing `iosApp/project.yml` or `version.properties`.
