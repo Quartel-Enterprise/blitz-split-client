@@ -176,7 +176,7 @@ struct MainTabView: View {
                 case .activity: model.send(GroupsUiEventOnActivityTabClicked.shared)
                 case .search: model.send(GroupsUiEventOnSearchOpened.shared)
                 case .groups:
-                    if showsSearchTab { model.send(GroupsUiEventOnSearchClosed.shared) }
+                    if showsSearchTab { model.send(GroupsUiEventOnSearchTabLeft.shared) }
                 }
             },
         )
@@ -412,7 +412,7 @@ struct GroupsView: View {
             get: { model.current.search.query },
             set: { query in
                 if query.isEmpty {
-                    if model.state.search.isOpen { model.send(GroupsUiEventOnSearchClosed.shared) }
+                    if model.current.search.isOpen { model.send(GroupsUiEventOnSearchClosed.shared) }
                     return
                 }
                 if !model.current.search.isOpen { model.send(GroupsUiEventOnSearchOpened.shared) }

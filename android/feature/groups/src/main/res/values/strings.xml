@@ -93,8 +93,6 @@
     <string name="groups_search_group_meta">%1$s · %2$s</string>
     <string name="groups_search_settled_bill">Settled up · expense “%s”</string>
     <string name="groups_search_bill_meta">%1$s · %2$s</string>
-    <string name="groups_search_you">You</string>
-    <string name="groups_search_you_paid">You paid</string>
     <string name="groups_search_hint">Searches the groups, people and expenses on this device, settled groups included, even without internet.</string>
     <string name="groups_search_none_title">Nothing for “%s”</string>
     <string name="groups_search_none_body">We searched the groups, people and expenses on this device, settled groups included.</string>

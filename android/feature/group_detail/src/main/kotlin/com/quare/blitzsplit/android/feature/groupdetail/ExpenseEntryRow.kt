@@ -33,14 +33,12 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
+import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 internal const val META_SEPARATOR = " · "
 
@@ -207,26 +205,13 @@ private fun ExpenseMetaLine(
         parts = listOfNotNull(
             dates.toTimeText(expense.spentAt),
             stringResource(R.string.group_detail_queued).takeIf { expense.isPending },
-            paidTextOrNull(expense.payers),
+            paidTextOrNull(
+                expense.payers,
+                isMe = { it.isMe },
+                nameOf = { it.name },
+            ),
         ),
     )
-}
-
-// Why: "Você pagou", "Bruno pagou", "Você e Ana pagaram" or "3 pessoas pagaram"; nothing for one who left the group.
-@Composable
-private fun paidTextOrNull(payers: List<ExpenseRowPayer>): String? {
-    if (payers.size > 1) {
-        val formerMember = stringResource(DesignR.string.designsystem_former_member)
-        val you = stringResource(R.string.group_detail_you)
-        return paidBySeveralOf(payers.map { if (it.isMe) you else it.name ?: formerMember })
-    }
-    val payer = payers.singleOrNull() ?: return null
-    val name = payer.name
-    return when {
-        payer.isMe -> stringResource(R.string.group_detail_you_paid)
-        name != null -> stringResource(R.string.group_detail_someone_paid, name)
-        else -> null
-    }
 }
 
 // Why: a bill's or a payment's icon, in the same tile.

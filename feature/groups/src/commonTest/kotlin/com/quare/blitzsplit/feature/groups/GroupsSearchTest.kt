@@ -66,6 +66,7 @@ import kotlin.test.assertTrue
 class GroupsSearchTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var expenses: FakeExpenseRepository
+    private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupsViewModel
 
@@ -94,6 +95,41 @@ class GroupsSearchTest {
         assertFalse(viewModel.uiState.value.canSearch)
         assertFalse(viewModel.uiState.value.isSearching)
     }
+
+    @Test
+    fun `GIVEN a screen over the groups WHEN opening the search THEN it stays closed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(
+            Route.JoinWithLink(
+                skippedCode = null,
+                skippedMemberCode = null,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+        // Then
+        assertFalse(viewModel.uiState.value.isSearching)
+    }
+
+    @Test
+    fun `GIVEN the search open WHEN the last group goes and a new one comes THEN the search stays closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            groups.groups.value = emptyList()
+
+            // When
+            groups.groups.value = listOf(ape)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+        }
 
     @Test
     fun `GIVEN the search closed WHEN a late keystroke arrives THEN the search stays closed and empty`() =
@@ -357,7 +393,26 @@ class GroupsSearchTest {
     }
 
     @Test
-    fun `GIVEN a result open from the search WHEN closing it THEN forgets the text and goes back to the groups`() =
+    fun `GIVEN a result open from the search WHEN closing it THEN forgets the text and keeps the result open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertFalse(search.isOpen)
+            assertEquals("", search.query)
+            assertEquals(2, navigator.backStack.value.size)
+        }
+
+    @Test
+    fun `GIVEN a result open from the search tab WHEN leaving the tab THEN forgets the text and goes back home`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -367,7 +422,7 @@ class GroupsSearchTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("churrasco"))
 
             // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+            viewModel.onEvent(GroupsUiEvent.OnSearchTabLeft)
 
             // Then
             val search = viewModel.uiState.value.search
@@ -477,6 +532,7 @@ class GroupsSearchTest {
         storedExpenses: List<Expense> = storedBills,
     ) {
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        groups = FakeGroupRepository(initialGroups = storedGroups)
         navigator = BackStackNavigator(startRoute = Route.Groups)
         val deletions = InMemoryGroupDeletionRepository()
         viewModel = GroupsViewModel(
@@ -485,7 +541,7 @@ class GroupsSearchTest {
             ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository()),
             observeSyncState = ObserveSyncState { MutableStateFlow(SyncState.SYNCED) },
-            observeGroups = ObserveGroupsUseCase(FakeGroupRepository(initialGroups = storedGroups)),
+            observeGroups = ObserveGroupsUseCase(groups),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
             retrySync = RetrySync {},
             syncNow = SyncNow { Result.success(Unit) },

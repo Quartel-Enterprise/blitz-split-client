@@ -30,3 +30,27 @@ fun payerNamesTextOf(names: List<String>): String = if (names.size <= MAX_NAMED_
 fun paidBySeveralOf(names: List<String>): String = names.singleOrNull()?.let {
     stringResource(R.string.designsystem_paid_by_one, it)
 } ?: stringResource(R.string.designsystem_paid_by_several, payerNamesTextOf(names))
+
+/*
+ * Why: who paid a bill, as Despesas and the search name them: "Você pagou", "Bruno pagou", "Você e Ana pagaram" or "3
+ * pessoas pagaram"; nothing when its one payer left the group.
+ */
+@Composable
+fun <T> paidTextOrNull(
+    payers: List<T>,
+    isMe: (T) -> Boolean,
+    nameOf: (T) -> String?,
+): String? {
+    if (payers.size > 1) {
+        val formerMember = stringResource(R.string.designsystem_former_member)
+        val you = stringResource(R.string.designsystem_you)
+        return paidBySeveralOf(payers.map { if (isMe(it)) you else nameOf(it) ?: formerMember })
+    }
+    val payer = payers.singleOrNull() ?: return null
+    val name = nameOf(payer)
+    return when {
+        isMe(payer) -> stringResource(R.string.designsystem_you_paid)
+        name != null -> stringResource(R.string.designsystem_paid_by_one, name)
+        else -> null
+    }
+}

@@ -221,8 +221,11 @@ class GroupsViewModel(
                         hasLoadedGroups = true,
                         summary = summaryOf(home.rows),
                         pendingChangeCount = home.pendingChangeCount,
-                        // Why: what the search found changes with the device's data, a sync's included.
-                        search = searchedOf(it.search, home.rows),
+                        /*
+                         * Why: what the search found changes with the device's data, a sync's included. Once the last
+                         * group goes the search closes, so the next group doesn't bring back a forgotten search.
+                         */
+                        search = if (home.rows.isEmpty()) GroupsSearch.closed else searchedOf(it.search, home.rows),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -314,6 +317,8 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSearchClosed -> closeSearch()
 
+            GroupsUiEvent.OnSearchTabLeft -> leaveSearchTab()
+
             is GroupsUiEvent.OnSearchQueryChanged -> search { it.copy(query = event.query) }
 
             is GroupsUiEvent.OnSearchScopeChanged -> search { it.copy(scope = event.scope) }
@@ -329,18 +334,23 @@ class GroupsViewModel(
         }
     }
 
-    // Why: there is nothing to look in before the first group.
+    /*
+     * Why: there is nothing to look in before the first group, and only from the groups on top, so ⌘K over a dialog
+     * on the web or iOS's search tab over a pushed screen doesn't open a search whose close would pop that screen.
+     */
     private fun openSearch() {
-        if (!uiState.value.canSearch) return
+        if (!uiState.value.canSearch || !isOnTop()) return
         uiState.update { it.copy(search = searchedOf(it.search.copy(isOpen = true), it.groups)) }
     }
 
-    /*
-     * Why: closing forgets what was typed. iOS's search tab shows what its results opened, so leaving it goes back to
-     * the groups; elsewhere the search only closes with the groups on top.
-     */
+    // Why: closing forgets what was typed.
     private fun closeSearch() {
         uiState.update { it.copy(search = GroupsSearch.closed) }
+    }
+
+    // Why: what iOS's search tab opened goes with it, back to the groups.
+    private fun leaveSearchTab() {
+        closeSearch()
         val stack = navigator.backStack.value
         val groupsIndex = stack.indexOf(Route.Groups)
         if (groupsIndex >= 0 && groupsIndex < stack.lastIndex) navigator.popTo(groupsIndex + 1)

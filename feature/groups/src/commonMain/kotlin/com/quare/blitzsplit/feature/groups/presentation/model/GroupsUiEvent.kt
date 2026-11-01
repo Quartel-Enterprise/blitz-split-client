@@ -87,8 +87,11 @@ sealed interface GroupsUiEvent : UiEvent {
     // Why: Android's magnifier, iOS's search tab, the web's "Buscar…" or ⌘K, the Mac's toolbar field.
     data object OnSearchOpened : GroupsUiEvent
 
-    // Why: back or ✕ on Android, another tab on iOS, Esc or a click outside on the web, the field cancelled on the Mac.
+    // Why: back or ✕ on Android, Esc or a click outside on the web, the field cancelled on the Mac.
     data object OnSearchClosed : GroupsUiEvent
+
+    // Why: iOS's search tab shows what its results opened, so leaving it for Groups also goes back to the groups.
+    data object OnSearchTabLeft : GroupsUiEvent
 
     data class OnSearchQueryChanged(
         val query: String,
