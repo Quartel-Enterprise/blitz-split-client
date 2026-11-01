@@ -191,11 +191,33 @@ class GroupsLayoutTest {
         assertTrue(savedLayouts.isEmpty())
     }
 
+    @Test
+    fun `GIVEN the standard grid WHEN picking large then standard before the first is stored THEN stores both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD),
+                storesAtOnce = false,
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.LARGE))
+            viewModel.onEvent(GroupsUiEvent.OnGridSizeChanged(GroupGridSize.STANDARD))
+
+            // Then
+            assertEquals(
+                listOf(largeGrid, GroupsLayout(GroupsDisplay.GRID, GroupGridSize.STANDARD)),
+                savedLayouts,
+            )
+            assertEquals(GroupGridSize.STANDARD, viewModel.uiState.value.layout.gridSize)
+        }
+
     private val largeGrid = GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)
 
     private fun prepareScenario(
         stored: GroupsLayout = GroupsLayout.initial,
         observeGroupsLayout: ObserveGroupsLayout? = null,
+        storesAtOnce: Boolean = true,
     ) {
         storedLayout = MutableStateFlow(stored)
         savedLayouts = mutableListOf()
@@ -225,7 +247,7 @@ class GroupsLayoutTest {
             observeGroupsLayout = observeGroupsLayout ?: ObserveGroupsLayout { storedLayout },
             updateGroupsLayout = UpdateGroupsLayout { layout ->
                 savedLayouts += layout
-                storedLayout.value = layout
+                if (storesAtOnce) storedLayout.value = layout
             },
         )
     }

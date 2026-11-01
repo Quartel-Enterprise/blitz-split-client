@@ -321,9 +321,13 @@ class GroupsViewModel(
         saveLayout(uiState.value.layout.copy(gridSize = size))
     }
 
-    // Why: the state follows what the device stored, the one place every screen reads it from.
+    /*
+     * Why: the state takes the pick at once, so a second pick before the device stored the first (the Mac's slider
+     * dragged back and forth) builds on it instead of on the stale layout; the stored layout then confirms it.
+     */
     private fun saveLayout(layout: GroupsLayout) {
         if (layout == uiState.value.layout) return
+        uiState.update { it.copy(layout = layout) }
         viewModelScope.launch { updateGroupsLayout(layout) }
     }
 
