@@ -13,6 +13,9 @@ final class AppModel {
     /// a sheet. Nil until the root first measures the window, so nothing is pushed or presented by a guess; it only
     /// changes when the window crosses the threshold, never on each step of a live resize.
     private(set) var isLargeWindow: Bool?
+    /// How many times the shared code opened the profile on the Mac, whose profile lives in Ajustes (⌘,): each one
+    /// opens the Settings window (`RootView`) instead of pushing it over the groups.
+    private(set) var settingsRequestCount = 0
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -26,11 +29,30 @@ final class AppModel {
             self?.isReady = state == .ready
         })
         watches.add(viewModel.backStackWatcher.observe { [weak self] routes in
-            self?.backStack = Self.routes(of: routes)
+            self?.backStackChanged(Self.routes(of: routes))
         })
         watches.add(viewModel.themeWatcher.observe { [weak self] theme in
             self?.theme = theme
         })
+    }
+
+    /// The Mac never pushes the profile: any screen that opens it (the groups' avatar, "Protect your access", a
+    /// browser sign in coming back) opens Ajustes and leaves the back stack as it was, so nothing is drawn over the
+    /// groups. Everywhere else the back stack is drawn as the shared code moves it.
+    private func backStackChanged(_ routes: [AppRoute]) {
+        #if os(macOS)
+        if routes.count > 1, routes.last == .profile {
+            holder.viewModel.navigator.popTo(size: Int32(routes.count - 1))
+            settingsRequestCount += 1
+            return
+        }
+        #endif
+        backStack = routes
+    }
+
+    /// A profile exists once the groups are the root, which is when the Mac's Ajustes have something to show.
+    var hasProfile: Bool {
+        isReady && root == .groups
     }
 
     /// Whether the root measured the window yet: until then it draws nothing, as while the start route loads.
@@ -112,16 +134,30 @@ final class AppModel {
             && presentsAsSheet(backStack[backStack.count - 2])
     }
 
-    /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either.
+    /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either. What the
+    /// Mac's Ajustes open is their sheet, never the main window's.
     private func presentsAsSheet(_ route: AppRoute) -> Bool {
-        guard let isLargeWindow else { return false }
+        guard let isLargeWindow, !route.opensInSettings else { return false }
         return route.presentsAsSheet(isLargeWindow: isLargeWindow)
     }
 
     private var modalCount: Int {
         if isSheetStacked { return 2 }
         if sheetPushCount > 0 { return 1 + sheetPushCount }
-        return sheet == nil && cover == nil && invitePopover == nil ? 0 : 1
+        return sheet == nil && cover == nil && invitePopover == nil && settingsSheet == nil ? 0 : 1
+    }
+
+    /// The top entry when the Mac's Ajustes opened it (a key, deleting the account): a sheet on the Settings window,
+    /// which the main window never draws. Closing it pops it, as closing the main window's sheets does. Nil off the Mac.
+    var settingsSheet: AppRoute? {
+        get {
+            guard backStack.count > 1, let top = backStack.last, top.opensInSettings else { return nil }
+            return top
+        }
+        set {
+            guard newValue == nil, settingsSheet != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
+        }
     }
 
     /// The Mac's invite over the group's tab that opened it (F2Mac): a popover on that tab's "Invite people" rather

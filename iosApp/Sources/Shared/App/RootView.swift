@@ -2,13 +2,20 @@ import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack
 /// is replaced by the groups, which bring the tabs (or the sidebar on iPad and Mac) and push the
-/// profile inside the Groups tab. A route that opens as a sheet (a key or a bill with an iPad's room and on the Mac,
-/// deleting the account, a new group, its invite on an iPhone and the Mac, editing a group, a new or edited bill,
-/// recording a payment, the Mac's invite opened from its link) shows over the whole window, and a sheet opened from a
-/// sheet stacks over it; the Mac's invite from a group is a popover on the group's own button. The root measures the window, which every
-/// screen reads as `windowLayout`; only crossing an iPad's room changes what opens as a sheet and redraws the root.
+/// profile inside the Groups tab on iPhone and iPad. A route that opens as a sheet (a key, a bill or Edit profile with an
+/// iPad's room, a bill on the Mac, deleting the account, a new group, its invite on an iPhone and the Mac, editing a
+/// group, a new or edited bill, recording a payment, the Mac's invite opened from its link) shows over the whole window,
+/// and a sheet opened from a sheet stacks over it; the Mac's invite from a group is a popover on the group's own button.
+/// The root measures the window, which every screen reads as `windowLayout`; only crossing an iPad's room changes what
+/// opens as a sheet and redraws the root. The Mac never draws the profile here: opening it opens Ajustes (⌘,), the
+/// app's Settings window (`SettingsView`), where its key and account deletion show as sheets.
 struct RootView: View {
-    @State private var app = AppModel()
+    /// Owned by the app, which the Mac's Settings window shares.
+    @Bindable var app: AppModel
+
+    #if os(macOS)
+    @Environment(\.openSettings) private var openSettings
+    #endif
 
     var body: some View {
         Group {
@@ -55,6 +62,9 @@ struct RootView: View {
             WindowAppearance.apply(theme)
         }
         #if os(macOS)
+        .onChange(of: app.settingsRequestCount) {
+            openSettings()
+        }
         .frame(minWidth: 520, minHeight: 560)
         #endif
         // Outermost, so the sheets inherit the window the root measured

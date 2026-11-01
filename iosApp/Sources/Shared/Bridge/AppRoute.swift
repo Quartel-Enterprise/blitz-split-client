@@ -77,8 +77,9 @@ enum AppRoute: Hashable, Identifiable {
 
     var id: Self { self }
 
-    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
-    /// and a bill open as a form sheet and on the Mac as a sheet on its window, as the canvas draws them; an iPhone,
+    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key,
+    /// a bill and Edit profile open as a form sheet and on the Mac as a sheet (a key on Ajustes' window,
+    /// `opensInSettings`; the Mac edits the profile inline, so never Edit profile), as the canvas draws them; an iPhone,
     /// lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill and
     /// recording a payment (settling up across groups included) are sheets everywhere. The invite is a sheet on an
     /// iPhone and is pushed full screen with an iPad's room (decision 1); on the Mac it is a sheet, or the popover of
@@ -100,7 +101,7 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return false
             #endif
-        case .paymentKey, .billDetail:
+        case .paymentKey, .billDetail, .editProfile:
             #if os(macOS)
             return true
             #else
@@ -126,6 +127,19 @@ enum AppRoute: Hashable, Identifiable {
         default:
             return false
         }
+    }
+
+    /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key and deleting the account show as
+    /// sheets on the Settings window there (`AppModel.settingsSheet`). Never off the Mac.
+    var opensInSettings: Bool {
+        #if os(macOS)
+        switch self {
+        case .paymentKey, .deleteAccount: true
+        default: false
+        }
+        #else
+        false
+        #endif
     }
 
     /// A group's Expenses, Balances or Members: the tabs whose "Invite people" anchors the Mac's invite popover.
