@@ -2,20 +2,9 @@
 import Shared
 import SwiftUI
 
-/// The Mac's Settings (⌘,): "Categories" holds the person's category map (9.1), as the canvas draws it.
-struct MacSettingsView: View {
-    var body: some View {
-        TabView {
-            Tab("Categories", systemImage: "tag") {
-                MacCategoryMapTab()
-            }
-        }
-        .frame(width: 760, height: 520)
-    }
-}
-
-/// Makes the map's model once the tab appears, as the screens do.
-private struct MacCategoryMapTab: View {
+/// Ajustes › Categories (⌘,): the person's category map (9.1), as the canvas draws it, beside the profile's sections
+/// in the sidebar (`SettingsView`). Makes the map's model once the section shows, as the screens do.
+struct MacCategoryMapPane: View {
     @State private var model: CategoryMapModel?
 
     var body: some View {
@@ -32,7 +21,7 @@ private struct MacCategoryMapTab: View {
     }
 }
 
-/// Settings › Categories: the categories on the left, a table of the picked one's terms on the right with + and −
+/// Ajustes › Categories: the categories on the left, a table of the picked one's terms on the right with + and −
 /// under it, the search above and "Restore Default". "New Term" and "Edit Term" open as a sheet on the window.
 struct MacCategoryMapSettings: View {
     let model: CategoryMapModel

@@ -12,7 +12,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openGroupTab
-import com.quare.blitzsplit.core.presentation.CopiedFeedback
+import com.quare.blitzsplit.core.presentation.CopiedFeedbackTimer
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
@@ -21,8 +21,6 @@ import com.quare.blitzsplit.feature.invite.presentation.model.InviteMember
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiAction
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiEvent
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiState
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -67,7 +65,9 @@ class InviteViewModel(
     val stateWatcher: FlowWatcher<InviteUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<InviteUiAction> = FlowWatcher(uiAction)
 
-    private var copiedReset: Job? = null
+    private val copiedFeedback = CopiedFeedbackTimer(viewModelScope) { isCopied ->
+        uiState.update { it.copy(isLinkCopied = isCopied) }
+    }
 
     /*
      * Why: the link shows up here as soon as a sync brings it, also while the screen is open. Nothing is drawn before
@@ -103,12 +103,12 @@ class InviteViewModel(
 
             InviteUiEvent.OnSeeWhoJoinedClicked -> navigator.openGroupTab(
                 from = route,
-                tab = Route.Members(route.groupId, joinedAs = null),
+                tab = Route.Members(route.groupId),
             )
 
             InviteUiEvent.OnGoToGroupClicked -> navigator.openGroupTab(
                 from = route,
-                tab = Route.GroupDetail(route.groupId),
+                tab = Route.GroupDetail(route.groupId, joinedAs = null),
             )
 
             InviteUiEvent.OnChangeLinkClicked -> askToChangeLink()
@@ -159,16 +159,10 @@ class InviteViewModel(
         hasJoined = member.hasJoined,
     )
 
-    // Why: a second tap keeps "Copiado" for two seconds from that tap.
     private fun copy() {
         val link = uiState.value.link ?: return
         send(InviteUiAction.CopyLink(link))
-        uiState.update { it.copy(isLinkCopied = true) }
-        copiedReset?.cancel()
-        copiedReset = viewModelScope.launch {
-            delay(CopiedFeedback.duration)
-            uiState.update { it.copy(isLinkCopied = false) }
-        }
+        copiedFeedback.start()
     }
 
     private fun share() {

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -107,6 +108,7 @@ class GroupsViewModelTest {
     // Why: the device's clock, which a test moves on and then ticks a minute for.
     private var clockMillis = 0L
     private lateinit var minutes: MutableStateFlow<Int>
+    private lateinit var activityUnread: MutableStateFlow<Int>
 
     @BeforeTest
     fun setUp() {
@@ -185,20 +187,43 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN the empty groups WHEN tapping a flow not built yet THEN says it is coming soon`() =
+    fun `GIVEN a group open over the groups WHEN tapping the Contatos tab THEN closes it and opens Contatos`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario()
-            val actions = mutableListOf<GroupsUiAction>()
-            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Atividade tab THEN it takes the place of the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
             viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<GroupsUiAction>(2) { GroupsUiAction.ShowComingSoon }, actions)
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
         }
+
+    @Test
+    fun `GIVEN the groups WHEN unread activity arrives THEN the Atividade tab counts it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        activityUnread.value = 3
+
+        // Then
+        assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+    }
 
     @Test
     fun `GIVEN the groups WHEN tapping the Saldos tab THEN opens Saldos with everyone over the groups`() =
@@ -210,7 +235,10 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -218,40 +246,106 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio"))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
     fun `GIVEN Saldos open WHEN tapping the Grupos tab THEN goes back to the groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
+        navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL, charge = null))
 
         // When
         viewModel.onEvent(GroupsUiEvent.OnGroupsTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
     }
 
     @Test
     fun `GIVEN Saldos already open WHEN tapping its tab again THEN stays as it is`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GlobalBalances(BalancesFilter.YOU_OWE))
+        navigator.navigate(Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null))
 
         // When
         viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            navigator.backStack.value,
+        )
     }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Inicio tab THEN goes back to Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group open over the groups WHEN tapping the Inicio tab THEN closes both and goes back to Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the search open WHEN tapping the Inicio tab THEN closes the search`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("apê"))
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnHomeTabClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.search.isOpen)
+        assertEquals("", viewModel.uiState.value.search.query)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the search open WHEN tapping the Saldos tab THEN closes the search and opens Saldos above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.search.isOpen)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN a group someone else deleted WHEN the home is on top THEN says so once`() = runTest(testDispatcher) {
@@ -382,6 +476,7 @@ class GroupsViewModelTest {
         // Then
         assertEquals(
             listOf(
+                Route.Home,
                 Route.Groups,
                 Route.JoinWithLink(
                     skippedCode = null,
@@ -401,7 +496,7 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnProfileClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, Route.Profile), navigator.backStack.value)
     }
 
     @Test
@@ -1206,7 +1301,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnCreateGroupClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, Route.CreateGroup), navigator.backStack.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -1222,7 +1317,10 @@ class GroupsViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa", joinedAs = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -1236,7 +1334,10 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.Groups, Route.GroupDetail("floripa", joinedAs = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -1913,8 +2014,8 @@ class GroupsViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    Route.Groups,
-                    Route.GlobalBalances(BalancesFilter.YOU_OWE),
+                    Route.Home,
+                    Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null),
                     Route.SettleUp(
                         personKey = "name:ana",
                         currency = GroupCurrency.BRL,
@@ -1949,7 +2050,10 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnToPayClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -1971,7 +2075,10 @@ class GroupsViewModelTest {
         viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.OWES_YOU)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -2000,7 +2107,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnToReceiveClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, splitBill), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, splitBill), navigator.backStack.value)
         }
 
     @Test
@@ -2035,6 +2142,7 @@ class GroupsViewModelTest {
             // Then
             assertEquals(
                 listOf(
+                    Route.Home,
                     Route.Groups,
                     Route.SplitBill(
                         groupId = "recent",
@@ -2513,6 +2621,7 @@ class GroupsViewModelTest {
         syncNowCount = 0
         clockMillis = now
         minutes = MutableStateFlow(0)
+        activityUnread = MutableStateFlow(0)
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -2521,7 +2630,7 @@ class GroupsViewModelTest {
         isOnline = MutableStateFlow(online)
         this.syncState = MutableStateFlow(syncState)
         syncRequests = 0
-        navigator = BackStackNavigator(startRoute = Route.Groups)
+        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.Groups) }
         viewModel = GroupsViewModel(
             observeProfile = ObserveProfileUseCase(profiles),
             observeAccount = ObserveAccountUseCase(account),
@@ -2553,6 +2662,7 @@ class GroupsViewModelTest {
                 observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
             ),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
     }
 }

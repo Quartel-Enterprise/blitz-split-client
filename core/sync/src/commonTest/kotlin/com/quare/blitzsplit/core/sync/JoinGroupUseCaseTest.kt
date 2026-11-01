@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
+import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -9,6 +11,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteMember
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.groups.testing.FakeInviteRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -516,10 +519,14 @@ class JoinGroupUseCaseTest {
                 paymentKeyRepository = FakePaymentKeyRepository(),
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 groupRepository = groups,
+                groupPinRepository = FakeGroupPinRepository(),
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
                 categoryTermRepository = FakeCategoryTermRepository(),
+                activityRepository = FakeActivityRepository(),
+                hiddenContactRepository = FakeHiddenContactRepository(),
+                firstDownload = FirstDownload(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 scope = backgroundScope,
             ),

@@ -450,7 +450,13 @@ class ProfileViewModel(
                 hasSignInFailed = false,
             )
         }
-        viewModelScope.launch { providerConnector.connect(provider, ::launchNativeSignIn) }
+        viewModelScope.launch {
+            providerConnector.connect(
+                provider = provider,
+                isFromProfile = true,
+                launchNativeSignIn = ::launchNativeSignIn,
+            )
+        }
     }
 
     private suspend fun launchNativeSignIn(provider: AccountProvider) {

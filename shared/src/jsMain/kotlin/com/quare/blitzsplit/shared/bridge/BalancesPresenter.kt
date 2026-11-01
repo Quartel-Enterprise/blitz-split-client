@@ -108,6 +108,11 @@ class BalancesPresenter(
         viewModel.onEvent(BalancesUiEvent.OnMembersClicked)
     }
 
+    // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
+    fun togglePin() {
+        viewModel.onEvent(BalancesUiEvent.OnPinToggled)
+    }
+
     fun editGroup() {
         viewModel.onEvent(BalancesUiEvent.OnEditGroupClicked)
     }

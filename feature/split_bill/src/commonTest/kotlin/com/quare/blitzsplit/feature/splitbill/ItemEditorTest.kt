@@ -187,6 +187,25 @@ class ItemEditorTest {
     }
 
     @Test
+    fun `GIVEN no item and a couvert that matches the total WHEN reading it THEN Pronto stays disabled`() {
+        // Given
+        val base = itemsEditor(totalMinor = 750L)
+        val items = base.copy(
+            split = base.split.copy(
+                items = emptyList(),
+                couvertMinor = 250L,
+            ),
+        )
+
+        // When
+        val addsUp = items.addsUp
+
+        // Then
+        assertEquals(0L, items.remainingMinor)
+        assertFalse(addsUp)
+    }
+
+    @Test
     fun `GIVEN the service field WHEN typing over 100 or a couvert past the limit THEN it cannot be saved`() {
         // Given
         val service = FeeEditor(ItemsFee.SERVICE, "101", GroupCurrency.BRL)

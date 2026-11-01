@@ -20,6 +20,7 @@ export function ConfirmDialog({
   description,
   confirmLabel,
   isBusy = false,
+  isDestructive = true,
   onConfirm,
   onDismiss,
 }: {
@@ -27,6 +28,8 @@ export function ConfirmDialog({
   description: string
   confirmLabel: string
   isBusy?: boolean
+  // Why: a question that only hides something ("Ocultar Felipe?") confirms with the primary button.
+  isDestructive?: boolean
   onConfirm: () => void
   onDismiss: () => void
 }) {
@@ -45,7 +48,7 @@ export function ConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>{t('common_cancel')}</AlertDialogCancel>
           {/* Not an AlertDialogAction, which would close it through onOpenChange as a dismissal */}
-          <Button variant="destructive" disabled={isBusy} onClick={onConfirm}>
+          <Button variant={isDestructive ? 'destructive' : 'default'} disabled={isBusy} onClick={onConfirm}>
             {isBusy && <Loader2 className="animate-spin" />}
             {confirmLabel}
           </Button>

@@ -108,6 +108,8 @@ class JsGlobalBalancesState(
     val showsOfflineNotice: Boolean,
     val isLoaded: Boolean,
     val recordedPayment: JsPaymentNotice?,
+    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    val activityUnreadCount: Int,
 )
 
 class GlobalBalancesPresenter(
@@ -147,6 +149,7 @@ class GlobalBalancesPresenter(
                 showsOfflineNotice = state.showsOfflineNotice,
                 isLoaded = state.isLoaded,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
+                activityUnreadCount = state.activityUnreadCount,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -232,6 +235,11 @@ class GlobalBalancesPresenter(
 
     fun emptyAction() {
         viewModel.onEvent(GlobalBalancesUiEvent.OnEmptyActionClicked)
+    }
+
+    // Why: Início, the home's first tab.
+    fun openHome() {
+        viewModel.onEvent(GlobalBalancesUiEvent.OnHomeTabClicked)
     }
 
     fun openGroups() {

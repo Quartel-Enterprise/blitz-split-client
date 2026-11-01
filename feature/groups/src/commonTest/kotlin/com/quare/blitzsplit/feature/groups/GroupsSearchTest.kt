@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -360,7 +361,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked("ape"))
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members("ape", joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members("ape")), navigator.backStack.value)
     }
 
     @Test
@@ -374,7 +375,11 @@ class GroupsSearchTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail("churrasco"), Route.BillDetail("churrasco", "carne")),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail("churrasco", joinedAs = null),
+                Route.BillDetail("churrasco", "carne"),
+            ),
             navigator.backStack.value,
         )
     }
@@ -565,6 +570,7 @@ class GroupsSearchTest {
             observePeopleBalances = { emptyFlow() },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
+            observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
         )
     }
 }

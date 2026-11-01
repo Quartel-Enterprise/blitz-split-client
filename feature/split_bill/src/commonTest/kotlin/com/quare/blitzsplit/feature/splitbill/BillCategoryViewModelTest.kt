@@ -522,7 +522,7 @@ class BillCategoryViewModelTest {
         terms = FakeCategoryTermRepository(initialChanges = termChanges)
         teach = InMemoryCategoryTeachRepository()
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()

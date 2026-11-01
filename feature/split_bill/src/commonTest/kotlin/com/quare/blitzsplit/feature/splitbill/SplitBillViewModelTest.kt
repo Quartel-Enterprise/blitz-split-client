@@ -1863,21 +1863,21 @@ class SplitBillViewModelTest {
         groups.groups.value = emptyList()
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
     fun `GIVEN another screen on top WHEN the group is gone THEN stays under it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+        navigator.navigate(Route.Members(GROUP_ID))
 
         // When
         groups.groups.value = emptyList()
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route, Route.Members(GROUP_ID, joinedAs = null)),
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route, Route.Members(GROUP_ID)),
             navigator.backStack.value,
         )
     }
@@ -1887,27 +1887,30 @@ class SplitBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+            navigator.navigate(Route.Members(GROUP_ID))
             groups.groups.value = emptyList()
 
             // When
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
     fun `GIVEN the group still there WHEN another screen on top closes THEN stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+        navigator.navigate(Route.Members(GROUP_ID))
 
         // When
         navigator.navigateBack()
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -1959,7 +1962,7 @@ class SplitBillViewModelTest {
 
             // Then
             assertEquals(1, expenses.createdExpenses.size)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -2002,7 +2005,7 @@ class SplitBillViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         assertTrue(actions.isEmpty())
     }
 
@@ -2010,7 +2013,9 @@ class SplitBillViewModelTest {
     fun `GIVEN a bill split from the group statistics WHEN tapping Salvar THEN goes back to them`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(openedOver = listOf(Route.GroupDetail(GROUP_ID), Route.GroupStats(GROUP_ID)))
+            prepareScenario(
+                openedOver = listOf(Route.GroupDetail(GROUP_ID, joinedAs = null), Route.GroupStats(GROUP_ID)),
+            )
             typeAmount("100")
             describe("Mercado")
 
@@ -2019,7 +2024,7 @@ class SplitBillViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(GROUP_ID), Route.GroupStats(GROUP_ID)),
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), Route.GroupStats(GROUP_ID)),
                 navigator.backStack.value,
             )
         }
@@ -2065,7 +2070,10 @@ class SplitBillViewModelTest {
         // Then
         assertTrue(expenses.createdExpenses.isEmpty())
         assertFalse(viewModel.uiState.value.isSaving)
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -2101,7 +2109,7 @@ class SplitBillViewModelTest {
 
             // Then
             assertEquals(1, expenses.createdExpenses.size)
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -2119,7 +2127,7 @@ class SplitBillViewModelTest {
             gate.complete(Unit)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -2136,7 +2144,10 @@ class SplitBillViewModelTest {
         assertEquals(listOf<SplitBillUiAction>(SplitBillUiAction.ShowSaveError), actions)
         assertFalse(viewModel.uiState.value.isSaving)
         assertTrue(viewModel.uiState.value.canSave)
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -2150,7 +2161,7 @@ class SplitBillViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         assertTrue(expenses.createdExpenses.isEmpty())
     }
 
@@ -2158,14 +2169,14 @@ class SplitBillViewModelTest {
     fun `GIVEN another screen on top WHEN tapping close THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.Members(GROUP_ID, joinedAs = null))
+        navigator.navigate(Route.Members(GROUP_ID))
 
         // When
         viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route, Route.Members(GROUP_ID, joinedAs = null)),
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), route, Route.Members(GROUP_ID)),
             navigator.backStack.value,
         )
     }
@@ -2272,7 +2283,7 @@ class SplitBillViewModelTest {
         decimalSeparator: Char = ',',
         createError: Throwable? = null,
         createGate: CompletableDeferred<Unit>? = null,
-        openedOver: List<Route> = listOf(Route.GroupDetail(GROUP_ID)),
+        openedOver: List<Route> = listOf(Route.GroupDetail(GROUP_ID, joinedAs = null)),
     ) {
         clockMillis = now
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))

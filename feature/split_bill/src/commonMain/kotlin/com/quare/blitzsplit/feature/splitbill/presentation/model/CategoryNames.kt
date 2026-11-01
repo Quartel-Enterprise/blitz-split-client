@@ -2,7 +2,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Category
-import com.quare.blitzsplit.core.utils.TextFold
+import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
  * Why: "Buscar categoria" and "Não pode repetir dentro da mesma categoria" need the app categories' names, which each UI
@@ -14,10 +14,10 @@ internal object CategoryNames {
         category: Category,
         query: String,
     ): Boolean {
-        val folded = TextFold.toFolded(query.trim())
+        val folded = TextFolding.toFolded(query.trim())
         return namesOf(category).any { name ->
-            val words = TextFold.toFolded(name).split(' ', '-', '&', ',').filter { it.isNotEmpty() }
-            words.any { it.startsWith(folded) } || TextFold.toFolded(name).startsWith(folded)
+            val words = TextFolding.toFolded(name).split(' ', '-', '&', ',').filter { it.isNotEmpty() }
+            words.any { it.startsWith(folded) } || TextFolding.toFolded(name).startsWith(folded)
         }
     }
 
@@ -25,8 +25,8 @@ internal object CategoryNames {
         category: Category,
         name: String,
     ): Boolean {
-        val folded = TextFold.toFolded(name.trim())
-        return namesOf(category).any { TextFold.toFolded(it) == folded }
+        val folded = TextFolding.toFolded(name.trim())
+        return namesOf(category).any { TextFolding.toFolded(it) == folded }
     }
 
     private fun namesOf(category: Category): List<String> =

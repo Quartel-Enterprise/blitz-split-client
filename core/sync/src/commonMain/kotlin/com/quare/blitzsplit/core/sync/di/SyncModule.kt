@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync.di
 
+import com.quare.blitzsplit.core.sync.FirstDownload
 import com.quare.blitzsplit.core.sync.SyncCoordinator
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
@@ -13,6 +14,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -28,6 +30,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ExportUserDataUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.JoinGroupUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.LeaveGroupUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveFirstDownloadUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ObserveSyncStateUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.RetrySyncUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutUseCase
@@ -45,6 +48,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val syncModule = module {
+    single { FirstDownload() }
     single {
         SyncCoordinator(
             accountRepository = get(),
@@ -52,10 +56,14 @@ val syncModule = module {
             paymentKeyRepository = get(),
             notificationPreferencesRepository = get(),
             groupRepository = get(),
+            groupPinRepository = get(),
             expenseRepository = get(),
             settlementRepository = get(),
             categoryRepository = get(),
             categoryTermRepository = get(),
+            activityRepository = get(),
+            hiddenContactRepository = get(),
+            firstDownload = get(),
             connectivityObserver = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
@@ -67,6 +75,7 @@ val syncModule = module {
     factoryOf(::StartSyncUseCase).bind<StartSync>()
     factoryOf(::CompleteSignInUseCase).bind<CompleteSignIn>()
     factoryOf(::ObserveSyncStateUseCase).bind<ObserveSyncState>()
+    factoryOf(::ObserveFirstDownloadUseCase).bind<ObserveFirstDownload>()
     factoryOf(::RetrySyncUseCase).bind<RetrySync>()
     factoryOf(::SignOutUseCase).bind<SignOut>()
     factoryOf(::SignOutWhenSyncedUseCase).bind<SignOutWhenSynced>()

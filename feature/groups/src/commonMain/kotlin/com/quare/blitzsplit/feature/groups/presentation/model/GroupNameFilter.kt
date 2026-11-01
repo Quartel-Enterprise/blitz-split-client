@@ -1,13 +1,10 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
-import com.quare.blitzsplit.core.utils.TextFold
+import com.quare.blitzsplit.core.utils.TextFolding
 
-/*
- * Why: "Filtrar grupos" and "Buscar" find "Apê 302" from "ape", as people type a name without its accents. One
- * character folds to one, so a match in the folded text is at the same place in the text shown, which marks it.
- */
+// Why: "Filtrar grupos" and "Buscar" find "Apê 302" from "ape" (TextFolding), and mark where.
 internal object GroupNameFilter {
-    fun toFolded(text: String): String = TextFold.toFolded(text)
+    fun toFolded(text: String): String = TextFolding.toFolded(text)
 
     // Why: the first place the folded query is in the text, null when it isn't there or the query is empty.
     fun findMatchOrNull(

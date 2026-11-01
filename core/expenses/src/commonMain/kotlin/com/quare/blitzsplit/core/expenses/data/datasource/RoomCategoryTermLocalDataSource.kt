@@ -13,6 +13,8 @@ class RoomCategoryTermLocalDataSource(
 
     override suspend fun getAll(): List<CategoryTermEntity> = dao.getAll()
 
+    override suspend fun getPending(userId: String): List<CategoryTermEntity> = dao.getPending(userId)
+
     override suspend fun upsert(entities: List<CategoryTermEntity>) {
         dao.upsert(entities)
     }

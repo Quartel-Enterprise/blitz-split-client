@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -33,6 +35,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -610,7 +615,7 @@ class GroupDetailPaymentsViewModelTest {
 
         // Then
         assertEquals(paymentRows().single(), viewModel.uiState.value.paymentToDelete)
-        assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
     }
 
     @Test
@@ -734,7 +739,7 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO)),
                 navigator.backStack.value,
             )
         }
@@ -761,7 +766,7 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
                 navigator.backStack.value,
             )
         }
@@ -787,7 +792,7 @@ class GroupDetailPaymentsViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -810,7 +815,7 @@ class GroupDetailPaymentsViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Groups, route), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
         }
 
     @Test
@@ -823,7 +828,10 @@ class GroupDetailPaymentsViewModelTest {
         viewModel.onEvent(GroupDetailUiEvent.OnSettleClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -838,7 +846,7 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
+                listOf(Route.Home, Route.Groups, route, Route.Invite(GROUP_ID, isNewGroup = false)),
                 navigator.backStack.value,
             )
         }
@@ -1122,7 +1130,9 @@ class GroupDetailPaymentsViewModelTest {
         paidAt = thisAfternoon,
     ).getOrThrow()
 
-    private val route = Route.GroupDetail(GROUP_ID)
+    private val route = Route.GroupDetail(GROUP_ID, joinedAs = null)
+
+    private val pins = FakeGroupPinRepository()
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val thisMorning = Instant.parse("2026-10-30T09:00:00Z").toEpochMilliseconds()
@@ -1250,7 +1260,10 @@ class GroupDetailPaymentsViewModelTest {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
-        navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(route) }
+        navigator = BackStackNavigator(startRoute = Route.Home).also {
+            it.navigate(Route.Groups)
+            it.navigate(route)
+        }
         isRoomRead.value = isRoomReadAtStart
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { nowMillis }
         val deletedBills = InMemoryDeletedBillRepository()
@@ -1268,6 +1281,7 @@ class GroupDetailPaymentsViewModelTest {
                 observeMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
                 saveTerm = SaveCategoryTermUseCase(FakeCategoryTermRepository()) { 0L },
             ),
+            observeAccount = ObserveAccountUseCase(FakeAccountRepository()),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->
@@ -1283,6 +1297,8 @@ class GroupDetailPaymentsViewModelTest {
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+                observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
+                setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
             ),
         )
     }

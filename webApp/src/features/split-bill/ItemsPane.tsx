@@ -202,6 +202,8 @@ function ItemBody({ presenter, state, editor, money }: { presenter: SplitItemsPr
     return presenter.getName()
   })
   const [quantity, setQuantity] = useDraft(String(editor.quantity), (next) => {
+    // Why: an emptied field stays empty while another number is typed; the quantity holds until then.
+    if (next.trim() === '') return next
     presenter.changeQuantity(next)
     return presenter.getQuantity()
   })

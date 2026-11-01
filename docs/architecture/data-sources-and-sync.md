@@ -45,6 +45,8 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link; the `leave_group` and `delete_group` functions and the `removed_groups` table |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
+| `SupabaseHiddenContactRemoteDataSource` | the `hidden_contacts` table (Postgrest): the people the user hid from Contatos |
+| `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
 
@@ -71,8 +73,8 @@ so nothing above it sees an HTTP status:
 2. `reviveSnoozedPrompt()`: a recovery code snoozed with "Lembrar depois" becomes due again on the next launch.
 3. `syncOnUserSwitch()`: when the session moves to another user, it syncs right away under the new one, whose
    profile replaces this device's copy (see below).
-4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences, groups
-   and bills, and
+4. `syncWhenDue()`: a collector of connectivity, the local profile, its payment keys, notification preferences, groups,
+   bills and hidden contacts, and
    their pending changes. It syncs when the
    device becomes able to (online **and** a profile exists) and whenever a change is queued while it already is.
    Each round repeats while it succeeds and a change saved during the push is still pending (`syncUntilSettled()`).
@@ -98,10 +100,12 @@ suspend fun syncNow(): Result<Unit> {
                     paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
                 }
                 val preferencesSynced = suspendRunCatching { /* download, then upload */ }
-        val termsSynced = suspendRunCatching { /* the category map: download, then upload */ }
+                val termsSynced = suspendRunCatching { /* the category map: download, then upload */ }
+                var areGroupsSynced = false
                 val groupsSynced = suspendRunCatching {
                     groupRepository.downloadGroups(userId).getOrThrow()
                     groupRepository.uploadPendingGroups(userId).getOrThrow()
+                    areGroupsSynced = true
                     // A bill needs its group and members on both sides first
                     expenseRepository.downloadExpenses(userId).getOrThrow()
                     expenseRepository.uploadPendingExpenses(userId).getOrThrow()
@@ -110,11 +114,22 @@ suspend fun syncNow(): Result<Unit> {
                     categoryRepository.download(userId).getOrThrow()
                     categoryRepository.uploadPending(userId).getOrThrow()
                 }
+                // A pin needs its group on both sides too, but only orders Início, so it never holds the money back
+                val pinsSynced = if (areGroupsSynced) {
+                    suspendRunCatching {
+                        groupPinRepository.downloadPins(userId).getOrThrow()
+                        groupPinRepository.uploadPendingPins(userId).getOrThrow()
+                    }
+                } else {
+                    Result.success(Unit)
+                }
                 offerRecoveryCodeIfDue()
                 signOutIfScheduledAndSynced()
                 keysSynced.getOrThrow()
                 preferencesSynced.getOrThrow()
+                termsSynced.getOrThrow()
                 groupsSynced.getOrThrow()
+                pinsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
         }
     } finally {
@@ -125,8 +140,8 @@ suspend fun syncNow(): Result<Unit> {
 
 `observeState()` (the `ObserveSyncState` use case) turns that into a `SyncState`: `SYNCING` while any sync is
 running or waiting on the lock, `FAILED` when the last one failed, `PENDING` when a local change is not pushed yet
-(`ProfileRepository`, `PaymentKeyRepository`, `NotificationPreferencesRepository` or
-`GroupRepository.observeHasPendingChanges()`),
+(`ProfileRepository`, `PaymentKeyRepository`, `NotificationPreferencesRepository`,
+`GroupRepository.observeHasPendingChanges()` or `GroupPinRepository`),
 and `SYNCED` otherwise. The home draws a badge only for the states that ask for attention, and its "try again" goes
 through `RetrySync`, which runs in the coordinator's scope so it outlives the screen.
 
@@ -150,6 +165,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   deleted on the server. Deleting the default writes the key that takes over in the same upsert. Two devices may each mark a default offline, so readers
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
+- **Hidden contacts**: "Ocultar de Contatos" is a row of `hidden_contact` per person key (`user:<id>` or
+  `name:<name in lower case, single spaces>`, no accent folding), synced by `updatedAt` like the keys, each user's own list across their devices. Showing
+  again keeps the row with `isHidden = false`, so the change syncs; whether someone hidden comes back (a newer
+  shared bill or an open balance) is worked out from the device's bills (`ContactBook`), never stored.
 - **Groups**: a group (`split_group`) and its members (`group_member`) sync by `updatedAt` like the keys: a newer
   server row wins (`GroupDao.applyRemote*`), and the push sends the groups before their members, since the server
   only lets the creator or a member write a group's members. A new group belongs to the profile's account, like a
@@ -219,6 +238,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
     group's screen open on it shows "Grupo apagado" instead of just closing, or the home says so when no group screen
     is on top. A failed read only skips the notices.
+- **Pins** (`:core:groups`): "Fixar na Início" is a row of `group_pin` per group (`GroupPinRepository`), this
+  user's own and never another member's, synced to `group_pins` (one row per user and group) by `updatedAt` like the
+  keys, the server's `keep_newer_group_pin` trigger keeping the newer one too. Unpinning keeps the row with
+  `isPinned` false, so an unpin on one device wins over an older pin of another. A pin is kept apart from the group's
+  row so it never meets the group's Last-Write-Wins; a remote pin for a group not on the device yet waits for the
+  next sync, and the pin goes with its group (`ON DELETE CASCADE` on both sides). Pins sync in their own step
+  once the groups did, after the bills and payments, so a pin that fails to sync never holds the money back (the sync
+  still reports the failure).
 - **Bills** (`:core:expenses`): a bill (`expense`) is one Last-Write-Wins row, its payers and shares inside it as
   JSON (jsonb on the server), so an edit never mixes two versions of a split. It belongs to its group through a
   foreign key with `ON DELETE CASCADE`: whatever deletes a group on the device (a sign out, an account switch, the
@@ -264,6 +291,17 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   Last-Write-Wins per word, a newer server row winning even over a change not pushed yet.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
+- **Activity** (`:core:activity`): the "Atividade" feed is a log the server writes (`activity_events`, by triggers
+  on groups, members, bills and payments), so the device never writes an event of its own except `charge_sent`
+  ("Cobrar" sent, which only the device sees happen). It syncs after the groups, bills and payments, up then down,
+  and a failure fails the sync like any other step. Up: the charges recorded here (`activity_event.pendingSync`),
+  the events opened here (`activity_read`) and the read mark ("Marcar tudo como lido", `activity_read_state`, the
+  greater of the two marks wins on both sides). Down: the events after the newest `seq` the device has, from the last
+  90 days; a group that appears on the device after the first download is backfilled once (`activity_backfill`);
+  then everything older than 90 days goes, and so does what belongs to a group no longer on the device, except its
+  `group_deleted`. Older pages come from the server only online, into memory. Changes not up yet ("Aguardando
+  envio") are not events: the feed reads them from the pending bills, payments and groups. A user switch or a sign
+  out clears it all.
 
 A new synced table follows the same shape: `updatedAt` and `pendingSync` columns, an `applyRemote` query with the
 same guard, a `markSynced` that compares `updatedAt`, and a pull and push step in `syncNow()`. Its pending flag

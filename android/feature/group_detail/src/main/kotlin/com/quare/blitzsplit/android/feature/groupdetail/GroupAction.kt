@@ -8,6 +8,7 @@ internal enum class GroupAction {
     BACK,
     INVITE,
     STATS,
+    PIN,
     EDIT_GROUP,
     LEAVE_GROUP,
     DELETE_GROUP,

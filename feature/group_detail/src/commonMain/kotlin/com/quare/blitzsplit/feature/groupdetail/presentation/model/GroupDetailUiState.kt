@@ -22,7 +22,14 @@ data class GroupDetailUiState(
     val isLoaded: Boolean,
     // Why: "Ensinar ao mapa?" (9.3e) after a bill of this group was saved in a category picked by hand.
     val teach: CategoryTeach?,
+    // Why: "Você entrou como Bruno", right after joining the group through its link (3.3).
+    val joinedAs: String?,
+    // Why: "Proteja seu acesso" under it, while the account has no Google or Apple.
+    val isAccountUnprotected: Boolean,
 ) {
+    val showsProtectAccess: Boolean
+        get() = joinedAs != null && isAccountUnprotected
+
     // Why: "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it.
     val isEmpty: Boolean
         get() = isLoaded && days.isEmpty()

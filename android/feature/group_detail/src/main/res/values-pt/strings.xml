@@ -4,6 +4,8 @@
     <string name="group_detail_stats">Estatísticas</string>
     <string name="group_detail_invite">Convidar pessoas</string>
     <string name="group_detail_more">Mais opções do grupo</string>
+    <string name="group_detail_pin">Fixar na Início</string>
+    <string name="group_detail_unpin">Desafixar da Início</string>
     <string name="group_detail_edit_group">Editar grupo</string>
     <string name="group_detail_leave_group">Sair do grupo</string>
     <string name="group_detail_delete_group">Apagar grupo</string>
@@ -66,4 +68,8 @@
     <string name="group_detail_teach_footer">As contas já salvas não mudam. Dá para desfazer no Mapa de categorias.</string>
     <string name="group_detail_teach_cancel">Cancelar</string>
     <string name="group_detail_teach_error">Não deu para ensinar o mapa. Tente de novo.</string>
+    <string name="group_detail_joined_title">Você entrou como %s</string>
+    <string name="group_detail_joined_message">Tudo que for lançado para você aparece aqui.</string>
+    <string name="group_detail_protect_title">Proteja seu acesso</string>
+    <string name="group_detail_protect_message">Você entrou sem conta. Guarde o código ou conecte Google ou Apple.</string>
 </resources>

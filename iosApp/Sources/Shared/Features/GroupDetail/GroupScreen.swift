@@ -9,6 +9,8 @@ struct GroupScreenActions {
     let stats: () -> Void
     let members: () -> Void
     let editGroup: () -> Void
+    /// "Pin to Home" or "Unpin from Home", as the header says the group is.
+    let togglePin: () -> Void
     let leaveGroup: () -> Void
     let deleteGroup: () -> Void
     let splitBill: () -> Void
@@ -25,6 +27,7 @@ struct GroupScreenActions {
         stats: {},
         members: {},
         editGroup: {},
+        togglePin: {},
         leaveGroup: {},
         deleteGroup: {},
         splitBill: {},
@@ -42,6 +45,7 @@ extension View {
     /// Leave and Delete need the internet; the dialogs they open come with the bars.
     func groupScreenBars(
         tab: GroupTab,
+        host: AppRoute,
         header: GroupHeader?,
         hasExpenses: Bool,
         showsSplitBill: Bool,
@@ -52,6 +56,7 @@ extension View {
         modifier(
             GroupScreenBars(
                 tab: tab,
+                host: host,
                 header: header,
                 hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
@@ -66,6 +71,8 @@ extension View {
 
 private struct GroupScreenBars: ViewModifier {
     let tab: GroupTab
+    /// This tab in the shared back stack, whose "Invite people" anchors the Mac's invite popover.
+    let host: AppRoute
     let header: GroupHeader?
     let hasExpenses: Bool
     let showsSplitBill: Bool
@@ -119,6 +126,7 @@ private struct GroupScreenBars: ViewModifier {
         ToolbarItem(placement: .primaryAction) {
             Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
                 .disabled(!isLoaded)
+                .invitePopover(host: host)
         }
         ToolbarItem(placement: .primaryAction) { groupMenu }
         if showsSplitBill {
@@ -135,10 +143,15 @@ private struct GroupScreenBars: ViewModifier {
         }
     }
 
-    /// "⋯": only what changes the group itself (6.1i); offline, Leave and Delete say they need the internet (6.1j).
-    /// The Mac's items that open a dialog end in "…".
+    /// "⋯": only what changes the group itself (6.1i), Pin to Home first, which works offline; offline, Leave and
+    /// Delete say they need the internet (6.1j). The Mac's items that open a dialog end in "…".
     private var groupMenu: some View {
         Menu("More group options", systemImage: "ellipsis") {
+            if header?.isPinned == true {
+                Button("Unpin from Home", systemImage: "pin.slash", action: actions.togglePin)
+            } else {
+                Button("Pin to Home", systemImage: "pin", action: actions.togglePin)
+            }
             Button(editGroupTitle, systemImage: "pencil", action: actions.editGroup)
             Divider()
             Button(action: actions.leaveGroup) {
@@ -190,19 +203,7 @@ private struct GroupScreenBars: ViewModifier {
     }
 
     private var splitBillButton: some View {
-        Button(action: actions.splitBill) {
-            // A toolbar draws a Label as its icon only: the canvas spells "Split a bill" out
-            HStack(spacing: 6) {
-                Image(systemName: "plus")
-                Text("Split a bill")
-            }
-            .fontWeight(.semibold)
-        }
-        #if os(iOS)
-        .buttonStyle(.glassProminent)
-        #else
-        .buttonStyle(.borderedProminent)
-        #endif
+        SplitBillButton(action: actions.splitBill)
     }
 
     #if os(iOS)
@@ -428,14 +429,10 @@ struct PhoneGroupScaffold<Sections: View>: View {
                     balanceCard
                 }
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
+                .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                 .listRowSeparator(.hidden)
             }
-            Section {
-                GroupTabsPicker(selected: tab, onSelect: actions.select)
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            GroupTabsSection(selected: tab, onSelect: actions.select)
             sections
         }
         .listStyle(.insetGrouped)

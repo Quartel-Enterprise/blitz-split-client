@@ -70,105 +70,228 @@ final class ProfileModel {
 }
 
 /// The profile: a grouped form pushed over the groups. On iPhone and iPad the identity row opens the
-/// editor; the Mac edits name, photo and color right here, as the canvas draws it.
+/// editor; the Mac edits name, photo and color right here, in Ajustes (⌘,), as the canvas draws it.
+/// Lying down (an iPhone, an iPad, an iPhone Duo open) who you are, your account and the rest go in one column and
+/// the keys and preferences in a second one, each scrolling on its own; an iPad lying down draws the first one as the
+/// panel of a Settings split. Upright with an iPad's room it is one 520 pt column.
 struct ProfileView: View {
-    @State private var model = ProfileModel()
     #if os(macOS)
+    /// Ajustes' own (`SettingsView`), made once per profile: SwiftUI rebuilds this view's value whenever the window
+    /// redraws.
+    let model: ProfileModel
+    /// The section Ajustes' sidebar picked, which the form scrolls to.
+    var pane: ProfileSettingsPane?
+    /// Bumped on every click in Ajustes' sidebar, the section already picked included, so the form scrolls back to it.
+    var scrollRequest: Int
     /// Made once the settings appear, as the other screens make theirs: SwiftUI rebuilds this view's value
     /// whenever its parent redraws.
     @State private var notificationModel: NotificationSettingsModel?
+
+    init(model: ProfileModel, pane: ProfileSettingsPane?, scrollRequest: Int) {
+        self.model = model
+        self.pane = pane
+        self.scrollRequest = scrollRequest
+    }
+    #else
+    @State private var model = ProfileModel()
+    /// The screen's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
+    /// The iPhone Duo's fold, where the two columns sit on each side of it rather than as a Settings split.
+    @State private var division: FoldDivision?
     #endif
 
     var body: some View {
-        let state = model.state
-        Form {
-            if state.showsOfflineNotice {
-                Section {
-                    GlassNotice(
-                        title: "No internet.",
-                        message: "Edit freely: it stays saved on this \(DeviceName.current) and goes up when the connection is back.",
-                    )
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-            }
-            IdentitySection(model: model)
-            #if os(macOS)
-            // The Mac's settings list the keys right under the profile, as the canvas draws them
-            PaymentKeysSection(model: model)
-            AccountSection(model: model)
-            #else
-            AccountSection(model: model)
-            PaymentKeysSection(model: model)
-            #endif
-            Section("Preferences") {
-                Picker(
-                    "Appearance",
-                    selection: Binding(
-                        get: { model.state.theme },
-                        set: { model.send(ProfileUiEventOnThemeSelected(theme: $0)) },
-                    ),
-                ) {
-                    Text("System").tag(ThemePreference.system)
-                    Text("Light").tag(ThemePreference.light)
-                    Text("Dark").tag(ThemePreference.dark)
-                }
-                #if os(iOS)
-                Button {
-                    model.send(ProfileUiEventOnNotificationsClicked.shared)
-                } label: {
-                    LabeledContent("Notifications") {
-                        HStack(spacing: 6) {
-                            Text("\(Int(state.activeNotificationCount)) active")
-                            Image(systemName: "chevron.forward")
-                                .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.tertiary)
-                        }
+        content
+            .navigationTitle("Profile")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Who sees your profile", systemImage: "info.circle") {
+                        model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
                     }
                 }
-                .foregroundStyle(.primary)
-                #endif
-                CategoryMapRow(model: model)
             }
+            .profileDialogs(model: model)
             #if os(macOS)
-            // The Mac's settings show the toggles right here, as the canvas draws them
-            if let notificationModel {
-                NotificationSettingsSections(model: notificationModel)
+            .onAppear {
+                if notificationModel == nil { notificationModel = NotificationSettingsModel() }
             }
             #endif
-            AboutSection(model: model)
-            Section {
-                Button(role: .destructive) {
-                    model.send(ProfileUiEventOnSignOutClicked.shared)
-                } label: {
-                    Text(state.hasAccount ? "Sign out" : "Erase profile and sign out")
-                        .frame(maxWidth: .infinity)
+            .dataExporter(json: Binding(
+                get: { model.exportJson },
+                set: { model.exportJson = $0 },
+            ))
+    }
+
+    #if os(macOS)
+    private var content: some View {
+        ScrollViewReader { proxy in
+            Form {
+                OfflineSection(model: model)
+                IdentitySection(model: model)
+                    .id(ProfileSettingsPane.profile)
+                // The Mac's settings list the keys right under the profile, as the canvas draws them
+                PaymentKeysSection(model: model)
+                    .id(ProfileSettingsPane.keys)
+                AccountSection(model: model)
+                    .id(ProfileSettingsPane.account)
+                PreferencesSection(model: model)
+                    .id(ProfileSettingsPane.appearance)
+                // The Mac's settings show the toggles right here, as the canvas draws them
+                if let notificationModel {
+                    NotificationSettingsSections(model: notificationModel)
+                        .id(ProfileSettingsPane.notifications)
                 }
-                .disabled(!state.canSignOut)
+                AboutSection(model: model)
+                    .id(ProfileSettingsPane.privacy)
+                SignOutSection(model: model)
+                if model.state.showsDeleteAccount {
+                    DeleteAccountSection(model: model)
+                }
             }
-            if state.showsDeleteAccount {
+            .formStyle(.grouped)
+            // Also as the form comes back from Ajustes' Categories, which drew the map in its place
+            .onChange(of: scrollRequest, initial: true) {
+                guard let pane, scrollRequest > 0 else { return }
+                withAnimation { proxy.scrollTo(pane, anchor: .top) }
+            }
+        }
+    }
+    #else
+    private var content: some View {
+        Group {
+            if layout.usesTwoColumns {
+                TwoColumnsLayout(
+                    firstWidth: layout.isLarge ? 360 : 300,
+                    spacing: layout.isLarge ? 48 : 28,
+                    maxWidth: layout.isLarge ? 1048 : ScreenLayout.twoColumnsMaxWidth,
+                ) {
+                    identityForm
+                } second: {
+                    Form {
+                        PaymentKeysSection(model: model)
+                        PreferencesSection(model: model)
+                    }
+                    .formStyle(.grouped)
+                }
+            } else {
+                Form {
+                    OfflineSection(model: model)
+                    IdentitySection(model: model)
+                    AccountSection(model: model)
+                    PaymentKeysSection(model: model)
+                    PreferencesSection(model: model)
+                    AboutSection(model: model)
+                    SignOutSection(model: model)
+                    if model.state.showsDeleteAccount {
+                        DeleteAccountSection(model: model)
+                    }
+                }
+                .formStyle(.grouped)
+                .frame(maxWidth: layout.isLarge ? ScreenLayout.singleColumnMaxWidth : .infinity)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
+        .readingFoldDivision($division)
+    }
+
+    /// The first column lying down: who you are, the account, privacy and signing out. With an iPad's room and no
+    /// fold down the middle it is the Settings split's panel, on glass, as the canvas draws it.
+    @ViewBuilder
+    private var identityForm: some View {
+        let form = Form {
+            OfflineSection(model: model)
+            IdentitySection(model: model)
+            AccountSection(model: model)
+            AboutSection(model: model)
+            SignOutSection(model: model)
+            if model.state.showsDeleteAccount {
                 DeleteAccountSection(model: model)
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Profile")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("Who sees your profile", systemImage: "info.circle") {
-                    model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
+        if layout.showsListDetail, division == nil {
+            form
+                .scrollContentBackground(.hidden)
+                .glassEffect(.regular, in: .rect(cornerRadius: 30))
+                .padding(.bottom, 16)
+        } else {
+            form
+        }
+    }
+    #endif
+}
+
+/// "No internet": what changes is kept on the device and goes up later.
+private struct OfflineSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        if model.state.showsOfflineNotice {
+            Section {
+                GlassNotice(
+                    title: "No internet.",
+                    message: "Edit freely: it stays saved on this \(DeviceName.current) and goes up when the connection is back.",
+                )
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+        }
+    }
+}
+
+/// Appearance, and on iPhone and iPad the row that opens the notification settings (the Mac shows them inline).
+private struct PreferencesSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Section("Preferences") {
+            Picker(
+                "Appearance",
+                selection: Binding(
+                    get: { model.state.theme },
+                    set: { model.send(ProfileUiEventOnThemeSelected(theme: $0)) },
+                ),
+            ) {
+                Text("System").tag(ThemePreference.system)
+                Text("Light").tag(ThemePreference.light)
+                Text("Dark").tag(ThemePreference.dark)
+            }
+            #if os(iOS)
+            Button {
+                model.send(ProfileUiEventOnNotificationsClicked.shared)
+            } label: {
+                LabeledContent("Notifications") {
+                    HStack(spacing: 6) {
+                        Text("\(Int(model.state.activeNotificationCount)) active")
+                        Image(systemName: "chevron.forward")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
                 }
             }
+            .foregroundStyle(.primary)
+            #endif
+            CategoryMapRow(model: model)
         }
-        .profileDialogs(model: model)
-        #if os(macOS)
-        .onAppear {
-            if notificationModel == nil { notificationModel = NotificationSettingsModel() }
+    }
+}
+
+private struct SignOutSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        let state = model.state
+        Section {
+            Button(role: .destructive) {
+                model.send(ProfileUiEventOnSignOutClicked.shared)
+            } label: {
+                Text(state.hasAccount ? "Sign out" : "Erase profile and sign out")
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(!state.canSignOut)
         }
-        #endif
-        .dataExporter(json: Binding(
-            get: { model.exportJson },
-            set: { model.exportJson = $0 },
-        ))
     }
 }
 
@@ -630,21 +753,14 @@ private extension Bundle {
     }
 }
 
-/// Preferences › "Category map" (flow 9): pushed on iPhone and iPad; the Mac keeps it in Settings › Categories.
+/// Preferences › "Category map" (flow 9): pushed on iPhone and iPad; on the Mac, whose profile is Ajustes, it picks
+/// Ajustes' Categories section instead (`AppModel`).
 private struct CategoryMapRow: View {
     let model: ProfileModel
 
-    #if os(macOS)
-    @Environment(\.openSettings) private var openSettings
-    #endif
-
     var body: some View {
         Button {
-            #if os(macOS)
-            openSettings()
-            #else
             model.send(ProfileUiEventOnCategoryMapClicked.shared)
-            #endif
         } label: {
             LabeledContent {
                 Image(systemName: "chevron.forward")

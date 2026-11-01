@@ -76,7 +76,7 @@ class CategoryTermRepositoryImpl(
     }
 
     override suspend fun uploadPending(userId: String): Result<Unit> = suspendRunCatching {
-        val pending = local.getAll().filter { it.pendingSync && (it.ownerUserId == null || it.ownerUserId == userId) }
+        val pending = local.getPending(userId)
         if (pending.isEmpty()) return@suspendRunCatching
         remote.upsert(pending.map { mapper.toDto(it, userId) })
         local.claimUnowned(userId)

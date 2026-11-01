@@ -175,6 +175,7 @@ class JoinPickUiStateTest {
         isJoining: Boolean = false,
     ): JoinPickUiState = JoinPickUiState(
         isLoaded = true,
+        groupName = "Viagem Floripa",
         members = members,
         selectedMemberId = selectedMemberId,
         takenName = null,

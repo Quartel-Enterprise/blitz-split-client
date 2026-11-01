@@ -1150,8 +1150,6 @@ private struct MacBillForm: View {
 private struct MacCategoryMenu: View {
     let model: SplitBillModel
 
-    @Environment(\.openSettings) private var openSettings
-
     private var state: SplitBillUiState {
         model.state
     }
@@ -1189,9 +1187,9 @@ private struct MacCategoryMenu: View {
             Button("New Category…") {
                 model.send(SplitBillUiEventOnNewCategoryClicked(parentId: nil, name: ""))
             }
-            // The map lives in Settings › Categories on the Mac (9.0)
+            // The map lives in Ajustes › Categories on the Mac (9.0), which this opens (`AppModel`)
             Button("Category Map…") {
-                openSettings()
+                model.send(SplitBillUiEventOnCategoryMapClicked.shared)
             }
         } label: {
             CategoryBadge(category: state.category, size: 22)

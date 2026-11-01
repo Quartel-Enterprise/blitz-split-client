@@ -5,7 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryMap
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
-import com.quare.blitzsplit.core.utils.TextFold
+import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
  * Why: "Mapa de categorias" (9.1): the person's terms by category, the app's and every group's on the device, the
@@ -62,7 +62,7 @@ data class CategoryMapUiState(
             return map.terms.mapNotNull { term ->
                 val start = matchStartOrNull(term.key, folded) ?: return@mapNotNull null
                 val category = categories.findOrNull(term.categoryId) ?: return@mapNotNull null
-                val isMarked = TextFold.toFolded(term.term) == term.key
+                val isMarked = TextFolding.toFolded(term.term) == term.key
                 MapSearchResult(
                     term = term,
                     category = category,

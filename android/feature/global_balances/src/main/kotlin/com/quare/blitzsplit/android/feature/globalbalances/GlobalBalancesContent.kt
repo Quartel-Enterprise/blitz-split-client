@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -37,10 +36,11 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.HomeTab
+import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -54,6 +54,7 @@ private val sideColumnWidth = 320.dp
 private val railWidth = 80.dp
 
 private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
+    HomeTab.HOME -> GlobalBalancesUiEvent.OnHomeTabClicked
     HomeTab.GROUPS -> GlobalBalancesUiEvent.OnGroupsTabClicked
     HomeTab.BALANCES -> null
     HomeTab.CONTACTS -> GlobalBalancesUiEvent.OnContactsTabClicked
@@ -84,6 +85,7 @@ fun GlobalBalancesContent(
                 HomeNavigationRail(
                     selected = HomeTab.BALANCES,
                     onTabClick = onTabClick,
+                    activityBadgeCount = state.activityUnreadCount,
                 )
             }
             Scaffold(
@@ -92,16 +94,13 @@ fun GlobalBalancesContent(
                     TopAppBar(
                         title = {},
                         actions = {
-                            IconButton(
+                            ProfileAvatarButton(
+                                initial = state.avatarInitial,
+                                color = state.avatarColor,
+                                photoUrl = state.photoUrl,
+                                contentDescription = profile,
                                 onClick = { onEvent(GlobalBalancesUiEvent.OnProfileClicked) },
-                                modifier = Modifier.semantics { contentDescription = profile },
-                            ) {
-                                AvatarBadge(
-                                    initial = state.avatarInitial,
-                                    color = state.avatarColor,
-                                    photoUrl = state.photoUrl,
-                                )
-                            }
+                            )
                         },
                     )
                 },
@@ -111,6 +110,7 @@ fun GlobalBalancesContent(
                         HomeNavigationBar(
                             selected = HomeTab.BALANCES,
                             onTabClick = onTabClick,
+                            activityBadgeCount = state.activityUnreadCount,
                         )
                     }
                 },
@@ -309,7 +309,12 @@ private fun FilterHeaderColumn(
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (state.showsOfflineNotice) OfflineChip(modifier = Modifier.padding(horizontal = 16.dp))
+        if (state.showsOfflineNotice) {
+            OfflineChip(
+                text = stringResource(R.string.global_balances_offline),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
         BalancesFilterRow(
             state = state,
             onFilterClick = { onEvent(GlobalBalancesUiEvent.OnFilterChanged(it)) },

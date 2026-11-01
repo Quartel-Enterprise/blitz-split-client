@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-import com.quare.blitzsplit.core.utils.TextFold
+import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
  * Why: the map's rule (flow 9): a term matches whole words, ignoring case and accents ("Farmacia" is "farmácia", but
@@ -60,7 +60,7 @@ object CategoryMatcher {
     }
 
     private fun wordsOf(text: String): List<Word> {
-        val folded = TextFold.toFolded(text)
+        val folded = TextFolding.toFolded(text)
         val words = mutableListOf<Word>()
         var start = -1
         folded.forEachIndexed { index, char ->

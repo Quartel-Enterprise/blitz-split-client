@@ -41,6 +41,8 @@ settings:
     INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
     INFOPLIST_KEY_NSCameraUsageDescription: To scan the QR code of an invite or from your old device, and to take your profile photo.
+    # Invite from contacts reads the agenda only on the device: no number leaves it
+    INFOPLIST_KEY_NSContactsUsageDescription: To invite people from your contacts with a group's link. Their numbers stay on this device.
     INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
 
 targetTemplates:
@@ -116,6 +118,8 @@ targets:
         com.apple.security.app-sandbox: true
         com.apple.security.network.client: true
         com.apple.security.device.camera: true
+        # Invite from contacts reads the Mac's Contacts
+        com.apple.security.personal-information.addressbook: true
         com.apple.developer.applesignin: [Default]
         com.apple.developer.associated-domains: [webcredentials:blitzsplit.com, applinks:blitzsplit.com]
 

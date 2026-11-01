@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountTextField
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
@@ -145,12 +146,15 @@ private fun PaymentHeader(
 }
 
 @Composable
-private fun PersonFaceBadge(person: PaymentPerson?) {
+internal fun PersonFaceBadge(
+    person: PaymentPerson?,
+    size: Dp = faceSize,
+) {
     // Why: a blank face for someone no longer in the group, as Saldos draws them.
     if (person == null) {
         Box(
             modifier = Modifier
-                .size(faceSize)
+                .size(size)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape),
         )
         return
@@ -158,7 +162,7 @@ private fun PersonFaceBadge(person: PaymentPerson?) {
     AvatarBadge(
         initial = person.initials,
         color = person.avatarColor,
-        size = faceSize,
+        size = size,
     )
 }
 

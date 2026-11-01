@@ -3,9 +3,10 @@
 # Looks for copied code in the Kotlin, Swift and TypeScript of the apps with jscpd (github.com/kucherenko/jscpd):
 #   ./scripts/cpd.sh                                check: fails on copied code .jscpd-baseline.json doesn't list,
 #                                                   and on copied code it still lists after it was removed
-#   ./scripts/cpd.sh --update-baseline              write the copied code found now to .jscpd-baseline.json, when
-#                                                   there is no more of it than the baseline lists (a renamed file)
+#   ./scripts/cpd.sh --update-baseline              write the copied code found now to .jscpd-baseline.json, when no
+#                                                   file has more of it than the baseline lists, but a renamed one
 #   ./scripts/cpd.sh --update-baseline --allow-new  also take more copied code in, only when the copy is on purpose
+#   ./scripts/cpd.sh --base <baseline of main>      check, and warn about copied code the baseline takes in (CI)
 #
 # What it scans is in .jscpd.json. jscpd only compares files of the same language, so a screen drawn by Compose,
 # SwiftUI and React is never a clone: what it finds is logic or UI copied within one of them.
@@ -13,9 +14,24 @@
 set -e
 
 ROOT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." > /dev/null && pwd)"
+
+# Why: the check runs from the repo root, so a relative --base path is made absolute against where the script ran.
+args=()
+while [ $# -gt 0 ]; do
+    if [ "$1" = "--base" ] && [ $# -gt 1 ] && [ "${2#/}" = "$2" ]; then
+        args+=("$1" "$PWD/$2")
+        shift 2
+    else
+        args+=("$1")
+        shift
+    fi
+done
+set -- "${args[@]}"
+
 cd "$ROOT"
 
-if ! command -v npm > /dev/null; then
+if ! command -v npm > /dev/null || ! command -v node > /dev/null \
+    || ! node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 18 ? 0 : 1)'; then
     echo "❌ jscpd needs Node.js 18 or later (see docs/getting-started.md)"
     exit 1
 fi
@@ -29,6 +45,9 @@ if ! cmp -s "$TOOL/package-lock.json" "$TOOL/node_modules/.installed-lock.json";
 fi
 
 rm -rf build/jscpd
-"$TOOL/node_modules/.bin/jscpd" --config .jscpd.json
+if ! "$TOOL/node_modules/.bin/jscpd" --config .jscpd.json; then
+    echo "❌ jscpd failed: see its error above, or set \"silent\" to false in .jscpd.json for more"
+    exit 1
+fi
 
 exec node scripts/cpd-check.mjs build/jscpd/jscpd-report.json .jscpd-baseline.json "$@"

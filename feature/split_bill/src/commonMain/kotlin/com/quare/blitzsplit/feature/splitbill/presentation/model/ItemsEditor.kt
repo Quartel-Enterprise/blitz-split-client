@@ -89,9 +89,12 @@ data class ItemsEditor(
             }
         }
 
-    // Why: "Pronto" only once every item has someone and it all closes with the total.
+    /*
+     * Why: "Pronto" only once there is an item, every item has someone and it all closes with the total; a couvert
+     * alone may close it, but a bill without items is one the save (BillItemsSplit.isWellFormed) refuses.
+     */
     val addsUp: Boolean
-        get() = totalMinor > 0 && remainingMinor == 0L && breakdown.shares != null
+        get() = items.isNotEmpty() && totalMinor > 0 && remainingMinor == 0L && breakdown.shares != null
 
     // Why: "Adicionar item de R$ 15,00", while the items fall short of the total.
     val canAddDifferenceItem: Boolean
@@ -99,14 +102,15 @@ data class ItemsEditor(
 
     /*
      * Why: "Dividir a diferença" shares it in proportion to what each one consumed, so only once every item has
-     * someone and, for a total below the items, while what they consumed covers it.
+     * someone and, for a total below the items, while the shares it gives (rounding included) leave nobody below zero.
      */
     val canSplitDifference: Boolean
         get() = remainingMinor != 0L &&
             totalMinor > 0 &&
             looseItems.isEmpty() &&
             breakdown.itemsMinor > 0 &&
-            breakdown.itemsMinor + split.extraMinor + remainingMinor >= 0
+            BillItemsSplit.breakdownOf(split.copy(extraMinor = split.extraMinor + remainingMinor), payerIds).shares !=
+            null
 
     val canAddItem: Boolean
         get() = items.size < BillItemsSplit.MAX_ITEMS

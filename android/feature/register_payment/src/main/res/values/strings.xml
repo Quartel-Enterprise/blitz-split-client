@@ -25,4 +25,8 @@
     <string name="register_payment_save_error">Couldn\'t record the payment. Try again.</string>
     <string name="register_payment_former_member">Former member</string>
     <string name="register_payment_one_per_group">The app records one payment in each group.</string>
+    <string name="register_payment_pick_title">Who paid whom?</string>
+    <string name="register_payment_pick_pair">%1$s → %2$s</string>
+    <string name="register_payment_pick_empty_title">Nobody owes anything right now</string>
+    <string name="register_payment_pick_empty_body">When someone owes, just pick here who paid.</string>
 </resources>

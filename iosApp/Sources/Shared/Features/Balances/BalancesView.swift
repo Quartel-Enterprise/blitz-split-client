@@ -49,6 +49,7 @@ final class BalancesModel {
             stats: { [weak self] in self?.send(BalancesUiEventOnStatsClicked.shared) },
             members: { [weak self] in self?.send(BalancesUiEventOnMembersClicked.shared) },
             editGroup: { [weak self] in self?.send(BalancesUiEventOnEditGroupClicked.shared) },
+            togglePin: { [weak self] in self?.send(BalancesUiEventOnPinToggled.shared) },
             leaveGroup: { [weak self] in self?.send(BalancesUiEventOnLeaveGroupClicked.shared) },
             deleteGroup: { [weak self] in self?.send(BalancesUiEventOnDeleteGroupClicked.shared) },
             splitBill: { [weak self] in self?.send(BalancesUiEventOnSplitBillClicked.shared) },
@@ -107,6 +108,7 @@ struct BalancesView: View {
         }
         .groupScreenBars(
             tab: .balances,
+            host: .balances(route),
             header: model?.state.isLoaded == true ? model?.state.header : nil,
             hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,

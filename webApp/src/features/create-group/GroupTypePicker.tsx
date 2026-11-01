@@ -10,6 +10,11 @@ const typeLabels: Record<string, MessageKey> = {
   other: 'createGroup_typeOther',
 }
 
+/** "Viagem", "Casa", "Evento" or "Outro", by the GroupType's code. */
+export function groupTypeLabel(code: string): string {
+  return t(typeLabels[code] ?? 'createGroup_typeOther')
+}
+
 /** The group's type as one radio button per type, the same in "New group" and "Edit group". */
 export function GroupTypePicker({ label, types, selected, onSelect }: { label: string; types: string[]; selected: string; onSelect: (type: string) => void }) {
   const labelId = useId()
@@ -30,7 +35,7 @@ export function GroupTypePicker({ label, types, selected, onSelect }: { label: s
             onClick={() => onSelect(type)}
           >
             {type === selected && <Check />}
-            {t(typeLabels[type] ?? 'createGroup_typeOther')}
+            {groupTypeLabel(type)}
           </Button>
         ))}
       </div>

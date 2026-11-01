@@ -122,8 +122,11 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
   )
 }
 
+/** What the sync status reads, the same on Grupos and Início. */
+export type SyncState = Pick<JsGroupsState, 'syncBadge' | 'pendingChangeCount' | 'canRetrySync'>
+
 /** The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" or "Sem resposta do servidor" with "Tentar de novo". */
-export function SyncStatus({ state, presenter }: { state: JsGroupsState; presenter: GroupsPresenter }) {
+export function SyncStatus({ state, presenter }: { state: SyncState; presenter: { retrySync(): void } }) {
   if (!state.syncBadge) return null
   const isOffline = state.syncBadge === 'OFFLINE'
   const label = isOffline
@@ -154,7 +157,7 @@ export function SyncStatus({ state, presenter }: { state: JsGroupsState; present
 }
 
 /** Each currency's amount with its sign, or a zero in the first currency when none has any. */
-function amountsOf(totals: JsBalanceTotal[], select: (total: JsBalanceTotal) => number): string[] {
+export function amountsOf(totals: JsBalanceTotal[], select: (total: JsBalanceTotal) => number): string[] {
   const amounts = totals.filter((total) => select(total) !== 0).map((total) => formatSignedMoney(select(total), total.currency, total.fractionDigits))
   if (amounts.length > 0) return amounts
   const first = totals[0]

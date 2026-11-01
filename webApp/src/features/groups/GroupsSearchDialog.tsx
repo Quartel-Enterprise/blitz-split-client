@@ -211,7 +211,8 @@ function billMetaText(hit: JsSearchBillHit): string {
   return paid ? `${hit.groupName} · ${paid}` : hit.groupName
 }
 
-function paidText(payers: JsSearchBillPayer[]): string | null {
+/** "Bruno pagou", "Você pagou", "Ana e Bruno pagaram" or "3 pessoas pagaram", in the search and on Início. */
+export function paidText(payers: JsSearchBillPayer[]): string | null {
   if (payers.length > 1) {
     return t('groups_searchPaidBySeveral', { names: payerNamesText(payers.map((payer) => (payer.isMe ? t('splitBill_you') : nameOrFormer(payer.name)))) })
   }

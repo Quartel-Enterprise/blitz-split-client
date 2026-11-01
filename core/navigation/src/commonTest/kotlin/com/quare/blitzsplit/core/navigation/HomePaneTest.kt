@@ -16,22 +16,22 @@ class HomePaneTest {
         prepareScenario(Route.Groups)
 
         // When
-        navigator.openBesideGroups(Route.GroupDetail("trip"))
+        navigator.openBesideGroups(Route.GroupDetail("trip", joinedAs = null))
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("trip")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail("trip", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
     fun `GIVEN a tab of a group beside the groups WHEN opening another group THEN takes its place`() {
         // Given
-        prepareScenario(Route.Groups, Route.Members("trip", joinedAs = null))
+        prepareScenario(Route.Groups, Route.Members("trip"))
 
         // When
-        navigator.openBesideGroups(Route.GroupDetail("flat"))
+        navigator.openBesideGroups(Route.GroupDetail("flat", joinedAs = null))
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("flat")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail("flat", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -40,10 +40,10 @@ class HomePaneTest {
         prepareScenario(Route.Welcome)
 
         // When
-        navigator.openBesideGroups(Route.GroupDetail("trip"))
+        navigator.openBesideGroups(Route.GroupDetail("trip", joinedAs = null))
 
         // Then
-        assertEquals(listOf(Route.Welcome, Route.GroupDetail("trip")), navigator.backStack.value)
+        assertEquals(listOf(Route.Welcome, Route.GroupDetail("trip", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -61,7 +61,7 @@ class HomePaneTest {
     @Test
     fun `GIVEN Saldos right above the groups WHEN reading the group beside them THEN there is none`() {
         // Given
-        prepareScenario(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL))
+        prepareScenario(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null))
 
         // When
         val groupId = navigator.backStack.value.groupBesideGroupsOrNull()
@@ -73,7 +73,7 @@ class HomePaneTest {
     @Test
     fun `GIVEN only a tab of a group above the groups WHEN asking whether only the pane is above THEN it is`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail("trip"))
+        prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null))
 
         // When
         val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
@@ -85,7 +85,7 @@ class HomePaneTest {
     @Test
     fun `GIVEN a bill over the group beside the groups WHEN asking whether only the pane is above THEN it is not`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail("trip"), Route.BillDetail("trip", "dinner"))
+        prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null), Route.BillDetail("trip", "dinner"))
 
         // When
         val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
@@ -109,7 +109,11 @@ class HomePaneTest {
     @Test
     fun `GIVEN a group stacked on the one beside the groups WHEN reading the pane THEN shows the last`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail("trip"), Route.GroupDetail("flat"))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail("trip", joinedAs = null),
+            Route.GroupDetail("flat", joinedAs = null),
+        )
 
         // When
         val groupId = navigator.backStack.value.groupBesideGroupsOrNull()

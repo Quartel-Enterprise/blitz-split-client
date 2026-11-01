@@ -109,11 +109,58 @@ class GroupDetailUiStateTest {
         assertFalse(state.isEmpty)
     }
 
+    @Test
+    fun `GIVEN just joined with an unprotected account WHEN checking the protect access invite THEN it shows`() {
+        // Given
+        val state = state(
+            joinedAs = "Bruno",
+            isAccountUnprotected = true,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertTrue(shows)
+    }
+
+    @Test
+    fun `GIVEN just joined with a protected account WHEN checking the protect access invite THEN it hides`() {
+        // Given
+        val state = state(
+            joinedAs = "Bruno",
+            isAccountUnprotected = false,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertFalse(shows)
+    }
+
+    @Test
+    fun `GIVEN not opened from a join with an unprotected account WHEN checking the invite THEN it hides`() {
+        // Given
+        val state = state(
+            joinedAs = null,
+            isAccountUnprotected = true,
+        )
+
+        // When
+        val shows = state.showsProtectAccess
+
+        // Then
+        assertFalse(shows)
+    }
+
     private fun state(
         memberCount: Int = 4,
         faceCount: Int = 4,
         isLoaded: Boolean = true,
         hasBills: Boolean = true,
+        joinedAs: String? = null,
+        isAccountUnprotected: Boolean = false,
     ): GroupDetailUiState = GroupDetailUiState(
         header = GroupHeader(
             groupName = "Viagem de Floripa",
@@ -126,6 +173,7 @@ class GroupDetailUiStateTest {
             totalSpentMinor = if (hasBills) 12_000 else 0,
             myBalance = null,
             isEveryoneSettled = false,
+            isPinned = false,
         ),
         days = if (hasBills) listOf(day) else emptyList(),
         paymentToDelete = null,
@@ -134,6 +182,8 @@ class GroupDetailUiStateTest {
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
         teach = null,
+        joinedAs = joinedAs,
+        isAccountUnprotected = isAccountUnprotected,
     )
 
     private val day = ExpenseDay(

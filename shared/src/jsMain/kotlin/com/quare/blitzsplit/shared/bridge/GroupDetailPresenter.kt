@@ -98,6 +98,9 @@ class JsGroupDetailState(
     val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
     val teach: JsCategoryTeach?,
+    // Why: "Você entrou como Bruno", right after joining, and "Proteja seu acesso" under it.
+    val joinedAs: String?,
+    val showsProtectAccess: Boolean,
 )
 
 class GroupDetailPresenter(
@@ -136,6 +139,8 @@ class GroupDetailPresenter(
                         isSaving = teach.isSaving,
                     )
                 },
+                joinedAs = state.joinedAs,
+                showsProtectAccess = state.showsProtectAccess,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -164,6 +169,10 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
     }
 
+    fun protectAccess() {
+        viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+    }
+
     fun invite() {
         viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
     }
@@ -178,6 +187,11 @@ class GroupDetailPresenter(
 
     fun balances() {
         viewModel.onEvent(GroupDetailUiEvent.OnBalancesTabClicked)
+    }
+
+    // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
+    fun togglePin() {
+        viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
     }
 
     fun editGroup() {
