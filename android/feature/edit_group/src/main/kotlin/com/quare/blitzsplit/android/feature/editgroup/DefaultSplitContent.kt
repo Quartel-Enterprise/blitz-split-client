@@ -121,8 +121,8 @@ private fun NoticesSection(state: DefaultSplitUiState) {
             color = MaterialTheme.colorScheme.error,
         )
     }
-    val newcomers = state.newcomers
-    if (newcomers.isEmpty()) return
+    val joinedPeople = state.joinedPeople
+    if (joinedPeople.isEmpty()) return
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -141,7 +141,7 @@ private fun NoticesSection(state: DefaultSplitUiState) {
                 modifier = Modifier.size(20.dp),
             )
             Text(
-                text = newcomerTextOf(state.mode, newcomers.map { it.name }),
+                text = newcomerTextOf(state.mode, joinedPeople.map { it.name }),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

@@ -81,7 +81,7 @@ data class DefaultSplitUiState(
     val rows: List<DefaultSplitRow> = rowsOf(this)
 
     // Why: "Carla entrou no grupo. Ela começa com 1 parte; ajuste se precisar.", until someone saves.
-    val newcomers: List<DefaultSplitPerson>
+    val joinedPeople: List<DefaultSplitPerson>
         get() = people.filter { it.isNew }
 
     val modes: List<DefaultSplitMode>

@@ -331,26 +331,10 @@ private struct DefaultSplitPersonRow: View {
     ) -> some View {
         let isError = model.state.showsPercentError && mode == .percent
         return TextField(text: text, prompt: Text(verbatim: prompt), label: label)
-            .multilineTextAlignment(.trailing)
-            .monospacedDigit()
             #if os(iOS)
             .keyboardType(mode == .income ? .decimalPad : .numberPad)
-            .padding(.horizontal, 10)
-            .frame(width: width, height: 36)
-            .background(.fill.tertiary, in: .rect(cornerRadius: 10))
-            .overlay {
-                if isError {
-                    RoundedRectangle(cornerRadius: 10).strokeBorder(Palette.negative, lineWidth: 2)
-                }
-            }
-            #else
-            .frame(width: width)
-            .overlay {
-                if isError {
-                    RoundedRectangle(cornerRadius: 5).strokeBorder(Palette.negative, lineWidth: 1.5)
-                }
-            }
             #endif
+            .inlineValueFieldStyle(width: width, isError: isError)
     }
 }
 

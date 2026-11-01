@@ -62,7 +62,7 @@ class DefaultSplitViewModelTest {
             assertTrue(state.people.all { it.isIncluded })
             assertEquals(10_000L, state.exampleTotalMinor)
             assertEquals(5_000L, state.exampleEachMinor)
-            assertTrue(state.newcomers.isEmpty())
+            assertTrue(state.joinedPeople.isEmpty())
             assertFalse(state.canSave)
         }
 
@@ -184,7 +184,7 @@ class DefaultSplitViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf(CARLA), state.newcomers.map { it.id })
+            assertEquals(listOf(CARLA), state.joinedPeople.map { it.id })
             assertEquals(1L, state.weights[CARLA])
             assertTrue(state.canSave)
         }
@@ -213,7 +213,7 @@ class DefaultSplitViewModelTest {
                     ?.weights,
             )
             assertTrue(
-                viewModel.uiState.value.newcomers
+                viewModel.uiState.value.joinedPeople
                     .isEmpty(),
             )
         }
