@@ -48,28 +48,34 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `TwoHalvesLayout(start, end, gap)` | A screen the boards split on a book's hinge: each half on its side, the gap centered on the hinge and never narrower than the band (`gap = 72.dp` for flows 3 and 4). It finds itself on screen, so it works after the rail or inside a dialog |
 | `TopBottomHalvesLayout(top, bottom, gap)` | A screen with a tabletop board of its own: what is read or scanned on top, the controls at the bottom. Needs a bounded height; each half scrolls on its own |
 | `FoldDialog(onDismissRequest, properties, placement, content)` | A dialog off the hinge: `DialogPlacement.Centered`, `EndHalf` (a book's right half, the other half under the scrim) or `TopHalf` (a tabletop's). `rememberDialogPlacement()` is the canvas' default per posture (a tabletop lying down draws its dialogs like the book's, in the right half above its hinge); pass `TopHalf` where the boards put them on a tabletop's top half (flow 2). The content brings its own surface, as in a centered dialog; one that replaces Material's `BasicAlertDialog` puts `Modifier.alertDialogPane(title)` on it, for the 280 to 560 dp width and the pane title TalkBack says |
-| `FoldDialogSceneStrategy.dialogMetadataOf(properties)` | A navigation entry in a `FoldDialog` over the entry under it (`AppNavDisplay` uses it for every dialog route) |
-| `rememberUsesFormDialog()` | Novo grupo, Editar grupo, Convidar, the keys, Excluir conta: a dialog on a tablet, full screen on any foldable |
+| `FoldDialogSceneStrategy.dialogMetadataOf(properties, isTopHalfOnTabletop)` | A navigation entry in a `FoldDialog` over the entry under it (`AppNavDisplay` uses it for every dialog route); `isTopHalfOnTabletop` for a flow whose boards put it in a tabletop's top half even lying down (flow 2's Novo grupo) |
+| `rememberUsesFormDialog()` | Editar grupo, Convidar, the keys, Excluir conta: a dialog on a tablet, full screen on any foldable |
 | `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento, Cobrar: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
 | `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)` |
 
-Not checked on a device yet: `TwoHalvesLayout`, `TopBottomHalvesLayout`, `tabletopFoldLayoutOf` and
-`FoldHinge.isSeparating` have no screen using them, so their layout math (right to left, a hinge band partly off the
-layout) has only run in previews. They land ahead of the flows that need them, and each flow's responsive slice
-adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then. `FoldDialog` and
-`FoldDialogSceneStrategy` already draw the recovery code and every dialog route.
+Not checked on a device yet: `TwoHalvesLayout` (Boas-vindas, Seu perfil and Recuperar on a book), `FoldDialog`'s
+halves (the recovery code, Novo grupo), `TopBottomHalvesLayout`, `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
+their layout math (right to left, a hinge band partly off the layout) has only run in previews. Each flow's
+responsive slice adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then.
+`FoldDialog` and `FoldDialogSceneStrategy` already draw every dialog route.
 
 The two `rememberUses…Dialog` rules are the presentations of today. A flow whose boards draw something else on a
-foldable (Novo grupo as a 560 dp dialog upright and in the right half on a book, Registrar pagamento in the right half
-instead of a sheet) switches on `formFactor` for that route in `AppNavDisplay` and tells its screen how it is drawn:
+foldable (Registrar pagamento in the right half instead of a sheet) switches on `formFactor` for that route in
+`AppNavDisplay` and tells its screen how it is drawn, as Novo grupo does (a 560 dp dialog upright, in the right half on
+a book, in the top half on a tabletop):
 
 ```kotlin
 val formFactor = rememberFoldLayout().formFactor
-val opensAsDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
-entry<Route.CreateGroup>(metadata = if (opensAsDialog) formDialogMetadata else emptyMap()) {
+val usesCreateGroupDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+val createGroupMetadata = if (usesCreateGroupDialog) {
+    FoldDialogSceneStrategy.dialogMetadataOf(properties = dialogProperties, isTopHalfOnTabletop = true)
+} else {
+    emptyMap()
+}
+entry<Route.CreateGroup>(metadata = createGroupMetadata) {
     // In a book's half the dialog is the half's width minus 16 dp each side: the form lays out for that width
-    CreateGroupScreen(isDialog = opensAsDialog)
+    CreateGroupScreen(isDialog = usesCreateGroupDialog)
 }
 ```
 
@@ -88,6 +94,7 @@ Every layout rule is `ScreenLayout`, the size of what a view measures (`.measuri
 | `usesTwoColumns` | Lying down and at least 640 pt wide: an iPhone lying down, an iPad lying down, an iPhone Duo open, a wide Mac window |
 | `isLarge` | An iPad's room, 600 pt or more on the short side: an iPad, an iPhone Duo open (920×648) and upright (648×920), a wide Split View |
 | `showsListDetail` | `isLarge` and lying down (iOS only): the home's list and detail on an iPad lying down and an iPhone Duo open |
+| `isShortColumn` | Upright, wider than any iPhone (over 440 pt), short of an iPad's room and under 700 pt tall: the iPhone Duo closed (452×648), where the boards drop what doesn't fit (Boas-vindas' benefits) |
 
 The root measures the whole window (`.measuringWindow`) into the environment's `windowLayout`, so a screen inside a
 sheet still knows what it opened over, and into `AppModel.isLargeWindow`, which only changes when the window crosses
@@ -101,13 +108,14 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | Piece | Use it for |
 | --- | --- |
 | `TwoColumnsLayout(firstWidth:spacing:first:second:)` | Two columns of one screen in a container of at most 920 pt, the first fixed (or half); on an iPhone Duo whose fold runs down, each column on its side of the fold |
-| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo, Editar grupo, Registrar pagamento, Cobrar): about 540 pt on iPad |
+| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code and Novo grupo use it; Editar grupo, Registrar pagamento, Cobrar to come): about 540 pt on iPad |
 | `billSheetSizing(in: windowLayout)` | A bill's sheet: 820×640 lying down, 620×860 upright, never more than the window. Check on a device that the sheet's two columns still fit when adopting it |
 | `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` doesn't cover (a top and bottom split upright, a custom overlay) |
 
-Not checked on a device yet: `TwoColumnsLayout`, `FoldDivision` / `.readingFoldDivision` and `billSheetSizing` have
-no screen using them; the per-flow slices adopt them and check them on the iPhone Duo simulator and an iPad then.
-`formSheetSizing()` already sizes the recovery code's sheet.
+Not checked on a device yet: `TwoColumnsLayout` (Boas-vindas, Seu perfil, Recuperar, Novo grupo's sheet lying down),
+`FoldDivision` / `.readingFoldDivision` (also the empty home on an iPhone Duo open) and `billSheetSizing`, which no
+screen uses yet; the per-flow slices check them on the iPhone Duo simulator and an iPad. `formSheetSizing()` sizes the
+recovery code's and Novo grupo's sheets.
 
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind
