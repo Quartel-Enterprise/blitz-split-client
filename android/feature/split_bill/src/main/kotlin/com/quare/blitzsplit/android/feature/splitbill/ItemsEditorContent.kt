@@ -19,8 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,9 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -184,54 +179,19 @@ private fun ItemsStatusCard(
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val isOk = items.addsUp
     val status = items.status
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics { liveRegion = LiveRegionMode.Polite },
-        shape = RoundedCornerShape(16.dp),
-        color = if (isOk) {
-            MaterialTheme.colorScheme.surfaceContainerLowest
-        } else {
-            MaterialTheme.colorScheme.errorContainer
-        },
-        contentColor = if (isOk) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onErrorContainer,
+    StatusCard(
+        isOk = items.addsUp,
+        title = itemsStatusTitleOf(status, money),
+        message = itemsStatusDetailOf(status, money),
+        progress = null,
     ) {
-        Column(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 14.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = if (isOk) Icons.Outlined.CheckCircle else Icons.Outlined.ErrorOutline,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = if (isOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                )
-                Text(
-                    text = itemsStatusTitleOf(status, money),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-            Text(
-                text = itemsStatusDetailOf(status, money),
-                style = MaterialTheme.typography.bodySmall,
+        if (status is ItemsStatus.AmountLeft || status is ItemsStatus.AmountOver) {
+            DifferenceActionsRow(
+                items = items,
+                money = money,
+                onEvent = onEvent,
             )
-            if (status is ItemsStatus.AmountLeft || status is ItemsStatus.AmountOver) {
-                DifferenceActionsRow(
-                    items = items,
-                    money = money,
-                    onEvent = onEvent,
-                )
-            }
         }
     }
 }

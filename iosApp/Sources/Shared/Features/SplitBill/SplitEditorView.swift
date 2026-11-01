@@ -255,6 +255,34 @@ private struct SplitListHeader: View {
     }
 }
 
+/// Over Split and Bill items: what the bill is, who paid it, and the total being split.
+struct SplitLeadHeader: View {
+    let systemImage: String
+    let lead: String
+    let total: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.title3)
+                .foregroundStyle(Palette.accent)
+                .frame(width: 44, height: 44)
+                .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 13))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(verbatim: lead)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Text(verbatim: total)
+                    .font(.largeTitle.bold())
+                    .monospacedDigit()
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
 #if os(iOS)
 /// Pushed inside the bill's sheet. Lying down and on iPad: the summary, the modes and the status on the left, the
 /// people on the right.
@@ -310,24 +338,11 @@ struct PhoneSplitEditor: View {
     @ViewBuilder
     private func overview(_ editor: SplitEditor) -> some View {
         Section {
-            HStack(spacing: 12) {
-                Image(systemName: "receipt")
-                    .font(.title3)
-                    .foregroundStyle(Palette.accent)
-                    .frame(width: 44, height: 44)
-                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 13))
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: SplitBillCopy.paidBy(model.state.description_, state: model.state))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    Text(verbatim: editor.currency.format(editor.totalMinor))
-                        .font(.largeTitle.bold())
-                        .monospacedDigit()
-                }
-            }
-            .accessibilityElement(children: .combine)
+            SplitLeadHeader(
+                systemImage: "receipt",
+                lead: SplitBillCopy.paidBy(model.state.description_, state: model.state),
+                total: editor.currency.format(editor.totalMinor),
+            )
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))

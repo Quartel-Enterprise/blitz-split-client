@@ -533,24 +533,11 @@ struct PhoneItemsEditor: View {
     @ViewBuilder
     private func overview(_ items: ItemsEditor) -> some View {
         Section {
-            HStack(spacing: 12) {
-                Image(systemName: "fork.knife")
-                    .font(.title3)
-                    .foregroundStyle(Palette.accent)
-                    .frame(width: 44, height: 44)
-                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 13))
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: SplitBillCopy.paidBy(model.state.description_, state: model.state))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                    Text(verbatim: items.currency.format(items.totalMinor))
-                        .font(.largeTitle.bold())
-                        .monospacedDigit()
-                }
-            }
-            .accessibilityElement(children: .combine)
+            SplitLeadHeader(
+                systemImage: "fork.knife",
+                lead: SplitBillCopy.paidBy(model.state.description_, state: model.state),
+                total: items.currency.format(items.totalMinor),
+            )
         }
         .listRowBackground(Color.clear)
         .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))

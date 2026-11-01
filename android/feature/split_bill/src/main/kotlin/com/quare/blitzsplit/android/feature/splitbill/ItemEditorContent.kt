@@ -8,17 +8,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -29,10 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -198,56 +190,12 @@ private fun ItemStatusCard(
     editor: ItemEditor,
     money: MoneyFormatter,
 ) {
-    val isOk = !editor.isStatusError
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics { liveRegion = LiveRegionMode.Polite },
-        shape = RoundedCornerShape(16.dp),
-        color = if (isOk) {
-            MaterialTheme.colorScheme.surfaceContainerLowest
-        } else {
-            MaterialTheme.colorScheme.errorContainer
-        },
-        contentColor = if (isOk) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onErrorContainer,
-    ) {
-        Column(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 14.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = if (isOk) Icons.Outlined.CheckCircle else Icons.Outlined.ErrorOutline,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = if (isOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                )
-                Text(
-                    text = itemStatusTitleOf(editor.status, money),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-            editor.progress?.let { progress ->
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = if (isOk) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                    trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                )
-            }
-            Text(
-                text = itemStatusDetailOf(editor.status, money),
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-    }
+    StatusCard(
+        isOk = !editor.isStatusError,
+        title = itemStatusTitleOf(editor.status, money),
+        message = itemStatusDetailOf(editor.status, money),
+        progress = editor.progress,
+    )
 }
 
 // Why: one person of the item: Igual's checkbox, Unidades' and Partes' stepper, or Valor's and %'s field.
