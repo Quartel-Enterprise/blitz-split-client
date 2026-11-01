@@ -4,6 +4,8 @@ import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
 import { BalancesScreen } from '@/features/balances/BalancesScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
+import { ContactInviteDialog } from '@/features/contacts/ContactInviteDialog'
+import { ContactsScreen } from '@/features/contacts/ContactsScreen'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
@@ -52,6 +54,8 @@ export function App() {
   const isDeleteAccount = top.name === 'delete-account'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
+  // Why: Contatos' "Convidar com link ou QR" (and a guest's "Convidar Diego") opens over Contatos or the profile.
+  const isContactInvite = top.name === 'contact-invite'
   const isJoinWithLink = top.name === 'join-with-link'
   const isSplitBill = top.name === 'split-bill'
   const isEditGroup = top.name === 'edit-group'
@@ -61,7 +65,7 @@ export function App() {
   // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
   const isDialog =
-    isCreateGroup || isInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPaymentKey || isDeleteAccount
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPaymentKey || isDeleteAccount
   let pageIndex = backStack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -77,6 +81,7 @@ export function App() {
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
+      {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
@@ -107,6 +112,11 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <BalancesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
+    // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it.
+    case 'contacts':
+      return <ContactsScreen />
+    case 'contact-profile':
+      return <ContactsScreen profileRoute={route} />
     case 'join-invite':
       // Why: the group's link and each member's personal link of the same group are different invites.
       return route ? <JoinInviteScreen key={`${route.inviteCode}/${route.inviteMemberCode ?? ''}`} route={route} /> : null
