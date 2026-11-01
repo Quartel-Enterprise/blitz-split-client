@@ -169,6 +169,51 @@ class DefaultSplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Dividir on the default WHEN someone joins THEN they get 1 part and it is still the default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("190,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+
+            // When
+            groups.groups.value = listOf(
+                home.copy(
+                    defaultSplit = threeToOne,
+                    members = home.members + carla,
+                ),
+            )
+
+            // Then
+            val editor = assertNotNull(viewModel.uiState.value.splitEditor)
+            assertEquals(listOf(3L, 1L, 1L), editor.rows.map { it.parts })
+            assertFalse(viewModel.uiState.value.isSplitEditorOffDefault)
+        }
+
+    @Test
+    fun `GIVEN Dividir changed off the default WHEN someone joins THEN they start with 0 parts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("190,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPartsIncreased(ANA))
+
+            // When
+            groups.groups.value = listOf(
+                home.copy(
+                    defaultSplit = threeToOne,
+                    members = home.members + carla,
+                ),
+            )
+
+            // Then
+            val editor = assertNotNull(viewModel.uiState.value.splitEditor)
+            assertEquals(listOf(3L, 2L, 0L), editor.rows.map { it.parts })
+            assertTrue(viewModel.uiState.value.isSplitEditorOffDefault)
+        }
+
+    @Test
     fun `GIVEN Pela renda WHEN a new bill opens THEN it splits by the percentages`() = runTest(testDispatcher) {
         // Given
         prepareScenario(

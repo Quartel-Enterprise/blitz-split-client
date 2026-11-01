@@ -62,18 +62,20 @@ internal fun GroupMember.toBillPerson(): BillPerson = BillPerson(
 )
 
 /*
- * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes.
- * A bill being edited keeps its split, so saving it never adds whoever joined meanwhile.
+ * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes,
+ * unless newcomerRows gives them their row (the group's default's, while the split still follows it). A bill being
+ * edited keeps its split, so saving it never adds whoever joined meanwhile.
  */
 internal fun SplitEditor.withPeople(
     people: List<BillPerson>,
     currency: GroupCurrency,
     payerIds: List<String>,
     includesNewcomers: Boolean,
+    newcomerRows: Map<String, SplitRow> = emptyMap(),
 ): SplitEditor {
     val byId = rows.associateBy { it.person.id }
     val rows = people.map { person ->
-        byId[person.id]?.copy(person = person) ?: SplitRow(
+        byId[person.id]?.copy(person = person) ?: newcomerRows[person.id]?.copy(person = person) ?: SplitRow(
             person = person,
             isIncluded = includesNewcomers,
             valueText = "",
@@ -230,7 +232,8 @@ internal fun billDefaultSplitOf(
 /*
  * Why: the bill's split and Dividir's among the group's people as they are now. A new bill follows the group's
  * "Divisão padrão" (everyone equally without one) until "Pronto" picks its own; one being edited keeps its split, so
- * saving it never adds whoever joined meanwhile.
+ * saving it never adds whoever joined meanwhile. Someone who joins while Dividir still follows the default gets the
+ * default's weight (1 part for Partes), so its notice still says "Padrão" though the people changed.
  */
 internal fun SplitBillUiState.withSplitAmong(
     people: List<BillPerson>,
@@ -250,7 +253,21 @@ internal fun SplitBillUiState.withSplitAmong(
     }
     return copy(
         split = bill,
-        splitEditor = splitEditor?.withPeople(people, currency, payerIds, !isEditing),
+        splitEditor = splitEditor?.let { editor ->
+            val followsDefault = this.defaultSplit?.isFollowedBy(editor) == true
+            editor.withPeople(
+                people = people,
+                currency = currency,
+                payerIds = payerIds,
+                includesNewcomers = !isEditing,
+                newcomerRows = billDefault
+                    ?.editor
+                    ?.rows
+                    ?.associateBy { it.person.id }
+                    ?.takeIf { followsDefault }
+                    .orEmpty(),
+            )
+        },
         defaultSplit = billDefault,
     )
 }
