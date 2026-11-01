@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { locale, t } from '@/i18n'
+import { copyLink, shareOrCopy } from '@/lib/share'
 import { cn } from '@/lib/utils'
 
 const linkId = 'invite-link'
@@ -31,9 +32,9 @@ export function InviteDialog({ route }: { route: JsRoute }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: JsInviteAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'copy' && action.link) {
-      navigator.clipboard.writeText(action.link).catch(() => toast(t('invite_copyFailed')))
+      copyLink(action.link)
     } else if (action.type === 'share' && action.link) {
-      shareLink(action.link, action.groupName ?? '')
+      shareOrCopy(t('invite_shareMessage', { group: action.groupName ?? '', link: action.link }), action.link)
     } else if (action.type === 'change-link-failed') {
       toast(t('invite_changeLinkFailed'))
     }
@@ -176,7 +177,7 @@ function InviteBody({ presenter, state }: { presenter: InvitePresenter; state: J
 }
 
 /** Black on white in both themes, as scanners read it best, with the quiet zone around the modules. */
-function QrCode({ size, modules }: { size: number; modules: boolean[] }) {
+export function QrCode({ size, modules, className = 'size-56' }: { size: number; modules: boolean[]; className?: string }) {
   const cells = size + qrQuietZone * 2
   let path = ''
   modules.forEach((isDark, index) => {
@@ -188,7 +189,7 @@ function QrCode({ size, modules }: { size: number; modules: boolean[] }) {
       aria-label={t('invite_qrDescription')}
       viewBox={`0 0 ${cells} ${cells}`}
       shapeRendering="crispEdges"
-      className="size-56 rounded-xl bg-white"
+      className={cn('rounded-xl bg-white', className)}
     >
       <path d={path} fill="#000" />
     </svg>
@@ -243,17 +244,4 @@ function WhoPicks({ names }: { names: string[] }) {
       {after}
     </>
   )
-}
-
-// Why: the browser's share sheet where there is one (phones, Safari), otherwise the link goes to the clipboard.
-function shareLink(link: string, groupName: string) {
-  const text = t('invite_shareMessage', { group: groupName, link })
-  if (typeof navigator.share === 'function') {
-    navigator.share({ text }).catch(() => {})
-    return
-  }
-  navigator.clipboard
-    .writeText(link)
-    .then(() => toast(t('invite_linkCopied')))
-    .catch(() => toast(t('invite_copyFailed')))
 }

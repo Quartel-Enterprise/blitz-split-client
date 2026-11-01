@@ -1001,6 +1001,7 @@ class GroupMapperImplTest {
             userId = "user-2",
             isMe = false,
             addedAt = 4L,
+            inviteCode = "c3Rt9z",
         )
 
         // When
@@ -1020,6 +1021,25 @@ class GroupMapperImplTest {
             ),
             dto,
         )
+    }
+
+    @Test
+    fun `GIVEN an account added to the group and not synced yet WHEN mapping it to a DTO THEN sends its account`() {
+        // Given
+        val entity = memberEntity(
+            id = "m-3",
+            name = "Bruno",
+            userId = "user-3",
+            isMe = false,
+            pendingSync = true,
+            inviteCode = null,
+        )
+
+        // When
+        val dto = mapper.toDto(entity)
+
+        // Then
+        assertEquals("user-3", dto.userId)
     }
 
     @Test

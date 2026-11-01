@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.globalbalances
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,9 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CloudOff
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -142,33 +138,4 @@ private fun shapeOf(index: Int): RoundedCornerShape = when (index) {
     0 -> RoundedCornerShape(outerCorner, innerCorner, innerCorner, outerCorner)
     BalancesFilter.entries.lastIndex -> RoundedCornerShape(innerCorner, outerCorner, outerCorner, innerCorner)
     else -> RoundedCornerShape(innerCorner)
-}
-
-// Why: "Offline · saldos deste aparelho": everything works on what the device has, Recebi and Acertar queue up.
-@Composable
-internal fun OfflineChip(modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-    ) {
-        Row(
-            modifier = Modifier.padding(
-                start = 8.dp,
-                end = 12.dp,
-                top = 6.dp,
-                bottom = 6.dp,
-            ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Outlined.CloudOff, contentDescription = null)
-            Text(
-                text = stringResource(R.string.global_balances_offline),
-                style = MaterialTheme.typography.labelLarge,
-            )
-        }
-    }
 }

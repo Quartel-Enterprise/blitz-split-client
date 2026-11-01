@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.join
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -90,15 +91,20 @@ internal fun ProblemContent(
                 }
             }
         },
-        end = {},
-        // Why: stacked beside what went wrong, side by side only in a tabletop's bottom half.
+        end = null,
+        /*
+         * Why: stacked beside what went wrong, side by side only in a tabletop's bottom half; a phone's column keeps
+         * the 48dp it starts with under its last button too.
+         */
         actions = {
-            ProblemActionsLayout(
-                isRow = layout == JoinLayout.TABLETOP,
-                onRetry = onRetry,
-                onScanAnother = onScanAnother,
-                onEvent = onEvent,
-            )
+            Box(modifier = Modifier.padding(bottom = if (isColumn) 48.dp else 0.dp)) {
+                ProblemActionsLayout(
+                    isRow = layout == JoinLayout.TABLETOP,
+                    onRetry = onRetry,
+                    onScanAnother = onScanAnother,
+                    onEvent = onEvent,
+                )
+            }
         },
     )
 }

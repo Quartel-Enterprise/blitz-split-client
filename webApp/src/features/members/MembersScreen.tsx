@@ -112,7 +112,6 @@ export function MembersScreen({ route }: { route: JsRoute }) {
   )
 }
 
-/** Right after joining through the link, and "Proteja seu acesso" while the account has no Google or Apple. */
 /** "+R$ 223,50 a receber", "−R$ 118,00 deve", "R$ 0,00" while what they get and owe cancel out, or "Quitado". */
 function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money: (minor: number) => string }) {
   const net = balance.netMinor

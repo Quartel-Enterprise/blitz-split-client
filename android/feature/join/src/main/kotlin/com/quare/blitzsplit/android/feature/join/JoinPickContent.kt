@@ -52,8 +52,6 @@ import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
 
-// Why: the gap of flow 3's book, centered on the hinge: its 24dp band and 24dp on each side.
-private val bookGap = 72.dp
 private val maxContentWidth = 560.dp
 
 /*
@@ -223,7 +221,8 @@ private fun PickColumnsLayout(
             )
         }
     }
-    if (layout == JoinLayout.BOOK || layout == JoinLayout.TABLETOP) {
+    // Why: rememberJoinLayout(hasTabletop = false) draws a tabletop lying down as the book, never as TABLETOP.
+    if (layout == JoinLayout.BOOK) {
         TwoHalvesLayout(
             start = {
                 intro(
