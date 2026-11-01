@@ -48,8 +48,6 @@ import com.quare.blitzsplit.feature.categorymap.presentation.model.MapSection
 
 private val pendingDotSize = 8.dp
 private val rowLabelWidth = 96.dp
-
-// Why: the queue's orange dot, the same on every platform.
 private val pendingColor = Color(0xFFD97706)
 
 // Why: "Transporte · 7 termos", "Nenhum termo · categoria do Viagem Floripa".
@@ -77,12 +75,24 @@ internal fun SectionCard(
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
-            modifier = Modifier.padding(start = 12.dp, end = 8.dp, top = 12.dp, bottom = 8.dp),
+            modifier = Modifier.padding(
+                start = 12.dp,
+                end = 8.dp,
+                top = 12.dp,
+                bottom = 8.dp,
+            ),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             SectionHeader(section = section)
-            SectionRowsList(section = section, state = state, onEvent = onEvent)
-            AddInSectionButton(section = section, onEvent = onEvent)
+            SectionRowsList(
+                section = section,
+                state = state,
+                onEvent = onEvent,
+            )
+            AddInSectionButton(
+                section = section,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -122,7 +132,13 @@ private fun SectionRowsList(
         )
         return
     }
-    section.rows.forEach { row -> TermsLine(row = row, state = state, onEvent = onEvent) }
+    section.rows.forEach { row ->
+        TermsLine(
+            row = row,
+            state = state,
+            onEvent = onEvent,
+        )
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -191,10 +207,16 @@ internal fun TermChip(
         modifier = Modifier
             .heightIn(min = 32.dp)
             .semantics { contentDescription = label }
-            .clickable(role = Role.Button, onClick = onClick),
+            .clickable(
+                role = Role.Button,
+                onClick = onClick,
+            ),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 6.dp,
+            ),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -260,7 +282,10 @@ internal fun SectionListRow(
         Row(
             modifier = Modifier
                 .heightIn(min = 60.dp)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
+                .padding(
+                    horizontal = 12.dp,
+                    vertical = 6.dp,
+                ),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -290,14 +315,20 @@ internal fun SectionDetailPane(
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp,
+            ),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CategoryBadge(category = section.category, size = 48.dp)
+            CategoryBadge(
+                category = section.category,
+                size = 48.dp,
+            )
             Column {
                 Text(
                     text = categoryName(section.category),
@@ -318,8 +349,15 @@ internal fun SectionDetailPane(
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                SectionRowsList(section = section, state = state, onEvent = onEvent)
-                AddInSectionButton(section = section, onEvent = onEvent)
+                SectionRowsList(
+                    section = section,
+                    state = state,
+                    onEvent = onEvent,
+                )
+                AddInSectionButton(
+                    section = section,
+                    onEvent = onEvent,
+                )
             }
         }
         Text(
@@ -333,5 +371,10 @@ internal fun SectionDetailPane(
 @Composable
 private fun subcategoriesText(section: MapSection): String {
     if (section.subcategoryCount == 0) return ""
-    return " · " + pluralStringResource(R.plurals.category_map_subcategory_count, section.subcategoryCount, section.subcategoryCount)
+    return " · " +
+        pluralStringResource(
+            R.plurals.category_map_subcategory_count,
+            section.subcategoryCount,
+            section.subcategoryCount,
+        )
 }

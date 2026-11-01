@@ -24,6 +24,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
+import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
@@ -40,7 +41,6 @@ import com.quare.blitzsplit.android.feature.join.JoinPickScreen
 import com.quare.blitzsplit.android.feature.join.JoinWithLinkScreen
 import com.quare.blitzsplit.android.feature.members.MembersScreen
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
-import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen

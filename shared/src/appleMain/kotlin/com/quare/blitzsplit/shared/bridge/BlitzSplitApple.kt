@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -22,7 +23,6 @@ import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewMode
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkViewModel
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
-import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel

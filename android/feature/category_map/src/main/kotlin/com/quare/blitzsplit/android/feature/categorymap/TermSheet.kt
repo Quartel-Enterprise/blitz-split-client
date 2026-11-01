@@ -61,8 +61,9 @@ internal fun TermSheet(
 ) {
     val form = state.termForm ?: return
     val onDismiss = { onEvent(CategoryMapUiEvent.OnTermDismissed) }
-    when (rememberFoldLayout().formFactor) {
-        FormFactor.Phone, FormFactor.PhoneLandscape -> ModalBottomSheet(
+    val formFactor = rememberFoldLayout().formFactor
+    if (formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape) {
+        ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = rememberBottomSheetState(
                 initialValue = SheetValue.Hidden,
@@ -71,10 +72,14 @@ internal fun TermSheet(
             sheetMaxWidth = landscapeSheetMaxWidth,
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
-            TermFormContent(state = state, form = form, onEvent = onEvent)
+            TermFormContent(
+                state = state,
+                form = form,
+                onEvent = onEvent,
+            )
         }
-
-        else -> FoldDialog(onDismissRequest = onDismiss) {
+    } else {
+        FoldDialog(onDismissRequest = onDismiss) {
             Surface(
                 shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -101,18 +106,39 @@ private fun TermFormContent(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+                bottom = 24.dp,
+            ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = stringResource(if (form.isEditing) R.string.category_map_edit_term else R.string.category_map_new_term),
+            text = stringResource(
+                if (form.isEditing) R.string.category_map_edit_term else R.string.category_map_new_term,
+            ),
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.semantics { heading() },
         )
-        TermTextField(state = state, form = form, onEvent = onEvent)
-        TermCategoryField(state = state, form = form, onEvent = onEvent)
-        TermExampleText(state = state, form = form)
-        TermButtonsRow(state = state, form = form, onEvent = onEvent)
+        TermTextField(
+            state = state,
+            form = form,
+            onEvent = onEvent,
+        )
+        TermCategoryField(
+            state = state,
+            form = form,
+            onEvent = onEvent,
+        )
+        TermExampleText(
+            state = state,
+            form = form,
+        )
+        TermButtonsRow(
+            state = state,
+            form = form,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -126,13 +152,17 @@ private fun TermTextField(
     val duplicateCategory = state.duplicateCategory
     val help = when {
         state.termError == TermError.TOO_SHORT -> stringResource(R.string.category_map_term_too_short)
+
         state.termError == TermError.INVALID_CHARACTERS -> stringResource(R.string.category_map_term_invalid)
+
         duplicate != null && duplicateCategory != null -> stringResource(
             R.string.category_map_term_duplicate,
             duplicate.term,
             pathOf(duplicateCategory, state),
         )
+
         form.original?.isAppTerm == true -> stringResource(R.string.category_map_term_help_app)
+
         else -> stringResource(R.string.category_map_term_help)
     }
     OutlinedTextField(
@@ -158,7 +188,9 @@ private fun TermCategoryField(
             R.string.category_map_category_help_move,
             categoryName(state.duplicateCategory ?: category),
         )
+
         form.isEditing -> stringResource(R.string.category_map_category_help_edit)
+
         else -> stringResource(R.string.category_map_category_help)
     }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -170,10 +202,21 @@ private fun TermCategoryField(
             category = category,
             label = pathOf(category, state),
             isSelected = false,
-            trailing = { Icon(if (form.isPickingCategory) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, null) },
+            trailing = {
+                Icon(
+                    if (form.isPickingCategory) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                    null,
+                )
+            },
             onClick = { onEvent(CategoryMapUiEvent.OnTermCategoryClicked) },
         )
-        if (form.isPickingCategory) CategoryOptionsList(state = state, form = form, onEvent = onEvent)
+        if (form.isPickingCategory) {
+            CategoryOptionsList(
+                state = state,
+                form = form,
+                onEvent = onEvent,
+            )
+        }
         Text(
             text = help,
             style = MaterialTheme.typography.bodySmall,
@@ -222,11 +265,17 @@ private fun CategoryOptionRow(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .clickable(role = Role.Button, onClick = onClick),
+            .clickable(
+                role = Role.Button,
+                onClick = onClick,
+            ),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CategoryBadge(category = category, size = 32.dp)
+        CategoryBadge(
+            category = category,
+            size = 32.dp,
+        )
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
@@ -246,7 +295,15 @@ private fun TermExampleText(
     val category = state.formCategory ?: return
     val text = form.text.trim()
     if (text.isEmpty()) return
-    val label = stringResource(if (state.duplicateTerm != null) R.string.category_map_example_move else R.string.category_map_example)
+    val label = stringResource(
+        if (state.duplicateTerm !=
+            null
+        ) {
+            R.string.category_map_example_move
+        } else {
+            R.string.category_map_example
+        },
+    )
     Text(
         text = "$label: “${text.replaceFirstChar { it.uppercaseChar() }}” → ${pathOf(category, state)}",
         style = MaterialTheme.typography.bodyMedium,

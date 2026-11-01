@@ -48,7 +48,16 @@ class FakeCategoryTermRepository(
     ): Result<Unit> {
         saveError?.let { return Result.failure(it) }
         changes.update { list ->
-            list.map { if (it.key in appKeys) it.copy(isRestored = true, isPending = true) else it }
+            list.map {
+                if (it.key in appKeys) {
+                    it.copy(
+                        isRestored = true,
+                        isPending = true,
+                    )
+                } else {
+                    it
+                }
+            }
         }
         return Result.success(Unit)
     }

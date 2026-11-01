@@ -30,14 +30,15 @@ data class CategoryMapUiState(
     val sections: List<MapSection>
         get() = categories.branches.mapNotNull { branch ->
             val main = branch.category
-            val rows = (branch.subcategories.map { it to false } + (main to true)).map { (category, isOnlyMain) ->
-                MapRow(
-                    category = category,
-                    isOnlyMain = isOnlyMain,
-                    groupName = groupNameOf(category).takeIf { category.parentId != null && !isOnlyMain },
-                    terms = map.terms.filter { it.categoryId == category.id },
-                )
-            }.filter { it.terms.isNotEmpty() }
+            val rows = (branch.subcategories.map { it to false } + (main to true))
+                .map { (category, isOnlyMain) ->
+                    MapRow(
+                        category = category,
+                        isOnlyMain = isOnlyMain,
+                        groupName = groupNameOf(category).takeIf { category.parentId != null && !isOnlyMain },
+                        terms = map.terms.filter { it.categoryId == category.id },
+                    )
+                }.filter { it.terms.isNotEmpty() }
             MapSection(
                 category = main,
                 groupName = groupNameOf(main),
@@ -119,7 +120,8 @@ data class CategoryMapUiState(
     val canSaveTerm: Boolean
         get() {
             val form = termForm ?: return false
-            val isChanged = form.original?.let { it.term != form.text.trim() || it.categoryId != form.categoryId } ?: true
+            val isChanged =
+                form.original?.let { it.term != form.text.trim() || it.categoryId != form.categoryId } ?: true
             return !form.isSaving && termError == null && CategoryMatcher.isTermValid(form.text) && isChanged &&
                 formCategory != null
         }

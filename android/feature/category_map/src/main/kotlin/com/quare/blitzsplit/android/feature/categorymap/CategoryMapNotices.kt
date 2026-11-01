@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.categorymap
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Search
@@ -75,7 +75,10 @@ internal fun OfflineQueueBanner(count: Int) {
             .semantics { liveRegion = LiveRegionMode.Polite },
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 12.dp,
+            ),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -96,7 +99,13 @@ internal fun DeviceOnlyCard(onEvent: (CategoryMapUiEvent) -> Unit) {
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp)) {
+        Column(
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 8.dp,
+                top = 12.dp,
+            ),
+        ) {
             Text(
                 text = stringResource(R.string.category_map_device_only),
                 style = MaterialTheme.typography.bodyMedium,
@@ -127,7 +136,10 @@ internal fun EmptyMapContent(onEvent: (CategoryMapUiEvent) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 40.dp, horizontal = 16.dp),
+            .padding(
+                vertical = 40.dp,
+                horizontal = 16.dp,
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -140,7 +152,14 @@ internal fun EmptyMapContent(onEvent: (CategoryMapUiEvent) -> Unit) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Button(onClick = { onEvent(CategoryMapUiEvent.OnAddTermClicked(categoryId = null, text = "")) }) {
+        Button(onClick = {
+            onEvent(
+                CategoryMapUiEvent.OnAddTermClicked(
+                    categoryId = null,
+                    text = "",
+                ),
+            )
+        }) {
             Text(stringResource(R.string.category_map_add))
         }
         OutlinedButton(onClick = { onEvent(CategoryMapUiEvent.OnRestoreClicked) }) {
@@ -171,7 +190,14 @@ internal fun NoTermFoundContent(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Button(onClick = { onEvent(CategoryMapUiEvent.OnAddTermClicked(categoryId = null, text = query)) }) {
+        Button(onClick = {
+            onEvent(
+                CategoryMapUiEvent.OnAddTermClicked(
+                    categoryId = null,
+                    text = query,
+                ),
+            )
+        }) {
             Text(stringResource(R.string.category_map_add_query, query))
         }
     }
@@ -189,7 +215,10 @@ internal fun SearchResultsList(
             text = pluralStringResource(R.plurals.category_map_results, results.size, results.size, state.query.trim()),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
+            modifier = Modifier.padding(
+                start = 4.dp,
+                bottom = 8.dp,
+            ),
         )
         results.forEachIndexed { index, result ->
             SearchResultRow(
@@ -204,7 +233,10 @@ internal fun SearchResultsList(
                 text = stringResource(R.string.category_map_longest_wins),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                modifier = Modifier.padding(
+                    start = 4.dp,
+                    top = 8.dp,
+                ),
             )
         }
     }
@@ -220,11 +252,20 @@ private fun SearchResultRow(
     val term = result.term.term
     val marked = buildAnnotatedString {
         append(term.substring(0, result.matchStart))
-        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(term.substring(result.matchStart, result.matchEnd)) }
+        withStyle(
+            SpanStyle(fontWeight = FontWeight.Bold),
+        ) { append(term.substring(result.matchStart, result.matchEnd)) }
         append(term.substring(result.matchEnd))
     }
-    val path = result.parent?.let { stringResource(R.string.category_map_path, categoryName(it), categoryName(result.category)) }
-        ?: categoryName(result.category)
+    val path =
+        result.parent?.let {
+            stringResource(
+                R.string.category_map_path,
+                categoryName(it),
+                categoryName(result.category),
+            )
+        }
+            ?: categoryName(result.category)
     Surface(
         shape = groupedRowShapeOf(index, count),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -235,13 +276,19 @@ private fun SearchResultRow(
         Row(
             modifier = Modifier
                 .heightIn(min = 60.dp)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
+                .padding(
+                    horizontal = 12.dp,
+                    vertical = 6.dp,
+                ),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CategoryBadge(category = result.parent ?: result.category)
             Column {
-                Text(text = marked, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = marked,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
                 Text(
                     text = path,
                     style = MaterialTheme.typography.bodySmall,

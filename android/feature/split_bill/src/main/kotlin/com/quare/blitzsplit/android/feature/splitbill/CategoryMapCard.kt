@@ -49,7 +49,10 @@ internal fun CategoryMapCard(
             .clickable(role = Role.Button) { onEvent(SplitBillUiEvent.OnCategoryMapClicked) },
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 12.dp,
+            ),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

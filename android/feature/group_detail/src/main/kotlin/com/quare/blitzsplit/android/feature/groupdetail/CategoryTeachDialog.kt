@@ -33,8 +33,9 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.TeachWord
 private fun pathOf(
     category: Category,
     parent: Category?,
-): String = parent?.let { stringResource(R.string.group_detail_category_path, categoryName(it), categoryName(category)) }
-    ?: categoryName(category)
+): String =
+    parent?.let { stringResource(R.string.group_detail_category_path, categoryName(it), categoryName(category)) }
+        ?: categoryName(category)
 
 /*
  * Why: "Conta salva em Lazer › Esportes, e não em Casa › Aluguel, que o mapa sugeriu. Ensinar ao mapa?" (9.3e): the
@@ -137,14 +138,23 @@ private fun TeachWordRow(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .selectable(selected = isSelected, role = Role.RadioButton, onClick = onClick)
-            .padding(vertical = 6.dp),
+            .selectable(
+                selected = isSelected,
+                role = Role.RadioButton,
+                onClick = onClick,
+            ).padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        RadioButton(selected = isSelected, onClick = null)
+        RadioButton(
+            selected = isSelected,
+            onClick = null,
+        )
         Column {
-            Text(text = word.term, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = word.term,
+                style = MaterialTheme.typography.bodyLarge,
+            )
             Text(
                 text = detail,
                 style = MaterialTheme.typography.bodySmall,

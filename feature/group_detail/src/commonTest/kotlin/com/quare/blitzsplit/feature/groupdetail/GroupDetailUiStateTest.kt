@@ -133,6 +133,7 @@ class GroupDetailUiStateTest {
         showsBillDeletedNotice = false,
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
+        teach = null,
     )
 
     private val day = ExpenseDay(

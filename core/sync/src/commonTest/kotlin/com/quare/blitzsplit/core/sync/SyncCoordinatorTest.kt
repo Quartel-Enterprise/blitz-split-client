@@ -91,20 +91,25 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN a term changed on the device WHEN syncing THEN the map comes down and goes up under the user id`() = runTest {
-        // Given
-        prepareScenario(storedProfile = pierre)
-        categoryTerms.saveTerm(term = "pizzaria", categoryId = "food.restaurant", updatedAt = 1L)
+    fun `GIVEN a term changed on the device WHEN syncing THEN the map comes down and goes up under the user id`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            categoryTerms.saveTerm(
+                term = "pizzaria",
+                categoryId = "food.restaurant",
+                updatedAt = 1L,
+            )
 
-        // When
-        val result = coordinator.syncNow()
+            // When
+            val result = coordinator.syncNow()
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), categoryTerms.downloadedUserIds)
-        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), categoryTerms.uploadedUserIds)
-        assertTrue(categoryTerms.changes.value.none { it.isPending })
-    }
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), categoryTerms.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), categoryTerms.uploadedUserIds)
+            assertTrue(categoryTerms.changes.value.none { it.isPending })
+        }
 
     @Test
     fun `GIVEN the map fails to go up WHEN syncing THEN the sync fails`() = runTest {

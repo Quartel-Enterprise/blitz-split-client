@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.feature.categorymap
 
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
-import com.quare.blitzsplit.core.model.AccountStatus
-import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
@@ -14,9 +12,11 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUs
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -85,7 +85,7 @@ class CategoryMapViewModelTest {
     }
 
     @Test
-    fun `GIVEN a new term WHEN typed one letter or a word another category has THEN says why and Salvar becomes Mover`() = runTest {
+    fun `GIVEN a new term WHEN typed one letter or a word another category has THEN says why and Mover`() = runTest {
         // Given
         prepareScenario()
         viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(AppCategory.LEISURE_PARTIES.key, ""))
@@ -220,12 +220,27 @@ class CategoryMapViewModelTest {
         assertEquals(Route.Profile, navigator.backStack.value.last())
     }
 
+    private val trip = Group(
+        id = GROUP_ID,
+        name = "Viagem Floripa",
+        type = GroupType.TRIP,
+        color = AvatarColor.BLUE,
+        currency = GroupCurrency.BRL,
+        members = emptyList(),
+        isPending = false,
+        inviteCode = null,
+        isCreatedByMe = true,
+        defaultSplit = null,
+        updatedAt = 0L,
+    )
+
     private fun changeOf(
         term: String,
         categoryId: String?,
         isPending: Boolean = false,
-    ) = CategoryTermChange(
-        key = com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher.keyOf(term),
+    ): CategoryTermChange = CategoryTermChange(
+        key = com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher
+            .keyOf(term),
         term = term,
         categoryId = categoryId,
         isRestored = false,
@@ -274,20 +289,6 @@ class CategoryMapViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
     }
-
-    private val trip = Group(
-        id = GROUP_ID,
-        name = "Viagem Floripa",
-        type = GroupType.TRIP,
-        color = AvatarColor.BLUE,
-        currency = GroupCurrency.BRL,
-        members = emptyList(),
-        isPending = false,
-        inviteCode = null,
-        isCreatedByMe = true,
-        defaultSplit = null,
-        updatedAt = 0L,
-    )
 
     private companion object {
         const val NOW = 1_000L

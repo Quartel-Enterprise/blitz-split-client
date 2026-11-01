@@ -34,7 +34,10 @@ data class CategoryMap(
             changes.forEach { change ->
                 val categoryId = change.categoryId
                 when {
-                    change.isRestored -> byKey[change.key]?.let { byKey[change.key] = it.copy(isPending = change.isPending) }
+                    change.isRestored -> byKey[change.key]?.let {
+                        byKey[change.key] =
+                            it.copy(isPending = change.isPending)
+                    }
 
                     categoryId == null -> byKey.remove(change.key)
 

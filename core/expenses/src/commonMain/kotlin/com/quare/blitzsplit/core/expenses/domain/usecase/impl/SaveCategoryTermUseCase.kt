@@ -19,8 +19,17 @@ class SaveCategoryTermUseCase(
         val now = currentTimeMillis()
         val isRenamed = replacedTerm != null && CategoryMatcher.keyOf(replacedTerm) != CategoryMatcher.keyOf(term)
         if (isRenamed) {
-            repository.saveTerm(term = replacedTerm, categoryId = null, updatedAt = now).onFailure { return Result.failure(it) }
+            repository
+                .saveTerm(
+                    term = replacedTerm,
+                    categoryId = null,
+                    updatedAt = now,
+                ).onFailure { return Result.failure(it) }
         }
-        return repository.saveTerm(term = term, categoryId = categoryId, updatedAt = now)
+        return repository.saveTerm(
+            term = term,
+            categoryId = categoryId,
+            updatedAt = now,
+        )
     }
 }

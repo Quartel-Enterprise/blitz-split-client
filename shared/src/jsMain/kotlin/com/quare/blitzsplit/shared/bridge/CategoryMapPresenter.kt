@@ -115,45 +115,79 @@ class CategoryMapPresenter {
         return JsWatch(watch::cancel)
     }
 
-    fun back() = viewModel.onEvent(CategoryMapUiEvent.OnBackClicked)
+    fun back() {
+        viewModel.onEvent(CategoryMapUiEvent.OnBackClicked)
+    }
 
-    fun openProfile() = viewModel.onEvent(CategoryMapUiEvent.OnProfileClicked)
+    fun openProfile() {
+        viewModel.onEvent(CategoryMapUiEvent.OnProfileClicked)
+    }
 
-    fun changeQuery(text: String) = viewModel.onEvent(CategoryMapUiEvent.OnQueryChanged(text))
+    fun changeQuery(text: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnQueryChanged(text))
+    }
 
     // Why: what the search field shows right after a keystroke, before the next state arrives.
     fun getQuery(): String = viewModel.uiState.value.query
 
-    fun selectSection(categoryId: String) = viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(categoryId))
+    fun selectSection(categoryId: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnSectionSelected(categoryId))
+    }
 
     fun addTerm(
         categoryId: String?,
         text: String,
-    ) = viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(categoryId, text))
+    ) {
+        viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(categoryId, text))
+    }
 
-    fun openTerm(key: String) = viewModel.onEvent(CategoryMapUiEvent.OnTermClicked(key))
+    fun openTerm(key: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnTermClicked(key))
+    }
 
-    fun changeTermText(text: String) = viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged(text))
+    fun changeTermText(text: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged(text))
+    }
 
-    fun getTermText(): String = viewModel.uiState.value.termForm?.text.orEmpty()
+    fun getTermText(): String = viewModel.uiState.value.termForm
+        ?.text
+        .orEmpty()
 
-    fun pickTermCategory(categoryId: String) = viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryPicked(categoryId))
+    fun pickTermCategory(categoryId: String) {
+        viewModel.onEvent(CategoryMapUiEvent.OnTermCategoryPicked(categoryId))
+    }
 
-    fun saveTerm() = viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+    fun saveTerm() {
+        viewModel.onEvent(CategoryMapUiEvent.OnTermSaveClicked)
+    }
 
-    fun removeTerm() = viewModel.onEvent(CategoryMapUiEvent.OnTermRemoveClicked)
+    fun removeTerm() {
+        viewModel.onEvent(CategoryMapUiEvent.OnTermRemoveClicked)
+    }
 
-    fun dismissTerm() = viewModel.onEvent(CategoryMapUiEvent.OnTermDismissed)
+    fun dismissTerm() {
+        viewModel.onEvent(CategoryMapUiEvent.OnTermDismissed)
+    }
 
-    fun undoRemove() = viewModel.onEvent(CategoryMapUiEvent.OnUndoRemoveClicked)
+    fun undoRemove() {
+        viewModel.onEvent(CategoryMapUiEvent.OnUndoRemoveClicked)
+    }
 
-    fun dismissRemoved() = viewModel.onEvent(CategoryMapUiEvent.OnRemovedNoticeDismissed)
+    fun dismissRemoved() {
+        viewModel.onEvent(CategoryMapUiEvent.OnRemovedNoticeDismissed)
+    }
 
-    fun askToRestore() = viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+    fun askToRestore() {
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreClicked)
+    }
 
-    fun confirmRestore() = viewModel.onEvent(CategoryMapUiEvent.OnRestoreConfirmed)
+    fun confirmRestore() {
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreConfirmed)
+    }
 
-    fun dismissRestore() = viewModel.onEvent(CategoryMapUiEvent.OnRestoreDismissed)
+    fun dismissRestore() {
+        viewModel.onEvent(CategoryMapUiEvent.OnRestoreDismissed)
+    }
 
     fun dispose() {
         holder.clear()
@@ -193,7 +227,10 @@ private fun toJsMapState(state: CategoryMapUiState): JsCategoryMapState {
                 category = state.formCategory?.let(::toJsCategory),
                 categoryParent = state.formCategoryParent?.let(::toJsCategory),
                 isSaving = it.isSaving,
-                error = state.termError?.name?.lowercase()?.replace('_', '-'),
+                error = state.termError
+                    ?.name
+                    ?.lowercase()
+                    ?.replace('_', '-'),
                 duplicateTerm = state.duplicateTerm?.term,
                 duplicateCategory = state.duplicateCategory?.let(::toJsCategory),
                 duplicateParent = state.duplicateCategory?.let { category -> parentOf(state.categories, category) },

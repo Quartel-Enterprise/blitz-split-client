@@ -34,26 +34,52 @@ class CategoryTermRepositoryImplTest {
         prepareScenario()
 
         // When
-        repository.saveTerm(term = " Farmácia ", categoryId = "health.pharmacy", updatedAt = 10L)
-        repository.saveTerm(term = "farmacia", categoryId = null, updatedAt = 5L)
+        repository.saveTerm(
+            term = " Farmácia ",
+            categoryId = "health.pharmacy",
+            updatedAt = 10L,
+        )
+        repository.saveTerm(
+            term = "farmacia",
+            categoryId = null,
+            updatedAt = 5L,
+        )
 
         // Then
         val change = repository.observeChanges().first().single()
         assertEquals("farmacia", change.key)
         assertNull(change.categoryId)
         assertTrue(change.isPending)
-        assertEquals(11L, database.categoryTermDao().getAll().single().updatedAt)
+        assertEquals(
+            11L,
+            database
+                .categoryTermDao()
+                .getAll()
+                .single()
+                .updatedAt,
+        )
     }
 
     @Test
     fun `GIVEN changes to app and own terms WHEN restoring THEN only the app ones are restored`() = runTest {
         // Given
         prepareScenario()
-        repository.saveTerm(term = "uber", categoryId = "leisure.parties", updatedAt = 1L)
-        repository.saveTerm(term = "picanha", categoryId = "food", updatedAt = 1L)
+        repository.saveTerm(
+            term = "uber",
+            categoryId = "leisure.parties",
+            updatedAt = 1L,
+        )
+        repository.saveTerm(
+            term = "picanha",
+            categoryId = "food",
+            updatedAt = 1L,
+        )
 
         // When
-        repository.restoreAppTerms(appKeys = setOf("uber"), updatedAt = 2L)
+        repository.restoreAppTerms(
+            appKeys = setOf("uber"),
+            updatedAt = 2L,
+        )
 
         // Then
         val byKey = repository.observeChanges().first().associateBy { it.key }
@@ -65,7 +91,11 @@ class CategoryTermRepositoryImplTest {
     fun `GIVEN a pending change WHEN pushing THEN it goes up as the user and stops pending`() = runTest {
         // Given
         prepareScenario()
-        repository.saveTerm(term = "pizzaria", categoryId = "food.restaurant", updatedAt = 3L)
+        repository.saveTerm(
+            term = "pizzaria",
+            categoryId = "food.restaurant",
+            updatedAt = 3L,
+        )
 
         // When
         repository.uploadPending(USER_ID)
@@ -73,16 +103,36 @@ class CategoryTermRepositoryImplTest {
         // Then
         assertEquals(listOf("pizzaria" to USER_ID), remote.upserted.map { it.termKey to it.userId })
         assertFalse(repository.observeHasPendingChanges().first())
-        assertEquals(USER_ID, database.categoryTermDao().getAll().single().ownerUserId)
+        assertEquals(
+            USER_ID,
+            database
+                .categoryTermDao()
+                .getAll()
+                .single()
+                .ownerUserId,
+        )
     }
 
     @Test
     fun `GIVEN rows on the server WHEN pulling THEN a newer one wins and an older one does not`() = runTest {
         // Given
         prepareScenario()
-        repository.saveTerm(term = "uber", categoryId = "leisure.parties", updatedAt = 10L)
-        repository.saveTerm(term = "bar", categoryId = "leisure", updatedAt = 10L)
-        remote.rows = listOf(dto("uber", "transport.ride", updatedAt = 20L), dto("bar", null, updatedAt = 5L), dto("voo", "travel.flight", updatedAt = 1L))
+        repository.saveTerm(
+            term = "uber",
+            categoryId = "leisure.parties",
+            updatedAt = 10L,
+        )
+        repository.saveTerm(
+            term = "bar",
+            categoryId = "leisure",
+            updatedAt = 10L,
+        )
+        remote.rows =
+            listOf(
+                dto("uber", "transport.ride", updatedAt = 20L),
+                dto("bar", null, updatedAt = 5L),
+                dto("voo", "travel.flight", updatedAt = 1L),
+            )
 
         // When
         repository.download(USER_ID)
@@ -96,16 +146,24 @@ class CategoryTermRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN another user's map WHEN pulling THEN it is dropped and clearing empties the map`() = runTest {
+    fun `GIVEN the map of another user WHEN pulling THEN it is dropped and clearing empties the map`() = runTest {
         // Given
         prepareScenario()
-        repository.saveTerm(term = "uber", categoryId = "leisure.parties", updatedAt = 1L)
+        repository.saveTerm(
+            term = "uber",
+            categoryId = "leisure.parties",
+            updatedAt = 1L,
+        )
         repository.uploadPending("someone-else")
 
         // When
         repository.download(USER_ID)
         val afterSwitch = repository.observeChanges().first()
-        repository.saveTerm(term = "voo", categoryId = "travel.flight", updatedAt = 2L)
+        repository.saveTerm(
+            term = "voo",
+            categoryId = "travel.flight",
+            updatedAt = 2L,
+        )
         repository.clear()
 
         // Then
@@ -117,7 +175,7 @@ class CategoryTermRepositoryImplTest {
         term: String,
         categoryId: String?,
         updatedAt: Long,
-    ) = CategoryTermDto(
+    ): CategoryTermDto = CategoryTermDto(
         userId = USER_ID,
         termKey = term,
         term = term,

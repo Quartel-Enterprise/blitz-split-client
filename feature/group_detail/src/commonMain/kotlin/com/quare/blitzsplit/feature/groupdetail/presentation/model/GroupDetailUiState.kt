@@ -21,7 +21,7 @@ data class GroupDetailUiState(
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
     // Why: "Ensinar ao mapa?" (9.3e) after a bill of this group was saved in a category picked by hand.
-    val teach: CategoryTeach? = null,
+    val teach: CategoryTeach?,
 ) {
     // Why: "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it.
     val isEmpty: Boolean

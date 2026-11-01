@@ -55,6 +55,7 @@ class GroupDetailViewModel(
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                teach = null,
             ),
         )
 

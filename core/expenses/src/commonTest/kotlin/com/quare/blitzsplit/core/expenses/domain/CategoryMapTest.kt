@@ -52,7 +52,12 @@ class CategoryMapTest {
         // Given
         val changes = listOf(
             changeOf("uber", AppCategory.LEISURE_PARTIES.key, isRestored = true),
-            changeOf("café", null, isRestored = true, isPending = true),
+            changeOf(
+                "café",
+                null,
+                isRestored = true,
+                isPending = true,
+            ),
         )
 
         // When
@@ -69,8 +74,9 @@ class CategoryMapTest {
         categoryId: String?,
         isRestored: Boolean = false,
         isPending: Boolean = false,
-    ) = CategoryTermChange(
-        key = com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher.keyOf(term),
+    ): CategoryTermChange = CategoryTermChange(
+        key = com.quare.blitzsplit.core.expenses.domain.model.CategoryMatcher
+            .keyOf(term),
         term = term,
         categoryId = categoryId,
         isRestored = isRestored,

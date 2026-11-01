@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
+import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
 import com.quare.blitzsplit.feature.editgroup.di.editGroupModule
@@ -27,7 +28,6 @@ import com.quare.blitzsplit.feature.invite.di.inviteModule
 import com.quare.blitzsplit.feature.join.di.joinModule
 import com.quare.blitzsplit.feature.members.di.membersModule
 import com.quare.blitzsplit.feature.notificationsettings.di.notificationSettingsModule
-import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
 import com.quare.blitzsplit.feature.paymentkey.di.paymentKeyModule
 import com.quare.blitzsplit.feature.profilesetup.di.profileSetupModule
 import com.quare.blitzsplit.feature.recoverycode.di.recoveryCodeModule

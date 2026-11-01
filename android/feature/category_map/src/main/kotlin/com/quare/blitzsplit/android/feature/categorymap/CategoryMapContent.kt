@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -42,6 +41,7 @@ import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
+import com.quare.blitzsplit.feature.categorymap.presentation.model.MapSection
 
 private val singleColumnMaxWidth = 560.dp
 private val landscapeListWidth = 320.dp
@@ -90,7 +90,10 @@ fun CategoryMapContent(
                     state = state,
                     listWidth = landscapeListWidth,
                     onEvent = onEvent,
-                    modifier = Modifier.padding(start = 24.dp, end = 24.dp),
+                    modifier = Modifier.padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                    ),
                 )
 
                 FormFactor.TabletLandscape -> SideBySideLayout(
@@ -104,8 +107,19 @@ fun CategoryMapContent(
                 )
 
                 FormFactor.Book, FormFactor.Tabletop -> TwoHalvesLayout(
-                    start = { MapListColumn(state = state, showsCards = false, onEvent = onEvent) },
-                    end = { MapDetailColumn(state = state, onEvent = onEvent) },
+                    start = {
+                        MapListColumn(
+                            state = state,
+                            showsCards = false,
+                            onEvent = onEvent,
+                        )
+                    },
+                    end = {
+                        MapDetailColumn(
+                            state = state,
+                            onEvent = onEvent,
+                        )
+                    },
                 )
 
                 else -> MapListColumn(
@@ -120,14 +134,31 @@ fun CategoryMapContent(
             }
         }
     }
-    state.termForm?.let { TermSheet(state = state, onEvent = onEvent) }
-    if (state.isRestoreConfirmOpen) RestoreMapDialog(state = state, onEvent = onEvent)
+    state.termForm?.let {
+        TermSheet(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
+    if (state.isRestoreConfirmOpen) {
+        RestoreMapDialog(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
 }
 
 @Composable
 private fun MapActionsMenu(onEvent: (CategoryMapUiEvent) -> Unit) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
-    IconButton(onClick = { onEvent(CategoryMapUiEvent.OnAddTermClicked(categoryId = null, text = "")) }) {
+    IconButton(onClick = {
+        onEvent(
+            CategoryMapUiEvent.OnAddTermClicked(
+                categoryId = null,
+                text = "",
+            ),
+        )
+    }) {
         Icon(
             imageVector = Icons.Outlined.Add,
             contentDescription = stringResource(R.string.category_map_add),
@@ -196,15 +227,40 @@ private fun MapListColumn(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 8.dp,
+            bottom = 24.dp,
+        ),
     ) {
-        item(key = "search") { MapSearchField(state = state, onEvent = onEvent) }
-        mapNotices(state = state, onEvent = onEvent)
+        item(key = "search") {
+            MapSearchField(
+                state = state,
+                onEvent = onEvent,
+            )
+        }
+        mapNotices(
+            state = state,
+            onEvent = onEvent,
+        )
         when {
-            state.isSearching -> mapSearchResults(state = state, onEvent = onEvent)
+            state.isSearching -> mapSearchResults(
+                state = state,
+                onEvent = onEvent,
+            )
+
             state.isEmpty -> item(key = "empty") { EmptyMapContent(onEvent = onEvent) }
-            showsCards -> mapCards(state = state, onEvent = onEvent)
-            else -> mapCategoryList(state = state, onEvent = onEvent)
+
+            showsCards -> mapCards(
+                state = state,
+                onEvent = onEvent,
+            )
+
+            else -> mapCategoryList(
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -219,12 +275,17 @@ private fun MapDetailColumn(
     Column(modifier = modifier.fillMaxSize()) {
         when {
             state.isEmpty -> EmptyMapContent(onEvent = onEvent)
-            section != null -> SectionDetailPane(section = state.selectedSectionOrFirst(), state = state, onEvent = onEvent)
+
+            section != null -> SectionDetailPane(
+                section = state.findSelectedSection(),
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
 
-private fun CategoryMapUiState.selectedSectionOrFirst() = selectedSection ?: sections.first()
+private fun CategoryMapUiState.findSelectedSection(): MapSection = selectedSection ?: sections.first()
 
 private fun LazyListScope.mapNotices(
     state: CategoryMapUiState,
@@ -245,7 +306,11 @@ private fun LazyListScope.mapCards(
 ) {
     state.sections.forEach { section ->
         item(key = "card-${section.category.id}") {
-            SectionCard(section = section, state = state, onEvent = onEvent)
+            SectionCard(
+                section = section,
+                state = state,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -275,8 +340,18 @@ private fun LazyListScope.mapSearchResults(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     if (state.showsNoResult) {
-        item(key = "no-result") { NoTermFoundContent(query = state.query.trim(), onEvent = onEvent) }
+        item(key = "no-result") {
+            NoTermFoundContent(
+                query = state.query.trim(),
+                onEvent = onEvent,
+            )
+        }
         return
     }
-    item(key = "results") { SearchResultsList(state = state, onEvent = onEvent) }
+    item(key = "results") {
+        SearchResultsList(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
 }

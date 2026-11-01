@@ -1,8 +1,8 @@
 package com.quare.blitzsplit.feature.groupdetail.di
 
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.BalancesViewModel
-import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf

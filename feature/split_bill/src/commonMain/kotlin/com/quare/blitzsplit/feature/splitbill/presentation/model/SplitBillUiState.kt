@@ -4,10 +4,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules

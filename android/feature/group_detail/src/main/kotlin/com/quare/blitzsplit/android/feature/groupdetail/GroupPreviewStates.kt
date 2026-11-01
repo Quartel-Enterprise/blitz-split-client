@@ -64,6 +64,7 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     showsBillDeletedNotice = false,
     exit = previewGroupExit,
     isLoaded = true,
+    teach = null,
 )
 
 internal fun createPreviewDays(): List<ExpenseDay> = listOf(
@@ -181,4 +182,5 @@ internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
     recordedPayment = null,
     exit = previewGroupExit,
     isLoaded = true,
+    teach = null,
 )

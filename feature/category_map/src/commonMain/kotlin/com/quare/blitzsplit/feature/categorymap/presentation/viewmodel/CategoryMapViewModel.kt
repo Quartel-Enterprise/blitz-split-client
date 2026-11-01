@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.categorymap.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMap
@@ -13,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -67,14 +67,27 @@ class CategoryMapViewModel(
 
     init {
         observeCategoryMap()
-            .onEach { map -> uiState.update { it.copy(map = map, isLoaded = true) } }
-            .launchIn(viewModelScope)
+            .onEach { map ->
+                uiState.update {
+                    it.copy(
+                        map = map,
+                        isLoaded = true,
+                    )
+                }
+            }.launchIn(viewModelScope)
         observeMapCategories()
             .onEach { tree -> uiState.update { it.copy(categories = tree) } }
             .launchIn(viewModelScope)
         observeGroups()
-            .onEach { groups -> uiState.update { it.copy(groupNames = groups.associate { group -> group.id to group.name }) } }
-            .launchIn(viewModelScope)
+            .onEach { groups ->
+                uiState.update {
+                    it.copy(
+                        groupNames = groups.associate { group ->
+                            group.id to group.name
+                        },
+                    )
+                }
+            }.launchIn(viewModelScope)
         observeAccount()
             .onEach { account -> uiState.update { it.copy(isConnected = account.status is AccountStatus.Connected) } }
             .launchIn(viewModelScope)
@@ -108,14 +121,27 @@ class CategoryMapViewModel(
 
             is CategoryMapUiEvent.OnTermCategoryPicked -> uiState.update { state ->
                 val picked = state.categories.findOrNull(event.categoryId) ?: return@update state
-                state.copy(termForm = state.termForm?.copy(categoryId = picked.id, isPickingCategory = false))
+                state.copy(
+                    termForm = state.termForm?.copy(
+                        categoryId = picked.id,
+                        isPickingCategory = false,
+                    ),
+                )
             }
 
             CategoryMapUiEvent.OnTermSaveClicked -> saveTerm()
 
             CategoryMapUiEvent.OnTermRemoveClicked -> removeTerm()
 
-            CategoryMapUiEvent.OnTermDismissed -> uiState.update { if (it.termForm?.isSaving == true) it else it.copy(termForm = null) }
+            CategoryMapUiEvent.OnTermDismissed -> uiState.update {
+                if (it.termForm?.isSaving ==
+                    true
+                ) {
+                    it
+                } else {
+                    it.copy(termForm = null)
+                }
+            }
 
             CategoryMapUiEvent.OnUndoRemoveClicked -> undoRemove()
 
@@ -150,7 +176,10 @@ class CategoryMapViewModel(
     ) {
         uiState.update { state ->
             val start = categoryId?.let { state.categories.findOrNull(it) }
-                ?: state.selectedSection?.category?.takeIf { categoryId == null && state.sections.size > 1 && !state.isSearching }
+                ?: state.selectedSection?.category?.takeIf {
+                    categoryId == null && state.sections.size > 1 &&
+                        !state.isSearching
+                }
                 ?: state.categories.findOrNull(AppCategory.OTHER.key)
             state.copy(
                 termForm = TermForm(
@@ -190,7 +219,12 @@ class CategoryMapViewModel(
                 categoryId = form.categoryId,
                 replacedTerm = form.original?.term,
             ).onSuccess {
-                uiState.update { it.copy(termForm = null, removedTerm = null) }
+                uiState.update {
+                    it.copy(
+                        termForm = null,
+                        removedTerm = null,
+                    )
+                }
             }.onFailure {
                 uiState.update { it.copy(termForm = it.termForm?.copy(isSaving = false)) }
                 uiAction.emit(CategoryMapUiAction.ShowSaveError)
@@ -213,13 +247,21 @@ class CategoryMapViewModel(
         val term = uiState.value.removedTerm ?: return
         uiState.update { it.copy(removedTerm = null) }
         viewModelScope.launch {
-            saveCategoryTerm(term = term.term, categoryId = term.categoryId, replacedTerm = null)
-                .onFailure { uiAction.emit(CategoryMapUiAction.ShowSaveError) }
+            saveCategoryTerm(
+                term = term.term,
+                categoryId = term.categoryId,
+                replacedTerm = null,
+            ).onFailure { uiAction.emit(CategoryMapUiAction.ShowSaveError) }
         }
     }
 
     private fun restore() {
-        uiState.update { it.copy(isRestoreConfirmOpen = false, removedTerm = null) }
+        uiState.update {
+            it.copy(
+                isRestoreConfirmOpen = false,
+                removedTerm = null,
+            )
+        }
         viewModelScope.launch {
             restoreCategoryMap().onFailure { uiAction.emit(CategoryMapUiAction.ShowSaveError) }
         }

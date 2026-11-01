@@ -61,8 +61,11 @@ internal class CategoryTeaching(
         write(teach.copy(isSaving = true))
         scope.launch {
             useCases
-                .saveTerm(term = word.term, categoryId = teach.category.id, replacedTerm = null)
-                .onSuccess { write(null) }
+                .saveTerm(
+                    term = word.term,
+                    categoryId = teach.category.id,
+                    replacedTerm = null,
+                ).onSuccess { write(null) }
                 .onFailure {
                     write(read()?.copy(isSaving = false))
                     showError()

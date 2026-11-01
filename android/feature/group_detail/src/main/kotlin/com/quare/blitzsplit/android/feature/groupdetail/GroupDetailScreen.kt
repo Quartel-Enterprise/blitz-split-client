@@ -69,7 +69,12 @@ fun GroupDetailScreen(
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
-    state.teach?.takeIf { it.isPickingWord }?.let { CategoryTeachDialog(teach = it, onEvent = viewModel::onEvent) }
+    state.teach?.takeIf { it.isPickingWord }?.let {
+        CategoryTeachDialog(
+            teach = it,
+            onEvent = viewModel::onEvent,
+        )
+    }
     if (state.paymentToDelete != null) {
         DeletePaymentDialog(onEvent = viewModel::onEvent)
     }
