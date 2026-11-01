@@ -187,6 +187,46 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN a row opened on Te devem WHEN a sync leaves that person alone THEN the row stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.OWES_YOU)
+            val carla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(carla.id))
+
+            // When
+            expenses.expenses.update { bills -> bills.filterNot { it.id in setOf("e2", "e6") } }
+
+            // Then
+            val rows = viewModel.uiState.value.sections
+                .single()
+                .rows
+            assertEquals(listOf("Carla"), rows.map { it.name })
+            assertTrue(rows.single().isExpanded)
+        }
+
+    @Test
+    fun `GIVEN the lone row closed WHEN a sync brings someone else into the filter THEN the row stays closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.YOU_OWE)
+            val bruno = viewModel.uiState.value.people
+                .single { it.name == "Bruno" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(bruno.id))
+
+            // When
+            expenses.expenses.update { bills -> bills + owes(FLORIPA, ME_FLORIPA, ANA_FLORIPA, 20_000L, id = "e7") }
+
+            // Then
+            val rows = viewModel.uiState.value.sections
+                .single()
+                .rows
+            assertEquals(listOf("Ana", "Bruno"), rows.mapNotNull { it.name }.sorted())
+            assertTrue(rows.none { it.isExpanded })
+        }
+
+    @Test
     fun `GIVEN a row opened WHEN changing the filter THEN rows open as the new filter opens them`() =
         runTest(testDispatcher) {
             // Given

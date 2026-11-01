@@ -88,8 +88,8 @@ class GlobalBalancesViewModel(
         me = null,
     )
 
-    // Why: the rows whose "Por grupo" differs from how they open.
-    private var toggledIds = emptySet<String>()
+    // Why: what a tap set each row's "Por grupo" to; the others open as the filter opens them.
+    private var expandedById = emptyMap<String, Boolean>()
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
@@ -176,7 +176,7 @@ class GlobalBalancesViewModel(
 
     private fun showPeople() {
         val state = uiState.value
-        val rows = rowsOf(balances.people, state.filter, toggledIds)
+        val rows = rowsOf(balances.people, state.filter, expandedById)
         uiState.update {
             it.copy(
                 people = rows,
@@ -198,13 +198,14 @@ class GlobalBalancesViewModel(
     // Why: a new filter opens its lone person's "Por grupo" afresh.
     private fun changeFilter(filter: BalancesFilter) {
         if (filter == uiState.value.filter) return
-        toggledIds = emptySet()
+        expandedById = emptyMap()
         uiState.update { it.copy(filter = filter) }
         showPeople()
     }
 
     private fun toggle(personId: String) {
-        toggledIds = if (personId in toggledIds) toggledIds - personId else toggledIds + personId
+        val row = uiState.value.people.firstOrNull { it.id == personId } ?: return
+        expandedById = expandedById + (personId to !row.isExpanded)
         showPeople()
     }
 

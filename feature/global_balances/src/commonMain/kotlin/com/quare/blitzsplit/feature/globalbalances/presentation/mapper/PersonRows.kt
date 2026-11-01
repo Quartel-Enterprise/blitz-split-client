@@ -8,13 +8,13 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
 internal fun idOf(person: PersonBalance): String = "${person.key}|${person.currency.code}"
 
 /*
- * Why: "Por grupo" opens on a tap, and is already open for someone alone in Você deve or Te devem; a tap on that one
- * closes it, so toggledIds holds whatever differs from the default.
+ * Why: "Por grupo" opens on a tap, and is already open for someone alone in Você deve or Te devem. expandedById holds
+ * what each row was set to by a tap, so a sync that changes who is alone never opens or closes a row by itself.
  */
 internal fun rowsOf(
     people: List<PersonBalance>,
     filter: BalancesFilter,
-    toggledIds: Set<String>,
+    expandedById: Map<String, Boolean>,
 ): List<PersonRow> {
     val inFilter = people.filter { person ->
         when (filter) {
@@ -36,7 +36,7 @@ internal fun rowsOf(
             netMinor = person.netMinor,
             groups = person.groups,
             isGuest = person.isGuest,
-            isExpanded = isOpenByDefault != (id in toggledIds),
+            isExpanded = expandedById[id] ?: isOpenByDefault,
         )
     }
 }
