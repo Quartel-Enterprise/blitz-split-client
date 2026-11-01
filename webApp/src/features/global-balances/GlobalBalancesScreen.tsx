@@ -103,7 +103,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
 
 /** The desktop's list and detail: the people on the left, the one picked on the right, or the empty state there. */
 function BalancesListDetail({ presenter, state }: { presenter: GlobalBalancesPresenter; state: JsGlobalBalancesState }) {
-  const selected = state.sections.flatMap((section) => section.rows).find((row) => row.id === state.selectedPersonId)
+  const selected = state.selectedPerson
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] items-start gap-5">
       {state.emptyState ? (
