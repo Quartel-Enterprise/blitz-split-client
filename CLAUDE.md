@@ -217,6 +217,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Android's chip, iOS's "Grupo" row, the web's "Grupo" field and a pop-up button on the Mac, which picks in one go
     (the Mac's sheet only asks from the home); "Editar conta" keeps its group. Another group keeps what was typed
     (valor, descrição, quando), but who paid and the split start over with its people: you pay, Igual among everyone.
+    A sync deleting the group the bill was moved to sends it back to the group it was opened for, the same way, and
+    closes Rachar conta only once that one is gone too.
     A bottom sheet on Android, a sheet on iOS and the Mac, a dialog over the bill on the web (in its place on a
     phone's drawer). Saving a bill from the home, or moved to a group other than the one it was split from, opens
     that group's Despesas in Rachar conta's place.

@@ -263,6 +263,57 @@ class PickGroupViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill moved to another group WHEN a sync deletes that group THEN goes back to its own group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                screen = fromGroup,
+                storedGroups = listOf(trip, home, soccer),
+            )
+            fillIn()
+            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(YESTERDAY))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(CARLA))
+            viewModel.onEvent(SplitBillUiEvent.OnPayerDone)
+
+            // When
+            groups.groups.value = listOf(trip, soccer)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(fromGroup, navigator.backStack.value.last())
+            assertEquals(TRIP_ID, state.groupId)
+            assertEquals("Viagem Floripa", state.groupName)
+            assertEquals("90", state.amountText)
+            assertEquals("Mercado", state.description)
+            assertEquals(YESTERDAY, state.spentAt)
+            assertEquals(PIERRE_TRIP, state.payerId)
+            assertEquals(listOf(ANA, PIERRE_TRIP, BRUNO), state.split.included.map { it.id })
+            assertTrue(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN a bill moved to another group WHEN a sync deletes both groups THEN closes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            screen = fromGroup,
+            storedGroups = listOf(trip, home, soccer),
+        )
+        viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
+        viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+        // When
+        groups.groups.value = listOf(soccer)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(TRIP_ID)), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN a bill being edited WHEN tapping its group THEN nothing opens`() = runTest(testDispatcher) {
         // Given
         prepareScenario(screen = Route.SplitBill(TRIP_ID, "bill-1", picksGroupFirst = false))
@@ -444,6 +495,7 @@ class PickGroupViewModelTest {
 
     private companion object {
         const val NOW = 1_761_836_400_000L
+        const val YESTERDAY = NOW - 86_400_000L
         const val TRIP_ID = "trip"
         const val HOME_ID = "home"
         const val ANA = "ana"

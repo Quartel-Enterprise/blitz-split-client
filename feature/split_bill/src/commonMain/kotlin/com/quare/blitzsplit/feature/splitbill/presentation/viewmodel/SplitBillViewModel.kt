@@ -243,7 +243,7 @@ class SplitBillViewModel(
         // Why: a group that comes back before this screen is on top again keeps it open.
         isGroupGone = group == null
         when {
-            group == null -> exits.leave()
+            group == null -> handleGroupGone()
 
             route.expenseId == null -> show(group)
 
@@ -262,6 +262,12 @@ class SplitBillViewModel(
                 show(group)
             }
         }
+    }
+
+    // Why: a new bill whose picked group went goes back to the group it was opened for, and closes once that one went.
+    private fun handleGroupGone() {
+        isGroupGone = route.expenseId != null || groupId.value == route.groupId
+        if (isGroupGone) exits.leave() else groupId.value = route.groupId
     }
 
     /*
