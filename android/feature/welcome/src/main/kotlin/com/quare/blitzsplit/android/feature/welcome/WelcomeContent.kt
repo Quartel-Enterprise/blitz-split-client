@@ -47,6 +47,8 @@ import com.quare.blitzsplit.android.designsystem.component.ShapeClusterHero
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeUiEvent
@@ -66,8 +68,14 @@ fun WelcomeContent(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surface,
     ) {
+        val isBook = rememberFoldLayout().bookSplit != null
         AdaptiveScreen(modifier = Modifier.fillMaxSize().safeDrawingPadding()) { layout ->
             when {
+                isBook -> WelcomeBookLayout(
+                    state = state,
+                    onEvent = onEvent,
+                )
+
                 layout.isTablet && layout.isLandscape -> WelcomeTabletLandscapeLayout(
                     state = state,
                     onEvent = onEvent,
@@ -229,8 +237,55 @@ private fun WelcomeTabletLandscapeLayout(
     }
 }
 
+/*
+ * Why: a book (and a tabletop lying down, drawn like it) splits on the hinge: the pitch fills the half before it,
+ * the actions sit centered in the one after it, nothing on the band.
+ */
 @Composable
-private fun WelcomePitchPanel(modifier: Modifier = Modifier) {
+private fun WelcomeBookLayout(
+    state: WelcomeUiState,
+    onEvent: (WelcomeUiEvent) -> Unit,
+) {
+    TwoHalvesLayout(
+        start = {
+            WelcomePitchPanel(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp),
+                isCompact = true,
+            )
+        },
+        end = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                WelcomeActionsSection(
+                    state = state,
+                    onEvent = onEvent,
+                    buttonHeight = 56.dp,
+                    modifier = Modifier.widthIn(max = tabletActionsMaxWidth),
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                top = 16.dp,
+                bottom = 24.dp,
+            ),
+    )
+}
+
+// Why: compact in a book's half, which is narrower and shorter than a tablet's column.
+@Composable
+private fun WelcomePitchPanel(
+    modifier: Modifier = Modifier,
+    isCompact: Boolean = false,
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -248,23 +303,30 @@ private fun WelcomePitchPanel(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
                     .padding(
-                        horizontal = 48.dp,
-                        vertical = 40.dp,
+                        horizontal = if (isCompact) 28.dp else 48.dp,
+                        vertical = if (isCompact) 32.dp else 40.dp,
                     ),
-                verticalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterVertically),
+                verticalArrangement = Arrangement.spacedBy(
+                    space = if (isCompact) 22.dp else 28.dp,
+                    alignment = Alignment.CenterVertically,
+                ),
             ) {
                 CurrencyBadgeIcon()
                 Text(
                     text = stringResource(R.string.welcome_title),
-                    style = MaterialTheme.typography.displayMedium,
+                    style = if (isCompact) {
+                        MaterialTheme.typography.displaySmall
+                    } else {
+                        MaterialTheme.typography.displayMedium
+                    },
                     fontWeight = FontWeight.ExtraBold,
                 )
                 WelcomeBenefitsList(
-                    iconSize = 44.dp,
+                    iconSize = if (isCompact) 40.dp else 44.dp,
                     tileColor = MaterialTheme.colorScheme.surface,
                     iconColor = MaterialTheme.colorScheme.primary,
                     bodyColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    spacing = 18.dp,
+                    spacing = if (isCompact) 16.dp else 18.dp,
                 )
             }
         }
