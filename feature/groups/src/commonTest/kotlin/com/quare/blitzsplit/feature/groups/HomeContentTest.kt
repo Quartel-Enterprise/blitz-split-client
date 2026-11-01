@@ -405,6 +405,7 @@ class HomeContentTest {
                     isPending = true,
                     updatedAt = hoursAgo(1),
                     updatedByMemberId = null,
+                    items = null,
                 ),
             ),
         )
@@ -603,5 +604,6 @@ class HomeContentTest {
         isPending = false,
         updatedAt = spentAt,
         updatedByMemberId = null,
+        items = null,
     )
 }

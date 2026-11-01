@@ -1818,6 +1818,7 @@ class HomeViewModelTest {
         isPending = isPending,
         updatedAt = spentAt,
         updatedByMemberId = null,
+        items = null,
     )
 
     private fun payment(
