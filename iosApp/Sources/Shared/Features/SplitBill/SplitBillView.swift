@@ -485,23 +485,10 @@ private struct DisclosureIndicator: View {
 private struct GroupSheet: View {
     let model: SplitBillModel
 
-    private var state: SplitBillUiState {
-        model.state
-    }
-
     var body: some View {
         NavigationStack {
             List {
-                ForEach(state.groups, id: \.id) { group in
-                    let isSelected = state.groupSelection?.groupId == group.id
-                    Button {
-                        model.send(SplitBillUiEventOnGroupPicked(groupId: group.id))
-                    } label: {
-                        GroupOptionLabel(group: group, isSelected: isSelected)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
+                GroupOptionRows(model: model)
             }
             .navigationTitle("Split in which group?")
             .navigationSubtitle("The one you used last comes marked")
@@ -664,6 +651,25 @@ private struct SeveralPayersSheet: View {
     }
 }
 #endif
+
+/// One row per group of "Split in which group?", which marks the group tapped.
+private struct GroupOptionRows: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        let state = model.state
+        ForEach(state.groups, id: \.id) { group in
+            let isSelected = state.groupSelection?.groupId == group.id
+            Button {
+                model.send(SplitBillUiEventOnGroupPicked(groupId: group.id))
+            } label: {
+                GroupOptionLabel(group: group, isSelected: isSelected)
+            }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+        }
+    }
+}
 
 /// A group to pick: its shape, its name, how many people are in it and whether it is marked.
 private struct GroupOptionLabel: View {
@@ -985,10 +991,6 @@ private struct MacBillForm: View {
 private struct MacGroupPicker: View {
     let model: SplitBillModel
 
-    private var state: SplitBillUiState {
-        model.state
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 2) {
@@ -998,16 +1000,7 @@ private struct MacGroupPicker: View {
                     .foregroundStyle(.secondary)
             }
             List {
-                ForEach(state.groups, id: \.id) { group in
-                    let isSelected = state.groupSelection?.groupId == group.id
-                    Button {
-                        model.send(SplitBillUiEventOnGroupPicked(groupId: group.id))
-                    } label: {
-                        GroupOptionLabel(group: group, isSelected: isSelected)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(isSelected ? .isSelected : [])
-                }
+                GroupOptionRows(model: model)
             }
             .listStyle(.inset(alternatesRowBackgrounds: true))
             .frame(minHeight: 200)
