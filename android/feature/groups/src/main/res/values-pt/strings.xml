@@ -7,6 +7,8 @@
     <string name="groups_sync_failed">Sem resposta do servidor · tentar de novo</string>
     <string name="groups_empty_title">Nenhum grupo ainda</string>
     <string name="groups_empty_body">Crie um grupo para a viagem, a casa ou o churrasco. Dá para começar mesmo sem internet.</string>
+    <string name="groups_no_group_open_title">Nenhum grupo aberto</string>
+    <string name="groups_no_group_open_body">Quando você criar ou entrar num grupo, as despesas e os saldos aparecem nesta metade, ao lado da lista.</string>
     <string name="groups_create">Criar grupo</string>
     <string name="groups_join_with_link">Entrar com link ou QR</string>
     <string name="groups_coming_soon">Em breve</string>

@@ -14,6 +14,7 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 
 /*
  * Why: Navigation 3's dialog scene, drawn by FoldDialog: centered as before wherever a flow opens a dialog today,
@@ -26,6 +27,7 @@ private class FoldDialogScene<T : Any>(
     override val overlaidEntries: List<NavEntry<T>>,
     private val entry: NavEntry<T>,
     private val properties: DialogProperties,
+    private val isTopHalfOnTabletop: Boolean,
     onBack: () -> Unit,
 ) : OverlayScene<T> {
     override val entries: List<NavEntry<T>> = listOf(entry)
@@ -34,6 +36,7 @@ private class FoldDialogScene<T : Any>(
         FoldDialog(
             onDismissRequest = onBack,
             properties = properties,
+            placement = rememberDialogPlacement(isTopHalfOnTabletop = isTopHalfOnTabletop),
         ) {
             CompositionLocalProvider(LocalLifecycleOwner provides rememberLifecycleOwner()) {
                 entry.Content()
@@ -47,7 +50,8 @@ private class FoldDialogScene<T : Any>(
         previousEntries == other.previousEntries &&
         overlaidEntries == other.overlaidEntries &&
         entry == other.entry &&
-        properties == other.properties
+        properties == other.properties &&
+        isTopHalfOnTabletop == other.isTopHalfOnTabletop
 
     override fun hashCode(): Int {
         var result = key.hashCode()
@@ -55,6 +59,7 @@ private class FoldDialogScene<T : Any>(
         result = 31 * result + overlaidEntries.hashCode()
         result = 31 * result + entry.hashCode()
         result = 31 * result + properties.hashCode()
+        result = 31 * result + isTopHalfOnTabletop.hashCode()
         return result
     }
 }
@@ -69,6 +74,7 @@ class FoldDialogSceneStrategy<T : Any> : SceneStrategy<T> {
             overlaidEntries = entries.dropLast(1),
             entry = lastEntry,
             properties = properties,
+            isTopHalfOnTabletop = lastEntry.metadata[TopHalfOnTabletopKey] ?: false,
             onBack = onBack,
         )
     }
@@ -76,8 +82,18 @@ class FoldDialogSceneStrategy<T : Any> : SceneStrategy<T> {
     companion object {
         object FoldDialogKey : NavMetadataKey<DialogProperties>
 
-        // Why: marks an entry to draw in a dialog over the entry under it, placed off the hinge.
-        fun dialogMetadataOf(properties: DialogProperties): Map<String, Any> =
-            metadata { put(FoldDialogKey, properties) }
+        object TopHalfOnTabletopKey : NavMetadataKey<Boolean>
+
+        /*
+         * Why: marks an entry to draw in a dialog over the entry under it, placed off the hinge: the canvas' default
+         * per posture, or a tabletop's top half even lying down where the flow's boards put it there (flow 2).
+         */
+        fun dialogMetadataOf(
+            properties: DialogProperties,
+            isTopHalfOnTabletop: Boolean = false,
+        ): Map<String, Any> = metadata {
+            put(FoldDialogKey, properties)
+            put(TopHalfOnTabletopKey, isTopHalfOnTabletop)
+        }
     }
 }

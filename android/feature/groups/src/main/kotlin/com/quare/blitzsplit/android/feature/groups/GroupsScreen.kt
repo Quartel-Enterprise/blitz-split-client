@@ -25,9 +25,12 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 @Composable
 fun GroupsScreen(
     recoveryCodeSheet: @Composable () -> Unit,
+    // Why: the app draws the empty home in one pane on a tablet lying down, beside an empty detail on a book.
+    onEmptyChanged: (Boolean) -> Unit = {},
     viewModel: GroupsViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(state.showsEmptyState) { onEmptyChanged(state.showsEmptyState) }
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             GroupsUiAction.ShowComingSoon -> R.string.groups_coming_soon

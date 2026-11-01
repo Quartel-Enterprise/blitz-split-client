@@ -10,7 +10,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreateGroupScreen(
-    // Why: a tablet opens the new group as a dialog over the home, so the screen drops its own scaffold.
+    // Why: anything wider than a phone opens the new group as a dialog over the home, so the screen drops its scaffold.
     isDialog: Boolean,
     viewModel: CreateGroupViewModel = koinViewModel(),
 ) {
