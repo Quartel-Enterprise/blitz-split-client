@@ -96,6 +96,21 @@ class GroupsSearchTest {
     }
 
     @Test
+    fun `GIVEN the search closed WHEN a late keystroke arrives THEN the search stays closed and empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged("chur"))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSearching)
+            assertEquals("", viewModel.uiState.value.search.query)
+            assertTrue(viewModel.uiState.value.search.results.isEmpty)
+        }
+
+    @Test
     fun `GIVEN the groups WHEN opening the search THEN shows it with nothing typed and no result`() =
         runTest(testDispatcher) {
             // Given
