@@ -59,7 +59,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 
 // Why: what isn't a card of the grid takes the whole line, so the list is a grid of one column.
-private val fullLine: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
+internal val fullLine: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
 
 /*
  * Why: the home's list: "Saldo geral", the open groups by their latest activity, as rows or as the grid's cards, and,
@@ -130,7 +130,7 @@ internal fun LazyGridScope.groupsListItems(
         itemsIndexed(
             open,
             key = { _, group -> group.id },
-            span = { _, _ -> GridItemSpan(maxLineSpan) },
+            span = { _, _ -> fullLine() },
             contentType = { _, _ -> "group" },
         ) { index, group ->
             GroupListRow(
@@ -160,7 +160,7 @@ internal fun LazyGridScope.groupsListItems(
     itemsIndexed(
         settled,
         key = { _, group -> group.id },
-        span = { _, _ -> GridItemSpan(maxLineSpan) },
+        span = { _, _ -> fullLine() },
         contentType = { _, _ -> "group" },
     ) { index, group ->
         GroupListRow(

@@ -71,7 +71,7 @@ private fun cardMetricsOf(size: GroupGridSize): CardMetrics = when (size) {
  * 1; a tablet's centred column 4, 3 and 2).
  */
 internal fun minCardWidthOf(size: GroupGridSize): Dp = when (size) {
-    GroupGridSize.COMPACT -> 112.dp
+    GroupGridSize.COMPACT -> 104.dp
     GroupGridSize.STANDARD -> 144.dp
     GroupGridSize.LARGE -> 220.dp
 }

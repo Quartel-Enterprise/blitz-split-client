@@ -130,10 +130,7 @@ private struct GroupGridCard: View {
                 #endif
             }
             if group.isPending {
-                Circle()
-                    .fill(.orange)
-                    .frame(width: 8, height: 8)
-                    .accessibilityHidden(true)
+                PendingIndicator()
             }
             if size == .compact, group.isPending {
                 Text("queued")

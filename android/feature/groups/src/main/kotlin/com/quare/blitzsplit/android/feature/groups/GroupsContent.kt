@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -274,7 +273,7 @@ private fun GroupsListPane(
             if (state.syncBadge != null) {
                 item(
                     key = "sync",
-                    span = { GridItemSpan(maxLineSpan) },
+                    span = fullLine,
                     contentType = "sync",
                 ) {
                     Box(modifier = Modifier.padding(bottom = 12.dp)) {

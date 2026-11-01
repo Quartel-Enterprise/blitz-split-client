@@ -119,6 +119,10 @@ struct MainTabView: View {
                     GroupsView(model: model)
                         .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
+                #if os(macOS)
+                // What the View menu's Grid Size reads and changes, only while the groups are in front
+                .focusedSceneValue(\.groupsModel, path.isEmpty ? model : nil)
+                #endif
             }
             Tab("Balances", systemImage: "creditcard", value: MainTab.balances) { Color.clear }
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
@@ -307,8 +311,6 @@ struct GroupsView: View {
             }
         }
         #else
-        // What the View menu's Grid Size reads and changes while this window shows the groups
-        .focusedSceneValue(\.groupsModel, model)
         .navigationSubtitle(macSubtitle)
         // Nothing to look in before the first group
         .toolbarSearch(macSearchBinding, isShown: !state.groups.isEmpty)
