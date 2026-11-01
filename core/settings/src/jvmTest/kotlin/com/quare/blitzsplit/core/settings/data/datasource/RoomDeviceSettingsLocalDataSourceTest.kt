@@ -36,6 +36,8 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 theme = "system",
                 groupsDisplay = "grid",
                 groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
             ),
             dataSource.observe().first(),
         )
@@ -62,6 +64,8 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 theme = "dark",
                 groupsDisplay = "grid",
                 groupGridSize = "large",
+                statsChartType = null,
+                statsGrain = null,
             ),
             dataSource.observe().first(),
         )

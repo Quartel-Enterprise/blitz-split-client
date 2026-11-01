@@ -3,6 +3,9 @@ package com.quare.blitzsplit.core.settings.data.repository
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
+import com.quare.blitzsplit.core.model.StatsChartPreferences
+import com.quare.blitzsplit.core.model.StatsChartType
+import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDataSource
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
@@ -38,6 +41,26 @@ class DeviceSettingsRepositoryImpl(
             entity.copy(
                 groupsDisplay = layout.display.code,
                 groupGridSize = layout.gridSize.code,
+            )
+        }
+    }
+
+    // Why: nothing picked yet, or a code from a newer version, is bars, grouped by what fits the period.
+    override fun observeStatsChart(): Flow<StatsChartPreferences> = local
+        .observe()
+        .map { entity ->
+            StatsChartPreferences(
+                chartType = entity?.statsChartType?.let(StatsChartType::fromCodeOrNull)
+                    ?: StatsChartPreferences.initial.chartType,
+                grain = entity?.statsGrain?.let(StatsGrain::fromCodeOrNull),
+            )
+        }.distinctUntilChanged()
+
+    override suspend fun updateStatsChart(preferences: StatsChartPreferences) {
+        local.update { entity ->
+            entity.copy(
+                statsChartType = preferences.chartType.code,
+                statsGrain = preferences.grain?.code,
             )
         }
     }

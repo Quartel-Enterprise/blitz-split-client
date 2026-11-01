@@ -3,6 +3,9 @@ package com.quare.blitzsplit.core.settings.data
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
+import com.quare.blitzsplit.core.model.StatsChartPreferences
+import com.quare.blitzsplit.core.model.StatsChartType
+import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
@@ -22,6 +25,7 @@ class DeviceSettingsRepositoryImplTest {
     private lateinit var repository: DeviceSettingsRepositoryImpl
     private lateinit var observed: MutableList<ThemePreference>
     private lateinit var observedLayouts: MutableList<GroupsLayout>
+    private lateinit var observedCharts: MutableList<StatsChartPreferences>
 
     @Test
     fun `GIVEN a fresh install with no theme stored WHEN observing the theme THEN follows the system`() = runTest {
@@ -251,15 +255,97 @@ class DeviceSettingsRepositoryImplTest {
         assertEquals(listOf(GroupsLayout(GroupsDisplay.GRID, GroupGridSize.LARGE)), observedLayouts)
     }
 
+    @Test
+    fun `GIVEN nothing picked on this device WHEN observing the statistics chart THEN is bars with no grain`() =
+        runTest {
+            // Given
+            prepareScenario(stored = null)
+
+            // When
+            val charts = observedCharts.toList()
+
+            // Then
+            assertEquals(listOf(StatsChartPreferences.initial), charts)
+        }
+
+    @Test
+    fun `GIVEN the line by week picked WHEN observing the statistics chart THEN is the line by week`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                statsChartType = "line",
+                statsGrain = "week",
+            ),
+        )
+
+        // When
+        val charts = observedCharts.toList()
+
+        // Then
+        assertEquals(listOf(StatsChartPreferences(StatsChartType.LINE, StatsGrain.WEEK)), charts)
+    }
+
+    @Test
+    fun `GIVEN chart codes this version does not know WHEN observing the statistics chart THEN falls back`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                statsChartType = "pie",
+                statsGrain = "quarter",
+            ),
+        )
+
+        // When
+        val charts = observedCharts.toList()
+
+        // Then
+        assertEquals(listOf(StatsChartPreferences.initial), charts)
+    }
+
+    @Test
+    fun `GIVEN the grid picked WHEN picking the line by month THEN stores it and keeps the grid`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                groupsDisplay = "grid",
+                groupGridSize = "large",
+            ),
+        )
+
+        // When
+        repository.updateStatsChart(StatsChartPreferences(StatsChartType.LINE, StatsGrain.MONTH))
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    groupsDisplay = "grid",
+                    groupGridSize = "large",
+                    statsChartType = "line",
+                    statsGrain = "month",
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+    }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
         groupGridSize: String? = null,
+        statsChartType: String? = null,
+        statsGrain: String? = null,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
         groupsDisplay = groupsDisplay,
         groupGridSize = groupGridSize,
+        statsChartType = statsChartType,
+        statsGrain = statsGrain,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -267,11 +353,15 @@ class DeviceSettingsRepositoryImplTest {
         repository = DeviceSettingsRepositoryImpl(local = local)
         observed = mutableListOf()
         observedLayouts = mutableListOf()
+        observedCharts = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeTheme().collect(observed::add)
         }
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeGroupsLayout().collect(observedLayouts::add)
+        }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeStatsChart().collect(observedCharts::add)
         }
     }
 }
@@ -299,6 +389,8 @@ private class FakeDeviceSettingsLocalDataSource(
             theme = "system",
             groupsDisplay = null,
             groupGridSize = null,
+            statsChartType = null,
+            statsGrain = null,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

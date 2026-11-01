@@ -5,12 +5,16 @@ import com.quare.blitzsplit.core.settings.data.datasource.RoomDeviceSettingsLoca
 import com.quare.blitzsplit.core.settings.data.repository.DeviceSettingsRepositoryImpl
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePreferenceUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateGroupsLayoutUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateThemePreferenceUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -24,4 +28,6 @@ val settingsModule = module {
     factoryOf(::UpdateThemePreferenceUseCase).bind<UpdateThemePreference>()
     factoryOf(::ObserveGroupsLayoutUseCase).bind<ObserveGroupsLayout>()
     factoryOf(::UpdateGroupsLayoutUseCase).bind<UpdateGroupsLayout>()
+    factoryOf(::ObserveStatsChartPreferencesUseCase).bind<ObserveStatsChartPreferences>()
+    factoryOf(::UpdateStatsChartPreferencesUseCase).bind<UpdateStatsChartPreferences>()
 }
