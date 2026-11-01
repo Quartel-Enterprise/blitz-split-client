@@ -2,7 +2,6 @@
 <resources>
     <string name="group_stats_title">Statistics</string>
     <string name="group_stats_back">Back to %s</string>
-    <string name="group_stats_period">Period</string>
     <string name="group_stats_period_all_trip">The whole trip</string>
     <string name="group_stats_period_all">All time</string>
     <string name="group_stats_period_this_year">This year</string>
@@ -11,7 +10,6 @@
     <string name="group_stats_period_custom">Pick dates…</string>
     <string name="group_stats_period_custom_hint">From one day to another</string>
     <string name="group_stats_period_hint">%1$s · %2$s</string>
-    <string name="group_stats_period_short">%1$s · %2$s</string>
     <string name="group_stats_expenses_none">no expenses</string>
     <string name="group_stats_summary">Period summary</string>
     <string name="group_stats_total_spent">Total spent</string>

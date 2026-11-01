@@ -410,6 +410,25 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN a trip WHEN picking dates past today THEN the period ends today`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(
+            GroupStatsUiEvent.OnCustomPeriodPicked(
+                startMillis = millisOf("2026-10-20T10:00:00Z"),
+                endMillis = millisOf("2026-11-15T10:00:00Z"),
+            ),
+        )
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(millisOf("2026-10-20T00:00:00Z"), state.periodStartMillis)
+        assertEquals(millisOf("2026-10-29T00:00:00Z"), state.periodEndMillis)
+    }
+
+    @Test
     fun `GIVEN a trip WHEN the statistics open THEN the biggest bill names who paid it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

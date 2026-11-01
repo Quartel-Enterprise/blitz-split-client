@@ -150,13 +150,15 @@ class GroupStatsViewModel(
         render()
     }
 
+    // Why: "Escolher datas…" never goes past today, whatever a typed date (the web's date field) says.
     private fun pickCustomPeriod(
         startMillis: Long,
         endMillis: Long,
     ) {
         val timeZone = currentTimeZone()
-        val first = SpentDay.dateOf(startMillis, timeZone)
-        val last = SpentDay.dateOf(endMillis, timeZone)
+        val today = SpentDay.dateOf(currentTimeMillis(), timeZone)
+        val first = minOf(SpentDay.dateOf(startMillis, timeZone), today)
+        val last = minOf(SpentDay.dateOf(endMillis, timeZone), today)
         customSpan = DateSpan(minOf(first, last), maxOf(first, last))
         period = StatsPeriod.CUSTOM
         render()

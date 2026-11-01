@@ -133,11 +133,20 @@ internal class StatsCalculator(
         grain: StatsGrain,
     ): List<StatsBar> {
         val buckets = span.splitBy(grain)
-        val amounts = buckets.map { bucket ->
-            spending.expenses
-                .filter { SpentDay.dateOf(it.spentAt, timeZone) in bucket }
-                .sumOf { it.amountMinor }
+        // Why: each bill's day once, into the bucket holding it (the buckets follow each other in order).
+        val amountsByBucket = LongArray(buckets.size)
+        spending.expenses.forEach { expense ->
+            val date = SpentDay.dateOf(expense.spentAt, timeZone)
+            val index = buckets.binarySearch { bucket ->
+                when {
+                    bucket.end < date -> -1
+                    bucket.start > date -> 1
+                    else -> 0
+                }
+            }
+            if (index >= 0) amountsByBucket[index] += expense.amountMinor
         }
+        val amounts = amountsByBucket.toList()
         val peak = amounts.indexOf(amounts.maxOrNull()?.takeIf { it > 0 })
         val labelStep = if (buckets.size <= maxLabelsOf(grain)) 1 else ceil(buckets.size / SPARSE_LABELS).toInt()
         return buckets.mapIndexed { index, bucket ->
