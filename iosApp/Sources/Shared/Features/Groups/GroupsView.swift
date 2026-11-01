@@ -93,7 +93,7 @@ final class GroupsModel {
     }
 }
 
-/// The tabs of the canvas. Groups and Balances are built; the others answer "Coming soon". Search is the iPhone's and
+/// The tabs of the canvas. Groups, Balances and Contacts are built; Activity answers "Coming soon". Search is the iPhone's and
 /// the iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
 enum MainTab: Hashable {
     case groups
@@ -136,7 +136,14 @@ struct MainTabView: View {
                     }
                 }
             }
-            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
+            // Contacts sits right above the groups too, and keeps what it opens in its own tab's stack
+            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
+                if isContactsShown {
+                    ContactsColumns(path: contactsPath)
+                } else {
+                    Color.clear
+                }
+            }
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
             #if os(iOS)
             // Nothing to look in before the first group
@@ -176,10 +183,15 @@ struct MainTabView: View {
     }
 
     // Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
-    // and goes back to the groups, past what its results opened; leaving Balances goes back to the groups too.
+    // and goes back to the groups, past what its results opened; leaving Balances or Contacts goes back to the groups
+    // too.
     private var tabSelection: Binding<MainTab> {
         Binding(
-            get: { showsSearchTab ? .search : (balancesRoute != nil ? .balances : .groups) },
+            get: {
+                if showsSearchTab { return .search }
+                if balancesRoute != nil { return .balances }
+                return isContactsShown ? .contacts : .groups
+            },
             set: { tab in
                 switch tab {
                 case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
@@ -189,7 +201,7 @@ struct MainTabView: View {
                 case .groups:
                     if showsSearchTab {
                         model.send(GroupsUiEventOnSearchTabLeft.shared)
-                    } else if balancesRoute != nil {
+                    } else if balancesRoute != nil || isContactsShown {
                         model.send(GroupsUiEventOnGroupsTabClicked.shared)
                     }
                 }
@@ -201,6 +213,23 @@ struct MainTabView: View {
     private var balancesRoute: RouteGlobalBalances? {
         if case let .globalBalances(route) = path.first { return route }
         return nil
+    }
+
+    /// Contacts right above the groups, which its tab shows.
+    private var isContactsShown: Bool {
+        if case .contacts = path.first { return true }
+        return false
+    }
+
+    /// What Contacts opened over itself (a person's profile, the agenda, Balances with a request), in its tab's stack.
+    private var contactsPath: Binding<[AppRoute]> {
+        Binding(
+            get: { isContactsShown ? Array(path.dropFirst()) : [] },
+            set: { newValue in
+                guard isContactsShown, let first = path.first else { return }
+                path = [first] + newValue
+            },
+        )
     }
 
     /// What Balances pushed over itself (the profile), shown in its own tab's stack.
@@ -237,13 +266,15 @@ struct MainTabView: View {
         )
     }
 
-    /// Search while it is open, Groups while neither Search nor Balances is: the tab whose stack holds the path.
+    /// Search while it is open, Groups while neither Search, Balances nor Contacts is: the tab whose stack holds the
+    /// path.
     private func isInFront(isSearch: Bool) -> Bool {
-        balancesRoute == nil && showsSearchTab == isSearch
+        balancesRoute == nil && !isContactsShown && showsSearchTab == isSearch
     }
 
     /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
-    /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key.
+    /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key. Contacts also pushes a
+    /// person's profile, the agenda, and Balances opened from a profile's Request.
     @ViewBuilder
     static func destination(_ route: AppRoute) -> some View {
         switch route {
@@ -257,6 +288,9 @@ struct MainTabView: View {
         case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
+        case let .contactProfile(route): ContactProfileView(route: route)
+        case .contactsAgenda: AgendaView()
+        case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         default: ProfileView()
         }
     }

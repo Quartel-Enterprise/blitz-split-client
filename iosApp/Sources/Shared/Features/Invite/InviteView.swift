@@ -215,7 +215,7 @@ private struct LinkCard: View {
 }
 
 /// Black on white in both appearances, as scanners read it best, with the quiet zone around the modules.
-private struct QrCodeImage: View {
+struct QrCodeImage: View {
     let qrCode: QrCode
 
     /// The blank border a scanner needs around the code, in modules.
