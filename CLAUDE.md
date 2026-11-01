@@ -52,13 +52,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     symbol of the device's region, `$` when there is none.
   - The home shows the five tabs of the design (Início, Grupos, Saldos, Contatos, Atividade), every one with
     Atividade's unread badge. Início (`Route.Home`) is the root and where the app opens; every other tab is one route
-    right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
-    lying down and a tabletop, and stays, without "Rachar conta", beside a group's Despesas, Saldos, Membros and
-    Estatísticas drawn alone anywhere wider than a phone upright (a phone lying down, a tablet or a foldable upright,
-    Estatísticas over a whole tablet or book; never on a tabletop, nor beside the home's list, which has its own), the
-    tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
-    to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
-    `OnRailTabClicked`).
+    right above it, taking each other's place (`Navigator.openHomeTab`).
   - "Início" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Saldos com pessoas", a row of faces
     with each person's net across groups as Saldos nets it (`PeopleBalances`), whom you owe first, then who owes you,
     the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net (`Route.SettleUp`),
@@ -118,14 +112,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download
-    progress (5.1d) yet: the sync can't tell how many groups are still to come. A phone lying down (Android and
-    iPhone) splits in two: the sync status and "Saldo geral" (its buttons side by side under the amount) stay still on
-    the left, 320 dp / 300 pt (Android's QR, Buscar and profile at its top, iOS's stay in the bar), and the list
-    scrolls on the right. On a Flip's cover screen (Android, `FoldLayout.isOnCoverScreen`: the whole display under
-    480 dp, the same test as Início's cover) Grupos with a group only draws "Saldo geral" ("a receber em 4 grupos"), "Última atividade" (the bill
-    saved last on the device, "Ana lançou Uber aeroporto, R$ 87,60, em Viagem Floripa", `GroupsUiState.latestBill`)
-    and "Abrir no celular", which says "Abra o celular para continuar", since no app can open the phone; no list,
-    search, form nor the recovery code's prompt.
+    progress (5.1d) yet: the sync can't tell how many groups are still to come.
   - The home's group actions (5.3, 5.4): every row of Grupos and Quitados ends in a ⋮ (⋯ on iOS, macOS and the web)
     with "Convidar pessoas", "Sair do grupo" and "Apagar grupo", the same as its long press (a bottom sheet with the
     group and your balance on Android, the context menu on iOS) and its right click (the Mac's and the web's table);
@@ -137,8 +124,6 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     internet" (Android's sheet adds "Sair e apagar precisam de internet…"); online, "Acerte os R$ 98,00 antes" (what
     you owe, else what you're owed, `GroupRow.settleBeforeLeavingMinor`) and "Só quando todos tiverem acertado"
     (`GroupRow.hasOpenDebts`) say what blocks them before the tap, which still opens the dialog listing what is open.
-    On Android their dialogs (`GroupExitAlertDialog`, the group's too) take a book's right half and a tabletop's top
-    half.
   - The home's "Lista ou grade" (5.5, 5.6): the open groups show as a list (the default) or a grid of cards, at
     Compacto, Padrão or Grande, kept per device and never synced (`GroupsLayout` in `device_settings`, so it outlives
     a sign out; the grid keeps its size while the list is picked). Quitados and what a filter or the search finds stay
@@ -162,9 +147,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Quitado · despesa “Churros”", as the design draws it), and "Despesas"
     lists it too. A group opens the group, a person the Membros of the group they were found in, a bill its Conta over the group. Results are always a list, even with the grid; nothing typed says where it
-    looks, nothing found says "Nada com “pizza”". A phone lying down (Android and iPhone) puts the field and the
-    scopes on the left (under a "Buscar" title on the iPhone, whose bar hides) and the results on the right. Closing
-    forgets the text; leaving iOS's search tab also goes back
+    looks, nothing found says "Nada com “pizza”". Closing forgets the text; leaving iOS's search tab also goes back
     to the groups (`GroupsUiState.search`). The web's "Filtrar grupos" stays, as the board draws it. Where the home
     draws its list and detail, the first result opens beside the results as it is typed: a group or a bill's group
     as its Despesas, a person as the Membros they were found in (a bill's Conta waits for a tap), never over a result

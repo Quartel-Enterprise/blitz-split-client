@@ -1718,6 +1718,7 @@ class GroupsViewModelTest {
                         paidBy = "Ana",
                         amountMinor = 9000L,
                         splitOver = everyone,
+                        isPending = true,
                     ),
                 ),
             )
@@ -1728,6 +1729,30 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(LatestBillAuthor.Me, author)
+        }
+
+    @Test
+    fun `GIVEN the latest bill synced with no editor in the group WHEN the groups open THEN nobody is named`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        paidBy = "Ana",
+                        amountMinor = 9000L,
+                        splitOver = everyone,
+                    ),
+                ),
+            )
+
+            // When
+            val author = viewModel.uiState.value.latestBill
+                ?.savedBy
+
+            // Then
+            assertEquals(LatestBillAuthor.Unknown, author)
         }
 
     @Test

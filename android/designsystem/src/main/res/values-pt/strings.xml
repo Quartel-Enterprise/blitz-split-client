@@ -105,8 +105,6 @@
     <string name="designsystem_tab_balances">Saldos</string>
     <string name="designsystem_tab_contacts">Contatos</string>
     <string name="designsystem_tab_activity">Atividade</string>
-    <!-- Why: Atividade, on the home's rail beside a group, is not built yet. -->
-    <string name="designsystem_coming_soon">Em breve</string>
     <string name="designsystem_person_you_owe">você deve</string>
     <string name="designsystem_person_owes_you">te deve</string>
     <string name="designsystem_person_net">Líquido, já compensado</string>

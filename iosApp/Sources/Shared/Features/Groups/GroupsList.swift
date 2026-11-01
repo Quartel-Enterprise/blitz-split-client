@@ -41,9 +41,7 @@ struct GroupsList: View {
         return ScrollView {
             VStack(alignment: .leading, spacing: 8) {
                 if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
-                    SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
-                        model.send(GroupsUiEventOnRetrySyncClicked.shared)
-                    }
+                    syncStatusRow(status)
                 }
                 GroupsSummaryCard(summary: state.summary, isStacked: true, send: { model.send($0) })
             }
@@ -53,15 +51,21 @@ struct GroupsList: View {
         .scrollBounceBehavior(.basedOnSize)
     }
 
+    /// The sync status with its retry, in the list upright and in the column lying down.
+    private func syncStatusRow(_ status: String) -> some View {
+        let state = model.state
+        return SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
+            model.send(GroupsUiEventOnRetrySyncClicked.shared)
+        }
+    }
+
     private func list(showsSummary: Bool) -> some View {
         let state = model.state
         return List {
             if showsSummary {
                 if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
                     Section {
-                        SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
-                            model.send(GroupsUiEventOnRetrySyncClicked.shared)
-                        }
+                        syncStatusRow(status)
                     }
                 }
                 Section {
