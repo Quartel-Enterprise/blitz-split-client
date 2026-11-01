@@ -57,12 +57,14 @@ struct WelcomeView: View {
     var body: some View {
         Group {
             if layout.usesTwoColumns {
-                HStack(alignment: .center, spacing: 56) {
+                // An iPhone Duo open splits on its fold: the pitch on one side, the sign in on the other
+                TwoColumnsLayout(spacing: 56) {
                     ViewThatFits(in: .vertical) {
                         WelcomePitch(alignment: .leading, isLarge: layout.isLarge)
                         ScrollView { WelcomePitch(alignment: .leading, isLarge: layout.isLarge) }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                } second: {
                     // Centred while it fits; scrolls only when the window is too short
                     ViewThatFits(in: .vertical) {
                         WelcomeActions(model: model)
@@ -70,13 +72,17 @@ struct WelcomeView: View {
                     }
                     .frame(maxWidth: 400, maxHeight: .infinity)
                 }
-                .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
                 .padding(.horizontal, 32)
             } else {
                 VStack(spacing: 0) {
                     ScrollView {
-                        WelcomePitch(alignment: .center, isLarge: layout.isLarge)
-                            .padding(.top, layout.isLarge ? 80 : 40)
+                        // The iPhone Duo closed keeps the title and the sign in; the benefits come back open
+                        WelcomePitch(
+                            alignment: .center,
+                            isLarge: layout.isLarge,
+                            showsBenefits: !layout.isShortColumn,
+                        )
+                        .padding(.top, layout.isLarge ? 80 : 40)
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     WelcomeActions(model: model)
@@ -95,6 +101,7 @@ struct WelcomeView: View {
 private struct WelcomePitch: View {
     let alignment: HorizontalAlignment
     let isLarge: Bool
+    var showsBenefits = true
 
     var body: some View {
         VStack(alignment: alignment, spacing: 28) {
@@ -104,25 +111,31 @@ private struct WelcomePitch: View {
                     .font(isLarge ? .largeTitle.bold() : .title.bold())
                     .multilineTextAlignment(alignment == .center ? .center : .leading)
             }
-            VStack(alignment: .leading, spacing: 16) {
-                BenefitRow(
-                    systemImage: "wifi.slash",
-                    title: "Works offline",
-                    message: "Everything stays on your \(DeviceName.current) and syncs later.",
-                )
-                BenefitRow(
-                    systemImage: "checkmark.shield",
-                    title: "An account is optional",
-                    message: "Apple or Google only keep you from losing anything when you switch devices.",
-                )
-                BenefitRow(
-                    systemImage: "link",
-                    title: "Invite with a link or QR code",
-                    message: "Friends join the group without creating an account.",
-                )
+            if showsBenefits {
+                benefits
             }
-            .padding(.horizontal, alignment == .center ? 12 : 0)
         }
+    }
+
+    private var benefits: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            BenefitRow(
+                systemImage: "wifi.slash",
+                title: "Works offline",
+                message: "Everything stays on your \(DeviceName.current) and syncs later.",
+            )
+            BenefitRow(
+                systemImage: "checkmark.shield",
+                title: "An account is optional",
+                message: "Apple or Google only keep you from losing anything when you switch devices.",
+            )
+            BenefitRow(
+                systemImage: "link",
+                title: "Invite with a link or QR code",
+                message: "Friends join the group without creating an account.",
+            )
+        }
+        .padding(.horizontal, alignment == .center ? 12 : 0)
     }
 }
 

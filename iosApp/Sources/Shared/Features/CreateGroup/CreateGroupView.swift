@@ -67,6 +67,10 @@ struct CreateGroupView: View {
             }
         }
         .interactiveDismissDisabled(model?.state.isCreating == true)
+        #if os(iOS)
+        // The canvas' 540 pt form sheet with an iPad's room; an iPhone's sheet keeps the system's width
+        .formSheetSizing()
+        #endif
         #if os(macOS)
         .frame(minWidth: 460, idealWidth: 500, minHeight: 560, idealHeight: 680)
         #endif
@@ -76,55 +80,90 @@ struct CreateGroupView: View {
     }
 }
 
+/// One grouped form, or two in an iPhone's sheet lying down: the group itself in a 300 pt column and who takes part
+/// beside it, each scrolling on its own. An iPad's room (an iPhone Duo open too) opens the 540 pt form sheet, one
+/// column, and the Mac's sheet stays one column whatever it is resized to.
 private struct CreateGroupForm: View {
     let model: CreateGroupModel
+
+    /// The sheet's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
 
     private var state: CreateGroupUiState {
         model.state
     }
 
+    private var usesTwoColumns: Bool {
+        #if os(iOS)
+        layout.usesTwoColumns
+        #else
+        false
+        #endif
+    }
+
     var body: some View {
-        Form {
-            #if os(macOS)
-            // A Mac sheet has no title bar, so the title heads the form
-            Section {
-                Text("New group").font(.title2.bold())
-            }
-            .listRowBackground(Color.clear)
-            #endif
-            if state.showsCreateError {
-                Section {
-                    Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")
-                        .foregroundStyle(Palette.negative)
+        Group {
+            if usesTwoColumns {
+                TwoColumnsLayout(firstWidth: 300, spacing: 28) {
+                    Form { groupSections }
+                        .formStyle(.grouped)
+                } second: {
+                    Form { MembersSection(model: model) }
+                        .formStyle(.grouped)
                 }
-            }
-            Section {
-                Button {
-                    model.send(CreateGroupUiEventOnColorClicked.shared)
-                } label: {
-                    GroupAvatar(initials: state.initials, color: state.color, size: 88)
+            } else {
+                Form {
+                    groupSections
+                    MembersSection(model: model)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Change the group's color")
-                .frame(maxWidth: .infinity)
-                .listRowBackground(Color.clear)
+                .formStyle(.grouped)
             }
-            Section {
-                TextField("Group name", text: nameBinding)
-                Picker("Type", selection: typeBinding) {
-                    ForEach(state.types, id: \.self) { type in
-                        Text(type.title).tag(type)
-                    }
-                }
-                Picker("Currency", selection: currencyBinding) {
-                    ForEach(state.currencies, id: \.self) { currency in
-                        Text(verbatim: currency.label).tag(currency)
-                    }
-                }
-            }
-            MembersSection(model: model)
         }
-        .formStyle(.grouped)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
+    }
+
+    /// The title on the Mac, the error, the avatar and the name, type and currency.
+    @ViewBuilder
+    private var groupSections: some View {
+        #if os(macOS)
+        // A Mac sheet has no title bar, so the title heads the form
+        Section {
+            Text("New group").font(.title2.bold())
+        }
+        .listRowBackground(Color.clear)
+        #endif
+        if state.showsCreateError {
+            Section {
+                Label("Couldn’t save the group. Try again.", systemImage: "exclamationmark.circle")
+                    .foregroundStyle(Palette.negative)
+            }
+        }
+        Section {
+            Button {
+                model.send(CreateGroupUiEventOnColorClicked.shared)
+            } label: {
+                GroupAvatar(initials: state.initials, color: state.color, size: 88)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Change the group's color")
+            .frame(maxWidth: .infinity)
+            .listRowBackground(Color.clear)
+        }
+        Section {
+            TextField("Group name", text: nameBinding)
+            Picker("Type", selection: typeBinding) {
+                ForEach(state.types, id: \.self) { type in
+                    Text(type.title).tag(type)
+                }
+            }
+            Picker("Currency", selection: currencyBinding) {
+                ForEach(state.currencies, id: \.self) { currency in
+                    Text(verbatim: currency.label).tag(currency)
+                }
+            }
+        }
     }
 
     private var nameBinding: Binding<String> {

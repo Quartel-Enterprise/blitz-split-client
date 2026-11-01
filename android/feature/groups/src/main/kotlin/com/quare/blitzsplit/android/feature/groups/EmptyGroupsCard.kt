@@ -26,14 +26,19 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 
-// Why: "Crie seu primeiro grupo", in a row on a phone in landscape and larger on a tablet.
+/*
+ * Why: "Crie seu primeiro grupo", in a row on a phone in landscape and larger on a tablet; in a book's half the
+ * large card keeps the canvas' tighter padding and stacks its two actions, which don't fit side by side there.
+ */
 @Composable
 internal fun EmptyGroupsCard(
     onEvent: (GroupsUiEvent) -> Unit,
     isHorizontal: Boolean,
     isLarge: Boolean,
     modifier: Modifier = Modifier,
+    isInBookHalf: Boolean = false,
 ) {
+    val isWide = isLarge && !isInBookHalf
     Surface(
         modifier = modifier
             .then(if (isLarge) Modifier.widthIn(max = 600.dp) else Modifier)
@@ -71,18 +76,26 @@ internal fun EmptyGroupsCard(
         } else {
             Column(
                 modifier = Modifier.padding(
-                    horizontal = if (isLarge) 40.dp else 24.dp,
-                    vertical = if (isLarge) 40.dp else 32.dp,
+                    horizontal = when {
+                        isWide -> 40.dp
+                        isLarge -> 20.dp
+                        else -> 24.dp
+                    },
+                    vertical = when {
+                        isWide -> 40.dp
+                        isLarge -> 28.dp
+                        else -> 32.dp
+                    },
                 ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                EmptyGroupsImage(scale = if (isLarge) 1.18f else 1f)
+                EmptyGroupsImage(scale = if (isWide) 1.18f else 1f)
                 EmptyGroupsText(
                     textAlign = TextAlign.Center,
                     isLarge = isLarge,
                 )
-                if (isLarge) {
+                if (isWide) {
                     Row(
                         modifier = Modifier.padding(top = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
