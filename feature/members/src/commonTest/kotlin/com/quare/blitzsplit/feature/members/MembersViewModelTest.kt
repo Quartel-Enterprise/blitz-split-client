@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -29,6 +30,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -62,6 +64,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -376,6 +379,43 @@ class MembersViewModelTest {
         // Then
         assertEquals(listOf(Route.Groups, Route.Balances("group-1")), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN the screen open WHEN its rail opens Grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnRailTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the screen over the groups WHEN drawn THEN its rail selects Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(HomeTab.GROUPS, state.homeTab)
+    }
+
+    @Test
+    fun `GIVEN the screen drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            activityUnread.value = 3
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
 
     @Test
     fun `GIVEN the screen open WHEN tapping the expenses tab THEN the group takes its place`() =
@@ -3311,6 +3351,7 @@ class MembersViewModelTest {
             },
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

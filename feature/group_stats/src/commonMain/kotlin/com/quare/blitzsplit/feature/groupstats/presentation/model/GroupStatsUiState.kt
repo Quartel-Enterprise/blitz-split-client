@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.model
 
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 
@@ -49,6 +50,10 @@ data class GroupStatsUiState(
     val biggestExpense: StatsBiggestExpense?,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: the home tab the screen was opened from, which Android's rail beside it selects.
+    val homeTab: HomeTab,
+    // Why: Atividade's unread badge on Android's rail beside the screen.
+    val activityUnreadCount: Int,
 ) {
     // Why: "Nada para mostrar ainda", with "Rachar conta", while the group has no bill at all.
     val isGroupEmpty: Boolean

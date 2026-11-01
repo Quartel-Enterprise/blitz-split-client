@@ -166,7 +166,11 @@ there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(fil
 the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the
 welcome, the restore) it does nothing. `popToGroups()` is `openHomeTab(Route.Groups)`. Each tab's ViewModel has an
 `OnHomeTabClicked`, and on Apple the `TabView` selects the tab from the route right above Início. Back from any tab
-returns to Início. Contatos' profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite
+returns to Início. Android's rail beside a group's Despesas, Saldos, Membros or Estatísticas drawn alone sends the
+screen's `OnRailTabClicked(HomeTab)` (`HomeTab` in `:core:model`, which Android's bar and rail draw too):
+`Navigator.openHomeTab(HomeTab)` goes back to that tab while it is in the stack (Saldos with whatever filter), and
+otherwise opens its first route through `openHomeTab(Route)`. The rail selects the tab the screen sits in, the nearest
+one under it (`List<Route>.findHomeTabUnder`: Início for a group Início opened, Grupos for a row of Grupos). Contatos' profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite
 (`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
 Saldos). Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
 

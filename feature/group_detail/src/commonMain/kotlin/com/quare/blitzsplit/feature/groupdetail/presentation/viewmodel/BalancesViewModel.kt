@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiEvent
@@ -35,6 +36,9 @@ class BalancesViewModel(
                 recordedPayment = null,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                homeTab = useCases.navigator.backStack.value
+                    .findHomeTabUnder(route),
+                activityUnreadCount = 0,
             ),
         )
 
@@ -63,6 +67,10 @@ class BalancesViewModel(
         screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
+        useCases
+            .observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: BalancesUiEvent) {
@@ -78,6 +86,8 @@ class BalancesViewModel(
             BalancesUiEvent.OnExpensesTabClicked -> screen.openTab(Route.GroupDetail(route.groupId, joinedAs = null))
 
             BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
+
+            is BalancesUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 

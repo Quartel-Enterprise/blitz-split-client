@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
+import com.quare.blitzsplit.core.model.HomeTab
 
 // Why: "Saldos", the group's tab with who owes whom, each pair once and already netted.
 data class BalancesUiState(
@@ -19,6 +20,10 @@ data class BalancesUiState(
     val exit: GroupExitState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: the home tab the screen was opened from, which Android's rail beside it selects.
+    val homeTab: HomeTab,
+    // Why: Atividade's unread badge on Android's rail beside the screen.
+    val activityUnreadCount: Int,
 ) {
     // Why: "Ninguém deve nada ainda" / "Os saldos aparecem quando a primeira despesa for lançada."
     val isEmpty: Boolean

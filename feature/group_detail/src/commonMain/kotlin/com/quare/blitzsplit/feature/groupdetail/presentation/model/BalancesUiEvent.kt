@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface BalancesUiEvent : UiEvent {
@@ -19,6 +20,11 @@ sealed interface BalancesUiEvent : UiEvent {
 
     // Why: the "Membros" tab and the faces under the name.
     data object OnMembersClicked : BalancesUiEvent
+
+    // Why: a tab of the home's rail, which Android keeps beside the group when it is drawn alone.
+    data class OnRailTabClicked(
+        val tab: HomeTab,
+    ) : BalancesUiEvent
 
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : BalancesUiEvent

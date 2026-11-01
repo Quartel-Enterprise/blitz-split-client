@@ -40,7 +40,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
 import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
-import com.quare.blitzsplit.android.designsystem.component.HomeTab
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -48,6 +47,7 @@ import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiState
 
