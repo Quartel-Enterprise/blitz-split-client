@@ -6,9 +6,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
-import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -16,7 +15,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -36,12 +37,14 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -59,6 +62,8 @@ class SplitBillViewModel(
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
     observeGroupsByActivity: ObserveGroupsByActivity,
+    observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
@@ -104,19 +109,37 @@ class SplitBillViewModel(
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
+    // Why: one read of the bill's group, shared by the form and by what a change to the bill unsettles.
+    private val group: SharedFlow<Group?> = groupId
+        .flatMapLatest { observeGroup(it) }
+        .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+
+    // Why: the payments a change to the bill unsettles (7.4b), only while editing, since only a saved bill can.
+    private val settledPairs = route.expenseId?.let {
+        SettledPairs(viewModelScope, it, route.groupId, group, observeExpenses, observeSettlements)
+    }
+
+    // Why: what "Apagar esta conta?" says deleting the bill unsettles, read from that one source when it opens.
+    private val deletionSettledPair: SettledPairChange?
+        get() = settledPairs?.deletionPair?.value
+
     /*
      * Why: a sync may bring other members while the bill is being filled in, or remove the whole group. While editing,
-     * it may also bring someone else's edit of the bill, or its deletion.
+     * it may also bring someone else's edit of the bill, or its deletion, or a payment it unsettles.
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        combine(groupId.flatMapLatest { observeGroup(it) }, expenseFlow, ::Pair)
-            .onEach { (group, expense) -> handle(group, expense) }
-            .launchIn(viewModelScope)
-        if (route.expenseId == null) {
+        combine(group, expenseFlow, ::Pair)
+            .onEach { (group, expense) ->
+                handle(group, expense)
+                settledPairs?.refresh(uiState.value)
+            }.launchIn(viewModelScope)
+        if (settledPairs == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
                 .launchIn(viewModelScope)
+        } else {
+            settledPairs.showIn(uiState)
         }
         navigator.backStack
             .onEach {
@@ -133,6 +156,11 @@ class SplitBillViewModel(
     }
 
     fun onEvent(event: SplitBillUiEvent) {
+        handleEvent(event)
+        settledPairs?.refresh(uiState.value)
+    }
+
+    private fun handleEvent(event: SplitBillUiEvent) {
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
@@ -172,7 +200,9 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnSeveralPayersDismissed -> uiState.update { it.copy(payerAmounts = null) }
 
-            SplitBillUiEvent.OnSpentAtOpened -> refreshSpentAtLimit()
+            SplitBillUiEvent.OnSpentAtOpened -> uiState.update {
+                it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone())
+            }
 
             is SplitBillUiEvent.OnSpentAtChanged -> changeSpentAt(event.epochMillis)
 
@@ -257,7 +287,9 @@ class SplitBillViewModel(
                 // Why: like Conta, "Apagar esta conta?" says what deleting it changes as the bill is now.
                 val meId = group.members.firstOrNull { it.isMe }?.id
                 uiState.update { state ->
-                    state.copy(deletion = state.deletion?.let { BillDeletion.of(expense, meId) })
+                    state.copy(
+                        deletion = state.deletion?.let { BillDeletion.of(expense, meId, deletionSettledPair) },
+                    )
                 }
                 show(group)
             }
@@ -320,7 +352,7 @@ class SplitBillViewModel(
                 payerId = payerId,
                 severalPayers = severalPayers,
                 spentAt = expense.spentAt,
-                spentDay = relativeDayOf(expense.spentAt),
+                spentDay = SpentDay.relativeDayOf(expense.spentAt, currentTimeMillis(), currentTimeZone()),
                 split = split,
             )
         }
@@ -396,28 +428,8 @@ class SplitBillViewModel(
         }
     }
 
-    // Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day.
-    private fun refreshSpentAtLimit() {
-        val now = currentTimeMillis()
-        uiState.update {
-            it.copy(
-                spentDay = relativeDayOf(it.spentAt),
-                latestSpentAt = now,
-            )
-        }
-    }
-
-    // Why: a later time today, which the pickers can't rule out, becomes now.
     private fun changeSpentAt(epochMillis: Long) {
-        val now = currentTimeMillis()
-        val spentAt = minOf(epochMillis, now)
-        uiState.update {
-            it.copy(
-                spentAt = spentAt,
-                spentDay = relativeDayOf(spentAt),
-                latestSpentAt = now,
-            )
-        }
+        uiState.update { it.withSpentAt(epochMillis, currentTimeMillis(), currentTimeZone()) }
     }
 
     private fun changeAmount(text: String) {
@@ -494,12 +506,7 @@ class SplitBillViewModel(
         if (state.groupId != groupId.value) return
         val amountMinor = state.amountMinor ?: return
         val shares = state.split.shares ?: return
-        val payers = state.severalPayers?.payers ?: listOf(
-            ExpensePayer(
-                memberId = state.payerId,
-                amountMinor = amountMinor,
-            ),
-        )
+        val payers = state.payersToSave
         uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             val expenseId = route.expenseId
@@ -541,7 +548,7 @@ class SplitBillViewModel(
         val meId = uiState.value.people
             .firstOrNull { it.isMe }
             ?.id
-        uiState.update { it.copy(deletion = BillDeletion.of(expense, meId)) }
+        uiState.update { it.copy(deletion = BillDeletion.of(expense, meId, deletionSettledPair)) }
     }
 
     private fun delete() {
@@ -581,12 +588,6 @@ class SplitBillViewModel(
     // Why: what an amount field keeps of what was typed, the bill's and each of Valores'.
     private fun toAmountText(text: String): String =
         text.filter { it.isDigit() || it in amountSeparators }.take(AMOUNT_MAX_LENGTH)
-
-    private fun relativeDayOf(epochMillis: Long): RelativeDay = SpentDay.relativeDayOf(
-        epochMillis = epochMillis,
-        nowMillis = currentTimeMillis(),
-        timeZone = currentTimeZone(),
-    )
 
     private companion object {
         // Why: "100.000.000,00" with room for the separators someone types.

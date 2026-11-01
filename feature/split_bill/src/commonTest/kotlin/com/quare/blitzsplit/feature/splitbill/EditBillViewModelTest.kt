@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -31,6 +32,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -519,6 +521,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = -10_400L,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
@@ -541,6 +544,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = -10_400L,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
@@ -567,6 +571,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = null,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
@@ -590,6 +595,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Feira",
                     myBalanceMinor = -20_000L,
+                    settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
             )
@@ -713,7 +719,7 @@ class EditBillViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
 
         // Then
-        assertEquals(BillDeletion("Mercado", -10_400L), viewModel.uiState.value.deletion)
+        assertEquals(BillDeletion("Mercado", -10_400L, null), viewModel.uiState.value.deletion)
     }
 
     @Test
@@ -1097,6 +1103,8 @@ class EditBillViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
+            observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = { flowOf(emptyList()) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

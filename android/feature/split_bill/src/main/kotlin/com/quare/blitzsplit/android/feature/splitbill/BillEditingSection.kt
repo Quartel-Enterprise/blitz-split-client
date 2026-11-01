@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,13 +19,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.settledPairSentenceOf
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -85,13 +91,53 @@ internal fun BillConflictBanner(
     }
 }
 
-// Why: under the form while editing: who may change the bill, and "Apagar conta".
+/*
+ * Why: "Elisa já acertou com Bruno depois desta conta. O acerto continua valendo e o saldo é refeito: ...", under the
+ * form while the change being typed unsettles a payment made after the bill (7.4b). TalkBack says it as a pane when it
+ * shows and when the pair or how it ends up changes, not as a live region re-read on every digit of the amount.
+ */
+@Composable
+internal fun SettledPairCard(
+    change: SettledPairChange,
+    money: MoneyFormatter,
+    modifier: Modifier = Modifier,
+) {
+    val sentence = settledPairSentenceOf(change, money)
+    val announcement = remember(change.announcementKey) { sentence }
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { paneTitle = announcement },
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Payments,
+                contentDescription = null,
+            )
+            Text(
+                text = sentence,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+// Why: under the form while editing: what the change unsettles, who may change the bill, and "Apagar conta".
 @Composable
 internal fun BillEditingFooter(
     state: SplitBillUiState,
+    money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        state.settledPair?.let { SettledPairCard(it, money, Modifier.padding(bottom = 8.dp)) }
         if (state.showsAnyoneCanEditHint) {
             Text(
                 text = stringResource(R.string.split_bill_anyone_can_edit),

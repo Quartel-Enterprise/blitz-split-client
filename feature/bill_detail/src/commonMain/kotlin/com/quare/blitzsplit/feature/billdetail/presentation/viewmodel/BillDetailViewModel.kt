@@ -7,11 +7,15 @@ import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -32,10 +36,13 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -48,6 +55,8 @@ class BillDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
+    observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
 ) : ViewModel() {
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
@@ -79,6 +88,18 @@ class BillDetailViewModel(
     private var expense: Expense? = null
     private var myMemberId: String? = null
 
+    // Why: one read of the bill's group, shared by the bill and by what deleting it unsettles.
+    private val group: SharedFlow<Group?> = observeGroup(route.groupId)
+        .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+
+    // Why: the payment deleting the bill would unsettle (7.4b), the one source "Apagar esta conta?" says it from.
+    private val deletionSettledPair: StateFlow<SettledPairChange?> = combine(
+        group,
+        observeExpenses(route.groupId),
+        observeSettlements(route.groupId),
+        ::findDeletionSettledPairOrNull,
+    ).stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     /*
      * Why: the group or the bill went while "Editar conta" covered this screen, which then leaves as soon as it is on
      * top again. A bill that went after it showed says so on Despesas do grupo, unless this device deleted it.
@@ -88,8 +109,11 @@ class BillDetailViewModel(
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
-        combine(observeGroup(route.groupId), observeExpense(route.expenseId), ::Pair)
+        combine(group, observeExpense(route.expenseId), ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }
+            .launchIn(viewModelScope)
+        deletionSettledPair
+            .onEach(::showDeletionSettledPair)
             .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
@@ -133,6 +157,17 @@ class BillDetailViewModel(
         }
     }
 
+    private fun findDeletionSettledPairOrNull(
+        group: Group?,
+        expenses: List<Expense>,
+        settlements: List<Settlement>,
+    ): SettledPairChange? = SettledPairChange.findDeletionOrNull(route.expenseId, group, expenses, settlements)
+
+    private fun showDeletionSettledPair(settledPair: SettledPairChange?) {
+        // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
+        uiState.update { if (it.isDeleting) it else it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
+    }
+
     private fun markGone(isBillGoneAfterShowing: Boolean) {
         isGone = true
         this.isBillGoneAfterShowing = isBillGoneAfterShowing
@@ -162,7 +197,7 @@ class BillDetailViewModel(
                 splitMode = expense.splitMode,
                 people = rowsOf(group, expense),
                 // Why: the dialog says what deleting it changes as the bill is now, after a sync changed it.
-                deletion = state.deletion?.let { BillDeletion.of(expense, me?.id) },
+                deletion = state.deletion?.let { BillDeletion.of(expense, me?.id, deletionSettledPair.value) },
                 isLoaded = true,
             )
         }
@@ -264,7 +299,7 @@ class BillDetailViewModel(
     private fun askToDelete() {
         val expense = expense ?: return
         if (!uiState.value.areActionsEnabled) return
-        uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId)) }
+        uiState.update { it.copy(deletion = BillDeletion.of(expense, myMemberId, deletionSettledPair.value)) }
     }
 
     private fun delete() {

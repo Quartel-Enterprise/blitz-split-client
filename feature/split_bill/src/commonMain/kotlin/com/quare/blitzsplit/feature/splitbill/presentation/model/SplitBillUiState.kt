@@ -2,8 +2,10 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -47,6 +49,8 @@ data class SplitBillUiState(
     val splitEditor: SplitEditor?,
     // Why: someone else saved the bill while it was being edited here.
     val conflict: BillConflict?,
+    // Why: a payment made after the bill whose pair's balance the change being typed moves (7.4b), said before saving.
+    val settledPair: SettledPairChange?,
     // Why: "Apagar esta conta?", open while not null.
     val deletion: BillDeletion?,
     val isOnline: Boolean,
@@ -115,6 +119,15 @@ data class SplitBillUiState(
             return refund.takeIf { it > 0 || (it == 0L && severalPayers == null) }
         }
 
+    // Why: who paid and how much as Salvar saves it: several people, or one paying the whole amount.
+    val payersToSave: List<ExpensePayer>
+        get() = severalPayers?.payers ?: listOf(
+            ExpensePayer(
+                memberId = payerId,
+                amountMinor = amountMinor ?: 0L,
+            ),
+        )
+
     // Why: who paid is settled: one person (or one who left a bill being edited), or several adding up to the total.
     val isPayerValid: Boolean
         get() = severalPayers?.addsUp ?: (payer != null || isPayerFormerMember)
@@ -140,7 +153,7 @@ data class SplitBillUiState(
     val showsOfflineNotice: Boolean
         get() = !isOnline
 
-    // Why: "Qualquer pessoa do grupo pode editar ou apagar." under the form when editing.
+    // Why: "Qualquer pessoa do grupo pode editar ou apagar." under the form when editing, unless a warning says more.
     val showsAnyoneCanEditHint: Boolean
-        get() = isEditing && conflict == null
+        get() = isEditing && conflict == null && settledPair == null
 }

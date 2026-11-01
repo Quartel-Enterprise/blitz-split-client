@@ -42,6 +42,7 @@ internal fun createInitialBillState(
         split = createEmptySplit(currency),
         splitEditor = null,
         conflict = null,
+        settledPair = null,
         deletion = null,
         isOnline = true,
         isSaving = false,

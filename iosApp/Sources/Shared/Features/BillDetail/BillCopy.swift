@@ -93,15 +93,70 @@ enum BillCopy {
     }
 
     /// "“Groceries” leaves the group and everyone's share of it stops counting.", then what it meant for this
-    /// device's user: "You no longer owe R$ 118.00." or "You no longer get back R$ 249.60.".
+    /// device's user: "You no longer owe R$ 118.00." or "You no longer get back R$ 249.60.", then the payment made
+    /// after the bill that deleting it unsettles (7.4b).
     static func deletionMessage(_ deletion: BillDeletion, currency: GroupCurrency) -> String {
         let leaves = String(localized: "“\(deletion.description_)” leaves the group and everyone's share of it stops counting.")
-        guard let mine = deletion.myBalanceMinor?.int64Value, mine != 0 else { return leaves }
-        let amount = currency.format(mine == .min ? .max : abs(mine))
-        let change = mine < 0
-            ? String(localized: "You no longer owe \(amount).")
-            : String(localized: "You no longer get back \(amount).")
-        return "\(leaves) \(change)"
+        var sentences = [leaves]
+        if let mine = deletion.myBalanceMinor?.int64Value, mine != 0 {
+            let amount = currency.format(mine == .min ? .max : abs(mine))
+            sentences.append(
+                mine < 0
+                    ? String(localized: "You no longer owe \(amount).")
+                    : String(localized: "You no longer get back \(amount).")
+            )
+        }
+        if let change = deletion.settledPair {
+            sentences.append(settledPair(change, currency: currency))
+        }
+        return sentences.joined(separator: " ")
+    }
+
+    /// "Elisa already settled up with Bruno after this bill. The payment still counts …", in one go.
+    static func settledPair(_ change: SettledPairChange, currency: GroupCurrency) -> String {
+        "\(settledPairLead(change)). \(settledPairDetail(change, currency: currency))"
+    }
+
+    /// "Elisa already settled up with Bruno after this bill", "You already settled up with Bruno …" or "Elisa already
+    /// settled up with you …": a payment made after the bill that editing or deleting it unsettles (7.4b).
+    static func settledPairLead(_ change: SettledPairChange) -> String {
+        let payer = change.payerName ?? formerMember
+        let receiver = change.receiverName ?? formerMember
+        if change.payerIsMe { return String(localized: "You already settled up with \(receiver) after this bill") }
+        if change.receiverIsMe { return String(localized: "\(payer) already settled up with you after this bill") }
+        return String(localized: "\(payer) already settled up with \(receiver) after this bill")
+    }
+
+    /// "The payment still counts and the balance is worked out again: with the change, Elisa owes Bruno R$ 20.00
+    /// again.", "… Bruno now owes Elisa R$ 98.00.", "… Elisa is left owing R$ 30.00 to Bruno." (a remaining debt that
+    /// shrinks) or "… Elisa and Bruno are settled up.".
+    static func settledPairDetail(_ change: SettledPairChange, currency: GroupCurrency) -> String {
+        let outcome = settledPairOutcome(change, currency: currency)
+        return String(localized: "The payment still counts and the balance is worked out again: \(outcome)")
+    }
+
+    private static func settledPairOutcome(_ change: SettledPairChange, currency: GroupCurrency) -> String {
+        let debtor = change.debtorName ?? formerMember
+        let creditor = change.creditorName ?? formerMember
+        let amount = currency.format(change.amountMinor)
+        switch change.outcome {
+        case .owesAgain:
+            if change.debtorIsMe { return String(localized: "with the change, you owe \(creditor) \(amount) again.") }
+            if change.creditorIsMe { return String(localized: "with the change, \(debtor) owes you \(amount) again.") }
+            return String(localized: "with the change, \(debtor) owes \(creditor) \(amount) again.")
+        case .owes:
+            if change.debtorIsMe { return String(localized: "with the change, you now owe \(creditor) \(amount).") }
+            if change.creditorIsMe { return String(localized: "with the change, \(debtor) now owes you \(amount).") }
+            return String(localized: "with the change, \(debtor) now owes \(creditor) \(amount).")
+        case .owesLess:
+            if change.debtorIsMe { return String(localized: "with the change, you are left owing \(amount) to \(creditor).") }
+            if change.creditorIsMe { return String(localized: "with the change, \(debtor) is left owing you \(amount).") }
+            return String(localized: "with the change, \(debtor) is left owing \(amount) to \(creditor).")
+        default:
+            if change.debtorIsMe { return String(localized: "with the change, you and \(creditor) are settled up.") }
+            if change.creditorIsMe { return String(localized: "with the change, you and \(debtor) are settled up.") }
+            return String(localized: "with the change, \(debtor) and \(creditor) are settled up.")
+        }
     }
 
     /// "Ana changed this bill 2 minutes ago. The last saved edit wins: …", "You changed this bill on another device

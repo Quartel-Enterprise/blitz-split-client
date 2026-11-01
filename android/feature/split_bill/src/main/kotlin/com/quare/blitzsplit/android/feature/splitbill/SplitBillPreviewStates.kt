@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -86,6 +87,7 @@ internal fun createPreviewBillState(
     splitEditor: SplitEditor? = null,
     isEditing: Boolean = false,
     conflict: BillConflict? = null,
+    settledPair: SettledPairChange? = null,
     groupSelection: GroupSelection? = null,
 ): SplitBillUiState = SplitBillUiState(
     isEditing = isEditing,
@@ -114,6 +116,7 @@ internal fun createPreviewBillState(
     ),
     splitEditor = splitEditor,
     conflict = conflict,
+    settledPair = settledPair,
     deletion = null,
     isOnline = isOnline,
     isSaving = false,
