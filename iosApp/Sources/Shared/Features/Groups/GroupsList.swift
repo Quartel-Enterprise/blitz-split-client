@@ -6,10 +6,17 @@ import SwiftUI
 /// The home's list on iPhone and iPad: the sync status while it asks for attention, "Overall balance", the open
 /// groups by their latest activity, as rows or as the grid's cards, and, collapsed, the settled ones, always rows.
 /// Pulling down syncs. A row opens the group; its ⋯ menu and its long press hold the group's actions. The search
-/// is its own tab (GroupsSearchView).
+/// is its own tab (GroupsSearchView). An iPhone lying down (5.1) keeps the sync status and "Overall balance" still in a
+/// 300 pt column on the left, the list scrolling on the right.
 struct GroupsList: View {
     let model: GroupsModel
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+    @State private var layout = ScreenLayout()
+
+    /// Lying down short of an iPad's room, the list alone: an iPhone lying down (an iPad's list column is upright).
+    private var usesSideColumn: Bool {
+        layout.usesTwoColumns && !layout.isLarge && !showsGroupBesideList
+    }
 
     /// The group open beside the list on an iPad lying down, whose row or card is highlighted.
     private var selectedGroupId: String? {
@@ -17,19 +24,51 @@ struct GroupsList: View {
     }
 
     var body: some View {
+        // The list keeps its place whether the column shows, so turning the iPhone keeps its scroll
+        HStack(alignment: .top, spacing: usesSideColumn ? 28 : 0) {
+            if usesSideColumn {
+                sideColumn
+                    .frame(width: 300)
+            }
+            list(showsSummary: !usesSideColumn)
+        }
+        .measuringScreenLayout($layout)
+    }
+
+    /// The sync status while it asks for attention and "Overall balance", which stay still lying down.
+    private var sideColumn: some View {
         let state = model.state
-        List {
-            if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
-                Section {
+        return ScrollView {
+            VStack(alignment: .leading, spacing: 8) {
+                if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
                     SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
                         model.send(GroupsUiEventOnRetrySyncClicked.shared)
                     }
                 }
+                GroupsSummaryCard(summary: state.summary, isStacked: true, send: { model.send($0) })
             }
-            Section {
-                GroupsSummaryCard(summary: state.summary, send: { model.send($0) })
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
+            .padding(.leading, 20)
+            .padding(.vertical, 12)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+    }
+
+    private func list(showsSummary: Bool) -> some View {
+        let state = model.state
+        return List {
+            if showsSummary {
+                if let status = GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount) {
+                    Section {
+                        SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
+                            model.send(GroupsUiEventOnRetrySyncClicked.shared)
+                        }
+                    }
+                }
+                Section {
+                    GroupsSummaryCard(summary: state.summary, isStacked: false, send: { model.send($0) })
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                }
             }
             Section {
                 // Every group is settled up: the section says so rather than standing empty
@@ -141,54 +180,77 @@ private struct SyncStatusRow: View {
 }
 
 /// "Overall balance": the sum of your net in each group, one line per currency. "To get back" and "To pay" will
-/// open the global Balances already filtered, and stay disabled while there is nothing in them.
+/// open the global Balances already filtered, and stay disabled while there is nothing in them. In an iPhone lying
+/// down's column the buttons go side by side under the amount, as the canvas draws it.
 private struct GroupsSummaryCard: View {
     let summary: GroupsSummary
+    let isStacked: Bool
     let send: (any GroupsUiEvent) -> Void
 
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Overall balance")
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.secondary)
-                ForEach(GroupsCopy.amounts(summary.totals) { $0.netMinor }, id: \.self) { amount in
-                    Text(verbatim: amount)
-                        .font(summary.totals.count > 1 ? .title2.bold() : .largeTitle.bold())
-                        .monospacedDigit()
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
+        Group {
+            if isStacked {
+                VStack(alignment: .leading, spacing: 10) {
+                    amount
+                    HStack(spacing: 10) {
+                        buttons
+                    }
                 }
-                Text(verbatim: GroupsCopy.summaryHint(summary.kind))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                .padding(16)
+            } else {
+                HStack(alignment: .center, spacing: 12) {
+                    amount
+                    Spacer(minLength: 0)
+                    VStack(spacing: 6) {
+                        buttons
+                    }
+                    .fixedSize(horizontal: true, vertical: false)
+                }
+                .padding(20)
             }
-            .accessibilityElement(children: .combine)
-            Spacer(minLength: 0)
-            VStack(spacing: 6) {
-                SummaryButton(
-                    label: "To get back",
-                    amounts: GroupsCopy.amounts(summary.totals) { $0.toReceiveMinor },
-                    color: Palette.accent,
-                    isEnabled: summary.canOpenToReceive,
-                    hint: "See who owes you",
-                ) {
-                    send(GroupsUiEventOnToReceiveClicked.shared)
-                }
-                SummaryButton(
-                    label: "To pay",
-                    amounts: GroupsCopy.amounts(summary.totals) { -$0.toPayMinor },
-                    color: Palette.negative,
-                    isEnabled: summary.canOpenToPay,
-                    hint: "See whom you owe",
-                ) {
-                    send(GroupsUiEventOnToPayClicked.shared)
-                }
-            }
-            .fixedSize(horizontal: true, vertical: false)
         }
-        .padding(20)
-        .background(Palette.card, in: .rect(cornerRadius: 28))
+        .background(Palette.card, in: .rect(cornerRadius: isStacked ? 26 : 28))
+    }
+
+    private var amount: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Overall balance")
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.secondary)
+            ForEach(GroupsCopy.amounts(summary.totals) { $0.netMinor }, id: \.self) { amount in
+                Text(verbatim: amount)
+                    .font(summary.totals.count > 1 ? .title2.bold() : isStacked ? .title.bold() : .largeTitle.bold())
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            Text(verbatim: GroupsCopy.summaryHint(summary.kind))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var buttons: some View {
+        SummaryButton(
+            label: "To get back",
+            amounts: GroupsCopy.amounts(summary.totals) { $0.toReceiveMinor },
+            color: Palette.accent,
+            isEnabled: summary.canOpenToReceive,
+            hint: "See who owes you",
+        ) {
+            send(GroupsUiEventOnToReceiveClicked.shared)
+        }
+        SummaryButton(
+            label: "To pay",
+            amounts: GroupsCopy.amounts(summary.totals) { -$0.toPayMinor },
+            color: Palette.negative,
+            isEnabled: summary.canOpenToPay,
+            hint: "See whom you owe",
+        ) {
+            send(GroupsUiEventOnToPayClicked.shared)
+        }
     }
 }
 
