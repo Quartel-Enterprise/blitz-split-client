@@ -48,19 +48,25 @@ struct SettingsView: View {
     /// sidebar click, the main window moving the back stack) never makes another.
     @State private var model: ProfileModel?
     @State private var pane: ProfileSettingsPane? = .profile
+    /// Bumped on every pick in the sidebar, the section already picked included, so the form scrolls back to it.
+    @State private var scrollRequest = 0
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var body: some View {
         Group {
             if app.hasProfile, let model {
                 NavigationSplitView(columnVisibility: $columnVisibility) {
-                    List(ProfileSettingsPane.allCases, selection: $pane) { pane in
+                    List(ProfileSettingsPane.allCases, selection: selection) { pane in
                         Label(pane.title, systemImage: pane.symbol)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(.rect)
+                            // A click on the section already picked changes no selection, yet scrolls back to it
+                            .simultaneousGesture(TapGesture().onEnded { pick(pane) })
                             .tag(pane)
                     }
                     .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
                 } detail: {
-                    ProfileView(model: model, pane: pane)
+                    ProfileView(model: model, pane: pane, scrollRequest: scrollRequest)
                 }
                 .onGeometryChange(for: Bool.self, of: { $0.size.width < 700 }) { isNarrow in
                     columnVisibility = isNarrow ? .detailOnly : .all
@@ -90,6 +96,22 @@ struct SettingsView: View {
                 dismiss()
             }
         }
+    }
+
+    /// The sidebar's selection, moved by a click or the arrow keys.
+    private var selection: Binding<ProfileSettingsPane?> {
+        Binding(
+            get: { pane },
+            set: { newPane in
+                guard newPane != pane, let newPane else { return }
+                pick(newPane)
+            },
+        )
+    }
+
+    private func pick(_ newPane: ProfileSettingsPane) {
+        pane = newPane
+        scrollRequest += 1
     }
 }
 #endif

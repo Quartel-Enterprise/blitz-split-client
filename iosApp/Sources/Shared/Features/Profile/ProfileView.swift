@@ -81,13 +81,16 @@ struct ProfileView: View {
     let model: ProfileModel
     /// The section Ajustes' sidebar picked, which the form scrolls to.
     var pane: ProfileSettingsPane?
+    /// Bumped on every click in Ajustes' sidebar, the section already picked included, so the form scrolls back to it.
+    var scrollRequest: Int
     /// Made once the settings appear, as the other screens make theirs: SwiftUI rebuilds this view's value
     /// whenever its parent redraws.
     @State private var notificationModel: NotificationSettingsModel?
 
-    init(model: ProfileModel, pane: ProfileSettingsPane?) {
+    init(model: ProfileModel, pane: ProfileSettingsPane?, scrollRequest: Int) {
         self.model = model
         self.pane = pane
+        self.scrollRequest = scrollRequest
     }
     #else
     @State private var model = ProfileModel()
@@ -146,7 +149,7 @@ struct ProfileView: View {
                 }
             }
             .formStyle(.grouped)
-            .onChange(of: pane) { _, pane in
+            .onChange(of: scrollRequest) {
                 guard let pane else { return }
                 withAnimation { proxy.scrollTo(pane, anchor: .top) }
             }
