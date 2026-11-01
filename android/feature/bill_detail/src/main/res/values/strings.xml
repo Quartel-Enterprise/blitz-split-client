@@ -34,6 +34,10 @@
         <item quantity="one">Split equally among %d</item>
         <item quantity="other">Split equally among %d</item>
     </plurals>
+    <plurals name="bill_detail_mode_items">
+        <item quantity="one">By items among %d</item>
+        <item quantity="other">By items among %d</item>
+    </plurals>
     <plurals name="bill_detail_mode_amount">
         <item quantity="one">By amount among %d</item>
         <item quantity="other">By amount among %d</item>

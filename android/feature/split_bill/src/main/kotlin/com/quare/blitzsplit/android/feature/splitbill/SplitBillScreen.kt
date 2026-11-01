@@ -22,6 +22,11 @@ import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillVi
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val PAGE_BILL = 0
+private const val PAGE_SPLIT = 1
+private const val PAGE_ITEMS = 2
+private const val PAGE_ITEM = 3
+
 @Composable
 fun SplitBillScreen(
     route: Route.SplitBill,
@@ -39,16 +44,44 @@ fun SplitBillScreen(
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
     BackHandler {
         viewModel.onEvent(
-            if (state.splitEditor == null) SplitBillUiEvent.OnCloseClicked else SplitBillUiEvent.OnSplitDismissed,
+            when {
+                state.itemEditor != null -> SplitBillUiEvent.OnItemDismissed
+                state.itemsEditor != null -> SplitBillUiEvent.OnItemsDismissed
+                state.splitEditor != null -> SplitBillUiEvent.OnSplitDismissed
+                else -> SplitBillUiEvent.OnCloseClicked
+            },
         )
     }
+    // Why: Dividir over the bill, "Itens da conta" in Dividir's place and "Item" over it, each kept while it fades out.
     AnimatedContent(
-        targetState = state.splitEditor,
+        targetState = Triple(state.splitEditor, state.itemsEditor, state.itemEditor),
         transitionSpec = { fadeIn() togetherWith fadeOut() },
-        contentKey = { it != null },
+        contentKey = { (split, items, item) ->
+            when {
+                item != null -> PAGE_ITEM
+                items != null -> PAGE_ITEMS
+                split != null -> PAGE_SPLIT
+                else -> PAGE_BILL
+            }
+        },
         label = "split-editor",
-    ) { editor ->
-        if (editor == null) {
+    ) { (editor, items, item) ->
+        if (item != null) {
+            ItemEditorContent(
+                editor = item,
+                isDialog = isDialog,
+                snackbarHostState = snackbarHostState,
+                onEvent = viewModel::onEvent,
+            )
+        } else if (items != null) {
+            ItemsEditorContent(
+                state = state,
+                items = items,
+                isDialog = isDialog,
+                snackbarHostState = snackbarHostState,
+                onEvent = viewModel::onEvent,
+            )
+        } else if (editor == null) {
             SplitBillContent(
                 state = state,
                 isDialog = isDialog,
@@ -87,6 +120,20 @@ fun SplitBillScreen(
     state.payerAmounts?.let { amounts ->
         SeveralPayersSheet(
             amounts = amounts,
+            money = rememberMoneyFormatter(state.currency),
+            onEvent = viewModel::onEvent,
+        )
+    }
+    state.itemDeletion?.let { deletion ->
+        DeleteItemDialog(
+            deletion = deletion,
+            money = rememberMoneyFormatter(state.currency),
+            onEvent = viewModel::onEvent,
+        )
+    }
+    state.feeEditor?.let { editor ->
+        FeeDialog(
+            editor = editor,
             money = rememberMoneyFormatter(state.currency),
             onEvent = viewModel::onEvent,
         )

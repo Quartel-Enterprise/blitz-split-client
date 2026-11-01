@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -21,9 +22,10 @@ class CreateExpenseUseCase(
         payers: List<ExpensePayer>,
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
+        items: BillItems?,
         spentAt: Long,
     ): Result<String> {
-        if (!ExpenseRules.isSplitValid(amountMinor, splitMode, payers, shares)) {
+        if (!ExpenseRules.isSplitValid(amountMinor, splitMode, payers, shares, items)) {
             return Result.failure(IllegalArgumentException("The payers or the shares don't add up to the total"))
         }
         val id = Uuid.random().toString()
@@ -38,6 +40,7 @@ class CreateExpenseUseCase(
                     payers = payers,
                     splitMode = splitMode,
                     shares = shares,
+                    items = items,
                     spentAt = spentAt,
                     now = now,
                 ),

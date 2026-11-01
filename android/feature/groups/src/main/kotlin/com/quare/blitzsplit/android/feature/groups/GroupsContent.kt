@@ -176,6 +176,7 @@ fun GroupsContent(
                             state = state,
                             onEvent = onEvent,
                             layout = layout,
+                            isInBookHalf = listDetail?.isBook == true,
                         )
                     } else {
                         GroupsListPane(
@@ -331,6 +332,7 @@ private fun EmptyGroupsPane(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
+    isInBookHalf: Boolean,
 ) {
     /*
      * Why: always scrollable, so a pull feeds PullToRefreshBox's nested scroll on every layout and before the groups
@@ -341,6 +343,7 @@ private fun EmptyGroupsPane(
             state = state,
             onEvent = onEvent,
             layout = layout,
+            isInBookHalf = isInBookHalf,
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -354,11 +357,12 @@ private fun EmptyGroupsColumn(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
+    isInBookHalf: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.padding(
-            horizontal = horizontalPaddingOf(layout),
+            horizontal = if (isInBookHalf) 16.dp else horizontalPaddingOf(layout),
             vertical = 4.dp,
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -381,6 +385,7 @@ private fun EmptyGroupsColumn(
                     isHorizontal = false,
                     isLarge = true,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    isInBookHalf = isInBookHalf,
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }

@@ -3491,6 +3491,7 @@ class MembersViewModelTest {
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer(paidBy, amountMinor)),
         shares = splitWith.map { ExpenseShare(it, amountMinor / splitWith.size, weight = 1) },
+        items = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,

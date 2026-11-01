@@ -39,9 +39,10 @@ class JsSplitRow(
 /*
  * Why: a SplitFact, flat. kind is "each", "nobody", "nobody-checked", "nobody-has-parts", "among", "out",
  * "amount-left", "amount-over", "amount-adds-up", "parts-match-total", "amount-so-far", "without-value",
- * "percent-left", "percent-over", "percent-adds-up", "parts", "person-parts" or "group-default", and only that fact's fields are set:
+ * "percent-left", "percent-over", "percent-adds-up", "parts", "person-parts", "group-default", "items" or "loose-items",
+ * and only that fact's fields are set:
  * amountMinor is also the assigned amount of "amount-so-far" and the part's value of "parts", count the people of
- * "among" and the parts of "parts" and "person-parts".
+ * "among", the parts of "parts" and "person-parts" and the items of "items" and "loose-items".
  */
 class JsSplitFact(
     val kind: String,
@@ -55,7 +56,7 @@ class JsSplitFact(
 
 // Why: amounts in the currency's minor unit, as numbers JavaScript reads exactly.
 class JsSplitEditor(
-    // Why: the SplitMode's code: "equal", "amount", "percent" or "shares".
+    // Why: the SplitMode's code: "equal", "amount", "percent", "shares" or "items".
     val mode: String,
     val rows: Array<JsSplitRow>,
     val totalMinor: Double,
@@ -158,6 +159,11 @@ class JsSplitBillState(
     val latestSpentAt: Double,
     val split: JsSplitEditor,
     val splitEditor: JsSplitEditor?,
+    // Why: "Itens da conta" in Dividir's place, "Item" over it, and their questions; null while closed.
+    val itemsEditor: JsItemsEditor?,
+    val itemEditor: JsItemEditor?,
+    val itemDeletion: JsItemDeletion?,
+    val feeEditor: JsFeeEditor?,
     // Why: what "Divisão" says under its title, "Padrão do grupo" first while it follows the group's default.
     val splitSummary: Array<JsSplitFact>,
     val defaultSplit: JsBillDefaultSplit?,
@@ -186,6 +192,9 @@ class SplitBillPresenter(
         KoinPlatform.getKoin().get { parametersOf(billRoute) }
     }
     private val viewModel get() = holder.viewModel
+
+    // Why: "Itens da conta" and "Item", on this same ViewModel.
+    val items: SplitItemsPresenter = SplitItemsPresenter { holder.viewModel }
 
     fun observeState(onChange: (JsSplitBillState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
@@ -229,6 +238,10 @@ class SplitBillPresenter(
                 latestSpentAt = state.latestSpentAt.toDouble(),
                 split = toJsSplitEditor(state.split),
                 splitEditor = state.splitEditor?.let(::toJsSplitEditor),
+                itemsEditor = state.itemsEditor?.let(::toJsItemsEditor),
+                itemEditor = state.itemEditor?.let(::toJsItemEditor),
+                itemDeletion = state.itemDeletion?.let(::toJsItemDeletion),
+                feeEditor = state.feeEditor?.let(::toJsFeeEditor),
                 splitSummary = state.splitSummary.map(::toJsSplitFact).toTypedArray(),
                 defaultSplit = state.defaultSplit?.let { default ->
                     JsBillDefaultSplit(
@@ -432,7 +445,7 @@ class SplitBillPresenter(
     }
 }
 
-private fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
+internal fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     id = person.id,
     name = person.name,
     initials = person.initials,
@@ -506,6 +519,8 @@ private fun toJsSplitFact(fact: SplitFact): JsSplitFact {
         is SplitFact.Parts -> "parts"
         is SplitFact.PersonParts -> "person-parts"
         SplitFact.GroupDefault -> "group-default"
+        is SplitFact.Items -> "items"
+        is SplitFact.LooseItems -> "loose-items"
     }
     val amountMinor = when (fact) {
         is SplitFact.Each -> fact.amountMinor
@@ -527,6 +542,8 @@ private fun toJsSplitFact(fact: SplitFact): JsSplitFact {
         is SplitFact.Among -> fact.count.toLong()
         is SplitFact.Parts -> fact.count
         is SplitFact.PersonParts -> fact.parts
+        is SplitFact.Items -> fact.count.toLong()
+        is SplitFact.LooseItems -> fact.count.toLong()
         else -> null
     }
     val percent = when (fact) {

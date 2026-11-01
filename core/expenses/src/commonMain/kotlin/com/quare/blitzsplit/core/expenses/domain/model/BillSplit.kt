@@ -27,7 +27,8 @@ object BillSplit {
                 payerIds = payerIds,
             )
 
-            SplitMode.AMOUNT ->
+            // Why: "Itens" hands each one's total over the items, which adds up as "Valores" does.
+            SplitMode.AMOUNT, SplitMode.ITEMS ->
                 included
                     .takeIf { amounts -> amounts.sumOf { it.value } == totalMinor }
                     ?.map {

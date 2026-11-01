@@ -108,6 +108,7 @@ class ObserveExpenseUseCaseTest {
                 weight = 1L,
             ),
         ),
+        items = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 2_000L,

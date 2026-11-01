@@ -1243,6 +1243,28 @@
         }
       }
     },
+    "No group open" : {
+      "comment" : "The column beside the empty home on an iPhone Duo open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum grupo aberto"
+          }
+        }
+      }
+    },
+    "Once you create or join a group, its expenses and balances show on this side of the fold." : {
+      "comment" : "The column beside the empty home on an iPhone Duo open, across the fold from the list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando você criar ou entrar num grupo, as despesas e os saldos aparecem deste lado da dobra."
+          }
+        }
+      }
+    },
     "all %lld members" : {
       "comment" : "Who a deleted group is gone for, in “gone for all 5 members”",
       "localizations" : {
@@ -11097,6 +11119,941 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Já entram na divisão"
+          }
+        }
+      }
+    },
+    "Units" : {
+      "comment" : "Item split mode: by units",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unidades"
+          }
+        }
+      }
+    },
+    "1 item with nobody" : {
+      "comment" : "Bill items: one item nobody is checked in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 item sem ninguém"
+          }
+        }
+      }
+    },
+    "%lld items with nobody" : {
+      "comment" : "Bill items: items nobody is checked in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld itens sem ninguém"
+          }
+        }
+      }
+    },
+    "Tap each item and check who had it. Done unlocks once every item has someone." : {
+      "comment" : "Bill items: no item has anyone yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque em cada item e marque quem consumiu. Pronto libera quando todos tiverem dono."
+          }
+        }
+      }
+    },
+    "%@ has nobody yet: %@ out of the split." : {
+      "comment" : "Bill items: the item nobody has, and its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ainda não tem dono: %2$@ fora da divisão."
+          }
+        }
+      }
+    },
+    "%@ have nobody yet: %@ out of the split." : {
+      "comment" : "Bill items: the items nobody has, and their amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ainda não têm dono: %2$@ fora da divisão."
+          }
+        }
+      }
+    },
+    "%@ in items, %@ of service and %@ of cover." : {
+      "comment" : "Bill items: what closes with the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ em itens, %2$@ de serviço e %3$@ de couvert."
+          }
+        }
+      }
+    },
+    "%@ in items, %@ of service, %@ of cover and %@ of difference." : {
+      "comment" : "Bill items: what closes with the total, a difference shared included",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ em itens, %2$@ de serviço, %3$@ de couvert e %4$@ de diferença."
+          }
+        }
+      }
+    },
+    "Items, service and cover add up to %@, but the receipt says %@." : {
+      "comment" : "Bill items read from a receipt that don't close",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Itens, serviço e couvert somam %1$@, mas o cupom diz %2$@."
+          }
+        }
+      }
+    },
+    "Items, service and cover add up to %@, but the total is %@." : {
+      "comment" : "Bill items that don't close with the total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Itens, serviço e couvert somam %1$@, mas o total é %2$@."
+          }
+        }
+      }
+    },
+    "Nobody yet" : {
+      "comment" : "An item nobody is checked in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem ninguém"
+          }
+        }
+      }
+    },
+    "By unit" : {
+      "comment" : "An item split by units",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por unidade"
+          }
+        }
+      }
+    },
+    "Equal among %lld" : {
+      "comment" : "An item split equally",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual entre %lld"
+          }
+        }
+      }
+    },
+    "%@ in items + %@ of service and cover" : {
+      "comment" : "What each one pays of the bill items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ em itens + %2$@ de serviço e couvert"
+          }
+        }
+      }
+    },
+    "Only the cover, for now" : {
+      "comment" : "Someone who has no item yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só o couvert, por enquanto"
+          }
+        }
+      }
+    },
+    "Nothing yet" : {
+      "comment" : "Someone with no item and no cover",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada por enquanto"
+          }
+        }
+      }
+    },
+    "Service (%@)" : {
+      "comment" : "The service row with its percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço (%@)"
+          }
+        }
+      }
+    },
+    "%@ per person · the same for everyone" : {
+      "comment" : "The cover row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ por pessoa · igual para todos"
+          }
+        }
+      }
+    },
+    "1 of 1 unit" : {
+      "comment" : "An item by units that adds up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 de 1 unidade"
+          }
+        }
+      }
+    },
+    "%lld of %lld units" : {
+      "comment" : "An item by units that adds up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld unidades"
+          }
+        }
+      }
+    },
+    "Each unit costs %@." : {
+      "comment" : "An item by units",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada unidade custa %@."
+          }
+        }
+      }
+    },
+    "1 unit left" : {
+      "comment" : "An item by units missing one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta 1 unidade"
+          }
+        }
+      }
+    },
+    "%lld units left" : {
+      "comment" : "An item by units missing some",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faltam %lld unidades"
+          }
+        }
+      }
+    },
+    "%lld of %lld checked. Say who had the other one." : {
+      "comment" : "An item by units missing one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld marcadas. Diga quem ficou com a outra."
+          }
+        }
+      }
+    },
+    "%lld of %lld checked. Say who had the others." : {
+      "comment" : "An item by units missing some",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld marcadas. Diga quem ficou com as outras."
+          }
+        }
+      }
+    },
+    "%lld of %lld checked." : {
+      "comment" : "An item by units with too many",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld marcadas."
+          }
+        }
+      }
+    },
+    "1 unit over" : {
+      "comment" : "An item by units with one too many",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passou 1 unidade"
+          }
+        }
+      }
+    },
+    "%lld units over" : {
+      "comment" : "An item by units with too many",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passou %lld unidades"
+          }
+        }
+      }
+    },
+    "You had %lld shares." : {
+      "comment" : "An item by shares: this device's user had more than one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você ficou com %lld partes."
+          }
+        }
+      }
+    },
+    "%@ had %lld shares." : {
+      "comment" : "An item by shares: someone had more than one",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ficou com %2$lld partes."
+          }
+        }
+      }
+    },
+    "The parts add up to the item." : {
+      "comment" : "An item by amount that adds up",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A soma das partes é igual ao item."
+          }
+        }
+      }
+    },
+    "How many each one had" : {
+      "comment" : "Above the people of an item by units",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quantas cada um consumiu"
+          }
+        }
+      }
+    },
+    "Who shared it" : {
+      "comment" : "Above the people of an item split equally",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem dividiu"
+          }
+        }
+      }
+    },
+    "Units only shows when the item has more than one." : {
+      "comment" : "Hint of an item by units",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unidades só aparece quando o item tem mais de uma."
+          }
+        }
+      }
+    },
+    "Use shares when someone eats more of the same dish." : {
+      "comment" : "Hint of an item by shares",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use partes quando alguém come mais do mesmo prato."
+          }
+        }
+      }
+    },
+    "Whoever is left at %@ is out of the item." : {
+      "comment" : "Hint of an item by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem fica com %@ sai do item."
+          }
+        }
+      }
+    },
+    "Whole numbers only." : {
+      "comment" : "Hint of an item by percentage",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só números inteiros."
+          }
+        }
+      }
+    },
+    "The cents left over go to whoever paid." : {
+      "comment" : "Hint of an item split equally",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os centavos que sobram ficam com quem pagou."
+          }
+        }
+      }
+    },
+    "“%@” (%@) leaves the bill and the service is redone." : {
+      "comment" : "Delete this item?: the item and its total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@” (%2$@) sai da conta e o serviço é refeito."
+          }
+        }
+      }
+    },
+    "“%@” (%@) leaves the bill." : {
+      "comment" : "Delete this item?: the item and its total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@” (%2$@) sai da conta."
+          }
+        }
+      }
+    },
+    "The items no longer add up to the total: %@ is left to split." : {
+      "comment" : "Delete this item?: what is left once it goes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os itens deixam de fechar com o total: falta dividir %@."
+          }
+        }
+      }
+    },
+    "Service" : {
+      "comment" : "The service of the bill items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço"
+          }
+        }
+      }
+    },
+    "Cover" : {
+      "comment" : "The cover charge of the bill items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couvert"
+          }
+        }
+      }
+    },
+    "Service percentage" : {
+      "comment" : "Field of the service",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porcentagem do serviço"
+          }
+        }
+      }
+    },
+    "Cover per person" : {
+      "comment" : "Field of the cover charge",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couvert por pessoa"
+          }
+        }
+      }
+    },
+    "0 for a bill without service." : {
+      "comment" : "Under the service's field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 para uma conta sem serviço."
+          }
+        }
+      }
+    },
+    "The same for everyone at the table. 0 for none." : {
+      "comment" : "Under the cover's field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual para todos da mesa. 0 para nenhum."
+          }
+        }
+      }
+    },
+    "Nobody checked" : {
+      "comment" : "An item nobody is checked in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém marcado"
+          }
+        }
+      }
+    },
+    "Check who had this item. Done unlocks once it has someone." : {
+      "comment" : "An item nobody is checked in",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marque quem consumiu este item. Pronto libera quando ele tiver dono."
+          }
+        }
+      }
+    },
+    "Add an item of %@" : {
+      "comment" : "Bill items: add an item priced at what is missing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar item de %@"
+          }
+        }
+      }
+    },
+    "Split the difference" : {
+      "comment" : "Bill items: share what is missing as each one consumed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dividir a diferença"
+          }
+        }
+      }
+    },
+    "No internet: you can still check everything. The bill stays saved on this Mac and syncs when you reconnect." : {
+      "comment" : "Bill items offline on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: dá para marcar tudo. A conta fica salva neste Mac e sincroniza ao reconectar."
+          }
+        }
+      }
+    },
+    "No internet: you can still check everything. The bill stays saved on this iPhone and syncs when you reconnect." : {
+      "comment" : "Bill items offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: dá para marcar tudo. A conta fica salva neste iPhone e sincroniza ao reconectar."
+          }
+        }
+      }
+    },
+    "In proportion to what each one had" : {
+      "comment" : "The service and the difference shared",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proporcional ao que cada um consumiu"
+          }
+        }
+      }
+    },
+    "Difference" : {
+      "comment" : "The difference shared in proportion to what each one had",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diferença"
+          }
+        }
+      }
+    },
+    "Remove the difference" : {
+      "comment" : "Takes the difference shared off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tirar a diferença"
+          }
+        }
+      }
+    },
+    "How to split the item" : {
+      "comment" : "The modes of an item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Como dividir o item"
+          }
+        }
+      }
+    },
+    "%@ had it" : {
+      "comment" : "A person checked in an item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ consumiu"
+          }
+        }
+      }
+    },
+    "Amount of %@" : {
+      "comment" : "A person's field of an item by amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valor de %@"
+          }
+        }
+      }
+    },
+    "Units of %@" : {
+      "comment" : "A person's units of an item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unidades de %@"
+          }
+        }
+      }
+    },
+    "Delete this item?" : {
+      "comment" : "Asks before deleting an item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar este item?"
+          }
+        }
+      }
+    },
+    "Delete (the item)" : {
+      "comment" : "Deletes the item, in Delete this item?",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar"
+          }
+        }
+      }
+    },
+    "Bill items" : {
+      "comment" : "Title of the bill's items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Itens da conta"
+          }
+        }
+      }
+    },
+    "What each one pays" : {
+      "comment" : "Each one's total of the bill items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quanto fica para cada um"
+          }
+        }
+      }
+    },
+    "Items · %lld" : {
+      "comment" : "Above the list of the bill's items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Itens · %lld"
+          }
+        }
+      }
+    },
+    "Add item" : {
+      "comment" : "Adds an item to the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar item"
+          }
+        }
+      }
+    },
+    "Service and cover" : {
+      "comment" : "Above the service and the cover",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serviço e couvert"
+          }
+        }
+      }
+    },
+    "Item" : {
+      "comment" : "Title and name field of an item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item"
+          }
+        }
+      }
+    },
+    "Delete item" : {
+      "comment" : "Deletes the item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar item"
+          }
+        }
+      }
+    },
+    "Quantity" : {
+      "comment" : "How many of the item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quantidade"
+          }
+        }
+      }
+    },
+    "Price of each" : {
+      "comment" : "The price of one of the item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preço de cada"
+          }
+        }
+      }
+    },
+    "Item total" : {
+      "comment" : "Quantity times the price of each",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total do item"
+          }
+        }
+      }
+    },
+    "Bill Items" : {
+      "comment" : "Title of the bill's items on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Itens da Conta"
+          }
+        }
+      }
+    },
+    "What Each One Pays" : {
+      "comment" : "Each one's total of the bill items on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quanto Fica para Cada Um"
+          }
+        }
+      }
+    },
+    "Item:" : {
+      "comment" : "Mac form label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item:"
+          }
+        }
+      }
+    },
+    "Quantity:" : {
+      "comment" : "Mac form label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quantidade:"
+          }
+        }
+      }
+    },
+    "Price of each:" : {
+      "comment" : "Mac form label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preço de cada:"
+          }
+        }
+      }
+    },
+    "Total:" : {
+      "comment" : "Mac form label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total:"
+          }
+        }
+      }
+    },
+    "Delete Item…" : {
+      "comment" : "Deletes the item on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar Item…"
+          }
+        }
+      }
+    },
+    "Items" : {
+      "comment" : "Split mode: by items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Itens"
+          }
+        }
+      }
+    },
+    "By items" : {
+      "comment" : "The bill's split row: by items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por itens"
+          }
+        }
+      }
+    },
+    "1 item" : {
+      "comment" : "How many items the bill splits by",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 item"
+          }
+        }
+      }
+    },
+    "%lld items" : {
+      "comment" : "How many items the bill splits by",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld itens"
+          }
+        }
+      }
+    },
+    "This bill splits by items." : {
+      "comment" : "Split's default notice once this bill splits by items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta fica por itens."
+          }
+        }
+      }
+    },
+    "By items among %lld" : {
+      "comment" : "Above the people of a bill split by items",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por itens entre %lld"
           }
         }
       }

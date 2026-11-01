@@ -227,6 +227,12 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   longer has (`ExpenseDao.deleteGoneFromServer`); pending ones stay. A bill with a split mode this version doesn't
   know stays in Room but out of the lists. The split math (`BillSplit`) is shared by every UI: the cents a split
   can't share evenly go to whoever paid while they are in the split, otherwise one each to the first members.
+  A bill split by its items ("Itens da conta") keeps them in the same row (`itemsJson`, jsonb `items` on the server)
+  beside shares that hold each one's total, and is stored as `amount`, so a version that doesn't know items reads it
+  by "Valores" with the same balances. Such a version saves the bill without the column, which the upsert then leaves
+  as it was: the items therefore go up stamped with the bill's `updatedAt` (`ExpenseMapper.toDto`), the server drops
+  items whose stamp isn't the row's, the download keeps only items stamped with the row's version, and Room's items
+  count only while `BillItemsSplit` still gives the stored shares from them (otherwise the bill reads by amounts).
   An edit stamps `updatedAt` with `MAX(now, updatedAt + 1)`, so it wins over the row it read even when the device
   clock is behind, and a delete is a tombstone (`isDeleted`) that syncs like an edit; `observeExpense` emits `null`
   for a deleted or gone bill. The server records who last saved each bill in `updated_by` (its triggers set it from

@@ -51,6 +51,14 @@ class FormChrome(
     val cancelLabel: String,
     // Why: Rachar conta's dialog closes from its header's end, Dividir's goes back from its start, as the canvas has.
     val isNavigationAtEndInDialog: Boolean,
+    // Why: an icon before "Pronto", Item's "Apagar item"; null for none.
+    val iconAction: FormIconAction?,
+)
+
+class FormIconAction(
+    val icon: ImageVector,
+    val label: String,
+    val onClick: () -> Unit,
 )
 
 /*
@@ -106,6 +114,7 @@ fun ColumnsFormLayout(
                         }
                     },
                     actions = {
+                        chrome.iconAction?.let { IconActionButton(it) }
                         Button(
                             onClick = chrome.onConfirm,
                             enabled = chrome.isConfirmEnabled,
@@ -211,9 +220,20 @@ private fun DialogHeader(chrome: FormChrome) {
             )
             chrome.subtitle?.let { FormSubtitleText(it) }
         }
+        chrome.iconAction?.let { IconActionButton(it) }
         if (chrome.isNavigationAtEndInDialog) {
             NavigationButton(chrome)
         }
+    }
+}
+
+@Composable
+private fun IconActionButton(action: FormIconAction) {
+    IconButton(onClick = action.onClick) {
+        Icon(
+            imageVector = action.icon,
+            contentDescription = action.label,
+        )
     }
 }
 

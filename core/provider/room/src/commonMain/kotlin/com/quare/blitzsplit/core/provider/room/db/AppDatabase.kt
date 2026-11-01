@@ -43,7 +43,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         ActivityStateEntity::class,
         ActivityBackfillEntity::class,
     ],
-    version = 19,
+    version = 20,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -117,6 +117,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 18,
             to = 19,
+        ),
+        AutoMigration(
+            from = 19,
+            to = 20,
         ),
     ],
 )

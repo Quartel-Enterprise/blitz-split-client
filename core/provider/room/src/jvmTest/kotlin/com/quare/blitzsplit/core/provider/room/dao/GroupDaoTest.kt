@@ -912,6 +912,7 @@ class GroupDaoTest {
         splitMode = "equal",
         payersJson = "[]",
         sharesJson = "[]",
+        itemsJson = null,
         spentAt = 1_000L,
         isDeleted = false,
         addedAt = 1L,

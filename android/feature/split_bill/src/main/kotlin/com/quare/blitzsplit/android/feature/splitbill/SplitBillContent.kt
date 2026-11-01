@@ -45,6 +45,7 @@ fun SplitBillContent(
             onConfirm = { onEvent(SplitBillUiEvent.OnSaveClicked) },
             cancelLabel = stringResource(R.string.split_bill_cancel),
             isNavigationAtEndInDialog = true,
+            iconAction = null,
         ),
         isDialog = isDialog,
         snackbarHostState = snackbarHostState,

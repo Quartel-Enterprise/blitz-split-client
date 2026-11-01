@@ -137,6 +137,7 @@ class DeleteExpenseUseCaseTest {
         splitMode = SplitMode.EQUAL,
         payers = emptyList(),
         shares = emptyList(),
+        items = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 2_000L,

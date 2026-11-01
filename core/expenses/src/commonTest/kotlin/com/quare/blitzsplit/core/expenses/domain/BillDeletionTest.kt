@@ -122,6 +122,7 @@ class BillDeletionTest {
                 weight = 40L,
             ),
         ),
+        items = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 1L,

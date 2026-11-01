@@ -11,6 +11,8 @@ data class Expense(
     val payers: List<ExpensePayer>,
     // Why: each member in the split with the part the split gave them, adding up to the total.
     val shares: List<ExpenseShare>,
+    // Why: "Itens da conta" the shares come from, null for any other split.
+    val items: BillItems?,
     // Why: "Quando", in epoch millis.
     val spentAt: Long,
     // Why: created or changed on this device and not up on the server yet ("na fila").

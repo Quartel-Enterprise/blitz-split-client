@@ -120,6 +120,7 @@ class ObserveGroupsByActivityUseCaseTest {
         splitMode = SplitMode.EQUAL,
         payers = emptyList(),
         shares = emptyList(),
+        items = null,
         spentAt = 0L,
         isPending = false,
         updatedAt = updatedAt,
