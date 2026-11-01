@@ -10,6 +10,11 @@ enum HomeCopy {
         String(localized: "Home tab", defaultValue: "Home", comment: "The home's first tab and its title (Início)")
     }
 
+    /// "See all" beside "Your groups", its own key: Contacts' "See all" opens a history, said differently in Portuguese.
+    static var seeAllGroups: String {
+        String(localized: "See all groups", defaultValue: "See all", comment: "Home: opens the Groups tab")
+    }
+
     /// "Balances with people", with how many once the row of faces runs past the screen: "Balances with people · 9".
     static func peopleTitle(count: Int, isCounted: Bool) -> String {
         isCounted ? String(localized: "Balances with people · \(count)") : String(localized: "Balances with people")

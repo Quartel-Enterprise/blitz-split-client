@@ -156,7 +156,10 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -169,7 +172,10 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnSeeBalancesClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -267,7 +273,10 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnBalancesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -360,19 +369,31 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping Ver tudo Contatos and Atividade THEN says each is coming soon`() =
+    fun `GIVEN Inicio WHEN tapping Ver tudo and Atividade THEN says each is coming soon`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
+        viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
+
+        // Then
+        assertEquals(List<HomeUiAction>(2) { HomeUiAction.ShowComingSoon }, actions)
+        assertEquals(listOf(Route.Home), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a group opened from Inicio WHEN tapping Contatos THEN Contatos takes its place above Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
 
             // When
-            viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
             viewModel.onEvent(HomeUiEvent.OnContactsTabClicked)
-            viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<HomeUiAction>(3) { HomeUiAction.ShowComingSoon }, actions)
-            assertEquals(listOf(Route.Home), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test
@@ -700,7 +721,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU)),
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.OWES_YOU, charge = null)),
                 navigator.backStack.value,
             )
         }
@@ -746,7 +767,7 @@ class HomeViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.GlobalBalances(BalancesFilter.YOU_OWE),
+                    Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null),
                     Route.SettleUp(
                         personKey = "name:ana",
                         currency = GroupCurrency.BRL,
@@ -779,7 +800,10 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnToPayClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test
@@ -812,7 +836,10 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnToPayClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)), navigator.backStack.value)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
+                navigator.backStack.value,
+            )
         }
 
     @Test

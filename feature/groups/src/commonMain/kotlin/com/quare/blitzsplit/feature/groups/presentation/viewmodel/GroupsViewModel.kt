@@ -338,7 +338,7 @@ class GroupsViewModel(
 
             // Why: only from the groups on top, so a late tap never closes a screen over them, a half-typed bill's.
             GroupsUiEvent.OnToReceiveClicked -> if (isListShown() && uiState.value.summary.canOpenToReceive) {
-                openBalancesTab(BalancesFilter.OWES_YOU)
+                openTab(toBalancesTab(BalancesFilter.OWES_YOU))
             }
 
             GroupsUiEvent.OnToPayClicked -> if (uiState.value.summary.canOpenToPay) openToPay()
@@ -382,13 +382,13 @@ class GroupsViewModel(
                 navigator.openHomeTab(Route.Home)
             }
 
-            GroupsUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
+            GroupsUiEvent.OnBalancesTabClicked -> openTab(toBalancesTab(BalancesFilter.ALL))
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
-            GroupsUiEvent.OnContactsTabClicked,
-            GroupsUiEvent.OnActivityTabClicked,
-            -> showComingSoon()
+            GroupsUiEvent.OnContactsTabClicked -> openTab(Route.Contacts)
+
+            GroupsUiEvent.OnActivityTabClicked -> showComingSoon()
         }
     }
 
@@ -462,20 +462,22 @@ class GroupsViewModel(
     }
 
     /*
-     * Why: Saldos is the tab next to Grupos, in its place above Início; from a screen the groups opened (iOS keeps the
-     * tab bar over it), it closes that screen first, as a tab bar does.
+     * Why: Saldos and Contatos take Grupos' place above Início; from a screen the groups opened (iOS keeps the tab bar
+     * over it), they close that screen first, as a tab bar does.
      */
-    private fun openBalancesTab(filter: BalancesFilter) {
+    private fun openTab(tab: Route) {
         val stack = navigator.backStack.value
-        if (Route.Groups !in stack || stack.any { it is Route.GlobalBalances }) return
+        if (Route.Groups !in stack || stack.any { it::class == tab::class }) return
         closeSearch()
-        navigator.openHomeTab(Route.GlobalBalances(filter))
+        navigator.openHomeTab(tab)
     }
+
+    private fun toBalancesTab(filter: BalancesFilter): Route = Route.GlobalBalances(filter, charge = null)
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
     private fun openToPay() {
         if (!isListShown()) return
-        openBalancesTab(BalancesFilter.YOU_OWE)
+        openTab(toBalancesTab(BalancesFilter.YOU_OWE))
         val person = peopleBalances.people.singleOrNull { it.netMinor < 0 } ?: return
         navigator.navigate(
             Route.SettleUp(

@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- The invite reader's camera, asked for only when it opens. A device without a camera still pastes the link. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- "Convidar da agenda" (11.3), asked for only from that screen. Names and numbers stay on the device. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- The CAMERA permission implies a required back camera with autofocus, which Google Play would filter by. -->
     <uses-feature
         android:name="android.hardware.camera"

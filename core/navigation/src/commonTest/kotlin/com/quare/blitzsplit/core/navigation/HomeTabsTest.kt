@@ -43,14 +43,14 @@ class HomeTabsTest {
     fun `GIVEN a group opened from Grupos WHEN opening Saldos THEN Saldos takes the place of Grupos and the group`() {
         // Given
         prepareScenario(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID))
-        val tab = Route.GlobalBalances(BalancesFilter.ALL)
+        val tab = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
         // When
         navigator.openHomeTab(tab)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -58,15 +58,15 @@ class HomeTabsTest {
     @Test
     fun `GIVEN Saldos with everyone WHEN opening Saldos filtered by Voce deve THEN the filtered one takes its place`() {
         // Given
-        prepareScenario(Route.Home, Route.GlobalBalances(BalancesFilter.ALL))
-        val tab = Route.GlobalBalances(BalancesFilter.YOU_OWE)
+        prepareScenario(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null))
+        val tab = Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)
 
         // When
         navigator.openHomeTab(tab)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.YOU_OWE, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -76,17 +76,17 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Home,
-            Route.GlobalBalances(BalancesFilter.ALL),
+            Route.GlobalBalances(BalancesFilter.ALL, charge = null),
             Route.SettleUp("user:carla", GroupCurrency.BRL),
         )
-        val tab = Route.GlobalBalances(BalancesFilter.ALL)
+        val tab = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
         // When
         navigator.openHomeTab(tab)
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+            listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
             navigator.backStack.value,
         )
     }
@@ -174,7 +174,7 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Home,
-            Route.GlobalBalances(BalancesFilter.ALL),
+            Route.GlobalBalances(BalancesFilter.ALL, charge = null),
             Route.SettleUp("user:carla", GroupCurrency.BRL),
         )
 

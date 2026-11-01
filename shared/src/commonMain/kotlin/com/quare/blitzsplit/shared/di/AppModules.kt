@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.shared.di
 
 import com.quare.blitzsplit.core.account.di.accountModule
+import com.quare.blitzsplit.core.contacts.di.contactModule
 import com.quare.blitzsplit.core.expenses.di.expenseModule
 import com.quare.blitzsplit.core.groups.di.groupModule
 import com.quare.blitzsplit.core.navigation.di.navigationModule
@@ -15,6 +16,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
+import com.quare.blitzsplit.feature.contacts.di.contactsModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
 import com.quare.blitzsplit.feature.editgroup.di.editGroupModule
@@ -63,6 +65,7 @@ val sharedModules: List<Module> = listOf(
     accountModule,
     groupModule,
     expenseModule,
+    contactModule,
     syncModule,
     settingsModule,
     welcomeModule,
@@ -86,6 +89,7 @@ val sharedModules: List<Module> = listOf(
     registerPaymentModule,
     globalBalancesModule,
     groupStatsModule,
+    contactsModule,
 )
 
 // Why: each app adds what only it can provide (the Android Context, the browser's SQLite Worker).

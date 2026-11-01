@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
+import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
@@ -19,6 +20,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
+import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
@@ -35,9 +37,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         GroupMemberEntity::class,
         ExpenseEntity::class,
         SettlementEntity::class,
+        HiddenContactEntity::class,
         GroupPinEntity::class,
     ],
-    version = 20,
+    version = 21,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -116,6 +119,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 19,
             to = 20,
         ),
+        AutoMigration(
+            from = 20,
+            to = 21,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -135,6 +142,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
 
     abstract fun settlementDao(): SettlementDao
+
+    abstract fun hiddenContactDao(): HiddenContactDao
 
     abstract fun groupPinDao(): GroupPinDao
 }

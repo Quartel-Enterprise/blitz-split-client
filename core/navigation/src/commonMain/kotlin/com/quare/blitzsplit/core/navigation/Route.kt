@@ -112,6 +112,36 @@ sealed interface Route {
      */
     data class GlobalBalances(
         val filter: BalancesFilter,
+        // Why: Contatos' "Cobrar" opens the message right away; closing it goes back. Null from the home's tabs and cards.
+        val charge: BalancesCharge?,
+    ) : Route
+
+    /*
+     * Why: the home's fourth tab, "Contatos" (flow 11): everyone in the user's groups, guests included, with the net of
+     * each. Over the groups like Saldos, so the Grupos tab and back return to them.
+     */
+    data object Contacts : Route
+
+    /*
+     * Why: "Perfil do contato" (11.2), a person's net, groups in common and history with them, from Contatos and its
+     * search. personKey is PeopleBalances.keyOf, the same person Saldos nets. A wide window draws it beside Contatos
+     * instead (ContactsUiState.selectedKey).
+     */
+    data class ContactProfile(
+        val personKey: String,
+    ) : Route
+
+    // Why: "Convidar da agenda" (11.3): the device's contacts, each invited with a group's link. Not on the web.
+    data object ContactsAgenda : Route
+
+    /*
+     * Why: "Convidar" (11.4), a group's link and QR code, the group picked in the sheet ("Novo grupo" included), for
+     * name from the agenda or for nobody in particular ("Convidar com link ou QR"). For a guest (personKey of a name
+     * nobody joined as), their personal link in the groups they are in instead.
+     */
+    data class ContactInvite(
+        val personKey: String?,
+        val name: String?,
     ) : Route
 
     /*

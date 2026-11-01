@@ -315,9 +315,10 @@ class HomeViewModel(
 
             HomeUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
 
+            HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
+
             // Why: Atividade (page 12) holds every bill and payment; it is not built yet.
             HomeUiEvent.OnSeeAllBillsClicked,
-            HomeUiEvent.OnContactsTabClicked,
             HomeUiEvent.OnActivityTabClicked,
             -> showComingSoon()
 
@@ -366,7 +367,7 @@ class HomeViewModel(
     }
 
     private fun openBalancesTab(filter: BalancesFilter) {
-        navigator.openHomeTab(Route.GlobalBalances(filter))
+        navigator.openHomeTab(Route.GlobalBalances(filter, charge = null))
     }
 
     // Why: "Você deve" with a single person to pay goes straight to settling up with them (4.5), over Você deve.

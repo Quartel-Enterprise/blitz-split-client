@@ -1,7 +1,7 @@
 import Shared
 import SwiftUI
 
-/// The tabs of the canvas: Home first, then Groups and Balances; Contacts and Activity answer "Coming soon". Search is
+/// The tabs of the canvas: Home first, then Groups, Balances and Contacts; Activity answers "Coming soon". Search is
 /// the iPhone's and the iPad's search tab, once there is a group, and looks in Groups; the Mac searches from Groups'
 /// toolbar instead.
 enum MainTab: Hashable {
@@ -15,10 +15,10 @@ enum MainTab: Hashable {
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable). Home is the root of
 /// the shared back stack and every other tab the entry right above it, so the first entry of `path` says which tab is
-/// in front: Groups, Balances, or else Home, whose own stack is then the whole path.
+/// in front: Groups, Balances, Contacts, or else Home, whose own stack is then the whole path.
 struct MainTabView: View {
-    /// The shared back stack above Home: Groups or Balances with what they opened, or what Home opened (a group, the
-    /// profile, an invite opened from its link).
+    /// The shared back stack above Home: Groups, Balances or Contacts with what they opened, or what Home opened (a
+    /// group, the profile, an invite opened from its link).
     @Binding var path: [AppRoute]
 
     @State private var home = HomeModel()
@@ -57,7 +57,14 @@ struct MainTabView: View {
                     }
                 }
             }
-            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
+            // Contacts sits right above Home too, and keeps what it opens in its own tab's stack
+            Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
+                if isContactsShown {
+                    ContactsColumns(path: tabStack(isShown: isContactsShown))
+                } else {
+                    Color.clear
+                }
+            }
             Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
             #if os(iOS)
             // Nothing to look in before the first group
@@ -99,13 +106,14 @@ struct MainTabView: View {
 
     /// Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
     /// and goes back to the groups, past what its results opened; Home goes back to itself, past what any tab opened.
+    /// Home's tab events work from any tab, so every tab but Groups and Search selects through them.
     private var tabSelection: Binding<MainTab> {
         Binding(
             get: { selectedTab },
             set: { tab in
                 switch selectedTab {
-                case .home: selectFromHome(tab)
-                default: selectFromGroups(tab)
+                case .groups, .search: selectFromGroups(tab)
+                default: selectFromHome(tab)
                 }
             },
         )
@@ -116,13 +124,14 @@ struct MainTabView: View {
         switch path.first {
         case .groups: return .groups
         case .globalBalances: return .balances
+        case .contacts: return .contacts
         default: return .home
         }
     }
 
-    /// Home's tab events, which work over whatever Home pushed (a group, the profile): Groups and Balances take its
-    /// place right above Home, while Contacts and Activity only say "Coming soon" and leave it open. Search lives in
-    /// Groups, so it opens Groups first.
+    /// Home's tab events, which work over whatever Home or another tab pushed: Groups, Balances and Contacts take its
+    /// place right above Home, while Activity only says "Coming soon" and leaves it open. Search lives in Groups, so it
+    /// opens Groups first; Home goes back to itself.
     private func selectFromHome(_ tab: MainTab) {
         switch tab {
         case .groups: home.send(HomeUiEventOnGroupsTabClicked.shared)
@@ -132,11 +141,11 @@ struct MainTabView: View {
         case .search:
             home.send(HomeUiEventOnGroupsTabClicked.shared)
             model.send(GroupsUiEventOnSearchOpened.shared)
-        case .home: break
+        case .home: if !path.isEmpty { path = [] }
         }
     }
 
-    /// The groups' events, which also move the stack from Balances right above Home.
+    /// The groups' events while Groups or Search is in front, so leaving Search forgets it.
     private func selectFromGroups(_ tab: MainTab) {
         switch tab {
         case .home: model.send(GroupsUiEventOnHomeTabClicked.shared)
@@ -147,7 +156,7 @@ struct MainTabView: View {
         case .groups:
             if showsSearchTab {
                 model.send(GroupsUiEventOnSearchTabLeft.shared)
-            } else if balancesRoute != nil {
+            } else {
                 model.send(GroupsUiEventOnGroupsTabClicked.shared)
             }
         }
@@ -173,6 +182,12 @@ struct MainTabView: View {
     private var balancesRoute: RouteGlobalBalances? {
         if case let .globalBalances(route) = path.first { return route }
         return nil
+    }
+
+    /// Contacts right above Home, which its tab shows.
+    private var isContactsShown: Bool {
+        if case .contacts = path.first { return true }
+        return false
     }
 
     /// What Balances pushed over itself (the profile), shown in its own tab's stack.
@@ -214,7 +229,8 @@ struct MainTabView: View {
     }
 
     /// What the tabs push over themselves: a group's expenses, balances, members or statistics, a bill, an invite
-    /// opened from its link, the profile, its editor and, on iPhone, a key.
+    /// opened from its link, the profile, its editor and, on iPhone, a key. Contacts also pushes a person's profile,
+    /// the agenda, and Balances opened from a profile's Request.
     @ViewBuilder
     static func destination(_ route: AppRoute) -> some View {
         switch route {
@@ -228,6 +244,9 @@ struct MainTabView: View {
         case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
+        case let .contactProfile(route): ContactProfileView(route: route)
+        case .contactsAgenda: AgendaView()
+        case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         default: ProfileView()
         }
     }

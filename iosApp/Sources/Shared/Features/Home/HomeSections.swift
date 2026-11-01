@@ -4,7 +4,7 @@ import SwiftUI
 /// A section's title with its link on the right: "Your groups" with "See all".
 struct HomeSectionHeader: View {
     let title: String
-    let action: LocalizedStringKey
+    let action: String
     let onAction: () -> Void
 
     var body: some View {
@@ -37,7 +37,7 @@ struct HomePeopleSection: View {
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(
                 title: HomeCopy.peopleTitle(count: people.count, isCounted: isCounted),
-                action: "See balances",
+                action: String(localized: "See balances"),
             ) {
                 send(HomeUiEventOnSeeBalancesClicked.shared)
             }
@@ -366,7 +366,7 @@ struct HomeGroupsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HomeSectionHeader(title: String(localized: "Your groups"), action: "See all") {
+            HomeSectionHeader(title: String(localized: "Your groups"), action: HomeCopy.seeAllGroups) {
                 send(HomeUiEventOnSeeAllGroupsClicked.shared)
             }
             switch style {
@@ -522,7 +522,7 @@ struct HomeBillsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HomeSectionHeader(title: String(localized: "Latest expenses"), action: "See everything") {
+            HomeSectionHeader(title: String(localized: "Latest expenses"), action: String(localized: "See everything")) {
                 send(HomeUiEventOnSeeAllBillsClicked.shared)
             }
             ForEach(days, id: \.dayStartMillis) { day in

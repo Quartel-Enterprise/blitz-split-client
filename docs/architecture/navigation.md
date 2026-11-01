@@ -137,13 +137,14 @@ launch.
 
 The home has five tabs: Início, Grupos, Saldos, Contatos and Atividade. Início (`Route.Home`) is the root of the
 back stack and where the app opens; every other tab is one route right above it, and the tabs take each other's place
-there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter)]`. `Navigator.openHomeTab(tab)`
-(`HomeTabs.kt`) goes back to the tab when it is already in the stack, closing whatever it opened, and otherwise puts it
+there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`.
+`Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in the stack, closing whatever it opened, and otherwise puts it
 right above Início; without Início in the stack (the welcome, the restore) it does nothing. `popToGroups()` is
 `openHomeTab(Route.Groups)` unless the groups are on top. Each tab's ViewModel has an `OnHomeTabClicked`, and on
-Apple the `TabView` selects the tab from the route right above Início. Back from any tab returns to Início. Contatos
-and Atividade are drawn on every platform but not built yet: their events emit `ShowComingSoon` and the selection
-stays where it was.
+Apple the `TabView` selects the tab from the route right above Início. Back from any tab returns to Início. Contatos'
+profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite (`Route.ContactInvite`) open over it,
+or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like Saldos). Atividade is drawn on every
+platform but not built yet: its event emits `ShowComingSoon` and the selection stays where it was.
 
 Início's "Registrar pagamento" belongs to no group, so it asks who paid whom first: `Route.PickPayment` lists every
 open pair of every group, and the pair tapped opens `Route.RegisterPayment` in its place (`replaceTop`), so closing

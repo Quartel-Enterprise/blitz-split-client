@@ -54,6 +54,24 @@
           }
         }
       }
+    },
+    "NSContactsUsageDescription" : {
+      "comment" : "Why the app asks for the contacts: inviting someone from them with a group's link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To invite people from your contacts with a group's link. Their numbers stay on this device."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para convidar gente da sua agenda com o link de um grupo. Os números ficam só neste aparelho."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

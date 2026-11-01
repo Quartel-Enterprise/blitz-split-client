@@ -49,6 +49,28 @@
         }
       }
     },
+    "%@ doesn't use Blitz Split yet" : {
+      "comment" : "A guest's card; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ainda não usa o Bora Rachar"
+          }
+        }
+      }
+    },
+    "%@ joined %@." : {
+      "comment" : "A contact was added to a group; the first %@ is them, the second the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ entrou em %2$@."
+          }
+        }
+      }
+    },
     "%@ · everyone settled up on %@" : {
       "comment" : "A settled group of the home: its members, then the day of its last activity",
       "localizations" : {
@@ -953,6 +975,39 @@
         }
       }
     },
+    "%@ joins right away as themselves." : {
+      "comment" : "A guest's personal invite",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entra direto, já com o próprio nome."
+          }
+        }
+      }
+    },
+    "%@ joins right away, with no part in the old bills, and sees the group in their list." : {
+      "comment" : "Adding someone who uses the app to a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entra direto, sem parte nas contas antigas, e vê o grupo na lista de grupos."
+          }
+        }
+      }
+    },
+    "%@ joins the group as a name, with no part in the old bills." : {
+      "comment" : "Adding a guest to a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entra no grupo como nome, sem parte nas contas antigas."
+          }
+        }
+      }
+    },
     "in %lld groups" : {
       "comment" : "Under To get back and To pay: in how many groups",
       "localizations" : {
@@ -1053,6 +1108,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ acabou de entrar por outro aparelho"
+          }
+        }
+      }
+    },
+    "%@ leaves your Contacts. They stay in %@ and come back by themselves if they join a new account with you. You can show them again in Hidden." : {
+      "comment" : "Hide a contact?; the first %@ is them, the second their groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ sai da lista de Contatos. Continua em %2$@ e volta sozinho se entrar numa conta nova com você. Dá para mostrar de novo em Ocultos."
           }
         }
       }
@@ -1255,6 +1321,17 @@
         }
       }
     },
+    "%@ picks their name on the list or joins as a new member." : {
+      "comment" : "An invite for someone of the agenda",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ escolhe o nome na lista ou entra como membro novo."
+          }
+        }
+      }
+    },
     "%lld payments left:" : {
       "comment" : "After why a group can't be deleted yet: how many pairs still owe, listed under it",
       "localizations" : {
@@ -1303,6 +1380,116 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ninguém deve nada agora"
+          }
+        }
+      }
+    },
+    "%lld people paid %@" : {
+      "comment" : "A bill several people paid in a contact's history; %@ is its total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld pessoas pagaram %2$@"
+          }
+        }
+      }
+    },
+    "Access to contacts was denied. To invite from your contacts, allow Contacts in Settings. The invite link works without it." : {
+      "comment" : "The agenda was refused, on iPhone and iPad",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso aos contatos foi negado. Para convidar da agenda, libere Contatos em Ajustes. O link de convite funciona sem isso."
+          }
+        }
+      }
+    },
+    "Access to contacts was denied. To invite from your contacts, allow Contacts in System Settings. The invite link works without it." : {
+      "comment" : "The agenda was refused, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso aos contatos foi negado. Para convidar da agenda, libere Contatos nos Ajustes do Sistema. O link de convite funciona sem isso."
+          }
+        }
+      }
+    },
+    "Add %@ to a group" : {
+      "comment" : "The title of adding a contact to a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar %@ a um grupo"
+          }
+        }
+      }
+    },
+    "Add to a group" : {
+      "comment" : "A contact's profile: adds them to one of your groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar a um grupo"
+          }
+        }
+      }
+    },
+    "Allow access to contacts" : {
+      "comment" : "Hands the agenda's question to the system",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acesso à agenda"
+          }
+        }
+      }
+    },
+    "Already offset across %lld groups" : {
+      "comment" : "Under a contact's net: it already offsets the groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já compensado entre %lld grupos"
+          }
+        }
+      }
+    },
+    "Ask someone who uses the app" : {
+      "comment" : "Merging a guest: a request to an account",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pedir para quem já usa o app"
+          }
+        }
+      }
+    },
+    "Bring in people from your contacts" : {
+      "comment" : "The agenda before the system asks for it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chame gente da sua agenda"
+          }
+        }
+      }
+    },
+    "Bring more people" : {
+      "comment" : "Contacts' section of the invites",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chamar mais gente"
           }
         }
       }
@@ -1519,17 +1706,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Buscando em grupos, pessoas e despesas"
-          }
-        }
-      }
-    },
-    "See all" : {
-      "comment" : "Home: opens the Groups tab",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ver todos"
           }
         }
       }
@@ -3458,6 +3634,17 @@
         }
       }
     },
+    "Couldn't cancel the invite. Try again." : {
+      "comment" : "Canceling a guest's personal invite failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para cancelar o convite. Tente de novo."
+          }
+        }
+      }
+    },
     "Couldn't change the link. Try again." : {
       "comment" : "Invite: changing the link failed",
       "localizations" : {
@@ -3485,6 +3672,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para criar o link"
+          }
+        }
+      }
+    },
+    "Couldn't create the personal invite." : {
+      "comment" : "Merging a guest: the server failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para gerar o convite pessoal."
           }
         }
       }
@@ -3625,6 +3823,17 @@
         }
       }
     },
+    "Create a group first: an invite is always a group's link." : {
+      "comment" : "Contacts' invite with no group yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crie um grupo antes: o convite é sempre o link de um grupo."
+          }
+        }
+      }
+    },
     "Create a group for the trip, the house or the barbecue. You can start even without internet." : {
       "localizations" : {
         "pt-BR" : {
@@ -3651,6 +3860,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gerando o link…"
+          }
+        }
+      }
+    },
+    "Creating the personal invite needs internet." : {
+      "comment" : "Merging a guest offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerar o convite pessoal precisa de internet."
+          }
+        }
+      }
+    },
+    "Creating the personal invite…" : {
+      "comment" : "Merging a guest: the server makes the link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerando o convite pessoal…"
           }
         }
       }
@@ -4154,6 +4385,17 @@
         }
       }
     },
+    "Everything in %@'s name (bills, payments and the balance of %@) moves to their account, in every group, and the guest goes away. It only happens once they accept." : {
+      "comment" : "Merging a guest; the first %@ is them, the second their balance",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo o que está no nome de %1$@ (contas, pagamentos e o saldo de %2$@) passa para a conta da pessoa, em todos os grupos, e o convidado some. Só acontece quando ela aceitar."
+          }
+        }
+      }
+    },
     "Everything is synced with your %@ account. When you sign out, we erase the copy on this %@. Your groups come back when you sign in again." : {
       "comment" : "The first %@ is Google or Apple, the second the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -4387,6 +4629,17 @@
         }
       }
     },
+    "Group of the invite" : {
+      "comment" : "VoiceOver: the groups of Contacts' invite",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupo do convite"
+          }
+        }
+      }
+    },
     "Group sections" : {
       "comment" : "Accessibility label of the group's tabs (Expenses, Balances, Members)",
       "localizations" : {
@@ -4415,6 +4668,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Grupos"
+          }
+        }
+      }
+    },
+    "Groups in common · %lld" : {
+      "comment" : "A contact's groups shared with this device's user",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupos em comum · %lld"
+          }
+        }
+      }
+    },
+    "Guest · not on the app yet" : {
+      "comment" : "A guest's profile: a name nobody joined as",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convidado · ainda sem o app"
           }
         }
       }
@@ -4448,6 +4723,94 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ainda não entraram"
+          }
+        }
+      }
+    },
+    "Hi %@! Let's split the bills of %@ on Blitz Split. Join with this link:" : {
+      "comment" : "The message shared with an invite for someone named; the first %@ is them, the second the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oi, %1$@! Bora rachar as contas do grupo %2$@ no Bora Rachar? Entra pelo link:"
+          }
+        }
+      }
+    },
+    "Hi %@! This is your personal invite on Blitz Split: open it and you join as yourself." : {
+      "comment" : "The message shared with a guest's personal invite",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oi, %@! Este é o seu convite pessoal no Bora Rachar: abra e você entra com o seu nome."
+          }
+        }
+      }
+    },
+    "Hidden · %lld" : {
+      "comment" : "Contacts' section of the hidden people, which opens and closes",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultos · %lld"
+          }
+        }
+      }
+    },
+    "Hide" : {
+      "comment" : "Hides a contact from Contacts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar"
+          }
+        }
+      }
+    },
+    "Hide %@?" : {
+      "comment" : "Asks before hiding a contact",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar %@?"
+          }
+        }
+      }
+    },
+    "Hide from Contacts" : {
+      "comment" : "A contact's menu: hides them from the list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar de Contatos"
+          }
+        }
+      }
+    },
+    "Hide from Contacts…" : {
+      "comment" : "The Mac's contact menu item, which opens a dialog",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar de Contatos…"
+          }
+        }
+      }
+    },
+    "History with %@" : {
+      "comment" : "A contact's latest bills and payments",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Histórico com %@"
           }
         }
       }
@@ -4722,6 +5085,90 @@
         }
       }
     },
+    "In your contacts · %lld" : {
+      "comment" : "The people of the agenda listed or found",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na agenda · %lld"
+          }
+        }
+      }
+    },
+    "In your groups · %lld" : {
+      "comment" : "Contacts' search: the people of your groups found",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nos seus grupos · %lld"
+          }
+        }
+      }
+    },
+    "Invite %@" : {
+      "comment" : "Invites someone named: a title, or a guest's or a contact's button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convidar %@"
+          }
+        }
+      }
+    },
+    "Invite (a contact)" : {
+      "comment" : "Invites someone of the agenda with a group's link",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invite"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convidar"
+          }
+        }
+      }
+    },
+    "Invite from contacts" : {
+      "comment" : "Opens the device's agenda to invite someone",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convidar da agenda"
+          }
+        }
+      }
+    },
+    "Invite someone from your contacts" : {
+      "comment" : "Under Invite from contacts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convide alguém da sua agenda"
+          }
+        }
+      }
+    },
+    "Invite someone from your contacts with one of your groups' links. Their numbers stay on this %@." : {
+      "comment" : "The agenda before the system asks; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convide alguém da sua agenda com o link de um grupo seu. Os números ficam só neste %@."
+          }
+        }
+      }
+    },
     "It's also in %@." : {
       "comment" : "%@ is where the recovery code lives: Profile › Recovery on iOS, Settings › Recovery on the Mac",
       "localizations" : {
@@ -4940,6 +5387,50 @@
         }
       }
     },
+    "Merge %@ with their account" : {
+      "comment" : "The title of merging a guest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juntar %@ com a conta da pessoa"
+          }
+        }
+      }
+    },
+    "Merge with an account" : {
+      "comment" : "A guest's card: moves what is in their name to an account",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juntar com uma conta"
+          }
+        }
+      }
+    },
+    "Merge with their account" : {
+      "comment" : "A guest's menu: moves what is in their name to their account",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juntar com a conta da pessoa"
+          }
+        }
+      }
+    },
+    "Merge with their account…" : {
+      "comment" : "The Mac's guest menu item, which opens a sheet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juntar com a conta da pessoa…"
+          }
+        }
+      }
+    },
     "Mobile number with area code" : {
       "localizations" : {
         "pt-BR" : {
@@ -4957,6 +5448,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mais opções do convite"
+          }
+        }
+      }
+    },
+    "More options" : {
+      "comment" : "VoiceOver: a contact's ⋯ menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais opções"
           }
         }
       }
@@ -5040,6 +5542,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Novo grupo"
+          }
+        }
+      }
+    },
+    "No access to contacts" : {
+      "comment" : "The agenda was refused",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem acesso à agenda"
           }
         }
       }
@@ -5210,6 +5723,17 @@
         }
       }
     },
+    "Nobody here yet" : {
+      "comment" : "Contacts with nobody sharing a group yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém por aqui ainda"
+          }
+        }
+      }
+    },
     "Nobody is in yet" : {
       "comment" : "The split has nobody in it",
       "localizations" : {
@@ -5217,6 +5741,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ninguém participa ainda"
+          }
+        }
+      }
+    },
+    "Nobody named “%@”" : {
+      "comment" : "Contacts' search found nobody; %@ is what was typed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguém com “%@”"
           }
         }
       }
@@ -5260,6 +5795,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Agora não"
+          }
+        }
+      }
+    },
+    "Nothing open in any group" : {
+      "comment" : "Under a contact's net at zero",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada pendente em nenhum grupo"
           }
         }
       }
@@ -5316,6 +5862,17 @@
         }
       }
     },
+    "Offline · contacts on this %@" : {
+      "comment" : "Contacts offline; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline · contatos deste %@"
+          }
+        }
+      }
+    },
     "Offline · everything is saved on your %@" : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -5323,6 +5880,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Offline · tudo fica salvo no %@"
+          }
+        }
+      }
+    },
+    "Offline · the link already exists, so you can copy and share it." : {
+      "comment" : "Contacts' invite offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline · o link já existe, dá para copiar e compartilhar."
+          }
+        }
+      }
+    },
+    "Offline · what you do goes into the queue" : {
+      "comment" : "A contact's profile offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline · o que você fizer entra na fila"
           }
         }
       }
@@ -8100,6 +8679,28 @@
         }
       }
     },
+    "Personal invite sent %@" : {
+      "comment" : "Under Waiting for Diego to accept; %@ is when",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Convite pessoal enviado %@"
+          }
+        }
+      }
+    },
+    "Pick the account; they get the request and accept." : {
+      "comment" : "Merging a guest: a request to an account",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha a conta; a pessoa recebe o pedido e aceita."
+          }
+        }
+      }
+    },
     "Pix" : {
       "comment" : "A payment method, Brazil's instant payment",
       "localizations" : {
@@ -8118,6 +8719,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registrar pagamento"
+          }
+        }
+      }
+    },
+    "Search contacts" : {
+      "comment" : "The prompt of Contacts' and the agenda's search field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar contatos"
+          }
+        }
+      }
+    },
+    "See all" : {
+      "comment" : "Opens the whole history with a contact",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver tudo"
+          }
+        }
+      }
+    },
+    "See all groups" : {
+      "comment" : "Home: opens the Groups tab",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver todos"
+          }
+        }
+      }
+    },
+    "See in Balances" : {
+      "comment" : "A contact's menu: opens Balances",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver em Saldos"
           }
         }
       }
@@ -8583,6 +9228,17 @@
         }
       }
     },
+    "People in your groups · %lld" : {
+      "comment" : "Contacts' section of the people",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pessoas dos seus grupos · %lld"
+          }
+        }
+      }
+    },
     "Standard" : {
       "comment" : "The middle size of the home's grid cards",
       "localizations" : {
@@ -8851,6 +9507,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acertar com %@"
+          }
+        }
+      }
+    },
+    "settled up" : {
+      "comment" : "A contact's net at zero, under the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "quitado"
+          }
+        }
+      }
+    },
+    "Show %@ in Contacts" : {
+      "comment" : "VoiceOver: brings a hidden contact back",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar %@ em Contatos"
+          }
+        }
+      }
+    },
+    "Show in Contacts" : {
+      "comment" : "A hidden contact's menu: brings them back",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar em Contatos"
           }
         }
       }
@@ -9164,6 +9853,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copiar mensagem"
+          }
+        }
+      }
+    },
+    "paid" : {
+      "comment" : "A payment this device's user made, in a contact's history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pago"
           }
         }
       }
@@ -9515,6 +10215,17 @@
         }
       }
     },
+    "They only exist in your groups, as a name. Send them a personal invite, or merge them with their account if they already use the app." : {
+      "comment" : "A guest's card",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só existe nos seus grupos, como nome. Mande um convite pessoal ou junte com a conta da pessoa, se ela já usa o app."
+          }
+        }
+      }
+    },
     "Week" : {
       "comment" : "The group statistics: the chart by week",
       "localizations" : {
@@ -9533,6 +10244,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mês"
+          }
+        }
+      }
+    },
+    "The link of %@ comes with its next sync." : {
+      "comment" : "A group made offline has no link yet; %@ is the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O link de %@ chega com a próxima sincronização."
           }
         }
       }
@@ -9599,6 +10321,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "nada"
+          }
+        }
+      }
+    },
+    "Only the contacts you picked show here." : {
+      "comment" : "The agenda under iOS's limited access",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só aparecem aqui os contatos que você escolheu."
+          }
+        }
+      }
+    },
+    "Only with a zero balance. Settle up first." : {
+      "comment" : "Why Hide from Contacts is disabled",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só com saldo zero. Acerte antes."
           }
         }
       }
@@ -10194,6 +10938,61 @@
         }
       }
     },
+    "received" : {
+      "comment" : "A payment this device's user got, in a contact's history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "recebido"
+          }
+        }
+      }
+    },
+    "Send a personal invite" : {
+      "comment" : "Merging a guest: the single-use link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mandar convite pessoal"
+          }
+        }
+      }
+    },
+    "Single-use link. %@ joins and becomes themselves right away." : {
+      "comment" : "Merging a guest: the single-use link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link de uso único. Quando %@ entrar, o convidado já vira a conta da pessoa."
+          }
+        }
+      }
+    },
+    "The invite is for a group. Pick which." : {
+      "comment" : "Over the groups of Contacts' invite",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O convite é para um grupo. Escolha qual."
+          }
+        }
+      }
+    },
+    "The invite is for one of your groups" : {
+      "comment" : "Under Invite with a link or QR code",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O convite é de um grupo seu"
+          }
+        }
+      }
+    },
     "Who's in the split" : {
       "comment" : "Default split, Equal: above the people",
       "localizations" : {
@@ -10289,6 +11088,113 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$lld para %2$lld"
+          }
+        }
+      }
+    },
+    "today, %@" : {
+      "comment" : "When a personal invite was sent today; %@ is the time",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hoje, %@"
+          }
+        }
+      }
+    },
+    "Uses Blitz Split · %lld groups in common" : {
+      "comment" : "A contact's profile: they use the app and share these groups",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Uses Blitz Split · %lld group in common"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Uses Blitz Split · %lld groups in common"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Usa o Bora Rachar · %lld grupo em comum"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Usa o Bora Rachar · %lld grupos em comum"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Waiting for %@ to accept" : {
+      "comment" : "A guest's personal invite is out",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguardando %@ aceitar"
+          }
+        }
+      }
+    },
+    "We couldn't find anyone with that name in your groups or your contacts. Check the spelling or invite them." : {
+      "comment" : "Contacts' search found nobody",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não achamos ninguém com esse nome nos seus grupos nem na agenda. Confira a grafia ou convide a pessoa."
+          }
+        }
+      }
+    },
+    "Whoever is hidden stays in the groups. They come back to the list by themselves if they join a new account with you." : {
+      "comment" : "Under the hidden contacts",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem está oculto continua nos grupos. Volta para a lista sozinho se entrar numa conta nova com você."
+          }
+        }
+      }
+    },
+    "Whoever opens the link picks their name on the group's list or joins as a new member." : {
+      "comment" : "An invite for anyone",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem abrir o link escolhe o nome na lista do grupo ou entra como membro novo."
+          }
+        }
+      }
+    },
+    "Whoever shares a group with you shows up here, with the balance of each one." : {
+      "comment" : "Contacts with nobody yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem dividir um grupo com você aparece aqui, com o saldo de cada um."
           }
         }
       }
@@ -11390,6 +12296,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Por itens entre %lld"
+          }
+        }
+      }
+    },
+    "you paid %@" : {
+      "comment" : "A bill in a contact's history; %@ is its total",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você pagou %@"
+          }
+        }
+      }
+    },
+    "You're settled up" : {
+      "comment" : "A contact's profile when neither owes the other",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vocês estão quitados"
           }
         }
       }
