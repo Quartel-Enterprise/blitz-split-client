@@ -74,7 +74,6 @@ class JsSplitEditor(
     val partValueMinor: Double,
     val statusTitle: JsSplitFact,
     val statusDetails: Array<JsSplitFact>,
-    val summary: Array<JsSplitFact>,
 )
 
 // Why: person is null for someone who left the group, "Ex-membro".
@@ -485,7 +484,6 @@ private fun toJsSplitEditor(editor: SplitEditor): JsSplitEditor = JsSplitEditor(
     partValueMinor = editor.partValueMinor.toDouble(),
     statusTitle = toJsSplitFact(editor.statusTitle),
     statusDetails = editor.statusDetails.map(::toJsSplitFact).toTypedArray(),
-    summary = editor.summary.map(::toJsSplitFact).toTypedArray(),
 )
 
 private fun toJsSplitFact(fact: SplitFact): JsSplitFact {

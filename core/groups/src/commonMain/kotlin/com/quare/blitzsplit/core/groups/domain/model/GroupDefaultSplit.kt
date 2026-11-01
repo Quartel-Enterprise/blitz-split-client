@@ -27,6 +27,7 @@ data class GroupDefaultSplit(
 
     companion object {
         const val FULL_PERCENT = 100L
-        const val MAX_WEIGHT = 100L
+        // Why: the most parts Dividir lets a bill hold, so a default never opens a bill its stepper can't keep.
+        const val MAX_WEIGHT = 99L
     }
 }

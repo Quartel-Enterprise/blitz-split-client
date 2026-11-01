@@ -82,9 +82,12 @@ struct DefaultSplitView: View {
         .navigationTitle("Default split")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        // Popping clears the ViewModel, which would cancel a save in flight
+        .navigationBarBackButtonHidden(model?.state.isSaving == true)
         #else
         .navigationBarBackButtonHidden(true)
         #endif
+        .interactiveDismissDisabled(model?.state.isSaving == true)
         .toolbar {
             #if os(macOS)
             ToolbarItem(placement: .cancellationAction) {

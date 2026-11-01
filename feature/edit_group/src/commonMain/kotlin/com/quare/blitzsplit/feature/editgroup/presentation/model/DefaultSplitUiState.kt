@@ -141,11 +141,7 @@ data class DefaultSplitUiState(
 
         // Why: the cents a split can't share evenly go as in Rachar conta, to whoever pays: this device's user by default.
         fun rowsOf(state: DefaultSplitUiState): List<DefaultSplitRow> {
-            val splitMode = when (state.mode) {
-                DefaultSplitMode.EQUAL -> SplitMode.EQUAL
-                DefaultSplitMode.SHARES -> SplitMode.SHARES
-                DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> SplitMode.PERCENT
-            }
+            val splitMode = SplitMode.of(state.mode)
             val entries = state.people.map {
                 SplitEntry(
                     memberId = it.id,

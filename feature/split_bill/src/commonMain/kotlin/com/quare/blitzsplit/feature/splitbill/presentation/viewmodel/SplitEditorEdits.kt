@@ -8,7 +8,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillDefaultSplit
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -200,11 +199,7 @@ internal fun billDefaultSplitOf(
 ): BillDefaultSplit? {
     if (default == null || people.isEmpty()) return null
     val weights = people.associate { it.id to default.weightOf(it.id) }
-    val mode = when (default.mode) {
-        DefaultSplitMode.EQUAL -> SplitMode.EQUAL
-        DefaultSplitMode.SHARES -> SplitMode.SHARES
-        DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> SplitMode.PERCENT
-    }
+    val mode = SplitMode.of(default.mode)
     val isValid = weights.values.any { it > 0 } &&
         (mode != SplitMode.PERCENT || weights.values.sum() == BillSplit.FULL_PERCENT)
     if (!isValid) return null

@@ -118,9 +118,14 @@ const defaultModes: Record<string, MessageKey> = {
   income: 'defaultSplit_modeIncome',
 }
 
+/** "Igual", "Partes", "Porcentagem" or "Pela renda": a DefaultSplitMode's code by name, "Igual" for one unknown. */
+export function defaultSplitModeLabel(mode: string): string {
+  return t(defaultModes[mode] ?? 'defaultSplit_modeEqual')
+}
+
 /** "Partes, 3 para 1", "Porcentagem, 75% e 25%", "Igual, sem Diego": the group's default split a bill opens with. */
 export function defaultSplitText(split: JsBillDefaultSplit): string {
-  const mode = t(defaultModes[split.mode] ?? 'defaultSplit_modeEqual')
+  const mode = defaultSplitModeLabel(split.mode)
   let detail: string | null
   if (split.mode === 'shares') {
     detail =

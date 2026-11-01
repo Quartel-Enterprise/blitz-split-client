@@ -169,6 +169,24 @@ class DefaultSplitViewModelTest {
     }
 
     @Test
+    fun `GIVEN incomes another member's newer percentages replaced WHEN the screen opens THEN it shows the group's`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = percent(60L, 40L).copy(mode = DefaultSplitMode.INCOME)),
+                storedIncomes = mapOf(PIERRE to 900_000L, ANA to 300_000L),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.people.all { it.incomeText.isEmpty() })
+            assertEquals(mapOf(PIERRE to 60L, ANA to 40L), state.weights)
+            assertFalse(state.hasChanges)
+        }
+
+    @Test
     fun `GIVEN someone who joined since WHEN the screen opens THEN they start with 1 part until saved`() =
         runTest(testDispatcher) {
             // Given

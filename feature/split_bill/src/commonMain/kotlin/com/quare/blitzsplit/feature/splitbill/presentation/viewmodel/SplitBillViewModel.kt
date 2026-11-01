@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -588,6 +589,7 @@ class SplitBillViewModel(
         get() = decimalSeparator().takeIf { it in TypedText.amountSeparators } ?: '.'
 
     private companion object {
-        const val MAX_PARTS = 99L
+        // Why: the same cap as the group's "Divisão padrão", which a new bill opens with.
+        const val MAX_PARTS = GroupDefaultSplit.MAX_WEIGHT
     }
 }

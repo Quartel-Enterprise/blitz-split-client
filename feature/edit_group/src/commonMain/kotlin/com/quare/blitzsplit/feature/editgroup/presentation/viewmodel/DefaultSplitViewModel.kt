@@ -168,7 +168,7 @@ class DefaultSplitViewModel(
         }
         viewModelScope.launch {
             val incomes = getSplitIncomes(route.groupId).getOrDefault(emptyMap())
-            if (incomes.isEmpty()) return@launch
+            if (incomes.isEmpty() || !split.isGivenBy(incomes)) return@launch
             opened = opened?.copy(incomes = incomes.filterValues { it > 0 })
             updateForm { state ->
                 state.copy(
@@ -184,6 +184,14 @@ class DefaultSplitViewModel(
             }
         }
     }
+
+    /*
+     * Why: another member may have saved other percentages for "Pela renda" since this device typed its incomes, which
+     * then no longer give what the group keeps: the screen shows the group's, not the stale incomes'.
+     */
+    private fun GroupDefaultSplit.isGivenBy(incomes: Map<String, Long>): Boolean =
+        mode != DefaultSplitMode.INCOME ||
+            IncomePercents.of(weights.keys.map { it to (incomes[it] ?: 0L) }) == weights
 
     // Why: someone the saved split has, or a newcomer as its way to split starts them.
     private fun personOf(
@@ -273,7 +281,8 @@ class DefaultSplitViewModel(
                 // Why: the screen may not be on top to leave, so it starts from what it just saved.
                 opened = Opened(
                     split = state.defaultSplit,
-                    incomes = state.incomes,
+                    // Why: as isChangedFrom compares them, or an income typed as 0 keeps Salvar on after saving.
+                    incomes = state.incomes.filterValues { it > 0 },
                 )
                 updateForm { current ->
                     current.copy(

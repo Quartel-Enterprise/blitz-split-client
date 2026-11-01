@@ -9,18 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
+import { defaultSplitModeLabel } from '@/features/split-bill/splitText'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t, type MessageKey } from '@/i18n'
+import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
 import { cn } from '@/lib/utils'
-
-const defaultSplitModes: Record<string, MessageKey> = {
-  equal: 'defaultSplit_modeEqual',
-  shares: 'defaultSplit_modeShares',
-  percent: 'defaultSplit_modePercent',
-  income: 'defaultSplit_modeIncome',
-}
 
 const formId = 'edit-group-form'
 const nameId = 'edit-group-name'
@@ -187,7 +181,7 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
           <span className="text-sm font-medium">{t('editGroup_defaultSplit')}</span>
           <span className="text-[13px] text-muted-foreground">{t('editGroup_defaultSplitHelp')}</span>
         </span>
-        <span className="text-sm text-muted-foreground">{t(defaultSplitModes[state.defaultSplitMode] ?? 'defaultSplit_modeEqual')}</span>
+        <span className="text-sm text-muted-foreground">{defaultSplitModeLabel(state.defaultSplitMode)}</span>
         <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
       </button>
 
