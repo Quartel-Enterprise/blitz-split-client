@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
@@ -82,11 +83,14 @@ internal fun GroupTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onAction(GroupAction.BACK) }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = stringResource(R.string.group_detail_back),
-                )
+            // Why: beside the home's list the group has nothing to go back to; another row takes its place.
+            if (!LocalInDetailPane.current) {
+                IconButton(onClick = { onAction(GroupAction.BACK) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = stringResource(R.string.group_detail_back),
+                    )
+                }
             }
         },
         actions = {

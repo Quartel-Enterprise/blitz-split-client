@@ -47,6 +47,7 @@ import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
@@ -195,11 +196,14 @@ private fun MembersHeader(
             top = 8.dp,
         ),
     ) {
-        IconButton(onClick = { onEvent(MembersUiEvent.OnBackClicked) }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                contentDescription = stringResource(R.string.members_back),
-            )
+        // Why: beside the home's list the group has nothing to go back to; another row takes its place.
+        if (!LocalInDetailPane.current) {
+            IconButton(onClick = { onEvent(MembersUiEvent.OnBackClicked) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = stringResource(R.string.members_back),
+                )
+            }
         }
         Text(
             text = state.groupName,

@@ -73,6 +73,7 @@ class GlobalBalancesViewModel(
                 isOnline = true,
                 isLoaded = false,
                 recordedPayment = null,
+                pickedPersonId = null,
             ),
         )
 
@@ -142,6 +143,14 @@ class GlobalBalancesViewModel(
             is GlobalBalancesUiEvent.OnFilterChanged -> changeFilter(event.filter)
 
             is GlobalBalancesUiEvent.OnPersonExpandToggled -> toggle(event.personId)
+
+            /*
+             * Why: only someone the filter lists, so a stale tap never picks a person a sync just settled, nor one the
+             * filter hides, whom the pane would jump to once the filter changes.
+             */
+            is GlobalBalancesUiEvent.OnPersonSelected -> if (isListed(event.personId)) {
+                uiState.update { it.copy(pickedPersonId = event.personId) }
+            }
 
             is GlobalBalancesUiEvent.OnSettleClicked -> openSettleUp(event.personId, owesYou = false)
 
@@ -297,6 +306,10 @@ class GlobalBalancesViewModel(
     }
 
     private fun personOrNull(personId: String): PersonBalance? = balances.people.firstOrNull { idOf(it) == personId }
+
+    private fun isListed(personId: String): Boolean = uiState.value.sections.any { section ->
+        section.rows.any { it.id == personId }
+    }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 

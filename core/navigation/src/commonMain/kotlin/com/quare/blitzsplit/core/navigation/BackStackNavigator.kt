@@ -29,6 +29,13 @@ class BackStackNavigator(
         entries.value = listOf(route)
     }
 
+    override fun replaceAbove(
+        size: Int,
+        route: Route,
+    ) {
+        entries.update { stack -> stack.take(size.coerceIn(1, stack.size)) + route }
+    }
+
     override fun popTo(size: Int) {
         entries.update { stack -> stack.take(size.coerceIn(1, stack.size)) }
     }

@@ -139,6 +139,53 @@ Saldos, the home's second tab, is a route over the groups (`Route.GlobalBalances
 (`Navigator.popToGroups`, which also closes whatever either tab opened) and back return to them, and on Apple the `TabView` selects Balances while it is right above the groups. Contatos and Atividade are
 drawn on every platform but not built yet: their events emit `ShowComingSoon` and the selection stays where it was.
 
+### List and detail on wide windows
+
+A wide window draws some lists with what they opened beside them (the canvas' list and detail). The back stack stays
+the only source of truth: nothing about the window reaches it, and a phone walks the same entries.
+
+**A route in the pane** (Grupos, 5.1). The group's tabs (`GroupDetail`, `Balances`, `Members`) stay routes right
+above `Route.Groups`. Each UI decides from its own window whether it draws that entry beside the list or over it:
+
+- Android: `AppNavDisplay` adds Material's `ListDetailSceneStrategy` (`adaptive-navigation3`) after the dialog and
+  sheet strategies. `Route.Groups` carries `listPane` metadata (with its width and a placeholder), the group's tabs
+  `detailPane`. `rememberHomeListDetailStrategy` caps the directive at two panes only where `rememberListDetailLayout`
+  says so (expanded width, not a phone lying down: a tablet lying down and an unfolded book, the hinge kept out),
+  else at one, which leaves the strategy out and the screens as on a phone. The strategy only claims the pane entries
+  on top, so any other route above the groups (Estatísticas, the profile) is a scene of its own, full screen, and a
+  dialog or sheet over the group keeps the scene drawn under it. `LocalInDetailPane` tells a screen it sits in the
+  pane: `InGroupPane` reads it from the scene itself (`LocalListDetailSceneScope`, which Material provides to the
+  panes it draws, while the list pane shows), never from the window, so a tab drawn alone keeps its back arrow.
+  `rememberDeviceLayout` gives it a tablet's upright column, and it drops its back arrow and "Rachar conta", which
+  the list's rail has.
+- Apple: `GroupsColumns` (the Groups and Search tabs) keeps the list's `NavigationStack` and, on an iPad lying down
+  (`ScreenLayout.showsListDetailOnPad`) while the path holds nothing but the group's tabs (or nothing), roots a second
+  one beside it with the first of them (else a placeholder). Any other route above the groups goes back to the one
+  stack, which pushes the whole path over the list as upright, the way Android's strategy decides; the sheets, which
+  the path leaves out, keep the columns under them. Only the tab in front reports the pane, once it has a size. The
+  Mac's groups are a table and keep one stack.
+- The web's Grupos is a table on every width; it draws no pane.
+
+The UI tells the ViewModel whether it draws the pane (`GroupsUiEvent.OnDetailPaneChanged`), since that changes
+what a tap means: with the pane, the list is in sight while only the pane is above it (`showsOnlyPaneAboveGroups`),
+so a row opens its group in the place of the one shown (`Navigator.openBesideGroups`, one `replaceAbove` step);
+without it, only the groups on top take taps, so a late tap on a phone never stacks a second group. The pane's group
+comes back as state (`GroupsUiState.selectedGroupId`, from `groupBesideGroupsOrNull`), which the list highlights only
+while it draws the pane. With the pane, the search opens its first result there as it is typed
+(`GroupsDetailPane.preview`). Back from the pane closes it to the placeholder; turning the device upright leaves the
+group open, drawn over the list.
+
+**A selection in the ViewModel** (Saldos, flow 8). When the detail is not a screen of its own, it is state: the
+ViewModel keeps what was picked (`GlobalBalancesUiEvent.OnPersonSelected`, ignored for someone the filter doesn't
+list) and says who the pane shows (`GlobalBalancesUiState.selectedPerson`: the pick while the filter lists it, else
+the first row), which every UI draws as it comes, the web's presenter handing over that row. Each UI draws the
+pane where its window has room (Android's `rememberListDetailLayout`, the iPad lying down, a Mac window from 700 pt
+for the inspector column, the web from 1024 px), and the rows inline everywhere else. No route, so nothing changes
+on the back stack, and nothing to tell the ViewModel about the window.
+
+Pick the first when the detail is a screen that also opens on its own (it already has a route); the second when it
+only exists beside its list.
+
 ### Adding a route
 
 1. Add a `data object` (or `data class`) to `Route`.

@@ -52,6 +52,7 @@ private fun GroupsOfflinePreview() {
                 layout = GroupsLayout.initial,
                 recordedPayment = null,
                 search = GroupsSearch.closed,
+                selectedGroupId = null,
             ),
             onEvent = {},
         )
@@ -201,6 +202,7 @@ private fun buildPreviewState(
         layout = layout,
         recordedPayment = null,
         search = search,
+        selectedGroupId = null,
     )
 }
 

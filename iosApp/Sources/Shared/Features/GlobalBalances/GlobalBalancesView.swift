@@ -63,22 +63,43 @@ final class GlobalBalancesModel {
 }
 
 /// The home's Balances tab: each person once, netted across every group. The overall balance and the filter on top,
-/// then whom you owe and who owes you, "By group" opening in the row (the canvas' inspector on iPad and Mac waits for
-/// the app to have a list and detail). No "Split a bill": the actions are on each person.
+/// then whom you owe and who owes you. On iPhone, on iPad upright and in a narrow Mac window "By group" opens in the
+/// row; on iPad lying down and in a wide Mac window the person picked fills a column beside the list (the Mac's
+/// inspector), with their groups and actions. No "Split a bill": the actions are on each person.
 struct GlobalBalancesView: View {
     let route: RouteGlobalBalances
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: GlobalBalancesModel?
+    /// The whole screen, the column beside the list included, so showing it never changes what decides it.
+    @State private var layout = ScreenLayout()
+
+    /// The canvas' list and detail: an iPad lying down, a Mac window wide enough for the inspector.
+    private var showsDetail: Bool {
+        #if os(macOS)
+        layout.size.width >= PersonInspector.minimumScreenWidth
+        #else
+        layout.showsListDetailOnPad
+        #endif
+    }
 
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
-                GlobalBalancesList(model: model)
+                HStack(spacing: 0) {
+                    GlobalBalancesList(model: model, showsDetail: showsDetail)
+                    if showsDetail {
+                        Divider()
+                            .ignoresSafeArea()
+                        PersonInspector(model: model)
+                            .frame(width: PersonInspector.width)
+                    }
+                }
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
             }
         }
+        .measuringScreenLayout($layout)
         .navigationTitle("Balances")
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
@@ -146,6 +167,8 @@ private struct FilterPicker: View {
 
 private struct GlobalBalancesList: View {
     let model: GlobalBalancesModel
+    /// The person picked shows beside the list, so a row picks them instead of opening "By group" in place.
+    let showsDetail: Bool
 
     private var state: GlobalBalancesUiState {
         model.state
@@ -195,7 +218,8 @@ private struct GlobalBalancesList: View {
                 }
             }
             #endif
-            if let emptyState = state.emptyState {
+            // Beside the list, the empty state takes the detail's column instead
+            if let emptyState = state.emptyState, !showsDetail {
                 Section {
                     EmptyBalances(model: model, emptyState: emptyState, total: state.emptyStateTotal)
                 }
@@ -204,7 +228,11 @@ private struct GlobalBalancesList: View {
             ForEach(state.sections, id: \.isYouOwe) { section in
                 Section {
                     ForEach(section.rows, id: \.id) { row in
-                        PersonRowView(model: model, row: row)
+                        if showsDetail {
+                            PersonPickRow(model: model, row: row, isSelected: row.id == state.selectedPerson?.id)
+                        } else {
+                            PersonRowView(model: model, row: row)
+                        }
                     }
                 } header: {
                     HStack {
@@ -231,41 +259,9 @@ private struct PersonRowView: View {
         PaymentCopy.name(row.name)
     }
 
-    private var direction: LocalizedStringKey {
-        row.owesYou ? "owes you" : "you owe"
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 12) {
-                if let color = row.color {
-                    AvatarPhoto(initial: row.initials, color: color, photoUrl: nil, size: 40)
-                        .accessibilityHidden(true)
-                } else {
-                    Circle()
-                        .fill(.fill.tertiary)
-                        .frame(width: 40, height: 40)
-                        .accessibilityHidden(true)
-                }
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(verbatim: name)
-                        .lineLimit(1)
-                    Text(verbatim: GlobalBalancesCopy.meta(row))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 8)
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text(verbatim: row.currency.formatSigned(row.netMinor))
-                        .font(.subheadline.weight(.semibold))
-                        .monospacedDigit()
-                        .foregroundStyle(row.owesYou ? Palette.accent : Palette.negative)
-                    Text(direction)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            PersonSummary(row: row, name: name)
             if row.isExpanded {
                 PersonGroupsList(groups: row.groups, currency: row.currency)
                     .padding(.leading, 52)
@@ -284,31 +280,216 @@ private struct PersonRowView: View {
                 .buttonStyle(.borderless)
                 .accessibilityLabel(row.isExpanded ? Text("Hide \(name) by group") : Text("Show \(name) by group"))
                 Spacer()
-                if row.owesYou {
-                    Button("Got paid") {
-                        model.send(GlobalBalancesUiEventOnReceivedClicked(personId: row.id))
-                    }
-                    .buttonStyle(.borderless)
-                    .accessibilityLabel(Text("Got paid by \(name)"))
-                    Button("Request") {
-                        model.send(GlobalBalancesUiEventOnChargeClicked(personId: row.id))
-                    }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                    .accessibilityLabel(Text("Request from \(name)"))
-                } else {
-                    Button("Settle up") {
-                        model.send(GlobalBalancesUiEventOnSettleClicked(personId: row.id))
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
-                    .accessibilityLabel(Text("Settle up with \(name)"))
-                }
+                PersonActions(model: model, row: row, name: name)
             }
             .padding(.leading, 52)
             .font(.subheadline.weight(.semibold))
         }
         .padding(.vertical, 4)
+    }
+}
+
+/// The face, the name with its groups, and the net with whose way it goes, alike in the row and the list's pick.
+private struct PersonSummary: View {
+    let row: PersonRow
+    let name: String
+
+    private var direction: LocalizedStringKey {
+        row.owesYou ? "owes you" : "you owe"
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            PersonFace(row: row, size: 40)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(verbatim: name)
+                    .lineLimit(1)
+                Text(verbatim: GlobalBalancesCopy.meta(row))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            Spacer(minLength: 8)
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(verbatim: row.currency.formatSigned(row.netMinor))
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(row.owesYou ? Palette.accent : Palette.negative)
+                Text(direction)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+/// Someone's face, blank for someone no longer in the group, as the group's Balances draws them.
+private struct PersonFace: View {
+    let row: PersonRow
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let color = row.color {
+                AvatarPhoto(initial: row.initials, color: color, photoUrl: nil, size: size)
+            } else {
+                Circle()
+                    .fill(.fill.tertiary)
+                    .frame(width: size, height: size)
+            }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// Got paid and Request for someone who owes you, else Settle up: in the row and in the column beside the list.
+private struct PersonActions: View {
+    let model: GlobalBalancesModel
+    let row: PersonRow
+    let name: String
+
+    var body: some View {
+        if row.owesYou {
+            Button("Got paid") {
+                model.send(GlobalBalancesUiEventOnReceivedClicked(personId: row.id))
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel(Text("Got paid by \(name)"))
+            Button("Request") {
+                model.send(GlobalBalancesUiEventOnChargeClicked(personId: row.id))
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .accessibilityLabel(Text("Request from \(name)"))
+        } else {
+            Button("Settle up") {
+                model.send(GlobalBalancesUiEventOnSettleClicked(personId: row.id))
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .accessibilityLabel(Text("Settle up with \(name)"))
+        }
+    }
+}
+
+/// A person in the list beside the detail: a tap shows them in the column beside it, the one shown highlighted.
+private struct PersonPickRow: View {
+    let model: GlobalBalancesModel
+    let row: PersonRow
+    let isSelected: Bool
+
+    var body: some View {
+        Button {
+            model.send(GlobalBalancesUiEventOnPersonSelected(personId: row.id))
+        } label: {
+            PersonSummary(row: row, name: PaymentCopy.name(row.name))
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .padding(.vertical, 2)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .selectedRowBackground(isSelected)
+    }
+}
+
+/// The column beside the list (the Mac's inspector): the person picked, every group they are in, what they owe or are
+/// owed with the actions, "By group" and why one amount settles every group; with nothing open, the empty state.
+private struct PersonInspector: View {
+    let model: GlobalBalancesModel
+
+    /// The column's width, and the narrowest Mac window content that still fits it beside the list.
+    static let width: CGFloat = 380
+    static let minimumScreenWidth: CGFloat = 700
+
+    var body: some View {
+        ScrollView {
+            if let emptyState = model.state.emptyState {
+                EmptyBalances(model: model, emptyState: emptyState, total: model.state.emptyStateTotal)
+                    .padding(.top, 40)
+            } else if let person = model.state.selectedPerson {
+                PersonDetail(model: model, row: person)
+                    .id(person.id)
+            }
+        }
+        .scrollContentBackground(.hidden)
+        .background(Palette.groupedBackground)
+    }
+}
+
+private struct PersonDetail: View {
+    let model: GlobalBalancesModel
+    let row: PersonRow
+
+    private var name: String {
+        PaymentCopy.name(row.name)
+    }
+
+    private var groups: String {
+        row.groups.map(\.groupName).joined(separator: ", ")
+    }
+
+    private var direction: String {
+        row.owesYou
+            ? String(localized: "\(name) owes you")
+            : String(
+                localized: "You owe %@ (a member)",
+                defaultValue: "You owe \(name)",
+                comment: "A pair in Balances; %@ is whom this device's user owes",
+            )
+    }
+
+    private var note: String {
+        guard row.isNetOfSeveralGroups else { return String(localized: "Only one group open with \(name).") }
+        let amount = row.currency.format(abs(row.netMinor))
+        return row.owesYou
+            ? String(localized: "The net already offsets the groups: Request and Got paid use \(amount). The app records a payment in each group.")
+            : String(localized: "The net already offsets the groups: Settle up uses \(amount). The app records a payment in each group.")
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 14) {
+                PersonFace(row: row, size: 56)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(verbatim: name)
+                        .font(.title2.weight(.bold))
+                        .lineLimit(1)
+                        .accessibilityAddTraits(.isHeader)
+                    Text(verbatim: row.isGuest ? String(localized: "\(groups) · guest without the app") : groups)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            VStack(alignment: .leading, spacing: 10) {
+                Text(verbatim: direction)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(verbatim: row.currency.formatSigned(row.netMinor))
+                    .font(.system(size: 34, weight: .bold))
+                    .monospacedDigit()
+                    .foregroundStyle(row.owesYou ? Palette.accent : Palette.negative)
+                HStack(spacing: 8) {
+                    Spacer()
+                    PersonActions(model: model, row: row, name: name)
+                }
+                .font(.subheadline.weight(.semibold))
+            }
+            .padding(16)
+            .background(Palette.card, in: .rect(cornerRadius: 16))
+            Text("By group")
+                .font(.headline)
+                .accessibilityAddTraits(.isHeader)
+            PersonGroupsList(groups: row.groups, currency: row.currency)
+                .padding(.horizontal, 12)
+                .background(Palette.card, in: .rect(cornerRadius: 16))
+            Text(verbatim: note)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(20)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("Balance with \(name)"))
     }
 }
 

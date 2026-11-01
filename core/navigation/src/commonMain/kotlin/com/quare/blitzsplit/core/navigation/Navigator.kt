@@ -15,6 +15,15 @@ interface Navigator {
     fun replaceAll(route: Route)
 
     /*
+     * Why: keeps the first size entries and pushes route over them in one step, so a UI never draws the stack in
+     * between: a group tapped in a list and detail takes the place of the group shown beside the list.
+     */
+    fun replaceAbove(
+        size: Int,
+        route: Route,
+    )
+
+    /*
      * Why: a native back gesture (SwiftUI's swipe, the browser's back button) already moved the
      * screen; the back stack only catches up with how many entries remain.
      */

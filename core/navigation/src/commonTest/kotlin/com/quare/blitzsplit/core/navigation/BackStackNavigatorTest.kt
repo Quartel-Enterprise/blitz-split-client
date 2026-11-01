@@ -123,6 +123,38 @@ class BackStackNavigatorTest {
         assertEquals(listOf(Route.Welcome), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN a group over the groups WHEN replacing above the groups THEN the route takes the place of the group`() {
+        // Given
+        prepareScenario(startRoute = Route.Groups)
+        navigator.navigate(Route.GroupDetail("trip"))
+        navigator.navigate(Route.GroupStats("trip"))
+
+        // When
+        navigator.replaceAbove(
+            size = 1,
+            route = Route.GroupDetail("flat"),
+        )
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.GroupDetail("flat")), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN one route WHEN replacing above zero entries THEN keeps the start route under it`() {
+        // Given
+        prepareScenario(startRoute = Route.Groups)
+
+        // When
+        navigator.replaceAbove(
+            size = 0,
+            route = Route.Profile,
+        )
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
     private fun prepareScenario(startRoute: Route) {
         navigator = BackStackNavigator(startRoute = startRoute)
     }

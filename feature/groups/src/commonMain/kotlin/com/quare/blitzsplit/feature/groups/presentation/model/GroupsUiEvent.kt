@@ -15,6 +15,15 @@ sealed interface GroupsUiEvent : UiEvent {
 
     data object OnProfileClicked : GroupsUiEvent
 
+    /*
+     * Why: the UI draws, or stops drawing, the group beside the list, as its window decides (a tablet lying down, an
+     * unfolded book, an iPad lying down). Then a tap on the list replaces the group beside it, and the search opens
+     * its first result there.
+     */
+    data class OnDetailPaneChanged(
+        val isShown: Boolean,
+    ) : GroupsUiEvent
+
     data object OnBalancesTabClicked : GroupsUiEvent
 
     // Why: the tab bar of iOS and the Mac's sidebar stay over what the groups opened, Saldos included.

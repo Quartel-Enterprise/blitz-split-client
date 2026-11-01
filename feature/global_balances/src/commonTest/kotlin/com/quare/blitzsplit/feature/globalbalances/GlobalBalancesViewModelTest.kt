@@ -211,6 +211,127 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN nobody picked WHEN Saldos opens THEN the pane shows the first person listed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val selected = viewModel.uiState.value.selectedPerson
+
+            // Then
+            assertEquals("Bruno", selected?.name)
+        }
+
+    @Test
+    fun `GIVEN everyone WHEN picking Carla THEN the pane shows her`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carla = viewModel.uiState.value.people
+            .single { it.name == "Carla" }
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
+
+        // Then
+        assertEquals(
+            carla.id,
+            viewModel.uiState.value.selectedPerson
+                ?.id,
+        )
+    }
+
+    @Test
+    fun `GIVEN Carla picked WHEN filtering Voce deve THEN the pane shows whom you owe`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carla = viewModel.uiState.value.people
+            .single { it.name == "Carla" }
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+
+        // Then
+        assertEquals(
+            "Bruno",
+            viewModel.uiState.value.selectedPerson
+                ?.name,
+        )
+    }
+
+    @Test
+    fun `GIVEN Carla picked WHEN going back to Tudo THEN the pane shows her again`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val carla = viewModel.uiState.value.people
+            .single { it.name == "Carla" }
+        viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
+        viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.ALL))
+
+        // Then
+        assertEquals(
+            carla.id,
+            viewModel.uiState.value.selectedPerson
+                ?.id,
+        )
+    }
+
+    @Test
+    fun `GIVEN someone not listed WHEN a stale pick arrives THEN the pane keeps the first person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected("user:nobody|BRL"))
+
+            // Then
+            assertNull(viewModel.uiState.value.pickedPersonId)
+            assertEquals(
+                "Bruno",
+                viewModel.uiState.value.selectedPerson
+                    ?.name,
+            )
+        }
+
+    @Test
+    fun `GIVEN Voce deve WHEN a stale pick of someone who owes you arrives THEN Tudo keeps the first person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(filter = BalancesFilter.YOU_OWE)
+            val carla = viewModel.uiState.value.people
+                .single { it.name == "Carla" }
+            viewModel.onEvent(GlobalBalancesUiEvent.OnPersonSelected(carla.id))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.ALL))
+
+            // Then
+            assertNull(viewModel.uiState.value.pickedPersonId)
+            assertEquals(
+                "Bruno",
+                viewModel.uiState.value.selectedPerson
+                    ?.name,
+            )
+        }
+
+    @Test
+    fun `GIVEN everything settled WHEN Saldos opens THEN the pane shows nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(bills = emptyList())
+
+        // When
+        val selected = viewModel.uiState.value.selectedPerson
+
+        // Then
+        assertNull(selected)
+    }
+
+    @Test
     fun `GIVEN a row opened on Te devem WHEN a sync leaves that person alone THEN the row stays open`() =
         runTest(testDispatcher) {
             // Given

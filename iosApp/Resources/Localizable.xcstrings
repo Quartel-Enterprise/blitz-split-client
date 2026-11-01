@@ -38,6 +38,17 @@
         }
       }
     },
+    "%@ · guest without the app" : {
+      "comment" : "The person beside Balances' list nobody joined as; %@ is their groups by name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · convidado sem app"
+          }
+        }
+      }
+    },
     "%lld days" : {
       "comment" : "How long ago a group last changed, under its name on the home",
       "localizations" : {
@@ -418,6 +429,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Voltar para Grupos"
+          }
+        }
+      }
+    },
+    "Balance with %@" : {
+      "comment" : "VoiceOver: the column beside Balances' list; %@ is the person shown",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo com %@"
           }
         }
       }
@@ -1176,6 +1198,17 @@
         }
       }
     },
+    "Only one group open with %@." : {
+      "comment" : "Under the one group of someone beside Balances' list; %@ is their name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só um grupo em aberto com %@."
+          }
+        }
+      }
+    },
     "Open · %lld" : {
       "comment" : "Header of the home's open groups, with how many",
       "localizations" : {
@@ -1401,6 +1434,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O grupo “%@” foi apagado."
+          }
+        }
+      }
+    },
+    "The net already offsets the groups: Request and Got paid use %@. The app records a payment in each group." : {
+      "comment" : "Under the groups of someone who owes you, beside Balances' list; %@ is the net",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O líquido já compensa os grupos: Cobrar e Recebi usam %@. O app anota um pagamento em cada grupo."
+          }
+        }
+      }
+    },
+    "The net already offsets the groups: Settle up uses %@. The app records a payment in each group." : {
+      "comment" : "Under the groups of someone you owe, beside Balances' list; %@ is the net",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O líquido já compensa os grupos: Acertar usa %@. O app anota um pagamento em cada grupo."
           }
         }
       }

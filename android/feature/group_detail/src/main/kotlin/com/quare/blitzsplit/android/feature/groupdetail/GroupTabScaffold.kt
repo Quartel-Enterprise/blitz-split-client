@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
@@ -91,7 +92,8 @@ internal fun GroupTabScaffold(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            if (frame.showsSplitBillButton) {
+            // Why: beside the home's list, the rail's "Rachar conta" already marks this group.
+            if (frame.showsSplitBillButton && !LocalInDetailPane.current) {
                 ExtendedFloatingActionButton(
                     onClick = { onAction(GroupAction.SPLIT_BILL) },
                     icon = { Icon(Icons.Outlined.Add, contentDescription = null) },

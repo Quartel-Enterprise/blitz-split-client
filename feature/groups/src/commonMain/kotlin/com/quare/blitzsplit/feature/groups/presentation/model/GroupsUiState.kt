@@ -55,6 +55,11 @@ data class GroupsUiState(
      */
     val recordedPayment: PaymentNotice?,
     val search: GroupsSearch,
+    /*
+     * Why: the group whose Despesas, Saldos or Membros is open over the groups. A list and detail (a tablet lying down,
+     * an unfolded book) draws it beside the list and highlights its row or card; a phone never sees the list then.
+     */
+    val selectedGroupId: String?,
 ) {
     // Why: "Buscar" only shows once there is a group, as the empty home has nothing to look in.
     val canSearch: Boolean

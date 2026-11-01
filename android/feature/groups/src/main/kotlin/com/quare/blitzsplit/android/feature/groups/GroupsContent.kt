@@ -70,6 +70,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
@@ -92,6 +94,8 @@ fun GroupsContent(
     // Why: the row whose long press opened the actions sheet; it closes once its group leaves the list.
     var actionsGroupId by rememberSaveable { mutableStateOf<String?>(null) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    // Why: the group open beside the list in a list and detail, whose row or card shows it.
+    val listDetail = rememberListDetailLayout()
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
@@ -168,6 +172,7 @@ fun GroupsContent(
                             state = state,
                             onEvent = onEvent,
                             layout = layout,
+                            listDetail = listDetail,
                             listState = listState,
                             onLongPress = { actionsGroupId = it.id },
                         )
@@ -241,6 +246,7 @@ private fun GroupsListPane(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
+    listDetail: ListDetailLayout?,
     listState: LazyGridState,
     onLongPress: (GroupRow) -> Unit,
 ) {
@@ -262,8 +268,8 @@ private fun GroupsListPane(
                 .then(if (layout.isTablet) Modifier.widthIn(max = 560.dp) else Modifier)
                 .fillMaxSize(),
             contentPadding = PaddingValues(
-                start = horizontalPaddingOf(layout),
-                end = horizontalPaddingOf(layout),
+                start = horizontalPaddingOf(layout, listDetail),
+                end = horizontalPaddingOf(layout, listDetail),
                 top = 4.dp,
                 // Why: room for the FAB over the last row.
                 bottom = 96.dp,
@@ -290,12 +296,19 @@ private fun GroupsListPane(
                 state = state,
                 onEvent = onEvent,
                 onLongPress = onLongPress,
+                selectedGroupId = state.selectedGroupId.takeIf { listDetail != null },
             )
         }
     }
 }
 
-private fun horizontalPaddingOf(layout: DeviceLayout): Dp = if (layout.isTablet) {
+// Why: a list beside its detail keeps the canvas' tighter margins, the tightest on a book's half.
+private fun horizontalPaddingOf(
+    layout: DeviceLayout,
+    listDetail: ListDetailLayout? = null,
+): Dp = if (listDetail != null) {
+    if (listDetail.isBook) 16.dp else 24.dp
+} else if (layout.isTablet) {
     40.dp
 } else if (layout.usesNavigationRail) {
     32.dp

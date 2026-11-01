@@ -26,6 +26,13 @@
     <string name="global_balances_settle_with">Settle up with %s</string>
     <string name="global_balances_charge">Request</string>
     <string name="global_balances_charge_person">Request from %s</string>
+    <string name="global_balances_detail_pane">Balance with %s</string>
+    <string name="global_balances_detail_owes_you">%s owes you</string>
+    <string name="global_balances_detail_you_owe">You owe %s</string>
+    <string name="global_balances_detail_guest">%s · guest without the app</string>
+    <string name="global_balances_detail_note_owed">The net already offsets the groups: Request and Received use %s. The app records a payment in each group.</string>
+    <string name="global_balances_detail_note_settle">The net already offsets the groups: Settle up uses %s. The app records a payment in each group.</string>
+    <string name="global_balances_detail_note_single">Only one group open with %s.</string>
     <string name="global_balances_settled_title">All settled</string>
     <string name="global_balances_settled_body">Nobody owes you and you owe nobody. When someone adds a bill, the balance shows up here.</string>
     <string name="global_balances_settled_action">See groups</string>

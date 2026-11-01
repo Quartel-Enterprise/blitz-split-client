@@ -8,6 +8,8 @@ struct GroupsGrid: View {
     let groups: [GroupRow]
     let size: GroupGridSize
     let isOnline: Bool
+    /// The group open beside the list on an iPad lying down, whose card is highlighted; nil elsewhere.
+    var selectedGroupId: String?
     let send: (any GroupsUiEvent) -> Void
 
     var body: some View {
@@ -17,7 +19,14 @@ struct GroupsGrid: View {
             spacing: GroupCardMetrics.spacing,
         ) {
             ForEach(groups, id: \.id) { group in
-                GroupGridCard(group: group, size: size, metrics: metrics, isOnline: isOnline, send: send)
+                GroupGridCard(
+                    group: group,
+                    size: size,
+                    metrics: metrics,
+                    isOnline: isOnline,
+                    isSelected: group.id == selectedGroupId,
+                    send: send,
+                )
             }
         }
     }
@@ -86,6 +95,7 @@ private struct GroupGridCard: View {
     let size: GroupGridSize
     let metrics: GroupCardMetrics
     let isOnline: Bool
+    let isSelected: Bool
     let send: (any GroupsUiEvent) -> Void
 
     var body: some View {
@@ -106,10 +116,14 @@ private struct GroupGridCard: View {
             }
             .padding(metrics.padding)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(Palette.card, in: .rect(cornerRadius: GroupCardMetrics.cornerRadius))
+            .background(
+                isSelected ? Palette.accent.opacity(0.16) : Palette.card,
+                in: .rect(cornerRadius: GroupCardMetrics.cornerRadius),
+            )
             .contentShape(.rect(cornerRadius: GroupCardMetrics.cornerRadius))
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
         .overlay(alignment: .topTrailing) {
             GroupRowMenuButton(group: group, isOnline: isOnline, send: send)
                 .padding(4)

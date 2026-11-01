@@ -8,6 +8,12 @@ import SwiftUI
 /// is its own tab (GroupsSearchView).
 struct GroupsList: View {
     let model: GroupsModel
+    @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+
+    /// The group open beside the list on an iPad lying down, whose row or card is highlighted.
+    private var selectedGroupId: String? {
+        showsGroupBesideList ? model.state.selectedGroupId : nil
+    }
 
     var body: some View {
         let state = model.state
@@ -38,6 +44,7 @@ struct GroupsList: View {
                             groups: state.openGroups,
                             size: state.layout.gridSize,
                             isOnline: state.exit.isOnline,
+                            selectedGroupId: selectedGroupId,
                             send: { model.send($0) },
                         )
                         .listRowInsets(EdgeInsets())
@@ -104,6 +111,8 @@ struct GroupsList: View {
         .contextMenu {
             GroupRowActions(group: group, isOnline: isOnline, send: { model.send($0) })
         }
+        .accessibilityAddTraits(group.id == selectedGroupId ? .isSelected : [])
+        .selectedRowBackground(group.id == selectedGroupId)
     }
 }
 
