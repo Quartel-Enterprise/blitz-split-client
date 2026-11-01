@@ -938,7 +938,13 @@ class EditBillViewModelTest {
     @Test
     fun `GIVEN a new bill WHEN tapping Apagar conta THEN nothing asks`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(screen = Route.SplitBill(GROUP_ID, expenseId = null))
+        prepareScenario(
+            screen = Route.SplitBill(
+                GROUP_ID,
+                expenseId = null,
+                picksGroupFirst = false,
+            ),
+        )
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100"))
         viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado"))
 
@@ -975,7 +981,7 @@ class EditBillViewModelTest {
 
     private fun SplitEditor.valueByMember(): Map<String, String> = rows.associate { it.person.id to it.valueText }
 
-    private val route = Route.SplitBill(GROUP_ID, EXPENSE_ID)
+    private val route = Route.SplitBill(GROUP_ID, EXPENSE_ID, picksGroupFirst = false)
 
     private val billDetail = Route.BillDetail(GROUP_ID, EXPENSE_ID)
 
@@ -1089,6 +1095,7 @@ class EditBillViewModelTest {
             decimalSeparator = { decimalSeparator },
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
+            observeGroupsByActivity = { groups.groups },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

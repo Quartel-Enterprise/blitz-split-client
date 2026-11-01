@@ -166,6 +166,7 @@ internal class GroupScreen(
             Route.SplitBill(
                 groupId = groupId,
                 expenseId = null,
+                picksGroupFirst = false,
             ),
         )
     }

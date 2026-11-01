@@ -11,9 +11,15 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 data class SplitBillUiState(
     // Why: "Editar conta" rather than "Rachar conta", with "Apagar conta" under the form.
     val isEditing: Boolean,
+    // Why: the group the bill goes to, which a new bill may change ("Rachar em qual grupo?").
+    val groupId: String,
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
+    // Why: the groups a new bill may go to, the most recently used first; empty while editing.
+    val groups: List<BillGroup>,
+    // Why: the "Rachar em qual grupo?" sheet, open while not null, with what is marked in it until "Continuar".
+    val groupSelection: GroupSelection?,
     val currency: GroupCurrency,
     // Why: in the order they were added to the group, the creator first.
     val people: List<BillPerson>,
@@ -117,6 +123,10 @@ data class SplitBillUiState(
     val canSave: Boolean
         get() = isLoaded && isAmountValid && isDescriptionValid && isPayerValid && split.addsUp && !isSaving &&
             !isDeleting
+
+    // Why: a new bill's group opens "Rachar em qual grupo?", once there is another group to pick; a saved one stays.
+    val canChangeGroup: Boolean
+        get() = !isEditing && isLoaded && groups.size > 1 && !isSaving
 
     // Why: "Apagar conta" only when editing, and not while saving or deleting.
     val canDelete: Boolean

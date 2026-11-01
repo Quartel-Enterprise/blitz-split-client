@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
+import com.quare.blitzsplit.core.expenses.domain.model.GroupActivity
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -42,11 +43,10 @@ internal fun rowOf(
     val receives = myBalance?.receivesMinor ?: 0L
     val owes = myBalance?.owesMinor ?: 0L
     val pendingBill = item.expenses.filter { it.isPending }.maxByOrNull { it.updatedAt }
-    // Why: when each one was saved, not its "Quando": a payment recorded today and dated last week is today's.
-    val activityAt = maxOf(
-        group.updatedAt,
-        item.expenses.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
-        item.settlements.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
+    val activityAt = GroupActivity.latestAtOf(
+        groupUpdatedAt = group.updatedAt,
+        expenses = item.expenses,
+        settlements = item.settlements,
     )
     return GroupRow(
         id = group.id,

@@ -398,10 +398,24 @@ class GroupsViewModel(
         viewModelScope.launch { uiAction.emit(GroupsUiAction.ShowComingSoon) }
     }
 
-    // Why: with no group yet "Rachar conta" makes one first, as the empty home does; picking a group (7.1i) comes later.
+    /*
+     * Why: with no group yet "Rachar conta" makes one first, as the empty home does. Otherwise it asks which group
+     * (7.1i), the most recently used one marked: the first row, since the rows go by their last activity.
+     */
     private fun openSplitBill() {
         if (!isOnTop()) return
-        if (uiState.value.groups.isEmpty()) navigator.navigate(Route.CreateGroup) else showComingSoon()
+        val recent = uiState.value.groups.firstOrNull()
+        if (recent == null) {
+            navigator.navigate(Route.CreateGroup)
+        } else {
+            navigator.navigate(
+                Route.SplitBill(
+                    groupId = recent.id,
+                    expenseId = null,
+                    picksGroupFirst = true,
+                ),
+            )
+        }
     }
 
     private fun refresh() {

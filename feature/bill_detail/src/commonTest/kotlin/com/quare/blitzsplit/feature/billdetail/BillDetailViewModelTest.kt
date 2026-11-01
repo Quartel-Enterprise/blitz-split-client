@@ -965,6 +965,7 @@ class BillDetailViewModelTest {
                 Route.SplitBill(
                     groupId = GROUP_ID,
                     expenseId = EXPENSE_ID,
+                    picksGroupFirst = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1255,6 +1256,7 @@ class BillDetailViewModelTest {
                     Route.SplitBill(
                         groupId = GROUP_ID,
                         expenseId = EXPENSE_ID,
+                        picksGroupFirst = false,
                     ),
                 ),
                 navigator.backStack.value,

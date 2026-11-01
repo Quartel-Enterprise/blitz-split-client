@@ -16,18 +16,18 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
+import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -47,7 +48,6 @@ import software.quare.connectivity.NetworkConnectivityObserver
 
 class SplitBillViewModel(
     private val route: Route.SplitBill,
-    private val navigator: Navigator,
     private val createExpense: CreateExpense,
     private val updateExpense: UpdateExpense,
     private val deleteExpense: DeleteExpense,
@@ -55,12 +55,19 @@ class SplitBillViewModel(
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val decimalSeparator: DeviceDecimalSeparator,
+    navigator: Navigator,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
+    observeGroupsByActivity: ObserveGroupsByActivity,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
-        field = MutableStateFlow(createInitialState())
+        field = MutableStateFlow(
+            createInitialBillState(
+                route = route,
+                now = currentTimeMillis(),
+            ),
+        )
 
     val uiAction: SharedFlow<SplitBillUiAction>
         field = MutableSharedFlow<SplitBillUiAction>()
@@ -69,6 +76,17 @@ class SplitBillViewModel(
     val actionWatcher: FlowWatcher<SplitBillUiAction> = FlowWatcher(uiAction)
 
     private val amountSeparators = setOf(',', '.')
+
+    private val exits = SplitBillExits(navigator, route)
+
+    // Why: the group the bill goes to, which "Rachar em qual grupo?" may change for a new bill.
+    private val groupId = MutableStateFlow(route.groupId)
+
+    // Why: the group last shown, so another one picked starts over who paid and how it splits among its own people.
+    private var shownGroupId: String? = null
+
+    // Why: the home's "Rachar conta" asks for the group once, as the groups first load; a sync never asks again.
+    private var hasAskedForGroup = false
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
@@ -92,15 +110,20 @@ class SplitBillViewModel(
      */
     init {
         val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
-        combine(observeGroup(route.groupId), expenseFlow, ::Pair)
+        combine(groupId.flatMapLatest { observeGroup(it) }, expenseFlow, ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }
             .launchIn(viewModelScope)
+        if (route.expenseId == null) {
+            observeGroupsByActivity()
+                .onEach(::showGroups)
+                .launchIn(viewModelScope)
+        }
         navigator.backStack
             .onEach {
                 if (isGroupGone) {
-                    leave()
+                    exits.leave()
                 } else if (isBillGone) {
-                    leaveToGroup()
+                    exits.leaveToGroup()
                 }
             }.launchIn(viewModelScope)
         connectivityObserver
@@ -112,6 +135,16 @@ class SplitBillViewModel(
     fun onEvent(event: SplitBillUiEvent) {
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
+
+            SplitBillUiEvent.OnGroupClicked -> uiState.update {
+                if (it.canChangeGroup) it.copy(groupSelection = GroupSelection(groupId = it.groupId)) else it
+            }
+
+            is SplitBillUiEvent.OnGroupPicked -> uiState.update { it.withGroupPicked(event.groupId) }
+
+            SplitBillUiEvent.OnGroupDone -> confirmGroup()
+
+            SplitBillUiEvent.OnGroupDismissed -> uiState.update { it.copy(groupSelection = null) }
 
             is SplitBillUiEvent.OnDescriptionChanged -> uiState.update {
                 it.copy(
@@ -180,46 +213,27 @@ class SplitBillViewModel(
             // Why: the question stays while the bill is being deleted, whatever closes it.
             SplitBillUiEvent.OnDeleteDismissed -> uiState.update { if (it.isDeleting) it else it.copy(deletion = null) }
 
-            SplitBillUiEvent.OnCloseClicked -> leave()
+            SplitBillUiEvent.OnCloseClicked -> exits.leave()
         }
     }
 
-    private fun createInitialState(): SplitBillUiState {
-        val now = currentTimeMillis()
-        val currency = GroupCurrency.BRL
-        return SplitBillUiState(
-            isEditing = route.expenseId != null,
-            groupName = "",
-            groupInitials = "",
-            groupColor = AvatarColor.entries.first(),
-            currency = currency,
-            people = emptyList(),
-            amountText = "",
-            description = "",
-            hasEditedAmount = false,
-            hasEditedDescription = false,
-            payerId = "",
-            severalPayers = null,
-            payerSelection = null,
-            payerAmounts = null,
-            spentAt = now,
-            spentDay = relativeDayOf(now),
-            latestSpentAt = now,
-            split = SplitEditor(
-                mode = SplitMode.EQUAL,
-                rows = emptyList(),
-                totalMinor = 0L,
-                payerIds = emptyList(),
-                currency = currency,
-            ),
-            splitEditor = null,
-            conflict = null,
-            deletion = null,
-            isOnline = true,
-            isSaving = false,
-            isDeleting = false,
-            isLoaded = false,
-        )
+    private fun showGroups(groups: List<Group>) {
+        val asks = route.picksGroupFirst && !hasAskedForGroup && groups.size > 1
+        hasAskedForGroup = true
+        uiState.update {
+            it.withGroups(
+                groups = groups.map(::toBillGroup),
+                asks = asks,
+                billGroupId = groupId.value,
+            )
+        }
+    }
+
+    private fun confirmGroup() {
+        val state = uiState.value
+        val picked = state.groupSelection?.groupId ?: return
+        uiState.update { it.copy(groupSelection = null) }
+        if (!state.isSaving && state.groups.any { it.id == picked }) groupId.value = picked
     }
 
     private fun handle(
@@ -229,7 +243,7 @@ class SplitBillViewModel(
         // Why: a group that comes back before this screen is on top again keeps it open.
         isGroupGone = group == null
         when {
-            group == null -> leave()
+            group == null -> exits.leave()
 
             route.expenseId == null -> show(group)
 
@@ -260,7 +274,7 @@ class SplitBillViewModel(
         isBillGone = true
         val expenseId = route.expenseId
         if (editedExpense != null && expenseId != null) noticeBillGone(route.groupId, expenseId)
-        leaveToGroup()
+        exits.leaveToGroup()
     }
 
     // Why: "Editar conta" opens filled in with the bill as it was saved, its split as it was typed.
@@ -327,11 +341,15 @@ class SplitBillViewModel(
 
     private fun show(group: Group) {
         val people = group.members.map { it.toBillPerson() }
+        val isAnotherGroup = shownGroupId != null && shownGroupId != group.id
+        shownGroupId = group.id
+        if (isAnotherGroup) amountAnchor = null
         // Why: a member who left takes their part of "Valores" along, so a new total rescales only the ones who stay.
         amountAnchor = amountAnchor?.let { (total, entries) ->
             total to entries.filter { entry -> people.any { it.id == entry.memberId } }
         }
-        uiState.update { state ->
+        uiState.update { current ->
+            val state = if (isAnotherGroup) current.toStartInAnotherGroup() else current
             /*
              * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the
              * group. A bill being edited keeps its payer even after they left it, so saving never moves who paid.
@@ -348,6 +366,7 @@ class SplitBillViewModel(
                     ?: people.firstOrNull()?.id.orEmpty()
             }
             val shown = state.copy(
+                groupId = group.id,
                 groupName = group.name,
                 groupInitials = Initials.of(group.name),
                 groupColor = group.color,
@@ -478,7 +497,7 @@ class SplitBillViewModel(
             val expenseId = route.expenseId
             val result = if (expenseId == null) {
                 createExpense(
-                    groupId = route.groupId,
+                    groupId = groupId.value,
                     description = state.description,
                     amountMinor = amountMinor,
                     payers = payers,
@@ -500,7 +519,7 @@ class SplitBillViewModel(
             }
             result
                 .onSuccess {
-                    leave()
+                    if (expenseId == null) exits.leaveToBillGroup(groupId.value) else exits.leave()
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }
                     uiAction.emit(SplitBillUiAction.ShowSaveError)
@@ -524,7 +543,7 @@ class SplitBillViewModel(
         uiState.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
             deleteExpense(expenseId)
-                .onSuccess { leaveToGroup() }
+                .onSuccess { exits.leaveToGroup() }
                 .onFailure {
                     uiState.update {
                         it.copy(
@@ -560,21 +579,6 @@ class SplitBillViewModel(
         nowMillis = currentTimeMillis(),
         timeZone = currentTimeZone(),
     )
-
-    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
-
-    // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
-    private fun leave() {
-        if (isOnTop()) navigator.navigateBack()
-    }
-
-    // Why: back to Despesas do grupo past "Conta", which would show a bill that is gone.
-    private fun leaveToGroup() {
-        if (!isOnTop()) return
-        val stack = navigator.backStack.value
-        val detailIndex = stack.indexOfLast { it is Route.BillDetail && it.expenseId == route.expenseId }
-        if (detailIndex > 0) navigator.popTo(detailIndex) else navigator.navigateBack()
-    }
 
     private companion object {
         // Why: "100.000.000,00" with room for the separators someone types.

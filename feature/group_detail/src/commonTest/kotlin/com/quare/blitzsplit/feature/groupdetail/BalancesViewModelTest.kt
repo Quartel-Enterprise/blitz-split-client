@@ -826,7 +826,15 @@ class BalancesViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, route, Route.SplitBill(GROUP_ID, expenseId = null)),
+            listOf(
+                Route.Groups,
+                route,
+                Route.SplitBill(
+                    GROUP_ID,
+                    expenseId = null,
+                    picksGroupFirst = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }

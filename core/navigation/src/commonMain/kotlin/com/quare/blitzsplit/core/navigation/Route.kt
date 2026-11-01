@@ -50,6 +50,8 @@ sealed interface Route {
     data class SplitBill(
         val groupId: String,
         val expenseId: String?,
+        // Why: from the home's "Rachar conta" (7.1i), which asks "Rachar em qual grupo?" first, groupId marked.
+        val picksGroupFirst: Boolean,
     ) : Route
 
     // Why: "Conta", one bill of the group: what it was, who paid and how it splits.

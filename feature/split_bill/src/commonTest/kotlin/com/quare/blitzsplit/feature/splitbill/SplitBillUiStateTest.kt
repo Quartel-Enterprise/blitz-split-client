@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
@@ -514,11 +515,15 @@ class SplitBillUiStateTest {
         conflict: BillConflict? = null,
         amountText: String = "100,00",
         severalPayers: PayerAmounts? = null,
+        groups: List<BillGroup> = emptyList(),
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
+        groupId = "group-1",
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
+        groups = groups,
+        groupSelection = null,
         currency = GroupCurrency.BRL,
         people = people,
         amountText = amountText,

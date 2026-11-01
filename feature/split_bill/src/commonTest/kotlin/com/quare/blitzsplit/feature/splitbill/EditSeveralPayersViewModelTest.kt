@@ -348,7 +348,7 @@ class EditSeveralPayersViewModelTest {
 
     private fun PayerAmounts.textByMember(): Map<String, String> = rows.associate { it.memberId to it.amountText }
 
-    private val route = Route.SplitBill(GROUP_ID, EXPENSE_ID)
+    private val route = Route.SplitBill(GROUP_ID, EXPENSE_ID, picksGroupFirst = false)
 
     private val yesterdayMillis = NOW_MILLIS - 20.hours.inWholeMilliseconds
 
@@ -443,6 +443,7 @@ class EditSeveralPayersViewModelTest {
             decimalSeparator = { decimalSeparator },
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
+            observeGroupsByActivity = { groups.groups },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }

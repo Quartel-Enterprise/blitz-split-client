@@ -766,7 +766,11 @@ class SeveralPayersViewModelTest {
 
     private fun SplitEditor.shareByMember(): Map<String, Long?> = rows.associate { it.person.id to it.shareMinor }
 
-    private val route = Route.SplitBill(GROUP_ID, expenseId = null)
+    private val route = Route.SplitBill(
+        GROUP_ID,
+        expenseId = null,
+        picksGroupFirst = false,
+    )
 
     private val ana = member(ANA, "Ana", AvatarColor.PEACH, hasJoined = true)
     private val pierre = member(
@@ -831,6 +835,7 @@ class SeveralPayersViewModelTest {
             decimalSeparator = { decimalSeparator },
             observeGroup = ObserveGroupUseCase(groups),
             observeExpense = ObserveExpenseUseCase(expenses),
+            observeGroupsByActivity = { groups.groups },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
     }
