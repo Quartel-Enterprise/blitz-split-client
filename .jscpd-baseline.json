@@ -1,1 +1,4 @@
-{}
+{
+  "feature/activity/src/commonMain/kotlin/com/quare/blitzsplit/feature/activity/presentation/viewmodel/ActivityViewModel.kt": 13,
+  "feature/global_balances/src/commonMain/kotlin/com/quare/blitzsplit/feature/globalbalances/presentation/viewmodel/GlobalBalancesViewModel.kt": 13
+}

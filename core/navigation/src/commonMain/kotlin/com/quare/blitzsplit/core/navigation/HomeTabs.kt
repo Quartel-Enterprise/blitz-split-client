@@ -11,7 +11,7 @@ fun Navigator.popToGroups() {
 }
 
 /*
- * Why: Saldos and Contatos are tabs next to Grupos, drawn over the groups; from a screen the groups or another tab
+ * Why: Saldos, Contatos and Atividade are tabs next to Grupos, drawn over the groups; from a screen the groups or another tab
  * opened, the tab closes it first, as a tab bar does. Nothing changes while that tab is already right above the groups.
  */
 fun Navigator.openHomeTab(route: Route) {

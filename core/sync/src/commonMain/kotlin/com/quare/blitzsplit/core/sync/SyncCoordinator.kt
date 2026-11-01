@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
+import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
@@ -39,6 +40,7 @@ class SyncCoordinator(
     private val groupRepository: GroupRepository,
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
+    private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
@@ -133,6 +135,14 @@ class SyncCoordinator(
             settlementRepository.downloadSettlements(userId).getOrThrow()
             settlementRepository.uploadPendingSettlements(userId).getOrThrow()
         }
+        /*
+         * Why: after every push, whose events the server records as they arrive, so the feed comes down with them; up
+         * first, so a charge sent here comes back with its place in the feed. A failure fails the sync like the others.
+         */
+        val activitySynced = suspendRunCatching {
+            activityRepository.uploadPendingActivity(userId).getOrThrow()
+            activityRepository.downloadActivity(userId).getOrThrow()
+        }
         // Why: Contatos' hidden list is the user's own, like the keys, so it syncs apart from the groups.
         val hiddenContactsSynced = suspendRunCatching {
             hiddenContactRepository.download(userId).getOrThrow()
@@ -143,6 +153,7 @@ class SyncCoordinator(
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
         groupsSynced.getOrThrow()
+        activitySynced.getOrThrow()
         hiddenContactsSynced.getOrThrow()
     }.also { result -> lastSyncFailed.value = result.isFailure }
 
@@ -167,6 +178,7 @@ class SyncCoordinator(
                     suspendRunCatching { paymentKeyRepository.clear() }
                     suspendRunCatching { notificationPreferencesRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
+                    suspendRunCatching { activityRepository.clear() }
                     suspendRunCatching { hiddenContactRepository.clear() }
                     suspendRunCatching { profileRepository.clear() }
                     suspendRunCatching { accountRepository.endDeletedSession() }
@@ -268,6 +280,7 @@ class SyncCoordinator(
         paymentKeyRepository.clear()
         notificationPreferencesRepository.clear()
         groupRepository.clear()
+        activityRepository.clear()
         hiddenContactRepository.clear()
         profileRepository.clear()
     }

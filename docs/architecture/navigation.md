@@ -142,8 +142,8 @@ Saldos, the home's second tab, is a route over the groups (`Route.GlobalBalances
 (`Route.Contacts`) is a tab the same way: `Navigator.openHomeTab` puts a tab right above the groups in place of the
 other one, and the profile (`Route.ContactProfile`), the agenda (`Route.ContactsAgenda`) and the invite
 (`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
-Saldos). Atividade is drawn on every platform but not built yet: its event emits `ShowComingSoon` and the selection
-stays where it was.
+Saldos). Atividade
+(`Route.Activity`) is a tab the same way, opened on a person from a contact's history ("Ver tudo").
 
 ### List and detail on wide windows
 
@@ -188,6 +188,11 @@ the first row), which every UI draws as it comes, the web's presenter handing ov
 pane where its window has room (Android's `rememberListDetailLayout`, the iPad lying down, a Mac window from 700 pt
 for the inspector column, the web from 1024 px), and the rows inline everywhere else. No route, so nothing changes
 on the back stack, and nothing to tell the ViewModel about the window.
+
+Atividade (page 12) keeps its pick the same way (`ActivityUiState.pickedItemId`, `selectedItem`), with one
+difference: a tap on a row opens what it is about where there is no pane, and only picks it where there is one. So
+its UIs do tell the ViewModel whether they draw the pane (`ActivityUiEvent.OnDetailPaneChanged`), and the pane's own
+button opens it (`OnOpenTargetClicked`).
 
 Pick the first when the detail is a screen that also opens on its own (it already has a route); the second when it
 only exists beside its list.

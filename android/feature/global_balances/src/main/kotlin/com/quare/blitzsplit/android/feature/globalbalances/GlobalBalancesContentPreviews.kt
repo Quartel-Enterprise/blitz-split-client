@@ -95,6 +95,7 @@ private fun createPreviewState(
     isLoaded = true,
     recordedPayment = null,
     pickedPersonId = null,
+    activityUnreadCount = 3,
 )
 
 @DevicePreviews

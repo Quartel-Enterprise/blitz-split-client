@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -26,7 +27,6 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
-import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -101,6 +101,7 @@ class GroupsViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
     observePeopleBalances: ObservePeopleBalances,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -126,6 +127,7 @@ class GroupsViewModel(
                 recordedPayment = null,
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -197,7 +199,7 @@ class GroupsViewModel(
                     avatarColor = profile?.avatarColor ?: AvatarColor.default,
                     photoUrl = profile?.photo?.toImageUrl(),
                     accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                    syncBadge = syncBadgeOf(
+                    syncBadge = SyncBadge.ofOrNull(
                         syncState = syncState,
                         isOnline = isOnline,
                     ),
@@ -259,6 +261,9 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         observeGroupsLayout()
             .onEach { layout -> uiState.update { it.copy(layout = layout) } }
+            .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people -> peopleBalances = people }
@@ -392,7 +397,7 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnContactsTabClicked -> openTab(Route.Contacts)
 
-            GroupsUiEvent.OnActivityTabClicked -> showComingSoon()
+            GroupsUiEvent.OnActivityTabClicked -> openTab(Route.Activity(personKey = null))
         }
     }
 
@@ -465,7 +470,7 @@ class GroupsViewModel(
         viewModelScope.launch { updateGroupsLayout(layout) }
     }
 
-    // Why: Saldos and Contatos, drawn over the groups, first close a screen the groups opened, as a tab bar does.
+    // Why: Saldos, Contatos and Atividade, drawn over the groups, first close a screen the groups opened, as a tab bar does.
     private fun openTab(tab: Route) {
         if (Route.Groups !in navigator.backStack.value) return
         closeSearch()
@@ -485,10 +490,6 @@ class GroupsViewModel(
                 currency = person.currency,
             ),
         )
-    }
-
-    private fun showComingSoon() {
-        viewModelScope.launch { uiAction.emit(GroupsUiAction.ShowComingSoon) }
     }
 
     /*
@@ -581,16 +582,5 @@ class GroupsViewModel(
                 ),
             )
         }
-    }
-
-    // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
-    private fun syncBadgeOf(
-        syncState: SyncState,
-        isOnline: Boolean,
-    ): SyncBadge? = when {
-        syncState == SyncState.SYNCED -> null
-        !isOnline -> SyncBadge.OFFLINE
-        syncState == SyncState.FAILED -> SyncBadge.FAILED
-        else -> SyncBadge.SYNCING
     }
 }

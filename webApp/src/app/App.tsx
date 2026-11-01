@@ -2,6 +2,7 @@ import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Toaster } from '@/components/ui/sonner'
+import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BalancesScreen } from '@/features/balances/BalancesScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { ContactInviteDialog } from '@/features/contacts/ContactInviteDialog'
@@ -112,6 +113,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <BalancesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
+    case 'activity':
+      return route ? <ActivityScreen route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it.
     case 'contacts':
       return <ContactsScreen />

@@ -14,7 +14,7 @@ import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { ChargeDialog, copyChargeMessage, shareChargeMessage } from './ChargeDialog'
 
-// Grupos goes back to the groups; Contatos and Atividade are not built yet and answer "Coming soon".
+// Grupos goes back to the groups and Atividade opens over them; Contatos is not built yet and answers "Coming soon".
 const tabEvents: Partial<Record<HomeTab, (presenter: GlobalBalancesPresenter) => void>> = {
   groups: (p) => p.openGroups(),
   contacts: (p) => p.openContacts(),
@@ -66,6 +66,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
 
   return (
     <HomeShell
+      activityUnreadCount={state.activityUnreadCount}
       selected="balances"
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}

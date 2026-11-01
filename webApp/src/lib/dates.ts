@@ -51,6 +51,31 @@ export function formatDayTime(millis: number, relativeDay: string): string {
   return `${(isThisYear ? dayMonthFormat : dayMonthYearFormat).format(millis)}, ${time}`
 }
 
+const longDayFormat = new Intl.DateTimeFormat(uiTag, { weekday: 'long', day: 'numeric', month: 'long' })
+const longDayYearFormat = new Intl.DateTimeFormat(uiTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
+/** "Sexta-feira, 30 de outubro" or "Friday, October 30": a day written out, with the year when it isn't this one. */
+export function formatLongDay(millis: number): string {
+  const isThisYear = new Date(millis).getFullYear() === new Date().getFullYear()
+  return capitalize((isThisYear ? longDayFormat : longDayYearFormat).format(millis))
+}
+
+/** Atividade's day headings: "Hoje", "Ontem" or "Sexta-feira, 30 de outubro". */
+export function formatLongDayLabel(dayStartMillis: number, relativeDay: string): string {
+  if (relativeDay === 'today') return t('date_today')
+  if (relativeDay === 'yesterday') return t('date_yesterday')
+  return formatLongDay(dayStartMillis)
+}
+
+/** Whether `millis` falls today, yesterday or on another day, in the browser's time zone. */
+export function relativeDayOf(millis: number, nowMillis: number = Date.now()): RelativeDay {
+  const day = new Date(millis)
+  const today = new Date(nowMillis)
+  if (day.toDateString() === today.toDateString()) return 'today'
+  today.setDate(today.getDate() - 1)
+  return day.toDateString() === today.toDateString() ? 'yesterday' : 'other'
+}
+
 const relativeTimeFormat = new Intl.RelativeTimeFormat(uiTag, { numeric: 'auto' })
 
 /**

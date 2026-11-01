@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.contacts
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
@@ -55,6 +56,7 @@ class ContactsViewModelTest {
     private lateinit var hidden: FakeHiddenContactRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ContactsViewModel
+    private val activityUnread = MutableStateFlow(0)
     private val actions = mutableListOf<ContactsUiAction>()
 
     @BeforeTest
@@ -796,16 +798,28 @@ class ContactsViewModelTest {
         }
 
     @Test
-    fun `GIVEN Contatos WHEN the Atividade tab is tapped THEN says it is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN Contatos WHEN the Atividade tab is tapped THEN opens Atividade in its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnActivityTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Activity(personKey = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN unread events WHEN Contatos shows THEN its Atividade tab counts them`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
         // When
-        viewModel.onEvent(ContactsUiEvent.OnActivityTabClicked)
+        activityUnread.value = 4
 
         // Then
-        assertEquals(listOf<ContactsUiAction>(ContactsUiAction.ShowComingSoon), actions)
-        assertEquals(listOf(Route.Groups, Route.Contacts), navigator.backStack.value)
+        assertEquals(4, viewModel.uiState.value.activityUnreadCount)
     }
 
     @Test
@@ -873,6 +887,7 @@ class ContactsViewModelTest {
                 FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE)),
             ),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

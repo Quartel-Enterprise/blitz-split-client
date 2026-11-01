@@ -11,7 +11,6 @@ import com.quare.blitzsplit.android.designsystem.component.DetailPlaceholderPane
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.platform.isContactsPermissionGranted
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -20,12 +19,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
-        when (action) {
-            ContactsUiAction.ShowComingSoon -> R.string.contacts_coming_soon
-            ContactsUiAction.ShowChangeError -> R.string.contacts_change_error
-        }
-    }
+    // Why: the only action is a change that couldn't be saved.
+    val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { R.string.contacts_change_error }
     /*
      * Why: the window decides whether a tap opens the profile beside the list, which the ViewModel needs for taps.
      * Once Contatos leaves the screen (a profile or the agenda over it) it draws no pane.

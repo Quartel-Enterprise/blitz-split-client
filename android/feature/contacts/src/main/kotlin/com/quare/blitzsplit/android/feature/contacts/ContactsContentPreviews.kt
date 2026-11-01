@@ -76,6 +76,7 @@ private fun createPreviewState(
     isDetailPaneShown = false,
     pickedKey = null,
     isAgendaPicked = false,
+    activityUnreadCount = 3,
 )
 
 // Why: a stand-in pattern for the previews, which can't run the shared encoder.

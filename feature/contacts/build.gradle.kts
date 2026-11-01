@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.core.groups)
             implementation(projects.core.expenses)
             implementation(projects.core.utils)
+            implementation(projects.core.activity)
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -27,6 +28,7 @@ kotlin {
             implementation(projects.core.groups.testing)
             implementation(projects.core.expenses.testing)
             implementation(projects.core.contacts.testing)
+            implementation(projects.core.activity.testing)
         }
     }
 }

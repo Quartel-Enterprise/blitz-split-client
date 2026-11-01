@@ -36,6 +36,7 @@ struct BoraRacharApp: App {
         .windowResizability(.contentMinSize)
         .commands {
             GroupsCommands()
+            ActivityCommands()
         }
         #endif
     }

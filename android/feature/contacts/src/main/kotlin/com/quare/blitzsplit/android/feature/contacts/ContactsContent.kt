@@ -81,6 +81,7 @@ fun ContactsContent(
                 HomeNavigationRail(
                     selected = HomeTab.CONTACTS,
                     onTabClick = onTabClick,
+                    activityBadgeCount = state.activityUnreadCount,
                 )
             }
             Scaffold(
@@ -106,6 +107,7 @@ fun ContactsContent(
                         HomeNavigationBar(
                             selected = HomeTab.CONTACTS,
                             onTabClick = onTabClick,
+                            activityBadgeCount = state.activityUnreadCount,
                         )
                     }
                 },
