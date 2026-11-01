@@ -228,7 +228,7 @@ private struct MembersList: View {
                 GroupTabsPicker(selected: .members) { model.select($0) }
             }
             .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            .listRowInsets(EdgeInsets())
             #endif
             Section {
                 HStack(spacing: 12) {
