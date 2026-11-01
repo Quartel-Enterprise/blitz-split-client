@@ -131,7 +131,7 @@ class SettlementRepositoryImplTest {
         prepareScenario()
 
         // When
-        val result = repository.createSettlement(newSettlement, recordedAt = 7_000L)
+        val result = repository.createSettlements(listOf(newSettlement), recordedAt = 7_000L)
 
         // Then
         assertTrue(result.isSuccess)
@@ -148,7 +148,7 @@ class SettlementRepositoryImplTest {
         prepareScenario(insertError = IllegalStateException("No group"))
 
         // When
-        val result = repository.createSettlement(newSettlement, recordedAt = 7_000L)
+        val result = repository.createSettlements(listOf(newSettlement), recordedAt = 7_000L)
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
@@ -160,7 +160,7 @@ class SettlementRepositoryImplTest {
         prepareScenario(stored = listOf(entity(id = "payment-1")))
 
         // When
-        val result = repository.deleteSettlement("payment-1", deletedAt = 9_000L)
+        val result = repository.deleteSettlements(listOf("payment-1"), deletedAt = 9_000L)
 
         // Then
         assertTrue(result.isSuccess)
@@ -174,7 +174,7 @@ class SettlementRepositoryImplTest {
         prepareScenario()
 
         // When
-        val result = repository.deleteSettlement("payment-1", deletedAt = 9_000L)
+        val result = repository.deleteSettlements(listOf("payment-1"), deletedAt = 9_000L)
 
         // Then
         assertTrue(result.isSuccess)
@@ -442,23 +442,25 @@ private class FakeSettlementLocalDataSource(
         return entities.value.filter { it.pendingSync }
     }
 
-    override suspend fun insertSettlement(entity: SettlementEntity) {
+    override suspend fun insertSettlements(entities: List<SettlementEntity>) {
         insertError?.let { throw it }
-        entities.update { it + entity }
+        this.entities.update { it + entities }
     }
 
     override suspend fun markDeleted(
-        id: String,
+        ids: List<String>,
         now: Long,
     ) {
-        val current = entities.value.firstOrNull { it.id == id && !it.isDeleted } ?: return
-        deletions += id to now
-        val deleted = current.copy(
-            isDeleted = true,
-            updatedAt = maxOf(now, current.updatedAt + 1),
-            pendingSync = true,
-        )
-        entities.update { list -> list.map { if (it.id == id) deleted else it } }
+        ids.forEach { id ->
+            val current = entities.value.firstOrNull { it.id == id && !it.isDeleted } ?: return@forEach
+            deletions += id to now
+            val deleted = current.copy(
+                isDeleted = true,
+                updatedAt = maxOf(now, current.updatedAt + 1),
+                pendingSync = true,
+            )
+            entities.update { list -> list.map { if (it.id == id) deleted else it } }
+        }
     }
 
     override suspend fun applyRemote(entities: List<SettlementEntity>) {

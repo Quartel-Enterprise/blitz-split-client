@@ -138,7 +138,7 @@ internal class GroupScreen(
     ) {
         notices.delete(
             scope = scope,
-            settlementId = settlementId,
+            settlementIds = listOf(settlementId),
             onFailure = onFailure,
         )
     }

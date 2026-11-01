@@ -48,12 +48,15 @@ class RecordedPaymentNotices(
             }.launchIn(scope)
     }
 
-    // Why: a payment already gone is what was asked; any other failure leaves it counting, which the screen says.
+    /*
+     * Why: a payment already gone is what was asked; any other failure leaves them all counting, which the screen
+     * says.
+     */
     fun delete(
         scope: CoroutineScope,
-        settlementId: String,
+        settlementIds: List<String>,
         onFailure: suspend () -> Unit,
     ) {
-        scope.launch { deleteSettlement(settlementId).onFailure { onFailure() } }
+        scope.launch { deleteSettlement(settlementIds).onFailure { onFailure() } }
     }
 }

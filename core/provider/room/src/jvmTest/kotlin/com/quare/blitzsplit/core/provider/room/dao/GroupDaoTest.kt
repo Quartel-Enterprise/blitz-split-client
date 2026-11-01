@@ -912,6 +912,6 @@ class GroupDaoTest {
         otherGroups.forEach { dao.upsertGroup(it) }
         dao.upsertMembers(members)
         expenses.forEach { database.expenseDao().insertExpenseIntoGroup(it) }
-        settlements.forEach { database.settlementDao().insertSettlementIntoGroup(it) }
+        database.settlementDao().insertSettlementsIntoGroups(settlements)
     }
 }

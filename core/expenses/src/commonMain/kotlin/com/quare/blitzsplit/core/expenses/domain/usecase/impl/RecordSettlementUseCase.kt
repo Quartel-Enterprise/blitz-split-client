@@ -38,8 +38,8 @@ class RecordSettlementUseCase(
             updatedAt = recordedAt,
         )
         return repository
-            .createSettlement(
-                settlement = settlement,
+            .createSettlements(
+                settlements = listOf(settlement),
                 recordedAt = recordedAt,
             ).onSuccess { recordedPayments.post(settlement) }
             .map { settlement.id }

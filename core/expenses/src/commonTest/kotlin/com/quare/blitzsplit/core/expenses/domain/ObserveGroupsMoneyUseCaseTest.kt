@@ -102,7 +102,7 @@ class ObserveGroupsMoneyUseCaseTest {
             )
             expenses.deleteExpense("dinner", deletedAt = 9_000L)
             expenses.deleteExpense("taxi", deletedAt = 9_000L)
-            settlements.deleteSettlement("paid", deletedAt = 9_000L)
+            settlements.deleteSettlements(listOf("paid"), deletedAt = 9_000L)
 
             // When
             val money = useCase().first()

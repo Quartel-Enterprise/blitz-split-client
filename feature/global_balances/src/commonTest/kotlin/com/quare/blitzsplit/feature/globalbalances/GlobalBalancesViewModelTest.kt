@@ -604,7 +604,7 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN the notice of a settling up WHEN tapping Desfazer THEN undoes every payment of it`() =
+    fun `GIVEN the notice of a settling up WHEN tapping Desfazer THEN undoes every payment of it at once`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -622,6 +622,7 @@ class GlobalBalancesViewModelTest {
             viewModel.onEvent(GlobalBalancesUiEvent.OnUndoPaymentClicked)
 
             // Then
+            assertEquals(listOf(listOf("p1", "p2")), settlements.deleteCalls)
             assertEquals(listOf("p1", "p2"), settlements.deletedIds)
             assertNull(viewModel.uiState.value.recordedPayment)
             assertTrue(actions.isEmpty())

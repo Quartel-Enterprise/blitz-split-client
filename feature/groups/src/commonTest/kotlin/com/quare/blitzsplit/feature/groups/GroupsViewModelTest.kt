@@ -2157,7 +2157,7 @@ class GroupsViewModelTest {
             )
 
             // When
-            settlements.deleteSettlement("paid", deletedAt = now)
+            settlements.deleteSettlements(listOf("paid"), deletedAt = now)
 
             // Then
             val state = viewModel.uiState.value
@@ -2180,7 +2180,7 @@ class GroupsViewModelTest {
                     ),
                 ),
             )
-            settlements.deleteSettlement("paid", deletedAt = now)
+            settlements.deleteSettlements(listOf("paid"), deletedAt = now)
 
             // When
             settlements.uploadPendingSettlements("user-1")

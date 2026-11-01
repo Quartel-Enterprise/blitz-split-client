@@ -43,11 +43,16 @@ interface SettlementDao {
     )
     suspend fun getSyncedSettlementIds(ownerUserId: String): List<String>
 
-    // Why: a group a sync deleted in the meantime takes no payment, which would stay pending with nowhere to go up.
+    /*
+     * Why: a group a sync deleted in the meantime takes no payment, which would stay pending with nowhere to go up.
+     * All or none, so a settling up across groups that fails on one leaves nothing waiting to sync.
+     */
     @Transaction
-    suspend fun insertSettlementIntoGroup(entity: SettlementEntity) {
-        check(hasGroup(entity.groupId)) { "No group ${entity.groupId}" }
-        insertSettlement(entity)
+    suspend fun insertSettlementsIntoGroups(entities: List<SettlementEntity>) {
+        entities.forEach { entity ->
+            check(hasGroup(entity.groupId)) { "No group ${entity.groupId}" }
+            insertSettlement(entity)
+        }
     }
 
     @Query("SELECT EXISTS(SELECT 1 FROM split_group WHERE id = :id)")
@@ -69,6 +74,20 @@ interface SettlementDao {
         id: String,
         now: Long,
     ): Int
+
+    // Why: the payments of a settling up go back together, all or none.
+    @Transaction
+    suspend fun markAllDeleted(
+        ids: List<String>,
+        now: Long,
+    ) {
+        ids.forEach { id ->
+            markDeleted(
+                id = id,
+                now = now,
+            )
+        }
+    }
 
     // Why: a payment only the server has comes down whole; one the device has follows Last-Write-Wins, in one write.
     @Transaction

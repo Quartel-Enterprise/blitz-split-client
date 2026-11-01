@@ -24,7 +24,7 @@ class DeleteSettlementUseCaseTest {
         prepareScenario(now = 9_000L)
 
         // When
-        val result = useCase(PAYMENT_ID)
+        val result = useCase(listOf(PAYMENT_ID))
 
         // Then
         assertTrue(result.isSuccess)
@@ -34,12 +34,26 @@ class DeleteSettlementUseCaseTest {
     }
 
     @Test
+    fun `GIVEN the payments of a settling up WHEN undoing them THEN deletes them all at once`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(payment(PAYMENT_ID), payment(OTHER_PAYMENT_ID)))
+
+        // When
+        val result = useCase(listOf(PAYMENT_ID, OTHER_PAYMENT_ID))
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(PAYMENT_ID, OTHER_PAYMENT_ID), repository.deletedIds)
+        assertTrue(repository.settlements.value.isEmpty())
+    }
+
+    @Test
     fun `GIVEN a payment owed its notice WHEN undoing it THEN no screen owes the notice anymore`() = runTest {
         // Given
         prepareScenario(noticed = payment(PAYMENT_ID))
 
         // When
-        useCase(PAYMENT_ID)
+        useCase(listOf(PAYMENT_ID))
 
         // Then
         assertNull(recordedPayments.observeRecorded().first())
@@ -54,7 +68,7 @@ class DeleteSettlementUseCaseTest {
         )
 
         // When
-        useCase(PAYMENT_ID)
+        useCase(listOf(PAYMENT_ID))
 
         // Then
         assertEquals(OTHER_PAYMENT_ID, recordedPayments.observeRecorded().first()?.id)
@@ -69,7 +83,7 @@ class DeleteSettlementUseCaseTest {
         )
 
         // When
-        val result = useCase(PAYMENT_ID)
+        val result = useCase(listOf(PAYMENT_ID))
 
         // Then
         assertTrue(result.isSuccess)
@@ -85,7 +99,7 @@ class DeleteSettlementUseCaseTest {
         )
 
         // When
-        val result = useCase(PAYMENT_ID)
+        val result = useCase(listOf(PAYMENT_ID))
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())

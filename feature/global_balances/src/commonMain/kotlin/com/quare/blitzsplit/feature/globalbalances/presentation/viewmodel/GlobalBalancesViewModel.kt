@@ -294,15 +294,14 @@ class GlobalBalancesViewModel(
         }
     }
 
-    // Why: every payment of the settling up goes back together; one that fails still counts, which the screen says.
+    // Why: the payments of the settling up go back together, all or none; a failure keeps them all, which it says.
     private fun undoSettledUp() {
         if (uiState.value.recordedPayment == null) return
         val ids = noticeSettlementIds
         noticeSettlementIds = emptyList()
         uiState.update { it.copy(recordedPayment = null) }
         viewModelScope.launch {
-            val failed = ids.map { id -> deleteSettlement(id) }.any { it.isFailure }
-            if (failed) uiAction.emit(GlobalBalancesUiAction.ShowChangeError)
+            deleteSettlement(ids).onFailure { uiAction.emit(GlobalBalancesUiAction.ShowChangeError) }
         }
     }
 

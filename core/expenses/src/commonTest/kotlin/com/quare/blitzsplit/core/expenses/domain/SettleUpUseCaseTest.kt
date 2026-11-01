@@ -2,10 +2,8 @@ package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemorySettledUpRepository
 import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
-import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
-import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import kotlinx.coroutines.flow.first
@@ -72,9 +70,9 @@ class SettleUpUseCaseTest {
     }
 
     @Test
-    fun `GIVEN the second payment fails WHEN settling up THEN takes back the first and posts nothing`() = runTest {
+    fun `GIVEN the device fails to save WHEN settling up THEN nothing is recorded nor waits to sync`() = runTest {
         // Given
-        prepareScenario(failingCall = 2)
+        prepareScenario(recordError = IllegalStateException("No group ape"))
 
         // When
         val result = useCase(
@@ -87,8 +85,9 @@ class SettleUpUseCaseTest {
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
-        assertEquals(settlements.recordedSettlements.map { it.id }, settlements.deletedIds)
         assertTrue(settlements.settlements.value.isEmpty())
+        assertTrue(settlements.deletedIds.isEmpty())
+        assertTrue(settlements.pendingDeletionGroupIds.value.isEmpty())
         assertNull(settledUps.observeSettledUp().first())
     }
 
@@ -107,11 +106,11 @@ class SettleUpUseCaseTest {
         ),
     )
 
-    private fun prepareScenario(failingCall: Int? = null) {
-        settlements = FakeSettlementRepository()
+    private fun prepareScenario(recordError: Throwable? = null) {
+        settlements = FakeSettlementRepository().also { it.recordError = recordError }
         settledUps = InMemorySettledUpRepository()
         useCase = SettleUpUseCase(
-            repository = failingCall?.let { FailingOnCallRepository(settlements, it) } ?: settlements,
+            repository = settlements,
             settledUps = settledUps,
             currentTimeMillis = { NOW },
         )
@@ -120,22 +119,5 @@ class SettleUpUseCaseTest {
     private companion object {
         const val NOW = 1_000L
         const val PAID_AT = 500L
-    }
-}
-
-// Why: the shared fake fails every record or none; settling up needs one that fails partway through.
-private class FailingOnCallRepository(
-    private val delegate: FakeSettlementRepository,
-    private val failingCall: Int,
-) : SettlementRepository by delegate {
-    private var calls = 0
-
-    override suspend fun createSettlement(
-        settlement: Settlement,
-        recordedAt: Long,
-    ): Result<Unit> {
-        calls++
-        if (calls == failingCall) return Result.failure(IllegalStateException("disk full"))
-        return delegate.createSettlement(settlement, recordedAt)
     }
 }
