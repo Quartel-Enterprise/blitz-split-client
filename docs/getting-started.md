@@ -4,10 +4,10 @@
 
 - JDK 21 or higher
 - Android Studio, with the Android SDK, for the Android app
-- macOS Tahoe 26.6 or later with Xcode 27.1 and [XcodeGen](https://github.com/yonaskolb/XcodeGen)
-  (`brew install xcodegen`), for the iOS, iPadOS and macOS app. The app builds with the iOS 27.1 SDK, whose iPhone Duo
-  APIs it uses behind `#available(iOS 27.1, *)` while still running on iOS 26; Xcode 27.1 brings that SDK and the
-  iPhone Duo simulator (Xcode 27.2 shipped before it without them, so a later Xcode needs the iOS 27.1 SDK or newer)
+- macOS Tahoe 26.6 or later with [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`) and an
+  Xcode with the iOS 27.1 SDK or newer, Xcode 27.1 at the least, for the iOS, iPadOS and macOS app. That SDK has the
+  iPhone Duo APIs (`reservedRegions(kind: .division)`), which the app uses behind `#available(iOS 27.1, *)` while
+  still running on iOS 26, and its Xcode the iPhone Duo simulator
 - Node.js with npm (a current LTS release), for the web app
 
 ## Local configuration
