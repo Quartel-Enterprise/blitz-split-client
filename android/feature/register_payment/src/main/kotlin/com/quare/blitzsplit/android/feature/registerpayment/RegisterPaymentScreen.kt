@@ -17,10 +17,13 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.Regis
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-// Why: "Registrar pagamento", a payment made outside the app, over the group's screen.
+/*
+ * Why: "Registrar pagamento", a payment made outside the app, over the group's screen; or, from the global Saldos
+ * (Route.SettleUp), settling up with someone across groups.
+ */
 @Composable
 fun RegisterPaymentScreen(
-    route: Route.RegisterPayment,
+    route: Route,
     // Why: a tablet and the upright foldable draw it as a dialog; a phone as a bottom sheet.
     isDialog: Boolean,
     viewModel: RegisterPaymentViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },

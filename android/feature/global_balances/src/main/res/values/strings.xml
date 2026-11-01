@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Balances</string>
+    <string name="global_balances_profile">Profile</string>
+    <string name="global_balances_offline">Offline · this device\'s balances</string>
+    <string name="global_balances_filter">Show</string>
+    <string name="global_balances_filter_all">All</string>
+    <string name="global_balances_filter_you_owe">You owe</string>
+    <string name="global_balances_filter_owes_you">Owe you</string>
+    <string name="global_balances_hint">Already offset across groups: each person shows once.</string>
+    <string name="global_balances_hint_empty">Adding up every group on this device.</string>
+    <string name="global_balances_section_you_owe">You owe · %d</string>
+    <string name="global_balances_section_owes_you">Owe you · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
+    </plurals>
+    <string name="global_balances_guest">%s · guest</string>
+    <string name="global_balances_you_owe">you owe</string>
+    <string name="global_balances_owes_you">owes you</string>
+    <string name="global_balances_by_group_show">Show %s by group</string>
+    <string name="global_balances_by_group_hide">Hide %s by group</string>
+    <string name="global_balances_received">Received</string>
+    <string name="global_balances_received_from">Received from %s</string>
+    <string name="global_balances_settle">Settle up</string>
+    <string name="global_balances_settle_with">Settle up with %s</string>
+    <string name="global_balances_charge">Request</string>
+    <string name="global_balances_charge_person">Request from %s</string>
+    <string name="global_balances_settled_title">All settled</string>
+    <string name="global_balances_settled_body">Nobody owes you and you owe nobody. When someone adds a bill, the balance shows up here.</string>
+    <string name="global_balances_settled_action">See groups</string>
+    <string name="global_balances_nothing_to_pay_title">You owe nothing</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">You\'ve settled up with everyone. You still have %2$s to get back from %1$d person.</item>
+        <item quantity="other">You\'ve settled up with everyone. You still have %2$s to get back from %1$d people.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">See who owes you</string>
+    <string name="global_balances_nothing_to_receive_title">Nobody owes you</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">You still owe %2$s to %1$d person.</item>
+        <item quantity="other">You still owe %2$s to %1$d people.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">See who you owe</string>
+    <string name="global_balances_coming_soon">Coming soon</string>
+    <string name="global_balances_change_error">Couldn\'t save the change. Try again.</string>
+    <string name="global_balances_copied">Copied</string>
+    <string name="global_balances_charge_title">Request from %s</string>
+    <string name="global_balances_charge_owes">Owes you %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Close</string>
+    <string name="global_balances_charge_guest">%s is a guest without the app. They only learn about it from this message, so it already says what went into the bill.</string>
+    <string name="global_balances_charge_message">Message</string>
+    <string name="global_balances_charge_pix">Include my Pix key</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copy message</string>
+    <string name="global_balances_charge_send">Send</string>
+    <string name="global_balances_message">Hi %1$s! By the Blitz Split math, you owe me %2$s from %3$s.</string>
+    <string name="global_balances_message_guest">Hi %1$s! You owe me %2$s from %3$s: your part of %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hi %1$s! You owe me %2$s from %3$s: your part of %4$s, minus the %5$s you already paid.</string>
+    <string name="global_balances_message_group">the group %s</string>
+    <string name="global_balances_message_groups">the groups %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Phone</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Random key</string>
+</resources>

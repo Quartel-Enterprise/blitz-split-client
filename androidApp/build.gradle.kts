@@ -82,6 +82,7 @@ dependencies {
     implementation(projects.android.feature.billDetail)
     implementation(projects.android.feature.editGroup)
     implementation(projects.android.feature.registerPayment)
+    implementation(projects.android.feature.globalBalances)
     implementation(projects.android.feature.profile)
     implementation(projects.android.feature.editProfile)
     implementation(projects.android.feature.paymentKey)
