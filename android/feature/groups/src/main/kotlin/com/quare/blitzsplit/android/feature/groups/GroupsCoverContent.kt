@@ -160,7 +160,6 @@ private fun CoverBalanceCard(state: GroupsUiState) {
     val formatters = remember(summary.totals, locale) {
         summary.totals.associate { it.currency to MoneyFormatter(it.currency, locale) }
     }
-    val groupCount = summary.toReceiveGroupCount + summary.toPayGroupCount
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
@@ -192,13 +191,16 @@ private fun CoverBalanceCard(state: GroupsUiState) {
             }
             Text(
                 text = when (summary.kind) {
-                    GroupBalanceKind.TO_RECEIVE ->
-                        pluralStringResource(R.plurals.groups_cover_to_receive, groupCount, groupCount)
+                    GroupBalanceKind.TO_RECEIVE -> pluralStringResource(
+                        R.plurals.groups_cover_to_receive,
+                        summary.toReceiveGroupCount,
+                        summary.toReceiveGroupCount,
+                    )
 
                     GroupBalanceKind.YOU_OWE -> pluralStringResource(
                         R.plurals.groups_cover_to_pay,
-                        groupCount,
-                        groupCount,
+                        summary.toPayGroupCount,
+                        summary.toPayGroupCount,
                     )
 
                     else -> stringResource(R.string.groups_summary_settled_hint)
