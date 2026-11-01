@@ -282,15 +282,10 @@ class RegisterPaymentViewModel(
             // Why: a pair of one group may pay part of the debt; a settling up of a single group too, through its one payment.
             val result = if (route is Route.SettleUp) {
                 settleUp(
-                    legs = target.legs.map { leg ->
-                        if (target.legs.size ==
-                            1
-                        ) {
-                            leg.copy(amountMinor = amountMinor)
-                        } else {
-                            leg
-                        }
-                    },
+                    legs = target.legs
+                        .singleOrNull()
+                        ?.let { leg -> listOf(leg.copy(amountMinor = amountMinor)) }
+                        ?: target.legs,
                     method = state.method,
                     paidAt = state.paidAt,
                     personName = (if (state.kind == PaymentKind.PAID) state.to else state.from)?.name,

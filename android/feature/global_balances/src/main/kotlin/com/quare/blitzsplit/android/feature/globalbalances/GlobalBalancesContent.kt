@@ -219,7 +219,7 @@ private fun PeopleList(
             item(key = "empty") {
                 EmptyBalancesSection(
                     emptyState = emptyState,
-                    total = state.primaryTotal,
+                    total = state.emptyStateTotal,
                     onAction = { onEvent(GlobalBalancesUiEvent.OnEmptyActionClicked) },
                 )
             }

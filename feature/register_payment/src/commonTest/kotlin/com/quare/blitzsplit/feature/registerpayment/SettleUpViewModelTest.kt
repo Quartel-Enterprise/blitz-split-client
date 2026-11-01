@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledUp
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
@@ -288,7 +287,7 @@ class SettleUpViewModelTest {
             observeGroup = ObserveGroupUseCase(groups),
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observePeopleBalances = ObservePeopleBalancesUseCase(
-                observeGroupsByActivity = ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+                observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,
             ),
             connectivityObserver = NetworkConnectivityObserver { flowOf(true) },

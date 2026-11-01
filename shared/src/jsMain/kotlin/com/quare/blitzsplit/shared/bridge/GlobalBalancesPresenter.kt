@@ -103,6 +103,8 @@ class JsGlobalBalancesState(
     val people: Array<JsPersonRow>,
     // Why: "settled", "nothing-to-pay" or "nothing-to-receive", null while there are rows.
     val emptyState: String?,
+    // Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open.
+    val emptyStateTotal: JsPeopleTotal,
     // Why: the PaymentKeyType's name ("EMAIL") and the value of the Pix key Cobrar offers, null without one.
     val pixKeyType: String?,
     val pixKeyValue: String?,
@@ -139,6 +141,7 @@ class GlobalBalancesPresenter(
                     BalancesEmptyState.NOTHING_TO_RECEIVE -> "nothing-to-receive"
                     null -> null
                 },
+                emptyStateTotal = toJsPeopleTotal(state.emptyStateTotal),
                 pixKeyType = state.pixKey?.type?.name,
                 pixKeyValue = state.pixKey?.value,
                 charge = state.charge?.let(::toJsChargeDraft),

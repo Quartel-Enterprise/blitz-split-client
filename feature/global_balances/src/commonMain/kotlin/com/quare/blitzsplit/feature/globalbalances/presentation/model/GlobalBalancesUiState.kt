@@ -46,9 +46,20 @@ data class GlobalBalancesUiState(
             else -> BalancesEmptyState.NOTHING_TO_RECEIVE
         }
 
-    // Why: the hero, the "Tudo" amount, and the empty states' "R$ 312,40 para receber de 4 pessoas".
+    // Why: the hero and the "Tudo" amount.
     val primaryTotal: PeopleTotal
         get() = totals.first()
+
+    /*
+     * Why: the empty states' "R$ 312,40 para receber de 4 pessoas", in the currency that still has something open,
+     * which needn't be the one with the most groups.
+     */
+    val emptyStateTotal: PeopleTotal
+        get() = when (emptyState) {
+            BalancesEmptyState.NOTHING_TO_PAY -> totals.firstOrNull { it.toReceiveMinor > 0 }
+            BalancesEmptyState.NOTHING_TO_RECEIVE -> totals.firstOrNull { it.toPayMinor > 0 }
+            else -> null
+        } ?: primaryTotal
 
     // Why: "Offline · saldos deste aparelho": everything works on what the device has.
     val showsOfflineNotice: Boolean

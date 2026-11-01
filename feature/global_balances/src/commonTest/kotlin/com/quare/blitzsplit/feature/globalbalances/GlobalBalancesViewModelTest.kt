@@ -14,7 +14,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
@@ -222,6 +221,29 @@ class GlobalBalancesViewModelTest {
                 .isEmpty(),
         )
     }
+
+    @Test
+    fun `GIVEN only another currency owes you WHEN filtering Voce deve THEN the empty state counts that currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups.map { group ->
+                    if (group.id == CHURRASCO) group.copy(currency = GroupCurrency.USD) else group
+                },
+                bills = listOf(owes(CHURRASCO, CARLA_CHURRASCO, ME_CHURRASCO, 3_250L)),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(BalancesEmptyState.NOTHING_TO_PAY, state.emptyState)
+            assertEquals(GroupCurrency.BRL, state.primaryTotal.currency)
+            assertEquals(GroupCurrency.USD, state.emptyStateTotal.currency)
+            assertEquals(3_250L, state.emptyStateTotal.toReceiveMinor)
+            assertEquals(1, state.emptyStateTotal.toReceiveCount)
+        }
 
     @Test
     fun `GIVEN you owe nothing WHEN tapping Ver quem te deve THEN shows Te devem`() = runTest(testDispatcher) {
@@ -814,7 +836,7 @@ class GlobalBalancesViewModelTest {
             consumeSettledUp = ConsumeSettledUpUseCase(settledUps),
             deleteSettlement = DeleteSettlementUseCase(settlements, InMemoryRecordedPaymentRepository()) { 0L },
             observePeopleBalances = ObservePeopleBalancesUseCase(
-                observeGroupsByActivity = ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+                observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = money,
             ),
             observeSettledUp = ObserveSettledUpUseCase(settledUps),

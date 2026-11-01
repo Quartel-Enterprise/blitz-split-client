@@ -80,7 +80,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
           <>
             <FilterCards presenter={presenter} state={state} />
             {state.emptyState ? (
-              <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.totals[0]} />
+              <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal} />
             ) : (
               <section aria-label={t('globalBalances_title')} className="overflow-hidden rounded-xl border bg-card">
                 {state.sections.map((section, index) => (

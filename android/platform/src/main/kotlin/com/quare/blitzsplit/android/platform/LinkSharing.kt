@@ -6,11 +6,9 @@ import android.content.Context
 import android.content.Intent
 
 // Why: "Copiar" of a group's link and of a member's personal link.
-fun Context.copyLink(link: String) {
-    getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(link, link))
-}
+fun Context.copyLink(link: String) = copyText(link)
 
-// Why: Cobrar's "Copiar mensagem".
+// Why: Cobrar's "Copiar mensagem", and the links above.
 fun Context.copyText(text: String) {
     getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(text, text))
 }
