@@ -229,7 +229,7 @@ struct MainTabView: View {
     }
 
     /// What the tabs push over themselves: a group's expenses, balances, members or statistics, a bill, an invite
-    /// opened from its link, the profile, its editor and, on iPhone, a key. Contacts also pushes a person's profile,
+    /// opened from its link, a group's invite with an iPad's room, the profile, its editor and, on iPhone, a key. Contacts also pushes a person's profile,
     /// the agenda, and Balances opened from a profile's Request.
     @ViewBuilder
     static func destination(_ route: AppRoute) -> some View {
@@ -244,6 +244,7 @@ struct MainTabView: View {
         case let .groupStats(route): GroupStatsView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
+        case let .invite(route): InviteView(route: route)
         case let .contactProfile(route): ContactProfileView(route: route)
         case .contactsAgenda: AgendaView()
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)

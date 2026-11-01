@@ -63,6 +63,8 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     showsBillDeletedNotice = false,
     exit = previewGroupExit,
     isLoaded = true,
+    joinedAs = null,
+    isAccountUnprotected = false,
 )
 
 internal fun createPreviewDays(): List<ExpenseDay> = listOf(

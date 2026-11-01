@@ -3,6 +3,8 @@ package com.quare.blitzsplit.feature.join.presentation.model
 data class JoinPickUiState(
     // Why: nothing is drawn until the invite comes.
     val isLoaded: Boolean,
+    // Why: "Entre na Viagem Floripa" beside the names on the web's desktop.
+    val groupName: String,
     // Why: in the order they were added, the creator first.
     val members: List<JoinMember>,
     val selectedMemberId: String?,

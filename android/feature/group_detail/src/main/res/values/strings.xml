@@ -57,4 +57,8 @@
     <string name="group_detail_balances_empty_message">Balances show up once the first expense is added.</string>
     <string name="group_detail_balances_settled_title">Everyone\'s settled up</string>
     <string name="group_detail_balances_settled_message">Nobody owes anything in this group. If the trip is over, you can delete the group for everyone.</string>
+    <string name="group_detail_joined_title">You joined as %s</string>
+    <string name="group_detail_joined_message">Everything added for you shows up here.</string>
+    <string name="group_detail_protect_title">Protect your access</string>
+    <string name="group_detail_protect_message">You joined without an account. Save the code or connect Google or Apple.</string>
 </resources>

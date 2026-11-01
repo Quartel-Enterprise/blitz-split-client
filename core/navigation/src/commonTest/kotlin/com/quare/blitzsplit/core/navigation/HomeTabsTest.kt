@@ -14,7 +14,7 @@ class HomeTabsTest {
         prepareScenario(
             Route.Home,
             Route.Groups,
-            Route.GroupDetail(GROUP_ID),
+            Route.GroupDetail(GROUP_ID, joinedAs = null),
             Route.BillDetail(GROUP_ID, EXPENSE_ID),
         )
         val tab = Route.Groups
@@ -42,7 +42,7 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group opened from Grupos WHEN opening Saldos THEN Saldos takes the place of Grupos and the group`() {
         // Given
-        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID))
+        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null))
         val tab = Route.GlobalBalances(BalancesFilter.ALL, charge = null)
 
         // When
@@ -188,7 +188,12 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group opened from Grupos WHEN going back to Grupos THEN closes the group`() {
         // Given
-        prepareScenario(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID), Route.Balances(GROUP_ID))
+        prepareScenario(
+            Route.Home,
+            Route.Groups,
+            Route.GroupDetail(GROUP_ID, joinedAs = null),
+            Route.Balances(GROUP_ID),
+        )
 
         // When
         navigator.popToGroups()

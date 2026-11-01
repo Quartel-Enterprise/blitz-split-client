@@ -70,7 +70,4 @@ sealed interface MembersUiEvent : UiEvent {
     data object OnUndoPaymentClicked : MembersUiEvent
 
     data object OnRecordedPaymentNoticeShown : MembersUiEvent
-
-    // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
-    data object OnProtectAccessClicked : MembersUiEvent
 }

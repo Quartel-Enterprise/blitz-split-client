@@ -64,14 +64,16 @@ final class AppModel {
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {
-            if isSheetStacked { return backStack[backStack.count - 2] }
-            if sheetPushCount > 0 { return backStack[backStack.count - 1 - sheetPushCount] }
-            guard backStack.count > 1, let top = backStack.last, presentsAsSheet(top) else { return nil }
+            if isSheetStacked { return backStack[sheetBaseIndex - 1] }
+            if sheetPushCount > 0 { return backStack[sheetBaseIndex] }
+            guard backStack.count > 1, let top = backStack.last, presentsAsSheet(top), invitePopover == nil else {
+                return nil
+            }
             return top
         }
         set {
             guard newValue == nil, sheet != nil else { return }
-            let shown = isSheetStacked ? 2 : 1 + sheetPushCount
+            let shown = (isSheetStacked ? 2 : 1) + sheetPushCount
             holder.viewModel.navigator.popTo(size: Int32(backStack.count - shown))
         }
     }
@@ -79,11 +81,29 @@ final class AppModel {
     /// The entries pushed inside the sheet (the default split inside Edit group's): its own NavigationStack's path.
     /// Its back button shortens it, and the shared back stack catches up.
     var sheetPath: [AppRoute] {
-        get { Array(backStack.suffix(sheetPushCount)) }
-        set {
-            guard newValue.count < sheetPushCount else { return }
-            holder.viewModel.navigator.popTo(size: Int32(backStack.count - sheetPushCount + newValue.count))
-        }
+        get { isSheetStacked ? [] : pushedInSheet }
+        set { popPushedInSheet(keeping: newValue.count) }
+    }
+
+    /// The entries pushed inside a sheet stacked over another (on the Mac, Quem é você inside an invite link's sheet
+    /// that opened over Edit group's): the stacked sheet's own path, so the sheet under it stays where it is.
+    var stackedSheetPath: [AppRoute] {
+        get { isSheetStacked ? pushedInSheet : [] }
+        set { popPushedInSheet(keeping: newValue.count) }
+    }
+
+    private var pushedInSheet: [AppRoute] {
+        Array(backStack.suffix(sheetPushCount))
+    }
+
+    private func popPushedInSheet(keeping count: Int) {
+        guard count < sheetPushCount else { return }
+        holder.viewModel.navigator.popTo(size: Int32(backStack.count - sheetPushCount + count))
+    }
+
+    /// The sheet the top entries are pushed inside, or the top one when none is.
+    private var sheetBaseIndex: Int {
+        backStack.count - 1 - sheetPushCount
     }
 
     /// How many entries on top are pushed inside the sheet right under them.
@@ -95,19 +115,21 @@ final class AppModel {
         return pushed
     }
 
-    /// The top entry when it opens as a sheet over another sheet: editing a bill open as a sheet (iPad's room, Mac).
+    /// The entry that opens as a sheet over another sheet (editing a bill open as a sheet with an iPad's room and on
+    /// the Mac, an invite link's sheet over Edit group's on the Mac), with what is pushed inside it on top.
     var stackedSheet: AppRoute? {
-        get { isSheetStacked ? backStack.last : nil }
+        get { isSheetStacked ? backStack[sheetBaseIndex] : nil }
         set {
             guard newValue == nil, stackedSheet != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1 - sheetPushCount))
         }
     }
 
-    /// The two top entries both open as sheets, so the second one stacks over the first instead of taking its place.
+    /// The two entries under what is pushed inside a sheet both open as sheets, so the second stacks over the first
+    /// instead of taking its place.
     private var isSheetStacked: Bool {
-        backStack.count > 2 && presentsAsSheet(backStack[backStack.count - 1])
-            && presentsAsSheet(backStack[backStack.count - 2])
+        let base = sheetBaseIndex
+        return base >= 2 && presentsAsSheet(backStack[base]) && presentsAsSheet(backStack[base - 1])
     }
 
     /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either.
@@ -117,9 +139,28 @@ final class AppModel {
     }
 
     private var modalCount: Int {
-        if isSheetStacked { return 2 }
+        if isSheetStacked { return 2 + sheetPushCount }
         if sheetPushCount > 0 { return 1 + sheetPushCount }
-        return sheet == nil && cover == nil ? 0 : 1
+        return sheet == nil && cover == nil && invitePopover == nil ? 0 : 1
+    }
+
+    /// The Mac's invite over the group's tab that opened it (F2Mac): a popover on that tab's "Invite people" rather
+    /// than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
+    var invitePopover: InvitePopover? {
+        get {
+            #if os(macOS)
+            guard backStack.count > 2, case let .invite(route) = backStack[backStack.count - 1] else { return nil }
+            let host = backStack[backStack.count - 2]
+            guard host.isGroupTab else { return nil }
+            return InvitePopover(host: host, route: route)
+            #else
+            return nil
+            #endif
+        }
+        set {
+            guard newValue == nil, invitePopover != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(backStack.count - 1))
+        }
     }
 
     /// The top entry when it covers the whole screen (the invite reader on iPhone and iPad). Closing it pops it.

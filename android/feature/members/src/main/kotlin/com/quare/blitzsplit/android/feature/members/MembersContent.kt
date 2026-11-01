@@ -15,11 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
@@ -247,18 +244,6 @@ private fun MembersHeader(
             top = if (state.myBalance == null) 20.dp else 12.dp,
         ),
     )
-    state.joinedAs?.let { name ->
-        JoinedBanner(
-            name = name,
-            showsProtectAccess = state.showsProtectAccess,
-            onEvent = onEvent,
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp,
-            ),
-        )
-    }
     LinkCard(
         displayLink = state.displayLink,
         onEvent = onEvent,
@@ -268,79 +253,6 @@ private fun MembersHeader(
             top = 16.dp,
         ),
     )
-}
-
-// Why: right after joining through the link, and "Proteja seu acesso" while the account has no Google or Apple.
-@Composable
-private fun JoinedBanner(
-    name: String,
-    showsProtectAccess: Boolean,
-    onEvent: (MembersUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.CheckCircle,
-                    contentDescription = null,
-                )
-                Column {
-                    Text(
-                        text = stringResource(R.string.members_joined_title, name),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Text(
-                        text = stringResource(R.string.members_joined_message),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-        }
-        if (showsProtectAccess) {
-            Surface(
-                onClick = { onEvent(MembersUiEvent.OnProtectAccessClicked) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.tertiaryContainer,
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Shield,
-                        contentDescription = null,
-                    )
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.members_protect_title),
-                            style = MaterialTheme.typography.titleSmall,
-                        )
-                        Text(
-                            text = stringResource(R.string.members_protect_message),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                        contentDescription = null,
-                    )
-                }
-            }
-        }
-    }
 }
 
 // Why: the group's sections, the same tabs as Despesas and Saldos.
@@ -505,8 +417,6 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
     isEveryoneSettled = false,
     recordedPayment = null,
     isLoaded = true,
-    joinedAs = null,
-    isAccountUnprotected = false,
 )
 
 @DevicePreviews

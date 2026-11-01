@@ -115,7 +115,9 @@ entries remain with `popTo`. When the root is `.groups`, `RootView` swaps the st
 Some routes open as a sheet instead of a push (`AppRoute.presentsAsSheet`: a payment key, and a bill on iPad and
 Mac). `AppModel.sheet` shows the top entry when it is one, and `path` leaves it out. When the two top entries are
 both sheets ("Editar conta" over a bill's "Conta"), `AppModel.stackedSheet` presents the second over the first
-instead of replacing it, and closing either pops the shared stack down to what is still shown.
+instead of replacing it, and closing either pops the shared stack down to what is still shown. On the Mac, a group's
+Convidar over one of its tabs is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
+tab's button draws it (`.invitePopover(host:)`); closing it pops it the same way.
 
 ### Web: last entry and browser history
 

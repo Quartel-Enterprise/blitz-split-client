@@ -9,31 +9,35 @@ class GroupTabsTest {
     @Test
     fun `GIVEN a tab over the home WHEN opening the other tab THEN takes its place`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID))
+        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null))
 
         // When
         navigator.openGroupTab(
-            from = Route.GroupDetail(GROUP_ID),
-            tab = Route.Members(GROUP_ID, joinedAs = null),
+            from = Route.GroupDetail(GROUP_ID, joinedAs = null),
+            tab = Route.Members(GROUP_ID),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
     fun `GIVEN Convidar over Despesas WHEN opening Membros THEN puts Membros in place of the group`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID), Route.Invite(GROUP_ID, isNewGroup = false))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(GROUP_ID, joinedAs = null),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
 
         // When
         navigator.openGroupTab(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID, joinedAs = null),
+            tab = Route.Members(GROUP_ID),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
@@ -41,18 +45,18 @@ class GroupTabsTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.Members(GROUP_ID, joinedAs = null),
+            Route.Members(GROUP_ID),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
         // When
         navigator.openGroupTab(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.GroupDetail(GROUP_ID),
+            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -63,45 +67,48 @@ class GroupTabsTest {
         // When
         navigator.openGroupTab(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID, joinedAs = null),
+            tab = Route.Members(GROUP_ID),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test
-    fun `GIVEN Convidar over Membros just joined WHEN opening Membros THEN goes back to it`() {
+    fun `GIVEN Convidar over Despesas just joined WHEN opening Despesas THEN goes back to it`() {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.Members(GROUP_ID, joinedAs = "Bruno"),
+            Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
         // When
         navigator.openGroupTab(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID, joinedAs = null),
+            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = "Bruno")), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno")),
+            navigator.backStack.value,
+        )
     }
 
     @Test
     fun `GIVEN Membros over Despesas WHEN opening Despesas THEN goes back to it`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID), Route.Members(GROUP_ID, joinedAs = null))
+        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null), Route.Members(GROUP_ID))
 
         // When
         navigator.openGroupTab(
-            from = Route.Members(GROUP_ID, joinedAs = null),
-            tab = Route.GroupDetail(GROUP_ID),
+            from = Route.Members(GROUP_ID),
+            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -109,19 +116,19 @@ class GroupTabsTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.Members(OTHER_GROUP_ID, joinedAs = null),
+            Route.Members(OTHER_GROUP_ID),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
         // When
         navigator.openGroupTab(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.GroupDetail(GROUP_ID),
+            tab = Route.GroupDetail(GROUP_ID, joinedAs = null),
         )
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members(OTHER_GROUP_ID, joinedAs = null), Route.GroupDetail(GROUP_ID)),
+            listOf(Route.Groups, Route.Members(OTHER_GROUP_ID), Route.GroupDetail(GROUP_ID, joinedAs = null)),
             navigator.backStack.value,
         )
     }
@@ -129,16 +136,16 @@ class GroupTabsTest {
     @Test
     fun `GIVEN the screen no longer on top WHEN opening a tab THEN keeps the back stack`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID))
+        prepareScenario(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null))
 
         // When
         navigator.openGroupTab(
             from = Route.Invite(GROUP_ID, isNewGroup = false),
-            tab = Route.Members(GROUP_ID, joinedAs = null),
+            tab = Route.Members(GROUP_ID),
         )
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     private fun prepareScenario(vararg routes: Route) {

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -1121,7 +1123,7 @@ class GroupDetailPaymentsViewModelTest {
         paidAt = thisAfternoon,
     ).getOrThrow()
 
-    private val route = Route.GroupDetail(GROUP_ID)
+    private val route = Route.GroupDetail(GROUP_ID, joinedAs = null)
 
     private val pins = FakeGroupPinRepository()
 
@@ -1264,6 +1266,7 @@ class GroupDetailPaymentsViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeAccount = ObserveAccountUseCase(FakeAccountRepository()),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = ObserveGroup { groupId ->

@@ -992,7 +992,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
 
         // Then
-        assertEquals(listOf(Route.Home, Route.GroupDetail("trio")), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.GroupDetail("trio", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -1060,7 +1060,7 @@ class HomeViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.GroupDetail("trio"), Route.BillDetail("trio", "dinner")),
+            listOf(Route.Home, Route.GroupDetail("trio", joinedAs = null), Route.BillDetail("trio", "dinner")),
             navigator.backStack.value,
         )
     }
@@ -1635,7 +1635,7 @@ class HomeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio"))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
             navigator.navigate(registerPayment)
             recordedPayments.post(
                 RecordedPayment.InGroup(

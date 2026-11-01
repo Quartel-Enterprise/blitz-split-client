@@ -766,7 +766,10 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(
+            listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)),
+            navigator.backStack.value,
+        )
     }
 
     @Test
@@ -779,10 +782,7 @@ class BalancesViewModelTest {
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(
-            listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID, joinedAs = null)),
-            navigator.backStack.value,
-        )
+        assertEquals(listOf(Route.Home, Route.Groups, Route.Members(GROUP_ID)), navigator.backStack.value)
     }
 
     @Test

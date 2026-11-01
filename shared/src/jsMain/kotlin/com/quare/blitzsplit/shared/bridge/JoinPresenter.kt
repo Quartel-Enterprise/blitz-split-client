@@ -124,6 +124,7 @@ class JsNewMemberDraft(
 
 class JsJoinPickState(
     val isLoaded: Boolean,
+    val groupName: String,
     val notJoined: Array<JsJoinMember>,
     val joined: Array<JsJoinMember>,
     val selectedMemberId: String?,
@@ -149,6 +150,7 @@ class JoinPickPresenter(
         val states = viewModel.uiState.map { state ->
             JsJoinPickState(
                 isLoaded = state.isLoaded,
+                groupName = state.groupName,
                 notJoined = state.notJoined.map(::toJsJoinMember).toTypedArray(),
                 joined = state.joined.map(::toJsJoinMember).toTypedArray(),
                 selectedMemberId = state.selectedMemberId,

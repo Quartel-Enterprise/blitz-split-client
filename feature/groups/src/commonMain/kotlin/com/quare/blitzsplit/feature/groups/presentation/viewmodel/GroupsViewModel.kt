@@ -300,7 +300,7 @@ class GroupsViewModel(
              * first's; beside the list, the group tapped takes the place of the one shown.
              */
             is GroupsUiEvent.OnGroupClicked -> if (isListShown()) {
-                navigator.openBesideGroups(Route.GroupDetail(event.groupId))
+                navigator.openBesideGroups(Route.GroupDetail(event.groupId, joinedAs = null))
             }
 
             GroupsUiEvent.OnJoinWithLinkClicked -> if (isListShown()) {
@@ -371,7 +371,7 @@ class GroupsViewModel(
 
             // Why: Membros is a tab of the group, which takes the place of the group beside the list.
             is GroupsUiEvent.OnSearchPersonClicked -> if (isListShown()) {
-                navigator.openBesideGroups(Route.Members(event.groupId, joinedAs = null))
+                navigator.openBesideGroups(Route.Members(event.groupId))
             }
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
@@ -436,7 +436,7 @@ class GroupsViewModel(
         expenseId: String,
     ) {
         if (!isListShown()) return
-        navigator.openBesideGroups(Route.GroupDetail(groupId))
+        navigator.openBesideGroups(Route.GroupDetail(groupId, joinedAs = null))
         navigator.navigate(Route.BillDetail(groupId, expenseId))
     }
 

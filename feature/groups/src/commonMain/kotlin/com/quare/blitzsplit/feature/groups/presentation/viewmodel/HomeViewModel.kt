@@ -293,7 +293,7 @@ class HomeViewModel(
                 ),
             )
 
-            is HomeUiEvent.OnGroupClicked -> open(Route.GroupDetail(event.groupId))
+            is HomeUiEvent.OnGroupClicked -> open(Route.GroupDetail(event.groupId, joinedAs = null))
 
             HomeUiEvent.OnSeeAllGroupsClicked -> if (isOnTop()) navigator.openHomeTab(Route.Groups)
 
@@ -302,7 +302,7 @@ class HomeViewModel(
 
             // Why: over its group, so back goes to the group's bills, as from Despesas.
             is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(Route.GroupDetail(event.groupId))
+                navigator.navigate(Route.GroupDetail(event.groupId, joinedAs = null))
                 navigator.navigate(Route.BillDetail(event.groupId, event.expenseId))
             }
 

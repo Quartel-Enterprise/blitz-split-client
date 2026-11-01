@@ -45,6 +45,7 @@ extension View {
     /// Leave and Delete need the internet; the dialogs they open come with the bars.
     func groupScreenBars(
         tab: GroupTab,
+        host: AppRoute,
         header: GroupHeader?,
         hasExpenses: Bool,
         showsSplitBill: Bool,
@@ -55,6 +56,7 @@ extension View {
         modifier(
             GroupScreenBars(
                 tab: tab,
+                host: host,
                 header: header,
                 hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
@@ -69,6 +71,8 @@ extension View {
 
 private struct GroupScreenBars: ViewModifier {
     let tab: GroupTab
+    /// This tab in the shared back stack, whose "Invite people" anchors the Mac's invite popover.
+    let host: AppRoute
     let header: GroupHeader?
     let hasExpenses: Bool
     let showsSplitBill: Bool
@@ -122,6 +126,7 @@ private struct GroupScreenBars: ViewModifier {
         ToolbarItem(placement: .primaryAction) {
             Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
                 .disabled(!isLoaded)
+                .invitePopover(host: host)
         }
         ToolbarItem(placement: .primaryAction) { groupMenu }
         if showsSplitBill {

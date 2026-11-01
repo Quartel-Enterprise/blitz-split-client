@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -25,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -39,10 +41,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
@@ -50,7 +54,11 @@ import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
 
 private val maxContentWidth = 560.dp
 
-// Why: the list scrolls under the button, which stays at the bottom where the thumb is.
+/*
+ * Why: upright the list scrolls under the button, which stays at the bottom where the thumb is. Lying down, on a
+ * tablet lying down and on a book, the question and "Não estou na lista" take a column of their own, and the names
+ * scroll above "Entrar como Bruno", always in sight (3.2); a tabletop draws it like the book.
+ */
 @Composable
 fun JoinPickContent(
     state: JoinPickUiState,
@@ -58,15 +66,28 @@ fun JoinPickContent(
     onEvent: (JoinPickUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val layout = rememberJoinLayout(hasTabletop = false)
+    val isColumn = layout == JoinLayout.COLUMN
     Scaffold(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            if (state.isLoaded) {
-                JoinButton(
-                    state = state,
-                    onEvent = onEvent,
-                )
+            if (state.isLoaded && isColumn) {
+                Surface(color = MaterialTheme.colorScheme.surface) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        JoinButton(
+                            state = state,
+                            onEvent = onEvent,
+                            modifier = Modifier.widthIn(max = maxContentWidth),
+                        )
+                    }
+                }
             }
         },
     ) { padding ->
@@ -76,36 +97,171 @@ fun JoinPickContent(
                 .padding(padding),
             contentAlignment = Alignment.TopCenter,
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = maxContentWidth)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp,
-                    ),
-            ) {
-                IconButton(onClick = { onEvent(JoinPickUiEvent.OnBackClicked) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(R.string.join_pick_back),
+            if (isColumn) {
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = maxContentWidth)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp,
+                        ),
+                ) {
+                    BackButton(onEvent)
+                    if (!state.isLoaded) {
+                        LoadingBox()
+                        return@Column
+                    }
+                    PickList(
+                        state = state,
+                        onEvent = onEvent,
                     )
                 }
-                if (!state.isLoaded) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 160.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
+            } else {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    BackButton(
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp,
+                        ),
+                    )
+                    if (state.isLoaded) {
+                        PickColumnsLayout(
+                            state = state,
+                            layout = layout,
+                            onEvent = onEvent,
+                            modifier = Modifier.weight(1f),
+                        )
+                    } else {
+                        LoadingBox()
                     }
-                    return@Column
                 }
-                PickList(
+            }
+        }
+    }
+}
+
+@Composable
+private fun BackButton(
+    onEvent: (JoinPickUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    IconButton(
+        onClick = { onEvent(JoinPickUiEvent.OnBackClicked) },
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+            contentDescription = stringResource(R.string.join_pick_back),
+        )
+    }
+}
+
+@Composable
+private fun LoadingBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 160.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun PickColumnsLayout(
+    state: JoinPickUiState,
+    layout: JoinLayout,
+    onEvent: (JoinPickUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val intro = @Composable { columnModifier: Modifier ->
+        Column(
+            modifier = columnModifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            PickIntroHeader(
+                state = state,
+                titleStyle = if (layout == JoinLayout.PHONE_LANDSCAPE) {
+                    MaterialTheme.typography.headlineMedium
+                } else {
+                    MaterialTheme.typography.headlineLarge
+                },
+            )
+            NotInListButton(
+                state = state,
+                isOutlined = true,
+                onEvent = onEvent,
+            )
+        }
+    }
+    val names = @Composable { columnModifier: Modifier ->
+        Column(
+            modifier = columnModifier,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                PickMembersList(
                     state = state,
                     onEvent = onEvent,
+                )
+            }
+            JoinButton(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+    // Why: rememberJoinLayout(hasTabletop = false) draws a tabletop lying down as the book, never as TABLETOP.
+    if (layout == JoinLayout.BOOK) {
+        TwoHalvesLayout(
+            start = {
+                intro(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = 32.dp,
+                            bottom = 48.dp,
+                        ),
+                )
+            },
+            end = {
+                names(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            end = 32.dp,
+                            bottom = 48.dp,
+                        ),
+                )
+            },
+            modifier = modifier.fillMaxSize(),
+            gap = bookGap,
+        )
+    } else {
+        val isTablet = layout == JoinLayout.TABLET_LANDSCAPE
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Row(
+                modifier = Modifier.landscapeColumns(isTablet),
+                horizontalArrangement = Arrangement.spacedBy(if (isTablet) 64.dp else 40.dp),
+            ) {
+                intro(Modifier.width(landscapeStartWidthOf(isTablet)))
+                names(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
                 )
             }
         }
@@ -121,56 +277,108 @@ private fun PickList(
         modifier = Modifier.padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = stringResource(R.string.join_pick_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
+        PickIntroHeader(
+            state = state,
+            titleStyle = MaterialTheme.typography.headlineMedium,
         )
-        Text(
-            text = stringResource(R.string.join_pick_subtitle),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        PickMembersList(
+            state = state,
+            onEvent = onEvent,
+            notInList = {
+                NotInListButton(
+                    state = state,
+                    isOutlined = false,
+                    onEvent = onEvent,
+                )
+            },
         )
-        state.takenName?.let { name ->
-            TakenBanner(
-                name = name,
-                creatorName = state.creatorName,
-            )
-        }
-        if (state.notJoined.isNotEmpty()) {
-            SectionTitle(stringResource(R.string.join_pick_not_joined))
-            Column(modifier = Modifier.selectableGroup()) {
-                state.notJoined.forEach { member ->
-                    MemberRow(
-                        member = member,
-                        isSelected = member.id == state.selectedMemberId,
-                        isEnabled = !state.isJoining,
-                        onClick = { onEvent(JoinPickUiEvent.OnMemberSelected(member.id)) },
-                    )
-                }
-            }
-        }
+    }
+}
+
+// Why: the question, what picking a name does and, once someone took the picked name first, who did.
+@Composable
+private fun PickIntroHeader(
+    state: JoinPickUiState,
+    titleStyle: TextStyle,
+) {
+    Text(
+        text = stringResource(R.string.join_pick_title),
+        style = titleStyle,
+        fontWeight = FontWeight.Bold,
+    )
+    Text(
+        text = stringResource(R.string.join_pick_subtitle),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    state.takenName?.let { name ->
+        TakenBanner(
+            name = name,
+            creatorName = state.creatorName,
+        )
+    }
+}
+
+// Why: upright it sits between the two lists; in a column of its own it is an outlined button under the question.
+@Composable
+private fun NotInListButton(
+    state: JoinPickUiState,
+    isOutlined: Boolean,
+    onEvent: (JoinPickUiEvent) -> Unit,
+) {
+    val content = @Composable {
+        Icon(
+            imageVector = Icons.Outlined.PersonAdd,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 8.dp),
+        )
+        Text(stringResource(R.string.join_pick_not_in_list))
+    }
+    if (isOutlined) {
+        OutlinedButton(
+            onClick = { onEvent(JoinPickUiEvent.OnNotInListClicked) },
+            enabled = !state.isJoining,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp),
+        ) { content() }
+    } else {
         TextButton(
             onClick = { onEvent(JoinPickUiEvent.OnNotInListClicked) },
             enabled = !state.isJoining,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.PersonAdd,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp),
-            )
-            Text(stringResource(R.string.join_pick_not_in_list))
-        }
-        if (state.joined.isNotEmpty()) {
-            SectionTitle(stringResource(R.string.join_pick_joined))
-            state.joined.forEach { member ->
+        ) { content() }
+    }
+}
+
+@Composable
+private fun PickMembersList(
+    state: JoinPickUiState,
+    onEvent: (JoinPickUiEvent) -> Unit,
+    notInList: (@Composable () -> Unit)? = null,
+) {
+    if (state.notJoined.isNotEmpty()) {
+        SectionTitle(stringResource(R.string.join_pick_not_joined))
+        Column(modifier = Modifier.selectableGroup()) {
+            state.notJoined.forEach { member ->
                 MemberRow(
                     member = member,
-                    isSelected = false,
-                    isEnabled = false,
-                    onClick = {},
+                    isSelected = member.id == state.selectedMemberId,
+                    isEnabled = !state.isJoining,
+                    onClick = { onEvent(JoinPickUiEvent.OnMemberSelected(member.id)) },
                 )
             }
+        }
+    }
+    notInList?.invoke()
+    if (state.joined.isNotEmpty()) {
+        SectionTitle(stringResource(R.string.join_pick_joined))
+        state.joined.forEach { member ->
+            MemberRow(
+                member = member,
+                isSelected = false,
+                isEnabled = false,
+                onClick = {},
+            )
         }
     }
 }
@@ -275,41 +483,32 @@ private fun TakenBanner(
 private fun JoinButton(
     state: JoinPickUiState,
     onEvent: (JoinPickUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Button(
-                onClick = { onEvent(JoinPickUiEvent.OnJoinClicked) },
-                enabled = state.canJoin,
-                modifier = Modifier
-                    .widthIn(max = maxContentWidth)
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp),
-            ) {
-                if (state.isJoining) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    Text(
-                        state.selectedName?.let { stringResource(R.string.join_pick_join_as, it) }
-                            ?: stringResource(R.string.join_pick_choose),
-                    )
-                }
-            }
+    Button(
+        onClick = { onEvent(JoinPickUiEvent.OnJoinClicked) },
+        enabled = state.canJoin,
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp),
+    ) {
+        if (state.isJoining) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Text(
+                state.selectedName?.let { stringResource(R.string.join_pick_join_as, it) }
+                    ?: stringResource(R.string.join_pick_choose),
+            )
         }
     }
 }
 
 private fun createPreviewState(): JoinPickUiState = JoinPickUiState(
     isLoaded = true,
+    groupName = "Viagem Floripa",
     members = createPreviewMembers(),
     selectedMemberId = "3",
     takenName = null,
