@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.contacts.domain.usecase.impl
 
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.MemberColors
@@ -22,11 +23,11 @@ class AddContactToGroupUseCase(
         contact: Contact,
         groupId: String,
     ): Result<Unit> {
-        val userId = contact.userId ?: return addMember(groupId, contact.name)
         val group = observeGroup(groupId).first()
             ?: return Result.failure(NoSuchElementException("No group $groupId"))
-        // Why: a stale tap never adds someone the group already has.
-        if (group.members.any { it.userId == userId }) return Result.success(Unit)
+        // Why: a stale tap never adds someone the group already has, a guest being their name there.
+        if (group.members.any { PeopleBalances.keyOf(it) == contact.key }) return Result.success(Unit)
+        val userId = contact.userId ?: return addMember(groupId, contact.name)
         return repository.addMember(
             groupId = groupId,
             member = GroupMember(

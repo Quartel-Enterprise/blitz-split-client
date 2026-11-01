@@ -8,6 +8,9 @@ class FakeGuestMergeRepository(
     var pending: GuestMerge? = null,
 ) : GuestMergeRepository {
     val requestedMemberIds = mutableListOf<List<String>>()
+
+    // Why: the members each lookup of a pending request asked about.
+    val pendingLookups = mutableListOf<List<String>>()
     val cancelledIds = mutableListOf<String>()
     var requestError: Throwable? = null
     var findError: Throwable? = null
@@ -28,6 +31,7 @@ class FakeGuestMergeRepository(
     }
 
     override suspend fun findPending(memberIds: List<String>): Result<GuestMerge?> {
+        pendingLookups += memberIds
         findError?.let { return Result.failure(it) }
         return Result.success(pending?.takeIf { merge -> merge.memberIds.any { it in memberIds } })
     }
