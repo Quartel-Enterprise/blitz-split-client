@@ -475,7 +475,12 @@ class GroupStatsViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID), route, Route.BillDetail(GROUP_ID, "boat")),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(GROUP_ID, joinedAs = null),
+                route,
+                Route.BillDetail(GROUP_ID, "boat"),
+            ),
             navigator.backStack.value,
         )
     }
@@ -523,7 +528,7 @@ class GroupStatsViewModelTest {
         viewModel.onEvent(GroupStatsUiEvent.OnBackClicked)
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -535,7 +540,7 @@ class GroupStatsViewModelTest {
         groups.groups.value = emptyList()
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -550,7 +555,7 @@ class GroupStatsViewModelTest {
             navigator.navigateBack()
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null)), navigator.backStack.value)
         }
 
     private val route = Route.GroupStats(GROUP_ID)
@@ -675,7 +680,7 @@ class GroupStatsViewModelTest {
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
             it.navigate(route)
         }
         chart = MutableStateFlow(keptChart)

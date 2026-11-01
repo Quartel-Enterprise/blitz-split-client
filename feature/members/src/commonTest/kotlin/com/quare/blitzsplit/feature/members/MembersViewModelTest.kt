@@ -1,7 +1,5 @@
 package com.quare.blitzsplit.feature.members
 
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
-import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -28,8 +26,6 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
-import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -67,7 +63,6 @@ import kotlin.time.Duration.Companion.milliseconds
 class MembersViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
-    private lateinit var account: FakeAccountRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
     private val recordedPayments = InMemoryRecordedPaymentRepository()
@@ -277,7 +272,7 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.Members("group-1", joinedAs = null),
+                    Route.Members("group-1"),
                     Route.Invite("group-1", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -325,7 +320,7 @@ class MembersViewModelTest {
         assertEquals(
             listOf(
                 Route.Groups,
-                Route.Members("group-1", joinedAs = null),
+                Route.Members("group-1"),
                 Route.Invite("group-1", isNewGroup = false),
             ),
             navigator.backStack.value,
@@ -346,7 +341,7 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.Members("group-1", joinedAs = null),
+                    Route.Members("group-1"),
                     Route.Invite("group-1", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -364,7 +359,7 @@ class MembersViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members("group-1", joinedAs = null), Route.Profile),
+            listOf(Route.Groups, Route.Members("group-1"), Route.Profile),
             navigator.backStack.value,
         )
     }
@@ -392,7 +387,7 @@ class MembersViewModelTest {
             viewModel.onEvent(MembersUiEvent.OnExpensesTabClicked)
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test
@@ -408,7 +403,7 @@ class MembersViewModelTest {
             // Then
             assertNull(viewModel.uiState.value.personalInvite)
             assertEquals(emptyList(), actions)
-            assertEquals(listOf(Route.Groups, Route.Members("group-1", joinedAs = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.Members("group-1")), navigator.backStack.value)
         }
 
     @Test
@@ -511,48 +506,6 @@ class MembersViewModelTest {
             assertEquals("https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z", invite?.link)
             assertEquals("blitzsplit.com/g/7Hk2pQ8x/c3Rt9z", invite?.displayLink)
         }
-
-    @Test
-    fun `GIVEN just joined with an anonymous account WHEN tapping a personal invite THEN opens it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroup = tripWithCodes,
-                joinedAs = "Pierre",
-                accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
-            )
-            val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(
-                carlaLink,
-                viewModel.uiState.value.personalInvite
-                    ?.link,
-            )
-        }
-
-    @Test
-    fun `GIVEN connected with Google WHEN tapping a personal invite THEN opens it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroup = tripWithCodes,
-            accountStatus = withGoogle,
-        )
-        val event = MembersUiEvent.OnPersonalInviteClicked("member-4")
-
-        // When
-        viewModel.onEvent(event)
-
-        // Then
-        assertEquals(
-            carlaLink,
-            viewModel.uiState.value.personalInvite
-                ?.link,
-        )
-    }
 
     @Test
     fun `GIVEN the codes synced WHEN tapping the personal invite of an unknown member THEN nothing opens`() =
@@ -1759,213 +1712,6 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN the group was just joined as Bruno WHEN the screen opens THEN says Bruno joined`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(joinedAs = "Bruno")
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertEquals("Bruno", state.joinedAs)
-        }
-
-    @Test
-    fun `GIVEN the screen opened from the groups list WHEN it opens THEN there is no joined banner`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(joinedAs = null)
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertNull(state.joinedAs)
-        }
-
-    @Test
-    fun `GIVEN just joined with a local only account WHEN the screen opens THEN asks to protect the access`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = "Bruno",
-                accountStatus = AccountStatus.LocalOnly,
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertTrue(state.isAccountUnprotected)
-            assertTrue(state.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN just joined with an anonymous account WHEN the screen opens THEN asks to protect the access`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = "Bruno",
-                accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertTrue(state.isAccountUnprotected)
-            assertTrue(state.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN just joined with Google WHEN the screen opens THEN does not ask to protect the access`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = "Bruno",
-                accountStatus = AccountStatus.Connected(
-                    FakeAccountRepository.CONNECTED_USER_ID,
-                    AccountProvider.GOOGLE,
-                ),
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertFalse(state.isAccountUnprotected)
-            assertFalse(state.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN just joined with Apple WHEN the screen opens THEN does not ask to protect the access`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = "Bruno",
-                accountStatus = withApple,
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertFalse(state.isAccountUnprotected)
-            assertFalse(state.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN asked to protect the access WHEN Google gets connected THEN stops asking`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            joinedAs = "Bruno",
-            accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
-        )
-
-        // When
-        account.status = withGoogle
-
-        // Then
-        assertFalse(viewModel.uiState.value.showsProtectAccess)
-        assertEquals("Bruno", viewModel.uiState.value.joinedAs)
-    }
-
-    @Test
-    fun `GIVEN just joined with Google WHEN Google is removed THEN asks to protect the access`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = "Bruno",
-                accountStatus = AccountStatus.Connected(
-                    FakeAccountRepository.CONNECTED_USER_ID,
-                    AccountProvider.GOOGLE,
-                ),
-            )
-
-            // When
-            account.status = AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID)
-
-            // Then
-            assertTrue(viewModel.uiState.value.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN opened from the groups list with a local only account WHEN it opens THEN does not ask to protect`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = null,
-                accountStatus = AccountStatus.LocalOnly,
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertFalse(state.isAccountUnprotected)
-            assertFalse(state.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN opened from the groups list with Google WHEN Google is removed THEN does not ask to protect`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                joinedAs = null,
-                accountStatus = AccountStatus.Connected(
-                    FakeAccountRepository.CONNECTED_USER_ID,
-                    AccountProvider.GOOGLE,
-                ),
-            )
-
-            // When
-            account.status = AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID)
-
-            // Then
-            assertFalse(viewModel.uiState.value.isAccountUnprotected)
-            assertFalse(viewModel.uiState.value.showsProtectAccess)
-        }
-
-    @Test
-    fun `GIVEN asked to protect the access WHEN tapping it THEN opens the profile over the members`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(joinedAs = "Bruno")
-            val event = MembersUiEvent.OnProtectAccessClicked
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = "Bruno"), Route.Profile),
-                navigator.backStack.value,
-            )
-        }
-
-    @Test
-    fun `GIVEN another screen on top WHEN tapping protect the access THEN the back stack stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(joinedAs = "Bruno")
-            navigator.navigate(Route.Invite("group-1", isNewGroup = false))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnProtectAccessClicked)
-
-            // Then
-            assertEquals(
-                listOf(
-                    Route.Groups,
-                    Route.Members("group-1", joinedAs = "Bruno"),
-                    Route.Invite("group-1", isNewGroup = false),
-                ),
-                navigator.backStack.value,
-            )
-        }
-
-    @Test
     fun `GIVEN a group without bills WHEN the screen opens THEN there is no balance card and nobody is settled`() =
         runTest(testDispatcher) {
             // Given
@@ -2467,7 +2213,7 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.Members("group-1", joinedAs = null),
+                    Route.Members("group-1"),
                     Route.RegisterPayment("group-1", "member-1", "member-3"),
                 ),
                 navigator.backStack.value,
@@ -2533,7 +2279,7 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = null)),
+                listOf(Route.Groups, Route.Members("group-1")),
                 navigator.backStack.value,
             )
         }
@@ -2549,7 +2295,7 @@ class MembersViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.Members("group-1", joinedAs = null)),
+            listOf(Route.Groups, Route.Members("group-1")),
             navigator.backStack.value,
         )
     }
@@ -2575,7 +2321,7 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members("group-1", joinedAs = null)),
+                listOf(Route.Groups, Route.Members("group-1")),
                 navigator.backStack.value,
             )
         }
@@ -2601,7 +2347,7 @@ class MembersViewModelTest {
         assertEquals(
             listOf(
                 Route.Groups,
-                Route.Members("group-1", joinedAs = null),
+                Route.Members("group-1"),
                 Route.Invite("group-1", isNewGroup = false),
             ),
             navigator.backStack.value,
@@ -2622,7 +2368,7 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.Members("group-1", joinedAs = null),
+                    Route.Members("group-1"),
                     Route.Invite("group-1", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -3369,9 +3115,6 @@ class MembersViewModelTest {
             assertTrue(viewModel.uiState.value.isReleasing)
         }
 
-    private val withGoogle = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
-    private val withApple = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE)
-
     private val pierre = GroupMember(
         "member-1",
         "Pierre",
@@ -3534,14 +3277,11 @@ class MembersViewModelTest {
         storedGroup: Group = trip,
         isRoomReadAtStart: Boolean = true,
         memberChangeError: Throwable? = null,
-        joinedAs: String? = null,
-        accountStatus: AccountStatus = AccountStatus.LocalOnly,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
         releaseError: Throwable? = null,
         waitsForServer: Boolean = false,
     ) {
-        account = FakeAccountRepository(initialStatus = accountStatus)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         isRoomRead.value = isRoomReadAtStart
@@ -3554,10 +3294,10 @@ class MembersViewModelTest {
         navigator =
             BackStackNavigator(
                 startRoute = Route.Groups,
-            ).also { it.navigate(Route.Members("group-1", joinedAs)) }
+            ).also { it.navigate(Route.Members("group-1")) }
         val observeGroup = ObserveGroupUseCase(groups)
         viewModel = MembersViewModel(
-            route = Route.Members("group-1", joinedAs),
+            route = Route.Members("group-1"),
             navigator = navigator,
             checkMemberName = CheckMemberNameUseCase(),
             addMember = AddMemberUseCase(groups, observeGroup) { 1_000L },
@@ -3571,7 +3311,6 @@ class MembersViewModelTest {
             },
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
-            observeAccount = ObserveAccountUseCase(account),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

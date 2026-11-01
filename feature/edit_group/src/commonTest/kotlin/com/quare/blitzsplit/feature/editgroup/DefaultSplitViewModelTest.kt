@@ -460,7 +460,7 @@ class DefaultSplitViewModelTest {
             if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
         }
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
             it.navigate(editGroup)
             it.navigate(defaultSplit)
         }

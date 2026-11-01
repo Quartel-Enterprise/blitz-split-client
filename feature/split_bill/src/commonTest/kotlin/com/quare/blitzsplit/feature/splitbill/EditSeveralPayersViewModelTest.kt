@@ -431,7 +431,7 @@ class EditSeveralPayersViewModelTest {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = listOf(storedExpense))
         val navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
             it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID))
             it.navigate(route)
         }

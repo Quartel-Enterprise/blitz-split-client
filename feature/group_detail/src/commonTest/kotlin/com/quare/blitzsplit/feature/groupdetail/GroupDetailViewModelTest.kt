@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -31,6 +33,8 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
+import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -76,6 +80,7 @@ class GroupDetailViewModelTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: GroupDetailViewModel
+    private lateinit var account: FakeAccountRepository
     private val actions = mutableListOf<GroupDetailUiAction>()
     private val deletedBills = InMemoryDeletedBillRepository()
     private val recordedPayments = InMemoryRecordedPaymentRepository()
@@ -956,7 +961,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Members(GROUP_ID, joinedAs = null)),
+                listOf(Route.Groups, Route.Members(GROUP_ID)),
                 navigator.backStack.value,
             )
         }
@@ -1500,7 +1505,7 @@ class GroupDetailViewModelTest {
 
     private fun ExpenseDay.ids(): List<String> = entries.map { it.id }
 
-    private val route = Route.GroupDetail(GROUP_ID)
+    private var route = Route.GroupDetail(GROUP_ID, joinedAs = null)
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val thisMorning = Instant.parse("2026-10-30T09:00:00Z").toEpochMilliseconds()
@@ -1593,6 +1598,155 @@ class GroupDetailViewModelTest {
         updatedByMemberId = null,
     )
 
+    @Test
+    fun `GIVEN the group was just joined as Bruno WHEN the screen opens THEN says Bruno joined`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("Bruno", state.joinedAs)
+        }
+
+    @Test
+    fun `GIVEN the screen opened from the groups list WHEN it opens THEN there is no joined notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.joinedAs)
+        }
+
+    @Test
+    fun `GIVEN just joined with a local only account WHEN the screen opens THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.LocalOnly,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isAccountUnprotected)
+            assertTrue(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with an anonymous account WHEN the screen opens THEN asks to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN just joined with Apple WHEN the screen opens THEN does not ask to protect the access`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = "Bruno",
+                accountStatus = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.APPLE),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isAccountUnprotected)
+            assertFalse(state.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN asked to protect the access WHEN Google gets connected THEN stops asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            joinedAs = "Bruno",
+            accountStatus = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+        )
+
+        // When
+        account.status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsProtectAccess)
+        assertEquals("Bruno", viewModel.uiState.value.joinedAs)
+    }
+
+    @Test
+    fun `GIVEN opened from the groups list with Google WHEN Google is removed THEN does not ask to protect`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                joinedAs = null,
+                accountStatus = AccountStatus.Connected(
+                    FakeAccountRepository.CONNECTED_USER_ID,
+                    AccountProvider.GOOGLE,
+                ),
+            )
+
+            // When
+            account.status = AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isAccountUnprotected)
+            assertFalse(viewModel.uiState.value.showsProtectAccess)
+        }
+
+    @Test
+    fun `GIVEN asked to protect the access WHEN tapping it THEN opens the profile over the expenses`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"), Route.Profile),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen on top WHEN tapping protect the access THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinedAs = "Bruno")
+            navigator.navigate(Route.Invite(GROUP_ID, isNewGroup = false))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"),
+                    Route.Invite(GROUP_ID, isNewGroup = false),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
@@ -1602,7 +1756,11 @@ class GroupDetailViewModelTest {
         exitOutcome: GroupExitOutcome = GroupExitOutcome.DONE,
         exitError: Throwable? = null,
         exitGate: CompletableDeferred<Unit>? = null,
+        joinedAs: String? = null,
+        accountStatus: AccountStatus = AccountStatus.LocalOnly,
     ) {
+        route = Route.GroupDetail(GROUP_ID, joinedAs = joinedAs)
+        account = FakeAccountRepository(initialStatus = accountStatus)
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.exitOutcome = exitOutcome
             it.exitError = exitError
@@ -1619,6 +1777,7 @@ class GroupDetailViewModelTest {
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeAccount = ObserveAccountUseCase(account),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
                 observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },

@@ -107,6 +107,7 @@ struct BalancesView: View {
         }
         .groupScreenBars(
             tab: .balances,
+            host: .balances(route),
             header: model?.state.isLoaded == true ? model?.state.header : nil,
             hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,

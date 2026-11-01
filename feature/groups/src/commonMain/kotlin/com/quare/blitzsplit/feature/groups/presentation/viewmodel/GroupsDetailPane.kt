@@ -67,8 +67,8 @@ internal class GroupsDetailPane(
 
     // Why: the sections show Grupos, then Pessoas, then Despesas.
     private fun firstResultRouteOf(results: GroupsSearchResults): Route? {
-        results.groups.firstOrNull()?.let { return Route.GroupDetail(it.group.id) }
-        results.people.firstOrNull()?.let { return Route.Members(it.groupId, joinedAs = null) }
-        return results.bills.firstOrNull()?.let { Route.GroupDetail(it.groupId) }
+        results.groups.firstOrNull()?.let { return Route.GroupDetail(it.group.id, joinedAs = null) }
+        results.people.firstOrNull()?.let { return Route.Members(it.groupId) }
+        return results.bills.firstOrNull()?.let { Route.GroupDetail(it.groupId, joinedAs = null) }
     }
 }

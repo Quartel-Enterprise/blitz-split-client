@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.LinkOff
-import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,27 +27,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteStatus
@@ -59,7 +59,11 @@ import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 private val maxContentWidth = 560.dp
 private const val SHOWN_FACES = 3
 
-// Why: one centered column on every device, scrolling when a phone lying down can't fit it.
+/*
+ * Why: one centered column on a phone and upright on a tablet or a foldable; two columns lying down (the title on the
+ * left, the group and the buttons on the right), a half each on a book, and the title and group on top of a
+ * tabletop, its buttons under the thumb (3.1).
+ */
 @Composable
 fun JoinInviteContent(
     state: JoinInviteUiState,
@@ -67,6 +71,7 @@ fun JoinInviteContent(
     onEvent: (JoinInviteUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val layout = rememberJoinLayout()
     Surface(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -74,52 +79,45 @@ fun JoinInviteContent(
                 .safeDrawingPadding(),
             contentAlignment = Alignment.TopCenter,
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = maxContentWidth)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp,
-                    ),
-            ) {
-                IconButton(onClick = { onEvent(JoinInviteUiEvent.OnNotNowClicked) }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = stringResource(R.string.join_close),
+            if (layout == JoinLayout.COLUMN) {
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = maxContentWidth)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 8.dp,
+                        ),
+                ) {
+                    CloseButton(onEvent)
+                    JoinInviteBodyContent(
+                        state = state,
+                        layout = layout,
+                        onEvent = onEvent,
                     )
                 }
-                when (state.status) {
-                    JoinInviteStatus.LOADING -> LoadingBox()
-
-                    JoinInviteStatus.READY -> InviteContent(state, onEvent)
-
-                    JoinInviteStatus.INVALID -> ProblemContent(
-                        icon = Icons.Outlined.LinkOff,
-                        title = stringResource(R.string.join_invalid_title),
-                        message = stringResource(
-                            if (state.isPersonal) {
-                                R.string.join_invalid_personal_message
-                            } else {
-                                R.string.join_invalid_message
-                            },
+            } else {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    CloseButton(
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp,
                         ),
-                        displayLink = null,
-                        onRetry = null,
-                        onScanAnother = { onEvent(JoinInviteUiEvent.OnScanAnotherClicked) },
-                        onEvent = onEvent,
                     )
-
-                    JoinInviteStatus.OFFLINE -> ProblemContent(
-                        icon = Icons.Outlined.CloudOff,
-                        title = stringResource(R.string.join_offline_title),
-                        message = stringResource(R.string.join_offline_message),
-                        displayLink = state.displayLink,
-                        onRetry = { onEvent(JoinInviteUiEvent.OnRetryClicked) },
-                        onScanAnother = null,
-                        onEvent = onEvent,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        JoinInviteBodyContent(
+                            state = state,
+                            layout = layout,
+                            onEvent = onEvent,
+                        )
+                    }
                 }
             }
             SnackbarHost(
@@ -127,6 +125,67 @@ fun JoinInviteContent(
                 modifier = Modifier.align(Alignment.BottomCenter),
             )
         }
+    }
+}
+
+@Composable
+private fun CloseButton(
+    onEvent: (JoinInviteUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    IconButton(
+        onClick = { onEvent(JoinInviteUiEvent.OnNotNowClicked) },
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Close,
+            contentDescription = stringResource(R.string.join_close),
+        )
+    }
+}
+
+@Composable
+private fun JoinInviteBodyContent(
+    state: JoinInviteUiState,
+    layout: JoinLayout,
+    onEvent: (JoinInviteUiEvent) -> Unit,
+) {
+    when (state.status) {
+        JoinInviteStatus.LOADING -> LoadingBox()
+
+        JoinInviteStatus.READY -> InviteContent(
+            state = state,
+            layout = layout,
+            onEvent = onEvent,
+        )
+
+        JoinInviteStatus.INVALID -> ProblemContent(
+            icon = Icons.Outlined.LinkOff,
+            title = stringResource(R.string.join_invalid_title),
+            message = stringResource(
+                if (state.isPersonal) {
+                    R.string.join_invalid_personal_message
+                } else {
+                    R.string.join_invalid_message
+                },
+            ),
+            displayLink = null,
+            onRetry = null,
+            onScanAnother = { onEvent(JoinInviteUiEvent.OnScanAnotherClicked) },
+            layout = layout,
+            onEvent = onEvent,
+        )
+
+        JoinInviteStatus.OFFLINE -> ProblemContent(
+            icon = Icons.Outlined.CloudOff,
+            title = stringResource(R.string.join_offline_title),
+            message = stringResource(R.string.join_offline_message),
+            displayLink = state.displayLink,
+            onRetry = { onEvent(JoinInviteUiEvent.OnRetryClicked) },
+            onScanAnother = null,
+            layout = layout,
+            onEvent = onEvent,
+        )
     }
 }
 
@@ -146,86 +205,134 @@ private fun LoadingBox() {
 @Composable
 private fun InviteContent(
     state: JoinInviteUiState,
+    layout: JoinLayout,
     onEvent: (JoinInviteUiEvent) -> Unit,
 ) {
     val personalMember = state.personalMember
-    Column(
-        modifier = Modifier.padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.secondaryContainer,
-        ) {
-            Text(
-                text = stringResource(if (personalMember == null) R.string.join_chip else R.string.join_personal_chip),
-                modifier = Modifier.padding(
-                    horizontal = 12.dp,
-                    vertical = 6.dp,
-                ),
-                style = MaterialTheme.typography.labelLarge,
-            )
-        }
-        Text(
-            text = inviteTitleOf(
-                state = state,
-                personalMember = personalMember,
-            ),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-        )
-        GroupCard(state)
-        if (state.joinedNames.isNotEmpty()) {
-            AlreadyInText(
-                members = state.joined,
-                joinedNames = state.joinedNames,
-            )
-        }
+    val isColumn = layout == JoinLayout.COLUMN
+    val hint = @Composable {
         Text(
             text = personalMember?.let { stringResource(R.string.join_personal_hint, it.name) }
                 ?: stringResource(R.string.join_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+    JoinColumnsLayout(
+        layout = layout,
+        start = {
+            InviteChip(personalMember)
+            Text(
+                text = inviteTitleOf(
+                    state = state,
+                    personalMember = personalMember,
+                ),
+                style = titleStyleOf(layout),
+                fontWeight = FontWeight.Bold,
+            )
+            // Why: the phone's column says it under the group, the wide boards under the title.
+            if (!isColumn) hint()
+        },
+        end = {
+            GroupCard(state)
+            if (state.joinedNames.isNotEmpty()) {
+                AlreadyInText(
+                    members = state.joined,
+                    joinedNames = state.joinedNames,
+                )
+            }
+            if (isColumn) hint()
+        },
+        actions = { isRow ->
+            InviteActionsLayout(
+                state = state,
+                personalMember = personalMember,
+                isRow = isRow,
+                onEvent = onEvent,
+            )
+        },
+    )
+}
+
+@Composable
+private fun InviteChip(personalMember: JoinMember?) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+    ) {
+        Text(
+            text = stringResource(if (personalMember == null) R.string.join_chip else R.string.join_personal_chip),
+            modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 6.dp,
+            ),
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+@Composable
+private fun titleStyleOf(layout: JoinLayout): TextStyle = when (layout) {
+    JoinLayout.TABLET_LANDSCAPE -> MaterialTheme.typography.displaySmall
+    JoinLayout.BOOK -> MaterialTheme.typography.headlineLarge
+    else -> MaterialTheme.typography.headlineMedium
+}
+
+// Why: lying down and on a tabletop the two buttons share a row, the main one first; elsewhere they stack.
+@Composable
+private fun InviteActionsLayout(
+    state: JoinInviteUiState,
+    personalMember: JoinMember?,
+    isRow: Boolean,
+    onEvent: (JoinInviteUiEvent) -> Unit,
+) {
+    val join = @Composable { buttonModifier: Modifier ->
+        Button(
+            onClick = { onEvent(JoinInviteUiEvent.OnJoinClicked) },
+            enabled = !state.isJoining,
+            modifier = buttonModifier.heightIn(min = if (isRow) 48.dp else 56.dp),
+        ) {
+            if (state.isJoining) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(end = ButtonDefaults.IconSpacing)
+                        .size(ButtonDefaults.IconSize),
+                    color = LocalContentColor.current,
+                    strokeWidth = 2.dp,
+                )
+            }
+            Text(
+                personalMember?.let { stringResource(R.string.join_personal_join, it.name) }
+                    ?: stringResource(R.string.join_join),
+            )
+        }
+    }
+    val secondary = @Composable { buttonModifier: Modifier ->
+        val secondaryEvent = if (personalMember == null) {
+            JoinInviteUiEvent.OnNotNowClicked
+        } else {
+            JoinInviteUiEvent.OnNotMeClicked
+        }
+        TextButton(
+            onClick = { onEvent(secondaryEvent) },
+            enabled = !state.isJoining,
+            modifier = buttonModifier.heightIn(min = 48.dp),
+        ) {
+            Text(
+                personalMember?.let { stringResource(R.string.join_personal_not_me, it.name) }
+                    ?: stringResource(R.string.join_not_now),
+            )
+        }
+    }
+    if (isRow) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            join(Modifier.weight(1f))
+            secondary(Modifier.weight(1f))
+        }
+    } else {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
-                onClick = { onEvent(JoinInviteUiEvent.OnJoinClicked) },
-                enabled = !state.isJoining,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp),
-            ) {
-                if (state.isJoining) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(end = ButtonDefaults.IconSpacing)
-                            .size(ButtonDefaults.IconSize),
-                        color = LocalContentColor.current,
-                        strokeWidth = 2.dp,
-                    )
-                }
-                Text(
-                    personalMember?.let { stringResource(R.string.join_personal_join, it.name) }
-                        ?: stringResource(R.string.join_join),
-                )
-            }
-            val secondaryEvent = if (personalMember == null) {
-                JoinInviteUiEvent.OnNotNowClicked
-            } else {
-                JoinInviteUiEvent.OnNotMeClicked
-            }
-            TextButton(
-                onClick = { onEvent(secondaryEvent) },
-                enabled = !state.isJoining,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 48.dp),
-            ) {
-                Text(
-                    personalMember?.let { stringResource(R.string.join_personal_not_me, it.name) }
-                        ?: stringResource(R.string.join_not_now),
-                )
-            }
+            join(Modifier.fillMaxWidth())
+            secondary(Modifier.fillMaxWidth())
         }
     }
 }
@@ -332,104 +439,6 @@ private fun namesOf(names: List<String>): String {
     }
 }
 
-@Composable
-private fun ProblemContent(
-    icon: ImageVector,
-    title: String,
-    message: String,
-    displayLink: String?,
-    onRetry: (() -> Unit)?,
-    onScanAnother: (() -> Unit)?,
-    onEvent: (JoinInviteUiEvent) -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 8.dp,
-                vertical = 48.dp,
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            tint = MaterialTheme.colorScheme.primary,
-        )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        if (displayLink != null) {
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            ) {
-                Text(
-                    text = displayLink,
-                    modifier = Modifier.padding(
-                        horizontal = 12.dp,
-                        vertical = 8.dp,
-                    ),
-                    fontFamily = FontFamily.Monospace,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-        Column(
-            modifier = Modifier.padding(top = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            if (onRetry != null) {
-                Button(
-                    onClick = onRetry,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 56.dp),
-                ) {
-                    Text(stringResource(R.string.join_retry))
-                }
-            }
-            OutlinedButton(
-                onClick = { onEvent(JoinInviteUiEvent.OnGoHomeClicked) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp),
-            ) {
-                Text(stringResource(R.string.join_go_home))
-            }
-            if (onScanAnother != null) {
-                TextButton(
-                    onClick = onScanAnother,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 56.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.QrCodeScanner,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize),
-                    )
-                    Text(
-                        text = stringResource(R.string.join_scan_another),
-                        modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
-                    )
-                }
-            }
-        }
-    }
-}
-
 private fun createPreviewState(status: JoinInviteStatus): JoinInviteUiState = JoinInviteUiState(
     status = status,
     groupName = "Viagem Floripa",
@@ -499,5 +508,23 @@ private fun JoinInviteOfflinePreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
         )
+    }
+}
+
+// Why: a preview's window reports no fold, so the tabletop's hinge is handed in.
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun JoinInviteTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            JoinInviteContent(
+                state = createPreviewState(JoinInviteStatus.READY),
+                snackbarHostState = remember { SnackbarHostState() },
+                onEvent = {},
+            )
+        }
     }
 }

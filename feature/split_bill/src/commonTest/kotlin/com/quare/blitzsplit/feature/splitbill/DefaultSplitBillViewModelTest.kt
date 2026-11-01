@@ -361,7 +361,7 @@ class DefaultSplitBillViewModelTest {
             picksGroupFirst = false,
         )
         val navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID))
+            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()

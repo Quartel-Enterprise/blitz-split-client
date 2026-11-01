@@ -204,7 +204,7 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio"))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
@@ -234,7 +234,7 @@ class GroupsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(Route.GroupDetail("trio"))
+            navigator.navigate(Route.GroupDetail("trio", joinedAs = null))
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
@@ -1244,7 +1244,7 @@ class GroupsViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa", joinedAs = null)), navigator.backStack.value)
     }
 
     @Test
@@ -1258,7 +1258,7 @@ class GroupsViewModelTest {
             viewModel.onEvent(GroupsUiEvent.OnGroupClicked("other-group"))
 
             // Then
-            assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa")), navigator.backStack.value)
+            assertEquals(listOf(Route.Groups, Route.GroupDetail("floripa", joinedAs = null)), navigator.backStack.value)
         }
 
     @Test

@@ -127,6 +127,7 @@ struct GroupDetailView: View {
         }
         .groupScreenBars(
             tab: .expenses,
+            host: .groupDetail(route),
             header: model?.state.isLoaded == true ? model?.state.header : nil,
             hasExpenses: model?.state.isEmpty != true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
@@ -171,6 +172,50 @@ struct GroupDetailView: View {
                 if !shown { model?.dismissPaymentDeletion() }
             },
         )
+    }
+}
+
+/// Right after joining through the link (3.3), over the group's bills: "You joined as Bruno", and "Protect your
+/// access" while the account has no Google or Apple, which opens the profile. A list's section shows them as two rows.
+private struct JoinedNotice: View {
+    let name: String
+    let showsProtectAccess: Bool
+    let onProtectAccess: () -> Void
+
+    var body: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("You joined as \(name)")
+                    .font(.headline)
+                Text("Everything added for you shows up here.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        } icon: {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(Palette.accent)
+        }
+        .accessibilityElement(children: .combine)
+        if showsProtectAccess {
+            Button(action: onProtectAccess) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Protect your access")
+                            .font(.headline)
+                        Text("You joined without an account. Save the code or connect Google or Apple.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "lock.shield")
+                        .foregroundStyle(Palette.accent)
+                }
+                .foregroundStyle(.primary)
+            }
+            #if os(macOS)
+            .buttonStyle(.plain)
+            #endif
+        }
     }
 }
 
@@ -273,6 +318,13 @@ private struct PhoneExpenseSections: View {
     }
 
     var body: some View {
+        if let joinedAs = state.joinedAs {
+            Section {
+                JoinedNotice(name: joinedAs, showsProtectAccess: state.showsProtectAccess) {
+                    model.send(GroupDetailUiEventOnProtectAccessClicked.shared)
+                }
+            }
+        }
         if state.isEmpty {
             Section {
                 EmptyExpenses { model.send($0) }
@@ -403,6 +455,18 @@ private struct MacGroupExpenses: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             MacGroupTop(header: state.header, actions: model.actions)
+            if let joinedAs = state.joinedAs {
+                VStack(alignment: .leading, spacing: 10) {
+                    JoinedNotice(name: joinedAs, showsProtectAccess: state.showsProtectAccess) {
+                        model.send(GroupDetailUiEventOnProtectAccessClicked.shared)
+                    }
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Palette.card, in: .rect(cornerRadius: 12))
+                .padding(.horizontal, 20)
+                .padding(.bottom, 12)
+            }
             if state.isEmpty {
                 EmptyExpenses { model.send($0) }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

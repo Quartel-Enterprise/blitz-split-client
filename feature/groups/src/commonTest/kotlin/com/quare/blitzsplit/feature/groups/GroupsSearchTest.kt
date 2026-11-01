@@ -360,7 +360,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked("ape"))
 
         // Then
-        assertEquals(listOf(Route.Groups, Route.Members("ape", joinedAs = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Groups, Route.Members("ape")), navigator.backStack.value)
     }
 
     @Test
@@ -374,7 +374,11 @@ class GroupsSearchTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail("churrasco"), Route.BillDetail("churrasco", "carne")),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail("churrasco", joinedAs = null),
+                Route.BillDetail("churrasco", "carne"),
+            ),
             navigator.backStack.value,
         )
     }

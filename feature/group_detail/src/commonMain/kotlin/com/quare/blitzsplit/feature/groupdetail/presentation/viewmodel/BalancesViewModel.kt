@@ -75,9 +75,9 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
-            BalancesUiEvent.OnExpensesTabClicked -> screen.openTab(Route.GroupDetail(route.groupId))
+            BalancesUiEvent.OnExpensesTabClicked -> screen.openTab(Route.GroupDetail(route.groupId, joinedAs = null))
 
-            BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId, joinedAs = null))
+            BalancesUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
 
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 

@@ -37,17 +37,39 @@ final class JoinPickModel {
 }
 
 /// "Who are you in the group?": the members nobody joined as yet to pick from, the ones who joined, and
-/// "I'm not on the list", which joins under a new name.
+/// "I'm not on the list", which joins under a new name. Lying down (an iPhone, an iPad, an iPhone Duo open) what
+/// picking does and "I'm not on the list" take a column on the left, the names and "Join as Bruno" the right (3.2).
 struct JoinPickView: View {
     let route: RouteJoinPick
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: JoinPickModel?
+    /// The screen's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
 
     var body: some View {
         Group {
-            if let model, model.state.isLoaded {
-                JoinPickList(model: model)
+            if let model, model.state.isLoaded, layout.usesTwoColumns {
+                TwoColumnsLayout(
+                    firstWidth: layout.isLarge ? 360 : 290,
+                    spacing: layout.isLarge ? 56 : 40,
+                    maxWidth: 900,
+                ) {
+                    ScrollView {
+                        JoinPickIntro(model: model)
+                            .padding(.vertical, 20)
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
+                } second: {
+                    JoinPickList(model: model, isListOnly: true)
+                        .safeAreaInset(edge: .bottom) {
+                            joinButton(model.state)
+                        }
+                }
+                .padding(.horizontal, layout.isLarge ? 64 : 0)
+                .background(Palette.groupedBackground)
+            } else if let model, model.state.isLoaded {
+                JoinPickList(model: model, isListOnly: false)
                     .safeAreaInset(edge: .bottom) {
                         joinButton(model.state)
                     }
@@ -72,6 +94,10 @@ struct JoinPickView: View {
             trigger: model?.joinErrorCount ?? 0,
             duration: .seconds(3)
         )
+        #if os(macOS)
+        .frame(minWidth: 460, idealWidth: 480, minHeight: 440, idealHeight: 560)
+        #endif
+        .measuringScreenLayout($layout)
         .onAppear {
             if model == nil { model = JoinPickModel(route: route) }
         }
@@ -104,33 +130,77 @@ struct JoinPickView: View {
     }
 }
 
-private struct JoinPickList: View {
+/// Lying down, the left column: what picking a name does, who took the picked name first, and "I'm not on the list".
+private struct JoinPickIntro: View {
     let model: JoinPickModel
 
     var body: some View {
         let state = model.state
-        List {
-            Section {
-                Text("Pick your name. You'll see the expenses already added for that person.")
-                    .foregroundStyle(.secondary)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-            }
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Pick your name. You'll see the expenses already added for that person.")
+                .foregroundStyle(.secondary)
             if let takenName = state.takenName {
+                TakenNotice(takenName: takenName, creatorName: state.creatorName)
+                    .padding(14)
+                    .background(Palette.card, in: .rect(cornerRadius: 20))
+            }
+            Button {
+                model.send(JoinPickUiEventOnNotInListClicked.shared)
+            } label: {
+                Label("I'm not on the list", systemImage: "person.badge.plus")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 36)
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .disabled(state.isJoining)
+        }
+    }
+}
+
+/// "Bruno just joined from another device", and who can release the name.
+private struct TakenNotice: View {
+    let takenName: String
+    let creatorName: String?
+
+    var body: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(takenName) just joined from another device")
+                    .font(.headline)
+                if let creatorName {
+                    Text("If it was you, ask \(creatorName) to release the name in Members.")
+                } else {
+                    Text("If it was you, talk to whoever invited you.")
+                }
+            }
+        } icon: {
+            Image(systemName: "exclamationmark.circle.fill")
+                .foregroundStyle(.orange)
+        }
+    }
+}
+
+/// The names to pick from and who already joined; upright also what picking does and "I'm not on the list", which
+/// lying down sit in the column beside it (`isListOnly`).
+private struct JoinPickList: View {
+    let model: JoinPickModel
+    let isListOnly: Bool
+
+    var body: some View {
+        let state = model.state
+        List {
+            if !isListOnly {
                 Section {
-                    Label {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("\(takenName) just joined from another device")
-                                .font(.headline)
-                            if let creatorName = state.creatorName {
-                                Text("If it was you, ask \(creatorName) to release the name in Members.")
-                            } else {
-                                Text("If it was you, talk to whoever invited you.")
-                            }
-                        }
-                    } icon: {
-                        Image(systemName: "exclamationmark.circle.fill")
-                            .foregroundStyle(.orange)
+                    Text("Pick your name. You'll see the expenses already added for that person.")
+                        .foregroundStyle(.secondary)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                }
+                if let takenName = state.takenName {
+                    Section {
+                        TakenNotice(takenName: takenName, creatorName: state.creatorName)
                     }
                 }
             }
@@ -148,11 +218,13 @@ private struct JoinPickList: View {
                     }
                 }
             }
-            Section {
-                Button("I'm not on the list", systemImage: "person.badge.plus") {
-                    model.send(JoinPickUiEventOnNotInListClicked.shared)
+            if !isListOnly {
+                Section {
+                    Button("I'm not on the list", systemImage: "person.badge.plus") {
+                        model.send(JoinPickUiEventOnNotInListClicked.shared)
+                    }
+                    .disabled(state.isJoining)
                 }
-                .disabled(state.isJoining)
             }
             if !state.joined.isEmpty {
                 Section("Already in the group") {

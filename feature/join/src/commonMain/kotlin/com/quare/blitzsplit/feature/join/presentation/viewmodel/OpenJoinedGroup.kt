@@ -4,9 +4,9 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 
 /*
- * Why: after joining, from the invite or from "Quem é você no grupo?", the group opens over the home, whatever was
- * under the invite: the welcome too, since joining without a profile made one from the member. "Membros" says
- * "Você entrou como Bruno"; with no name to say, the group's own screen opens.
+ * Why: after joining, from the invite or from "Quem é você no grupo?", the group's Despesas opens over the home
+ * (3.3), whatever was under the invite: the welcome too, since joining without a profile made one from the member.
+ * It says "Você entrou como Bruno" while there is a name to say.
  */
 internal fun Navigator.openJoinedGroup(
     groupId: String,
@@ -14,13 +14,9 @@ internal fun Navigator.openJoinedGroup(
 ) {
     replaceAll(Route.Groups)
     navigate(
-        if (joinedAs == null) {
-            Route.GroupDetail(groupId)
-        } else {
-            Route.Members(
-                groupId = groupId,
-                joinedAs = joinedAs,
-            )
-        },
+        Route.GroupDetail(
+            groupId = groupId,
+            joinedAs = joinedAs,
+        ),
     )
 }

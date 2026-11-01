@@ -10,6 +10,7 @@ kotlin {
             api(projects.core.navigation)
             api(projects.core.expenses)
             implementation(projects.core.groups)
+            implementation(projects.core.account)
             implementation(projects.core.sync)
             implementation(projects.core.utils)
             implementation(libs.quare.connectivity)
@@ -20,6 +21,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.groups.testing)
+            implementation(projects.core.account.testing)
             implementation(projects.core.expenses.testing)
         }
     }

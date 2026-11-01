@@ -63,4 +63,7 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: the notice went away without Desfazer.
     data object OnRecordedPaymentNoticeShown : GroupDetailUiEvent
+
+    // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
+    data object OnProtectAccessClicked : GroupDetailUiEvent
 }
