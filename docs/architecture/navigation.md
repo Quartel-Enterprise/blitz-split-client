@@ -119,6 +119,26 @@ instead of replacing it, and closing either pops the shared stack down to what i
 Convidar over one of its tabs is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
 tab's button draws it (`.invitePopover(host:)`); closing it pops it the same way.
 
+#### The Mac's Ajustes: two windows, one back stack
+
+The Mac's profile is Ajustes, the app's `Settings` window, which draws the same back stack as the main window: a
+`Route.Profile` the shared code pushes is popped at once and opens Ajustes instead, and what Ajustes opens
+(`AppRoute.opensInSettings`: a key, deleting the account) is pushed on top as usual. Each window reads only its own
+entries, so a sheet open in one never changes the other's:
+
+- `AppModel.windowStack`, the back stack without the trailing `opensInSettings` entries, is all the main window's
+  `path`, `sheet`, `stackedSheet`, `invitePopover` and `cover` read, and what their setters pop to. A key opened in
+  Ajustes over the main window's "Editar grupo" leaves that sheet where it is.
+- `AppModel.settingsSheet` is the top entry while it is one of Ajustes'; closing it pops down to `windowStack`.
+- Ajustes' entries only ever sit on top, since a ViewModel's `navigateBack()` pops the top whichever window drew
+  it: while `settingsSheet` is open the main window is disabled, and a screen the shared code still opens over it (a
+  link opened from outside, a menu command) closes Ajustes' entries, `AppModel` keeping what was opened above them
+  (`replaceAbove`).
+
+Since the profile is never on the back stack there, a screen never learns where it is from the top entry: the
+profile tells `ProviderConnector.connect` that a browser sign in leaves from it (`isFromProfile`), so the browser
+coming back reopens it, which on the Mac opens Ajustes.
+
 ### Web: last entry and browser history
 
 `AppPresenter.observeBackStack` sends the stack as `JsRoute`s: a route name (`RouteName.kt`: `welcome`,

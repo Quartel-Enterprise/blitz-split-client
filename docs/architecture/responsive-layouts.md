@@ -145,7 +145,8 @@ for interactions) is not read. Before building anything by hand for the Duo:
 The Mac's profile is the app's `Settings` scene (Ajustes, ⌘,), which shares the app's `AppModel` with the main
 window: `AppModel` pops a `Route.Profile` the shared code pushes and asks the root to `openSettings()` instead, and
 what the profile opens (`AppRoute.opensInSettings`: a key, deleting the account) is `AppModel.settingsSheet`, a sheet
-on the Settings window that the main window never draws.
+on the Settings window that the main window never draws (see
+[navigation.md](navigation.md#the-macs-ajustes-two-windows-one-back-stack)).
 
 The boards' Duo measures are provisional (taken from Apple's diagrams); compare with Apple's template before matching
 a number exactly.

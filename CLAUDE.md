@@ -132,8 +132,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
     name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Salvar (✓). The Mac's profile is
     Ajustes (⌘,), the app's Settings window, never pushed: whatever opens the profile (the avatar, "Proteja seu
-    acesso") opens it instead; its sidebar lists the sections and scrolls the form to the one picked (hidden under 700
-    pt), a key and Excluir conta open as sheets on it, and it closes once no profile is left. The web's is a page.
+    acesso", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
+    scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Excluir conta open as sheets
+    on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
+    once no profile is left. The web's is a page.
   - "Editar perfil": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
