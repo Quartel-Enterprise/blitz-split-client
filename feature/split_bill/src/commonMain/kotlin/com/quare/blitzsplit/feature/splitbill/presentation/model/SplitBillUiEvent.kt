@@ -91,6 +91,9 @@ sealed interface SplitBillUiEvent : UiEvent {
         val memberId: String,
     ) : SplitBillUiEvent
 
+    // Why: "Voltar ao padrão" on Dividir's notice, back to the group's "Divisão padrão" for this bill.
+    data object OnSplitResetToDefault : SplitBillUiEvent
+
     // Why: "Pronto" on "Dividir".
     data object OnSplitDone : SplitBillUiEvent
 

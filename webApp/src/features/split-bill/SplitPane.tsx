@@ -1,4 +1,4 @@
-import { Minus, Plus } from 'lucide-react'
+import { ChartPie, Minus, Plus } from 'lucide-react'
 import type { JsSplitBillState, JsSplitEditor, JsSplitRow, SplitBillPresenter } from 'blitzsplit-shared'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,7 @@ import { amountPlaceholder, currencySymbol } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import type { PaneParts } from '@/components/ResponsiveDialog'
-import { personName, splitStatus, type Money } from './splitText'
+import { defaultSplitText, personName, splitStatus, type Money } from './splitText'
 
 // Why: Itens isn't built yet, so the four modes of the shared SplitMode.
 const modes: { mode: string; label: MessageKey }[] = [
@@ -75,6 +75,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
   const missingIds = new Set(editor.addsUp ? [] : editor.withoutValue.map((person) => person.id))
   return (
     <div className="flex flex-col gap-4">
+      {state.showsDefaultSplitNotice && state.defaultSplit && <DefaultSplitNotice presenter={presenter} state={state} editor={editor} />}
       <div role="radiogroup" aria-label={t('split_modes')} className="grid h-9 grid-cols-4 rounded-lg bg-muted p-[3px] text-muted-foreground">
         {modes.map(({ mode, label }) => (
           <button
@@ -130,7 +131,49 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
         </ul>
       </div>
 
-      <p className="text-[13px] text-muted-foreground">{t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}</p>
+      <p className="text-[13px] text-muted-foreground">
+        {state.defaultSplit ? t('split_hintDefault') : t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}
+      </p>
+    </div>
+  )
+}
+
+const nowKeys: Record<string, MessageKey> = {
+  equal: 'split_defaultNowEqual',
+  amount: 'split_defaultNowAmount',
+  percent: 'split_defaultNowPercent',
+  shares: 'split_defaultNowShares',
+}
+
+/**
+ * Above the modes for a group with a "Divisão padrão" (7.2f, 7.2h): where the split came from, or that this bill
+ * changed it, with "Voltar ao padrão".
+ */
+function DefaultSplitNotice({ presenter, state, editor }: { presenter: SplitBillPresenter; state: JsSplitBillState; editor: JsSplitEditor }) {
+  const split = state.defaultSplit
+  if (!split) return null
+  const description = defaultSplitText(split)
+  const isOff = state.isSplitEditorOffDefault
+  const body = isOff
+    ? [t('split_defaultOffBody', { group: state.groupName, split: description }), editor.mode === split.editorMode ? null : t(nowKeys[editor.mode] ?? 'split_defaultNowEqual')]
+        .filter(Boolean)
+        .join(' ')
+    : t('split_defaultBody')
+  return (
+    <div
+      role="note"
+      className={cn('flex items-center gap-3 rounded-lg px-4 py-3', isOff ? 'border bg-card' : 'bg-primary/10 text-foreground')}
+    >
+      <ChartPie aria-hidden className="size-5 shrink-0 text-primary" />
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <strong className="text-sm font-semibold">{isOff ? t('split_defaultOffTitle') : t('split_defaultTitle', { group: state.groupName, split: description })}</strong>
+        <span className="text-[13px] text-muted-foreground">{body}</span>
+      </span>
+      {isOff && (
+        <Button variant="link" size="sm" className="h-8 shrink-0 px-0" onClick={() => presenter.resetSplitToDefault()}>
+          {t('split_defaultReset')}
+        </Button>
+      )}
     </div>
   )
 }

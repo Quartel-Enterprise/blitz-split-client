@@ -16,4 +16,59 @@
     <string name="edit_group_note">Qualquer pessoa do grupo pode mudar o nome, o ícone e o tipo.</string>
     <string name="edit_group_offline_note">Sem internet: a mudança vale neste aparelho agora e chega aos outros quando ele reconectar.</string>
     <string name="edit_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
+    <string name="edit_group_default_split">Divisão padrão</string>
+    <string name="edit_group_default_split_help">Como as despesas novas se dividem</string>
+    <string name="default_split_title">Divisão padrão</string>
+    <string name="default_split_subtitle">%s · para as despesas novas</string>
+    <string name="default_split_back">Voltar para Editar grupo</string>
+    <string name="default_split_cancel">Cancelar</string>
+    <string name="default_split_note">Vale para as despesas novas. Em cada despesa dá para mudar na hora. As despesas já lançadas não mudam.</string>
+    <string name="default_split_offline_note">Sem internet: a divisão nova vale neste aparelho agora e chega aos outros quando o aparelho reconectar.</string>
+    <string name="default_split_save_error">Não deu para salvar a divisão. Tente de novo.</string>
+    <plurals name="default_split_joined">
+        <item quantity="one">%s entrou no grupo</item>
+        <item quantity="other">%s entraram no grupo</item>
+    </plurals>
+    <plurals name="default_split_joined_equal">
+        <item quantity="one">Já entra na divisão</item>
+        <item quantity="other">Já entram na divisão</item>
+    </plurals>
+    <plurals name="default_split_joined_shares">
+        <item quantity="one">Começa com 1 parte</item>
+        <item quantity="other">Cada um começa com 1 parte</item>
+    </plurals>
+    <plurals name="default_split_joined_percent">
+        <item quantity="one">Começa com 0%</item>
+        <item quantity="other">Cada um começa com 0%</item>
+    </plurals>
+    <string name="default_split_joined_sentence">%1$s. %2$s; ajuste se precisar.</string>
+    <string name="default_split_modes">Como dividir</string>
+    <string name="default_split_hint_equal">Todos pagam a mesma parte</string>
+    <string name="default_split_hint_shares">Ex.: 3 para 1. Bom para casais e famílias</string>
+    <string name="default_split_hint_percent">Ex.: 75% e 25%</string>
+    <string name="default_split_hint_income">A parte de cada um segue a renda</string>
+    <string name="default_split_list_equal">Quem entra na divisão</string>
+    <string name="default_split_list_shares">Partes de cada um</string>
+    <string name="default_split_list_percent">Porcentagem de cada um</string>
+    <string name="default_split_list_income">Renda de cada um</string>
+    <string name="default_split_income_note">As rendas ficam só neste aparelho. O grupo vê só as porcentagens.</string>
+    <string name="default_split_parts_of">Partes de %s</string>
+    <string name="default_split_percent_of">Porcentagem de %s</string>
+    <string name="default_split_income_of">Renda de %s</string>
+    <string name="default_split_less">Menos uma parte</string>
+    <string name="default_split_more">Mais uma parte</string>
+    <string name="default_split_sum_left">A soma dá %1$d%%. Faltam %2$d%%.</string>
+    <string name="default_split_sum_over">A soma dá %1$d%%. Passou %2$d%%.</string>
+    <string name="default_split_sum_help">Ajuste as porcentagens até somar 100% para salvar.</string>
+    <string name="default_split_example_equal">Numa conta de %1$s: %2$s para cada um</string>
+    <string name="default_split_example">Numa conta de %s:</string>
+    <string name="default_split_example_equal_help">Quem não estiver numa despesa sai dela na hora de rachar.</string>
+    <string name="default_split_example_part">%1$s %2$s</string>
+    <string name="default_split_row_equal">1 de %1$d · %2$s%%</string>
+    <string name="default_split_row_out">Fica de fora por padrão</string>
+    <string name="default_split_row_shares">%d%% de cada conta</string>
+    <string name="default_split_row_percent">%1$s de cada %2$s</string>
+    <string name="default_split_row_income">Renda por mês · %d%% de cada conta</string>
+    <string name="default_split_row_new">%s · acabou de entrar</string>
+    <string name="default_split_me">%s (você)</string>
 </resources>

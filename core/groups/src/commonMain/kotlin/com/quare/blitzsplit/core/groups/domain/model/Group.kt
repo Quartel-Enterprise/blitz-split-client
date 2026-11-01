@@ -21,6 +21,8 @@ data class Group(
      * invite link ("Trocar link").
      */
     val isCreatedByMe: Boolean,
+    // Why: "Divisão padrão" (6.7), how its new bills split; null while it splits equally among everyone.
+    val defaultSplit: GroupDefaultSplit?,
     // Why: when the group itself last changed, in epoch millis: its last activity on the home until it has a bill.
     val updatedAt: Long,
 )

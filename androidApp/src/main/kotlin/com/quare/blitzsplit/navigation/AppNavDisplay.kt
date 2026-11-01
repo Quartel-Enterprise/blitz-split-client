@@ -21,6 +21,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
+import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
@@ -138,6 +139,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: like the new group, a tablet keeps the group behind the form; elsewhere it opens full screen.
             entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
                 EditGroupScreen(
+                    route = route,
+                    isDialog = usesFormDialog,
+                )
+            }
+            // Why: over Editar grupo, the same way: a dialog on a tablet, full screen elsewhere (two columns lying down).
+            entry<Route.DefaultSplit>(metadata = formDialogMetadata) { route ->
+                DefaultSplitScreen(
                     route = route,
                     isDialog = usesFormDialog,
                 )

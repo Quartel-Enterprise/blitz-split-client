@@ -15,10 +15,12 @@ import com.quare.blitzsplit.core.groups.data.mapper.GroupMapperImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -3513,8 +3516,86 @@ class GroupRepositoryImplTest {
         isPending = true,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
+
+    @Test
+    fun `GIVEN a group WHEN saving its default split THEN the device holds it pending with the incomes`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    updatedAt = 5L,
+                ),
+            ),
+        )
+        val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("m-1" to 75L, "m-2" to 25L))
+
+        // When
+        val result = repository.updateDefaultSplit("group-1", split, mapOf("m-1" to 900_000L), updatedAt = 9L)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            split,
+            repository
+                .observeGroups()
+                .first()
+                .single()
+                .defaultSplit,
+        )
+        assertEquals(mapOf("m-1" to 900_000L), repository.getSplitIncomes("group-1").getOrThrow())
+        assertTrue(local.group("group-1")!!.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a server split with a key this version lacks WHEN editing it THEN the push keeps the key`() = runTest {
+        // Given
+        val serverRow = Json.decodeFromString<GroupDto>(
+            """
+            {"id":"group-1","created_by":"user-1","name":"Apê 302","type":"home","color":"blue","currency":"BRL",
+            "added_at":1,"updated_at":2,"invite_code":"abc",
+            "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
+            "exceptions":[{"category":"food","mode":"equal"}]}}
+            """.trimIndent(),
+        )
+        prepareScenario(remoteGroups = listOf(serverRow))
+        repository.downloadGroups("user-1").getOrThrow()
+        val split = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf("m-1" to 60L, "m-2" to 40L))
+
+        // When
+        repository.updateDefaultSplit("group-1", split, emptyMap(), updatedAt = 9L).getOrThrow()
+        repository.uploadPendingGroups("user-1").getOrThrow()
+
+        // Then
+        val pushed = remote.upsertedGroups
+            .single()
+            .single()
+            .defaultSplit!!
+        assertEquals(serverRow.defaultSplit!!["exceptions"], pushed["exceptions"])
+        assertEquals("\"percent\"", pushed["mode"].toString())
+        assertEquals(
+            """[{"member_id":"m-1","weight":60},{"member_id":"m-2","weight":40}]""",
+            pushed["weights"].toString(),
+        )
+    }
+
+    @Test
+    fun `GIVEN the device cannot write WHEN saving the default split THEN it fails`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            groupWriteError = IllegalStateException("disk full"),
+        )
+
+        // When
+        val result = repository.updateDefaultSplit("group-1", null, emptyMap(), updatedAt = 9L)
+
+        // Then
+        assertTrue(result.isFailure)
+    }
 
     private fun group(
         id: String,
@@ -3536,6 +3617,8 @@ class GroupRepositoryImplTest {
         pendingSync = pendingSync,
         ownerUserId = ownerUserId,
         inviteCode = inviteCode,
+        defaultSplit = null,
+        splitIncomes = null,
     )
 
     private fun member(
@@ -3591,6 +3674,7 @@ class GroupRepositoryImplTest {
         addedAt = 1L,
         updatedAt = updatedAt,
         inviteCode = inviteCode,
+        defaultSplit = null,
     )
 
     private fun memberDto(
@@ -3777,6 +3861,37 @@ private class FakeGroupLocalDataSource(
         }
     }
 
+    override suspend fun updateDefaultSplit(
+        id: String,
+        defaultSplit: String?,
+        splitIncomes: String?,
+        updatedAt: Long,
+    ) {
+        groupWriteError?.let { throw it }
+        groups.value = groups.value.map {
+            if (it.id == id) {
+                it.copy(
+                    defaultSplit = defaultSplit,
+                    splitIncomes = splitIncomes,
+                    updatedAt = maxOf(updatedAt, it.updatedAt + 1),
+                    pendingSync = true,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun getSplitIncomes(id: String): String? {
+        groupWriteError?.let { throw it }
+        return group(id)?.splitIncomes
+    }
+
+    override suspend fun getDefaultSplit(id: String): String? {
+        groupWriteError?.let { throw it }
+        return group(id)?.defaultSplit
+    }
+
     override suspend fun removeMember(
         id: String,
         removedAt: Long,
@@ -3833,7 +3948,12 @@ private class FakeGroupLocalDataSource(
             current == null -> put(entity)
 
             current.ownerUserId == entity.ownerUserId && current.updatedAt < entity.updatedAt ->
-                put(entity.copy(pendingSync = false))
+                put(
+                    entity.copy(
+                        pendingSync = false,
+                        splitIncomes = current.splitIncomes,
+                    ),
+                )
         }
         entity.inviteCode?.let {
             updateInviteCode(

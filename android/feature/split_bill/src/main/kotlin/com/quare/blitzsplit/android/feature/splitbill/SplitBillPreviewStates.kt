@@ -115,6 +115,7 @@ internal fun createPreviewBillState(
         isAnyoneIn = true,
     ),
     splitEditor = splitEditor,
+    defaultSplit = null,
     conflict = conflict,
     settledPair = settledPair,
     deletion = null,

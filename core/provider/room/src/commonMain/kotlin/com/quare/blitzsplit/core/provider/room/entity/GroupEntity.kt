@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
@@ -24,4 +25,16 @@ data class GroupEntity(
     val ownerUserId: String?,
     // Why: the code of the invite link, which the server makes; null until the group's first sync brings it.
     val inviteCode: String?,
+    /*
+     * Why: "Divisão padrão" (6.7) as the JSON object the server keeps ({"mode", "weights"}, plus whatever a newer
+     * app adds), synced with the group's other fields; null while the group splits equally among everyone.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val defaultSplit: String?,
+    /*
+     * Why: the incomes "Pela renda" was typed with, as a JSON object of member id to minor units. They stay on this
+     * device: never synced, so a newer row from the server keeps them, and they go with the group.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val splitIncomes: String?,
 )

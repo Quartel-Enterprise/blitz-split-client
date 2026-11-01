@@ -242,11 +242,27 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
     grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
     the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
-    stays editable; there is no "Divisão padrão" yet. Moeda locks once the group has a bill on the device ("Não muda
+    stays editable. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
     rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS, a dialog on the web and
-    on Android tablets.
+    on Android tablets. Its last row, under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
+  - "Divisão padrão" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
+    Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), in its
+    dialog's place on the web (a drawer on a phone), and the way Editar grupo opens on Android (a dialog on a
+    tablet). It sets how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
+    (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
+    incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
+    percentages they give (`IncomePercents`). "Numa conta de R$ 100,00: Pierre R$ 75,00 · Ana R$ 25,00" with the bar
+    in each one's color is always in sight, the cents as Rachar conta shares them (Igual's example is the first round
+    bill everyone gets the same of, R$ 120,00 among six). It is one field of the group row (`groups.default_split`,
+    `GroupDefaultSplit`), saved alone by its own Salvar (back goes to Editar grupo unsaved) and synced with the
+    group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
+    writes only `mode` and `weights` over the stored object); Igual with everyone in saves no default. Someone who joined
+    after it was saved starts in, with 1 part or at 0% ("Carla entrou no grupo. Começa com 1 parte; ajuste se
+    precisar.", until someone saves). Two columns lying down (the ways to split, the people with the example), in
+    the Mac's sheet, an iPad lying down and the web from 1024 px. There are no exceptions by category yet: bills have
+    no category (7.7).
   - "Sair do grupo" and "Apagar grupo" (5.3c to 5.3f, 6.1i to 6.1k) need the internet: offline the ⋮ menu shows
     them disabled with "Precisa de internet", since only the server knows every device's bills and payments. The
     device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
@@ -268,7 +284,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
-    Valores, % (whole numbers adding up to 100) or Partes, and only changes the bill on "Pronto". The cents a split can't share evenly go to whoever paid, while they are in the split: one each
+    Valores, % (whole numbers adding up to 100) or Partes, and only changes the bill on "Pronto". A new bill starts
+    from the group's "Divisão padrão" (Pela renda as its percentages) and follows it, and a sync's change of it,
+    until "Pronto" picks its own (another group picked starts over from that one's); percentages someone who left
+    took part of start Igual among everyone. Someone who joins while Dividir is open and still on the default gets
+    the default's part (1 part, in Igual, 0%), so it stays "Padrão"; once changed there, they start as in any split
+    (in Igual, out of the other modes). "Divisão" then says "Padrão do grupo", and Dividir's notice above the
+    modes "Padrão do Apê 302: Partes, 3 para 1", or "Diferente do padrão do grupo" with "Voltar ao padrão" once
+    changed for this bill (`SplitBillUiState.defaultSplit`, `isSplitEditorOffDefault`); "Editar conta" keeps its split
+    with no notice. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).
     Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's

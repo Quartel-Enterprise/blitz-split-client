@@ -48,6 +48,7 @@ class CreateGroupUseCase(
                     isPending = true,
                     inviteCode = null,
                     isCreatedByMe = true,
+                    defaultSplit = null,
                     updatedAt = createdAt,
                 ),
                 createdAt = createdAt,

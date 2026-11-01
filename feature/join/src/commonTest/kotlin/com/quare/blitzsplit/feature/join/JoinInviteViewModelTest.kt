@@ -1329,6 +1329,7 @@ class JoinInviteViewModelTest {
         isPending = false,
         inviteCode = CODE,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
 

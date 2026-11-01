@@ -5,10 +5,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillDefaultSplit
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 
@@ -59,18 +62,20 @@ internal fun GroupMember.toBillPerson(): BillPerson = BillPerson(
 )
 
 /*
- * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes.
- * A bill being edited keeps its split, so saving it never adds whoever joined meanwhile.
+ * Why: the people of the group as they are now: a new member comes in "Igual" and stays out of the other modes,
+ * unless newcomerRows gives them their row (the group's default's, while the split still follows it). A bill being
+ * edited keeps its split, so saving it never adds whoever joined meanwhile.
  */
 internal fun SplitEditor.withPeople(
     people: List<BillPerson>,
     currency: GroupCurrency,
     payerIds: List<String>,
     includesNewcomers: Boolean,
+    newcomerRows: Map<String, SplitRow> = emptyMap(),
 ): SplitEditor {
     val byId = rows.associateBy { it.person.id }
     val rows = people.map { person ->
-        byId[person.id]?.copy(person = person) ?: SplitRow(
+        byId[person.id]?.copy(person = person) ?: newcomerRows[person.id]?.copy(person = person) ?: SplitRow(
             person = person,
             isIncluded = includesNewcomers,
             valueText = "",
@@ -181,3 +186,101 @@ private fun SplitEditor.splitEvenly(
         payerIds = payerIds,
     )?.associate { it.memberId to it.amountMinor }
     .orEmpty()
+
+/*
+ * Why: the group's "Divisão padrão" (6.7) as a new bill's split among its people now: who joined after it was saved
+ * comes in as the rules start them (in, 1 part, 0%). Percentages that no longer add up to 100, once someone holding
+ * part of them left the group, start the bill equally among everyone instead, as a group without one does.
+ */
+internal fun billDefaultSplitOf(
+    default: GroupDefaultSplit?,
+    people: List<BillPerson>,
+    currency: GroupCurrency,
+    payerIds: List<String>,
+    totalMinor: Long,
+): BillDefaultSplit? {
+    if (default == null || people.isEmpty()) return null
+    val weights = people.associate { it.id to default.weightOf(it.id) }
+    val mode = SplitMode.of(default.mode)
+    val isValid = weights.values.any { it > 0 } &&
+        (mode != SplitMode.PERCENT || weights.values.sum() == BillSplit.FULL_PERCENT)
+    if (!isValid) return null
+    val editor = SplitEditor(
+        mode = mode,
+        rows = people.map { person ->
+            val weight = weights.getValue(person.id)
+            SplitRow(
+                person = person,
+                isIncluded = weight > 0,
+                valueText = if (mode == SplitMode.PERCENT && weight > 0) weight.toString() else "",
+                parts = if (mode == SplitMode.SHARES) weight else 0L,
+                shareMinor = null,
+            )
+        },
+        totalMinor = totalMinor,
+        payerIds = payerIds,
+        currency = currency,
+    ).withShares()
+    return BillDefaultSplit(
+        mode = default.mode,
+        editor = editor,
+        values = people.mapNotNull { person -> weights.getValue(person.id).takeIf { it > 0 } },
+        excluded = people.filter { weights.getValue(it.id) <= 0 },
+    )
+}
+
+/*
+ * Why: the bill's split and Dividir's among the group's people as they are now. A new bill follows the group's
+ * "Divisão padrão" (everyone equally without one) until "Pronto" picks its own; one being edited keeps its split, so
+ * saving it never adds whoever joined meanwhile. Someone who joins while Dividir still follows the default gets the
+ * default's weight (1 part for Partes), so its notice still says "Padrão" though the people changed.
+ */
+internal fun SplitBillUiState.withSplitAmong(
+    people: List<BillPerson>,
+    defaultSplit: GroupDefaultSplit?,
+    followsDefault: Boolean,
+): SplitBillUiState {
+    val billDefault = if (isEditing) {
+        null
+    } else {
+        billDefaultSplitOf(defaultSplit, people, currency, payerIds, split.totalMinor)
+    }
+    val bill = if (followsDefault) {
+        billDefault?.editor
+            ?: createEmptySplit(currency).withPeople(people, currency, payerIds, includesNewcomers = true)
+    } else {
+        split.withPeople(people, currency, payerIds, !isEditing)
+    }
+    return copy(
+        split = bill,
+        splitEditor = splitEditor?.let { editor ->
+            val followsDefault = this.defaultSplit?.isFollowedBy(editor) == true
+            editor.withPeople(
+                people = people,
+                currency = currency,
+                payerIds = payerIds,
+                includesNewcomers = !isEditing,
+                newcomerRows = billDefault
+                    ?.editor
+                    ?.rows
+                    ?.associateBy { it.person.id }
+                    ?.takeIf { followsDefault }
+                    .orEmpty(),
+            )
+        },
+        defaultSplit = billDefault,
+    )
+}
+
+// Why: "Voltar ao padrão" only puts Dividir's split back; the bill's own changes on "Pronto", as any change there.
+internal fun SplitBillUiState.withSplitEditorReset(): SplitBillUiState {
+    val default = defaultSplit ?: return this
+    val editor = splitEditor ?: return this
+    return copy(
+        splitEditor = default.editor
+            .copy(
+                totalMinor = editor.totalMinor,
+                payerIds = editor.payerIds,
+            ).withShares(),
+    )
+}

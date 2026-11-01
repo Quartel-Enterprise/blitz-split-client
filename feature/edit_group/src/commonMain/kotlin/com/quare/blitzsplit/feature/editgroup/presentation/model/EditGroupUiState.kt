@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.editgroup.presentation.model
 
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 
@@ -14,6 +15,8 @@ data class EditGroupUiState(
     val currency: GroupCurrency,
     // Why: "Não muda depois da primeira despesa", once the group has a bill.
     val isCurrencyLocked: Boolean,
+    // Why: the "Divisão padrão" row's value ("Igual", "Partes"…), as the group has it now; saved from its own screen.
+    val defaultSplitMode: DefaultSplitMode,
     val isOnline: Boolean,
     // Why: the form is filled from the group once Room is read; nothing is drawn before.
     val isLoaded: Boolean,

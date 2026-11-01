@@ -285,6 +285,8 @@ class ExpenseDaoTest {
         pendingSync = false,
         ownerUserId = "user-1",
         inviteCode = null,
+        defaultSplit = null,
+        splitIncomes = null,
     )
 
     private fun expense(

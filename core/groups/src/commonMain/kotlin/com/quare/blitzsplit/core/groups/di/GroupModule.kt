@@ -20,12 +20,14 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
+import com.quare.blitzsplit.core.groups.domain.usecase.GetSplitIncomes
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
+import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
@@ -33,12 +35,14 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RenameMemberUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -63,6 +67,8 @@ val groupModule = module {
     factoryOf(::RemoveMemberUseCase).bind<RemoveMember>()
     factoryOf(::ReleaseMemberUseCase).bind<ReleaseMember>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
+    factoryOf(::UpdateDefaultSplitUseCase).bind<UpdateDefaultSplit>()
+    factoryOf(::GetSplitIncomesUseCase).bind<GetSplitIncomes>()
     factoryOf(::GetInviteUseCase).bind<GetInvite>()
     factoryOf(::ObserveGroupDeletionsUseCase).bind<ObserveGroupDeletions>()
     factoryOf(::ConsumeGroupDeletionUseCase).bind<ConsumeGroupDeletion>()

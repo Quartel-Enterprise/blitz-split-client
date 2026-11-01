@@ -23,5 +23,8 @@ sealed interface EditGroupUiEvent : UiEvent {
         val currency: GroupCurrency,
     ) : EditGroupUiEvent
 
+    // Why: "Divisão padrão" opens over the form, which keeps what was typed.
+    data object OnDefaultSplitClicked : EditGroupUiEvent
+
     data object OnSaveClicked : EditGroupUiEvent
 }

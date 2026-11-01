@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitFact
 import kotlin.math.abs
 
 private const val PART_SEPARATOR = " · "
@@ -61,9 +62,9 @@ internal fun splitTitleOf(split: SplitEditor): String {
  */
 @Composable
 internal fun splitSubtitleOrNull(
-    split: SplitEditor,
+    summary: List<SplitFact>,
     money: MoneyFormatter,
-): String? = split.summary
+): String? = summary
     .map { fact ->
         factTextOf(
             fact = fact,

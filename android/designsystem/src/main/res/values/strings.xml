@@ -15,6 +15,10 @@
     <string name="designsystem_group_type_home">Home</string>
     <string name="designsystem_group_type_event">Event</string>
     <string name="designsystem_group_type_other">Other</string>
+    <string name="designsystem_default_split_equal">Equal</string>
+    <string name="designsystem_default_split_shares">Shares</string>
+    <string name="designsystem_default_split_percent">Percentage</string>
+    <string name="designsystem_default_split_income">By income</string>
     <string name="designsystem_currency_value">%1$s (%2$s)</string>
     <string name="designsystem_avatar_color_blue">Blue</string>
     <string name="designsystem_avatar_color_peach">Peach</string>

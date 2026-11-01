@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.testing
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -38,6 +39,15 @@ class FakeGroupRepository(
 
     // Why: while set, an update waits for it, so a test can act while the save is in flight.
     var updateGroupGate: CompletableDeferred<Unit>? = null
+
+    // Why: the default splits saved, with the incomes saved along, by group id, in the order they were saved.
+    val savedDefaultSplits = mutableListOf<Pair<String, GroupDefaultSplit?>>()
+    val savedIncomes = mutableMapOf<String, Map<String, Long>>()
+    var defaultSplitError: Throwable? = null
+
+    // Why: while set, a save of the default split waits for it, so a test can act while it is in flight.
+    var defaultSplitGate: CompletableDeferred<Unit>? = null
+    var incomesError: Throwable? = null
 
     // Why: one knob for the three member edits, which fail alike.
     var memberChangeError: Throwable? = null
@@ -81,6 +91,27 @@ class FakeGroupRepository(
         groups.value = listOf(group) + groups.value
         hasPendingChanges.value = true
         return Result.success(Unit)
+    }
+
+    override suspend fun updateDefaultSplit(
+        groupId: String,
+        defaultSplit: GroupDefaultSplit?,
+        incomes: Map<String, Long>,
+        updatedAt: Long,
+    ): Result<Unit> {
+        defaultSplitGate?.await()
+        defaultSplitError?.let { return Result.failure(it) }
+        savedDefaultSplits += groupId to defaultSplit
+        savedIncomes[groupId] = incomes
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) group.copy(defaultSplit = defaultSplit) else group
+        }
+        return Result.success(Unit)
+    }
+
+    override suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>> {
+        incomesError?.let { return Result.failure(it) }
+        return Result.success(savedIncomes[groupId].orEmpty())
     }
 
     override suspend fun updateGroup(

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -44,6 +45,7 @@ class EditGroupViewModel(
                 type = GroupType.default,
                 currency = GroupCurrency.fallback,
                 isCurrencyLocked = false,
+                defaultSplitMode = DefaultSplitMode.EQUAL,
                 isOnline = true,
                 isLoaded = false,
                 isSaving = false,
@@ -102,6 +104,8 @@ class EditGroupViewModel(
                 if (it.isCurrencyLocked) it else it.copy(currency = event.currency)
             }
 
+            EditGroupUiEvent.OnDefaultSplitClicked -> openDefaultSplit()
+
             EditGroupUiEvent.OnSaveClicked -> save()
         }
     }
@@ -129,9 +133,17 @@ class EditGroupViewModel(
             }
             filled.copy(
                 isCurrencyLocked = hasExpenses,
+                defaultSplitMode = group.defaultSplit?.mode ?: DefaultSplitMode.EQUAL,
                 currency = if (hasExpenses) group.currency else filled.currency,
             )
         }
+    }
+
+    // Why: only from the form on top, so a late second tap never stacks the split twice.
+    private fun openDefaultSplit() {
+        val state = uiState.value
+        if (!state.isLoaded || state.isSaving || navigator.backStack.value.lastOrNull() != route) return
+        navigator.navigate(Route.DefaultSplit(route.groupId))
     }
 
     private fun changeName(name: String) {

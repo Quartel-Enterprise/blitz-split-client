@@ -39,7 +39,7 @@ class JsSplitRow(
 /*
  * Why: a SplitFact, flat. kind is "each", "nobody", "nobody-checked", "nobody-has-parts", "among", "out",
  * "amount-left", "amount-over", "amount-adds-up", "parts-match-total", "amount-so-far", "without-value",
- * "percent-left", "percent-over", "percent-adds-up", "parts" or "person-parts", and only that fact's fields are set:
+ * "percent-left", "percent-over", "percent-adds-up", "parts", "person-parts" or "group-default", and only that fact's fields are set:
  * amountMinor is also the assigned amount of "amount-so-far" and the part's value of "parts", count the people of
  * "among" and the parts of "parts" and "person-parts".
  */
@@ -74,7 +74,6 @@ class JsSplitEditor(
     val partValueMinor: Double,
     val statusTitle: JsSplitFact,
     val statusDetails: Array<JsSplitFact>,
-    val summary: Array<JsSplitFact>,
 )
 
 // Why: person is null for someone who left the group, "Ex-membro".
@@ -93,6 +92,18 @@ class JsPayerAmounts(
     val addsUp: Boolean,
     val showsMismatch: Boolean,
     val paying: Array<JsPayerAmountRow>,
+)
+
+/*
+ * Why: the group's "Divisão padrão" a new bill opens with. mode is the DefaultSplitMode's code ("shares"), values the
+ * parts or percentages of who is in it ("3 para 1"), excluded who an "Igual" default leaves out, editorMode the
+ * SplitMode's code it gives the bill ("percent" for "Pela renda").
+ */
+class JsBillDefaultSplit(
+    val mode: String,
+    val editorMode: String,
+    val values: Array<Double>,
+    val excluded: Array<JsBillPerson>,
 )
 
 // Why: a group "Rachar em qual grupo?" lists.
@@ -147,6 +158,11 @@ class JsSplitBillState(
     val latestSpentAt: Double,
     val split: JsSplitEditor,
     val splitEditor: JsSplitEditor?,
+    // Why: what "Divisão" says under its title, "Padrão do grupo" first while it follows the group's default.
+    val splitSummary: Array<JsSplitFact>,
+    val defaultSplit: JsBillDefaultSplit?,
+    val showsDefaultSplitNotice: Boolean,
+    val isSplitEditorOffDefault: Boolean,
     val myShareMinor: Double?,
     val refundMinor: Double?,
     val canSave: Boolean,
@@ -213,6 +229,17 @@ class SplitBillPresenter(
                 latestSpentAt = state.latestSpentAt.toDouble(),
                 split = toJsSplitEditor(state.split),
                 splitEditor = state.splitEditor?.let(::toJsSplitEditor),
+                splitSummary = state.splitSummary.map(::toJsSplitFact).toTypedArray(),
+                defaultSplit = state.defaultSplit?.let { default ->
+                    JsBillDefaultSplit(
+                        mode = default.mode.code,
+                        editorMode = default.editor.mode.code,
+                        values = default.values.map { it.toDouble() }.toTypedArray(),
+                        excluded = default.excluded.map(::toJsBillPerson).toTypedArray(),
+                    )
+                },
+                showsDefaultSplitNotice = state.showsDefaultSplitNotice,
+                isSplitEditorOffDefault = state.isSplitEditorOffDefault,
                 myShareMinor = state.myShareMinor?.toDouble(),
                 refundMinor = state.refundMinor?.toDouble(),
                 canSave = state.canSave,
@@ -380,6 +407,10 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnPartsDecreased(memberId))
     }
 
+    fun resetSplitToDefault() {
+        viewModel.onEvent(SplitBillUiEvent.OnSplitResetToDefault)
+    }
+
     fun confirmSplit() {
         viewModel.onEvent(SplitBillUiEvent.OnSplitDone)
     }
@@ -453,7 +484,6 @@ private fun toJsSplitEditor(editor: SplitEditor): JsSplitEditor = JsSplitEditor(
     partValueMinor = editor.partValueMinor.toDouble(),
     statusTitle = toJsSplitFact(editor.statusTitle),
     statusDetails = editor.statusDetails.map(::toJsSplitFact).toTypedArray(),
-    summary = editor.summary.map(::toJsSplitFact).toTypedArray(),
 )
 
 private fun toJsSplitFact(fact: SplitFact): JsSplitFact {
@@ -475,6 +505,7 @@ private fun toJsSplitFact(fact: SplitFact): JsSplitFact {
         SplitFact.PercentAddsUp -> "percent-adds-up"
         is SplitFact.Parts -> "parts"
         is SplitFact.PersonParts -> "person-parts"
+        SplitFact.GroupDefault -> "group-default"
     }
     val amountMinor = when (fact) {
         is SplitFact.Each -> fact.amountMinor

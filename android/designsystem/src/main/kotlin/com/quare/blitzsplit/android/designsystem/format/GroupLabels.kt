@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.R
+import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import java.util.Currency
@@ -17,6 +18,15 @@ val GroupType.labelRes: Int
         GroupType.HOME -> R.string.designsystem_group_type_home
         GroupType.EVENT -> R.string.designsystem_group_type_event
         GroupType.OTHER -> R.string.designsystem_group_type_other
+    }
+
+// Why: "Divisão padrão" and Dividir's notice name the group's default way to split alike.
+val DefaultSplitMode.labelRes: Int
+    @StringRes get() = when (this) {
+        DefaultSplitMode.EQUAL -> R.string.designsystem_default_split_equal
+        DefaultSplitMode.SHARES -> R.string.designsystem_default_split_shares
+        DefaultSplitMode.PERCENT -> R.string.designsystem_default_split_percent
+        DefaultSplitMode.INCOME -> R.string.designsystem_default_split_income
     }
 
 // Why: "Real brasileiro (R$)", named by the platform in the device's language.

@@ -99,7 +99,7 @@ internal fun BillDetailsSection(
             label = stringResource(R.string.split_bill_split),
             value = splitTitleOf(state.split),
             subtitle = splitSubtitleOrNull(
-                split = state.split,
+                summary = state.splitSummary,
                 money = money,
             ),
             shape = rowShapeOf(index = 2),

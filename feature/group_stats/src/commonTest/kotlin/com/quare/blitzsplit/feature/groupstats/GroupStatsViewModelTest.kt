@@ -572,6 +572,7 @@ class GroupStatsViewModelTest {
         isPending = false,
         inviteCode = null,
         isCreatedByMe = true,
+        defaultSplit = null,
         updatedAt = 0L,
     )
     private val home = trip.copy(

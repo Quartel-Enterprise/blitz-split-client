@@ -30,7 +30,9 @@ import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormChrome
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -52,9 +54,10 @@ internal fun SplitEditorContent(
 ) {
     val money = rememberMoneyFormatter(state.currency)
     val rowMinHeight = if (rememberDeviceLayout().isLandscape) 52.dp else 60.dp
-    SplitBillFormLayout(
+    ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(R.string.split_bill_split_title),
+            subtitle = null,
             navigationIcon = Icons.AutoMirrored.Outlined.ArrowBack,
             navigationLabel = stringResource(R.string.split_bill_back),
             onNavigate = { onEvent(SplitBillUiEvent.OnSplitDismissed) },
@@ -72,6 +75,16 @@ internal fun SplitEditorContent(
                 editor = editor,
                 money = money,
             )
+            val default = state.defaultSplit
+            if (state.showsDefaultSplitNotice && default != null) {
+                DefaultSplitNoticeCard(
+                    default = default,
+                    groupName = state.groupName,
+                    editorMode = editor.mode,
+                    isOffDefault = state.isSplitEditorOffDefault,
+                    onEvent = onEvent,
+                )
+            }
             ConnectedButtonRow(
                 labels = SplitMode.entries.map { stringResource(it.labelRes) },
                 selectedIndex = SplitMode.entries.indexOf(editor.mode),
@@ -87,11 +100,10 @@ internal fun SplitEditorContent(
                 money = money,
             )
             Text(
-                text = when (editor.mode) {
-                    SplitMode.EQUAL -> stringResource(R.string.split_bill_hint_equal)
-                    SplitMode.AMOUNT -> stringResource(R.string.split_bill_hint_amount, money.toText(0L))
-                    SplitMode.PERCENT -> stringResource(R.string.split_bill_hint_percent)
-                    SplitMode.SHARES -> stringResource(R.string.split_bill_hint_shares)
+                text = if (state.defaultSplit != null) {
+                    stringResource(R.string.split_bill_hint_default)
+                } else {
+                    modeHintOf(editor.mode, money)
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -107,6 +119,17 @@ internal fun SplitEditorContent(
             )
         },
     )
+}
+
+@Composable
+private fun modeHintOf(
+    mode: SplitMode,
+    money: MoneyFormatter,
+): String = when (mode) {
+    SplitMode.EQUAL -> stringResource(R.string.split_bill_hint_equal)
+    SplitMode.AMOUNT -> stringResource(R.string.split_bill_hint_amount, money.toText(0L))
+    SplitMode.PERCENT -> stringResource(R.string.split_bill_hint_percent)
+    SplitMode.SHARES -> stringResource(R.string.split_bill_hint_shares)
 }
 
 private val SplitMode.labelRes: Int
