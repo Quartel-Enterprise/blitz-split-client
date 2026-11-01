@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.MoreVert
@@ -89,6 +90,12 @@ internal fun GroupTopBar(
             }
         },
         actions = {
+            IconButton(onClick = { onAction(GroupAction.STATS) }) {
+                Icon(
+                    imageVector = Icons.Outlined.BarChart,
+                    contentDescription = stringResource(R.string.group_detail_stats),
+                )
+            }
             IconButton(onClick = { onAction(GroupAction.INVITE) }) {
                 Icon(
                     imageVector = Icons.Outlined.PersonAdd,
