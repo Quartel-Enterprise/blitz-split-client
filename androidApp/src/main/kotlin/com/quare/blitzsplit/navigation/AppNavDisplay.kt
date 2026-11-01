@@ -160,13 +160,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.CreateGroup>(metadata = createGroupMetadata) {
                 CreateGroupScreen(isDialog = usesCreateGroupDialog)
             }
-            // Why: it takes the new group's place; a tablet keeps the home behind it, elsewhere it opens full screen.
-            entry<Route.Invite>(metadata = formDialogMetadata) { route ->
-                InviteScreen(
-                    route = route,
-                    isDialog = usesFormDialog,
-                )
-            }
+            // Why: it takes the new group's place, full screen at every size (decision 1), laid out per size inside.
+            entry<Route.Invite> { route -> InviteScreen(route) }
             // Why: the group's tabs go in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane { GroupDetailScreen(route) }
