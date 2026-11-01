@@ -98,6 +98,7 @@ fun HomeContent(
                 SplitBillNavigationRail(
                     selected = HomeTab.HOME,
                     onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+                    activityBadgeCount = state.activityUnreadCount,
                     onSplitBillClick = {
                         onEvent(
                             HomeUiEvent.OnSplitBillClicked,
@@ -134,6 +135,7 @@ fun HomeContent(
                         HomeNavigationBar(
                             selected = HomeTab.HOME,
                             onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+                            activityBadgeCount = state.activityUnreadCount,
                         )
                     }
                 },

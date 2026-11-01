@@ -5,12 +5,37 @@ import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.RecoveryCodeCardDismissal
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
+// Why: viewModelOf stops at 22 parameters, fewer than Grupos and Início take.
 val groupsModule = module {
-    viewModelOf(::GroupsViewModel)
-    // Why: more parameters than viewModelOf takes.
+    viewModel {
+        GroupsViewModel(
+            retrySync = get(),
+            syncNow = get(),
+            navigator = get(),
+            consumeGroupDeletion = get(),
+            updateGroupsLayout = get(),
+            leaveGroup = get(),
+            deleteGroup = get(),
+            observeRecordedPayment = get(),
+            consumeRecordedPayment = get(),
+            deleteSettlement = get(),
+            currentTimeMillis = get(),
+            currentTimeZone = get(),
+            minuteTicks = get(),
+            observeProfile = get(),
+            observeAccount = get(),
+            observeSyncState = get(),
+            observeGroups = get(),
+            observeGroupsMoney = get(),
+            connectivityObserver = get(),
+            observeGroupDeletions = get(),
+            observeGroupsLayout = get(),
+            observePeopleBalances = get(),
+            observeActivityUnreadCount = get(),
+        )
+    }
     viewModel {
         HomeViewModel(
             navigator = get(),
@@ -36,6 +61,7 @@ val groupsModule = module {
             observePinnedGroupIds = get(),
             observeGroupDeletions = get(),
             connectivityObserver = get(),
+            observeActivityUnreadCount = get(),
         )
     }
     // Why: Início's recovery code card stays closed until the next launch, whichever Início is drawn.

@@ -23,6 +23,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
+import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactInvitePresentation
@@ -236,6 +237,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: the home's Saldos tab, over Início.
             entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
+            // Why: the home's Atividade tab, over the groups like Saldos.
+            entry<Route.Activity> { route -> ActivityScreen(route) }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(
                 metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,

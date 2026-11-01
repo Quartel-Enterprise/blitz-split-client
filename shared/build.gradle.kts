@@ -9,6 +9,7 @@ private val exportedToApple = listOf(
     projects.core.presentation,
     projects.core.navigation,
     projects.core.expenses,
+    projects.core.activity,
     projects.core.contacts,
     projects.feature.welcome,
     projects.feature.profileSetup,
@@ -31,6 +32,7 @@ private val exportedToApple = listOf(
     projects.feature.registerPayment,
     projects.feature.globalBalances,
     projects.feature.groupStats,
+    projects.feature.activity,
     projects.feature.contacts,
 )
 

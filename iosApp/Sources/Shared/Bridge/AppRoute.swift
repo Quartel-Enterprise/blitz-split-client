@@ -24,6 +24,8 @@ enum AppRoute: Hashable, Identifiable {
     case pickPayment
     /// The home's Balances tab; holds the Kotlin route itself, which its ViewModel reads the filter from.
     case globalBalances(RouteGlobalBalances)
+    /// The home's Activity tab; holds the Kotlin route itself, which its ViewModel reads the person it filters by from.
+    case activity(RouteActivity)
     /// Settling up with someone across groups; holds the Kotlin route itself, which its ViewModel reads the person from.
     case settleUp(RouteSettleUp)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
@@ -73,6 +75,7 @@ enum AppRoute: Hashable, Identifiable {
         case let registerPayment as RouteRegisterPayment: self = .registerPayment(registerPayment)
         case is RoutePickPayment: self = .pickPayment
         case let globalBalances as RouteGlobalBalances: self = .globalBalances(globalBalances)
+        case let activity as RouteActivity: self = .activity(activity)
         case let settleUp as RouteSettleUp: self = .settleUp(settleUp)
         case let splitBill as RouteSplitBill: self = .splitBill(splitBill)
         case let billDetail as RouteBillDetail: self = .billDetail(billDetail)

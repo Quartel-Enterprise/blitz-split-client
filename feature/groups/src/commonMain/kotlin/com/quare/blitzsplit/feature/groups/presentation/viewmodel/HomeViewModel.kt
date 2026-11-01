@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
@@ -53,7 +54,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
-import com.quare.blitzsplit.feature.groups.presentation.model.syncBadgeOf
+import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -94,6 +95,7 @@ class HomeViewModel(
     observePinnedGroupIds: ObservePinnedGroupIds,
     observeGroupDeletions: ObserveGroupDeletions,
     connectivityObserver: NetworkConnectivityObserver,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState>
         field = MutableStateFlow(
@@ -118,6 +120,7 @@ class HomeViewModel(
                 recordedPayment = null,
                 deletedGroupNotice = null,
                 isRefreshing = false,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -166,7 +169,7 @@ class HomeViewModel(
                     avatarColor = profile?.avatarColor ?: AvatarColor.default,
                     photoUrl = profile?.photo?.toImageUrl(),
                     accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                    syncBadge = syncBadgeOf(syncState, isOnline),
+                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
@@ -207,6 +210,9 @@ class HomeViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
         observeFirstDownload()
             .onEach { isPending ->
                 isFirstDownloadPending = isPending
@@ -310,10 +316,10 @@ class HomeViewModel(
 
             HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
-            // Why: Atividade (page 12) holds every bill and payment; it is not built yet.
-            HomeUiEvent.OnSeeAllBillsClicked,
-            HomeUiEvent.OnActivityTabClicked,
-            -> showComingSoon()
+            // Why: Atividade holds every bill and payment, so "Ver tudo" of Últimas despesas is its tab.
+            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.openHomeTab(Route.Activity(personKey = null))
+
+            HomeUiEvent.OnActivityTabClicked -> navigator.openHomeTab(Route.Activity(personKey = null))
 
             // Why: the sheet of the code, which "Já guardei" settles; "Lembrar depois" brings the card back.
             HomeUiEvent.OnShowRecoveryCodeClicked -> if (uiState.value.showsRecoveryCodeCard) {

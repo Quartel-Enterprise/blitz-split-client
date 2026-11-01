@@ -139,14 +139,14 @@ launch.
 
 The home has five tabs: Início, Grupos, Saldos, Contatos and Atividade. Início (`Route.Home`) is the root of the
 back stack and where the app opens; every other tab is one route right above it, and the tabs take each other's place
-there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`.
-`Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in the stack, closing whatever it opened, and otherwise puts it
-right above Início; without Início in the stack (the welcome, the restore) it does nothing. `popToGroups()` is
-`openHomeTab(Route.Groups)` unless the groups are on top. Each tab's ViewModel has an `OnHomeTabClicked`, and on
-Apple the `TabView` selects the tab from the route right above Início. Back from any tab returns to Início. Contatos'
-profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite (`Route.ContactInvite`) open over it,
-or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like Saldos). Atividade is drawn on every
-platform but not built yet: its event emits `ShowComingSoon` and the selection stays where it was.
+there, as a tab bar does: `[Home]`, `[Home, Groups]`, `[Home, GlobalBalances(filter, charge)]`, `[Home, Contacts]`,
+`[Home, Activity(personKey)]`. `Navigator.openHomeTab(tab)` (`HomeTabs.kt`) goes back to the tab when it is already in
+the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the
+welcome, the restore) it does nothing. `popToGroups()` is `openHomeTab(Route.Groups)`. Each tab's ViewModel has an
+`OnHomeTabClicked`, and on Apple the `TabView` selects the tab from the route right above Início. Back from any tab
+returns to Início. Contatos' profile (`Route.ContactProfile`), agenda (`Route.ContactsAgenda`) and invite
+(`Route.ContactInvite`) open over it, or in its pane on wide windows (Contatos keeps the pick in its ViewModel, like
+Saldos). Atividade opens on a person from a contact's history ("Ver tudo"), and on everyone from Início's "Ver tudo".
 
 Início's "Registrar pagamento" belongs to no group, so it asks who paid whom first: `Route.PickPayment` lists every
 open pair of every group, and the pair tapped opens `Route.RegisterPayment` in its place (`replaceTop`), so closing
@@ -195,6 +195,11 @@ the first row), which every UI draws as it comes, the web's presenter handing ov
 pane where its window has room (Android's `rememberListDetailLayout`, the iPad lying down, a Mac window from 700 pt
 for the inspector column, the web from 1024 px), and the rows inline everywhere else. No route, so nothing changes
 on the back stack, and nothing to tell the ViewModel about the window.
+
+Atividade (page 12) keeps its pick the same way (`ActivityUiState.pickedItemId`, `selectedItem`), with one
+difference: a tap on a row opens what it is about where there is no pane, and only picks it where there is one. So
+its UIs do tell the ViewModel whether they draw the pane (`ActivityUiEvent.OnDetailPaneChanged`), and the pane's own
+button opens it (`OnOpenTargetClicked`).
 
 Pick the first when the detail is a screen that also opens on its own (it already has a route); the second when it
 only exists beside its list.

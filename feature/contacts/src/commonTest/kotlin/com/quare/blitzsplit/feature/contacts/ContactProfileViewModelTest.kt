@@ -112,7 +112,7 @@ class ContactProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the history WHEN Ver tudo is tapped THEN says it is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN the history WHEN Ver tudo is tapped THEN opens Atividade on that person`() = runTest(testDispatcher) {
         // Given
         prepareScenario(personKey = CARLA_KEY)
 
@@ -120,7 +120,7 @@ class ContactProfileViewModelTest {
         viewModel.onEvent(ContactProfileUiEvent.OnSeeAllHistoryClicked)
 
         // Then
-        assertEquals(listOf<ContactProfileUiAction>(ContactProfileUiAction.ShowComingSoon), actions)
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = CARLA_KEY)), navigator.backStack.value)
     }
 
     @Test

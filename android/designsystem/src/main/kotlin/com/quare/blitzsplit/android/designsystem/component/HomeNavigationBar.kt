@@ -12,6 +12,8 @@ import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -22,13 +24,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 
-// Why: the five tabs of the home, Início first, which Início, Grupos and Saldos draw with their own tab selected.
+private const val MAX_BADGE_COUNT = 99
+
+/*
+ * Why: the five tabs of the home, Início first, which Início, Grupos, Saldos, Contatos and Atividade draw with their own
+ * tab selected.
+ */
 enum class HomeTab(
     @StringRes val label: Int,
     val icon: ImageVector,
@@ -44,6 +54,7 @@ enum class HomeTab(
 fun HomeNavigationBar(
     selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
+    activityBadgeCount: Int = 0,
 ) {
     NavigationBar {
         HomeTab.entries.forEach { tab ->
@@ -51,8 +62,9 @@ fun HomeNavigationBar(
                 selected = tab == selected,
                 onClick = { if (tab != selected) onTabClick(tab) },
                 icon = {
-                    Icon(
-                        imageVector = tab.icon,
+                    TabIcon(
+                        tab = tab,
+                        activityBadgeCount = activityBadgeCount,
                         contentDescription = null,
                     )
                 },
@@ -71,6 +83,7 @@ fun HomeNavigationBar(
 fun HomeNavigationRail(
     selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
+    activityBadgeCount: Int = 0,
     header: @Composable () -> Unit = {},
 ) {
     val formFactor = rememberFoldLayout().formFactor
@@ -94,8 +107,9 @@ fun HomeNavigationRail(
                     selected = tab == selected,
                     onClick = { if (tab != selected) onTabClick(tab) },
                     icon = {
-                        Icon(
-                            imageVector = tab.icon,
+                        TabIcon(
+                            tab = tab,
+                            activityBadgeCount = activityBadgeCount,
                             contentDescription = label.takeIf { isShort },
                         )
                     },
@@ -103,5 +117,42 @@ fun HomeNavigationRail(
                 )
             }
         }
+    }
+}
+
+/*
+ * Why: Atividade's unread count, in the primary color since it asks for a look, never an error; TalkBack reads it
+ * with the tab ("Atividade, 3 não lidas"). The rail of a phone lying down names the tab on the icon, having no labels.
+ */
+@Composable
+private fun TabIcon(
+    tab: HomeTab,
+    activityBadgeCount: Int,
+    contentDescription: String?,
+) {
+    val count = activityBadgeCount.takeIf { tab == HomeTab.ACTIVITY && it > 0 }
+    if (count == null) {
+        Icon(
+            imageVector = tab.icon,
+            contentDescription = contentDescription,
+        )
+        return
+    }
+    val description = pluralStringResource(R.plurals.designsystem_tab_unread, count, count)
+    BadgedBox(
+        badge = {
+            Badge(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ) {
+                Text(if (count > MAX_BADGE_COUNT) "$MAX_BADGE_COUNT+" else count.toString())
+            }
+        },
+        modifier = Modifier.semantics { stateDescription = description },
+    ) {
+        Icon(
+            imageVector = tab.icon,
+            contentDescription = contentDescription,
+        )
     }
 }

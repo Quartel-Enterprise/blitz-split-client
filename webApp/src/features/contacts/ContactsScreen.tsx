@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { ContactProfileView, useContactProfile } from './ContactProfile'
 import { netWord, rowMeta } from './contactWords'
 
-// Início, Grupos and Saldos are the other tabs; Atividade is not built yet and answers "Coming soon".
+// Início, Grupos, Saldos and Atividade take Contatos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>> = {
   home: (p) => p.openHome(),
   groups: (p) => p.openGroups(),
@@ -33,8 +33,8 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>
 export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   const presenter = usePresenter(() => new ContactsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsContactsState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) =>
-    toast(t(action === 'coming-soon' ? 'groups_comingSoon' : 'contacts_changeError')),
+  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), () =>
+    toast(t('contacts_changeError')),
   )
   const isWide = useMediaQuery('(min-width: 1024px)')
   // Why: beside the list a click picks the person; anywhere else it opens their profile over the list.
@@ -46,7 +46,13 @@ export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   const personKey = profileRoute?.personKey
   if (personKey) return <ProfileOverList key={personKey} contacts={presenter} state={state} personKey={personKey} />
   return (
-    <HomeShell selected="contacts" profile={state} onTab={(tab) => tabEvents[tab]?.(presenter)} onProfile={() => presenter.openProfile()}>
+    <HomeShell
+      selected="contacts"
+      profile={state}
+      activityUnreadCount={state.activityUnreadCount}
+      onTab={(tab) => tabEvents[tab]?.(presenter)}
+      onProfile={() => presenter.openProfile()}
+    >
       <main
         className={cn(
           'mx-auto w-full flex-1 p-4 sm:px-8 sm:py-7 lg:px-10 lg:py-8',
@@ -68,6 +74,7 @@ function ProfileOverList({ contacts, state, personKey }: { contacts: ContactsPre
     <HomeShell
       selected="contacts"
       profile={state}
+      activityUnreadCount={state.activityUnreadCount}
       onTab={(tab) => tabEvents[tab]?.(contacts)}
       onProfile={() => contacts.openProfile()}
     >

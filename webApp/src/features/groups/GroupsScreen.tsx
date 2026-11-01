@@ -37,7 +37,7 @@ export function useDeletedGroupNotice(presenter: { deletedGroupNoticeShown(): vo
   }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
 }
 
-// Contatos and Atividade are not built yet and answer "Coming soon".
+// Início, Saldos, Contatos and Atividade take Grupos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: GroupsPresenter) => void>> = {
   home: (p) => p.openHome(),
   balances: (p) => p.openBalances(),
@@ -77,6 +77,7 @@ export function GroupsScreen() {
 
   return (
     <HomeShell
+      activityUnreadCount={state.activityUnreadCount}
       selected="groups"
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}

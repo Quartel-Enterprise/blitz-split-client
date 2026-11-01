@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
@@ -59,6 +60,7 @@ class SyncCoordinatorTest {
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
+    private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var firstDownload: FirstDownload
@@ -4568,6 +4570,93 @@ class SyncCoordinatorTest {
             assertTrue(account.signOutWhenSynced)
         }
 
+    @Test
+    fun `GIVEN a local profile WHEN syncing THEN sends the activity up and brings it down under the user id`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.uploadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN the activity fails to come down WHEN syncing THEN fails and the sync state is failed`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        activity.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN the activity fails to go up WHEN syncing THEN fails and brings no activity down`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        activity.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(activity.downloadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the groups fail to sync WHEN syncing THEN still syncs the activity`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        groups.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN signing out THEN erases the activity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+
+        // When
+        coordinator.signOut()
+
+        // Then
+        assertEquals(1, activity.clearCalls)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN deleting the account THEN erases the activity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+
+        // When
+        coordinator.deleteAccount()
+
+        // Then
+        assertEquals(1, activity.clearCalls)
+    }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -4675,6 +4764,7 @@ class SyncCoordinatorTest {
         groups = FakeGroupRepository(initialGroups = storedGroups).also { it.hasPendingChanges.value = pendingGroups }
         expenses = FakeExpenseRepository().also { it.hasPendingChanges.value = pendingBills }
         settlements = FakeSettlementRepository().also { it.hasPendingChanges.value = pendingPayments }
+        activity = FakeActivityRepository()
         paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
         isOnline = MutableStateFlow(online)
         pullGate = CompletableDeferred()
@@ -4713,6 +4803,7 @@ class SyncCoordinatorTest {
             groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
+            activityRepository = activity,
             hiddenContactRepository = FakeHiddenContactRepository(),
             firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },

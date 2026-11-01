@@ -44,6 +44,8 @@ data class HomeUiState(
     val deletedGroupNotice: DeletedGroupNotice?,
     // Why: a pull to refresh waits for the sync it asked for.
     val isRefreshing: Boolean,
+    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    val activityUnreadCount: Int,
 ) {
     // Why: no group and nobody yet: only the card of 1.3, with no search, shortcuts nor "Rachar conta".
     val showsFirstUse: Boolean

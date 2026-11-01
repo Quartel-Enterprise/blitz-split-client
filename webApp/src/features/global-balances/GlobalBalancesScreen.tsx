@@ -14,7 +14,7 @@ import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { ChargeDialog, copyChargeMessage, shareChargeMessage } from './ChargeDialog'
 
-// Início and Grupos take Saldos' place; Contatos and Atividade are not built yet and answer "Coming soon".
+// Início, Grupos, Contatos and Atividade take Saldos' place above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: GlobalBalancesPresenter) => void>> = {
   home: (p) => p.openHome(),
   groups: (p) => p.openGroups(),
@@ -67,6 +67,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
 
   return (
     <HomeShell
+      activityUnreadCount={state.activityUnreadCount}
       selected="balances"
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}

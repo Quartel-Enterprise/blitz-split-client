@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groups
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -102,6 +103,7 @@ class HomeViewModelTest {
     private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var dismissal: RecoveryCodeCardDismissal
     private lateinit var firstDownload: FirstDownload
+    private lateinit var activityUnread: MutableStateFlow<Int>
     private lateinit var viewModel: HomeViewModel
     private val actions = mutableListOf<HomeUiAction>()
     private var retryCount = 0
@@ -372,17 +374,42 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping Ver tudo and Atividade THEN says each is coming soon`() = runTest(testDispatcher) {
+    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade above Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = listOf(trio()))
 
         // When
         viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
-        viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
 
         // Then
-        assertEquals(List<HomeUiAction>(2) { HomeUiAction.ShowComingSoon }, actions)
-        assertEquals(listOf(Route.Home), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group opened from Inicio WHEN tapping Atividade THEN Atividade takes its place above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnActivityTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN unread events WHEN Inicio shows THEN its Atividade tab counts them`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        activityUnread.value = 4
+
+        // Then
+        assertEquals(4, viewModel.uiState.value.activityUnreadCount)
     }
 
     @Test
@@ -1909,6 +1936,7 @@ class HomeViewModelTest {
         deletions = InMemoryGroupDeletionRepository()
         dismissal = RecoveryCodeCardDismissal().also { it.isDismissed.value = isCardDismissedThisLaunch }
         firstDownload = FirstDownload().also { if (isFirstDownloadPending) it.start() }
+        activityUnread = MutableStateFlow(0)
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = HomeViewModel(
             navigator = navigator,
@@ -1942,6 +1970,7 @@ class HomeViewModelTest {
             observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

@@ -5,6 +5,7 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
+import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
@@ -15,6 +16,10 @@ import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.dao.SettlementDao
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
+import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
+import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
+import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
+import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
@@ -37,10 +42,14 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         GroupMemberEntity::class,
         ExpenseEntity::class,
         SettlementEntity::class,
+        ActivityEventEntity::class,
+        ActivityReadEntity::class,
+        ActivityStateEntity::class,
+        ActivityBackfillEntity::class,
         HiddenContactEntity::class,
         GroupPinEntity::class,
     ],
-    version = 21,
+    version = 22,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -123,6 +132,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 20,
             to = 21,
         ),
+        AutoMigration(
+            from = 21,
+            to = 22,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -142,6 +155,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun expenseDao(): ExpenseDao
 
     abstract fun settlementDao(): SettlementDao
+
+    abstract fun activityDao(): ActivityDao
 
     abstract fun hiddenContactDao(): HiddenContactDao
 

@@ -1959,7 +1959,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"), Route.Profile),
+                listOf(Route.Home, Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"), Route.Profile),
                 navigator.backStack.value,
             )
         }
@@ -1977,6 +1977,7 @@ class GroupDetailViewModelTest {
             // Then
             assertEquals(
                 listOf(
+                    Route.Home,
                     Route.Groups,
                     Route.GroupDetail(GROUP_ID, joinedAs = "Bruno"),
                     Route.Invite(GROUP_ID, isNewGroup = false),

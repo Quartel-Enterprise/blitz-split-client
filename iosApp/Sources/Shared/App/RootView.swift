@@ -80,6 +80,7 @@ struct RootView: View {
         case let .balances(route): BalancesView(route: route)
         case let .registerPayment(route): RegisterPaymentView(route: route)
         case let .globalBalances(route): GlobalBalancesView(route: route)
+        case let .activity(route): ActivityView(route: route)
         case let .settleUp(route): RegisterPaymentView(settleUp: route)
         case .pickPayment: PickPaymentView()
         case let .splitBill(route): SplitBillView(route: route)

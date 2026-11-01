@@ -14,7 +14,7 @@ import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
 
-// Grupos and Saldos take Início's place above it; Contatos and Atividade are not built yet and answer "Coming soon".
+// Grupos, Saldos, Contatos and Atividade take their place right above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: HomePresenter) => void>> = {
   groups: (p) => p.openGroups(),
   balances: (p) => p.openBalances(),
@@ -46,6 +46,7 @@ export function HomeScreen() {
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}
       onProfile={() => presenter.openProfile()}
+      activityUnreadCount={state.activityUnreadCount}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
       <main className="flex flex-1 flex-col gap-3.5 p-4 md:gap-4 md:p-6 lg:gap-5 lg:px-8">

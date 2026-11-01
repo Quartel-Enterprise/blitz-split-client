@@ -115,6 +115,8 @@ class JsHomeState(
     val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
+    // Why: the Atividade tab's badge.
+    val activityUnreadCount: Int,
 )
 
 class HomePresenter {
@@ -150,6 +152,7 @@ class HomePresenter {
                 deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
+                activityUnreadCount = state.activityUnreadCount,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

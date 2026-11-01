@@ -16,6 +16,7 @@ internal fun toRouteName(route: Route): String = when (route) {
     is Route.RegisterPayment -> "register-payment"
     Route.PickPayment -> "pick-payment"
     is Route.GlobalBalances -> "global-balances"
+    is Route.Activity -> "activity"
     is Route.SettleUp -> "settle-up"
     Route.Contacts -> "contacts"
     is Route.ContactProfile -> "contact-profile"

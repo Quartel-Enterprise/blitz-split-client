@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -107,6 +108,7 @@ class GroupsViewModelTest {
     // Why: the device's clock, which a test moves on and then ticks a minute for.
     private var clockMillis = 0L
     private lateinit var minutes: MutableStateFlow<Int>
+    private lateinit var activityUnread: MutableStateFlow<Int>
 
     @BeforeTest
     fun setUp() {
@@ -185,21 +187,6 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN the empty groups WHEN tapping a flow not built yet THEN says it is coming soon`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val actions = mutableListOf<GroupsUiAction>()
-            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
-
-            // When
-            viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
-
-            // Then
-            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
-        }
-
-    @Test
     fun `GIVEN a group open over the groups WHEN tapping the Contatos tab THEN closes it and opens Contatos`() =
         runTest(testDispatcher) {
             // Given
@@ -212,6 +199,31 @@ class GroupsViewModelTest {
             // Then
             assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Atividade tab THEN it takes the place of the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN unread activity arrives THEN the Atividade tab counts it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        activityUnread.value = 3
+
+        // Then
+        assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+    }
 
     @Test
     fun `GIVEN the groups WHEN tapping the Saldos tab THEN opens Saldos with everyone over the groups`() =
@@ -2608,6 +2620,7 @@ class GroupsViewModelTest {
         syncNowCount = 0
         clockMillis = now
         minutes = MutableStateFlow(0)
+        activityUnread = MutableStateFlow(0)
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -2648,6 +2661,7 @@ class GroupsViewModelTest {
                 observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
             ),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
     }
 }

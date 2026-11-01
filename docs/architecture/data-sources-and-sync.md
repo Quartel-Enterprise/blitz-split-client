@@ -275,6 +275,17 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   (`GroupBalances`) are worked out on the device from the bills and payments in Room, never stored.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
+- **Activity** (`:core:activity`): the "Atividade" feed is a log the server writes (`activity_events`, by triggers
+  on groups, members, bills and payments), so the device never writes an event of its own except `charge_sent`
+  ("Cobrar" sent, which only the device sees happen). It syncs after the groups, bills and payments, up then down,
+  and a failure fails the sync like any other step. Up: the charges recorded here (`activity_event.pendingSync`),
+  the events opened here (`activity_read`) and the read mark ("Marcar tudo como lido", `activity_read_state`, the
+  greater of the two marks wins on both sides). Down: the events after the newest `seq` the device has, from the last
+  90 days; a group that appears on the device after the first download is backfilled once (`activity_backfill`);
+  then everything older than 90 days goes, and so does what belongs to a group no longer on the device, except its
+  `group_deleted`. Older pages come from the server only online, into memory. Changes not up yet ("Aguardando
+  envio") are not events: the feed reads them from the pending bills, payments and groups. A user switch or a sign
+  out clears it all.
 
 A new synced table follows the same shape: `updatedAt` and `pendingSync` columns, an `applyRemote` query with the
 same guard, a `markSynced` that compares `updatedAt`, and a pull and push step in `syncNow()`. Its pending flag

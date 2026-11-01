@@ -239,5 +239,6 @@ class HomeUiStateTest {
         recordedPayment = null,
         deletedGroupNotice = null,
         isRefreshing = false,
+        activityUnreadCount = 0,
     )
 }

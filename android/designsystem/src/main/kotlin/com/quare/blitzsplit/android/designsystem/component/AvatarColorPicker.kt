@@ -69,7 +69,7 @@ fun AvatarColorPicker(
 }
 
 @get:StringRes
-private val AvatarColor.labelRes: Int
+val AvatarColor.labelRes: Int
     get() = when (this) {
         AvatarColor.BLUE -> R.string.designsystem_avatar_color_blue
         AvatarColor.PEACH -> R.string.designsystem_avatar_color_peach

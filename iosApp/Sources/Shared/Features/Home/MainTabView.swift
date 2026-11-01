@@ -1,9 +1,8 @@
 import Shared
 import SwiftUI
 
-/// The tabs of the canvas: Home first, then Groups, Balances and Contacts; Activity answers "Coming soon". Search is
-/// the iPhone's and the iPad's search tab, once there is a group, and looks in Groups; the Mac searches from Groups'
-/// toolbar instead.
+/// The tabs of the canvas, all built: Home first, then Groups, Balances, Contacts and Activity. Search is the iPhone's
+/// and the iPad's search tab, once there is a group, and looks in Groups; the Mac searches from Groups' toolbar instead.
 enum MainTab: Hashable {
     case home
     case groups
@@ -15,15 +14,22 @@ enum MainTab: Hashable {
 
 /// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable). Home is the root of
 /// the shared back stack and every other tab the entry right above it, so the first entry of `path` says which tab is
-/// in front: Groups, Balances, Contacts, or else Home, whose own stack is then the whole path.
+/// in front: Groups, Balances, Contacts, Activity, or else Home, whose own stack is then the whole path.
 struct MainTabView: View {
-    /// The shared back stack above Home: Groups, Balances or Contacts with what they opened, or what Home opened (a
-    /// group, the profile, an invite opened from its link).
+    /// The shared back stack above Home: Groups, Balances, Contacts or Activity with what they opened, or what Home
+    /// opened (a group, the profile, an invite opened from its link).
     @Binding var path: [AppRoute]
 
     @State private var home = HomeModel()
     @State private var model = GroupsModel()
     @State private var showsRecoveryCode = false
+
+    init(path: Binding<[AppRoute]>) {
+        _path = path
+        #if os(iOS)
+        Self.tintsBadges()
+        #endif
+    }
 
     var body: some View {
         TabView(selection: tabSelection) {
@@ -65,7 +71,19 @@ struct MainTabView: View {
                     Color.clear
                 }
             }
-            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
+            // Activity sits right above Home as Balances does; the badge counts every unread item, in the accent
+            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) {
+                NavigationStack(path: tabStack(isShown: activityRoute != nil)) {
+                    if let route = activityRoute {
+                        ActivityView(route: route)
+                            .id(route)
+                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
+                    } else {
+                        Color.clear
+                    }
+                }
+            }
+            .badge(Int(home.state.activityUnreadCount))
             #if os(iOS)
             // Nothing to look in before the first group
             if model.state.canSearch {
@@ -104,8 +122,8 @@ struct MainTabView: View {
         }
     }
 
-    /// Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
-    /// and goes back to the groups, past what its results opened; Home goes back to itself, past what any tab opened.
+    /// Selecting a tab opens it right above Home. Leaving Search forgets it and goes back to the groups, past what its
+    /// results opened; Home goes back to itself, past what any tab opened.
     /// Home's tab events work from any tab, so every tab but Groups and Search selects through them.
     private var tabSelection: Binding<MainTab> {
         Binding(
@@ -125,13 +143,13 @@ struct MainTabView: View {
         case .groups: return .groups
         case .globalBalances: return .balances
         case .contacts: return .contacts
+        case .activity: return .activity
         default: return .home
         }
     }
 
-    /// Home's tab events, which work over whatever Home or another tab pushed: Groups, Balances and Contacts take its
-    /// place right above Home, while Activity only says "Coming soon" and leaves it open. Search lives in Groups, so it
-    /// opens Groups first; Home goes back to itself.
+    /// Home's tab events, which work over whatever Home or another tab pushed: Groups, Balances, Contacts and Activity
+    /// take its place right above Home. Search lives in Groups, so it opens Groups first; Home goes back to itself.
     private func selectFromHome(_ tab: MainTab) {
         switch tab {
         case .groups: home.send(HomeUiEventOnGroupsTabClicked.shared)
@@ -184,6 +202,12 @@ struct MainTabView: View {
         return nil
     }
 
+    /// Activity right above Home, which its tab shows; nil while another tab is in front.
+    private var activityRoute: RouteActivity? {
+        if case let .activity(route) = path.first { return route }
+        return nil
+    }
+
     /// Contacts right above Home, which its tab shows.
     private var isContactsShown: Bool {
         if case .contacts = path.first { return true }
@@ -228,9 +252,18 @@ struct MainTabView: View {
         path.first == .groups && showsSearchTab == isSearch
     }
 
+    #if os(iOS)
+    /// The tab bar's badges in the accent, never the system's red: Activity's unread count is news, not an error.
+    private static func tintsBadges() {
+        let appearance = UITabBarItem.appearance()
+        appearance.badgeColor = UIColor(named: "AccentColor")
+        appearance.setBadgeTextAttributes([.foregroundColor: UIColor(Palette.onAccent)], for: .normal)
+    }
+    #endif
+
     /// What the tabs push over themselves: a group's expenses, balances, members or statistics, a bill, an invite
-    /// opened from its link, a group's invite with an iPad's room, the profile, its editor and, on iPhone, a key. Contacts also pushes a person's profile,
-    /// the agenda, and Balances opened from a profile's Request.
+    /// opened from its link, a group's invite with an iPad's room, the profile, its editor and, on iPhone, a key.
+    /// Contacts also pushes a person's profile, the agenda, and Balances opened from a profile's Request.
     @ViewBuilder
     static func destination(_ route: AppRoute) -> some View {
         switch route {

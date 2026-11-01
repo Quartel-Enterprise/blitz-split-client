@@ -246,6 +246,7 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     recordedPayment = null,
     deletedGroupNotice = null,
     isRefreshing = false,
+    activityUnreadCount = 3,
 )
 
 private fun buildPreviewPerson(

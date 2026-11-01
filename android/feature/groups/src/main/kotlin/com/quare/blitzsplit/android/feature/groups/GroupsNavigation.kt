@@ -23,18 +23,26 @@ private fun eventOf(tab: HomeTab): GroupsUiEvent? = when (tab) {
 }
 
 @Composable
-internal fun GroupsNavigationBar(onEvent: (GroupsUiEvent) -> Unit) {
+internal fun GroupsNavigationBar(
+    activityBadgeCount: Int,
+    onEvent: (GroupsUiEvent) -> Unit,
+) {
     HomeNavigationBar(
         selected = HomeTab.GROUPS,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+        activityBadgeCount = activityBadgeCount,
     )
 }
 
 @Composable
-internal fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
+internal fun GroupsNavigationRail(
+    activityBadgeCount: Int,
+    onEvent: (GroupsUiEvent) -> Unit,
+) {
     SplitBillNavigationRail(
         selected = HomeTab.GROUPS,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
+        activityBadgeCount = activityBadgeCount,
         onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
     )
 }
@@ -44,11 +52,13 @@ internal fun GroupsNavigationRail(onEvent: (GroupsUiEvent) -> Unit) {
 internal fun SplitBillNavigationRail(
     selected: HomeTab,
     onTabClick: (HomeTab) -> Unit,
+    activityBadgeCount: Int,
     onSplitBillClick: (() -> Unit)?,
 ) {
     HomeNavigationRail(
         selected = selected,
         onTabClick = onTabClick,
+        activityBadgeCount = activityBadgeCount,
         header = {
             if (onSplitBillClick != null) {
                 FloatingActionButton(

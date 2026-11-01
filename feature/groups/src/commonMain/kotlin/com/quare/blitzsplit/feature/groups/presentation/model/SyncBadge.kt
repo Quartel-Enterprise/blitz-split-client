@@ -11,15 +11,18 @@ enum class SyncBadge {
     OFFLINE,
     SYNCING,
     FAILED,
-}
+    ;
 
-// Why: Grupos' and Início's chip alike. Online, a queued change is about to go, since the coordinator syncs at once.
-internal fun syncBadgeOf(
-    syncState: SyncState,
-    isOnline: Boolean,
-): SyncBadge? = when {
-    syncState == SyncState.SYNCED -> null
-    !isOnline -> SyncBadge.OFFLINE
-    syncState == SyncState.FAILED -> SyncBadge.FAILED
-    else -> SyncBadge.SYNCING
+    companion object {
+        // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
+        fun ofOrNull(
+            syncState: SyncState,
+            isOnline: Boolean,
+        ): SyncBadge? = when {
+            syncState == SyncState.SYNCED -> null
+            !isOnline -> OFFLINE
+            syncState == SyncState.FAILED -> FAILED
+            else -> SYNCING
+        }
+    }
 }

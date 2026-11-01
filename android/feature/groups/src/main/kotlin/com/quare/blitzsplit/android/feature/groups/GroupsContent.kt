@@ -102,7 +102,12 @@ fun GroupsContent(
          * the rail already takes.
          */
         Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) GroupsNavigationRail(onEvent = onEvent)
+            if (layout.usesNavigationRail) {
+                GroupsNavigationRail(
+                    activityBadgeCount = state.activityUnreadCount,
+                    onEvent = onEvent,
+                )
+            }
             Scaffold(
                 modifier = Modifier
                     .weight(1f)
@@ -134,7 +139,12 @@ fun GroupsContent(
                     }
                 },
                 bottomBar = {
-                    if (!layout.usesNavigationRail) GroupsNavigationBar(onEvent = onEvent)
+                    if (!layout.usesNavigationRail) {
+                        GroupsNavigationBar(
+                            activityBadgeCount = state.activityUnreadCount,
+                            onEvent = onEvent,
+                        )
+                    }
                 },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentWindowInsets = if (layout.usesNavigationRail) {
