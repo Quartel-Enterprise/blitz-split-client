@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupstats
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -17,6 +18,7 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
@@ -47,6 +49,7 @@ import kotlin.time.Instant
 
 class GroupStatsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
@@ -537,6 +540,44 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN the statistics WHEN the rail opens Grupos THEN goes back to the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnRailTabClicked(HomeTab.GROUPS))
+
+        // Then
+        assertEquals(listOf<Route>(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the statistics over the groups WHEN drawn THEN the rail selects Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(HomeTab.GROUPS, state.homeTab)
+    }
+
+    @Test
+    fun `GIVEN unread activity counted WHEN another period redraws the statistics THEN the rail keeps counting it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            activityUnread.value = 3
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
+
+    @Test
     fun `GIVEN the statistics WHEN the group leaves the device THEN they close`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -778,6 +819,7 @@ class GroupStatsViewModelTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
     }
 

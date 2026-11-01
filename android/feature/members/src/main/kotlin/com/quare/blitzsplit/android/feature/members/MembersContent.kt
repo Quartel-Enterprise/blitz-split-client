@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -41,6 +42,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
+import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -50,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
@@ -65,7 +69,8 @@ private val tabletMaxWidth = 920.dp
 /*
  * Why: a phone upright keeps "Adicionar pessoa" floating over the list; lying down, and on a tablet lying down, the
  * header, the tabs, the link and the button take a column of their own next to the list. A tablet or an unfolded
- * foldable upright centers one column, with the button under the list.
+ * foldable upright centers one column, with the button under the list. Drawn alone anywhere wider than a phone upright,
+ * the home's rail stays beside it, as the canvas draws it (6.3).
  */
 @Composable
 fun MembersContent(
@@ -74,12 +79,35 @@ fun MembersContent(
     onEvent: (MembersUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    WithGroupNavigationRail(
+        selected = state.homeTab,
+        onTabClick = { tab -> onEvent(MembersUiEvent.OnRailTabClicked(tab)) },
+        activityBadgeCount = state.activityUnreadCount,
+        modifier = modifier,
+    ) { showsRail ->
+        MembersScaffold(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            showsRail = showsRail,
+        )
+    }
+}
+
+@Composable
+private fun MembersScaffold(
+    state: MembersUiState,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (MembersUiEvent) -> Unit,
+    showsRail: Boolean,
+) {
     val layout = rememberDeviceLayout()
     val usesFab = layout == DeviceLayout.PhonePortrait
     val money = rememberMoneyFormatter(state.currency)
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
         floatingActionButton = {
             if (usesFab && state.isLoaded) {
                 ExtendedFloatingActionButton(
@@ -417,6 +445,8 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
     isEveryoneSettled = false,
     recordedPayment = null,
     isLoaded = true,
+    homeTab = HomeTab.GROUPS,
+    activityUnreadCount = 0,
 )
 
 @DevicePreviews

@@ -46,17 +46,15 @@ internal fun GroupsSearchBar(
     onEvent: (GroupsUiEvent) -> Unit,
     layout: DeviceLayout,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    // Why: only for a new search; coming back from a result keeps the keyboard down over what was found.
-    LaunchedEffect(Unit) { if (search.query.isEmpty()) focusRequester.requestFocus() }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.statusBars),
         contentAlignment = Alignment.TopCenter,
     ) {
-        Column(
+        GroupsSearchHeader(
+            search = search,
+            onEvent = onEvent,
             modifier = Modifier
                 .then(if (layout.isTablet) Modifier.widthIn(max = 560.dp) else Modifier)
                 .fillMaxWidth()
@@ -66,53 +64,72 @@ internal fun GroupsSearchBar(
                     top = 16.dp,
                     bottom = 8.dp,
                 ),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        )
+    }
+}
+
+/*
+ * Why: what is typed and the scopes, under the top bar's place, or on the left of a phone lying down with the results
+ * on the right.
+ */
+@Composable
+internal fun GroupsSearchHeader(
+    search: GroupsSearch,
+    onEvent: (GroupsUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    // Why: only for a new search; coming back from a result keeps the keyboard down over what was found.
+    LaunchedEffect(Unit) { if (search.query.isEmpty()) focusRequester.requestFocus() }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
         ) {
-            Surface(
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            Row(
+                modifier = Modifier
+                    .height(56.dp)
+                    .padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier
-                        .height(56.dp)
-                        .padding(horizontal = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchClosed) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(R.string.groups_search_back),
-                        )
-                    }
-                    SearchQueryField(
-                        query = search.query,
-                        placeholder = stringResource(R.string.groups_search_placeholder),
-                        onQueryChange = { onEvent(GroupsUiEvent.OnSearchQueryChanged(it)) },
-                        onSearch = { focusManager.clearFocus() },
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester),
+                IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchClosed) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = stringResource(R.string.groups_search_back),
                     )
-                    if (search.query.isNotEmpty()) {
-                        IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchQueryChanged("")) }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Close,
-                                contentDescription = stringResource(R.string.groups_search_clear),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                }
+                SearchQueryField(
+                    query = search.query,
+                    placeholder = stringResource(R.string.groups_search_placeholder),
+                    onQueryChange = { onEvent(GroupsUiEvent.OnSearchQueryChanged(it)) },
+                    onSearch = { focusManager.clearFocus() },
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester),
+                )
+                if (search.query.isNotEmpty()) {
+                    IconButton(onClick = { onEvent(GroupsUiEvent.OnSearchQueryChanged("")) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Close,
+                            contentDescription = stringResource(R.string.groups_search_clear),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }
-            ConnectedButtonRow(
-                labels = SearchScope.entries.map { stringResource(scopeLabelOf(it)) },
-                selectedIndex = SearchScope.entries.indexOf(search.scope),
-                groupLabel = stringResource(R.string.groups_search_scopes),
-                onClick = { index -> onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.entries[index])) },
-                height = 40.dp,
-                showsCheck = false,
-            )
         }
+        ConnectedButtonRow(
+            labels = SearchScope.entries.map { stringResource(scopeLabelOf(it)) },
+            selectedIndex = SearchScope.entries.indexOf(search.scope),
+            groupLabel = stringResource(R.string.groups_search_scopes),
+            onClick = { index -> onEvent(GroupsUiEvent.OnSearchScopeChanged(SearchScope.entries[index])) },
+            height = 40.dp,
+            showsCheck = false,
+        )
     }
 }
 

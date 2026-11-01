@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -102,6 +103,8 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
         ),
         categories = createPreviewCategories(),
         isLoaded = true,
+        homeTab = HomeTab.GROUPS,
+        activityUnreadCount = 0,
     )
 }
 

@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
@@ -57,8 +58,11 @@ class GroupDetailViewModel(
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                homeTab = useCases.navigator.backStack.value
+                    .findHomeTabUnder(route),
                 joinedAs = route.joinedAs,
                 isAccountUnprotected = false,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -100,6 +104,10 @@ class GroupDetailViewModel(
         combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
             .launchIn(viewModelScope)
+        useCases
+            .observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
         if (route.joinedAs != null) {
             observeAccount()
                 .onEach { account ->
@@ -128,6 +136,8 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnMembersClicked -> screen.openTab(Route.Members(route.groupId))
 
             GroupDetailUiEvent.OnBalancesTabClicked -> screen.openTab(Route.Balances(route.groupId))
+
+            is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 

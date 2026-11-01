@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
@@ -32,8 +33,10 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCas
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -65,6 +68,7 @@ import kotlin.time.Instant
 
 class BalancesViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -771,6 +775,62 @@ class BalancesViewModelTest {
             navigator.backStack.value,
         )
     }
+
+    @Test
+    fun `GIVEN Saldos drawn alone WHEN its rail opens Saldos THEN the home Saldos takes the groups place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = BalancesUiEvent.OnRailTabClicked(HomeTab.BALANCES)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Saldos drawn alone WHEN its rail opens Inicio THEN goes back to Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val event = BalancesUiEvent.OnRailTabClicked(HomeTab.HOME)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Saldos over the groups WHEN drawn THEN its rail selects Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(HomeTab.GROUPS, state.homeTab)
+    }
+
+    @Test
+    fun `GIVEN Saldos drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            activityUnread.value = 3
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
 
     @Test
     fun `GIVEN Saldos on top WHEN tapping Membros THEN the members tab takes its place`() = runTest(testDispatcher) {
@@ -1521,6 +1581,7 @@ class BalancesViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
+                observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
