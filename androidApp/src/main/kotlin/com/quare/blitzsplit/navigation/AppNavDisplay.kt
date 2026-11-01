@@ -193,7 +193,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: it takes the new group's place, full screen at every size (decision 1), laid out per size inside.
             entry<Route.Invite> { route -> InviteScreen(route) }
             // Why: the group's tabs go in the pane beside the groups, where the window has room for it.
-            entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
+            entry<Route.GroupDetail>(metadata = ::groupTabMetadataOf) { route ->
                 InGroupPane { GroupDetailScreen(route) }
             }
             // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
@@ -225,7 +225,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 )
             }
             // Why: a tab of the group, which takes Despesas' or Membros' place, beside the groups too.
-            entry<Route.Balances>(metadata = homeDetailPaneMetadata) { route ->
+            entry<Route.Balances>(metadata = ::groupTabMetadataOf) { route ->
                 InGroupPane { BalancesScreen(route) }
             }
             entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
@@ -268,7 +268,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     presentation = contactInvitePresentation,
                 )
             }
-            entry<Route.Members>(metadata = homeDetailPaneMetadata) { route ->
+            entry<Route.Members>(metadata = ::groupTabMetadataOf) { route ->
                 InGroupPane { MembersScreen(route) }
             }
             entry<Route.JoinInvite> { route -> JoinInviteScreen(route) }

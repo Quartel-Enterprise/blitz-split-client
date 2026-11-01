@@ -19,7 +19,7 @@ import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { cn } from '@/lib/utils'
 import { toastGroupAction } from './GroupExitDialog'
-import { GroupPage } from './GroupPage'
+import { GroupPage, GroupPageLoading, useRememberGroupPage } from './GroupPage'
 
 // Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
 const rowColumns = 'grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px_150px] lg:grid-cols-[minmax(0,1fr)_160px_180px]'
@@ -41,7 +41,13 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
     presenter?.billDeletedNoticeShown()
   }, [presenter, showsBillDeletedNotice])
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  if (!presenter || !state?.isLoaded) return null
+  useRememberGroupPage(
+    route.groupId ?? '',
+    state?.isLoaded
+      ? { header: state.header, hasExpenses: !state.isEmpty, showsSplitBillButton: state.showsSplitBillButton, exit: state.exit }
+      : null,
+  )
+  if (!presenter || !state?.isLoaded) return <GroupPageLoading groupId={route.groupId ?? ''} tab="expenses" />
 
   return (
     <GroupPage

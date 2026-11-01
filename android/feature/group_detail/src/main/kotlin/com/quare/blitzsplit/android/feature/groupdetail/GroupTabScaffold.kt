@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
+import com.quare.blitzsplit.android.designsystem.layout.blocksTapsWhileLoading
+import com.quare.blitzsplit.android.designsystem.layout.groupTabContainerColorOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
@@ -77,7 +79,9 @@ internal fun GroupTabScaffold(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
+            .blocksTapsWhileLoading(frame.isLoaded)
             .nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = groupTabContainerColorOf(frame.isLoaded),
         topBar = {
             if (frame.isLoaded) {
                 GroupTopBar(

@@ -123,13 +123,23 @@ struct GroupDetailView: View {
                 }
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                GroupTabLoading(groupId: route.groupId, tab: .expenses)
             }
         }
+        .remembersGroupHeader(
+            model?.state.header,
+            isLoaded: model?.state.isLoaded == true,
+            hasExpenses: model?.state.isEmpty != true,
+            groupId: route.groupId,
+        )
         .groupScreenBars(
             tab: .expenses,
             host: .groupDetail(route),
-            header: model?.state.isLoaded == true ? model?.state.header : nil,
+            header: GroupHeaderMemory.shown(
+                model?.state.header,
+                isLoaded: model?.state.isLoaded == true,
+                groupId: route.groupId,
+            ),
             hasExpenses: model?.state.isEmpty != true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
             showsInlineTitle: showsInlineTitle,

@@ -103,13 +103,23 @@ struct BalancesView: View {
                 }
                 #endif
             } else {
-                Palette.groupedBackground.ignoresSafeArea()
+                GroupTabLoading(groupId: route.groupId, tab: .balances)
             }
         }
+        .remembersGroupHeader(
+            model?.state.header,
+            isLoaded: model?.state.isLoaded == true,
+            hasExpenses: model?.state.hasBills == true,
+            groupId: route.groupId,
+        )
         .groupScreenBars(
             tab: .balances,
             host: .balances(route),
-            header: model?.state.isLoaded == true ? model?.state.header : nil,
+            header: GroupHeaderMemory.shown(
+                model?.state.header,
+                isLoaded: model?.state.isLoaded == true,
+                groupId: route.groupId,
+            ),
             hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
             showsInlineTitle: showsInlineTitle,

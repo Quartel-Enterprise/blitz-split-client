@@ -13,6 +13,7 @@ import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
+import { noteBackStack } from '@/features/group-detail/groupHeaderMemory'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { HomeScreen } from '@/features/home/HomeScreen'
@@ -39,7 +40,12 @@ import { applyTheme } from '@/lib/theme'
 export function App() {
   const app = usePresenter(() => new AppPresenter())
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
-  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
+  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) =>
+    presenter.observeBackStack((routes) => {
+      noteBackStack(routes)
+      onChange(routes)
+    }),
+  )
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
   // The theme is the database's once the app is ready; until then the last visit's stays painted.
   useEffect(() => {

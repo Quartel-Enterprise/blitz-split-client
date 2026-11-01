@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.isGroupTabSwitch
 
 /*
  * Why: a back stack entry as React sees it, its name plus the arguments of the routes that carry them. The
@@ -69,4 +70,10 @@ class JsRoute internal constructor(
 
     // Why: the member a personal link of "join-invite" joins as, null for the group's link and every other route.
     val inviteMemberCode: String? = (route as? Route.JoinInvite)?.memberCode
+
+    // Why: whether moving from this entry to `other` only swaps a group's tab, which draws in place.
+    fun isGroupTabSwitchTo(other: JsRoute): Boolean = isGroupTabSwitch(
+        from = route,
+        to = other.route,
+    )
 }

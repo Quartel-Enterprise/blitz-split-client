@@ -56,6 +56,16 @@ final class AppModel {
             return
         }
         #endif
+        // A group's tabs take each other's place on the stack, but only what is under the picker changes: no push,
+        // and the header the tab left drew stays while the next one reads the group.
+        let isTabSwitch = backStack.last.flatMap { from in routes.last.map { from.isGroupTabSwitch(to: $0) } } ?? false
+        GroupHeaderMemory.backStackMoved(switchingTabOf: isTabSwitch ? routes.last?.tabGroupId : nil)
+        if isTabSwitch {
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) { backStack = routes }
+            return
+        }
         backStack = routes
     }
 

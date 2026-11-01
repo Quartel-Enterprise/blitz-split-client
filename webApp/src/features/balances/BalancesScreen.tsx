@@ -4,7 +4,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
-import { GroupPage } from '@/features/group-detail/GroupPage'
+import { GroupPage, GroupPageLoading, useRememberGroupPage } from '@/features/group-detail/GroupPage'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -34,7 +34,13 @@ export function BalancesScreen({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsBalancesState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  if (!presenter || !state?.isLoaded) return null
+  useRememberGroupPage(
+    route.groupId ?? '',
+    state?.isLoaded
+      ? { header: state.header, hasExpenses: state.hasBills, showsSplitBillButton: state.showsSplitBillButton, exit: state.exit }
+      : null,
+  )
+  if (!presenter || !state?.isLoaded) return <GroupPageLoading groupId={route.groupId ?? ''} tab="balances" />
 
   const { header } = state
   const formats: Formats = {

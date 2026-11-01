@@ -176,6 +176,26 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
+    /// Whether moving from this entry to `other` only swaps a group's tab, which draws in place rather than as a push.
+    func isGroupTabSwitch(to other: AppRoute) -> Bool {
+        guard let from = groupTabRoute, let to = other.groupTabRoute else { return false }
+        return GroupTabsKt.isGroupTabSwitch(from: from, to: to)
+    }
+
+    /// The group whose tab this entry is, nil for any other screen.
+    var tabGroupId: String? {
+        groupTabRoute.flatMap { GroupTabsKt.tabGroupIdOrNull(route: $0) }
+    }
+
+    private var groupTabRoute: (any Route)? {
+        switch self {
+        case let .groupDetail(route): route
+        case let .balances(route): route
+        case let .members(route): route
+        default: nil
+        }
+    }
+
     /// The invite reader's camera, which stays dark in both themes, over the whole screen of an iPhone or iPad.
     var presentsFullScreen: Bool {
         #if os(iOS)

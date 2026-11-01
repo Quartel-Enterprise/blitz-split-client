@@ -131,6 +131,7 @@ internal fun GroupTabsRow(
                 MEMBERS_TAB_INDEX -> onAction(GroupAction.MEMBERS)
             }
         },
+        showsCheck = false,
         modifier = modifier,
     )
 }

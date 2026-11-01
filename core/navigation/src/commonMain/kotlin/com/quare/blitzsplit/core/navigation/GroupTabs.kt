@@ -33,3 +33,15 @@ fun tabGroupIdOrNull(route: Route): String? = when (route) {
     is Route.Members -> route.groupId
     else -> null
 }
+
+/*
+ * Why: moving between a group's tabs only swaps what is under the tabs, so the UIs draw it in place, with no screen
+ * transition, while the group's header stays put. Opening or leaving the group still plays one.
+ */
+fun isGroupTabSwitch(
+    from: Route,
+    to: Route,
+): Boolean {
+    val groupId = tabGroupIdOrNull(from) ?: return false
+    return from != to && groupId == tabGroupIdOrNull(to)
+}

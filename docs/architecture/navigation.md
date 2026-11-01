@@ -35,6 +35,16 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Home)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
 
+The group's tabs are routes, but they draw as one screen: when the top only changes to another tab of the same group
+(`isGroupTabSwitch(from, to)`), every UI swaps the content in place, the group's header still, with no screen
+transition. Each tab's ViewModel still reads the group from Room, so until it has the header can't blink: Android's
+three entries carry `NavDisplay.transitionSpec` and `popTransitionSpec` metadata (`groupTabMetadataOf`) that skip
+NavDisplay's crossfade and keep the tab left drawn under the next one, which stays see-through until loaded
+(`groupTabContainerColorOf`); Apple sets the back stack in a transaction that disables animations and the next tab
+draws the header the one left drew (`AppModel.backStackChanged`, `GroupHeaderMemory`); the web, which never animates
+a route, draws the page the tab left drew the same way (`noteBackStack`, `GroupPageLoading`). Opening or leaving the
+group keeps its transition and its empty first frame.
+
 A flow two screens share takes the ViewModel's `Navigator` along: `ProviderSignInController` (`:core:sync`),
 created by the Welcome and Restore ViewModels, opens the next screen once a Google or Apple sign in is done.
 

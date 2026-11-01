@@ -1,6 +1,6 @@
 import { ArrowLeft, BarChart3, ChevronRight, Ellipsis, LogOut, Pencil, Pin, PinOff, Plus, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { Avatar, GroupTabs, type GroupTab } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +16,7 @@ import { t } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { GroupExitDialog, type GroupExitEvents } from './GroupExitDialog'
+import { rememberGroupPage, rememberedGroupPage, type RememberedGroupPage } from './groupHeaderMemory'
 
 /** What the group's page asks of its ViewModel, the same on Despesas and Saldos. */
 export interface GroupPageEvents extends GroupExitEvents {
@@ -29,6 +30,30 @@ export interface GroupPageEvents extends GroupExitEvents {
   deleteGroup(): void
   splitBill(): void
   settle(): void
+}
+
+// Why: the page drawn while a tab reads the group takes no clicks, its ViewModel may not even exist yet.
+const ignoredEvents = new Proxy({}, { get: () => () => {} }) as GroupPageEvents
+
+/**
+ * What Despesas and Saldos draw until they have read the group: the page the tab they replaced drew, with this tab
+ * picked and nothing under it, or nothing when they were opened any other way (`noteBackStack`).
+ */
+export function GroupPageLoading({ groupId, tab }: { groupId: string; tab: GroupTab }) {
+  const page = rememberedGroupPage(groupId)
+  if (!page) return null
+  return (
+    <GroupPage {...page} tab={tab} events={ignoredEvents} onSelectTab={() => {}}>
+      {null}
+    </GroupPage>
+  )
+}
+
+/** Keeps what this tab's page draws, once it has read the group, for the next tab of the group to draw at once. */
+export function useRememberGroupPage(groupId: string, page: RememberedGroupPage | null) {
+  useEffect(() => {
+    if (page) rememberGroupPage(groupId, page)
+  })
 }
 
 /**

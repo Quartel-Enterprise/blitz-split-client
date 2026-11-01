@@ -45,6 +45,8 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
+import com.quare.blitzsplit.android.designsystem.layout.blocksTapsWhileLoading
+import com.quare.blitzsplit.android.designsystem.layout.groupTabContainerColorOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
@@ -78,7 +80,10 @@ fun MembersContent(
     val usesFab = layout == DeviceLayout.PhonePortrait
     val money = rememberMoneyFormatter(state.currency)
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .blocksTapsWhileLoading(state.isLoaded),
+        containerColor = groupTabContainerColorOf(state.isLoaded),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (usesFab && state.isLoaded) {
@@ -275,6 +280,7 @@ private fun GroupTabsRow(
                 BALANCES_TAB_INDEX -> onEvent(MembersUiEvent.OnBalancesTabClicked)
             }
         },
+        showsCheck = false,
         modifier = modifier,
     )
 }

@@ -257,7 +257,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - A group tapped on the home opens "Despesas do grupo" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Rachar conta" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
     web). Its tabs Despesas / Saldos / Membros take each other's place (`openGroupTab`), also through Convidar, so
-    the group never stacks over itself. Convidar's "Ir para o grupo" opens it too.
+    the group never stacks over itself; switching tabs swaps only what is under them, with no screen transition
+    (`isGroupTabSwitch`), and the selected tab is only highlighted, with no check mark. Convidar's "Ir para o grupo" opens it too.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
     with Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor history yet). A phone opens it
     full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
