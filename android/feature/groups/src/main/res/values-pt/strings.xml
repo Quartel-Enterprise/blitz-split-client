@@ -14,6 +14,7 @@
     <string name="groups_tab_contacts">Contatos</string>
     <string name="groups_tab_activity">Atividade</string>
     <string name="groups_coming_soon">Em breve</string>
+    <string name="groups_change_error">Não deu para salvar a mudança. Tente de novo.</string>
     <string name="groups_new_group">Novo grupo</string>
     <string name="groups_only_you">Só você</string>
     <string name="groups_extra_members">+%d</string>

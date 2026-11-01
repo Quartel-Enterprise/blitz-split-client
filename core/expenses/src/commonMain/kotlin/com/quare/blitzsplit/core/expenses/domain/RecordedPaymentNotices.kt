@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /*
- * Why: "Pagamento de Ana registrado." with "Desfazer", which Despesas, Saldos and Membros show alike once Registrar
- * pagamento closes over them.
+ * Why: "Pagamento de Ana registrado." with "Desfazer", which Despesas, Saldos, Membros and the home show alike once
+ * Registrar pagamento closes over them.
  */
 class RecordedPaymentNotices(
     private val consumeRecordedPayment: ConsumeRecordedPayment,

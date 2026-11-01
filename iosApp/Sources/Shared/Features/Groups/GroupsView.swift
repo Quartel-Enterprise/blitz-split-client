@@ -8,6 +8,7 @@ final class GroupsModel {
     private(set) var comingSoonCount = 0
     private(set) var leaveErrorCount = 0
     private(set) var deleteErrorCount = 0
+    private(set) var changeErrorCount = 0
     private(set) var deletedGroupCount = 0
     /// "Carla deleted the group “Ana's birthday”.", kept while the toast shows.
     private(set) var deletedGroupText: LocalizedStringKey = ""
@@ -33,6 +34,7 @@ final class GroupsModel {
             case is GroupsUiActionShowComingSoon: self?.comingSoonCount += 1
             case is GroupsUiActionShowLeaveError: self?.leaveErrorCount += 1
             case is GroupsUiActionShowDeleteError: self?.deleteErrorCount += 1
+            case is GroupsUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
         })
@@ -130,7 +132,11 @@ struct MainTabView: View {
         .tabViewStyle(.sidebarAdaptable)
         .glassToast(
             [GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount)]
-                + GroupExitCopy.errorToasts(leave: model.leaveErrorCount, delete: model.deleteErrorCount, change: 0),
+                + GroupExitCopy.errorToasts(
+                    leave: model.leaveErrorCount,
+                    delete: model.deleteErrorCount,
+                    change: model.changeErrorCount,
+                ),
         )
         // Its own toast, for its longer duration; the two seldom show at once
         .glassToast(
@@ -202,6 +208,12 @@ struct GroupsView: View {
             currency: state.exitGroup?.currency,
             onConfirm: { model.send(GroupsUiEventOnGroupExitConfirmed.shared) },
             onDismiss: { model.send(GroupsUiEventOnGroupExitDismissed.shared) },
+        )
+        // Registrar pagamento, which a row's Settle up opened over the home, just closed
+        .recordedPaymentNotice(
+            state.recordedPayment,
+            onUndo: { model.send(GroupsUiEventOnUndoPaymentClicked.shared) },
+            onShown: { model.send(GroupsUiEventOnRecordedPaymentNoticeShown.shared) },
         )
         .navigationTitle("Groups")
         // Why: on iPhone and iPad the selected Groups tab already names the screen, so the bar shows no title. The

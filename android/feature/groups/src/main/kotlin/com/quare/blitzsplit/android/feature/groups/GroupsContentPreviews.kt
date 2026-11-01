@@ -39,6 +39,7 @@ private fun GroupsOfflinePreview() {
                 deletedGroupNotice = null,
                 exit = GroupExitState.idle,
                 exitGroupId = null,
+                recordedPayment = null,
             ),
             onEvent = {},
         )
@@ -105,6 +106,7 @@ private fun GroupsListPreview() {
                 deletedGroupNotice = null,
                 exit = GroupExitState.idle,
                 exitGroupId = null,
+                recordedPayment = null,
             ),
             onEvent = {},
         )

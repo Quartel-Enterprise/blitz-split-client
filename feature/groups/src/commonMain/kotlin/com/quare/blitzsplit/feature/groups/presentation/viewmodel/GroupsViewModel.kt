@@ -3,11 +3,16 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
+import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
@@ -48,6 +53,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -62,6 +70,9 @@ class GroupsViewModel(
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     leaveGroup: LeaveGroup,
     deleteGroup: DeleteGroup,
+    observeRecordedPayment: ObserveRecordedPayment,
+    consumeRecordedPayment: ConsumeRecordedPayment,
+    deleteSettlement: DeleteSettlement,
     currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
     minuteTicks: MinuteTicks,
@@ -93,6 +104,7 @@ class GroupsViewModel(
                 deletedGroupNotice = null,
                 exit = GroupExitState.idle,
                 exitGroupId = null,
+                recordedPayment = null,
             ),
         )
 
@@ -107,6 +119,8 @@ class GroupsViewModel(
 
     // Why: what the dialogs of "Sair do grupo" and "Apagar grupo" read of the group asked for, as Room has it now.
     private var groupsWithMoney = emptyList<GroupWithMoney>()
+
+    private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
     // Why: leaving or deleting from a row stays on the home, which the group just leaves.
     private val exit = GroupExitController(
@@ -201,6 +215,20 @@ class GroupsViewModel(
         exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
+        // Why: only the group a row's "Acertar" was about can owe the home a notice; a group's own screens show theirs.
+        notices.watch(
+            scope = viewModelScope,
+            recorded = uiState
+                .map { it.exitGroupId }
+                .distinctUntilChanged()
+                .flatMapLatest { groupId -> groupId?.let(observeRecordedPayment::invoke) ?: flowOf(null) },
+            backStack = navigator.backStack,
+            isLoaded = uiState.map { it.hasLoadedGroups },
+            isOnTop = ::isOnTop,
+            meId = { exitGroupOrNull()?.members?.firstOrNull { it.isMe }?.id },
+            nameOf = { id -> exitGroupOrNull()?.members?.firstOrNull { it.id == id }?.name },
+            show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+        )
         // Why: only while the home is on top; a deleted group still open shows its own "Grupo apagado".
         combine(observeGroupDeletions(), navigator.backStack, ::Pair)
             .onEach { (deletions, _) ->
@@ -243,6 +271,10 @@ class GroupsViewModel(
                 uiState.update { it.copy(deletedGroupNotice = null) }
                 showNextDeletion()
             }
+
+            GroupsUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
+
+            GroupsUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
 
             GroupsUiEvent.OnRefresh -> refresh()
 
@@ -303,6 +335,16 @@ class GroupsViewModel(
         exit.update(exitTargetOrNull(groupId))
         exit.ask()
     }
+
+    private fun undoRecordedPayment() {
+        val notice = uiState.value.recordedPayment ?: return
+        uiState.update { it.copy(recordedPayment = null) }
+        notices.delete(viewModelScope, notice.settlementId) { uiAction.emit(GroupsUiAction.ShowChangeError) }
+    }
+
+    private fun exitGroupOrNull(): Group? = groupsWithMoney
+        .firstOrNull { it.group.id == uiState.value.exitGroupId }
+        ?.group
 
     private fun exitTargetOrNull(groupId: String?): GroupExitTarget? {
         val item = groupsWithMoney.firstOrNull { it.group.id == groupId } ?: return null

@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, BrandMark } from '@/components/common'
 import { Button } from '@/components/ui/button'
+import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
@@ -57,6 +58,8 @@ export function GroupsScreen() {
     )
     presenter?.deletedGroupNoticeShown()
   }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
+  // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
+  useRecordedPaymentNotice(presenter, state?.recordedPayment)
   if (!presenter || !state) return null
 
   const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
