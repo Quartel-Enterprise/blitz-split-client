@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -19,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -37,7 +43,10 @@ internal fun BillFieldsSection(
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    GroupChip(state)
+    GroupChip(
+        state = state,
+        onEvent = onEvent,
+    )
     AmountField(
         state = state,
         money = money,
@@ -63,19 +72,30 @@ internal fun BillFieldsSection(
     )
 }
 
-// Why: the group of the bill, which this screen can't change yet.
+// Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group.
 @Composable
-private fun GroupChip(state: SplitBillUiState) {
+private fun GroupChip(
+    state: SplitBillUiState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
     Surface(
+        onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
+        enabled = state.canChangeGroup,
+        modifier = Modifier.semantics {
+            if (state.canChangeGroup) contentDescription = changeLabel
+        },
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        // Why: a group that can't change reads as plain, not as a disabled control.
+        contentColor = MaterialTheme.colorScheme.onSurface,
     ) {
         Row(
             modifier = Modifier
                 .height(40.dp)
                 .padding(
                     start = 4.dp,
-                    end = 14.dp,
+                    end = if (state.canChangeGroup) 10.dp else 14.dp,
                 ),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -92,6 +112,13 @@ private fun GroupChip(state: SplitBillUiState) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (state.canChangeGroup) {
+                Icon(
+                    imageVector = Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
         }
     }
 }

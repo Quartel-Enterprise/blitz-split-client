@@ -5,7 +5,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -19,6 +21,7 @@ private const val PREVIEW_ME_ID = "pv"
 private const val PREVIEW_ANA_ID = "an"
 private const val PREVIEW_DIEGO_ID = "di"
 private const val PREVIEW_BRUNO_ID = "br"
+private const val PREVIEW_TRIP_ID = "vf"
 private val previewPeople: List<BillPerson> = listOf(
     BillPerson(
         PREVIEW_ME_ID,
@@ -69,6 +72,12 @@ private val previewPeople: List<BillPerson> = listOf(
         hasJoined = false,
     ),
 )
+private val previewGroups = listOf(
+    BillGroup(PREVIEW_TRIP_ID, "Viagem Floripa", "VF", AvatarColor.PEACH, memberCount = 6),
+    BillGroup("preview-home", "Apê 302", "AP", AvatarColor.BLUE, memberCount = 2),
+    BillGroup("preview-soccer", "Futebol de quinta", "FQ", AvatarColor.GREEN, memberCount = 10),
+    BillGroup("preview-barbecue", "Churrasco de sábado", "CS", AvatarColor.SAND, memberCount = 8),
+)
 
 internal fun createPreviewBillState(
     amountText: String = "312,00",
@@ -77,11 +86,15 @@ internal fun createPreviewBillState(
     splitEditor: SplitEditor? = null,
     isEditing: Boolean = false,
     conflict: BillConflict? = null,
+    groupSelection: GroupSelection? = null,
 ): SplitBillUiState = SplitBillUiState(
     isEditing = isEditing,
+    groupId = PREVIEW_TRIP_ID,
     groupName = "Viagem Floripa",
     groupInitials = "VF",
     groupColor = AvatarColor.PEACH,
+    groups = previewGroups,
+    groupSelection = groupSelection,
     currency = GroupCurrency.BRL,
     people = previewPeople,
     amountText = amountText,

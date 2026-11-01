@@ -127,4 +127,12 @@
     <string name="split_bill_payers_add_up">%1$s of %2$s. Adds up.</string>
     <string name="split_bill_payer_amount">How much %s paid</string>
     <string name="split_bill_row_paid_part">Paid part of the bill</string>
+    <string name="split_bill_group_title">Split in which group?</string>
+    <string name="split_bill_group_lead">The one you used last comes marked</string>
+    <string name="split_bill_group_continue">Continue</string>
+    <string name="split_bill_group_change">Group: %s. Change</string>
+    <plurals name="split_bill_group_people">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
 </resources>
