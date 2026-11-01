@@ -14,6 +14,11 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
         val personId: String,
     ) : GlobalBalancesUiEvent
 
+    // Why: a row picked in a list and detail, whose person the pane beside the list then shows.
+    data class OnPersonSelected(
+        val personId: String,
+    ) : GlobalBalancesUiEvent
+
     // Why: "Acertar", someone you owe.
     data class OnSettleClicked(
         val personId: String,

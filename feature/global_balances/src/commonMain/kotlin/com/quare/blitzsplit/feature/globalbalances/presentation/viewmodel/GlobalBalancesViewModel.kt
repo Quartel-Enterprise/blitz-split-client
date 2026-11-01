@@ -73,6 +73,7 @@ class GlobalBalancesViewModel(
                 isOnline = true,
                 isLoaded = false,
                 recordedPayment = null,
+                pickedPersonId = null,
             ),
         )
 
@@ -142,6 +143,11 @@ class GlobalBalancesViewModel(
             is GlobalBalancesUiEvent.OnFilterChanged -> changeFilter(event.filter)
 
             is GlobalBalancesUiEvent.OnPersonExpandToggled -> toggle(event.personId)
+
+            // Why: only someone listed, so a stale tap never picks a person a sync just settled.
+            is GlobalBalancesUiEvent.OnPersonSelected -> if (personOrNull(event.personId) != null) {
+                uiState.update { it.copy(pickedPersonId = event.personId) }
+            }
 
             is GlobalBalancesUiEvent.OnSettleClicked -> openSettleUp(event.personId, owesYou = false)
 

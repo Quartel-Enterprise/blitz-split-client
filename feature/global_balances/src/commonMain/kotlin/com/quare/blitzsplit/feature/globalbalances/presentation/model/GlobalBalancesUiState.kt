@@ -31,6 +31,11 @@ data class GlobalBalancesUiState(
     val isLoaded: Boolean,
     // Why: "Pagamento de Carla registrado." with "Desfazer", once settling up with her closed over Saldos.
     val recordedPayment: PaymentNotice?,
+    /*
+     * Why: the person a list and detail (an Android tablet lying down, an iPad lying down, the web's desktop, the Mac's
+     * inspector) shows beside the list, as last picked; null until someone is picked.
+     */
+    val pickedPersonId: String?,
 ) {
     // Why: once per state, since the JS presenter and each SwiftUI body pass read it many times.
     val sections: List<PeopleSection> by lazy {
@@ -38,6 +43,15 @@ data class GlobalBalancesUiState(
             sectionOf(isYouOwe = true).takeIf { filter != BalancesFilter.OWES_YOU },
             sectionOf(isYouOwe = false).takeIf { filter != BalancesFilter.YOU_OWE },
         ).filter { it.rows.isNotEmpty() }
+    }
+
+    /*
+     * Why: who the pane beside the list shows: the one picked while the filter still lists them, else the filter's first
+     * person, so the pane is never empty while there is someone. A phone draws "Por grupo" in the row instead.
+     */
+    val selectedPerson: PersonRow? by lazy {
+        val rows = sections.flatMap { it.rows }
+        rows.firstOrNull { it.id == pickedPersonId } ?: rows.firstOrNull()
     }
 
     val emptyState: BalancesEmptyState? by lazy {

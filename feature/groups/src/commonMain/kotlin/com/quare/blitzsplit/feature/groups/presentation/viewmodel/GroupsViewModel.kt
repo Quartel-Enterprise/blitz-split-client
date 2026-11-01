@@ -30,6 +30,8 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
+import com.quare.blitzsplit.core.navigation.openBesideGroups
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -122,6 +124,7 @@ class GroupsViewModel(
                 layout = GroupsLayout.initial,
                 recordedPayment = null,
                 search = GroupsSearch.closed,
+                selectedGroupId = null,
             ),
         )
 
@@ -146,6 +149,9 @@ class GroupsViewModel(
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
+    // Why: the group drawn beside the list (list and detail), as the UI's window decides; a phone never does.
+    private val detailPane = GroupsDetailPane(navigator)
+
     // Why: leaving or deleting from a row stays on the home, which the group just leaves.
     private val exit = GroupExitController(
         leaveGroup = leaveGroup,
@@ -160,8 +166,14 @@ class GroupsViewModel(
                 ),
             )
         },
-        openBalances = { groupId -> open(Route.Balances(groupId)) },
-        onExited = {},
+        // Why: a group's Saldos is a tab of the group, which takes the place of the group beside the list.
+        openBalances = { groupId -> if (isListShown()) navigator.openBesideGroups(Route.Balances(groupId)) },
+        // Why: the group left the device, so the pane beside the list no longer shows it.
+        onExited = {
+            if (navigator.backStack.value.groupBesideGroupsOrNull() == uiState.value.exitGroupId) {
+                navigator.popToGroups()
+            }
+        },
         showError = { isDelete ->
             uiAction.emit(if (isDelete) GroupsUiAction.ShowDeleteError else GroupsUiAction.ShowLeaveError)
         },
@@ -259,7 +271,8 @@ class GroupsViewModel(
                 .flatMapLatest { groupId -> groupId?.let(observeRecordedPayment::invoke) ?: flowOf(null) },
             backStack = navigator.backStack,
             isLoaded = uiState.map { it.hasLoadedGroups },
-            isOnTop = ::isOnTop,
+            // Why: the group beside the list shows its own notice, so the home leaves that group's to it.
+            isOnTop = { isListShown() && paneGroupIdOrNull() != uiState.value.exitGroupId },
             meId = { exitGroupOrNull()?.members?.firstOrNull { it.isMe }?.id },
             nameOf = { id -> exitGroupOrNull()?.members?.firstOrNull { it.id == id }?.name },
             show = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
@@ -270,6 +283,11 @@ class GroupsViewModel(
                 pendingDeletions = deletions
                 showNextDeletion()
             }.launchIn(viewModelScope)
+        navigator.backStack
+            .map { stack -> stack.groupBesideGroupsOrNull() }
+            .distinctUntilChanged()
+            .onEach { groupId -> uiState.update { it.copy(selectedGroupId = groupId) } }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: GroupsUiEvent) {
@@ -278,12 +296,19 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnProfileClicked -> navigator.navigate(Route.Profile)
 
+            is GroupsUiEvent.OnDetailPaneChanged -> detailPane.change(event.isShown, uiState.value.search)
+
             GroupsUiEvent.OnCreateGroupClicked -> navigator.navigate(Route.CreateGroup)
 
-            // Why: only from the groups on top, so a quick tap on a second row doesn't push its group over the first's.
-            is GroupsUiEvent.OnGroupClicked -> if (isOnTop()) navigator.navigate(Route.GroupDetail(event.groupId))
+            /*
+             * Why: only while the list shows, so a quick tap on a second row of a phone doesn't push its group over the
+             * first's; beside the list, the group tapped takes the place of the one shown.
+             */
+            is GroupsUiEvent.OnGroupClicked -> if (isListShown()) {
+                navigator.openBesideGroups(Route.GroupDetail(event.groupId))
+            }
 
-            GroupsUiEvent.OnJoinWithLinkClicked -> if (isOnTop()) {
+            GroupsUiEvent.OnJoinWithLinkClicked -> if (isListShown()) {
                 navigator.navigate(
                     Route.JoinWithLink(
                         skippedCode = null,
@@ -316,7 +341,7 @@ class GroupsViewModel(
             GroupsUiEvent.OnSplitBillClicked -> openSplitBill()
 
             // Why: only from the groups on top, so a late tap never closes a screen over them, a half-typed bill's.
-            GroupsUiEvent.OnToReceiveClicked -> if (isOnTop() && uiState.value.summary.canOpenToReceive) {
+            GroupsUiEvent.OnToReceiveClicked -> if (isListShown() && uiState.value.summary.canOpenToReceive) {
                 openBalancesTab(BalancesFilter.OWES_YOU)
             }
 
@@ -330,17 +355,29 @@ class GroupsViewModel(
 
             is GroupsUiEvent.OnGridSizeChanged -> changeGridSize(event.size)
 
-            GroupsUiEvent.OnSearchOpened -> openSearch()
+            GroupsUiEvent.OnSearchOpened -> {
+                openSearch()
+                detailPane.preview(uiState.value.search)
+            }
 
             GroupsUiEvent.OnSearchClosed -> closeSearch()
 
             GroupsUiEvent.OnSearchTabLeft -> leaveSearchTab()
 
-            is GroupsUiEvent.OnSearchQueryChanged -> search { it.copy(query = event.query) }
+            is GroupsUiEvent.OnSearchQueryChanged -> {
+                search { it.copy(query = event.query) }
+                detailPane.preview(uiState.value.search)
+            }
 
-            is GroupsUiEvent.OnSearchScopeChanged -> search { it.copy(scope = event.scope) }
+            is GroupsUiEvent.OnSearchScopeChanged -> {
+                search { it.copy(scope = event.scope) }
+                detailPane.preview(uiState.value.search)
+            }
 
-            is GroupsUiEvent.OnSearchPersonClicked -> open(Route.Members(event.groupId, joinedAs = null))
+            // Why: Membros is a tab of the group, which takes the place of the group beside the list.
+            is GroupsUiEvent.OnSearchPersonClicked -> if (isListShown()) {
+                navigator.openBesideGroups(Route.Members(event.groupId, joinedAs = null))
+            }
 
             is GroupsUiEvent.OnSearchBillClicked -> openBill(event.groupId, event.expenseId)
 
@@ -359,12 +396,13 @@ class GroupsViewModel(
      * on the web or iOS's search tab over a pushed screen doesn't open a search whose close would pop that screen.
      */
     private fun openSearch() {
-        if (!uiState.value.canSearch || !isOnTop()) return
+        if (!uiState.value.canSearch || !isListShown()) return
         uiState.update { it.copy(search = searchedOf(it.search.copy(isOpen = true), it.groups)) }
     }
 
     // Why: closing forgets what was typed.
     private fun closeSearch() {
+        detailPane.forgetPreview()
         uiState.update { it.copy(search = GroupsSearch.closed) }
     }
 
@@ -392,13 +430,13 @@ class GroupsViewModel(
         ),
     )
 
-    // Why: as a group's Despesas opens it, over the group.
+    // Why: as a group's Despesas opens it, over the group, which takes the place of the group beside the list.
     private fun openBill(
         groupId: String,
         expenseId: String,
     ) {
-        if (!isOnTop()) return
-        navigator.navigate(Route.GroupDetail(groupId))
+        if (!isListShown()) return
+        navigator.openBesideGroups(Route.GroupDetail(groupId))
         navigator.navigate(Route.BillDetail(groupId, expenseId))
     }
 
@@ -437,7 +475,7 @@ class GroupsViewModel(
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
     private fun openToPay() {
-        if (!isOnTop()) return
+        if (!isListShown()) return
         openBalancesTab(BalancesFilter.YOU_OWE)
         val person = peopleBalances.people.singleOrNull { it.netMinor < 0 } ?: return
         navigator.navigate(
@@ -454,12 +492,14 @@ class GroupsViewModel(
 
     /*
      * Why: with no group yet "Rachar conta" makes one first, as the empty home does. Otherwise it asks which group
-     * (7.1i), the most recently used one marked: the first row, since the rows go by their last activity.
+     * (7.1i), the group beside the list marked, else the most recently used one: the first row, since the rows go by
+     * their last activity.
      */
     private fun openSplitBill() {
         // Why: before Room answers, no group yet doesn't mean there is none.
-        if (!isOnTop() || !uiState.value.hasLoadedGroups) return
-        val recent = uiState.value.groups.firstOrNull()
+        if (!isListShown() || !uiState.value.hasLoadedGroups) return
+        val groups = uiState.value.groups
+        val recent = groups.firstOrNull { it.id == paneGroupIdOrNull() } ?: groups.firstOrNull()
         if (recent == null) {
             navigator.navigate(Route.CreateGroup)
         } else {
@@ -485,11 +525,13 @@ class GroupsViewModel(
         }
     }
 
-    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.Groups
+    private fun isListShown(): Boolean = detailPane.isListShown
 
-    // Why: only from the groups on top, as a row's tap.
+    private fun paneGroupIdOrNull(): String? = detailPane.groupIdOrNull
+
+    // Why: only while the list shows, as a row's tap; it opens over the group beside the list too.
     private fun open(route: Route) {
-        if (isOnTop()) navigator.navigate(route)
+        if (isListShown()) navigator.navigate(route)
     }
 
     // Why: a request in flight keeps its group; offline the menu shows both disabled, so the controller does nothing.
@@ -497,7 +539,7 @@ class GroupsViewModel(
         groupId: String,
         ask: GroupExitController.() -> Unit,
     ) {
-        if (!uiState.value.exit.canLeaveOrDelete || !isOnTop()) return
+        if (!uiState.value.exit.canLeaveOrDelete || !isListShown()) return
         uiState.update { it.copy(exitGroupId = groupId) }
         exit.update(exitTargetOrNull(groupId))
         exit.ask()
@@ -522,11 +564,13 @@ class GroupsViewModel(
         )
     }
 
+    // Why: the group beside the list says "Grupo apagado" itself, so the home leaves its deletion to it.
     private fun showNextDeletion() {
-        val deletion = pendingDeletions.firstOrNull() ?: return
-        if (!isOnTop() || uiState.value.deletedGroupNotice != null) return
+        val paneGroupId = paneGroupIdOrNull()
+        val deletion = pendingDeletions.firstOrNull { it.groupId != paneGroupId } ?: return
+        if (!isListShown() || uiState.value.deletedGroupNotice != null) return
         consumeGroupDeletion(deletion.groupId)
-        pendingDeletions = pendingDeletions.drop(1)
+        pendingDeletions = pendingDeletions - deletion
         uiState.update {
             it.copy(
                 deletedGroupNotice = DeletedGroupNotice(
