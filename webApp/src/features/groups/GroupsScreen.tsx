@@ -1,4 +1,4 @@
-import { Plus, ReceiptText, UserRound, Users, Wallet } from 'lucide-react'
+import { Plus, ReceiptText, Search, UserRound, Users, Wallet } from 'lucide-react'
 import { GroupsPresenter, type JsGroupsState } from 'blitzsplit-shared'
 import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { GroupsPage, SyncStatus } from '@/features/groups/GroupsPage'
+import { GroupsSearchDialog, searchShortcut } from '@/features/groups/GroupsSearchDialog'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import type { AccountProvider } from '@/lib/platform'
@@ -60,6 +61,19 @@ export function GroupsScreen() {
   }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
   // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
+  // Why: ⌘K (Ctrl+K off Apple devices) opens "Buscar" from anywhere on the home, once there is a group to look in.
+  const canSearch = state?.canSearch ?? false
+  useEffect(() => {
+    if (!presenter || !canSearch) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        presenter.openSearch()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [presenter, canSearch])
   if (!presenter || !state) return null
 
   const account = accountLabels[state.accountProvider as AccountProvider] ?? 'groups_noAccount'
@@ -68,7 +82,19 @@ export function GroupsScreen() {
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
         <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
         <BrandMark className="hidden h-10 px-1.5 lg:flex" />
-        <nav aria-label={t('groups_mainNavigation')} className="mt-4 flex flex-col gap-0.5">
+        {state.canSearch && (
+          <button
+            aria-label={t('groups_search')}
+            aria-keyshortcuts={searchShortcut === '⌘K' ? 'Meta+K' : 'Control+K'}
+            onClick={() => presenter.openSearch()}
+            className="mt-3 flex h-9 items-center justify-center gap-2 rounded-md border bg-card text-sm text-muted-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start lg:px-2.5"
+          >
+            <Search aria-hidden className="size-4 shrink-0" />
+            <span className="hidden flex-1 text-left lg:inline">{t('groups_searchButton')}</span>
+            <kbd className="hidden h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] lg:flex">{searchShortcut}</kbd>
+          </button>
+        )}
+        <nav aria-label={t('groups_mainNavigation')} className="mt-3 flex flex-col gap-0.5">
           {tabs.map((tab, index) => (
             <button
               key={tab.label}
@@ -103,6 +129,15 @@ export function GroupsScreen() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 items-center gap-2.5 border-b px-4 md:hidden">
           <BrandMark className="mr-auto" />
+          {state.canSearch && (
+            <button
+              aria-label={t('groups_search')}
+              onClick={() => presenter.openSearch()}
+              className="flex size-10 items-center justify-center rounded-md outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              <Search aria-hidden className="size-[18px]" />
+            </button>
+          )}
           <button aria-label={t('groups_profile')} onClick={() => presenter.openProfile()} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
             <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-9 text-sm" />
           </button>
@@ -154,6 +189,7 @@ export function GroupsScreen() {
         </nav>
       </div>
 
+      {state.isSearching && <GroupsSearchDialog presenter={presenter} state={state} />}
       {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     </div>
   )

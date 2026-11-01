@@ -11,6 +11,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
@@ -118,6 +119,10 @@ class JsGroupsState(
     val canPickGridSize: Boolean,
     // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento opened by a row's Acertar closes.
     val recordedPayment: JsPaymentNotice?,
+    // Why: "Buscar…" and ⌘K only once there is a group; the dialog shows while isSearching.
+    val canSearch: Boolean,
+    val isSearching: Boolean,
+    val search: JsGroupsSearch,
 )
 
 class GroupsPresenter {
@@ -157,6 +162,9 @@ class GroupsPresenter {
                 showsGrid = state.showsGrid,
                 canPickGridSize = state.canPickGridSize,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
+                canSearch = state.canSearch,
+                isSearching = state.isSearching,
+                search = toJsGroupsSearch(state.search),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -275,12 +283,46 @@ class GroupsPresenter {
         viewModel.onEvent(GroupsUiEvent.OnDeletedGroupNoticeShown)
     }
 
+    // Why: "Buscar…" in the sidebar, the phone's magnifier, or ⌘K / Ctrl+K.
+    fun openSearch() {
+        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+    }
+
+    // Why: Esc, a click outside, or a result picked.
+    fun closeSearch() {
+        viewModel.onEvent(GroupsUiEvent.OnSearchClosed)
+    }
+
+    fun search(query: String) {
+        viewModel.onEvent(GroupsUiEvent.OnSearchQueryChanged(query))
+    }
+
+    // Why: by SearchScope's name; a name this version doesn't know does nothing.
+    fun searchIn(scope: String) {
+        SearchScope.entries.firstOrNull { it.name == scope }?.let {
+            viewModel.onEvent(
+                GroupsUiEvent.OnSearchScopeChanged(it),
+            )
+        }
+    }
+
+    fun openSearchedPerson(groupId: String) {
+        viewModel.onEvent(GroupsUiEvent.OnSearchPersonClicked(groupId))
+    }
+
+    fun openSearchedBill(
+        groupId: String,
+        expenseId: String,
+    ) {
+        viewModel.onEvent(GroupsUiEvent.OnSearchBillClicked(groupId, expenseId))
+    }
+
     fun dispose() {
         holder.clear()
     }
 }
 
-private fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
+internal fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
     id = row.id,
     name = row.name,
     initials = row.initials,
