@@ -1,6 +1,7 @@
+import SwiftUI
+
 #if os(iOS)
 import Shared
-import SwiftUI
 
 /// The home's list on iPhone and iPad: the sync status while it asks for attention, "Overall balance", the open
 /// groups by their latest activity, as rows or as the grid's cards, and, collapsed, the settled ones, always rows.

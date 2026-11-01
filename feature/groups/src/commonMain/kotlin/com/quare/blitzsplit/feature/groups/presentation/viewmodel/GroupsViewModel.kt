@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -26,11 +27,11 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupGridSize
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
-import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupBesideGroupsOrNull
+import com.quare.blitzsplit.core.navigation.openActivityTab
 import com.quare.blitzsplit.core.navigation.openBesideGroups
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -100,6 +101,7 @@ class GroupsViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     observeGroupsLayout: ObserveGroupsLayout,
     observePeopleBalances: ObservePeopleBalances,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<GroupsUiState>
         field = MutableStateFlow(
@@ -125,6 +127,7 @@ class GroupsViewModel(
                 recordedPayment = null,
                 search = GroupsSearch.closed,
                 selectedGroupId = null,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -196,7 +199,7 @@ class GroupsViewModel(
                     avatarColor = profile?.avatarColor ?: AvatarColor.default,
                     photoUrl = profile?.photo?.toImageUrl(),
                     accountProvider = (account.status as? AccountStatus.Connected)?.provider,
-                    syncBadge = syncBadgeOf(
+                    syncBadge = SyncBadge.ofOrNull(
                         syncState = syncState,
                         isOnline = isOnline,
                     ),
@@ -258,6 +261,9 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         observeGroupsLayout()
             .onEach { layout -> uiState.update { it.copy(layout = layout) } }
+            .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
         observePeopleBalances()
             .onEach { people -> peopleBalances = people }
@@ -389,9 +395,9 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
-            GroupsUiEvent.OnContactsTabClicked,
-            GroupsUiEvent.OnActivityTabClicked,
-            -> showComingSoon()
+            GroupsUiEvent.OnActivityTabClicked -> openActivityTab()
+
+            GroupsUiEvent.OnContactsTabClicked -> showComingSoon()
         }
     }
 
@@ -475,6 +481,11 @@ class GroupsViewModel(
         closeSearch()
         navigator.popToGroups()
         navigator.navigate(Route.GlobalBalances(filter))
+    }
+
+    private fun openActivityTab() {
+        closeSearch()
+        navigator.openActivityTab(personKey = null)
     }
 
     // Why: "A pagar" with a single person to pay goes straight to settling up with them (4.5), over Você deve.
@@ -584,16 +595,5 @@ class GroupsViewModel(
                 ),
             )
         }
-    }
-
-    // Why: online, a queued change is about to go, since the coordinator syncs as soon as one is queued.
-    private fun syncBadgeOf(
-        syncState: SyncState,
-        isOnline: Boolean,
-    ): SyncBadge? = when {
-        syncState == SyncState.SYNCED -> null
-        !isOnline -> SyncBadge.OFFLINE
-        syncState == SyncState.FAILED -> SyncBadge.FAILED
-        else -> SyncBadge.SYNCING
     }
 }

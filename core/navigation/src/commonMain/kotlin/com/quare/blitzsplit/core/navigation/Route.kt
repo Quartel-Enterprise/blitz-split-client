@@ -102,6 +102,14 @@ sealed interface Route {
     ) : Route
 
     /*
+     * Why: the home's "Atividade" tab (page 12), the feed and notification center of every group, over the groups like
+     * Saldos. personKey (PeopleBalances.keyOf) opens it on one person, from a contact's history, as a removable chip.
+     */
+    data class Activity(
+        val personKey: String?,
+    ) : Route
+
+    /*
      * Why: "Acertar" or "Recebi" of someone in the global Saldos: Registrar pagamento for the whole net with them in
      * that currency, one payment in each group so each group closes right. personKey is PersonBalance.key.
      */

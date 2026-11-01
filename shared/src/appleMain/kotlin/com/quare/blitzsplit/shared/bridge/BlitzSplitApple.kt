@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
@@ -114,6 +115,10 @@ object BlitzSplitApple : KoinComponent {
 
     fun createGlobalBalancesViewModel(route: Route.GlobalBalances): ViewModelHolder<GlobalBalancesViewModel> =
         ViewModelHolder(GlobalBalancesViewModel::class) { get { parametersOf(route) } }
+
+    // Why: the home's Atividade tab, on one person when a contact's history opens it.
+    fun createActivityViewModel(route: Route.Activity): ViewModelHolder<ActivityViewModel> =
+        ViewModelHolder(ActivityViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
         ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }

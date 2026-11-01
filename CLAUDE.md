@@ -50,8 +50,25 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     iPad); Google comes first on Android and in any other browser.
   - Every UI is in English and Portuguese, English for any other language. The brand badge shows the currency
     symbol of the device's region, `$` when there is none.
-  - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); the two not built yet
-    (Contatos, Atividade) answer "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - The home shows the four tabs of the design (Grupos, Saldos, Contatos, Atividade); Contatos, not built yet,
+    answers "Em breve" (`GroupsUiAction.ShowComingSoon`).
+  - "Atividade" (page 12, `Route.Activity` over the groups like Saldos, `ActivityViewModel`) is every group's feed and
+    the notification center: who split, edited or deleted a bill, recorded or undid a payment, created, edited or
+    deleted a group, changed its invite link, added, joined, left, was removed, released or renamed in it, and the
+    charges sent from Saldos, by day (Hoje, Ontem, the date), the most recent first. The server writes the events
+    (`activity_events`, by triggers); each keeps the names it had, so it still reads once its bill, group or person is
+    gone. Unread is someone else's event never opened and after the last "Marcar tudo como lido": a blue dot and bold
+    names, counted on the tab's badge in the primary color (`activityUnreadCount`), whatever the filters. Your own
+    events are born read, opening the tab marks nothing, tapping an item marks only it. A tap opens what it is about
+    (the bill's Conta over its Despesas, the group, its Membros, its Saldos for a charge); a deleted bill or group
+    keeps its row with the trash and says who deleted it and when instead. A bill's edit shows its first change,
+    "mais 2 mudanças" and "Ver mudanças". "Filtrar atividade": one group or all, and the types (Contas, Pagamentos e
+    acertos, Comentários, Pessoas e grupos, Cobranças), as removable chips with "Limpar"; a contact's history opens it
+    on that person (`Route.Activity.personKey`), a chip too. Offline it shows the device's last 90 days, the changes
+    not up yet on top of Hoje as "Aguardando envio", and says older ones load when the internet is back; a device that
+    never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
+    web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
+    other events). No push notifications nor comments yet: Comentários is a filter nothing fills.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of

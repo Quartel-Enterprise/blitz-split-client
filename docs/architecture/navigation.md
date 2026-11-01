@@ -136,8 +136,10 @@ fills (features never see each other), SwiftUI with `.sheet(isPresented:)` in `M
 launch.
 
 Saldos, the home's second tab, is a route over the groups (`Route.GlobalBalances`): the Grupos tab
-(`Navigator.popToGroups`, which also closes whatever either tab opened) and back return to them, and on Apple the `TabView` selects Balances while it is right above the groups. Contatos and Atividade are
-drawn on every platform but not built yet: their events emit `ShowComingSoon` and the selection stays where it was.
+(`Navigator.popToGroups`, which also closes whatever either tab opened) and back return to them, and on Apple the `TabView` selects Balances while it is right above the groups. Atividade is the same kind of route
+(`Route.Activity`, opened by `Navigator.openActivityTab`, which takes the place of whatever the groups opened).
+Contatos is drawn on every platform but not built yet: its event emits `ShowComingSoon` and the selection stays where
+it was.
 
 ### List and detail on wide windows
 
@@ -182,6 +184,11 @@ the first row), which every UI draws as it comes, the web's presenter handing ov
 pane where its window has room (Android's `rememberListDetailLayout`, the iPad lying down, a Mac window from 700 pt
 for the inspector column, the web from 1024 px), and the rows inline everywhere else. No route, so nothing changes
 on the back stack, and nothing to tell the ViewModel about the window.
+
+Atividade (page 12) keeps its pick the same way (`ActivityUiState.pickedItemId`, `selectedItem`), with one
+difference: a tap on a row opens what it is about where there is no pane, and only picks it where there is one. So
+its UIs do tell the ViewModel whether they draw the pane (`ActivityUiEvent.OnDetailPaneChanged`), and the pane's own
+button opens it (`OnOpenTargetClicked`).
 
 Pick the first when the detail is a screen that also opens on its own (it already has a route); the second when it
 only exists beside its list.

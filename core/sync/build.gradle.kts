@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.core.profile)
             implementation(projects.core.groups)
             implementation(projects.core.expenses)
+            implementation(projects.core.activity)
             implementation(libs.quare.connectivity)
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -23,6 +24,7 @@ kotlin {
             implementation(projects.core.profile.testing)
             implementation(projects.core.groups.testing)
             implementation(projects.core.expenses.testing)
+            implementation(projects.core.activity.testing)
             implementation(libs.kotlinx.coroutines.test)
         }
     }

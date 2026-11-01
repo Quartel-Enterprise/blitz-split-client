@@ -93,8 +93,8 @@ final class GroupsModel {
     }
 }
 
-/// The tabs of the canvas. Groups and Balances are built; the others answer "Coming soon". Search is the iPhone's and
-/// the iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
+/// The tabs of the canvas. Groups, Balances and Activity are built; Contacts answers "Coming soon". Search is the
+/// iPhone's and the iPad's search tab, once there is a group; the Mac searches from its toolbar instead.
 enum MainTab: Hashable {
     case groups
     case balances
@@ -112,6 +112,13 @@ struct MainTabView: View {
     @State private var model = GroupsModel()
     @State private var showsRecoveryCode = false
 
+    init(path: Binding<[AppRoute]>) {
+        _path = path
+        #if os(iOS)
+        Self.tintsBadges()
+        #endif
+    }
+
     var body: some View {
         TabView(selection: tabSelection) {
             Tab("Groups", systemImage: "person.3", value: MainTab.groups) {
@@ -126,7 +133,7 @@ struct MainTabView: View {
             }
             // The shared back stack holds Balances over the groups, so its tab shows while it is right above them
             Tab("Balances", systemImage: "creditcard", value: MainTab.balances) {
-                NavigationStack(path: balancesPath) {
+                NavigationStack(path: tabPath(isShown: balancesRoute != nil)) {
                     if let route = balancesRoute {
                         GlobalBalancesView(route: route)
                             .id(route)
@@ -137,7 +144,19 @@ struct MainTabView: View {
                 }
             }
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) { Color.clear }
-            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) { Color.clear }
+            // Activity sits over the groups as Balances does; the badge counts every unread item, in the accent
+            Tab("Activity", systemImage: "list.bullet.rectangle", value: MainTab.activity) {
+                NavigationStack(path: tabPath(isShown: activityRoute != nil)) {
+                    if let route = activityRoute {
+                        ActivityView(route: route)
+                            .id(route)
+                            .navigationDestination(for: AppRoute.self) { Self.destination($0) }
+                    } else {
+                        Color.clear
+                    }
+                }
+            }
+            .badge(Int(model.state.activityUnreadCount))
             #if os(iOS)
             // Nothing to look in before the first group
             if model.state.canSearch {
@@ -176,10 +195,15 @@ struct MainTabView: View {
     }
 
     // Selecting a tab that is not built yet keeps the tab shown and says "Coming soon". Leaving Search forgets it
-    // and goes back to the groups, past what its results opened; leaving Balances goes back to the groups too.
+    // and goes back to the groups, past what its results opened; leaving Balances or Activity goes back to the
+    // groups too.
     private var tabSelection: Binding<MainTab> {
         Binding(
-            get: { showsSearchTab ? .search : (balancesRoute != nil ? .balances : .groups) },
+            get: {
+                if showsSearchTab { return .search }
+                if activityRoute != nil { return .activity }
+                return balancesRoute != nil ? .balances : .groups
+            },
             set: { tab in
                 switch tab {
                 case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
@@ -189,7 +213,7 @@ struct MainTabView: View {
                 case .groups:
                     if showsSearchTab {
                         model.send(GroupsUiEventOnSearchTabLeft.shared)
-                    } else if balancesRoute != nil {
+                    } else if balancesRoute != nil || activityRoute != nil {
                         model.send(GroupsUiEventOnGroupsTabClicked.shared)
                     }
                 }
@@ -203,12 +227,19 @@ struct MainTabView: View {
         return nil
     }
 
-    /// What Balances pushed over itself (the profile), shown in its own tab's stack.
-    private var balancesPath: Binding<[AppRoute]> {
+    /// Activity right above the groups, which its tab shows; nil while another tab is in front.
+    private var activityRoute: RouteActivity? {
+        if case let .activity(route) = path.first { return route }
+        return nil
+    }
+
+    /// What Balances or Activity pushed over itself (the profile, a group, a bill), shown in its own tab's stack
+    /// while that tab is the one right above the groups.
+    private func tabPath(isShown: Bool) -> Binding<[AppRoute]> {
         Binding(
-            get: { balancesRoute != nil ? Array(path.dropFirst()) : [] },
+            get: { isShown ? Array(path.dropFirst()) : [] },
             set: { newValue in
-                guard balancesRoute != nil, let first = path.first else { return }
+                guard isShown, let first = path.first else { return }
                 path = [first] + newValue
             },
         )
@@ -224,9 +255,9 @@ struct MainTabView: View {
         #endif
     }
 
-    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, Balances while
-    /// it is right above the groups, else Groups. The other tabs' stacks stay at their root, so a screen never shows in
-    /// two.
+    /// The shared back stack above the groups goes to the tab that pushed it: Search while it is open, Balances or
+    /// Activity while it is right above the groups, else Groups. The other tabs' stacks stay at their root, so a screen
+    /// never shows in two.
     private func stackPath(isSearch: Bool) -> Binding<[AppRoute]> {
         Binding(
             get: { isInFront(isSearch: isSearch) ? path : [] },
@@ -237,10 +268,20 @@ struct MainTabView: View {
         )
     }
 
-    /// Search while it is open, Groups while neither Search nor Balances is: the tab whose stack holds the path.
+    /// Search while it is open, Groups while neither Search, Balances nor Activity is: the tab whose stack holds the
+    /// path.
     private func isInFront(isSearch: Bool) -> Bool {
-        balancesRoute == nil && showsSearchTab == isSearch
+        balancesRoute == nil && activityRoute == nil && showsSearchTab == isSearch
     }
+
+    #if os(iOS)
+    /// The tab bar's badges in the accent, never the system's red: Activity's unread count is news, not an error.
+    private static func tintsBadges() {
+        let appearance = UITabBarItem.appearance()
+        appearance.badgeColor = UIColor(named: "AccentColor")
+        appearance.setBadgeTextAttributes([.foregroundColor: UIColor(Palette.onAccent)], for: .normal)
+    }
+    #endif
 
     /// What the groups and the search push over themselves: a group's expenses, balances, members or statistics, a
     /// bill, an invite opened from its link, the profile, its editor and, on iPhone, a key.

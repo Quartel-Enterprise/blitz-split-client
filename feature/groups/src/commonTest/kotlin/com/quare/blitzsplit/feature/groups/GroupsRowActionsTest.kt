@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -567,6 +568,7 @@ class GroupsRowActionsTest {
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
             deleteSettlement = DeleteSettlementUseCase(settlements, recordedPayments) { 1_000L },
             observePeopleBalances = { emptyFlow() },
+            observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
         )
     }
 }

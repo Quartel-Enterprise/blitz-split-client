@@ -60,6 +60,8 @@ data class GroupsUiState(
      * an unfolded book) draws it beside the list and highlights its row or card; a phone never sees the list then.
      */
     val selectedGroupId: String?,
+    // Why: the Atividade tab's badge, every unread event whatever its filters.
+    val activityUnreadCount: Int,
 ) {
     // Why: "Buscar" only shows once there is a group, as the empty home has nothing to look in.
     val canSearch: Boolean

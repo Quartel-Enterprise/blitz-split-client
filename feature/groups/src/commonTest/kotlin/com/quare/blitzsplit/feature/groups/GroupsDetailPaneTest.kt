@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -497,6 +498,7 @@ class GroupsDetailPaneTest {
             observePeopleBalances = { emptyFlow() },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
+            observeActivityUnreadCount = ObserveActivityUnreadCount { flowOf(0) },
         )
     }
 }

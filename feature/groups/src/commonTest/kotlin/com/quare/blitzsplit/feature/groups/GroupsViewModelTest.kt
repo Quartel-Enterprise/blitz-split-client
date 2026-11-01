@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -107,6 +108,7 @@ class GroupsViewModelTest {
     // Why: the device's clock, which a test moves on and then ticks a minute for.
     private var clockMillis = 0L
     private lateinit var minutes: MutableStateFlow<Int>
+    private lateinit var activityUnread: MutableStateFlow<Int>
 
     @BeforeTest
     fun setUp() {
@@ -194,11 +196,34 @@ class GroupsViewModelTest {
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnContactsTabClicked)
-            viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
 
             // Then
-            assertEquals(List<GroupsUiAction>(2) { GroupsUiAction.ShowComingSoon }, actions)
+            assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
         }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Atividade tab THEN opens it over the groups`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupsUiEvent.OnActivityTabClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Activity(personKey = null)), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the groups WHEN unread activity arrives THEN the Atividade tab counts it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        activityUnread.value = 3
+
+        // Then
+        assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+    }
 
     @Test
     fun `GIVEN the groups WHEN tapping the Saldos tab THEN opens Saldos with everyone over the groups`() =
@@ -2511,6 +2536,7 @@ class GroupsViewModelTest {
         syncNowCount = 0
         clockMillis = now
         minutes = MutableStateFlow(0)
+        activityUnread = MutableStateFlow(0)
         account = FakeAccountRepository(initialStatus = status).also { it.recoveryCodePrompt = prompt }
         profiles = FakeProfileRepository(profile)
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -2551,6 +2577,7 @@ class GroupsViewModelTest {
                 observeGroups = ObserveGroupsUseCase(groups),
                 observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
             ),
+            observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
         )
     }
 }

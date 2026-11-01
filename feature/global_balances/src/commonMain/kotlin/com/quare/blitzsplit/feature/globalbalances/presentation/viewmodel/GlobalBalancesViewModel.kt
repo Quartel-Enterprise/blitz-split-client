@@ -3,6 +3,9 @@ package com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.activity.domain.usecase.RecordCharges
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -21,6 +24,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openActivityTab
 import com.quare.blitzsplit.core.navigation.popToGroups
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePaymentKeys
@@ -48,6 +52,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class GlobalBalancesViewModel(
     private val route: Route.GlobalBalances,
     private val navigator: Navigator,
+    private val recordCharges: RecordCharges,
     consumeRecordedPayment: ConsumeRecordedPayment,
     deleteSettlement: DeleteSettlement,
     observePeopleBalances: ObservePeopleBalances,
@@ -56,6 +61,7 @@ class GlobalBalancesViewModel(
     observeAccount: ObserveAccount,
     observePaymentKeys: ObservePaymentKeys,
     connectivityObserver: NetworkConnectivityObserver,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<GlobalBalancesUiState>
         field = MutableStateFlow(
@@ -74,6 +80,7 @@ class GlobalBalancesViewModel(
                 isLoaded = false,
                 recordedPayment = null,
                 pickedPersonId = null,
+                activityUnreadCount = 0,
             ),
         )
 
@@ -92,6 +99,9 @@ class GlobalBalancesViewModel(
 
     // Why: what a tap set each row's "Por grupo" to; the others open as the filter opens them.
     private var expandedById = emptyMap<String, Boolean>()
+
+    // Why: the person whose open charge is recorded in Atividade, so sharing it again or copying it records nothing more.
+    private var chargeRecordedFor: String? = null
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
@@ -124,6 +134,9 @@ class GlobalBalancesViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -184,9 +197,11 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 
-            GlobalBalancesUiEvent.OnContactsTabClicked,
-            GlobalBalancesUiEvent.OnActivityTabClicked,
-            -> viewModelScope.launch { uiAction.emit(GlobalBalancesUiAction.ShowComingSoon) }
+            GlobalBalancesUiEvent.OnActivityTabClicked -> navigator.openActivityTab(personKey = null)
+
+            GlobalBalancesUiEvent.OnContactsTabClicked -> viewModelScope.launch {
+                uiAction.emit(GlobalBalancesUiAction.ShowComingSoon)
+            }
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 
@@ -249,6 +264,7 @@ class GlobalBalancesViewModel(
     private fun openCharge(personId: String) {
         if (!isOnTop()) return
         val person = personOrNull(personId)?.takeIf { it.netMinor > 0 } ?: return
+        chargeRecordedFor = null
         uiState.update {
             it.copy(
                 charge = chargeOf(
@@ -285,8 +301,30 @@ class GlobalBalancesViewModel(
     }
 
     private fun emitForCharge(action: GlobalBalancesUiAction) {
-        if (uiState.value.charge == null) return
+        val charge = uiState.value.charge ?: return
+        recordCharge(charge)
         viewModelScope.launch { uiAction.emit(action) }
+    }
+
+    /*
+     * Why: "Você cobrou Ana" in Atividade, once per opened charge however many times it is shared or copied: one event
+     * in each group where they owe you, which only this device sees happen.
+     */
+    private fun recordCharge(charge: ChargeDraft) {
+        if (chargeRecordedFor == charge.personId) return
+        chargeRecordedFor = charge.personId
+        val person = personOrNull(charge.personId) ?: return
+        val charges = person.groups
+            .filter { it.amountMinor > 0 }
+            .map { part ->
+                ChargeSent(
+                    groupId = part.groupId,
+                    memberId = part.memberId,
+                    memberName = person.name.orEmpty(),
+                    amountMinor = part.amountMinor,
+                )
+            }
+        if (charges.isNotEmpty()) viewModelScope.launch { recordCharges(charges) }
     }
 
     private fun handleEmptyAction() {

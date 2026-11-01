@@ -12,7 +12,7 @@ import { GroupsSearchDialog, searchShortcut } from '@/features/groups/GroupsSear
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t } from '@/i18n'
 
-// Contatos and Atividade are not built yet and answer "Coming soon".
+// Contatos is not built yet and answers "Coming soon".
 const tabEvents: Partial<Record<HomeTab, (presenter: GroupsPresenter) => void>> = {
   balances: (p) => p.openBalances(),
   contacts: (p) => p.openContacts(),
@@ -63,6 +63,7 @@ export function GroupsScreen() {
 
   return (
     <HomeShell
+      activityUnreadCount={state.activityUnreadCount}
       selected="groups"
       profile={state}
       onTab={(tab) => tabEvents[tab]?.(presenter)}

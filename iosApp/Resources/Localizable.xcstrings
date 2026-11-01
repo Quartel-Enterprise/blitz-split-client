@@ -5,6 +5,50 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ added %@" : {
+      "comment" : "Activity: someone added a member",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ adicionou %2$@"
+          }
+        }
+      }
+    },
+    "After" : {
+      "comment" : "The Mac's table of what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Depois"
+          }
+        }
+      }
+    },
+    "All groups" : {
+      "comment" : "The Activity filter's group: every group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos os grupos"
+          }
+        }
+      }
+    },
+    "All read" : {
+      "comment" : "The Mac window's subtitle on Activity with nothing unread",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo lido"
+          }
+        }
+      }
+    },
     "%@ already settled up with %@ after this bill" : {
       "comment" : "Edit bill and Delete this bill?: the first %@ paid the second after the bill, which the change unsettles",
       "localizations" : {
@@ -27,6 +71,160 @@
         }
       }
     },
+    "Before" : {
+      "comment" : "The Mac's table of what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Antes"
+          }
+        }
+      }
+    },
+    "Bill deleted" : {
+      "comment" : "The alert of an Activity item whose bill was deleted",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta apagada"
+          }
+        }
+      }
+    },
+    "Bills" : {
+      "comment" : "The Activity filter's type of bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contas"
+          }
+        }
+      }
+    },
+    "%@ changed the invite link of %@" : {
+      "comment" : "Activity: someone changed a group's link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ trocou o link do convite de %2$@"
+          }
+        }
+      }
+    },
+    "Changes in %@" : {
+      "comment" : "The changes of an edited bill in Activity, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudanças em %@"
+          }
+        }
+      }
+    },
+    "Clear filters" : {
+      "comment" : "Shows every Activity item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar filtros"
+          }
+        }
+      }
+    },
+    "Color" : {
+      "comment" : "A group's avatar color, in what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cor"
+          }
+        }
+      }
+    },
+    "Comments" : {
+      "comment" : "The Activity filter's type of comments",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comentários"
+          }
+        }
+      }
+    },
+    "%@ created the group %@" : {
+      "comment" : "Activity: someone created a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ criou o grupo %2$@"
+          }
+        }
+      }
+    },
+    "%@ deleted %@" : {
+      "comment" : "Activity: someone deleted a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou %2$@"
+          }
+        }
+      }
+    },
+    "%@ deleted %@ on %@." : {
+      "comment" : "Activity: who deleted a bill or group, which, and the date",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou %2$@ em %3$@."
+          }
+        }
+      }
+    },
+    "%@ deleted the group %@" : {
+      "comment" : "Activity: someone deleted a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou o grupo %2$@"
+          }
+        }
+      }
+    },
+    "%@ edited %@" : {
+      "comment" : "Activity: someone edited a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ editou %2$@"
+          }
+        }
+      }
+    },
+    "%@ edited the group %@" : {
+      "comment" : "Activity: someone edited a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ editou o grupo %2$@"
+          }
+        }
+      }
+    },
     "%@ · everyone settled up on %@" : {
       "comment" : "A settled group of the home: its members, then the day of its last activity",
       "localizations" : {
@@ -34,6 +232,72 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ · todos acertaram em %2$@"
+          }
+        }
+      }
+    },
+    "Field" : {
+      "comment" : "The Mac's table of what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campo"
+          }
+        }
+      }
+    },
+    "Filter" : {
+      "comment" : "Opens Activity's filters",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrar"
+          }
+        }
+      }
+    },
+    "Filter activity" : {
+      "comment" : "The title of the Mac's Activity filter popover",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrar atividade"
+          }
+        }
+      }
+    },
+    "Filter by group: %@" : {
+      "comment" : "Activity's group chip, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrar por grupo: %@"
+          }
+        }
+      }
+    },
+    "Filter by type: %@" : {
+      "comment" : "Activity's type chip, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrar por tipo: %@"
+          }
+        }
+      }
+    },
+    "Filtered by" : {
+      "comment" : "The Mac's bar of Activity's filters in use",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrado por"
           }
         }
       }
@@ -131,6 +395,127 @@
         }
       }
     },
+    "Hadn't joined the group" : {
+      "comment" : "Activity: under a member someone removed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não tinha entrado no grupo"
+          }
+        }
+      }
+    },
+    "Hide changes" : {
+      "comment" : "Closes an edited bill's changes in its Activity row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esconder mudanças"
+          }
+        }
+      }
+    },
+    "Item details show up here." : {
+      "comment" : "The column beside Activity's list with no item yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os detalhes do item aparecem aqui."
+          }
+        }
+      }
+    },
+    "%@ joined %@" : {
+      "comment" : "Activity: someone joined a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ entrou em %2$@"
+          }
+        }
+      }
+    },
+    "Joined as %@" : {
+      "comment" : "Activity: the member name someone joined a group as",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrou como %@"
+          }
+        }
+      }
+    },
+    "%@ left %@" : {
+      "comment" : "Activity: someone left a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ saiu de %2$@"
+          }
+        }
+      }
+    },
+    "Loading activity" : {
+      "comment" : "The placeholders of Activity, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carregando atividade"
+          }
+        }
+      }
+    },
+    "Loading more…" : {
+      "comment" : "Activity: the older items are on their way",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carregando mais…"
+          }
+        }
+      }
+    },
+    "Mark all as read" : {
+      "comment" : "Marks every Activity item read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcar tudo como lido"
+          }
+        }
+      }
+    },
+    "Mark All as Read" : {
+      "comment" : "The Mac's Edit menu: marks every Activity item read",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcar tudo como lido"
+          }
+        }
+      }
+    },
+    "message sent" : {
+      "comment" : "Activity: under a request to pay, after its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mensagem enviada"
+          }
+        }
+      }
+    },
     "%lld more" : {
       "comment" : "The members of a group after the first names: Pierre, Ana, Bruno and 3 more",
       "localizations" : {
@@ -142,6 +527,143 @@
         }
       }
     },
+    "%lld more changes" : {
+      "comment" : "Activity: how many other fields an edit changed, after the first one",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more change"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more changes"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "mais %lld mudança"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "mais %lld mudanças"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "More in %@" : {
+      "comment" : "The other Activity items of a bill; %@ is the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais em %@"
+          }
+        }
+      }
+    },
+    "%lld new" : {
+      "comment" : "How many Activity items are unread",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld new"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld new"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld nova"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld novas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "No activity" : {
+      "comment" : "The Mac window's subtitle on an empty Activity",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma atividade"
+          }
+        }
+      }
+    },
+    "Nothing here yet" : {
+      "comment" : "Activity with nothing in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada por aqui ainda"
+          }
+        }
+      }
+    },
+    "Nothing with these filters" : {
+      "comment" : "Activity with filters that show nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada com esses filtros"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "comment" : "Closes an alert",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
     "%lld open" : {
       "comment" : "The Mac window's subtitle: how many open groups",
       "localizations" : {
@@ -149,6 +671,190 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld em aberto"
+          }
+        }
+      }
+    },
+    "Open bill" : {
+      "comment" : "Opens the bill of an Activity item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir conta"
+          }
+        }
+      }
+    },
+    "Open group" : {
+      "comment" : "Opens the group of an Activity item",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir grupo"
+          }
+        }
+      }
+    },
+    "Payments and settlements" : {
+      "comment" : "The Activity filter's type of payments",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamentos e acertos"
+          }
+        }
+      }
+    },
+    "People and groups" : {
+      "comment" : "The Activity filter's type of members and groups",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pessoas e grupos"
+          }
+        }
+      }
+    },
+    "%@ recorded a payment" : {
+      "comment" : "Activity: someone recorded a payment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ registrou um pagamento"
+          }
+        }
+      }
+    },
+    "%@ released the name %@" : {
+      "comment" : "Activity: the creator released a member's name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ liberou o nome %2$@"
+          }
+        }
+      }
+    },
+    "Remove filter %@" : {
+      "comment" : "Removes one of Activity's filters",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover filtro %@"
+          }
+        }
+      }
+    },
+    "%@ removed %@" : {
+      "comment" : "Activity: someone removed a member",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ removeu %2$@"
+          }
+        }
+      }
+    },
+    "%@ renamed %@" : {
+      "comment" : "Activity: someone renamed a member",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ renomeou %2$@"
+          }
+        }
+      }
+    },
+    "Requests" : {
+      "comment" : "The Activity filter's type of requests to pay",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cobranças"
+          }
+        }
+      }
+    },
+    "%lld results" : {
+      "comment" : "How many Activity items the filter being picked shows",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld result"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld results"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld resultado"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld resultados"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "See changes" : {
+      "comment" : "Opens an edited bill's changes in its Activity row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver mudanças"
+          }
+        }
+      }
+    },
+    "See payment" : {
+      "comment" : "Opens the group where an Activity item's payment shows",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver pagamento"
+          }
+        }
+      }
+    },
+    "%@ sent a request to %@" : {
+      "comment" : "Activity: someone asked a member to pay",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ cobrou %2$@"
           }
         }
       }
@@ -190,6 +896,256 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Show %@" : {
+      "comment" : "Applies Activity's filters; %@ is how many items they show",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar %@"
+          }
+        }
+      }
+    },
+    "Someone" : {
+      "comment" : "Who did something in Activity, unnamed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alguém"
+          }
+        }
+      }
+    },
+    "%@ split %@" : {
+      "comment" : "Activity: someone split a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ rachou %2$@"
+          }
+        }
+      }
+    },
+    "Stays as a name in the bills and payments" : {
+      "comment" : "Activity: under someone who left a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fica como nome nas contas e pagamentos"
+          }
+        }
+      }
+    },
+    "the bill no longer exists" : {
+      "comment" : "Activity: under a deleted bill, after its amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a conta não existe mais"
+          }
+        }
+      }
+    },
+    "The bill “%@” was deleted." : {
+      "comment" : "Activity: a bill deleted by someone unknown",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A conta “%@” foi apagada."
+          }
+        }
+      }
+    },
+    "The entry stays in Activity, but the bill no longer opens." : {
+      "comment" : "Activity: why a deleted bill's item doesn't open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O registro fica na Atividade, mas a conta não abre mais."
+          }
+        }
+      }
+    },
+    "The entry stays in Activity, but the group no longer opens." : {
+      "comment" : "Activity: why a deleted group's item doesn't open",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O registro fica na Atividade, mas o grupo não abre mais."
+          }
+        }
+      }
+    },
+    "The group no longer exists" : {
+      "comment" : "Activity: under a deleted group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O grupo não existe mais"
+          }
+        }
+      }
+    },
+    "The last 90 days stay on this %@. Older ones load when the internet is back." : {
+      "comment" : "The end of Activity offline; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os últimos 90 dias ficam neste %@. Os mais antigos carregam quando a internet voltar."
+          }
+        }
+      }
+    },
+    "The old link no longer works" : {
+      "comment" : "Activity: under a group's changed invite link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O link antigo não funciona mais"
+          }
+        }
+      }
+    },
+    "This %@ hasn't synced yet, so only what you did on it shows here. Group activity arrives on the first connection, with or without an account." : {
+      "comment" : "Activity on a device that never synced; %@ is iPhone, iPad or Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este %@ ainda não sincronizou, então aqui só aparece o que você fez nele. A atividade dos grupos chega na primeira conexão, com ou sem conta."
+          }
+        }
+      }
+    },
+    "Through the invite link" : {
+      "comment" : "Activity: how someone joined a group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelo link de convite"
+          }
+        }
+      }
+    },
+    "to" : {
+      "comment" : "The arrow between a field's old and new value, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "para"
+          }
+        }
+      }
+    },
+    "Try another type or another group." : {
+      "comment" : "Activity with filters that show nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente outro tipo ou outro grupo."
+          }
+        }
+      }
+    },
+    "%lld types" : {
+      "comment" : "The Activity filter's Type chip with several types picked",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld type"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld types"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld tipo"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld tipos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%@ undid a payment" : {
+      "comment" : "Activity: someone undid a payment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ desfez um pagamento"
+          }
+        }
+      }
+    },
+    "Unread" : {
+      "comment" : "An unread Activity item, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não lida"
+          }
+        }
+      }
+    },
+    "waiting to send" : {
+      "comment" : "Activity: when a change saved on this device isn't on the server yet, in its detail",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "aguardando envio"
+          }
+        }
+      }
+    },
+    "Waiting to send" : {
+      "comment" : "Activity: a change saved on this device that isn't on the server yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguardando envio"
           }
         }
       }
@@ -1557,6 +2513,39 @@
         }
       }
     },
+    "What changed" : {
+      "comment" : "The fields an edit changed, beside Activity's list",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O que mudou"
+          }
+        }
+      }
+    },
+    "When someone splits a bill, pays, comments or joins one of your groups, it shows up here." : {
+      "comment" : "Activity with nothing in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando alguém rachar uma conta, pagar, comentar ou entrar num dos seus grupos, aparece aqui."
+          }
+        }
+      }
+    },
+    "Whoever joined as %@ left the group" : {
+      "comment" : "Activity: under a released member name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem entrou como %@ saiu do grupo"
+          }
+        }
+      }
+    },
     "with the change, %@ and %@ are settled up." : {
       "comment" : "How a pair that settled up ends up: the two people owe each other nothing",
       "localizations" : {
@@ -1674,6 +2663,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "com a mudança, você volta a dever %2$@ a %1$@."
+          }
+        }
+      }
+    },
+    "%@ with these filters. No type checked shows them all." : {
+      "comment" : "Activity's filters; %@ is how many items they show",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ com estes filtros. Nenhum tipo marcado mostra todos."
           }
         }
       }
