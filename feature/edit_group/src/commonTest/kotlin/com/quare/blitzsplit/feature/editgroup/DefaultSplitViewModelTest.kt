@@ -169,7 +169,7 @@ class DefaultSplitViewModelTest {
     }
 
     @Test
-    fun `GIVEN incomes another member's newer percentages replaced WHEN the screen opens THEN it shows the group's`() =
+    fun `GIVEN incomes another member replaced WHEN the screen opens THEN it shows the group percentages`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
