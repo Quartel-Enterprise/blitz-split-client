@@ -32,6 +32,7 @@ fun GroupDetailScreen(
     val deleteError = stringResource(DesignR.string.designsystem_group_exit_delete_error)
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
+    val teachError = stringResource(R.string.group_detail_teach_error)
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {
@@ -40,6 +41,7 @@ fun GroupDetailScreen(
                 GroupDetailUiAction.ShowLeaveError -> showSnackbar(leaveError)
                 GroupDetailUiAction.ShowDeleteError -> showSnackbar(deleteError)
                 GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
+                GroupDetailUiAction.ShowTeachError -> showSnackbar(teachError)
             }
         }
     }
@@ -56,12 +58,18 @@ fun GroupDetailScreen(
         onUndo = { viewModel.onEvent(GroupDetailUiEvent.OnUndoPaymentClicked) },
         onShown = { viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown) },
     )
+    CategoryTeachNoticeEffect(
+        teach = state.teach,
+        snackbarHostState = snackbarHostState,
+        onEvent = viewModel::onEvent,
+    )
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
     GroupDetailContent(
         state = state,
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
+    state.teach?.takeIf { it.isPickingWord }?.let { CategoryTeachDialog(teach = it, onEvent = viewModel::onEvent) }
     if (state.paymentToDelete != null) {
         DeletePaymentDialog(onEvent = viewModel::onEvent)
     }

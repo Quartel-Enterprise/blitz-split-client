@@ -55,4 +55,15 @@
     <string name="group_detail_balances_empty_message">Balances show up once the first expense is added.</string>
     <string name="group_detail_balances_settled_title">Everyone\'s settled up</string>
     <string name="group_detail_balances_settled_message">Nobody owes anything in this group. If the trip is over, you can delete the group for everyone.</string>
+    <string name="group_detail_category_path">%1$s › %2$s</string>
+    <string name="group_detail_teach_offer">Bill saved in %1$s, not in %2$s, which the map suggested. Teach the map?</string>
+    <string name="group_detail_teach_offer_no_map">Bill saved in %1$s. Teach the map?</string>
+    <string name="group_detail_teach">Teach</string>
+    <string name="group_detail_teach_title">Teach the map</string>
+    <string name="group_detail_teach_question">Which word of “%1$s” should pick %2$s on the next bills?</string>
+    <string name="group_detail_teach_word_new">New in the map. Titles with “%1$s” go to %2$s.</string>
+    <string name="group_detail_teach_word_moves">Leaves %1$s: titles with “%2$s” go to %3$s.</string>
+    <string name="group_detail_teach_footer">Bills already saved don\'t change. You can undo it in the Category map.</string>
+    <string name="group_detail_teach_cancel">Cancel</string>
+    <string name="group_detail_teach_error">Couldn\'t teach the map. Try again.</string>
 </resources>
