@@ -279,8 +279,12 @@ private struct PhoneBillDetail: View {
         Section {
             VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 12) {
-                    ExpenseIcon(size: 52)
+                    CategoryBadge(category: state.category, size: 52)
                     VStack(alignment: .leading, spacing: 2) {
+                        // The bill's category over its title, "Food › Groceries" (7.3)
+                        Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         Text(verbatim: state.description_)
                             .font(.title.bold())
                             .lineLimit(3)
@@ -368,8 +372,11 @@ private struct MacBillDetail: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: 12) {
-            ExpenseIcon(size: 40)
+            CategoryBadge(category: state.category, size: 40)
             VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                 Text(verbatim: state.description_)
                     .font(.title2.bold())
                     .lineLimit(2)

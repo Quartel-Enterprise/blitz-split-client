@@ -63,7 +63,9 @@ private struct DefaultSplitNotice: View {
     private var title: String {
         state.isSplitEditorOffDefault
             ? String(localized: "Different from the group's default")
-            : String(localized: "\(state.groupName) default: \(summary)")
+            : state.defaultSplitException.map {
+                String(localized: "Group exception for \(CategoryCopy.name($0)): \(summary)")
+            } ?? String(localized: "\(state.groupName) default: \(summary)")
     }
 
     private var detail: String {

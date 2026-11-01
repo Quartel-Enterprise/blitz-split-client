@@ -5,6 +5,39 @@
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false
     },
+    "%@ already exists in %@. Pick another name." : {
+      "comment" : "New category: the name is taken in that category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já existe %1$@ em %2$@. Escolha outro nome."
+          }
+        }
+      }
+    },
+    "%@ already exists. Pick another name." : {
+      "comment" : "New category: the name is taken",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já existe %@. Escolha outro nome."
+          }
+        }
+      }
+    },
+    "%@ already has an exception." : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ já tem uma exceção."
+          }
+        }
+      }
+    },
     "%@ already settled up with %@ after this bill" : {
       "comment" : "Edit bill and Delete this bill?: the first %@ paid the second after the bill, which the change unsettles",
       "localizations" : {
@@ -27,6 +60,28 @@
         }
       }
     },
+    "%@ by the word “%@” in your map. Tap the icon to change it." : {
+      "comment" : "Under a bill's description: its category, chosen by a word of the map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ pela palavra “%2$@” do seu mapa. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "%@ is the most used in %@." : {
+      "comment" : "Category picker",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ é a mais usada no %2$@."
+          }
+        }
+      }
+    },
     "%@ · everyone settled up on %@" : {
       "comment" : "A settled group of the home: its members, then the day of its last activity",
       "localizations" : {
@@ -45,6 +100,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · convidado sem app"
+          }
+        }
+      }
+    },
+    "%@: %lld%% of the total, %@" : {
+      "comment" : "VoiceOver label of a category's row in Statistics",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$lld%% do total, %3$@"
           }
         }
       }
@@ -153,6 +219,17 @@
         }
       }
     },
+    "%lld results" : {
+      "comment" : "Category search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld resultados"
+          }
+        }
+      }
+    },
     "%lld settled up" : {
       "comment" : "The Mac window's subtitle: how many settled groups",
       "localizations" : {
@@ -190,6 +267,17 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld subcategories" : {
+      "comment" : "Under a main category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld subcategorias"
           }
         }
       }
@@ -276,6 +364,39 @@
         }
       }
     },
+    "%lld words of the map matched. “%@” wins, the longest: %@." : {
+      "comment" : "Under a bill's description: several words of the map matched",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld palavras do mapa casaram. Vale “%2$@”, a mais longa: %3$@."
+          }
+        }
+      }
+    },
+    "A subcategory uses the icon of %@." : {
+      "comment" : "New category: inside another",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subcategoria usa o ícone de %@."
+          }
+        }
+      }
+    },
+    "Add exception" : {
+      "comment" : "Default split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar exceção"
+          }
+        }
+      }
+    },
     "All" : {
       "comment" : "A search scope: everything",
       "localizations" : {
@@ -283,6 +404,875 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tudo"
+          }
+        }
+      }
+    },
+    "All categories" : {
+      "comment" : "Category picker section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas as categorias"
+          }
+        }
+      }
+    },
+    "Appointments" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consultas"
+          }
+        }
+      }
+    },
+    "Apps" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apps"
+          }
+        }
+      }
+    },
+    "Bag" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sacola"
+          }
+        }
+      }
+    },
+    "Bakery and coffee" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Padaria e café"
+          }
+        }
+      }
+    },
+    "Ball" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bola"
+          }
+        }
+      }
+    },
+    "Bar" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bar"
+          }
+        }
+      }
+    },
+    "Bills of this category split another way." : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despesas desta categoria dividem de outro jeito."
+          }
+        }
+      }
+    },
+    "Book" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Livro"
+          }
+        }
+      }
+    },
+    "Books" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Livros"
+          }
+        }
+      }
+    },
+    "Bus and subway" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ônibus e metrô"
+          }
+        }
+      }
+    },
+    "By category" : {
+      "comment" : "Statistics section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por categoria"
+          }
+        }
+      }
+    },
+    "Car" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carro"
+          }
+        }
+      }
+    },
+    "Car rental" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aluguel de carro"
+          }
+        }
+      }
+    },
+    "Cart" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carrinho"
+          }
+        }
+      }
+    },
+    "Category" : {
+      "comment" : "Title of the category picker",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoria"
+          }
+        }
+      }
+    },
+    "Category: %@. Change it" : {
+      "comment" : "VoiceOver label of the category's icon beside a bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoria: %@. Trocar"
+          }
+        }
+      }
+    },
+    "Category: %@. Tap the icon to change it." : {
+      "comment" : "Under a bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoria: %@. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "Changing the name or the place counts for all of %@ and for the %lld bills that already use %@." : {
+      "comment" : "Edit category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mudar o nome ou o lugar vale para todo o %1$@ e para as %2$lld contas que já usam %3$@."
+          }
+        }
+      }
+    },
+    "Cleaning" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpeza"
+          }
+        }
+      }
+    },
+    "Clothes" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roupas"
+          }
+        }
+      }
+    },
+    "Condo fees" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condomínio"
+          }
+        }
+      }
+    },
+    "Couldn't delete the category. Try again." : {
+      "comment" : "Toast",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para apagar a categoria. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't save the category. Try again." : {
+      "comment" : "Toast",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar a categoria. Tente de novo."
+          }
+        }
+      }
+    },
+    "Courses" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursos"
+          }
+        }
+      }
+    },
+    "Create category “%@”" : {
+      "comment" : "Category search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar categoria “%@”"
+          }
+        }
+      }
+    },
+    "Create one: everyone in %@ can use it." : {
+      "comment" : "Category search found nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crie uma: ela fica disponível para todo mundo do %@."
+          }
+        }
+      }
+    },
+    "Create “%@”" : {
+      "comment" : "Category search found nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar “%@”"
+          }
+        }
+      }
+    },
+    "Created by %@" : {
+      "comment" : "Edit category: who created it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criada por %@"
+          }
+        }
+      }
+    },
+    "Created by %@ · from the group" : {
+      "comment" : "Under a category created in the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criada por %@ · do grupo"
+          }
+        }
+      }
+    },
+    "Cutlery" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Talheres"
+          }
+        }
+      }
+    },
+    "Delete category" : {
+      "comment" : "Edit category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar categoria"
+          }
+        }
+      }
+    },
+    "Delivery" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delivery"
+          }
+        }
+      }
+    },
+    "Dumbbell" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haltere"
+          }
+        }
+      }
+    },
+    "Edit category" : {
+      "comment" : "Title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar categoria"
+          }
+        }
+      }
+    },
+    "Edit “%@”…" : {
+      "comment" : "Mac menu: edit a group's category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar “%@”…"
+          }
+        }
+      }
+    },
+    "Education" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Educação"
+          }
+        }
+      }
+    },
+    "Electricity" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luz"
+          }
+        }
+      }
+    },
+    "Electronics" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eletrônicos"
+          }
+        }
+      }
+    },
+    "Equally among %lld" : {
+      "comment" : "An exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual entre %lld"
+          }
+        }
+      }
+    },
+    "Equally among everyone" : {
+      "comment" : "An exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual entre todos"
+          }
+        }
+      }
+    },
+    "Event tickets" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingressos"
+          }
+        }
+      }
+    },
+    "Exception by category" : {
+      "comment" : "Title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exceção por categoria"
+          }
+        }
+      }
+    },
+    "Exceptions by category" : {
+      "comment" : "Default split section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exceções por categoria"
+          }
+        }
+      }
+    },
+    "Food" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alimentação"
+          }
+        }
+      }
+    },
+    "From the description" : {
+      "comment" : "Why a category is suggested",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pela descrição"
+          }
+        }
+      }
+    },
+    "From the group" : {
+      "comment" : "A category someone created in the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do grupo"
+          }
+        }
+      }
+    },
+    "Fuel" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combustível"
+          }
+        }
+      }
+    },
+    "Games" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jogos"
+          }
+        }
+      }
+    },
+    "Gas" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gás"
+          }
+        }
+      }
+    },
+    "Gift" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presente"
+          }
+        }
+      }
+    },
+    "Gifts" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presentes"
+          }
+        }
+      }
+    },
+    "Glass" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taça"
+          }
+        }
+      }
+    },
+    "Groceries" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mercado"
+          }
+        }
+      }
+    },
+    "Group exception for %@" : {
+      "comment" : "Under a bill's split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exceção do grupo para %@"
+          }
+        }
+      }
+    },
+    "Group exception for %@: %@" : {
+      "comment" : "Above the ways to split",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exceção do grupo para %1$@: %2$@"
+          }
+        }
+      }
+    },
+    "Gym" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Academia"
+          }
+        }
+      }
+    },
+    "Health" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saúde"
+          }
+        }
+      }
+    },
+    "Heart" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coração"
+          }
+        }
+      }
+    },
+    "Home and decor" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casa e decoração"
+          }
+        }
+      }
+    },
+    "House" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casa"
+          }
+        }
+      }
+    },
+    "How it shows on bills" : {
+      "comment" : "New category: preview",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assim aparece nas contas"
+          }
+        }
+      }
+    },
+    "Icon" : {
+      "comment" : "New category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ícone"
+          }
+        }
+      }
+    },
+    "Inside" : {
+      "comment" : "New category: its parent",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dentro de"
+          }
+        }
+      }
+    },
+    "Internet" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Internet"
+          }
+        }
+      }
+    },
+    "It adds up to %lld%%. %lld%% missing." : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A soma dá %1$lld%%. Faltam %2$lld%%."
+          }
+        }
+      }
+    },
+    "It adds up to %lld%%. %lld%% too much." : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A soma dá %1$lld%%. Passou %2$lld%%."
+          }
+        }
+      }
+    },
+    "It belongs to all of %@: anyone in the group can use, edit and delete it." : {
+      "comment" : "New category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fica para todo o %@: qualquer pessoa do grupo pode usar, editar e apagar."
+          }
+        }
+      }
+    },
+    "It has subcategories, so it stays a main category." : {
+      "comment" : "Edit category: why it can't go inside another",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tem subcategorias, então continua principal."
+          }
+        }
+      }
+    },
+    "Leisure" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lazer"
+          }
+        }
+      }
+    },
+    "Lodging" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hospedagem"
+          }
+        }
+      }
+    },
+    "Most used in the group" : {
+      "comment" : "Why a category is suggested",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais usada no grupo"
+          }
+        }
+      }
+    },
+    "Music" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Música"
+          }
+        }
+      }
+    },
+    "New Category…" : {
+      "comment" : "Mac menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova Categoria…"
+          }
+        }
+      }
+    },
+    "New category" : {
+      "comment" : "Title and button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova categoria"
+          }
+        }
+      }
+    },
+    "New in %@" : {
+      "comment" : "Create a subcategory inside a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova em %@"
+          }
+        }
+      }
+    },
+    "New in %@…" : {
+      "comment" : "Mac menu: create a subcategory",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova em %@…"
+          }
+        }
+      }
+    },
+    "New subcategory" : {
+      "comment" : "Title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova subcategoria"
+          }
+        }
+      }
+    },
+    "No category with “%@”" : {
+      "comment" : "Category search found nothing",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma categoria com “%@”"
           }
         }
       }
@@ -298,6 +1288,72 @@
         }
       }
     },
+    "No subcategories" : {
+      "comment" : "Under a main category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem subcategorias"
+          }
+        }
+      }
+    },
+    "No word of your map. The bill stays in Other; tap the icon to pick one." : {
+      "comment" : "Under a bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma palavra do seu mapa. A conta fica em Outros; toque no ícone para escolher."
+          }
+        }
+      }
+    },
+    "None. Every category follows the split above." : {
+      "comment" : "Default split without exceptions",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma. Todas as categorias seguem a divisão acima."
+          }
+        }
+      }
+    },
+    "None: main category" : {
+      "comment" : "New category: no parent",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma: categoria principal"
+          }
+        }
+      }
+    },
+    "Offline: the category can already be used on this %@ and reaches the group once back online." : {
+      "comment" : "New category offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet: a categoria já pode ser usada neste %@ e aparece para o grupo ao reconectar."
+          }
+        }
+      }
+    },
+    "On a %@ bill in %@: %@" : {
+      "comment" : "Exception by category: the example",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numa conta de %1$@ no %2$@: %3$@"
+          }
+        }
+      }
+    },
     "Once you create or join a group, its expenses and balances show on this side of the fold." : {
       "comment" : "The column beside the empty home on an iPhone Duo open, across the fold from the list",
       "localizations" : {
@@ -305,6 +1361,460 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quando você criar ou entrar num grupo, as despesas e os saldos aparecem deste lado da dobra."
+          }
+        }
+      }
+    },
+    "Only %@" : {
+      "comment" : "Pick only the main category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só %@"
+          }
+        }
+      }
+    },
+    "Other (category)" : {
+      "comment" : "An app category",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outros"
+          }
+        }
+      }
+    },
+    "Other (icon)" : {
+      "comment" : "An icon of a category",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outros"
+          }
+        }
+      }
+    },
+    "Parking" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estacionamento"
+          }
+        }
+      }
+    },
+    "Parties" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Festas"
+          }
+        }
+      }
+    },
+    "Paw" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pata"
+          }
+        }
+      }
+    },
+    "Percentage, %@" : {
+      "comment" : "An exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porcentagem, %@"
+          }
+        }
+      }
+    },
+    "Pharmacy" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farmácia"
+          }
+        }
+      }
+    },
+    "Pick a category for the exception." : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha uma categoria para a exceção."
+          }
+        }
+      }
+    },
+    "Pick a category to create a subcategory." : {
+      "comment" : "New category: under Inside",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha uma categoria para criar uma subcategoria."
+          }
+        }
+      }
+    },
+    "Pick a subcategory or keep just %@" : {
+      "comment" : "Beside the categories",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha uma subcategoria ou fique só com %@"
+          }
+        }
+      }
+    },
+    "Plane" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avião"
+          }
+        }
+      }
+    },
+    "Remove exception" : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover exceção"
+          }
+        }
+      }
+    },
+    "Rent" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aluguel"
+          }
+        }
+      }
+    },
+    "Restaurant" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurante"
+          }
+        }
+      }
+    },
+    "Ride-hailing" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corrida por app"
+          }
+        }
+      }
+    },
+    "Save exception" : {
+      "comment" : "Exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salvar exceção"
+          }
+        }
+      }
+    },
+    "Search categories" : {
+      "comment" : "Category picker search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar categoria"
+          }
+        }
+      }
+    },
+    "Shares, %@" : {
+      "comment" : "An exception by category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partes, %@"
+          }
+        }
+      }
+    },
+    "Shopping" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compras"
+          }
+        }
+      }
+    },
+    "Split by category: %@" : {
+      "comment" : "VoiceOver label of the pie",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Divisão por categoria: %@"
+          }
+        }
+      }
+    },
+    "Sports" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esportes"
+          }
+        }
+      }
+    },
+    "Streaming" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Streaming"
+          }
+        }
+      }
+    },
+    "Subscription" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assinatura"
+          }
+        }
+      }
+    },
+    "Subscriptions" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assinaturas"
+          }
+        }
+      }
+    },
+    "Suggested" : {
+      "comment" : "Category picker section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sugeridas"
+          }
+        }
+      }
+    },
+    "Sun" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sol"
+          }
+        }
+      }
+    },
+    "Supplies" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Material"
+          }
+        }
+      }
+    },
+    "The %lld bills with %@ move to %@. The category goes for all of %@." : {
+      "comment" : "Delete category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As %1$lld contas com %2$@ passam para %3$@. A categoria some para todo o %4$@."
+          }
+        }
+      }
+    },
+    "The category goes for all of %@." : {
+      "comment" : "Delete category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A categoria some para todo o %@."
+          }
+        }
+      }
+    },
+    "Ticket" : {
+      "comment" : "An icon of a category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresso"
+          }
+        }
+      }
+    },
+    "Tickets and flights" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passagem"
+          }
+        }
+      }
+    },
+    "Tolls" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pedágio"
+          }
+        }
+      }
+    },
+    "Touch and hold one of the group's categories to edit or delete it." : {
+      "comment" : "Category picker",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque e segure numa categoria do grupo para editar ou apagar."
+          }
+        }
+      }
+    },
+    "Tours" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passeios"
+          }
+        }
+      }
+    },
+    "Transport" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transporte"
+          }
+        }
+      }
+    },
+    "Travel" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viagem"
+          }
+        }
+      }
+    },
+    "Up to 30 letters. It can't repeat inside the same category." : {
+      "comment" : "New category: the name's rules",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Até 30 letras. Não pode repetir dentro da mesma categoria."
+          }
+        }
+      }
+    },
+    "Water" : {
+      "comment" : "An app category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Água"
+          }
+        }
+      }
+    },
+    "You picked %@. By the map it would be %@ (“%@”)." : {
+      "comment" : "Under a bill's description: the category picked by hand differs from the map's",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você escolheu %1$@. Pelo mapa seria %2$@ (“%3$@”)."
           }
         }
       }
@@ -822,6 +2332,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ não participa"
+          }
+        }
+      }
+    },
+    "in %@" : {
+      "comment" : "Category search: where a subcategory is",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "em %@"
           }
         }
       }
@@ -1575,6 +3096,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Procuramos em grupos, pessoas e despesas deste %@, inclusive nos grupos quitados."
+          }
+        }
+      }
+    },
+    "used in %lld bills" : {
+      "comment" : "Edit category: how many bills have it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "usada em %lld contas"
           }
         }
       }

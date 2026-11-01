@@ -187,7 +187,7 @@ private func payerText(_ row: ExpenseRow) -> String? {
     ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
 }
 
-/// No categories yet: every bill gets the same receipt, and a payment the banknote.
+/// A payment's banknote (a bill draws its category's badge instead).
 struct ExpenseIcon: View {
     var size: CGFloat = 38
     var systemName = "receipt"
@@ -301,6 +301,8 @@ private struct PhoneExpenseSections: View {
 /// An entry of the day: its icon, a title and a meta line (with the orange dot while queued), and its amounts.
 private struct PhoneDayRow<Amounts: View>: View {
     let systemImage: String
+    /// A bill's category, drawn in place of the icon (6.1); nil for a payment.
+    var category: Shared.Category?
     let title: String
     let meta: String
     let isPending: Bool
@@ -308,7 +310,11 @@ private struct PhoneDayRow<Amounts: View>: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            ExpenseIcon(systemName: systemImage)
+            if let category {
+                CategoryBadge(category: category, size: 38)
+            } else {
+                ExpenseIcon(systemName: systemImage)
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: title)
                     .lineLimit(1)
@@ -335,7 +341,7 @@ private struct PhoneExpenseRow: View {
     let currency: GroupCurrency
 
     var body: some View {
-        PhoneDayRow(systemImage: "receipt", title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
+        PhoneDayRow(systemImage: "receipt", category: row.category, title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
             Text(verbatim: currency.format(row.totalMinor))
                 .monospacedDigit()
             MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: currency)
@@ -421,7 +427,11 @@ private struct MacGroupExpenses: View {
         Table(of: DayEntryItem.self, selection: $selection) {
             TableColumn("Expense") { item in
                 HStack(spacing: 8) {
-                    ExpenseIcon(size: 24, systemName: item.payment == nil ? "receipt" : "banknote")
+                    if let expense = item.expense {
+                        CategoryBadge(category: expense.category, size: 24)
+                    } else {
+                        ExpenseIcon(size: 24, systemName: "banknote")
+                    }
                     Text(verbatim: item.expense?.description_ ?? item.payment.map(PaymentCopy.title) ?? "")
                         .lineLimit(1)
                     if item.payment != nil {
