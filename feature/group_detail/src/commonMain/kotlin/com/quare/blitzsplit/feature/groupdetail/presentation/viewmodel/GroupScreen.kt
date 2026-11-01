@@ -4,7 +4,6 @@ import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
-import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.faceOf
@@ -19,7 +18,6 @@ import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -57,7 +55,8 @@ internal class GroupScreen(
 ) {
     private val notices = RecordedPaymentNotices(useCases.consumeRecordedPayment, useCases.deleteSettlement)
 
-    private val exit = GroupExitController(
+    // Why: the ⋮ menu's "Sair do grupo" and "Apagar grupo" and their dialogs, which the ViewModels call directly.
+    val exit = GroupExitController(
         leaveGroup = useCases.leaveGroup,
         deleteGroup = useCases.deleteGroup,
         scope = scope,
@@ -66,8 +65,6 @@ internal class GroupScreen(
         onExited = ::backToGroups,
         showError = showExitError,
     )
-
-    val exitState: StateFlow<GroupExitState> = exit.state
 
     private var group: Group? = null
     private var balances = GroupBalances(
@@ -196,22 +193,6 @@ internal class GroupScreen(
         )
     }
 
-    fun askToLeave() {
-        exit.askToLeave()
-    }
-
-    fun askToDelete() {
-        exit.askToDelete()
-    }
-
-    fun confirmExit() {
-        exit.confirm()
-    }
-
-    fun dismissExit() {
-        exit.dismiss()
-    }
-
     // Why: "Voltar para Grupos" on "Grupo apagado".
     fun closeDeletedNotice() {
         exit.clearDeletedNotice()
@@ -230,7 +211,7 @@ internal class GroupScreen(
      * someone else deleted says so first, once on top; otherwise, as before, the screen just closes.
      */
     private suspend fun closeGone() {
-        val state = exitState.value
+        val state = exit.state.value
         when {
             state.isRunning -> backToGroups()
 

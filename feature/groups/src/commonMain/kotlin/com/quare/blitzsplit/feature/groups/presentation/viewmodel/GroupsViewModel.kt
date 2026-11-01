@@ -105,9 +105,6 @@ class GroupsViewModel(
     // Why: the deletions no screen showed yet, so the next one shows once the current snackbar goes.
     private var pendingDeletions = emptyList<GroupDeletion>()
 
-    // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
-    private var isOnline = true
-
     // Why: what the dialogs of "Sair do grupo" and "Apagar grupo" read of the group asked for, as Room has it now.
     private var groupsWithMoney = emptyList<GroupWithMoney>()
 
@@ -139,7 +136,6 @@ class GroupsViewModel(
             observeSyncState(),
             connectivityObserver.observe(),
         ) { profile, account, syncState, isOnline ->
-            this.isOnline = isOnline
             exit.setOnline(isOnline)
             val displayName = profile?.displayName?.trim().orEmpty()
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
@@ -280,7 +276,8 @@ class GroupsViewModel(
 
     private fun refresh() {
         if (uiState.value.isRefreshing) return
-        if (!isOnline) return
+        // Why: offline, a pull to refresh ends at once instead of waiting for a sync that can't reach the server.
+        if (!exit.state.value.isOnline) return
         uiState.update { it.copy(isRefreshing = true) }
         viewModelScope.launch {
             // Why: a failure shows as the sync badge's "Sem resposta do servidor", so the result is not read here.

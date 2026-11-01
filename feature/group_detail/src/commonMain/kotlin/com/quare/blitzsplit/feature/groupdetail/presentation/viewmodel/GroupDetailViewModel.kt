@@ -76,7 +76,7 @@ class GroupDetailViewModel(
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
-        screen.exitState
+        screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
@@ -106,13 +106,13 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            GroupDetailUiEvent.OnLeaveGroupClicked -> screen.askToLeave()
+            GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
-            GroupDetailUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
+            GroupDetailUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
 
-            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.confirmExit()
+            GroupDetailUiEvent.OnGroupExitConfirmed -> screen.exit.confirm()
 
-            GroupDetailUiEvent.OnGroupExitDismissed -> screen.dismissExit()
+            GroupDetailUiEvent.OnGroupExitDismissed -> screen.exit.dismiss()
 
             GroupDetailUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
 

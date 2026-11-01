@@ -60,7 +60,7 @@ class BalancesViewModel(
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
         )
-        screen.exitState
+        screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
     }
@@ -79,13 +79,13 @@ class BalancesViewModel(
 
             BalancesUiEvent.OnEditGroupClicked -> screen.open(Route.EditGroup(route.groupId))
 
-            BalancesUiEvent.OnLeaveGroupClicked -> screen.askToLeave()
+            BalancesUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
 
-            BalancesUiEvent.OnDeleteGroupClicked -> screen.askToDelete()
+            BalancesUiEvent.OnDeleteGroupClicked -> screen.exit.askToDelete()
 
-            BalancesUiEvent.OnGroupExitConfirmed -> screen.confirmExit()
+            BalancesUiEvent.OnGroupExitConfirmed -> screen.exit.confirm()
 
-            BalancesUiEvent.OnGroupExitDismissed -> screen.dismissExit()
+            BalancesUiEvent.OnGroupExitDismissed -> screen.exit.dismiss()
 
             BalancesUiEvent.OnBackToGroupsClicked -> screen.closeDeletedNotice()
 
