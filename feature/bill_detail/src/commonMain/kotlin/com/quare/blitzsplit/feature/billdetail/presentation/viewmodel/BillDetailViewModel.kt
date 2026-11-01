@@ -256,6 +256,7 @@ class BillDetailViewModel(
             Route.SplitBill(
                 groupId = route.groupId,
                 expenseId = route.expenseId,
+                picksGroupFirst = false,
             ),
         )
     }

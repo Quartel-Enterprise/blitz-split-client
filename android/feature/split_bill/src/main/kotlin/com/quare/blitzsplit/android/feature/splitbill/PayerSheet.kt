@@ -126,7 +126,7 @@ private fun PayerColumn(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             state.people.forEachIndexed { index, person ->
-                PayerOptionRow(
+                SheetOptionRow(
                     title = personNameOf(person),
                     subtitle = stringResource(R.string.split_bill_not_joined).takeIf { !person.hasJoined },
                     isSelected = person.id == selection.memberId,
@@ -141,7 +141,7 @@ private fun PayerColumn(
                 }
             }
             // Why: marked while the bill has several payers and nobody else was picked; it opens their amounts.
-            PayerOptionRow(
+            SheetOptionRow(
                 title = stringResource(R.string.split_bill_several_payers),
                 subtitle = stringResource(R.string.split_bill_several_payers_hint),
                 isSelected = selection.memberId == null,
@@ -236,7 +236,7 @@ private fun payersStatusOrNull(
 }
 
 @Composable
-private fun SheetColumn(
+internal fun SheetColumn(
     title: String,
     subtitle: String,
     content: @Composable () -> Unit,
@@ -323,7 +323,7 @@ private fun PayerAmountRowItem(
 }
 
 @Composable
-private fun PayerOptionRow(
+internal fun SheetOptionRow(
     title: String,
     subtitle: String?,
     isSelected: Boolean,

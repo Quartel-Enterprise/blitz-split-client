@@ -64,9 +64,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     `showsNoSettledGroups`); a phone hides an empty Quitados. "Saldo geral" sums the nets per currency, never across
     two, the currency with the most groups first (`GroupsSummary`); "A receber" and "A pagar" sum the positive and the
     negative nets, are disabled at zero and answer "Em breve" until the global Saldos (flow 8). "Rachar conta"
-    (Android's FAB, iOS's +, the main button on the web and the Mac) opens Novo grupo while there's no group and answers
-    "Em breve" until it picks a group (7.1i). The sync status shows only when it asks for attention, "Offline · 1
-    alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
+    (Android's FAB, iOS's +, the main button on the web and the Mac) opens Novo grupo while there's no group, and
+    otherwise Rachar conta asking which group first (7.1i). The sync status shows only when it asks for attention,
+    "Offline · 1 alteração na fila" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "na fila"). Pulling down syncs on Android and iOS. There is no first-download
     progress (5.1d) yet: the sync can't tell how many groups are still to come.
   - The home's group actions (5.3, 5.4): every row of Grupos and Quitados ends in a ⋮ (⋯ on iOS, macOS and the web)
@@ -199,14 +199,29 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     someone makes it add up again; one person holding the whole total is one payer again. "Quando"
     picks date and time, never after now, and there is no category yet. A bill is 0.01 to 100 million in the group's currency with a
     description; Salvar stays disabled until both are valid and the split adds up, and saving goes back to the
-    group. "Dividir" splits by Igual, Valores, % (whole numbers adding up to 100) or Partes, and only changes the
-    bill on "Pronto". The cents a split can't share evenly go to whoever paid, while they are in the split: one each
+    group's screen it was split from, or opens the bill's group's Despesas in its place. "Dividir" splits by Igual,
+    Valores, % (whole numbers adding up to 100) or Partes, and only changes the bill on "Pronto". The cents a split can't share evenly go to whoever paid, while they are in the split: one each
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).
     Changing the total redoes a "Valores" split proportionally. Payers and shares live inside the bill (one
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's
     user first, `PayerOrder`) and count more ("3 pessoas pagaram"), and Dividir marks each of several payers "Pagou
     parte da conta"; Conta's "Sua parte" names whom the bill puts it on, as Saldos does
     (`GroupBalances.findDebtsWithin`).
+  - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
+    activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
+    último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
+    included, the most recent activity first as on the home (`ObserveGroupsByActivity`), each with "6 pessoas", one
+    marked until "Continuar" (`SplitBillUiState.groupSelection`); closing it keeps the marked group's bill. With a
+    single group it goes straight to the bill, and a sync bringing a second one never asks later. A new bill's group
+    reopens it from the form on every platform, once there is another group (`SplitBillUiState.canChangeGroup`):
+    Android's chip, iOS's "Grupo" row, the web's "Grupo" field and a pop-up button on the Mac, which picks in one go
+    (the Mac's sheet only asks from the home); "Editar conta" keeps its group. Another group keeps what was typed
+    (valor, descrição, quando), but who paid and the split start over with its people: you pay, Igual among everyone.
+    A sync deleting the group the bill was moved to sends it back to the group it was opened for, the same way, and
+    closes Rachar conta only once that one is gone too.
+    A bottom sheet on Android, a sheet on iOS and the Mac, a dialog over the bill on the web (in its place on a
+    phone's drawer). Saving a bill from the home, or moved to a group other than the one it was split from, opens
+    that group's Despesas in Rachar conta's place.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on Membros with "Você entrou como <nome>" and, while the account has no Google or Apple,
     "Proteja seu acesso", which opens the Perfil. Joining with no profile on the device makes one from the name and

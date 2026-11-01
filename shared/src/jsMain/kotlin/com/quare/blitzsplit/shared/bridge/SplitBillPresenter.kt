@@ -95,6 +95,15 @@ class JsPayerAmounts(
     val paying: Array<JsPayerAmountRow>,
 )
 
+// Why: a group "Rachar em qual grupo?" lists.
+class JsBillGroup(
+    val id: String,
+    val name: String,
+    val initials: String,
+    val color: String,
+    val memberCount: Int,
+)
+
 // Why: changedAt in epoch millis, which the page writes as how long ago.
 class JsBillConflict(
     val changerName: String?,
@@ -104,9 +113,14 @@ class JsBillConflict(
 
 class JsSplitBillState(
     val isEditing: Boolean,
+    val groupId: String,
     val groupName: String,
     val groupInitials: String,
     val groupColor: String,
+    val groups: Array<JsBillGroup>,
+    val canChangeGroup: Boolean,
+    // Why: the group "Rachar em qual grupo?" marks while it is open, null while it is closed.
+    val groupSelection: String?,
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
@@ -160,9 +174,22 @@ class SplitBillPresenter(
         val states = viewModel.uiState.map { state ->
             JsSplitBillState(
                 isEditing = state.isEditing,
+                groupId = state.groupId,
                 groupName = state.groupName,
                 groupInitials = state.groupInitials,
                 groupColor = state.groupColor.code,
+                groups = state.groups
+                    .map {
+                        JsBillGroup(
+                            id = it.id,
+                            name = it.name,
+                            initials = it.initials,
+                            color = it.color.code,
+                            memberCount = it.memberCount,
+                        )
+                    }.toTypedArray(),
+                canChangeGroup = state.canChangeGroup,
+                groupSelection = state.groupSelection?.groupId,
                 currency = state.currency.code,
                 fractionDigits = state.currency.fractionDigits,
                 people = state.people.map(::toJsBillPerson).toTypedArray(),
@@ -245,6 +272,22 @@ class SplitBillPresenter(
     }
 
     fun getDescription(): String = viewModel.uiState.value.description
+
+    fun openGroup() {
+        viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+    }
+
+    fun pickGroup(groupId: String) {
+        viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(groupId))
+    }
+
+    fun confirmGroup() {
+        viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+    }
+
+    fun dismissGroup() {
+        viewModel.onEvent(SplitBillUiEvent.OnGroupDismissed)
+    }
 
     fun openPayer() {
         viewModel.onEvent(SplitBillUiEvent.OnPayerClicked)

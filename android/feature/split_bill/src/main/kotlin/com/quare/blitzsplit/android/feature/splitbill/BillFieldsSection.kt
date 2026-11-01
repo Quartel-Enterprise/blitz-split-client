@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -19,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -37,7 +43,10 @@ internal fun BillFieldsSection(
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    GroupChip(state)
+    GroupChip(
+        state = state,
+        onEvent = onEvent,
+    )
     AmountField(
         state = state,
         money = money,
@@ -63,40 +72,78 @@ internal fun BillFieldsSection(
     )
 }
 
-// Why: the group of the bill, which this screen can't change yet.
+/*
+ * Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group. A group
+ * that can't change is a plain label (no button role for TalkBack), not a disabled control.
+ */
 @Composable
-private fun GroupChip(state: SplitBillUiState) {
-    Surface(
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        Row(
-            modifier = Modifier
-                .height(40.dp)
-                .padding(
-                    start = 4.dp,
-                    end = 14.dp,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+private fun GroupChip(
+    state: SplitBillUiState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    val shape = CircleShape
+    val color = MaterialTheme.colorScheme.surfaceContainerHigh
+    val contentColor = MaterialTheme.colorScheme.onSurface
+    if (state.canChangeGroup) {
+        val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+        Surface(
+            onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
+            modifier = Modifier.semantics { contentDescription = changeLabel },
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
         ) {
-            GroupBadge(
-                initials = state.groupInitials,
-                color = state.groupColor,
-                size = 32.dp,
-            )
-            Text(
-                text = state.groupName,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+            GroupChipContent(state)
+        }
+    } else {
+        Surface(
+            shape = shape,
+            color = color,
+            contentColor = contentColor,
+        ) {
+            GroupChipContent(state)
+        }
+    }
+}
+
+@Composable
+private fun GroupChipContent(state: SplitBillUiState) {
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .padding(
+                start = 4.dp,
+                end = if (state.canChangeGroup) 10.dp else 14.dp,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GroupBadge(
+            initials = state.groupInitials,
+            color = state.groupColor,
+            size = 32.dp,
+        )
+        Text(
+            text = state.groupName,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (state.canChangeGroup) {
+            Icon(
+                imageVector = Icons.Outlined.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
             )
         }
     }
 }
 
-// Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir.
+/*
+ * Why: a new bill opens on the amount, its keyboard up, as the canvas draws it focused; not when back from Dividir, and
+ * only once "Rachar em qual grupo?" no longer covers it.
+ */
 @Composable
 private fun AmountField(
     state: SplitBillUiState,
@@ -105,8 +152,9 @@ private fun AmountField(
 ) {
     val focusRequester = remember { FocusRequester() }
     val isAmountEmpty = state.amountText.isEmpty()
-    LaunchedEffect(focusRequester) {
-        if (isAmountEmpty) focusRequester.requestFocus()
+    val isAskingGroup = state.groupSelection != null
+    LaunchedEffect(focusRequester, isAskingGroup) {
+        if (isAmountEmpty && !isAskingGroup) focusRequester.requestFocus()
     }
     val help = listOfNotNull(
         amountHelpOrNull(

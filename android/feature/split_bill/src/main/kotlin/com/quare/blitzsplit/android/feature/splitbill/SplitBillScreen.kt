@@ -69,6 +69,13 @@ fun SplitBillScreen(
             )
         }
     }
+    state.groupSelection?.let { selection ->
+        GroupSheet(
+            groups = state.groups,
+            selection = selection,
+            onEvent = viewModel::onEvent,
+        )
+    }
     state.payerSelection?.let { selection ->
         PayerSheet(
             state = state,

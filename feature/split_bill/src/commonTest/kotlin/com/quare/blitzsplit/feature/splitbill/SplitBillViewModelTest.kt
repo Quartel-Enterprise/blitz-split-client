@@ -2183,7 +2183,11 @@ class SplitBillViewModelTest {
 
     private fun SplitEditor.valueByMember(): Map<String, String> = rows.associate { it.person.id to it.valueText }
 
-    private val route = Route.SplitBill(GROUP_ID, expenseId = null)
+    private val route = Route.SplitBill(
+        GROUP_ID,
+        expenseId = null,
+        picksGroupFirst = false,
+    )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
@@ -2268,6 +2272,7 @@ class SplitBillViewModelTest {
             decimalSeparator = { decimalSeparator },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeExpense = ObserveExpenseUseCase(expenses),
+            observeGroupsByActivity = { groups.groups },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

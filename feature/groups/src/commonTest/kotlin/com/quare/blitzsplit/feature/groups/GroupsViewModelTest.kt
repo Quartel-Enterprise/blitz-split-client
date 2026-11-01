@@ -1900,19 +1900,35 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group WHEN tapping Rachar conta THEN says picking a group is coming soon`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = listOf(trio()))
-        val actions = mutableListOf<GroupsUiAction>()
-        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+    fun `GIVEN groups WHEN tapping Rachar conta THEN asks which group with the most recently used marked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(updatedAt = 1L),
+                    group(
+                        id = "recent",
+                        updatedAt = 2L,
+                    ),
+                ),
+            )
 
-        // When
-        viewModel.onEvent(GroupsUiEvent.OnSplitBillClicked)
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSplitBillClicked)
 
-        // Then
-        assertEquals(listOf<GroupsUiAction>(GroupsUiAction.ShowComingSoon), actions)
-        assertEquals(Route.Groups, navigator.backStack.value.last())
-    }
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.SplitBill(
+                        groupId = "recent",
+                        expenseId = null,
+                        picksGroupFirst = true,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN another screen over the home WHEN tapping Rachar conta THEN opens nothing`() = runTest(testDispatcher) {

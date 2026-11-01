@@ -12,6 +12,19 @@ sealed interface SplitBillUiEvent : UiEvent {
         val text: String,
     ) : SplitBillUiEvent
 
+    // Why: the group of a new bill, which opens "Rachar em qual grupo?" with it marked.
+    data object OnGroupClicked : SplitBillUiEvent
+
+    data class OnGroupPicked(
+        val groupId: String,
+    ) : SplitBillUiEvent
+
+    // Why: "Continuar" on "Rachar em qual grupo?".
+    data object OnGroupDone : SplitBillUiEvent
+
+    // Why: the sheet closed without "Continuar", which leaves the bill in its group.
+    data object OnGroupDismissed : SplitBillUiEvent
+
     // Why: "Quem pagou", which opens the sheet with whoever paid marked, or "Várias pessoas".
     data object OnPayerClicked : SplitBillUiEvent
 

@@ -395,6 +395,11 @@ export const pt: Record<MessageKey, string> = {
 
   splitBill_title: 'Rachar conta',
   splitBill_group: 'Grupo',
+  splitBill_groupTitle: 'Rachar em qual grupo?',
+  splitBill_groupLead: 'O último que você usou vem marcado',
+  splitBill_groupContinue: 'Continuar',
+  splitBill_groupPeopleOne: '{count} pessoa',
+  splitBill_groupPeopleOther: '{count} pessoas',
   splitBill_amount: 'Valor',
   splitBill_description: 'Descrição',
   splitBill_descriptionPlaceholder: 'O que foi? Ex.: Mercado',

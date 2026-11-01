@@ -30,6 +30,7 @@ import { splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
 
 const formId = 'split-bill-form'
+const groupId = 'split-bill-group'
 const amountId = 'split-bill-amount'
 const amountHelpId = 'split-bill-amount-help'
 const amountEditHelpId = 'split-bill-amount-edit-help'
@@ -50,7 +51,8 @@ const splitTitles: Record<string, MessageKey> = {
 /**
  * "Rachar conta", over the group's page: a dialog on desktop and tablet, a drawer on the phone, like "Entrar com
  * link ou QR". "Dividir" takes the dialog's place while it is open, as the canvas draws it; "Quem pagou" and "Várias
- * pessoas pagaram" open over it on desktop and in its place on the phone. Closing it any way is the ViewModel's:
+ * pessoas pagaram" open over it on desktop and in its place on the phone, and so does "Rachar em qual grupo?", which the
+ * home's "Rachar conta" opens first. Closing it any way is the ViewModel's:
  * Dividir's back, the payer sheets' dismissal or the bill's close. With a bill to edit it is "Editar conta", over
  * Conta, and can delete the bill.
  */
@@ -67,10 +69,12 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
   const editor = state.splitEditor
   const isPayerOpen = state.isPayerOpen
+  const isGroupOpen = state.groupSelection != null
   const payerAmounts = state.payerAmounts
   const onOpenChange = (open: boolean) => {
     if (open) return
     if (editor) presenter.dismissSplit()
+    else if (isGroupOpen) presenter.dismissGroup()
     else if (isPayerOpen) presenter.dismissPayer()
     else if (payerAmounts) presenter.dismissSeveralPayers()
     else presenter.close()
@@ -78,6 +82,7 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
 
   let pane: PaneParts
   if (editor) pane = splitPane(presenter, state, editor, money)
+  else if (isGroupOpen && !isDesktop) pane = groupPane(presenter, state)
   else if (isPayerOpen && !isDesktop) pane = payerPane(presenter, state, money)
   else if (payerAmounts && !isDesktop) pane = severalPayersPane(presenter, state, payerAmounts, money)
   else pane = billPane(presenter, state, money)
@@ -99,6 +104,7 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
         onOpenChange={onOpenChange}
         className={cn('gap-5', editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
       />
+      {isDesktop && !editor && isGroupOpen && <GroupDialog presenter={presenter} state={state} />}
       {isDesktop && !editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
       {isDesktop && !editor && payerAmounts && <SeveralPayersDialog presenter={presenter} state={state} amounts={payerAmounts} money={money} />}
       {deletion}
@@ -169,14 +175,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       {state.conflict && <ConflictBanner conflict={state.conflict} />}
       <div className="grid gap-x-6 gap-y-4 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-4">
-          {/* Not a control: the bill stays in this group (no switching groups yet). */}
-          <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">{t('splitBill_group')}</span>
-            <div className="flex h-9 items-center gap-2 rounded-md border bg-muted/40 px-3 text-sm">
-              <GroupAvatar initials={state.groupInitials} color={state.groupColor} className="size-5 rounded-md text-[9px]" />
-              <span className="truncate">{state.groupName}</span>
-            </div>
-          </div>
+          <GroupField presenter={presenter} state={state} />
           <div className="flex flex-col gap-1.5">
             <Label htmlFor={amountId} className={cn(state.showsAmountError && 'text-destructive')}>
               {t('splitBill_amount')}
@@ -249,6 +248,83 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
       )}
       {state.showsAnyoneCanEditHint && <p className="text-[13px] leading-[18px] text-muted-foreground">{t('splitBill_anyoneCanEdit')}</p>}
     </form>
+  )
+}
+
+/**
+ * "Grupo": a new bill's opens "Rachar em qual grupo?" once there is another group to pick; a saved bill's, or the only
+ * group's, is plain text.
+ */
+function GroupField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
+  const content = (
+    <>
+      <GroupAvatar initials={state.groupInitials} color={state.groupColor} className="size-5 rounded-md text-[9px]" />
+      <span className="flex-1 truncate text-left">{state.groupName}</span>
+    </>
+  )
+  return (
+    <div className="flex flex-col gap-1.5">
+      {state.canChangeGroup ? (
+        <>
+          <Label htmlFor={groupId}>{t('splitBill_group')}</Label>
+          <button id={groupId} type="button" aria-haspopup="dialog" onClick={() => presenter.openGroup()} className={controlClass}>
+            {content}
+            <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
+          </button>
+        </>
+      ) : (
+        <>
+          <span className="text-sm font-medium">{t('splitBill_group')}</span>
+          <div className="flex h-9 items-center gap-2 rounded-md border bg-muted/40 px-3 text-sm">{content}</div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function groupPane(presenter: SplitBillPresenter, state: JsSplitBillState): PaneParts {
+  return {
+    title: t('splitBill_groupTitle'),
+    description: t('splitBill_groupLead'),
+    body: <GroupList presenter={presenter} state={state} />,
+    footer: (
+      <Button key="group-continue" onClick={() => presenter.confirmGroup()}>
+        {t('splitBill_groupContinue')}
+      </Button>
+    ),
+  }
+}
+
+/** "Rachar em qual grupo?" over the bill on desktop and tablet; its own dismissal leaves the bill in its group. */
+function GroupDialog({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
+  return (
+    <ResponsiveDialog
+      isDesktop
+      pane={groupPane(presenter, state)}
+      onOpenChange={(open) => {
+        if (!open) presenter.dismissGroup()
+      }}
+      className="sm:max-w-[420px]"
+    />
+  )
+}
+
+/** The groups, the most recently used first, each with how many people are in it. */
+function GroupList({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
+  return (
+    <div role="radiogroup" aria-label={t('splitBill_groupTitle')} className="flex flex-col divide-y overflow-hidden rounded-lg border">
+      {state.groups.map((group) => (
+        <PayerRow key={group.id} isSelected={group.id === state.groupSelection} onPick={() => presenter.pickGroup(group.id)}>
+          <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate font-medium">{group.name}</span>
+            <span className="text-xs text-muted-foreground">
+              {t(group.memberCount === 1 ? 'splitBill_groupPeopleOne' : 'splitBill_groupPeopleOther', { count: group.memberCount })}
+            </span>
+          </span>
+        </PayerRow>
+      ))}
+    </div>
   )
 }
 

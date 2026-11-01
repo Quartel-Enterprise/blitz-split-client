@@ -43,7 +43,7 @@ export function App() {
   const top = backStack[backStack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
   // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
-  // bill and the group's editor open over the group's expenses the same way, and a payment over its balances,
+  // bill and the group's editor open over the group's expenses (a bill from the home over the home) the same way, and a payment over its balances,
   // expenses or members.
   const isPaymentKey = top.name === 'payment-key'
   const isDeleteAccount = top.name === 'delete-account'

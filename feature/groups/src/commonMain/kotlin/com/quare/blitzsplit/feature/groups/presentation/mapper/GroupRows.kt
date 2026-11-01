@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
+import com.quare.blitzsplit.core.expenses.domain.model.GroupActivity
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -18,18 +19,13 @@ private const val MAX_FACES = 3
 private const val DAYS_IN_WEEK = 7
 private const val MAX_WEEKS = 4
 
-/*
- * Why: the most recent activity first, the groups' own order (the latest change first) breaking a tie, as the
- * design's "Em aberto" and "Quitados" both list them.
- */
+// Why: in the order "Rachar em qual grupo?" lists them too, as the design's "Em aberto" and "Quitados" both list them.
 internal fun rowsOf(
     groups: List<GroupWithMoney>,
     clock: ActivityClock,
 ): List<GroupRow> = groups
     .map { rowOf(it, clock) }
-    .withIndex()
-    .sortedWith(compareByDescending<IndexedValue<GroupRow>> { it.value.lastActivity.epochMillis }.thenBy { it.index })
-    .map { it.value }
+    .sortedWith(GroupActivity.compareMostRecentFirst { it.lastActivity.epochMillis })
 
 internal fun rowOf(
     item: GroupWithMoney,
@@ -42,11 +38,10 @@ internal fun rowOf(
     val receives = myBalance?.receivesMinor ?: 0L
     val owes = myBalance?.owesMinor ?: 0L
     val pendingBill = item.expenses.filter { it.isPending }.maxByOrNull { it.updatedAt }
-    // Why: when each one was saved, not its "Quando": a payment recorded today and dated last week is today's.
-    val activityAt = maxOf(
-        group.updatedAt,
-        item.expenses.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
-        item.settlements.maxOfOrNull { it.updatedAt } ?: Long.MIN_VALUE,
+    val activityAt = GroupActivity.latestAtOf(
+        groupUpdatedAt = group.updatedAt,
+        expenses = item.expenses,
+        settlements = item.settlements,
     )
     return GroupRow(
         id = group.id,
