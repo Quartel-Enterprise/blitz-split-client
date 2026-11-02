@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -19,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +28,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -240,6 +241,7 @@ private fun SheetContent(
  * Why: a tabletop (6.5): full screen under a bar with ✕, who paid whom and the amount in the top half, facing whoever
  * reads, and how, when and the buttons in the bottom one, within thumb reach. Each half scrolls on its own.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TabletopContent(
     state: RegisterPaymentUiState,
@@ -259,28 +261,21 @@ private fun TabletopContent(
     ) {
         Box(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
             Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(
-                        onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) },
-                        enabled = !state.isSaving,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Close,
-                            contentDescription = stringResource(R.string.register_payment_close),
-                        )
-                    }
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }
+                TopAppBar(
+                    title = { Text(title) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) },
+                            enabled = !state.isSaving,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Close,
+                                contentDescription = stringResource(R.string.register_payment_close),
+                            )
+                        }
+                    },
+                    windowInsets = WindowInsets(0),
+                )
                 TopBottomHalvesLayout(
                     modifier = Modifier.weight(1f),
                     gap = tabletopGap,

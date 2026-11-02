@@ -357,7 +357,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (4.5) comes later, since other members' keys never reach the device. It is a bottom sheet on an Android phone
     (640 dp lying down, in two columns: who paid whom and the amount, then how, when and the buttons), a 560 dp
     dialog on its tablets and foldables upright and in a book's right half, and full screen on a tabletop (✕ and
-    "Registrar pagamento" on top, who and how much above the hinge, how, when and the buttons under it); a sheet on
+    "Registrar pagamento" on top, who and how much above the hinge, how, when and the buttons under it, while Início's
+    "Quem pagou a quem?" stays a dialog there, being short); a sheet on
     iOS (in two columns on an iPhone lying down, its confirm the bar's ✓; the 540×620 form sheet with an iPad's room,
     Início's "Quem pagou a quem?" too) and macOS, a dialog on the web (a drawer on a phone). It works
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Ex-membro"

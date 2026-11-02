@@ -62,6 +62,10 @@ alert `FoldAlertDialog(..., placement = rememberDialogPlacement(...))` (the icon
 drawn like it (Convidar's "Trocar o link?" in a book's right half and a tabletop's top half, the profile's sign out
 dialogs in a book's right half).
 
+Checked on the Pixel Fold emulator: Registrar pagamento in a book's right half (`FoldDialog`) and full screen on a
+tabletop (`TopBottomHalvesLayout`), and the group's Saldos drawn alone on a tabletop; the Galaxy Z Fold and the phone
+lying down are still preview only for them.
+
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
 Perfil, Editar perfil and the keys on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
 "Não estou na lista", the profile's dialogs and Excluir conta),

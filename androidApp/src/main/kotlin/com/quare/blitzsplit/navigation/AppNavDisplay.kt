@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -161,10 +162,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      * under it (6.2); its other tabs stay beside the list, as on a book. Only the group on top counts.
      */
     var openGroupTab by remember { mutableStateOf<Pair<Route.GroupDetail, GroupTab>?>(null) }
+    val topGroupRoute = backStack.lastOrNull { it is Route.GroupDetail }
+    // Why: a group closed forgets its tab, so opening it again never starts as the Saldos it was left on.
+    LaunchedEffect(topGroupRoute) {
+        if (openGroupTab?.first != topGroupRoute) openGroupTab = null
+    }
     val showsBalancesAlone = formFactor == FormFactor.Tabletop &&
-        openGroupTab?.let { (route, tab) ->
-            tab == GroupTab.BALANCES && backStack.lastOrNull { it is Route.GroupDetail } == route
-        } == true
+        openGroupTab?.let { (route, tab) -> tab == GroupTab.BALANCES && topGroupRoute == route } == true
     val listDetail = homeListDetailOf(
         listDetail = rememberListDetailLayout().takeUnless { showsBalancesAlone },
         isHomeEmpty = isHomeEmpty,
