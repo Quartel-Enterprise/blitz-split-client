@@ -60,13 +60,14 @@ Run the `androidApp` module from Android Studio, or build it from the terminal:
 A debug build is signed with your machine's `~/.android/debug.keystore`, so a group's invite link
 (`blitzsplit.com/g/<code>`) only opens the app once that key's SHA-256 is in blitzsplit.com's `assetlinks.json`:
 otherwise Android fails the App Links verification and the link opens in the browser.
-`adb shell pm get-app-links com.quare.blitzsplit` says `verified` once it works, `legacy_failure` while the key is
-missing. Add the fingerprint that `keytool -list -v -keystore ~/.android/debug.keystore -storepass android` prints to
+On Android 12 or later, `adb shell pm get-app-links com.quare.blitzsplit` says `verified` once it works, `none` while
+the verification hasn't run yet, and a failure (`legacy_failure`, or a verifier error code such as `1024`) while the
+key is missing. Add the fingerprint that `keytool -list -v -keystore ~/.android/debug.keystore -storepass android` prints to
 `webApp/public/.well-known/assetlinks.json` and to the same file in `blitz-split-site`, whose pushes to `main` deploy
 blitzsplit.com. Android reads the file through Google's Digital Asset Links API, which keeps the old one for up to an
 hour (the `maxAge` of
 `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://blitzsplit.com&relation=delegate_permission/common.handle_all_urls`):
-until it lists your key, verification stays pending (a number such as `1024`). Then run
+until it lists your key, verification keeps failing. Then run
 `adb shell pm verify-app-links --re-verify com.quare.blitzsplit`.
 
 ## Build and run the Apple app
@@ -89,7 +90,9 @@ associated domain need a team that holds those capabilities for `com.quare.blitz
 
 A group's invite link opens the app through the `applinks` associated domain, once the system has downloaded
 blitzsplit.com's `apple-app-site-association` after the install: a link opened in the first seconds still goes to
-Safari. Test it with `xcrun simctl openurl <udid> https://blitzsplit.com/g/<code>`, or by tapping the link in Notes
+Safari. The system reads that file through Apple's CDN, which can take hours to pick up a change pushed to the site,
+and the file only lists the app id of the team in `project.yml`, so a build signed by another team never opens the
+links. Test it with `xcrun simctl openurl <udid> https://blitzsplit.com/g/<code>`, or by tapping the link in Notes
 or Messages; a link typed into Safari's address bar always stays in Safari.
 
 ## Build and run the web app
