@@ -90,6 +90,100 @@ class SaveGroupCategoryUseCaseTest {
             )
         }
 
+    @Test
+    fun `GIVEN Outros as the parent WHEN saving THEN fails and stores nothing`() = runTest {
+        // Given
+        val parentId = "other"
+
+        // When
+        val result = save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, "me")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(repository.groupCategories.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group subcategory as the parent WHEN saving THEN fails`() = runTest {
+        // Given
+        repository.groupCategories.value = listOf(category("pet", parentId = null), category("vet", parentId = "pet"))
+
+        // When
+        val result = save(null, GROUP_ID, "Banho", "vet", CategoryIcon.PAW, "me")
+
+        // Then
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `GIVEN a live group main category as the parent WHEN saving THEN stores the subcategory under it`() = runTest {
+        // Given
+        repository.groupCategories.value = listOf(category("pet", parentId = null))
+
+        // When
+        val id = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, "me").getOrThrow()
+
+        // Then
+        assertEquals(
+            "pet",
+            repository.groupCategories.value
+                .single { it.id == id }
+                .parentId,
+        )
+    }
+
+    @Test
+    fun `GIVEN a deleted group main category as the parent WHEN saving THEN fails`() = runTest {
+        // Given
+        repository.groupCategories.value = listOf(
+            category(
+                "pet",
+                parentId = null,
+                isDeleted = true,
+            ),
+        )
+
+        // When
+        val result = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, "me")
+
+        // Then
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `GIVEN a main category with subcategories WHEN moving it under another THEN fails and keeps it a main one`() =
+        runTest {
+            // Given
+            repository.groupCategories.value =
+                listOf(category("pet", parentId = null), category("vet", parentId = "pet"))
+
+            // When
+            val result = save("pet", GROUP_ID, "Pet", "home", CategoryIcon.PAW, "me")
+
+            // Then
+            assertTrue(result.isFailure)
+            assertNull(
+                repository.groupCategories.value
+                    .single { it.id == "pet" }
+                    .parentId,
+            )
+        }
+
+    private fun category(
+        id: String,
+        parentId: String?,
+        isDeleted: Boolean = false,
+    ): GroupCategory = GroupCategory(
+        id = id,
+        groupId = GROUP_ID,
+        parentId = parentId,
+        name = id,
+        icon = CategoryIcon.PAW.takeIf { parentId == null },
+        createdByMemberId = "ana",
+        isDeleted = isDeleted,
+        isPending = false,
+    )
+
     private companion object {
         const val GROUP_ID = "group-1"
     }

@@ -139,19 +139,20 @@ class SyncCoordinator(
         }
         /*
          * Why: the bills and the payments after their groups, which they need on the device to come
-         * down and on the server to go up.
+         * down and on the server to go up, and after the group's categories, so a bill never reaches
+         * another device before the category it is in.
          */
         var areGroupsSynced = false
         val groupsSynced = suspendRunCatching {
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
             areGroupsSynced = true
+            categoryRepository.download(userId).getOrThrow()
+            categoryRepository.uploadPending(userId).getOrThrow()
             expenseRepository.downloadExpenses(userId).getOrThrow()
             expenseRepository.uploadPendingExpenses(userId).getOrThrow()
             settlementRepository.downloadSettlements(userId).getOrThrow()
             settlementRepository.uploadPendingSettlements(userId).getOrThrow()
-            categoryRepository.download(userId).getOrThrow()
-            categoryRepository.uploadPending(userId).getOrThrow()
         }
         // Why: the pins need their groups too, but only order Início, so one that fails never holds the money back.
         val pinsSynced = if (areGroupsSynced) {

@@ -356,6 +356,39 @@ class BillCategoryViewModelTest {
             assertNull(power.defaultSplitException)
         }
 
+    @Test
+    fun `GIVEN Igual with everyone only for an exception WHEN another category opens THEN no group default`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(
+                    defaultSplit = GroupDefaultSplit(
+                        mode = DefaultSplitMode.EQUAL,
+                        weights = mapOf(PIERRE to 1L, ANA to 1L),
+                        exceptions = listOf(
+                            CategorySplit(
+                                AppCategory.FOOD_MARKET.key,
+                                DefaultSplitMode.SHARES,
+                                mapOf(PIERRE to 3L, ANA to 1L),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("120,00"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Conta de luz"))
+            val power = viewModel.uiState.value
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Supermercado"))
+            val market = viewModel.uiState.value
+
+            // Then
+            assertNull(power.defaultSplit)
+            assertEquals(SplitMode.EQUAL, power.split.mode)
+            assertEquals(AppCategory.FOOD_MARKET.key, market.defaultSplitException?.id)
+        }
+
     private val pierre = GroupMember(
         id = PIERRE,
         name = "Pierre",
