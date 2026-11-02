@@ -339,11 +339,6 @@ internal fun SplitEditor.withPartsChanged(
     memberId: String,
     delta: Int,
 ): SplitEditor = withRows { row ->
-    if (row.person.id ==
-        memberId
-    ) {
-        row.copy(parts = (row.parts + delta).coerceIn(0L, GroupDefaultSplit.MAX_WEIGHT))
-    } else {
-        row
-    }
+    val parts = (row.parts + delta).coerceIn(0L, GroupDefaultSplit.MAX_WEIGHT)
+    if (row.person.id == memberId) row.copy(parts = parts) else row
 }

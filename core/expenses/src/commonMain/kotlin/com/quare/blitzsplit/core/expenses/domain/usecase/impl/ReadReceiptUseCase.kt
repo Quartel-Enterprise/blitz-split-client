@@ -19,8 +19,8 @@ class ReadReceiptUseCase(
         source: ByteArray,
         currency: GroupCurrency,
     ): ReceiptScan {
-        val photo = suspendRunCatching { encodeImage(source).jpeg }.getOrNull() ?: return ReceiptScan(null, null)
-        val reading = repository.readReceipt(photo, currency).getOrNull()
+        val photo = suspendRunCatching { encodeImage(source) }.getOrNull() ?: return ReceiptScan(null, null)
+        val reading = repository.readReceipt(photo.jpeg, currency).getOrNull()
         return ReceiptScan(photo, reading)
     }
 }

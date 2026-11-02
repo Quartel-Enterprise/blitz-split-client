@@ -310,11 +310,6 @@ class SplitBillPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "Ler cupom fiscal" and "Tirar outra foto", which the page follows by opening its file picker.
-    fun scanReceipt() {
-        viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
-    }
-
     // Why: the file picked, as an Int8Array of its bytes.
     fun receiptPicked(photo: ByteArray) {
         viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(photo))

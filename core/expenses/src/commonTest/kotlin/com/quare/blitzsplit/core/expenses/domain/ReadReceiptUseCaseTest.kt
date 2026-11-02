@@ -56,7 +56,7 @@ class ReadReceiptUseCaseTest {
         val scan = useCase(source, GroupCurrency.BRL)
 
         // Then
-        assertTrue(encodedJpeg.contentEquals(scan.photo))
+        assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
         assertEquals(restaurantReading, scan.reading)
     }
 
@@ -69,7 +69,7 @@ class ReadReceiptUseCaseTest {
         val scan = useCase(source, GroupCurrency.BRL)
 
         // Then
-        assertTrue(encodedJpeg.contentEquals(scan.photo))
+        assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
         assertNull(scan.reading)
     }
 
@@ -85,7 +85,7 @@ class ReadReceiptUseCaseTest {
         val scan = useCase(source, GroupCurrency.BRL)
 
         // Then
-        assertTrue(encodedJpeg.contentEquals(scan.photo))
+        assertTrue(encodedJpeg.contentEquals(scan.photo?.jpeg))
         assertNull(scan.reading)
     }
 

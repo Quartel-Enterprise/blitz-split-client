@@ -11,9 +11,8 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
-import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
-import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -39,8 +38,8 @@ fun SplitBillContent(
 ) {
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
-    // Why: the tabletop's board leaves "Ler cupom fiscal" out of the form; Início's shortcut still opens the camera.
-    val isTabletop = rememberFoldLayout().formFactor == FormFactor.Tabletop
+    // Why: the tabletop's halves leave "Ler cupom fiscal" out of the form; Início's shortcut still opens the camera.
+    val usesTabletopHalves = rememberUsesTabletopHalves(isDialog)
     ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(if (state.isEditing) R.string.split_bill_edit_title else R.string.split_bill_title),
@@ -80,7 +79,7 @@ fun SplitBillContent(
                 )
                 ReceiptSection(
                     state = state,
-                    showsScanButton = !isTabletop,
+                    showsScanButton = !usesTabletopHalves,
                     onEvent = onEvent,
                 )
                 if (state.isEditing) {

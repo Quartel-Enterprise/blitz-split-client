@@ -639,9 +639,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     counts only while the description's words choose none and none was picked: "Alimentação › Restaurante pelo cupom
     fiscal", and "Pelo cupom" in the picker's Sugeridas. A receipt that can't be read (no receipt in it, no total, a
     server error, the reader not set up) says "Não deu para ler o cupom. Tente de novo com mais luz e o cupom inteiro
-    na foto, ou preencha à mão." with "Tirar outra foto", leaving the fields as they were. × on "Foto do cupom" (also
-    "Todo mundo do grupo vê") drops the photo and the receipt's items, keeping what it filled. Saving attaches the
-    photo as the bill's receipt (Conta's "Anexos", badge "Cupom").
+    na foto, ou preencha à mão." with "Tirar outra foto", leaving the fields as they were and keeping no photo (it may
+    be no receipt at all). × on "Foto do cupom" (also "Todo mundo do grupo vê") drops the photo and the receipt's
+    items, keeping what it filled. Saving attaches the photo read, as it was read, as the bill's receipt (Conta's
+    "Anexos", badge "Cupom").
   - "Rachar em qual grupo?" (7.1i): the home's "Rachar conta" opens Rachar conta for the group with the latest
     activity (the home's first row) and, while there are two groups or more, asks "Rachar em qual grupo?" over it ("O
     último que você usou vem marcado", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones

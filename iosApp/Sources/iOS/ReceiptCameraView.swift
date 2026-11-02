@@ -184,9 +184,14 @@ struct ReceiptCameraView: View {
             access = .denied
             return
         }
-        access = .allowed
+        // The picture shows once the session has its camera, so the preview's rotation has a connection to turn
         capture.start { torch in
-            if let torch { hasTorch = torch } else { access = .unavailable }
+            guard let torch else {
+                access = .unavailable
+                return
+            }
+            hasTorch = torch
+            access = .allowed
         }
     }
 }

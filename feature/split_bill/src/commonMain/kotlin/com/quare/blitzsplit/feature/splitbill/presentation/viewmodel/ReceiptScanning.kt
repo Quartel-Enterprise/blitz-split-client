@@ -5,8 +5,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
-import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
+import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -27,12 +28,12 @@ internal class ReceiptScanning(
     private val uiState: MutableStateFlow<SplitBillUiState>,
     private val scope: CoroutineScope,
     private val readReceipt: ReadReceipt,
-    private val addBillAttachment: AddBillAttachment,
+    private val attachBillImage: AttachBillImage,
     private val onRead: (ReceiptReading) -> Unit,
     private val onRemoved: () -> Unit,
 ) {
-    // Why: the JPEG the reader got, which the bill attaches as its receipt; held here, never in the state.
-    private var photo: ByteArray? = null
+    // Why: the photo of a receipt read, which the bill attaches as it was read; held here, never in the state.
+    private var photo: BillImage? = null
 
     // Why: the read in flight, which a new photo or removing it cancels so an older answer never fills the bill.
     private var reading: Job? = null
@@ -63,12 +64,12 @@ internal class ReceiptScanning(
         expenseId: String,
         state: SplitBillUiState,
     ) {
-        val jpeg = photo ?: return
-        addBillAttachment(
+        val image = photo ?: return
+        attachBillImage(
             expenseId = expenseId,
             groupId = state.groupId,
             kind = BillAttachmentKind.RECEIPT,
-            source = jpeg,
+            image = image,
             addedByMemberId = state.people.firstOrNull { it.isMe }?.id,
         )
     }
@@ -91,20 +92,21 @@ internal class ReceiptScanning(
         }
         reading = scope.launch {
             val scan = readReceipt(source, state.currency)
-            photo = scan.photo
             val read = scan.reading
+            // Why: a photo nothing was read from may be no receipt at all, so the bill never keeps it (7.1g).
             if (read == null) {
                 uiState.update {
                     it.copy(
                         receipt = BillReceipt(
                             status = ReceiptStatus.UNREADABLE,
                             itemCount = 0,
-                            hasPhoto = scan.photo != null,
+                            hasPhoto = false,
                         ),
                     )
                 }
                 return@launch
             }
+            photo = scan.photo
             items = read.toBillItems()
             uiState.update {
                 it.copy(

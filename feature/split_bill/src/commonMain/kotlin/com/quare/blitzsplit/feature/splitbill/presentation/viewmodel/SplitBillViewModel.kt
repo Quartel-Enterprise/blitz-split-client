@@ -10,7 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
-import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
@@ -65,7 +65,7 @@ class SplitBillViewModel(
     private val decimalSeparator: DeviceDecimalSeparator,
     private val offerCategoryTeach: OfferCategoryTeach,
     readReceipt: ReadReceipt,
-    addBillAttachment: AddBillAttachment,
+    attachBillImage: AttachBillImage,
     navigator: Navigator,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
@@ -154,7 +154,7 @@ class SplitBillViewModel(
         uiState = uiState,
         scope = viewModelScope,
         readReceipt = readReceipt,
-        addBillAttachment = addBillAttachment,
+        attachBillImage = attachBillImage,
         onRead = { reading ->
             categoryEditing.rematch {
                 it.withReceiptRead(reading, separator, currentTimeMillis(), currentTimeZone()).withBillTotal()

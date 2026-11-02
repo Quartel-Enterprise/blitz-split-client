@@ -301,6 +301,8 @@ private struct PhoneSplitBill: View {
                 } bottom: {
                     Form {
                         detailsSection
+                        // The board leaves "Ler cupom fiscal" out here; Início's shortcut still opens the camera
+                        ReceiptSection(model: model, showsScanButton: false)
                         settledPairSection
                         deleteSection
                     }
@@ -344,7 +346,7 @@ private struct PhoneSplitBill: View {
             GroupSheet(model: model)
                 .foldSheetPlacement()
         }
-        .fullScreenCover(isPresented: receiptCameraShown) {
+        .fullScreenCover(isPresented: model.receiptCameraShown(isSettled: isSettled)) {
             ReceiptCameraView(
                 onPhoto: { data in model.receiptPicked(data) },
                 onDismiss: { model.send(SplitBillUiEventOnReceiptCameraDismissed.shared) },
@@ -578,14 +580,6 @@ private struct PhoneSplitBill: View {
             set: { shown in
                 if !shown, model.current.splitEditor != nil { model.send(SplitBillUiEventOnSplitDismissed.shared) }
             },
-        )
-    }
-
-    /// The receipt's camera, once this sheet has settled: Início's "Ler cupom fiscal" opens it with the bill.
-    private var receiptCameraShown: Binding<Bool> {
-        Binding(
-            get: { isSettled && model.receiptCameraShown.wrappedValue },
-            set: { model.receiptCameraShown.wrappedValue = $0 },
         )
     }
 
@@ -1135,11 +1129,11 @@ private struct MacBillForm: View {
             MacSeveralPayers(model: model)
         }
         // "Ler Cupom Fiscal…" picks the receipt's photo from a file, as the Mac has no camera to frame it (7.1e)
-        .fileImporter(isPresented: receiptFileShown, allowedContentTypes: [.image]) { result in
+        .fileImporter(isPresented: model.receiptCameraShown(isSettled: isSettled), allowedContentTypes: [.image]) { result in
             guard case let .success(url) = result else { return }
-            let isScoped = url.startAccessingSecurityScopedResource()
-            defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
-            model.receiptPicked(try? Data(contentsOf: url))
+            Task {
+                model.receiptPicked(await Self.readFile(url))
+            }
         }
         .sheet(isPresented: groupShown) {
             MacGroupPicker(model: model)
@@ -1153,12 +1147,11 @@ private struct MacBillForm: View {
         }
     }
 
-    /// The receipt's file panel, once this sheet has settled: Início's "Ler cupom fiscal" opens it with the bill.
-    private var receiptFileShown: Binding<Bool> {
-        Binding(
-            get: { isSettled && model.receiptCameraShown.wrappedValue },
-            set: { model.receiptCameraShown.wrappedValue = $0 },
-        )
+    /// The picked file's bytes, read off the main actor since a large photo or one on iCloud Drive takes a while.
+    private nonisolated static func readFile(_ url: URL) async -> Data? {
+        let isScoped = url.startAccessingSecurityScopedResource()
+        defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
+        return try? Data(contentsOf: url)
     }
 
     private var categoryFormShown: Binding<Bool> {

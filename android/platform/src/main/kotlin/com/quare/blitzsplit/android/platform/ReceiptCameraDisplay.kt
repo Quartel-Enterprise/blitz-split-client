@@ -1,33 +1,16 @@
 package com.quare.blitzsplit.android.platform
 
 import android.content.Context
-import androidx.camera.compose.CameraXViewfinder
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.CameraState
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.InitializationException
-import androidx.camera.core.Preview
-import androidx.camera.core.SurfaceRequest
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.lifecycle.awaitInstance
-import androidx.camera.viewfinder.core.ImplementationMode
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import kotlinx.coroutines.awaitCancellation
 import java.io.ByteArrayOutputStream
 
 /*
@@ -70,9 +53,8 @@ class ReceiptCamera internal constructor() {
 fun rememberReceiptCamera(): ReceiptCamera = remember { ReceiptCamera() }
 
 /*
- * Why: the back camera's picture (the front one where there is none), for the receipt's camera. Needs the camera
- * permission. A camera that opens is reported with whether it has a torch; one missing, or that CameraX can't start,
- * bind or open, is reported unavailable, and the gallery remains.
+ * Why: the receipt's camera: the picture and the shutter's capture, turned with the display so the photo's EXIF says
+ * which way is up. A camera missing or that can't open is reported unavailable, and the gallery remains.
  */
 @Composable
 fun ReceiptCameraDisplay(
@@ -82,79 +64,23 @@ fun ReceiptCameraDisplay(
     onUnavailable: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val currentIsTorchOn by rememberUpdatedState(isTorchOn)
-    val currentOnOpened by rememberUpdatedState(onOpened)
-    val currentOnUnavailable by rememberUpdatedState(onUnavailable)
-    var surfaceRequest by remember { mutableStateOf<SurfaceRequest?>(null) }
-    var bound by remember { mutableStateOf<Camera?>(null) }
-    LaunchedEffect(context, lifecycleOwner) {
-        val provider = try {
-            ProcessCameraProvider.awaitInstance(context)
-        } catch (_: InitializationException) {
-            currentOnUnavailable()
-            return@LaunchedEffect
-        }
-        val selector = listOf(CameraSelector.DEFAULT_BACK_CAMERA, CameraSelector.DEFAULT_FRONT_CAMERA)
-            .firstOrNull(provider::hasCameraOrFalse)
-        if (selector == null) {
-            currentOnUnavailable()
-            return@LaunchedEffect
-        }
-        val previewUseCase = Preview.Builder().build().apply {
-            setSurfaceProvider { surfaceRequest = it }
-        }
+    BoundCameraDisplay(
+        isTorchOn = isTorchOn,
+        onOpened = onOpened,
+        onUnavailable = onUnavailable,
+        modifier = modifier,
+    ) { _, rotation ->
         // Why: a receipt's small print reads better sharp than fast.
-        val captureUseCase = ImageCapture
+        val capture = ImageCapture
             .Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+            .setTargetRotation(rotation)
             .build()
-        try {
-            val result = try {
-                provider.bindToLifecycle(lifecycleOwner, selector, previewUseCase, captureUseCase)
-            } catch (_: IllegalArgumentException) {
-                null
-            } catch (_: IllegalStateException) {
-                null
-            }
-            if (result == null) currentOnUnavailable()
-            bound = result
-            camera.capture = captureUseCase.takeIf { result != null }
-            awaitCancellation()
-        } finally {
-            provider.unbind(previewUseCase, captureUseCase)
-            bound = null
-            camera.capture = null
-            surfaceRequest = null
-        }
-    }
-    // Why: CameraX turns the torch off whenever the camera closes, so it is set again each time it opens.
-    DisposableEffect(bound, lifecycleOwner) {
-        val opened = bound ?: return@DisposableEffect onDispose {}
-        val cameraState = opened.cameraInfo.cameraState
-        val observer = Observer<CameraState> { state ->
-            when {
-                state.type == CameraState.Type.OPEN -> {
-                    val hasTorch = opened.cameraInfo.hasFlashUnit()
-                    currentOnOpened(hasTorch)
-                    if (hasTorch) opened.cameraControl.enableTorch(currentIsTorchOn)
-                }
-
-                state.error != null && state.type == CameraState.Type.CLOSED -> currentOnUnavailable()
-            }
-        }
-        cameraState.observe(lifecycleOwner, observer)
-        onDispose { cameraState.removeObserver(observer) }
-    }
-    LaunchedEffect(bound, isTorchOn) {
-        bound?.takeIf { it.cameraInfo.hasFlashUnit() }?.cameraControl?.enableTorch(isTorchOn)
-    }
-    surfaceRequest?.let { request ->
-        CameraXViewfinder(
-            surfaceRequest = request,
-            implementationMode = ImplementationMode.EMBEDDED,
-            modifier = modifier,
+        camera.capture = capture
+        CameraUses(
+            uses = listOf(capture),
+            onRotation = { capture.targetRotation = it },
+            onUnbound = { camera.capture = null },
         )
     }
 }

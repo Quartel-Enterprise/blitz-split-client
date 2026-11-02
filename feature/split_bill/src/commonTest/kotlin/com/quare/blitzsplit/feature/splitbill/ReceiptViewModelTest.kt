@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggestionReason
@@ -633,7 +634,7 @@ class ReceiptViewModelTest {
                 BillReceipt(
                     ReceiptStatus.UNREADABLE,
                     itemCount = 0,
-                    hasPhoto = true,
+                    hasPhoto = false,
                 ),
                 state.receipt,
             )
@@ -876,7 +877,7 @@ class ReceiptViewModelTest {
                         expenseId = created.id,
                         groupId = GROUP_ID,
                         kind = BillAttachmentKind.RECEIPT,
-                        source = encodedPhoto.toList(),
+                        source = encodedPhoto.jpeg.toList(),
                         addedByMemberId = PIERRE,
                     ),
                 ),
@@ -887,7 +888,7 @@ class ReceiptViewModelTest {
         }
 
     @Test
-    fun `GIVEN a receipt that could not be read WHEN saving the bill typed by hand THEN attaches its photo`() =
+    fun `GIVEN a receipt that could not be read WHEN saving the bill typed by hand THEN its photo is not kept`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -904,7 +905,8 @@ class ReceiptViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
 
             // Then
-            assertEquals(listOf(encodedPhoto.toList()), attachments.map { it.source })
+            assertEquals(1, expenses.createdExpenses.size)
+            assertTrue(attachments.isEmpty())
         }
 
     @Test
@@ -1005,7 +1007,11 @@ class ReceiptViewModelTest {
 
     private val otherSource = byteArrayOf(4, 5, 6)
 
-    private val encodedPhoto = byteArrayOf(9, 8, 7)
+    private val encodedPhoto = BillImage(
+        jpeg = byteArrayOf(9, 8, 7),
+        width = 1200,
+        height = 1600,
+    )
 
     private val receiptItems = listOf(
         ReceiptItem(
@@ -1165,8 +1171,8 @@ class ReceiptViewModelTest {
                     scan
                 }
             },
-            addBillAttachment = { expenseId, groupId, kind, photo, addedByMemberId ->
-                attachments += RecordedAttachment(expenseId, groupId, kind, photo.toList(), addedByMemberId)
+            attachBillImage = { expenseId, groupId, kind, image, addedByMemberId ->
+                attachments += RecordedAttachment(expenseId, groupId, kind, image.jpeg.toList(), addedByMemberId)
                 attachResult
             },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },

@@ -611,7 +611,7 @@ class BillCategoryViewModelTest {
                     reading = null,
                 )
             },
-            addBillAttachment = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
             deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

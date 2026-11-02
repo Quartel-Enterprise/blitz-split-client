@@ -571,7 +571,7 @@ class PickGroupViewModelTest {
                     reading = null,
                 )
             },
-            addBillAttachment = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
+            attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
             deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

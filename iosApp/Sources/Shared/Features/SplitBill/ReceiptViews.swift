@@ -10,10 +10,11 @@ extension SplitBillModel {
         send(SplitBillUiEventOnReceiptPhotoPicked(photo: BlitzSplitApple.shared.toByteArray(data: data ?? Data())))
     }
 
-    /// The camera (a file panel on the Mac) while "Ler cupom fiscal" asks for it; closing it without a photo says so.
-    var receiptCameraShown: Binding<Bool> {
+    /// The camera (a file panel on the Mac) while "Ler cupom fiscal" asks for it, once the form's sheet has settled
+    /// (Início's shortcut opens it with the bill); closing it without a photo says so.
+    func receiptCameraShown(isSettled: Bool) -> Binding<Bool> {
         Binding(
-            get: { self.state.showsReceiptCamera },
+            get: { isSettled && self.state.showsReceiptCamera },
             set: { shown in
                 if !shown, self.current.showsReceiptCamera { self.send(SplitBillUiEventOnReceiptCameraDismissed.shared) }
             },
@@ -90,10 +91,11 @@ struct ReceiptThumbnail: View {
 }
 
 #if os(iOS)
-/// Under "Detalhes": "Ler cupom fiscal" until a receipt is picked, then "Foto do cupom", which the bill attaches once
-/// saved, with × to take it off.
+/// Under "Detalhes": "Ler cupom fiscal" until a receipt is picked (where the board offers it), then "Foto do cupom",
+/// which the bill attaches once saved, with × to take it off.
 struct ReceiptSection: View {
     let model: SplitBillModel
+    var showsScanButton = true
 
     private var state: SplitBillUiState {
         model.state
@@ -133,7 +135,7 @@ struct ReceiptSection: View {
                     .accessibilityLabel(Text("Remove the receipt photo"))
                 }
             }
-        } else if state.showsScanReceipt {
+        } else if state.showsScanReceipt, showsScanButton {
             Section {
                 Button {
                     model.send(SplitBillUiEventOnScanReceiptClicked.shared)

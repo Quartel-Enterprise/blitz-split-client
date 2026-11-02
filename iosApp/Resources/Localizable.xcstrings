@@ -16659,10 +16659,40 @@
     "%lld items" : {
       "comment" : "How many items the bill splits by",
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items"
+                }
+              }
+            }
+          }
+        },
         "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld itens"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld itens"
+                }
+              }
+            }
           }
         }
       }
@@ -16901,10 +16931,40 @@
     "· Read from the receipt, %lld items" : {
       "comment" : "Split a bill on the Mac: the receipt was read with its items",
       "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Read from the receipt, %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Read from the receipt, %lld items"
+                }
+              }
+            }
+          }
+        },
         "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "· Lido do cupom, %lld itens"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Lido do cupom, %lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "· Lido do cupom, %lld itens"
+                }
+              }
+            }
           }
         }
       }

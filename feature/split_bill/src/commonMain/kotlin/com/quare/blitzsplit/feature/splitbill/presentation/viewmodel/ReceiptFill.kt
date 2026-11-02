@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import kotlinx.datetime.LocalDateTime
@@ -20,7 +19,7 @@ internal fun SplitBillUiState.withReceiptRead(
     now: Long,
     timeZone: TimeZone,
 ): SplitBillUiState {
-    val description = reading.description?.let(ExpenseRules::toCapped)
+    val description = reading.description
     val filled = copy(
         amountText = AmountInput.format(
             amountMinor = reading.totalMinor,
@@ -35,6 +34,6 @@ internal fun SplitBillUiState.withReceiptRead(
     val date = reading.date ?: return filled
     // Why: a day printed without its time keeps the time "Quando" had; a later time today becomes now.
     val time = reading.time ?: Instant.fromEpochMilliseconds(spentAt).toLocalDateTime(timeZone).time
-    val spentAt = LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds()
-    return filled.withSpentAt(spentAt, now, timeZone)
+    val printedAt = LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds()
+    return filled.withSpentAt(printedAt, now, timeZone)
 }

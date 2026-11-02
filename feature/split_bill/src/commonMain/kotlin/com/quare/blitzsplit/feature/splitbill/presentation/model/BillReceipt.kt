@@ -5,6 +5,6 @@ data class BillReceipt(
     val status: ReceiptStatus,
     // Why: "14 itens" beside "Lido do cupom", 0 for a receipt that lists none.
     val itemCount: Int,
-    // Why: "Foto do cupom", attached to the bill once saved; false when the image couldn't be opened at all.
+    // Why: "Foto do cupom", attached to the bill once saved; false once nothing could be read from it.
     val hasPhoto: Boolean,
 )

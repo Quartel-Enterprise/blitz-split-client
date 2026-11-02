@@ -69,6 +69,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepos
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.CommentOnSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
@@ -157,6 +158,7 @@ import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val expenseModule = module {
@@ -225,7 +227,7 @@ val expenseModule = module {
     singleOf(::BillAttachmentMapperImpl).bind<BillAttachmentMapper>()
     singleOf(::BillAttachmentRepositoryImpl).bind<BillAttachmentRepository>()
     factoryOf(::ObserveBillAttachmentsUseCase).bind<ObserveBillAttachments>()
-    factoryOf(::AddBillAttachmentUseCase).bind<AddBillAttachment>()
+    factoryOf(::AddBillAttachmentUseCase).binds(arrayOf(AddBillAttachment::class, AttachBillImage::class))
     factoryOf(::RemoveBillAttachmentUseCase).bind<RemoveBillAttachment>()
     factoryOf(::LoadBillAttachmentUrlsUseCase).bind<LoadBillAttachmentUrls>()
     factoryOf(::LoadBillAttachmentImageUseCase).bind<LoadBillAttachmentImage>()
