@@ -13,6 +13,9 @@ class FakeBillAttachmentRepository(
 ) : BillAttachmentRepository {
     val attachments = MutableStateFlow(initialAttachments)
     val removedIds = mutableListOf<String>()
+
+    // Why: each removal with the time it was stamped at, for the Last-Write-Wins of its tombstone.
+    val removals = mutableListOf<Pair<String, Long>>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     val urlRequests = mutableListOf<List<String>>()
@@ -45,6 +48,7 @@ class FakeBillAttachmentRepository(
     ): Result<Unit> {
         removeError?.let { return Result.failure(it) }
         removedIds += id
+        removals += id to updatedAt
         attachments.update { list -> list.filterNot { it.id == id } }
         return Result.success(Unit)
     }

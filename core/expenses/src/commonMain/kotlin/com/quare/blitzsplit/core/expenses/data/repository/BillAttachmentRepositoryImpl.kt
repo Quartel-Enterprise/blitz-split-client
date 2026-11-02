@@ -70,10 +70,21 @@ class BillAttachmentRepositoryImpl(
     ) {
         val path = "${entity.groupId}/${entity.expenseId}/${entity.id}.jpg"
         entity.pendingJpeg?.let { jpeg -> remote.uploadImage(path, jpeg) }
-        remote.upsertAttachment(mapper.toDto(entity, userId))
-        // Why: best effort; an image left behind is never shown, since its row says it is gone.
-        if (entity.isDeleted) suspendRunCatching { remote.removeImage(path) }
+        val dto = mapper.toDto(entity, userId)
+        remote.upsertAttachment(dto)
         local.markSynced(entity.id, entity.updatedAt)
+        // Why: a photo removed here while it first went up, which left the device as never synced, goes from the server too.
+        val isStillOnDevice = entity.isDeleted || local.isOnDevice(entity.id)
+        if (!isStillOnDevice && !entity.isDeleted) {
+            remote.upsertAttachment(
+                dto.copy(
+                    isDeleted = true,
+                    updatedAt = entity.updatedAt + 1,
+                ),
+            )
+        }
+        // Why: best effort; an image left behind is never shown, since its row says it is gone.
+        if (entity.isDeleted || !isStillOnDevice) suspendRunCatching { remote.removeImage(path) }
     }
 
     override suspend fun download(userId: String): Result<Unit> = suspendRunCatching {

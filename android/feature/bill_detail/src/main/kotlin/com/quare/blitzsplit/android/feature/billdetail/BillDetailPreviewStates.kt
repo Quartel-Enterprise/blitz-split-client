@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
@@ -94,8 +95,61 @@ internal fun createPreviewBillDetailState(
         history = if (isPending) createPendingPreviewHistory() else createPreviewHistory(),
         isOnline = !isReplyingOffline,
         isUndoing = false,
+        attachments = if (isPending) createPendingPreviewAttachments() else createPreviewAttachments(),
+        viewedAttachmentId = null,
+        isAddingPhoto = false,
     )
 }
+
+// Why: the receipt the bill was read from, then Ana's two photos; previews load no image, so the placeholders show.
+private fun createPreviewAttachments(): List<BillAttachmentTile> = listOf(
+    createPreviewAttachment(
+        "a1",
+        photoNumber = null,
+        adderName = "Bruno",
+    ),
+    createPreviewAttachment(
+        "a2",
+        photoNumber = 1,
+        adderName = "Ana",
+    ),
+    createPreviewAttachment(
+        "a3",
+        photoNumber = 2,
+        adderName = "Ana",
+    ),
+)
+
+// Why: a photo taken offline, waiting in the queue with its bill.
+private fun createPendingPreviewAttachments(): List<BillAttachmentTile> = listOf(
+    createPreviewAttachment(
+        "a1",
+        photoNumber = 1,
+        adderName = "Pierre",
+        isAddedByMe = true,
+        isPending = true,
+    ),
+)
+
+private fun createPreviewAttachment(
+    id: String,
+    photoNumber: Int?,
+    adderName: String,
+    isAddedByMe: Boolean = false,
+    isPending: Boolean = false,
+): BillAttachmentTile = BillAttachmentTile(
+    id = id,
+    isReceipt = photoNumber == null,
+    imageUrl = null,
+    width = null,
+    height = null,
+    photoNumber = photoNumber,
+    adderName = adderName,
+    isAddedByMe = isAddedByMe,
+    addedAt = PREVIEW_SPENT_AT,
+    addedDay = if (isPending) RelativeDay.TODAY else RelativeDay.YESTERDAY,
+    isPending = isPending,
+)
 
 // Why: Carla's thread, where Bruno answered and fixed the split, then Diego through the bill's link.
 private fun createPreviewThreads(hasQueuedReply: Boolean): List<BillCommentThread> = listOf(

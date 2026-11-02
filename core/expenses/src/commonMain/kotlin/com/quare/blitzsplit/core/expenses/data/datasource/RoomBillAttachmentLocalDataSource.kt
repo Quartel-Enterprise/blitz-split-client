@@ -36,6 +36,8 @@ class RoomBillAttachmentLocalDataSource(
         dao.markSynced(id, updatedAt)
     }
 
+    override suspend fun isOnDevice(id: String): Boolean = dao.getAttachment(id) != null
+
     override suspend fun applyRemote(entities: List<BillAttachmentEntity>) {
         dao.applyRemote(entities)
     }

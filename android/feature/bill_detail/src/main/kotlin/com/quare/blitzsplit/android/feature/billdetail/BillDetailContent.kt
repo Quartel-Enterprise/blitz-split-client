@@ -58,6 +58,10 @@ private val singleColumnMaxWidth = 592.dp
 private val sectionSpacing = 16.dp
 private val twoColumnsStartPadding = 56.dp
 private val twoColumnsEndPadding = 24.dp
+private val previewPickers = BillPhotoPickers(
+    onTakePhotoClick = {},
+    onChoosePhotoClick = {},
+)
 
 /*
  * Why: the canvas (7.3) opens Conta full screen on a phone, in two columns lying down, with the comment field pinned
@@ -71,6 +75,7 @@ fun BillDetailContent(
     state: BillDetailUiState,
     isDialog: Boolean,
     snackbarHostState: SnackbarHostState,
+    pickers: BillPhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -94,6 +99,7 @@ fun BillDetailContent(
                 fillsHeight = false,
                 columnsPadding = PaddingValues(0.dp),
                 scrollPadding = PaddingValues(0.dp),
+                pickers = pickers,
                 onEvent = onEvent,
                 modifier = Modifier.weight(
                     weight = 1f,
@@ -190,6 +196,7 @@ fun BillDetailContent(
                             bottom = 24.dp,
                         )
                     },
+                    pickers = pickers,
                     onEvent = onEvent,
                     modifier = Modifier
                         .weight(1f)
@@ -290,7 +297,7 @@ private fun DialogHeader(
 }
 
 /*
- * Why: the bill and your part first; who is in the split, the comments and the history next to them when lying down,
+ * Why: the bill, your part and its attachments first; who is in the split, the comments and the history next to them when lying down,
  * with the comment field under them, and all under the bill otherwise.
  */
 @Composable
@@ -301,6 +308,7 @@ private fun BillColumnsLayout(
     fillsHeight: Boolean,
     columnsPadding: PaddingValues,
     scrollPadding: PaddingValues,
+    pickers: BillPhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -319,6 +327,14 @@ private fun BillColumnsLayout(
                 money = money,
             )
         }
+        // Why: the canvas puts "Anexos" under the bill, so at the foot of the first column in two columns.
+        BillAttachmentsSection(
+            state = state,
+            wraps = usesTwoColumns,
+            dates = dates,
+            pickers = pickers,
+            onEvent = onEvent,
+        )
     }
     val second: @Composable ColumnScope.() -> Unit = {
         BillSplitSection(
@@ -439,6 +455,7 @@ private fun BillDetailContentBookPreview() {
                         state = createPreviewBillDetailState(),
                         isDialog = true,
                         snackbarHostState = SnackbarHostState(),
+                        pickers = previewPickers,
                         onEvent = {},
                     )
                 }
@@ -456,6 +473,7 @@ private fun PreviewBillDetailContent(state: BillDetailUiState) {
             state = state,
             isDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape,
             snackbarHostState = SnackbarHostState(),
+            pickers = previewPickers,
             onEvent = {},
         )
     }

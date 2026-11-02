@@ -71,6 +71,36 @@
         }
       }
     },
+    "%@ attached it on %@ at %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ anexou em %2$@ às %3$@"
+          }
+        }
+      }
+    },
+    "%@ attached it today at %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ anexou hoje às %2$@"
+          }
+        }
+      }
+    },
+    "%@ attached it yesterday at %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ anexou ontem às %2$@"
+          }
+        }
+      }
+    },
     "%@ attached the receipt" : {
       "comment" : "Bill history",
       "localizations" : {
@@ -236,6 +266,36 @@
         }
       }
     },
+    "%@ scanned the receipt on %@ at %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ leu o cupom em %2$@ às %3$@"
+          }
+        }
+      }
+    },
+    "%@ scanned the receipt today at %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ leu o cupom hoje às %2$@"
+          }
+        }
+      }
+    },
+    "%@ scanned the receipt yesterday at %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ leu o cupom ontem às %2$@"
+          }
+        }
+      }
+    },
     "%@ turned off the link" : {
       "comment" : "Bill history: the share link",
       "localizations" : {
@@ -254,6 +314,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ativou o link para qualquer pessoa"
+          }
+        }
+      }
+    },
+    "%lld of %lld photos" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld fotos"
           }
         }
       }
@@ -313,6 +383,27 @@
         }
       }
     },
+    "Anyone in the group can remove it." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa do grupo pode remover."
+          }
+        }
+      }
+    },
+    "Attachments" : {
+      "comment" : "The bill's photos section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anexos"
+          }
+        }
+      }
+    },
     "Bitcoin" : {
       "comment" : "Pay with a key (4.5): a payment method",
       "localizations" : {
@@ -346,6 +437,37 @@
         }
       }
     },
+    "Camera or photos" : {
+      "comment" : "Under the tile that adds a photo to a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Câmera ou fotos"
+          }
+        }
+      }
+    },
+    "Choose File…" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher arquivo…"
+          }
+        }
+      }
+    },
+    "Choose from Photos" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher nas fotos"
+          }
+        }
+      }
+    },
     "Copy code" : {
       "comment" : "Pay with a key (4.5): copies the Pix code",
       "localizations" : {
@@ -375,6 +497,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copiar %1$@ de %2$@"
+          }
+        }
+      }
+    },
+    "Couldn't attach the photo. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para anexar a foto. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't open this image. Choose another one." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para abrir essa imagem. Escolha outra."
+          }
+        }
+      }
+    },
+    "Couldn't remove the photo. Try again." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para remover a foto. Tente de novo."
+          }
+        }
+      }
+    },
+    "Download" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixar"
           }
         }
       }
@@ -838,6 +1000,16 @@
         }
       }
     },
+    "Next" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próxima"
+          }
+        }
+      }
+    },
     "On-chain" : {
       "comment" : "Pay with a key (4.5): a Bitcoin key type",
       "localizations" : {
@@ -900,6 +1072,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Forma de pagamento"
+          }
+        }
+      }
+    },
+    "Pending" : {
+      "comment" : "A bill's photo not on the server yet, on its Mac thumbnail",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pendente"
+          }
+        }
+      }
+    },
+    "Photo %lld" : {
+      "comment" : "One of a bill's photos, by the order it was added",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto %lld"
+          }
+        }
+      }
+    },
+    "Photo %lld of %lld" : {
+      "comment" : "The bill's photo viewer's title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto %1$lld de %2$lld"
           }
         }
       }
@@ -1486,6 +1691,16 @@
         }
       }
     },
+    "Previous" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anterior"
+          }
+        }
+      }
+    },
     "Queued" : {
       "comment" : "A history line done offline and not up yet",
       "localizations" : {
@@ -1504,6 +1719,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Na fila · sai ao reconectar"
+          }
+        }
+      }
+    },
+    "Receipt" : {
+      "comment" : "The badge on the receipt a bill was read from, among its photos",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cupom"
           }
         }
       }
@@ -1810,6 +2036,26 @@
         }
       }
     },
+    "Store receipt" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cupom fiscal"
+          }
+        }
+      }
+    },
+    "Swipe to see the next one." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deslize para ver a próxima."
+          }
+        }
+      }
+    },
     "the bill no longer exists" : {
       "comment" : "Activity: under a deleted bill, after its amount",
       "localizations" : {
@@ -1887,6 +2133,16 @@
         }
       }
     },
+    "The photo shows up once you're back online." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A foto aparece quando a internet voltar."
+          }
+        }
+      }
+    },
     "This %@ hasn't synced yet, so only what you did on it shows here. Group activity arrives on the first connection, with or without an account." : {
       "comment" : "Activity on a device that never synced; %@ is iPhone, iPad or Mac",
       "localizations" : {
@@ -1894,6 +2150,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Este %@ ainda não sincronizou, então aqui só aparece o que você fez nele. A atividade dos grupos chega na primeira conexão, com ou sem conta."
+          }
+        }
+      }
+    },
+    "This bill already has %lld photos." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta já tem %lld fotos."
           }
         }
       }
@@ -1994,6 +2260,16 @@
         }
       }
     },
+    "Use the arrow keys to see the next one." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use as setas para ver a próxima."
+          }
+        }
+      }
+    },
     "Via link" : {
       "comment" : "A comment written through the bill's open link, by someone out of the group",
       "localizations" : {
@@ -2001,6 +2277,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pelo link"
+          }
+        }
+      }
+    },
+    "Waiting" : {
+      "comment" : "A bill's photo not on the server yet, on its tile",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguardando"
+          }
+        }
+      }
+    },
+    "waiting to go up" : {
+      "comment" : "A bill's photo not on the server yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "aguardando envio"
           }
         }
       }

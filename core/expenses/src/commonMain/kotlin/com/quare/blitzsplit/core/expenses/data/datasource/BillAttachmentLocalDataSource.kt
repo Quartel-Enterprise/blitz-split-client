@@ -27,6 +27,8 @@ interface BillAttachmentLocalDataSource {
         updatedAt: Long,
     )
 
+    suspend fun isOnDevice(id: String): Boolean
+
     suspend fun applyRemote(entities: List<BillAttachmentEntity>)
 
     suspend fun deleteGoneFromServer(

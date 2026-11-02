@@ -42,17 +42,17 @@ export function BillComments({ state, onReply }: { state: JsBillDetailState; onR
   )
 }
 
-/** "hoje, 22:40", "ontem, 22:40" or "27 de out., 22:40". */
-function postedText(row: JsBillCommentRow): string {
-  const time = formatTime(row.postedAt)
-  if (row.postedDay === 'today') return t('billDetail_commentToday', { time })
-  if (row.postedDay === 'yesterday') return t('billDetail_commentYesterday', { time })
-  return `${formatShortDate(row.postedAt)}, ${time}`
+/** "hoje, 22:40", "ontem, 22:40" or "27 de out., 22:40": when a comment was written or a photo attached. */
+export function postedText(millis: number, day: string): string {
+  const time = formatTime(millis)
+  if (day === 'today') return t('billDetail_commentToday', { time })
+  if (day === 'yesterday') return t('billDetail_commentYesterday', { time })
+  return `${formatShortDate(millis)}, ${time}`
 }
 
 function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isReply?: boolean; onReply: (commentId: string) => void }) {
   const name = row.isMe ? t('splitBill_you') : (row.authorName ?? t('billDetail_commentSomeone'))
-  const posted = postedText(row)
+  const posted = postedText(row.postedAt, row.postedDay)
   return (
     <article aria-label={`${name}, ${posted}`} className={cn('flex gap-2.5 pb-0.5', isReply ? 'pt-2' : 'pt-3')}>
       <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className={isReply ? 'size-6 text-[10px]' : 'size-7 text-[11px]'} />

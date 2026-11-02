@@ -75,6 +75,42 @@
     <string name="bill_detail_change_none">—</string>
     <string name="bill_detail_change_note">%1$s · %2$s</string>
     <string name="bill_detail_change_spoken">%1$s, mudou para %2$s</string>
+    <string name="bill_detail_attachments">Anexos</string>
+    <string name="bill_detail_attachment_photo">Foto %d</string>
+    <string name="bill_detail_attachment_receipt">Cupom fiscal</string>
+    <string name="bill_detail_attachment_receipt_badge">Cupom</string>
+    <string name="bill_detail_attachment_pending_badge">Na fila</string>
+    <string name="bill_detail_attachment_sub">%1$s · %2$s</string>
+    <string name="bill_detail_attachment_today">hoje</string>
+    <string name="bill_detail_attachment_yesterday">ontem</string>
+    <string name="bill_detail_attachment_open">Abrir</string>
+    <string name="bill_detail_add_photo">Adicionar foto</string>
+    <string name="bill_detail_add_photo_sub">Câmera ou galeria</string>
+    <string name="bill_detail_take_photo">Tirar foto</string>
+    <string name="bill_detail_choose_photo">Escolher da galeria</string>
+    <string name="bill_detail_camera_denied">Permita a câmera nas configurações para tirar a foto.</string>
+    <string name="bill_detail_camera_settings">Configurações</string>
+    <string name="bill_detail_photo_unreadable">Não deu para abrir essa imagem. Escolha outra.</string>
+    <string name="bill_detail_photo_no_room">Esta conta já tem 5 fotos.</string>
+    <string name="bill_detail_photo_failed">Não deu para anexar a foto. Tente de novo.</string>
+    <string name="bill_detail_remove_photo_error">Não deu para remover a foto. Tente de novo.</string>
+    <string name="bill_detail_viewer_close">Fechar</string>
+    <string name="bill_detail_viewer_photo_title">Foto %1$d de %2$d</string>
+    <string name="bill_detail_viewer_download">Baixar</string>
+    <string name="bill_detail_viewer_remove">Remover foto</string>
+    <string name="bill_detail_viewer_added_today">%1$s anexou hoje às %2$s</string>
+    <string name="bill_detail_viewer_added_yesterday">%1$s anexou ontem às %2$s</string>
+    <string name="bill_detail_viewer_added_other">%1$s anexou em %2$s às %3$s</string>
+    <string name="bill_detail_viewer_read_today">%1$s leu o cupom hoje às %2$s</string>
+    <string name="bill_detail_viewer_read_yesterday">%1$s leu o cupom ontem às %2$s</string>
+    <string name="bill_detail_viewer_read_other">%1$s leu o cupom em %2$s às %3$s</string>
+    <string name="bill_detail_viewer_can_remove">Qualquer pessoa do grupo pode remover.</string>
+    <string name="bill_detail_viewer_swipe">Arraste para o lado para ver a próxima.</string>
+    <string name="bill_detail_viewer_no_image">A foto aparece quando a internet voltar.</string>
+    <string name="bill_detail_photo_saved">Foto salva na galeria</string>
+    <string name="bill_detail_photo_save_error">Não deu para salvar a foto. Tente de novo.</string>
+    <string name="bill_detail_photo_file_name">bora-rachar-foto-%d.jpg</string>
+    <string name="bill_detail_receipt_file_name">bora-rachar-cupom.jpg</string>
     <plurals name="bill_detail_history_photos_added">
         <item quantity="one">anexou %d foto</item>
         <item quantity="other">anexou %d fotos</item>
@@ -106,5 +142,10 @@
     <plurals name="bill_detail_mode_shares">
         <item quantity="one">Por partes entre %d</item>
         <item quantity="other">Por partes entre %d</item>
+    </plurals>
+    <plurals name="bill_detail_attachments_count">
+        <item quantity="one">%1$d de %2$d foto</item>
+        <item quantity="many">%1$d de %2$d fotos</item>
+        <item quantity="other">%1$d de %2$d fotos</item>
     </plurals>
 </resources>
