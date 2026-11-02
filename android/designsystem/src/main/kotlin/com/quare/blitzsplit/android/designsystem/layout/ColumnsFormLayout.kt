@@ -62,9 +62,9 @@ class FormIconAction(
 )
 
 /*
- * Why: the canvas opens Rachar conta, Dividir and Divisão padrão full screen on a phone, lying down and on the
- * tabletop, in two columns when lying down; as a dialog (where the caller says so) they sit over the group, two
- * columns wide on a tablet lying down.
+ * Why: the canvas opens Rachar conta and Dividir full screen on a phone, lying down and on the tabletop, and Divisão
+ * padrão on a phone and a foldable upright, in two columns when lying down; as a dialog (where the caller says so)
+ * they sit over the group, two columns wide on a tablet lying down, one in a book's half.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +77,9 @@ fun ColumnsFormLayout(
     modifier: Modifier = Modifier,
 ) {
     val layout = rememberDeviceLayout()
-    val usesTwoColumns = if (isDialog) layout.isTablet && layout.isLandscape else layout.isLandscape
+    // Why: a dialog in a book's half has one column's room, though the window lies down like a tablet's.
+    val isTabletLandscape = rememberFoldLayout().formFactor == FormFactor.TabletLandscape
+    val usesTwoColumns = if (isDialog) isTabletLandscape else layout.isLandscape
     if (isDialog) {
         DialogCard(
             isWide = usesTwoColumns,

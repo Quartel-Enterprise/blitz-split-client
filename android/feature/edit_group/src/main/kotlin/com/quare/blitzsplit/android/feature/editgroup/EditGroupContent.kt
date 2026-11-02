@@ -54,12 +54,14 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -70,15 +72,23 @@ import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiStat
 
 private val listEndRadius = 20.dp
 private val listInnerRadius = 6.dp
+private val phoneAvatarSize = 112.dp
+private val wideAvatarSize = 96.dp
+private val iconColumnWidth = 240.dp
 
+/*
+ * Why: full screen on a phone, in two columns lying down (the icon on the left, the fields on the right); anything wider
+ * draws it as a dialog over the group, with the smaller icon the canvas gives it there.
+ */
 @Composable
 fun EditGroupContent(
     state: EditGroupUiState,
-    // Why: a tablet draws the form as a 560dp dialog over the group.
+    // Why: anything wider than a phone draws the form as a dialog over the group, in a book's half on a foldable.
     isDialog: Boolean,
     onEvent: (EditGroupUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val usesTwoColumns = !isDialog && rememberDeviceLayout().usesTwoColumns
     FormLayout(
         isDialog = isDialog,
         topBar = { isInDialog ->
@@ -89,12 +99,32 @@ fun EditGroupContent(
             )
         },
         modifier = modifier,
+        secondColumn = if (usesTwoColumns && state.isLoaded) {
+            {
+                EditGroupFieldsColumn(
+                    state = state,
+                    onEvent = onEvent,
+                )
+            }
+        } else {
+            null
+        },
+        firstColumnWidth = iconColumnWidth.takeIf { usesTwoColumns },
     ) {
         if (state.isLoaded) {
-            EditGroupFormColumn(
-                state = state,
-                onEvent = onEvent,
-            )
+            if (usesTwoColumns) {
+                IconSection(
+                    state = state,
+                    onEvent = onEvent,
+                    avatarSize = wideAvatarSize,
+                )
+            } else {
+                EditGroupFormColumn(
+                    state = state,
+                    onEvent = onEvent,
+                    avatarSize = if (isDialog) wideAvatarSize else phoneAvatarSize,
+                )
+            }
         }
     }
 }
@@ -139,24 +169,54 @@ private fun EditGroupTopBar(
 private fun ColumnScope.EditGroupFormColumn(
     state: EditGroupUiState,
     onEvent: (EditGroupUiEvent) -> Unit,
+    avatarSize: Dp,
 ) {
-    if (state.showsSaveError) {
-        Text(
-            text = stringResource(R.string.edit_group_save_error),
-            modifier = Modifier
-                .padding(
-                    start = 20.dp,
-                    end = 20.dp,
-                    top = 8.dp,
-                ).semantics { liveRegion = LiveRegionMode.Polite },
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-        )
-    }
+    SaveErrorText(state)
     IconSection(
         state = state,
         onEvent = onEvent,
+        avatarSize = avatarSize,
     )
+    EditGroupFieldsSection(
+        state = state,
+        onEvent = onEvent,
+    )
+}
+
+// Why: lying down, the fields on the right, the error over them.
+@Composable
+private fun EditGroupFieldsColumn(
+    state: EditGroupUiState,
+    onEvent: (EditGroupUiEvent) -> Unit,
+) {
+    SaveErrorText(state)
+    EditGroupFieldsSection(
+        state = state,
+        onEvent = onEvent,
+    )
+}
+
+@Composable
+private fun SaveErrorText(state: EditGroupUiState) {
+    if (!state.showsSaveError) return
+    Text(
+        text = stringResource(R.string.edit_group_save_error),
+        modifier = Modifier
+            .padding(
+                start = 20.dp,
+                end = 20.dp,
+                top = 8.dp,
+            ).semantics { liveRegion = LiveRegionMode.Polite },
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.error,
+    )
+}
+
+@Composable
+private fun EditGroupFieldsSection(
+    state: EditGroupUiState,
+    onEvent: (EditGroupUiEvent) -> Unit,
+) {
     NameField(
         state = state,
         onEvent = onEvent,
@@ -192,6 +252,7 @@ private fun ColumnScope.EditGroupFormColumn(
 private fun ColumnScope.IconSection(
     state: EditGroupUiState,
     onEvent: (EditGroupUiEvent) -> Unit,
+    avatarSize: Dp,
 ) {
     val changeColorLabel = stringResource(R.string.edit_group_change_color_description)
     Column(
@@ -204,7 +265,7 @@ private fun ColumnScope.IconSection(
         GroupBadge(
             initials = state.initials,
             color = state.color,
-            size = 112.dp,
+            size = avatarSize,
             modifier = Modifier
                 .clickable(
                     role = Role.Button,
@@ -454,7 +515,7 @@ private fun EditGroupPreview() {
                 name = "Viagem Floripa",
                 isOnline = true,
             ),
-            isDialog = false,
+            isDialog = rememberUsesEditGroupDialog(),
             onEvent = {},
         )
     }
@@ -469,7 +530,7 @@ private fun EditGroupEmptyNameOfflinePreview() {
                 name = "",
                 isOnline = false,
             ),
-            isDialog = false,
+            isDialog = rememberUsesEditGroupDialog(),
             onEvent = {},
         )
     }

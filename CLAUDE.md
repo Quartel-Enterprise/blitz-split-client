@@ -352,7 +352,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
     after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
     the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
-    link. The released person gets no notice: the group just leaves their devices on the next sync.
+    link. The released person gets no notice: the group just leaves their devices on the next sync. On Android its
+    dialogs (rename, add, remove, release, and "Convite pessoal", a bottom sheet elsewhere) open in a book's right half;
+    a phone lying down, Android and iPhone, draws it in the group's two columns, the header and balance on the left.
   - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (no simplifying debts across the
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
@@ -378,12 +380,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     stays editable. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
-    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS, a dialog on the web and
-    on Android tablets. Its last row, under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
+    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
+    with an iPad's room, the avatar beside "Trocar cor" on an iPhone lying down) and a dialog on the web; on Android
+    full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
+    anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
+    under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
   - "Divisão padrão" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), in its
-    dialog's place on the web (a drawer on a phone), and the way Editar grupo opens on Android (a dialog on a
-    tablet). It sets how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
+    dialog's place on the web (a drawer on a phone), and on Android full screen on a phone and a foldable upright, a
+    dialog on a tablet (920 dp in two columns lying down, 560 dp upright) and in a book's right half in one column (off
+    the hinge as every dialog). It sets
+    how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
     percentages they give (`IncomePercents`). "Numa conta de R$ 100,00: Pierre R$ 75,00 · Ana R$ 25,00" with the bar
@@ -396,7 +403,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     precisar.", until someone saves). Two columns lying down (the ways to split, the people with the example), in
     the Mac's sheet, an iPad lying down and the web from 1024 px. "Exceções por categoria" (6.7f) lists the categories
     that split their own way ("Nenhuma. Todas as categorias seguem a divisão acima."): "Adicionar exceção" opens
-    "Exceção por categoria" (a bottom sheet on Android, a sheet on iOS and macOS, in the dialog's place on the web),
+    "Exceção por categoria" (a bottom sheet on Android where Divisão padrão is full screen, a 480 dp dialog where it
+    is a dialog, in a book's right half; a sheet on iOS and macOS, 540 pt with an iPad's room; in the dialog's place
+    on the web),
     one main category or subcategory (each at most once) split by Igual (who is in it), Partes or Porcentagem (whole
     numbers adding up to 100), with its own example, saved with the rest of the default by Salvar
     (`GroupDefaultSplit.exceptions`, `ExceptionEditor`). A new bill of that category, or of a subcategory of it
