@@ -246,9 +246,10 @@ private struct PaymentAmountHelp: View {
 }
 
 #if os(iOS)
-/// One grouped form on an iPhone upright and in the iPad's 540×620 form sheet; in an iPhone's sheet lying down two,
-/// side by side, as the canvas draws it: who paid whom and the amount, then how and when, each scrolling on its own,
-/// with the confirm as the bar's ✓ since the short sheet has no room for the button under the form.
+/// One grouped form on an iPhone upright and in the iPad's 540×620 form sheet, split on the fold of an iPhone Duo open
+/// upright; in an iPhone's sheet lying down two, side by side, as the canvas draws it: who paid whom and the amount,
+/// then how and when, each scrolling on its own, with the confirm as the bar's ✓ since the short sheet has no room for
+/// the button under the form.
 private struct PhoneRegisterPayment: View {
     let model: RegisterPaymentModel
 
@@ -260,32 +261,43 @@ private struct PhoneRegisterPayment: View {
     }
 
     var body: some View {
-        Group {
+        // An iPhone Duo open upright: who paid and the amount above the fold, how and when below it (6.5)
+        FoldHalves(scrollsHalves: false) {
+            Form {
+                whoAndAmount
+            }
+        } bottom: {
+            Form {
+                howAndWhen
+            }
+        } single: {
             if layout.usesTwoColumns {
                 TwoColumnsLayout(spacing: 8) {
-                    Form { summarySections }
+                    Form { whoAndAmount }
                 } second: {
-                    Form { detailSections }
+                    Form { howAndWhen }
                 }
             } else {
                 Form {
-                    summarySections
-                    detailSections
-                }
-                .safeAreaInset(edge: .bottom) {
-                    PrimaryButton(
-                        title: RegisterPaymentCopy.confirm(state),
-                        isEnabled: state.canConfirm,
-                        isLoading: state.isSaving,
-                    ) {
-                        confirm()
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 8)
+                    whoAndAmount
+                    howAndWhen
                 }
             }
         }
         .scrollDismissesKeyboard(.interactively)
+        .safeAreaInset(edge: .bottom) {
+            if !layout.usesTwoColumns {
+                PrimaryButton(
+                    title: RegisterPaymentCopy.confirm(state),
+                    isEnabled: state.canConfirm,
+                    isLoading: state.isSaving,
+                ) {
+                    confirm()
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 8)
+            }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
@@ -316,7 +328,7 @@ private struct PhoneRegisterPayment: View {
 
     /// Who paid whom, what is owed, and the amount (or the groups a net across groups closes).
     @ViewBuilder
-    private var summarySections: some View {
+    private var whoAndAmount: some View {
         Section {
             VStack(spacing: 8) {
                 PaymentFaces(from: state.from, to: state.to, size: 52)
@@ -361,7 +373,7 @@ private struct PhoneRegisterPayment: View {
 
     /// How and when it was paid, and what recording it does.
     @ViewBuilder
-    private var detailSections: some View {
+    private var howAndWhen: some View {
         Section("How it was paid") {
             MethodPicker(selection: model.method)
                 .listRowBackground(Color.clear)

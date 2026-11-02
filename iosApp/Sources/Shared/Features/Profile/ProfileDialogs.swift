@@ -61,6 +61,7 @@ private struct ProfileDialogsModifier: ViewModifier {
             }
             .sheet(isPresented: isPresented(.eraseProfile)) {
                 EraseProfileSheet(model: model)
+                    .foldSheetPlacement()
             }
     }
 
