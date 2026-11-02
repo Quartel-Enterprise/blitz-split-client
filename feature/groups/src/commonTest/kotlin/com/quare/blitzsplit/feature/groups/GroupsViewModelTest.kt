@@ -2698,6 +2698,7 @@ class GroupsViewModelTest {
         payers = listOf(ExpensePayer("member-$paidBy", amountMinor)),
         shares = splitOver.map { ExpenseShare("member-$it", amountMinor / splitOver.size, 1L) },
         items = null,
+        categoryId = null,
         spentAt = updatedAt,
         isPending = isPending,
         updatedAt = updatedAt,

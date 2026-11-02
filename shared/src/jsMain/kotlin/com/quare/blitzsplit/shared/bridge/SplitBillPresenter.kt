@@ -182,6 +182,8 @@ class JsSplitBillState(
     val canDelete: Boolean,
     val isDeleting: Boolean,
     val isLoaded: Boolean,
+    // Why: the bill's category and "Categoria" (7.7, 7.8).
+    val categories: JsBillCategories,
 )
 
 class SplitBillPresenter(
@@ -195,6 +197,9 @@ class SplitBillPresenter(
 
     // Why: "Itens da conta" and "Item", on this same ViewModel.
     val items: SplitItemsPresenter = SplitItemsPresenter { holder.viewModel }
+
+    // Why: "Categoria" and "Nova categoria", on this same ViewModel.
+    val categories: SplitCategoriesPresenter = SplitCategoriesPresenter { holder.viewModel }
 
     fun observeState(onChange: (JsSplitBillState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
@@ -272,6 +277,7 @@ class SplitBillPresenter(
                 canDelete = state.canDelete,
                 isDeleting = state.isDeleting,
                 isLoaded = state.isLoaded,
+                categories = toJsBillCategories(state),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -284,6 +290,8 @@ class SplitBillPresenter(
             when (action) {
                 SplitBillUiAction.ShowSaveError -> "save-error"
                 SplitBillUiAction.ShowDeleteError -> "delete-error"
+                SplitBillUiAction.ShowCategorySaveError -> "category-save-error"
+                SplitBillUiAction.ShowCategoryDeleteError -> "category-delete-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)

@@ -42,10 +42,14 @@ internal fun DefaultSplitNoticeCard(
     editorMode: SplitMode,
     isOffDefault: Boolean,
     onEvent: (SplitBillUiEvent) -> Unit,
+    // Why: "Exceção do grupo para Mercado: Igual" when the bill's category has its own way (7.2g).
+    exceptionName: String? = null,
 ) {
     val description = defaultSplitDescriptionOf(default)
     val title = if (isOffDefault) {
         stringResource(R.string.split_bill_default_off_title)
+    } else if (exceptionName != null) {
+        stringResource(R.string.split_bill_default_exception_title, exceptionName, description)
     } else {
         stringResource(R.string.split_bill_default_title, groupName, description)
     }

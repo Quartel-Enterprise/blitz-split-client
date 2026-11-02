@@ -63,13 +63,17 @@ struct DefaultSplitView: View {
                 if layout.usesTwoColumns {
                     HStack(alignment: .top, spacing: 0) {
                         Form { DefaultSplitOverview(model: model) }
-                        Form { DefaultSplitPeople(model: model) }
+                        Form {
+                            DefaultSplitPeople(model: model)
+                            DefaultSplitExceptions(model: model)
+                        }
                     }
                     .formStyle(.grouped)
                 } else {
                     Form {
                         DefaultSplitOverview(model: model)
                         DefaultSplitPeople(model: model)
+                        DefaultSplitExceptions(model: model)
                     }
                     .formStyle(.grouped)
                 }
@@ -108,9 +112,21 @@ struct DefaultSplitView: View {
         #if os(macOS)
         .frame(minWidth: 640, idealWidth: 760, minHeight: 520, idealHeight: 640)
         #endif
+        .sheet(isPresented: exceptionShown) {
+            if let model { ExceptionSheet(model: model) }
+        }
         .onAppear {
             if model == nil { model = DefaultSplitModel(route: route) }
         }
+    }
+
+    private var exceptionShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.exceptionEditor != nil },
+            set: { shown in
+                if !shown, model?.current.exceptionEditor != nil { model?.send(DefaultSplitUiEventOnExceptionDismissed.shared) }
+            },
+        )
     }
 }
 

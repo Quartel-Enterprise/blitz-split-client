@@ -101,6 +101,7 @@ internal fun BillDetailsSection(
             subtitle = splitSubtitleOrNull(
                 summary = state.splitSummary,
                 money = money,
+                exceptionName = state.defaultSplitException?.let { categoryNameOf(it) },
             ),
             shape = rowShapeOf(index = 2),
             onClick = { onEvent(SplitBillUiEvent.OnSplitClicked) },

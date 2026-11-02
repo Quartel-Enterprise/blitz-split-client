@@ -467,6 +467,7 @@ class ExpenseMapperImplTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
         isPending = true,
         // Why: the version it is stored at, the createdAt the tests pass.
@@ -492,6 +493,7 @@ class ExpenseMapperImplTest {
         payersJson = payersJson,
         sharesJson = sharesJson,
         itemsJson = null,
+        categoryId = null,
         spentAt = 5_000L,
         isDeleted = isDeleted,
         addedAt = 1L,
@@ -530,6 +532,7 @@ class ExpenseMapperImplTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
         isDeleted = isDeleted,
         addedAt = 2L,

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
@@ -98,6 +100,7 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 ),
                 totalMinor = 31_200L,
                 myBalanceMinor = 24_960L,
+                category = CategoryTree.appOnly.resolve(AppCategory.FOOD_RESTAURANT.key),
                 isPending = false,
             ),
         ),
@@ -122,6 +125,7 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 ),
                 totalMinor = 64_200L,
                 myBalanceMinor = -11_800L,
+                category = CategoryTree.appOnly.resolve(AppCategory.FOOD_RESTAURANT.key),
                 isPending = false,
             ),
             ExpenseRow(
@@ -136,6 +140,7 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 ),
                 totalMinor = 72_000L,
                 myBalanceMinor = null,
+                category = CategoryTree.appOnly.resolve(AppCategory.FOOD_RESTAURANT.key),
                 isPending = false,
             ),
         ),

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -4803,6 +4804,7 @@ class SyncCoordinatorTest {
             groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
+            categoryRepository = FakeCategoryRepository(),
             activityRepository = activity,
             hiddenContactRepository = FakeHiddenContactRepository(),
             firstDownload = firstDownload,

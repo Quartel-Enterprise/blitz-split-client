@@ -1,9 +1,11 @@
 package com.quare.blitzsplit.core.groups.data.mapper
 
+import com.quare.blitzsplit.core.groups.data.dto.CategorySplitDto
 import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitDto
 import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -23,7 +25,11 @@ import kotlinx.serialization.json.jsonObject
  * sight of a group because of it.
  */
 class GroupMapperImpl : GroupMapper {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        // Why: an older version saved no "exceptions"; the absent key reads as none.
+        explicitNulls = false
+    }
 
     override fun toDomain(
         groups: List<GroupEntity>,
@@ -201,10 +207,12 @@ class GroupMapperImpl : GroupMapper {
         val known = json.encodeToJsonElement(
             DefaultSplitDto(
                 mode = defaultSplit.mode.code,
-                weights = defaultSplit.weights.map { (memberId, weight) ->
-                    DefaultSplitWeightDto(
-                        memberId = memberId,
-                        weight = weight,
+                weights = weightDtosOf(defaultSplit.weights),
+                exceptions = defaultSplit.exceptions.map {
+                    CategorySplitDto(
+                        categoryId = it.categoryId,
+                        mode = it.mode.code,
+                        weights = weightDtosOf(it.weights),
                     )
                 },
             ),
@@ -227,8 +235,28 @@ class GroupMapperImpl : GroupMapper {
         return GroupDefaultSplit(
             mode = mode,
             weights = dto.weights.associate { it.memberId to it.weight },
+            // Why: an exception in a mode this version doesn't offer is left out, its bills splitting by the default.
+            exceptions = dto.exceptions.orEmpty().mapNotNull { exception ->
+                val exceptionMode = DefaultSplitMode
+                    .fromCodeOrNull(exception.mode)
+                    ?.takeIf { it in CategorySplit.modes }
+                    ?: return@mapNotNull null
+                CategorySplit(
+                    categoryId = exception.categoryId,
+                    mode = exceptionMode,
+                    weights = exception.weights.associate { it.memberId to it.weight },
+                )
+            },
         )
     }
+
+    private fun weightDtosOf(weights: Map<String, Long>): List<DefaultSplitWeightDto> =
+        weights.map { (memberId, weight) ->
+            DefaultSplitWeightDto(
+                memberId = memberId,
+                weight = weight,
+            )
+        }
 
     private fun decodeOrNull(text: String?): DefaultSplitDto? = text?.let {
         runCatching { json.decodeFromString<DefaultSplitDto>(it) }.getOrNull()

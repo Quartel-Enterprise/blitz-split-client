@@ -70,4 +70,9 @@
         <item quantity="one">%1$d despesa, %2$d na fila</item>
         <item quantity="other">%1$d despesas, %2$d na fila</item>
     </plurals>
+    <string name="group_stats_by_category">Por categoria</string>
+    <string name="group_stats_category_share">%1$s: %2$d%% do total</string>
+    <string name="group_stats_category_percent">%d%%</string>
+    <string name="group_stats_category_pie">Divisão por categoria: %s</string>
+    <string name="group_stats_category_pie_part">%1$s %2$d%%</string>
 </resources>

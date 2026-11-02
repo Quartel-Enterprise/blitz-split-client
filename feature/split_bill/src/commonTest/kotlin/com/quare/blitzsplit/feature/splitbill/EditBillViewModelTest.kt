@@ -10,9 +10,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -1026,6 +1028,7 @@ class EditBillViewModelTest {
         payers = listOf(ExpensePayer(ANA, 31_200L)),
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = yesterdayMillis,
         isPending = false,
         updatedAt = SAVED_VERSION,
@@ -1119,6 +1122,9 @@ class EditBillViewModelTest {
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+            deleteGroupCategory = { Result.success(Unit) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

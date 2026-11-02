@@ -48,6 +48,8 @@ data class GroupStatsUiState(
     val bars: List<StatsBar>,
     val grainNotes: List<StatsGrainNote>,
     val biggestExpense: StatsBiggestExpense?,
+    // Why: "Por categoria" and the pie, the largest first; a bill without one counts in "Outros".
+    val categories: List<StatsCategoryRow>,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
     // Why: the home tab the screen was opened from, which Android's rail beside it selects.
@@ -69,6 +71,10 @@ data class GroupStatsUiState(
     // Why: the period has nothing to pick from in a group without bills.
     val showsPeriodPicker: Boolean
         get() = isLoaded && allStartMillis != null
+
+    // Why: the pie's center names the largest category.
+    val topCategory: StatsCategoryRow?
+        get() = categories.firstOrNull()
 
     // Why: "Dia mais caro: 28 de out, R$ 1.458,00".
     val peak: StatsBar?

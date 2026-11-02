@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
@@ -13,15 +12,17 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
-import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -65,6 +66,9 @@ class SplitBillViewModel(
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
+    observeCategoryTree: ObserveCategoryTree,
+    saveGroupCategory: SaveGroupCategory,
+    deleteGroupCategory: DeleteGroupCategory,
     connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<SplitBillUiState>
@@ -121,6 +125,21 @@ class SplitBillViewModel(
         },
     )
 
+    // Why: the group as last shown, which a change of the bill's category shows again with that category's split.
+    private var shownGroup: Group? = null
+
+    // Why: "Categoria" (7.7) and the group's own categories (7.8); its exception may change the bill's split.
+    private val categoryEditing = CategoryEditing(
+        uiState = uiState,
+        scope = viewModelScope,
+        observeCategoryTree = observeCategoryTree,
+        observeExpenses = observeExpenses,
+        saveGroupCategory = saveGroupCategory,
+        deleteGroupCategory = deleteGroupCategory,
+        emit = { uiAction.emit(it) },
+        onCategoryChanged = ::showCategorySplit,
+    )
+
     // Why: the bill being edited as last read, whose version tells someone else's save from the one the form opened.
     private var editedExpense: Expense? = null
 
@@ -149,6 +168,7 @@ class SplitBillViewModel(
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
             }.launchIn(viewModelScope)
+        categoryEditing.observe(groupId)
         if (settledPairs == null) {
             observeGroupsByActivity()
                 .onEach(::showGroups)
@@ -189,12 +209,7 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnGroupDismissed -> uiState.update { it.copy(groupSelection = null) }
 
-            is SplitBillUiEvent.OnDescriptionChanged -> uiState.update {
-                it.copy(
-                    description = ExpenseRules.toCapped(event.text),
-                    hasEditedDescription = true,
-                )
-            }
+            is SplitBillUiEvent.OnDescriptionChanged -> categoryEditing.changeDescription(event.text)
 
             SplitBillUiEvent.OnPayerClicked -> uiState.update {
                 it.copy(payerSelection = PayerSelection(memberId = it.payerId.ifEmpty { null }))
@@ -260,6 +275,8 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.Items -> items.onEvent(event)
 
+            is SplitBillUiEvent.Categories -> categoryEditing.onEvent(event)
+
             SplitBillUiEvent.OnSaveClicked -> save()
 
             SplitBillUiEvent.OnDeleteClicked -> askToDelete()
@@ -298,6 +315,8 @@ class SplitBillViewModel(
     ) {
         // Why: a group that comes back before this screen is on top again keeps it open.
         isGroupGone = group == null
+        // Why: a category or bills change arriving before the screen leaves never redraws a deleted group's people.
+        if (group == null) shownGroup = null
         when {
             group == null -> handleGroupGone()
 
@@ -371,7 +390,13 @@ class SplitBillViewModel(
         }
     }
 
+    // Why: a new bill's category picks its split, the exception of its category or the group's default (7.1k).
+    private fun showCategorySplit() {
+        shownGroup?.let(::show)
+    }
+
     private fun show(group: Group) {
+        shownGroup = group
         val people = group.members.map { it.toBillPerson() }
         val isAnotherGroup = shownGroupId != null && shownGroupId != group.id
         shownGroupId = group.id
@@ -386,37 +411,7 @@ class SplitBillViewModel(
         }
         uiState.update { current ->
             val state = if (isAnotherGroup) current.toStartInAnotherGroup() else current
-            /*
-             * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the
-             * group. A bill being edited keeps its payer even after they left it, so saving never moves who paid.
-             * Several payers keep theirs in severalPayers, until every one of them left a new bill.
-             */
-            val severalPayers = state.severalPayers
-                ?.withPeople(people, group.currency, keepsFormer = state.isEditing)
-                ?.takeIf { it.payers.isNotEmpty() }
-            val payerId = if (severalPayers != null) {
-                ""
-            } else {
-                state.payerId.takeIf { id -> people.any { it.id == id } || (state.isEditing && id.isNotEmpty()) }
-                    ?: people.firstOrNull { it.isMe }?.id
-                    ?: people.firstOrNull()?.id.orEmpty()
-            }
-            val shown = state.copy(
-                groupId = group.id,
-                groupName = group.name,
-                groupInitials = Initials.of(group.name),
-                groupColor = group.color,
-                currency = group.currency,
-                people = people,
-                payerId = payerId,
-                severalPayers = severalPayers,
-                // Why: the payer of a bill being edited stays marked after they left the group.
-                payerSelection = state.payerSelection?.takeIf { selection ->
-                    selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
-                },
-                payerAmounts = state.payerAmounts?.withPeople(people, group.currency, keepsFormer = state.isEditing),
-                isLoaded = true,
-            )
+            val shown = state.withGroupShown(group, people)
             val withSplit = shown.withSplitAmong(
                 people = people,
                 defaultSplit = group.defaultSplit,
@@ -527,6 +522,7 @@ class SplitBillViewModel(
                     splitMode = state.split.mode,
                     shares = shares,
                     items = state.split.items,
+                    categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
                 ).map { }
             } else {
@@ -539,6 +535,7 @@ class SplitBillViewModel(
                     splitMode = state.split.mode,
                     shares = shares,
                     items = state.split.items,
+                    categoryId = state.categoryIdToSave,
                     spentAt = state.spentAt,
                 )
             }

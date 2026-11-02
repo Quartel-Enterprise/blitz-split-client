@@ -584,6 +584,7 @@ class ExpenseRepositoryImplTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
         isPending = true,
         // Why: the version it is stored at, the createdAt the tests pass.
@@ -609,6 +610,7 @@ class ExpenseRepositoryImplTest {
         payersJson = "[]",
         sharesJson = "[]",
         itemsJson = null,
+        categoryId = null,
         spentAt = 5_000L,
         isDeleted = isDeleted,
         addedAt = 1L,
@@ -641,6 +643,7 @@ class ExpenseRepositoryImplTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
         isDeleted = false,
         addedAt = 2L,

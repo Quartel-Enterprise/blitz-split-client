@@ -2,6 +2,11 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -47,6 +52,22 @@ data class SplitBillUiState(
     val split: SplitEditor,
     // Why: the group's "Divisão padrão" a new bill opens with; null while editing a saved bill or for a group without one.
     val defaultSplit: BillDefaultSplit?,
+    // Why: the app's categories with the group's (7.7), which the bill's category resolves in.
+    val categories: CategoryTree,
+    // Why: the bill's category, an app key or a group category's id; null for "Outros".
+    val categoryId: String?,
+    // Why: picked by hand (or a saved bill's), so the map's suggestion no longer follows the description.
+    val isCategoryPicked: Boolean,
+    // Why: the terms of the map in the description, the one that chooses first (7.1, 7.1l).
+    val categoryMatches: List<CategoryMatch>,
+    // Why: how many of the group's bills each category has, by the category they read as.
+    val categoryUsage: Map<String, Int>,
+    // Why: "Categoria" (7.7), open while not null.
+    val categoryPicker: CategoryPicker?,
+    // Why: "Nova categoria" or "Editar categoria" (7.8), open over the picker while not null.
+    val categoryForm: CategoryForm?,
+    // Why: "Apagar “Churrasco”?" (7.8f), open while not null.
+    val categoryDeletion: CategoryDeletion?,
     // Why: "Dividir", open while not null; it changes the bill's split only on "Pronto".
     val splitEditor: SplitEditor?,
     // Why: "Itens da conta" (7.5), Dividir's fifth mode, open in its place while not null; the bill changes on "Pronto".
@@ -170,6 +191,125 @@ data class SplitBillUiState(
             return defaultSplit?.isFollowedBy(editor) == false
         }
 
+    // Why: the bill's category as it reads: a deleted group category as its parent, none as "Outros".
+    val category: Category
+        get() = categories.resolve(categoryId)
+
+    // Why: "Alimentação › Mercado": the main category above a subcategory, null for a main one.
+    val categoryParent: Category?
+        get() = category.parentId?.let { categories.findOrNull(it) }
+
+    // Why: the category the map's term chooses, null when no term is in the description.
+    val mapCategory: Category?
+        get() = categoryMatches.firstOrNull()?.let { categories.findOrNull(it.categoryId) }
+
+    val categoryHint: CategoryHint
+        get() {
+            val mapCategory = mapCategory
+            return when {
+                isEditing -> CategoryHint.PICKED
+                isCategoryPicked && mapCategory != null && mapCategory.id != category.id -> CategoryHint.CHANGED
+                isCategoryPicked && mapCategory == null -> CategoryHint.PICKED
+                categoryMatches.size > 1 -> CategoryHint.BY_LONGEST_TERM
+                categoryMatches.size == 1 -> CategoryHint.BY_TERM
+                else -> CategoryHint.NO_TERM
+            }
+        }
+
+    // Why: Dividir's notice and the bill's "Divisão" name the exception's category ("Exceção do grupo para Mercado").
+    val defaultSplitException: Category?
+        get() = defaultSplit?.exceptionCategoryId?.let { categories.resolve(it) }
+
+    /*
+     * Why: "Sugeridas" (7.7): the map's choice first ("Pela descrição"), then the group's most used ("Mais usada no
+     * grupo" on the first), and the group's own categories ("Do grupo"), four at most.
+     */
+    val categorySuggestions: List<CategorySuggestion>
+        get() {
+            val fromMap = mapCategory?.let { listOf(it to CategorySuggestionReason.DESCRIPTION) }.orEmpty()
+            val used = categoryUsage.entries
+                .filter { (id, _) -> categories.findOrNull(id)?.isOther == false }
+                .sortedByDescending { it.value }
+                .mapIndexedNotNull { index, (id, _) ->
+                    val usedCategory = categories.findOrNull(id) ?: return@mapIndexedNotNull null
+                    usedCategory to when {
+                        usedCategory.isGroupCategory -> CategorySuggestionReason.GROUP
+                        index == 0 -> CategorySuggestionReason.MOST_USED
+                        else -> CategorySuggestionReason.USED
+                    }
+                }
+            val ofGroup = categories.all.filter { it.isGroupCategory }.map { it to CategorySuggestionReason.GROUP }
+            return (fromMap + used + ofGroup)
+                .distinctBy { it.first.id }
+                .take(MAX_SUGGESTIONS)
+                .map { (suggested, reason) ->
+                    CategorySuggestion(
+                        category = suggested,
+                        reason = reason,
+                        isSelected = suggested.id == category.id,
+                    )
+                }
+        }
+
+    // Why: "Restaurante é a mais usada no Viagem Floripa."
+    val mostUsedCategory: Category?
+        get() = categorySuggestions.firstOrNull { it.reason == CategorySuggestionReason.MOST_USED }?.category
+
+    // Why: what "Buscar categoria" finds, by any word of the name starting with what is typed, in the list's order.
+    val categoryResults: List<Category>
+        get() {
+            val query = categoryPicker?.query?.trim().orEmpty()
+            if (query.isEmpty()) return emptyList()
+            return categories.all.filter { CategoryNames.matches(it, query) }
+        }
+
+    val isSearchingCategories: Boolean
+        get() = categoryPicker?.query?.isNotBlank() == true
+
+    // Why: "Nenhuma categoria com “Pet”" with "Criar “Pet”" (7.7c).
+    val showsNoCategoryFound: Boolean
+        get() = isSearchingCategories && categoryResults.isEmpty()
+
+    // Why: the main category whose subcategories show in the picker, the bill's own to start.
+    val openCategoryBranch: CategoryBranch?
+        get() = categoryPicker?.openMainId?.let { categories.branchOf(it) }
+
+    // Why: "Já existe Churrasco em Alimentação. Escolha outro nome." (7.8c), among the app's names and the group's.
+    val isCategoryNameTaken: Boolean
+        get() {
+            val form = categoryForm ?: return false
+            val name = form.name.trim()
+            if (name.isEmpty()) return false
+            return categories.hasGroupName(form.parentId, name, form.categoryId) ||
+                categories.all.any { it.app != null && it.parentId == form.parentId && CategoryNames.isNamed(it, name) }
+        }
+
+    // Why: a category that has subcategories stays a main one, as there are only two levels.
+    val isCategoryParentLocked: Boolean
+        get() = categoryForm?.categoryId?.let(categories::hasSubcategories) == true
+
+    // Why: "Dentro de": "Nenhuma: categoria principal" and every main category but the one being edited.
+    val categoryParents: List<Category>
+        get() = categories.branches.map { it.category }.filter { it.id != categoryForm?.categoryId && !it.isOther }
+
+    // Why: "Criada por Ana · usada em 3 contas", the group's bills with it or a subcategory of it.
+    val categoryFormUsage: Int
+        get() {
+            val id = categoryForm?.categoryId ?: return 0
+            val subcategories = categories
+                .branchOf(id)
+                ?.subcategories
+                .orEmpty()
+                .map { it.id }
+            return (listOf(id) + subcategories).sumOf { categoryUsage[it] ?: 0 }
+        }
+
+    val canSaveCategory: Boolean
+        get() {
+            val form = categoryForm ?: return false
+            return CategoryRules.isNameValid(form.name) && !isCategoryNameTaken && !form.isSaving
+        }
+
     // Why: "Apagar conta" only when editing, and not while saving or deleting.
     val canDelete: Boolean
         get() = isEditing && isLoaded && !isSaving && !isDeleting
@@ -182,7 +322,18 @@ data class SplitBillUiState(
     val showsOfflineNotice: Boolean
         get() = !isOnline
 
+    /*
+     * Why: what Salvar stores: none while it reads as "Outros" without being picked, and the id as it is otherwise, so
+     * a deleted category keeps reading as its parent and one whose row hasn't come down yet isn't saved as "Outros".
+     */
+    val categoryIdToSave: String?
+        get() = categoryId
+
     // Why: "Qualquer pessoa do grupo pode editar ou apagar." under the form when editing, unless a warning says more.
     val showsAnyoneCanEditHint: Boolean
         get() = isEditing && conflict == null && settledPair == null
+
+    private companion object {
+        const val MAX_SUGGESTIONS = 4
+    }
 }

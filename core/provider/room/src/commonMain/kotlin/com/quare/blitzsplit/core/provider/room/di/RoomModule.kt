@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
+import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
@@ -37,4 +38,5 @@ val roomModule: Module = module {
     single<ActivityDao> { get<AppDatabase>().activityDao() }
     single<HiddenContactDao> { get<AppDatabase>().hiddenContactDao() }
     single<GroupPinDao> { get<AppDatabase>().groupPinDao() }
+    single<GroupCategoryDao> { get<AppDatabase>().groupCategoryDao() }
 }

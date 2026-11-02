@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -29,6 +32,12 @@ data class DefaultSplitUiState(
      * on each copy for the connection or a save going on, since every UI reads it on each keystroke.
      */
     val figures: DefaultSplitFigures,
+    // Why: "Exceções por categoria" (6.7f) as they will be saved, in the order they were added.
+    val exceptions: List<CategorySplit>,
+    // Why: the app's categories with the group's, which the exceptions name.
+    val categories: CategoryTree,
+    // Why: "Exceção por categoria", open while not null.
+    val exceptionEditor: ExceptionEditor?,
 ) {
     // Why: each one's weight as Salvar saves it.
     val weights: Map<String, Long>
@@ -89,7 +98,50 @@ data class DefaultSplitUiState(
         get() = GroupDefaultSplit(
             mode = mode,
             weights = weights,
+            exceptions = exceptions,
         )
+
+    // Why: "Mercado · Igual entre todos", each exception with the category it reads as now.
+    val exceptionRows: List<ExceptionRow>
+        get() = exceptions.map { exception ->
+            ExceptionRow(
+                exception = exception,
+                category = categories.resolve(exception.categoryId),
+                includedCount = people.count { exception.asDefault.weightOf(it.id) > 0 },
+                totalCount = people.size,
+            )
+        }
+
+    // Why: the categories an exception may pick: every main one but "Outros", then the open one's subcategories.
+    val exceptionMains: List<Category>
+        get() = categories.branches.map { it.category }.filterNot { it.isOther }
+
+    val exceptionSubcategories: List<Category>
+        get() = exceptionEditor
+            ?.openMainId
+            ?.let { categories.branchOf(it) }
+            ?.subcategories
+            .orEmpty()
+
+    // Why: a category takes one exception; the one being changed may keep its own.
+    val isExceptionCategoryTaken: Boolean
+        get() {
+            val editor = exceptionEditor ?: return false
+            return exceptions.any { it.categoryId == editor.categoryId && it.categoryId != editor.editedCategoryId }
+        }
+
+    val canSaveException: Boolean
+        get() {
+            val editor = exceptionEditor ?: return false
+            return editor.categoryId != null && editor.addsUp && !isExceptionCategoryTaken
+        }
+
+    // Why: "Numa conta de R$ 100,00 no Mercado: Pierre R$ 50,00 · Ana R$ 50,00".
+    val exceptionCategory: Category?
+        get() = exceptionEditor?.categoryId?.let { categories.resolve(it) }
+
+    val exceptionModes: List<DefaultSplitMode>
+        get() = CategorySplit.modes
 
     // Why: the incomes typed, by member id in minor units, which stay on this device.
     val incomes: Map<String, Long>

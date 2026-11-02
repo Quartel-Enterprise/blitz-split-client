@@ -1,16 +1,21 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -22,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -31,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountTextField
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -52,16 +59,33 @@ internal fun BillFieldsSection(
         money = money,
         onEvent = onEvent,
     )
+    val categoryLabel = stringResource(R.string.split_bill_category_change, billCategoryPathOf(state))
     OutlinedTextField(
         value = state.description,
         onValueChange = { onEvent(SplitBillUiEvent.OnDescriptionChanged(it)) },
         modifier = Modifier.fillMaxWidth(),
         label = { Text(stringResource(R.string.split_bill_description)) },
         placeholder = { Text(stringResource(R.string.split_bill_description_placeholder)) },
-        supportingText = if (state.showsDescriptionError) {
-            { Text(stringResource(R.string.split_bill_description_error)) }
-        } else {
-            null
+        // Why: the category's icon opens "Categoria" (7.7).
+        leadingIcon = {
+            IconButton(
+                onClick = { onEvent(SplitBillUiEvent.OnCategoryClicked) },
+                modifier = Modifier.semantics { contentDescription = categoryLabel },
+            ) {
+                CategoryBadge(
+                    category = state.category,
+                    size = 32.dp,
+                )
+            }
+        },
+        supportingText = {
+            Text(
+                text = if (state.showsDescriptionError) {
+                    stringResource(R.string.split_bill_description_error)
+                } else {
+                    categoryHintOf(state)
+                },
+            )
         },
         isError = state.showsDescriptionError,
         singleLine = true,
@@ -70,6 +94,42 @@ internal fun BillFieldsSection(
             imeAction = ImeAction.Done,
         ),
     )
+    if (!state.isEditing && state.categoryMatches.size > 1) {
+        MatchedTermsRow(state)
+    }
+}
+
+// Why: every word of the map the description has, the one that chose marked (7.1l).
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MatchedTermsRow(state: SplitBillUiState) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        state.categoryMatches.forEachIndexed { index, match ->
+            val isWinner = index == 0
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = if (isWinner) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
+                contentColor = if (isWinner) {
+                    MaterialTheme.colorScheme.onSecondaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                border = if (isWinner) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {
+                Text(
+                    text = match.term,
+                    modifier = Modifier.padding(
+                        horizontal = 10.dp,
+                        vertical = 4.dp,
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+        }
+    }
 }
 
 /*

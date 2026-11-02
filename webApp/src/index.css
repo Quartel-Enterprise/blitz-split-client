@@ -132,3 +132,12 @@
   background: var(--avatar-bg-dark);
   color: var(--avatar-fg-dark);
 }
+
+/* A slice of Estatísticas' pie takes its category's avatar color (CategoriesCard). */
+.avatar-stroke {
+  stroke: var(--avatar-bg);
+}
+
+.dark .avatar-stroke {
+  stroke: var(--avatar-bg-dark);
+}

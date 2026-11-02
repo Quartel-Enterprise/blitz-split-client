@@ -1518,6 +1518,7 @@ class BalancesViewModelTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = paidAt,
         isPending = false,
         updatedAt = paidAt,

@@ -1,4 +1,4 @@
-import { Pencil, ReceiptText, Trash2, X } from 'lucide-react'
+import { Pencil, Trash2, X } from 'lucide-react'
 import { BillDetailPresenter, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -12,6 +12,7 @@ import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
+import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { BillDeleteDialog } from './BillDeleteDialog'
 
@@ -123,10 +124,10 @@ function BillBody({ state, money, title, description }: { state: JsBillDetailSta
     <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
       <div className="flex min-w-0 flex-col gap-5">
         <div className="flex items-center gap-3">
-          <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
-            <ReceiptText className="size-5" />
-          </span>
+          <CategoryBadge category={state.category} />
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            {/* Why: the bill's category over its title, "Alimentação › Mercado" (7.3). */}
+            <span className="text-[13px] text-muted-foreground">{categoryPath(state.category, state.categoryParent)}</span>
             {title}
             {description}
           </div>

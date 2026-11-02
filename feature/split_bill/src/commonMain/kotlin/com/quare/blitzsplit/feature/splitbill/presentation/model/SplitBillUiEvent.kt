@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.presentation.UiEvent
@@ -198,6 +199,67 @@ sealed interface SplitBillUiEvent : UiEvent {
     data object OnFeeDone : Items
 
     data object OnFeeDismissed : Items
+
+    // Why: what "Categoria" (7.7), "Nova categoria" (7.8) and their questions send, which CategoryEditing handles.
+    sealed interface Categories : SplitBillUiEvent
+
+    // Why: the icon beside the description, which opens "Categoria" (7.7).
+    data object OnCategoryClicked : Categories
+
+    data class OnCategoryQueryChanged(
+        val text: String,
+    ) : Categories
+
+    // Why: a main category of "Todas as categorias", which shows its subcategories, or hides them again.
+    data class OnCategoryMainToggled(
+        val categoryId: String,
+    ) : Categories
+
+    // Why: a suggestion, a subcategory, "Só Alimentação", a result or a category without subcategories: the bill's now.
+    data class OnCategoryPicked(
+        val categoryId: String,
+    ) : Categories
+
+    data object OnCategoryDismissed : Categories
+
+    /*
+     * Why: "Nova" (a main category), "Nova em Alimentação" (its subcategory) or "Criar “Pet”" from a search with the
+     * text typed (7.7c, 7.8, 7.8b).
+     */
+    data class OnNewCategoryClicked(
+        val parentId: String?,
+        val name: String,
+    ) : Categories
+
+    // Why: a long press (⋯ on the web, the context menu on the Mac) on one of the group's categories (7.8e).
+    data class OnEditCategoryClicked(
+        val categoryId: String,
+    ) : Categories
+
+    data class OnCategoryNameChanged(
+        val text: String,
+    ) : Categories
+
+    // Why: "Dentro de", null for "Nenhuma: categoria principal".
+    data class OnCategoryParentPicked(
+        val parentId: String?,
+    ) : Categories
+
+    data class OnCategoryIconPicked(
+        val icon: CategoryIcon,
+    ) : Categories
+
+    data object OnCategoryFormSaveClicked : Categories
+
+    // Why: back to "Categoria" without saving.
+    data object OnCategoryFormDismissed : Categories
+
+    // Why: "Apagar categoria", which asks first (7.8f).
+    data object OnCategoryDeleteClicked : Categories
+
+    data object OnCategoryDeleteConfirmed : Categories
+
+    data object OnCategoryDeleteDismissed : Categories
 
     data object OnSaveClicked : SplitBillUiEvent
 

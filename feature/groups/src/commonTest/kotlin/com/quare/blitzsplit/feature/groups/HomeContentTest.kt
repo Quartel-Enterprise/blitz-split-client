@@ -406,6 +406,7 @@ class HomeContentTest {
                     updatedAt = hoursAgo(1),
                     updatedByMemberId = null,
                     items = null,
+                    categoryId = null,
                 ),
             ),
         )
@@ -605,5 +606,6 @@ class HomeContentTest {
         updatedAt = spentAt,
         updatedByMemberId = null,
         items = null,
+        categoryId = null,
     )
 }

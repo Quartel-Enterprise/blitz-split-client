@@ -121,6 +121,7 @@ class ObserveGroupsByActivityUseCaseTest {
         payers = emptyList(),
         shares = emptyList(),
         items = null,
+        categoryId = null,
         spentAt = 0L,
         isPending = false,
         updatedAt = updatedAt,

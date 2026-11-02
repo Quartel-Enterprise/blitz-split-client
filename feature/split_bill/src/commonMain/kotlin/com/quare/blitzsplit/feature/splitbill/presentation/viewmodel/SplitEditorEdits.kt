@@ -231,6 +231,7 @@ internal fun billDefaultSplitOf(
     currency: GroupCurrency,
     payerIds: List<String>,
     totalMinor: Long,
+    exceptionCategoryId: String?,
 ): BillDefaultSplit? {
     if (default == null || people.isEmpty()) return null
     val weights = people.associate { it.id to default.weightOf(it.id) }
@@ -260,6 +261,7 @@ internal fun billDefaultSplitOf(
         editor = editor,
         values = people.mapNotNull { person -> weights.getValue(person.id).takeIf { it > 0 } },
         excluded = people.filter { weights.getValue(it.id) <= 0 },
+        exceptionCategoryId = exceptionCategoryId,
     )
 }
 
@@ -274,10 +276,22 @@ internal fun SplitBillUiState.withSplitAmong(
     defaultSplit: GroupDefaultSplit?,
     followsDefault: Boolean,
 ): SplitBillUiState {
+    /*
+     * Why: the bill's category picks which split it opens with, its exception (6.7f) or the group's default; a
+     * default of "Igual" with everyone in, kept only for its exceptions, is no default for the other bills.
+     */
+    val exception = defaultSplit?.exceptionFor(listOf(category.id, categories.mainOf(category).id))
     val billDefault = if (isEditing) {
         null
     } else {
-        billDefaultSplitOf(defaultSplit, people, currency, payerIds, split.totalMinor)
+        billDefaultSplitOf(
+            default = exception?.asDefault ?: defaultSplit?.takeUnless { it.isEveryoneEqually },
+            people = people,
+            currency = currency,
+            payerIds = payerIds,
+            totalMinor = split.totalMinor,
+            exceptionCategoryId = exception?.categoryId,
+        )
     }
     val bill = if (followsDefault) {
         billDefault?.editor

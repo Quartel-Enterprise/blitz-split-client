@@ -5,6 +5,8 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -18,10 +20,12 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -103,6 +107,33 @@ class GroupDetailViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
+
+    @Test
+    fun `GIVEN bills with and without a category WHEN the screen opens THEN each row has the one it reads as`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        id = "market",
+                        spentAt = thisMorning,
+                        categoryId = AppCategory.FOOD_MARKET.key,
+                    ),
+                    expense(
+                        id = "raffle",
+                        spentAt = thisMorning - 1_000L,
+                    ),
+                ),
+            )
+
+            // When
+            val rows = viewModel.uiState.value.days
+                .flatMap { it.entries }
+                .filterIsInstance<ExpenseRow>()
+
+            // Then
+            assertEquals(listOf(AppCategory.FOOD_MARKET.key, AppCategory.OTHER.key), rows.map { it.category.id })
+        }
 
     @Test
     fun `GIVEN Room not read yet WHEN the screen opens THEN nothing is loaded`() = runTest(testDispatcher) {
@@ -386,6 +417,7 @@ class GroupDetailViewModelTest {
                     ),
                     totalMinor = 64_200,
                     myBalanceMinor = -16_050,
+                    category = CategoryTree.appOnly.other,
                     isPending = true,
                 ),
                 row,
@@ -1922,6 +1954,7 @@ class GroupDetailViewModelTest {
         payers: List<ExpensePayer> = listOf(ExpensePayer(ANA, amountMinor)),
         shares: List<ExpenseShare> = listOf(share(ANA, amountMinor / 2), share(PIERRE, amountMinor / 2)),
         isPending: Boolean = false,
+        categoryId: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
@@ -1931,6 +1964,7 @@ class GroupDetailViewModelTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = categoryId,
         spentAt = spentAt,
         isPending = isPending,
         updatedAt = spentAt,
@@ -2123,6 +2157,7 @@ class GroupDetailViewModelTest {
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             observeAccount = ObserveAccountUseCase(account),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
