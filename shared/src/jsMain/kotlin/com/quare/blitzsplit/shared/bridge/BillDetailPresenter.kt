@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
@@ -15,6 +16,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEntry
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryPart
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
@@ -148,6 +150,25 @@ class JsBillHistoryDay(
     val entries: Array<JsBillHistoryEntry>,
 )
 
+// Why: one of "Anexos"; imageUrl a data URI until the photo is up, then a signed URL, null offline.
+class JsBillAttachment(
+    val id: String,
+    val isReceipt: Boolean,
+    val imageUrl: String?,
+    val width: Int?,
+    val height: Int?,
+    // Why: "Foto 2"; null for the receipt.
+    val photoNumber: Int?,
+    // Why: null for someone no longer in the group.
+    val adderName: String?,
+    val isAddedByMe: Boolean,
+    val addedAt: Double,
+    // Why: "today", "yesterday" or "other", when the page writes the time.
+    val addedDay: String,
+    val isPending: Boolean,
+    val canRemove: Boolean,
+)
+
 class JsBillDetailState(
     val groupName: String,
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
@@ -186,6 +207,14 @@ class JsBillDetailState(
     val commentCount: Int,
     val canSendComment: Boolean,
     val showsNoComments: Boolean,
+    // Why: "Anexos", the receipt first.
+    val attachments: Array<JsBillAttachment>,
+    val photoCount: Int,
+    val photoLimit: Int,
+    val canAddPhoto: Boolean,
+    val isAddingPhoto: Boolean,
+    // Why: the viewer's page while it is open, else null.
+    val viewedAttachmentIndex: Int?,
 )
 
 class BillDetailPresenter(
@@ -239,19 +268,38 @@ class BillDetailPresenter(
                 commentCount = state.commentCount,
                 canSendComment = state.canSendComment,
                 showsNoComments = state.showsNoComments,
+                attachments = state.attachments.map(::toJsBillAttachment).toTypedArray(),
+                photoCount = state.photoCount,
+                photoLimit = state.photoLimit,
+                canAddPhoto = state.canAddPhoto,
+                isAddingPhoto = state.isAddingPhoto,
+                viewedAttachmentIndex = state.viewedAttachmentIndex,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
-    // Why: "delete-error", "comment-error" or "undo-error", a toast in the page's words.
+    /*
+     * Why: "delete-error", "comment-error", "undo-error", "photo-unreadable", "photo-no-room", "photo-error" or
+     * "remove-photo-error", a toast in the page's words.
+     */
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 BillDetailUiAction.ShowDeleteError -> "delete-error"
+
                 BillDetailUiAction.ShowCommentError -> "comment-error"
+
                 BillDetailUiAction.ShowUndoError -> "undo-error"
+
+                is BillDetailUiAction.ShowPhotoError -> when (action.error) {
+                    BillPhotoError.UNREADABLE -> "photo-unreadable"
+                    BillPhotoError.NO_ROOM -> "photo-no-room"
+                    BillPhotoError.FAILED -> "photo-error"
+                }
+
+                BillDetailUiAction.ShowRemovePhotoError -> "remove-photo-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -296,6 +344,31 @@ class BillDetailPresenter(
 
     fun undo() {
         viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+    }
+
+    // Why: the file picked, as an Int8Array of its bytes.
+    fun photoPicked(source: ByteArray) {
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(source))
+    }
+
+    fun photoUnreadable() {
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoUnreadable)
+    }
+
+    fun openAttachment(id: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnAttachmentClicked(id))
+    }
+
+    fun showAttachment(id: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnViewerPageChanged(id))
+    }
+
+    fun closeViewer() {
+        viewModel.onEvent(BillDetailUiEvent.OnViewerDismissed)
+    }
+
+    fun removeAttachment(id: String) {
+        viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(id))
     }
 
     fun dispose() {
@@ -479,4 +552,19 @@ private fun toJsBillHistoryPart(part: BillHistoryPart): JsBillHistoryPart = JsBi
     isMe = part.isMe,
     beforeMinor = part.beforeMinor?.toDouble(),
     afterMinor = part.afterMinor?.toDouble(),
+)
+
+private fun toJsBillAttachment(tile: BillAttachmentTile): JsBillAttachment = JsBillAttachment(
+    id = tile.id,
+    isReceipt = tile.isReceipt,
+    imageUrl = tile.imageUrl,
+    width = tile.width,
+    height = tile.height,
+    photoNumber = tile.photoNumber,
+    adderName = tile.adderName,
+    isAddedByMe = tile.isAddedByMe,
+    addedAt = tile.addedAt.toDouble(),
+    addedDay = toJsRelativeDay(tile.addedDay),
+    isPending = tile.isPending,
+    canRemove = tile.canRemove,
 )

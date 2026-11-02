@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillCommentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillCommentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermLocalDataSource
@@ -8,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillCommentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomCategoryTermLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomExpenseLocalDataSource
@@ -15,11 +18,14 @@ import com.quare.blitzsplit.core.expenses.data.datasource.RoomGroupCategoryLocal
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomSettlementLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SettlementLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SettlementRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseBillAttachmentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseBillCommentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseCategoryTermRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseGroupCategoryRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseSettlementRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.mapper.BillAttachmentMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.BillAttachmentMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.BillCommentMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.BillCommentMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapper
@@ -30,6 +36,7 @@ import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapperImpl
+import com.quare.blitzsplit.core.expenses.data.repository.BillAttachmentRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.BillCommentRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.CategoryRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.CategoryTermRepositoryImpl
@@ -39,6 +46,7 @@ import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRep
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.data.repository.SettlementRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTeachRepository
@@ -47,6 +55,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.DeletedBillRepositor
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
@@ -55,7 +64,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTeachOffer
@@ -73,12 +84,14 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
@@ -87,7 +100,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
@@ -105,6 +120,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUs
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.OfferCategoryTeachUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
@@ -178,4 +194,12 @@ val expenseModule = module {
     singleOf(::BillCommentRepositoryImpl).bind<BillCommentRepository>()
     factoryOf(::ObserveBillCommentsUseCase).bind<ObserveBillComments>()
     factoryOf(::AddBillCommentUseCase).bind<AddBillComment>()
+    singleOf(::RoomBillAttachmentLocalDataSource).bind<BillAttachmentLocalDataSource>()
+    singleOf(::SupabaseBillAttachmentRemoteDataSource).bind<BillAttachmentRemoteDataSource>()
+    singleOf(::BillAttachmentMapperImpl).bind<BillAttachmentMapper>()
+    singleOf(::BillAttachmentRepositoryImpl).bind<BillAttachmentRepository>()
+    factoryOf(::ObserveBillAttachmentsUseCase).bind<ObserveBillAttachments>()
+    factoryOf(::AddBillAttachmentUseCase).bind<AddBillAttachment>()
+    factoryOf(::RemoveBillAttachmentUseCase).bind<RemoveBillAttachment>()
+    factoryOf(::LoadBillAttachmentUrlsUseCase).bind<LoadBillAttachmentUrls>()
 }

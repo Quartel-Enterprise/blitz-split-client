@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentRules
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
@@ -48,7 +49,31 @@ data class BillDetailUiState(
     val isOnline: Boolean,
     // Why: "Desfazer" saving the bill as it was.
     val isUndoing: Boolean,
+    // Why: "Anexos", the receipt first, then the photos in the order they were added.
+    val attachments: List<BillAttachmentTile>,
+    // Why: the attachment the viewer shows, full screen, while not null.
+    val viewedAttachmentId: String?,
+    // Why: a photo picked and being made ready, which takes a moment on a large one.
+    val isAddingPhoto: Boolean,
 ) {
+    // Why: "Anexos · 2 de 5 fotos"; the receipt isn't one of them.
+    val photoCount: Int
+        get() = attachments.count { !it.isReceipt }
+
+    val photoLimit: Int
+        get() = BillAttachmentKind.PHOTO.limit
+
+    // Why: "Adicionar foto" while the bill has room, offline too.
+    val canAddPhoto: Boolean
+        get() = areActionsEnabled && !isAddingPhoto && photoCount < photoLimit
+
+    // Why: the viewer's page, gone with the attachment (removed on another device meanwhile).
+    val viewedAttachmentIndex: Int?
+        get() = attachments.indexOfFirst { it.id == viewedAttachmentId }.takeIf { it >= 0 }
+
+    val viewedAttachment: BillAttachmentTile?
+        get() = viewedAttachmentIndex?.let(attachments::get)
+
     // Why: the count beside "Comentários", replies included.
     val commentCount: Int
         get() = threads.sumOf { 1 + it.replies.size }

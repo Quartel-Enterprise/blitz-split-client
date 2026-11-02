@@ -5,10 +5,12 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
@@ -69,6 +71,7 @@ class SyncCoordinatorTest {
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var categories: FakeCategoryRepository
     private lateinit var billComments: FakeBillCommentRepository
+    private lateinit var billAttachments: FakeBillAttachmentRepository
     private val categoryTerms = FakeCategoryTermRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
@@ -5273,6 +5276,7 @@ class SyncCoordinatorTest {
         pendingPayments: Boolean = false,
         firstDownloadPending: Boolean = false,
         storedComments: List<BillComment> = emptyList(),
+        storedAttachments: List<BillAttachment> = emptyList(),
         commentQueuedDuringFirstPush: Boolean = false,
         logsCommentsAndActivity: Boolean = false,
     ) {
@@ -5294,6 +5298,7 @@ class SyncCoordinatorTest {
         activity = FakeActivityRepository()
         categories = FakeCategoryRepository()
         billComments = FakeBillCommentRepository(initialComments = storedComments)
+        billAttachments = FakeBillAttachmentRepository(initialAttachments = storedAttachments)
         // Why: only the cases that assert where the comments go log them, so the others keep their exact logs.
         val commentAndActivityCalls = if (logsCommentsAndActivity) calls else mutableListOf()
         paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
@@ -5347,6 +5352,7 @@ class SyncCoordinatorTest {
                 },
                 calls = commentAndActivityCalls,
             ),
+            billAttachmentRepository = billAttachments,
             activityRepository = RecordingActivityRepository(activity, commentAndActivityCalls),
             hiddenContactRepository = FakeHiddenContactRepository(),
             firstDownload = firstDownload,

@@ -62,6 +62,7 @@ val syncModule = module {
             categoryRepository = get(),
             categoryTermRepository = get(),
             billCommentRepository = get(),
+            billAttachmentRepository = get(),
             activityRepository = get(),
             hiddenContactRepository = get(),
             firstDownload = get(),
