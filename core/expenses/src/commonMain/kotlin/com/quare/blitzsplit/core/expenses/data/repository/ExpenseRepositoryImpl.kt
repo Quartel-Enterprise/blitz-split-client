@@ -92,6 +92,10 @@ class ExpenseRepositoryImpl(
         local.markSynced(pending.map { it.copy(updatedBy = userId) })
     }
 
+    override suspend fun downloadGroupExpenses(groupId: String): Result<Unit> = suspendRunCatching {
+        local.applyRemote(remote.fetchExpenses(groupId).map { mapper.toEntity(it) })
+    }
+
     override suspend fun downloadExpenses(userId: String): Result<Unit> = suspendRunCatching {
         val remoteExpenses = remote.fetchExpenses()
         local.applyRemote(remoteExpenses.map { mapper.toEntity(it) })

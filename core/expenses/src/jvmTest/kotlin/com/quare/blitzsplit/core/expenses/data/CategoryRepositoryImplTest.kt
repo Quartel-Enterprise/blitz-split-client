@@ -241,4 +241,7 @@ private class FakeGroupCategoryRemote : GroupCategoryRemoteDataSource {
     }
 
     override suspend fun fetchCategories(): List<GroupCategoryDto> = rows
+
+    override suspend fun fetchCategories(groupId: String): List<GroupCategoryDto> =
+        rows.filter { it.groupId == groupId }
 }

@@ -618,7 +618,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isSuccess)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -635,7 +635,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -652,7 +652,7 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertFalse(firstDownload.observeIsPending().value)
+        assertFalse(firstDownload.isPending)
     }
 
     @Test
@@ -667,7 +667,7 @@ class SyncCoordinatorTest {
         coordinator.syncNow()
 
         // Then
-        assertTrue(firstDownload.observeIsPending().value)
+        assertTrue(firstDownload.isPending)
     }
 
     @Test

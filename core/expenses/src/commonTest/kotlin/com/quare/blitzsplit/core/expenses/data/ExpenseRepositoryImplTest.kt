@@ -786,4 +786,9 @@ private class FakeExpenseRemoteDataSource(
         fetchError?.let { throw it }
         return rows
     }
+
+    override suspend fun fetchExpenses(groupId: String): List<ExpenseDto> {
+        fetchError?.let { throw it }
+        return rows.filter { it.groupId == groupId }
+    }
 }

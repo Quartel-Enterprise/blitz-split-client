@@ -52,4 +52,7 @@ interface ExpenseRepository {
 
     // Why: after the groups' download, so a bill of a group that just came down has its group on the device.
     suspend fun downloadExpenses(userId: String): Result<Unit>
+
+    // Why: one group's bills, right after it came down whole in a first download; nothing leaves the device.
+    suspend fun downloadGroupExpenses(groupId: String): Result<Unit>
 }

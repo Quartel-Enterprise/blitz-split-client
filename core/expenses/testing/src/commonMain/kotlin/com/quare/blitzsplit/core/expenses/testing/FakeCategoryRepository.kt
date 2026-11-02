@@ -17,6 +17,7 @@ class FakeCategoryRepository(
     val pendingVersions = MutableStateFlow(emptyList<Long>())
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+    val downloadedGroupIds = mutableListOf<String>()
     var saveError: Throwable? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
@@ -92,6 +93,11 @@ class FakeCategoryRepository(
 
     override suspend fun download(userId: String): Result<Unit> {
         downloadedUserIds += userId
+        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
+    override suspend fun downloadGroup(groupId: String): Result<Unit> {
+        downloadedGroupIds += groupId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 }

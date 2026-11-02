@@ -4509,6 +4509,22 @@ private class FakeGroupRemoteDataSource(
         return members
     }
 
+    // Why: the first download's order is the server's, so the groups come in the order given.
+    override suspend fun fetchFirstDownloadGroupIds(): List<String> {
+        fetchError?.let { throw it }
+        return groups.map { it.id }
+    }
+
+    override suspend fun fetchGroup(groupId: String): GroupDto? {
+        fetchError?.let { throw it }
+        return groups.firstOrNull { it.id == groupId }
+    }
+
+    override suspend fun fetchMembers(groupId: String): List<GroupMemberDto> {
+        fetchError?.let { throw it }
+        return members.filter { it.groupId == groupId }
+    }
+
     override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> {
         photoFetches++
         memberPhotosError?.let { throw it }

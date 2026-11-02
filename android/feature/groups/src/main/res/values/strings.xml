@@ -28,6 +28,16 @@
         <item quantity="one">Offline · %d change queued</item>
         <item quantity="other">Offline · %d changes queued</item>
     </plurals>
+    <plurals name="groups_sync_syncing_groups">
+        <item quantity="one">Syncing… %1$d of %2$d group</item>
+        <item quantity="other">Syncing… %1$d of %2$d groups</item>
+    </plurals>
+    <string name="groups_first_download_title">Bringing your groups</string>
+    <string name="groups_first_download_hint">You can use the app meanwhile: what has arrived shows below.</string>
+    <plurals name="groups_first_download_count_hint">
+        <item quantity="one">%1$d of %2$d group. You can use the app meanwhile: what has arrived shows below.</item>
+        <item quantity="other">%1$d of %2$d groups. You can use the app meanwhile: what has arrived shows below.</item>
+    </plurals>
     <string name="groups_open_count">Open · %d</string>
     <string name="groups_settled_count">Settled up · %d</string>
     <string name="groups_no_open">No open groups</string>

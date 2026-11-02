@@ -155,6 +155,7 @@ class SyncCoordinator(
          */
         var areGroupsSynced = false
         val groupsSynced = suspendRunCatching {
+            if (firstDownload.isPending) downloadGroupByGroup(userId)
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
             areGroupsSynced = true
@@ -437,5 +438,24 @@ class SyncCoordinator(
             RecoveryCodePrompt.REVIEW -> accountRepository.updateRecoveryCodePrompt(RecoveryCodePrompt.SAVED)
             else -> Unit
         }
+    }
+
+    /*
+     * Why: a first download (5.1d) asks the server which groups are coming, then brings each one whole, its categories,
+     * bills and payments right after it, the latest activity first, so Início and Grupos count "3 de 7 grupos" and
+     * what came is usable before the rest. It ends there; the full download right after it takes off what left
+     * meanwhile and brings the rest of the account.
+     */
+    private suspend fun downloadGroupByGroup(userId: String) {
+        val groupIds = groupRepository.fetchFirstDownloadGroupIds().getOrThrow()
+        firstDownload.expect(groupIds.size)
+        groupIds.forEach { groupId ->
+            groupRepository.downloadGroup(userId, groupId).getOrThrow()
+            categoryRepository.downloadGroup(groupId).getOrThrow()
+            expenseRepository.downloadGroupExpenses(groupId).getOrThrow()
+            settlementRepository.downloadGroupSettlements(groupId).getOrThrow()
+            firstDownload.groupArrived()
+        }
+        firstDownload.end()
     }
 }

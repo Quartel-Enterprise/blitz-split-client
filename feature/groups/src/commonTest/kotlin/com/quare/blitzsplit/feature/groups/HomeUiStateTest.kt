@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
@@ -228,7 +229,10 @@ class HomeUiStateTest {
         accountProvider = null,
         syncBadge = syncBadge,
         pendingChangeCount = 0,
-        isFirstDownload = isFirstDownload,
+        firstDownload = DownloadProgress(
+            arrivedGroupCount = 0,
+            groupCount = null,
+        ).takeIf { isFirstDownload },
         isOnline = isOnline,
         isLoaded = isLoaded,
         groupCount = groupCount,

@@ -17,10 +17,10 @@ data class HomeUiState(
     // Why: "Offline · 1 alteração na fila": the groups, bills and payments waiting to go up.
     val pendingChangeCount: Int,
     /*
-     * Why: "Sincronizando…" with the bar and the skeletons, while the first download of an account fills an empty
-     * device (after a sign in or the recovery code), rather than the first use's card.
+     * Why: "Sincronizando… 3 de 7 grupos" with the bar and the skeletons, while the first download of an account fills
+     * a new device (after a sign in or the recovery code), rather than the first use's card; null otherwise.
      */
-    val isFirstDownload: Boolean,
+    val firstDownload: DownloadProgress?,
     // Why: "Ler cupom fiscal" needs the internet; everything else works from the device.
     val isOnline: Boolean,
     // Why: nothing is drawn until Room is read, so the first use's card never flashes before the groups.
@@ -47,6 +47,9 @@ data class HomeUiState(
     // Why: the Atividade tab's badge, every unread event whatever its filters.
     val activityUnreadCount: Int,
 ) {
+    val isFirstDownload: Boolean
+        get() = firstDownload != null
+
     // Why: no group and nobody yet: only the card of 1.3, with no search, shortcuts nor "Rachar conta".
     val showsFirstUse: Boolean
         get() = isLoaded && groupCount == 0 && !isFirstDownload

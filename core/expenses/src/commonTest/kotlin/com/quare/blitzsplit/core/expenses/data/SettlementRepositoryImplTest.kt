@@ -501,4 +501,9 @@ private class FakeSettlementRemoteDataSource(
         fetchError?.let { throw it }
         return rows
     }
+
+    override suspend fun fetchSettlements(groupId: String): List<SettlementDto> {
+        fetchError?.let { throw it }
+        return rows.filter { it.groupId == groupId }
+    }
 }

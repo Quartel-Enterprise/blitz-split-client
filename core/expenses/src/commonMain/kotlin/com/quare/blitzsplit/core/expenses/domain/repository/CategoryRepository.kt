@@ -39,4 +39,7 @@ interface CategoryRepository {
 
     // Why: after the groups' download, so a category of a group that just came down has its group on the device.
     suspend fun download(userId: String): Result<Unit>
+
+    // Why: one group's categories, right after it came down whole in a first download; nothing leaves the device.
+    suspend fun downloadGroup(groupId: String): Result<Unit>
 }

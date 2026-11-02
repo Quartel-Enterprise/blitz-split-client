@@ -43,4 +43,7 @@ interface SettlementRepository {
 
     // Why: after the groups' download, so a payment of a group that just came down has its group on the device.
     suspend fun downloadSettlements(userId: String): Result<Unit>
+
+    // Why: one group's payments, right after it came down whole in a first download; nothing leaves the device.
+    suspend fun downloadGroupSettlements(groupId: String): Result<Unit>
 }

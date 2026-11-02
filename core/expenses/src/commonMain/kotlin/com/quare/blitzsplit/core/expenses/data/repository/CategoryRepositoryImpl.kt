@@ -70,6 +70,10 @@ class CategoryRepositoryImpl(
         groupLocal.markSynced(pending.map { it.copy(createdBy = it.createdBy ?: userId) })
     }
 
+    override suspend fun downloadGroup(groupId: String): Result<Unit> = suspendRunCatching {
+        groupLocal.applyRemote(groupRemote.fetchCategories(groupId).map(groupMapper::toEntity))
+    }
+
     override suspend fun download(userId: String): Result<Unit> = suspendRunCatching {
         val remote = groupRemote.fetchCategories()
         groupLocal.applyRemote(remote.map(groupMapper::toEntity))

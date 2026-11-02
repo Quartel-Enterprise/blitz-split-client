@@ -1218,7 +1218,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN a first download with groups already down WHEN Inicio opens THEN is no first download`() =
+    fun `GIVEN a first download with groups already down WHEN Inicio opens THEN shows them as still downloading`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1232,7 +1232,7 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertFalse(state.isFirstDownload)
+            assertTrue(state.isFirstDownload)
             assertTrue(state.showsHome)
         }
 
@@ -1285,7 +1285,7 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
             assertTrue(state.showsHome)
             assertFalse(state.showsFirstUse)
-            assertFalse(state.isFirstDownload)
+            assertTrue(state.isFirstDownload)
             assertEquals(1, state.groupCount)
         }
 

@@ -77,7 +77,19 @@ internal fun LazyGridScope.groupsListItems(
     // Why: a phone lying down keeps "Saldo geral" still in the column beside the list (GroupsSideColumn).
     showsSummary: Boolean = true,
 ) {
-    if (showsSummary) {
+    val firstDownload = state.firstDownload
+    if (firstDownload != null) {
+        item(
+            key = "first-download",
+            span = fullLine,
+            contentType = "summary",
+        ) {
+            GroupsFirstDownloadCard(
+                progress = firstDownload,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
+    } else if (showsSummary) {
         item(
             key = "summary",
             span = fullLine,
@@ -153,6 +165,7 @@ internal fun LazyGridScope.groupsListItems(
             )
         }
     }
+    firstDownload?.let { groupSkeletonItems(it.placeholderCount) }
     val settled = state.settledGroups
     if (settled.isEmpty()) return
     item(

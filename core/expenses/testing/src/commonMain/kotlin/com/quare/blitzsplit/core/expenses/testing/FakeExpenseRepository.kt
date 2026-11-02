@@ -27,6 +27,7 @@ class FakeExpenseRepository(
     val deletedAts = mutableListOf<Long>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+    val downloadedGroupIds = mutableListOf<String>()
     var createError: Throwable? = null
     var updateError: Throwable? = null
     var deleteError: Throwable? = null
@@ -119,6 +120,11 @@ class FakeExpenseRepository(
 
     override suspend fun downloadExpenses(userId: String): Result<Unit> {
         downloadedUserIds += userId
+        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
+    override suspend fun downloadGroupExpenses(groupId: String): Result<Unit> {
+        downloadedGroupIds += groupId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 }

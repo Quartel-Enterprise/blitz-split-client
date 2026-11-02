@@ -25,6 +25,8 @@ import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
@@ -51,6 +53,7 @@ import kotlin.time.Instant
 class GroupStatsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
+    private val firstDownload = MutableStateFlow<FirstDownloadProgress?>(null)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
@@ -862,6 +865,7 @@ class GroupStatsViewModelTest {
             observeStatsChartPreferences = { chart },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeFirstDownload = ObserveFirstDownload { firstDownload },
         )
     }
 

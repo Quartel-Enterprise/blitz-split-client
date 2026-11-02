@@ -28,6 +28,7 @@ class FakeSettlementRepository(
     val deleteCalls = mutableListOf<List<String>>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+    val downloadedGroupIds = mutableListOf<String>()
     var recordError: Throwable? = null
     var deleteError: Throwable? = null
     var pushError: Throwable? = null
@@ -93,6 +94,11 @@ class FakeSettlementRepository(
 
     override suspend fun downloadSettlements(userId: String): Result<Unit> {
         downloadedUserIds += userId
+        return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
+    override suspend fun downloadGroupSettlements(groupId: String): Result<Unit> {
+        downloadedGroupIds += groupId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 }

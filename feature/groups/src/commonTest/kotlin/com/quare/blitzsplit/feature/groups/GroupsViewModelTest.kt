@@ -47,6 +47,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -2845,6 +2846,7 @@ class GroupsViewModelTest {
                 observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
             ),
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeFirstDownload = ObserveFirstDownload { flowOf(null) },
         )
     }
 }

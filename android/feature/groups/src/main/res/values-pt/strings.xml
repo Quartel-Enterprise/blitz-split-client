@@ -28,6 +28,16 @@
         <item quantity="one">Offline · %d alteração na fila</item>
         <item quantity="other">Offline · %d alterações na fila</item>
     </plurals>
+    <plurals name="groups_sync_syncing_groups">
+        <item quantity="one">Sincronizando… %1$d de %2$d grupo</item>
+        <item quantity="other">Sincronizando… %1$d de %2$d grupos</item>
+    </plurals>
+    <string name="groups_first_download_title">Trazendo seus grupos</string>
+    <string name="groups_first_download_hint">Pode usar o app enquanto isso: o que já chegou aparece abaixo.</string>
+    <plurals name="groups_first_download_count_hint">
+        <item quantity="one">%1$d de %2$d grupo. Pode usar o app enquanto isso: o que já chegou aparece abaixo.</item>
+        <item quantity="other">%1$d de %2$d grupos. Pode usar o app enquanto isso: o que já chegou aparece abaixo.</item>
+    </plurals>
     <string name="groups_open_count">Em aberto · %d</string>
     <string name="groups_settled_count">Quitados · %d</string>
     <string name="groups_no_open">Nenhum grupo em aberto</string>

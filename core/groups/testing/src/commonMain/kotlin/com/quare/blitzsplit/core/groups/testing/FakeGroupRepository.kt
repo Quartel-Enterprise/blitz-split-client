@@ -23,6 +23,11 @@ class FakeGroupRepository(
     val createdAts = mutableListOf<Long>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
+
+    // Why: the groups the server holds, which a first download brings down one by one.
+    var serverGroups: List<Group> = emptyList()
+    val downloadedGroupIds = mutableListOf<String>()
+    var firstDownloadError: Throwable? = null
     var createError: Throwable? = null
     val addedMembers = mutableListOf<Pair<String, GroupMember>>()
     val memberChangeTimes = mutableListOf<Long>()
@@ -250,6 +255,22 @@ class FakeGroupRepository(
     override suspend fun downloadGroups(userId: String): Result<Unit> {
         downloadedUserIds += userId
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
+    override suspend fun fetchFirstDownloadGroupIds(): Result<List<String>> {
+        firstDownloadError?.let { return Result.failure(it) }
+        return Result.success(serverGroups.map { it.id })
+    }
+
+    // Why: puts the server's group on the device, as a first download does.
+    override suspend fun downloadGroup(
+        userId: String,
+        groupId: String,
+    ): Result<Unit> {
+        firstDownloadError?.let { return Result.failure(it) }
+        downloadedGroupIds += groupId
+        serverGroups.firstOrNull { it.id == groupId }?.let { group -> groups.value += group }
+        return Result.success(Unit)
     }
 
     override suspend fun clear() {
