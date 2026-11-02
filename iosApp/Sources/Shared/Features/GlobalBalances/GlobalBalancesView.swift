@@ -710,9 +710,11 @@ private struct ChargeSheet: View {
     }
 
     /// The sheet's own size: the whole screen on an iPhone lying down splits in two; a form sheet keeps one column.
+    /// Until the sheet has measured itself, the window it opens over decides, so it never opens in one column first.
     private var usesTwoColumns: Bool {
         #if os(iOS)
-        layout.usesTwoColumns
+        let sheet = layout.size == .zero ? window : layout
+        return sheet.usesTwoColumns && !sheet.isLarge
         #else
         false
         #endif
@@ -768,9 +770,9 @@ private struct ChargeSheet: View {
             }
         }
         #if os(iOS)
-        // An iPhone lying down takes the whole screen; an iPad's room centres a 540 pt form sheet, which a medium
-        // detent would pin to the bottom
-        .presentationDetents(window.usesTwoColumns || window.isLarge ? [.large] : [.medium, .large])
+        // An iPad's room centres a 540 pt form sheet, which a medium detent would pin to the bottom; an iPhone lying
+        // down has a compact height, where the sheet takes the whole screen whatever the detents
+        .presentationDetents(window.isLarge ? [.large] : [.medium, .large])
         .formSheetSizing()
         #else
         .frame(width: 480, height: 460)

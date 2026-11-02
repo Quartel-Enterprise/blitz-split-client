@@ -161,7 +161,7 @@ private fun GlobalBalancesSettledPreview() {
     }
 }
 
-// Why: the board draws no tabletop for page 8: Saldos stays as on the book, Cobrar in the half after the hinge.
+// Why: the board draws no tabletop for page 8, so Saldos stays as on the book (ChargeSheetTabletopPreview shows Cobrar).
 @Preview(
     name = "Tabletop",
     device = "spec:width=841dp,height=673dp,orientation=landscape",
