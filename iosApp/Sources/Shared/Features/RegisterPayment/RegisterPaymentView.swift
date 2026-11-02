@@ -311,12 +311,17 @@ private struct PhoneRegisterPayment: View {
                 .disabled(state.isSaving)
             }
             if layout.usesTwoColumns {
+                // The bar's ✓ turns into a spinner while saving, as the bottom button does.
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(RegisterPaymentCopy.confirm(state), systemImage: "checkmark") {
-                        confirm()
+                    if state.isSaving {
+                        ProgressView()
+                    } else {
+                        Button(RegisterPaymentCopy.confirm(state), systemImage: "checkmark") {
+                            confirm()
+                        }
+                        .buttonStyle(.glassProminent)
+                        .disabled(!state.canConfirm)
                     }
-                    .buttonStyle(.glassProminent)
-                    .disabled(!state.canConfirm || state.isSaving)
                 }
             }
         }

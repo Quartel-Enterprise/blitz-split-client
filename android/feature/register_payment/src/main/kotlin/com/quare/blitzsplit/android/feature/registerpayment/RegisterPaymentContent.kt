@@ -45,7 +45,9 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
@@ -58,8 +60,6 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPe
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 
-// Why: the canvas' tabletop keeps its halves 48dp apart around the hinge.
-private val tabletopGap = 48.dp
 private const val PREVIEW_NOW_MILLIS = 1_761_652_200_000L
 
 /*
@@ -70,37 +70,41 @@ private const val PREVIEW_NOW_MILLIS = 1_761_652_200_000L
 @Composable
 fun RegisterPaymentContent(
     state: RegisterPaymentUiState,
-    presentation: RegisterPaymentPresentation,
+    presentation: FormPresentation,
     snackbarHostState: SnackbarHostState,
     onWhenClick: () -> Unit,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (!state.isLoaded) return
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
+    // Why: a sheet and a dialog sit over the group and wait for the form; full screen, the tabletop draws its bar first.
     when (presentation) {
-        RegisterPaymentPresentation.Dialog -> DialogContent(
-            state = state,
-            money = money,
-            dates = dates,
-            snackbarHostState = snackbarHostState,
-            onWhenClick = onWhenClick,
-            onEvent = onEvent,
-            modifier = modifier,
-        )
+        FormPresentation.Dialog -> if (state.isLoaded) {
+            DialogContent(
+                state = state,
+                money = money,
+                dates = dates,
+                snackbarHostState = snackbarHostState,
+                onWhenClick = onWhenClick,
+                onEvent = onEvent,
+                modifier = modifier,
+            )
+        }
 
-        RegisterPaymentPresentation.BottomSheet -> SheetContent(
-            state = state,
-            money = money,
-            dates = dates,
-            snackbarHostState = snackbarHostState,
-            onWhenClick = onWhenClick,
-            onEvent = onEvent,
-            modifier = modifier,
-        )
+        FormPresentation.BottomSheet -> if (state.isLoaded) {
+            SheetContent(
+                state = state,
+                money = money,
+                dates = dates,
+                snackbarHostState = snackbarHostState,
+                onWhenClick = onWhenClick,
+                onEvent = onEvent,
+                modifier = modifier,
+            )
+        }
 
-        RegisterPaymentPresentation.TabletopHalves -> TabletopContent(
+        FormPresentation.TabletopHalves -> TabletopContent(
             state = state,
             money = money,
             dates = dates,
@@ -276,52 +280,54 @@ private fun TabletopContent(
                     },
                     windowInsets = WindowInsets(0),
                 )
-                TopBottomHalvesLayout(
-                    modifier = Modifier.weight(1f),
-                    gap = tabletopGap,
-                    top = {
-                        // Why: the summary sits on the hinge, as the canvas draws it, and scrolls once it doesn't fit.
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.BottomStart,
-                        ) {
-                            RegisterPaymentSummaryColumn(
-                                state = state,
-                                money = money,
-                                onEvent = onEvent,
+                if (state.isLoaded) {
+                    TopBottomHalvesLayout(
+                        modifier = Modifier.weight(1f),
+                        gap = TabletopGap,
+                        top = {
+                            // Why: the summary sits on the hinge, as the canvas draws it, and scrolls once it doesn't fit.
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.BottomStart,
+                            ) {
+                                RegisterPaymentSummaryColumn(
+                                    state = state,
+                                    money = money,
+                                    onEvent = onEvent,
+                                    modifier = Modifier
+                                        .verticalScroll(rememberScrollState())
+                                        .padding(horizontal = 48.dp),
+                                )
+                            }
+                        },
+                        bottom = {
+                            Column(
                                 modifier = Modifier
+                                    .fillMaxSize()
                                     .verticalScroll(rememberScrollState())
-                                    .padding(horizontal = 48.dp),
-                            )
-                        }
-                    },
-                    bottom = {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
-                                .imePadding()
-                                .padding(
-                                    start = 48.dp,
-                                    end = 48.dp,
-                                    bottom = 24.dp,
-                                ),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            RegisterPaymentDetailsColumn(
-                                state = state,
-                                dates = dates,
-                                onWhenClick = onWhenClick,
-                                onEvent = onEvent,
-                            )
-                            TextButtonsRow(
-                                state = state,
-                                onEvent = onEvent,
-                                modifier = Modifier.align(Alignment.End),
-                            )
-                        }
-                    },
-                )
+                                    .imePadding()
+                                    .padding(
+                                        start = 48.dp,
+                                        end = 48.dp,
+                                        bottom = 24.dp,
+                                    ),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                RegisterPaymentDetailsColumn(
+                                    state = state,
+                                    dates = dates,
+                                    onWhenClick = onWhenClick,
+                                    onEvent = onEvent,
+                                )
+                                TextButtonsRow(
+                                    state = state,
+                                    onEvent = onEvent,
+                                    modifier = Modifier.align(Alignment.End),
+                                )
+                            }
+                        },
+                    )
+                }
             }
             SnackbarHost(
                 hostState = snackbarHostState,
@@ -427,7 +433,7 @@ private fun RegisterPaymentContentPreview() {
     BlitzSplitTheme {
         RegisterPaymentContent(
             state = createPreviewState(),
-            presentation = RegisterPaymentPresentation.BottomSheet,
+            presentation = FormPresentation.BottomSheet,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},
             onEvent = {},
@@ -441,7 +447,7 @@ private fun RegisterPaymentContentDialogOfflinePreview() {
     BlitzSplitTheme {
         RegisterPaymentContent(
             state = createPreviewState(isOnline = false),
-            presentation = RegisterPaymentPresentation.Dialog,
+            presentation = FormPresentation.Dialog,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},
             onEvent = {},
@@ -459,7 +465,7 @@ private fun RegisterPaymentContentTabletopPreview() {
         BlitzSplitTheme {
             RegisterPaymentContent(
                 state = createPreviewState(),
-                presentation = RegisterPaymentPresentation.TabletopHalves,
+                presentation = FormPresentation.TabletopHalves,
                 snackbarHostState = SnackbarHostState(),
                 onWhenClick = {},
                 onEvent = {},

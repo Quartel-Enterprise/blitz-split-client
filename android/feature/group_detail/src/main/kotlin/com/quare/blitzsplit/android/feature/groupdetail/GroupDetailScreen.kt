@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
@@ -76,13 +77,24 @@ fun GroupDetailScreen(
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
-    LaunchedEffect(state.tab) { onTabChanged(state.tab) }
+    val currentOnTabChanged by rememberUpdatedState(onTabChanged)
+    /*
+     * Why: a tab tapped reaches the app in the tap, with the ViewModel, so a tabletop's scene changes in the same frame
+     * as the tab instead of drawing the old layout once; the effect covers the tab the group opens on.
+     */
+    val onEvent: (GroupDetailUiEvent) -> Unit = remember(viewModel) {
+        { event ->
+            if (event is GroupDetailUiEvent.OnTabSelected) currentOnTabChanged(event.tab)
+            viewModel.onEvent(event)
+        }
+    }
+    LaunchedEffect(state.tab) { currentOnTabChanged(state.tab) }
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
     GroupDetailContent(
         state = state,
         snackbarHostState = snackbarHostState,
         membersTab = membersTab(snackbarHostState),
-        onEvent = viewModel::onEvent,
+        onEvent = onEvent,
     )
     state.teach?.takeIf { it.isPickingWord }?.let {
         CategoryTeachDialog(

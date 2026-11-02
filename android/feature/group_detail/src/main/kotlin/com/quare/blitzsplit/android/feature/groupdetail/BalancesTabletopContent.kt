@@ -17,12 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
-
-// Why: the canvas' tabletop keeps its halves 48dp apart around the hinge.
-private val tabletopGap = 48.dp
 
 /*
  * Why: Saldos on a tabletop (6.2), the group drawn alone: a one-line bar, then the tabs and "Seu saldo neste grupo" in
@@ -56,7 +54,7 @@ internal fun BalancesTabletopContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            gap = tabletopGap,
+            gap = TabletopGap,
             top = {
                 Column(
                     modifier = Modifier
