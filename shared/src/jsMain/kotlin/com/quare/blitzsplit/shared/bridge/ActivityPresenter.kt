@@ -85,6 +85,8 @@ class JsActivityItem(
     val toName: String?,
     val toIsMe: Boolean,
     val changes: Array<JsActivityChange>,
+    // Why: what a comment says, cut to what a row shows.
+    val body: String?,
     val moreChangesCount: Int,
     val hasChangesToShow: Boolean,
     val isPending: Boolean,
@@ -413,6 +415,7 @@ private fun toJsActivityItem(
     toName = item.toName,
     toIsMe = item.toIsMe,
     changes = item.changes.map(::toJsActivityChange).toTypedArray(),
+    body = item.body,
     moreChangesCount = item.moreChangesCount,
     hasChangesToShow = item.hasChangesToShow,
     isPending = item.isPending,

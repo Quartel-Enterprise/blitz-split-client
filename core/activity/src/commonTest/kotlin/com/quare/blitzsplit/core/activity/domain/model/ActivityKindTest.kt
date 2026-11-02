@@ -25,6 +25,10 @@ class ActivityKindTest {
             "member_released",
             "member_renamed",
             "charge_sent",
+            "comment_added",
+            "attachment_added",
+            "attachment_removed",
+            "bill_link_changed",
         )
 
         // When
@@ -37,7 +41,7 @@ class ActivityKindTest {
     @Test
     fun `GIVEN a kind a newer server records WHEN reading it THEN it is unknown`() {
         // Given
-        val code = "comment_added"
+        val code = "poll_created"
 
         // When
         val kind = ActivityKind.fromCodeOrNull(code)

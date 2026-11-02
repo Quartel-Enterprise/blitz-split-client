@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 // In-memory ActivityRepository: the state is public so a test can set and read it, every call is
@@ -35,6 +36,11 @@ class FakeActivityRepository(
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var loadOlderCalls = 0
+    val loadedHistoryIds = mutableListOf<String>()
+
+    // Why: what a loadEventsAbout call adds to `events`, as the server's history of the bill.
+    var historyPage: List<ActivityEvent> = emptyList()
+    var loadHistoryError: Throwable? = null
     var clearCalls = 0
     var markReadError: Throwable? = null
     var recordError: Throwable? = null
@@ -43,6 +49,10 @@ class FakeActivityRepository(
     var pullError: Throwable? = null
 
     override fun observeEvents(): Flow<List<ActivityEvent>> = events
+
+    // Why: a bill's history, the events about it (the loaded ones are in `events` too).
+    override fun observeEventsAbout(targetId: String): Flow<List<ActivityEvent>> =
+        events.map { list -> list.filter { it.targetId == targetId } }
 
     override fun observeQueued(): Flow<List<QueuedChange>> = queued
 
@@ -76,6 +86,13 @@ class FakeActivityRepository(
         recordedCharges += charges
         chargeActorUserIds += actorUserId
         chargeSentAts += sentAt
+        return Result.success(Unit)
+    }
+
+    override suspend fun loadEventsAbout(targetId: String): Result<Unit> {
+        loadedHistoryIds += targetId
+        loadHistoryError?.let { return Result.failure(it) }
+        events.update { current -> current + historyPage.filterNot { page -> current.any { it.id == page.id } } }
         return Result.success(Unit)
     }
 

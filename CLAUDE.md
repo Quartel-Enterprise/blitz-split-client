@@ -100,7 +100,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     not up yet on top of Hoje as "Aguardando envio", and says older ones load when the internet is back; a device that
     never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
     web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
-    other events). No push notifications nor comments yet: Comentários is a filter nothing fills.
+    other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it), which
+    open the bill's Conta; a bill's attachments and its share link show only in its Conta's Histórico, never in the
+    feed nor its badge (`ActivityKind.isInFeed`). No push notifications yet.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -281,9 +283,22 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group. Convidar's "Ir para o grupo" and "Ver quem já entrou" open it in Convidar's place (`openGroup`), so the
     group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
-    with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
-    history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
-    on a phone), all over the group.
+    with its category over the title and Editar and Apagar in the top bar (no Compartilhar nor attachments yet). A
+    phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side
+    sheet (a drawer on a phone), all over the group.
+  - Conta's "Comentários" (7.3c to 7.3f): anyone in the group comments, offline too (the comment waits in the queue,
+    "Na fila · sai ao reconectar", like a bill, `bill_comments`), and "Responder" answers a comment or a reply, one
+    level deep: a reply to a reply joins its thread and names whom it answers. A comment is never edited nor
+    deleted. "Enviar comentário" stays disabled until something is typed (1 to 1000 letters); the composer is pinned
+    at the bottom on a phone and under the comments in two columns. Offline, a banner says "Sem internet.
+    Comentários e fotos ficam na fila e saem ao reconectar.". "Histórico" lists what was done to the bill, by day,
+    the most recent first, never the comments: created ("Igual entre 5 · R$ 312,00", "criou a conta sem internet"
+    while it waits to go up), each edit's first change with the others under it ("trocou a categoria", "mudou a
+    divisão" with each part that moved), photos added in a row as one line, a photo removed and the share link
+    changed. It reads the device's 90 days of Atividade and, online, the bill's whole history from the server
+    (`LoadBillHistory`). "Desfazer" shows only on the latest line when it is an edit, the bill is still as that edit
+    left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
+    (`BillHistoryEntry.canUndo`).
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
     on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so

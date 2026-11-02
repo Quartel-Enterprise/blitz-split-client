@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
+import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
@@ -44,10 +45,16 @@ class ActivityMapperImpl : ActivityMapper {
             occurredAt = entity.occurredAt,
             subject = data.findText("description") ?: data.findText("name"),
             amountMinor = data.findLong("amount_minor"),
-            code = data.findText("split_mode") ?: data.findText("type") ?: data.findText("method"),
+            code = data.findText("split_mode")
+                ?: data.findText("type")
+                ?: data.findText("method")
+                ?: data.findText("attachment_kind")
+                ?: data.findText("visibility"),
             fromMemberId = data.findText("from_member_id"),
             toMemberId = data.findText("to_member_id"),
             changes = (data["changes"] as? JsonArray).orEmpty().mapNotNull(::changeOf),
+            sharesCount = data.findLong("shares_count")?.toInt(),
+            body = data.findText("body"),
             isPending = entity.pendingSync,
         )
     }
@@ -165,16 +172,28 @@ class ActivityMapperImpl : ActivityMapper {
 
             ActivityField.DESCRIPTION, ActivityField.NAME -> ActivityValue.none.copy(text = primitive.textOrNull())
 
-            ActivityField.TYPE, ActivityField.COLOR, ActivityField.CURRENCY ->
-                ActivityValue.none.copy(code = primitive.textOrNull())
+            ActivityField.TYPE,
+            ActivityField.COLOR,
+            ActivityField.CURRENCY,
+            ActivityField.CATEGORY,
+            ActivityField.VISIBILITY,
+            -> ActivityValue.none.copy(code = primitive.textOrNull())
 
-            ActivityField.PAYERS -> ActivityValue.none.copy(memberIds = memberIdsOf(element as? JsonArray))
+            ActivityField.PAYERS -> {
+                val payers = element as? JsonArray
+                ActivityValue.none.copy(
+                    memberIds = memberIdsOf(payers),
+                    memberValues = memberValuesOf(payers, "amount_minor"),
+                )
+            }
 
             ActivityField.SPLIT -> {
                 val split = element as? JsonObject
+                val shares = split?.get("shares") as? JsonArray
                 ActivityValue.none.copy(
                     code = split?.findText("mode"),
-                    memberIds = memberIdsOf(split?.get("shares") as? JsonArray, skipZeroWeight = true),
+                    memberIds = memberIdsOf(shares, skipZeroWeight = true),
+                    memberValues = memberValuesOf(shares, "weight"),
                 )
             }
 
@@ -193,6 +212,21 @@ class ActivityMapperImpl : ActivityMapper {
         .mapNotNull { it as? JsonObject }
         .filterNot { skipZeroWeight && it.findLong("weight") == 0L }
         .mapNotNull { it.findText("member_id") }
+
+    private fun memberValuesOf(
+        array: JsonArray?,
+        key: String,
+    ): List<ActivityMemberValue> = array
+        .orEmpty()
+        .mapNotNull { it as? JsonObject }
+        .mapNotNull { entry ->
+            val memberId = entry.findText("member_id") ?: return@mapNotNull null
+            val value = entry.findLong(key) ?: return@mapNotNull null
+            ActivityMemberValue(
+                memberId = memberId,
+                value = value,
+            )
+        }
 
     private fun JsonObject.findText(key: String): String? = (this[key] as? JsonPrimitive).textOrNull()
 

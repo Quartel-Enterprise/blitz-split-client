@@ -110,6 +110,7 @@ private fun queuedEntryOf(
         toName = to?.name,
         toIsMe = to?.isMe == true,
         changes = emptyList(),
+        body = null,
         isPending = true,
         isUnread = false,
         target = targetOf(change.kind),
@@ -157,6 +158,7 @@ private fun eventEntryOf(
         toName = to?.name,
         toIsMe = to?.isMe == true,
         changes = event.changes.map { rowOf(it, group) },
+        body = event.body,
         isPending = event.isPending,
         isUnread = isUnread,
         target = targetOf(event.kind),
@@ -190,6 +192,10 @@ private fun targetOf(kind: ActivityKind): ActivityTarget = when (kind) {
     ActivityKind.BILL_CREATED,
     ActivityKind.BILL_EDITED,
     ActivityKind.BILL_DELETED,
+    ActivityKind.COMMENT_ADDED,
+    ActivityKind.ATTACHMENT_ADDED,
+    ActivityKind.ATTACHMENT_REMOVED,
+    ActivityKind.BILL_LINK_CHANGED,
     -> ActivityTarget.BILL
 
     // Why: a payment shows in Despesas as an "acerto", where it is undone.

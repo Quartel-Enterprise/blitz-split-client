@@ -24,6 +24,10 @@ interface ActivityDao {
     @Query("SELECT * FROM activity_event ORDER BY occurredAt DESC, seq DESC")
     fun observeEvents(): Flow<List<ActivityEventEntity>>
 
+    // Why: a bill's history in Conta (7.3): what happened to it in the window, the most recent first.
+    @Query("SELECT * FROM activity_event WHERE targetId = :targetId ORDER BY occurredAt DESC, seq DESC")
+    fun observeEventsAbout(targetId: String): Flow<List<ActivityEventEntity>>
+
     @Query("SELECT eventId FROM activity_read")
     fun observeReadEventIds(): Flow<List<String>>
 

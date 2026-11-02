@@ -1774,6 +1774,8 @@ class ActivityViewModelTest {
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
         changes = changes,
+        sharesCount = null,
+        body = null,
         isPending = isPending,
     )
 

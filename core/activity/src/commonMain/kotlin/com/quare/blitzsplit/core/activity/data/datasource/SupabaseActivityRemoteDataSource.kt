@@ -82,6 +82,17 @@ class SupabaseActivityRemoteDataSource(
             limit(limit)
         }.decodeList<ActivityEventDto>()
 
+    override suspend fun fetchEventsAbout(targetId: String): List<ActivityEventDto> = postgrest
+        .from(EVENTS)
+        .select {
+            filter { eq("target_id", targetId) }
+            order(
+                column = "seq",
+                order = Order.DESCENDING,
+            )
+            limit(PAGE_SIZE)
+        }.decodeList<ActivityEventDto>()
+
     // Why: a charge that went up once and whose answer was lost goes up again as the same event, which stays one.
     override suspend fun insertCharges(events: List<ChargeEventDto>) {
         postgrest.from(EVENTS).upsert(events) { ignoreDuplicates = true }

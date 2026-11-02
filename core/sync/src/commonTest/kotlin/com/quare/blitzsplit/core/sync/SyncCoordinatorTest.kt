@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -4842,6 +4843,7 @@ class SyncCoordinatorTest {
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             categoryRepository = FakeCategoryRepository(),
             categoryTermRepository = categoryTerms,
+            billCommentRepository = FakeBillCommentRepository(),
             activityRepository = activity,
             hiddenContactRepository = FakeHiddenContactRepository(),
             firstDownload = firstDownload,

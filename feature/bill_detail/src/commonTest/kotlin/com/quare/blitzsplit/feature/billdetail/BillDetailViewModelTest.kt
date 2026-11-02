@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.feature.billdetail
 
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistoryUseCase
+import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
@@ -13,12 +16,16 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
@@ -42,6 +49,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetail
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -52,6 +60,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
+import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -68,6 +77,9 @@ class BillDetailViewModelTest {
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var deletedBills: InMemoryDeletedBillRepository
+    private lateinit var comments: FakeBillCommentRepository
+    private lateinit var activity: FakeActivityRepository
+    private val isOnline = MutableStateFlow(true)
     private lateinit var viewModel: BillDetailViewModel
     private val actions = mutableListOf<BillDetailUiAction>()
 
@@ -1553,6 +1565,8 @@ class BillDetailViewModelTest {
             it.navigate(route)
         }
         deletedBills = InMemoryDeletedBillRepository()
+        comments = FakeBillCommentRepository()
+        activity = FakeActivityRepository()
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(
@@ -1573,6 +1587,12 @@ class BillDetailViewModelTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = ObserveSettlementsUseCase(settlements),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
+            updateExpense = UpdateExpenseUseCase(expenses, currentTimeMillis = { nowMillis }),
+            loadBillHistory = LoadBillHistoryUseCase(activity),
+            observeBillComments = ObserveBillCommentsUseCase(comments),
+            observeBillHistory = ObserveBillHistoryUseCase(activity),
+            connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

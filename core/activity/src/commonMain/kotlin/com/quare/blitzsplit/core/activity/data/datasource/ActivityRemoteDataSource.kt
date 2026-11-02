@@ -25,6 +25,9 @@ interface ActivityRemoteDataSource {
         limit: Long,
     ): List<ActivityEventDto>
 
+    // Why: everything that happened to one bill, older than the device keeps included, newest first.
+    suspend fun fetchEventsAbout(targetId: String): List<ActivityEventDto>
+
     suspend fun insertCharges(events: List<ChargeEventDto>)
 
     suspend fun fetchReadEventIds(): List<String>

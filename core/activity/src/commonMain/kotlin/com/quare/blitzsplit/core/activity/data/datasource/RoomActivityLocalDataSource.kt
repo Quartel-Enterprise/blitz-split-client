@@ -15,6 +15,9 @@ class RoomActivityLocalDataSource(
 ) : ActivityLocalDataSource {
     override fun observeEvents(): Flow<List<ActivityEventEntity>> = dao.observeEvents()
 
+    override fun observeEventsAbout(targetId: String): Flow<List<ActivityEventEntity>> =
+        dao.observeEventsAbout(targetId)
+
     override fun observeReadEventIds(): Flow<List<String>> = dao.observeReadEventIds()
 
     override fun observeState(): Flow<ActivityStateEntity?> = dao.observeState()

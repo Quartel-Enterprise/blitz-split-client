@@ -11,6 +11,9 @@ interface ActivityRepository {
     // Why: the device's 90 days, then the older pages loaded this session, the most recent first.
     fun observeEvents(): Flow<List<ActivityEvent>>
 
+    // Why: one bill's events (7.3), the device's and the ones loadBillHistory brought, the most recent first.
+    fun observeEventsAbout(targetId: String): Flow<List<ActivityEvent>>
+
     fun observeQueued(): Flow<List<QueuedChange>>
 
     fun observeReadState(): Flow<ActivityReadState>
@@ -35,6 +38,9 @@ interface ActivityRepository {
 
     // Why: online only; the page before the oldest event the feed has.
     suspend fun loadOlder(): Result<Unit>
+
+    // Why: online only; the bill's whole history, older than the device keeps.
+    suspend fun loadEventsAbout(targetId: String): Result<Unit>
 
     suspend fun uploadPendingActivity(userId: String): Result<Unit>
 

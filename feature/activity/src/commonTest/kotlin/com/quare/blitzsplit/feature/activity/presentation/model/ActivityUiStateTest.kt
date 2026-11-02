@@ -535,6 +535,7 @@ class ActivityUiStateTest {
             )
             ActivityChangeRow(ActivityField.AMOUNT, value, value)
         },
+        body = null,
         isPending = false,
         isUnread = false,
         target = ActivityTarget.BILL,

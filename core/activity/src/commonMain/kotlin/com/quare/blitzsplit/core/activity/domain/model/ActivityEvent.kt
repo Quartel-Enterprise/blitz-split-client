@@ -19,11 +19,15 @@ data class ActivityEvent(
     // Why: the bill's description, or the group's or the member's name, as it was then.
     val subject: String?,
     val amountMinor: Long?,
-    // Why: a bill's split mode, a group's type, a payment's method, by their codes.
+    // Why: a bill's split mode, a group's type, a payment's method, an attachment's kind, a link's visibility, by codes.
     val code: String?,
     val fromMemberId: String?,
     val toMemberId: String?,
     val changes: List<ActivityChange>,
+    // Why: how many take part in a new bill ("Igual entre 5").
+    val sharesCount: Int?,
+    // Why: a comment's text, cut to what a feed row shows.
+    val body: String?,
     // Why: a charge sent here and not up yet.
     val isPending: Boolean,
 )

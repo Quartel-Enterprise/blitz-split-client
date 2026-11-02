@@ -701,6 +701,10 @@ class ActivityItemsTest {
                 ActivityKind.MEMBER_RELEASED to ActivityTarget.MEMBERS,
                 ActivityKind.MEMBER_RENAMED to ActivityTarget.MEMBERS,
                 ActivityKind.CHARGE_SENT to ActivityTarget.BALANCES,
+                ActivityKind.COMMENT_ADDED to ActivityTarget.BILL,
+                ActivityKind.ATTACHMENT_ADDED to ActivityTarget.BILL,
+                ActivityKind.ATTACHMENT_REMOVED to ActivityTarget.BILL,
+                ActivityKind.BILL_LINK_CHANGED to ActivityTarget.BILL,
             ),
             targets,
         )
@@ -1111,6 +1115,8 @@ class ActivityItemsTest {
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
         changes = changes,
+        sharesCount = null,
+        body = null,
         isPending = false,
     )
 

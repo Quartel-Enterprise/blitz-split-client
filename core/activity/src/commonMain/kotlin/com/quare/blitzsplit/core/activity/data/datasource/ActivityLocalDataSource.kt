@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 interface ActivityLocalDataSource {
     fun observeEvents(): Flow<List<ActivityEventEntity>>
 
+    fun observeEventsAbout(targetId: String): Flow<List<ActivityEventEntity>>
+
     fun observeReadEventIds(): Flow<List<String>>
 
     fun observeState(): Flow<ActivityStateEntity?>

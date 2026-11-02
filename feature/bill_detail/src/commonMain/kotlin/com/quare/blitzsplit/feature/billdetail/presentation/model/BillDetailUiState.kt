@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillCommentRules
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -35,7 +36,31 @@ data class BillDetailUiState(
     val isDeleting: Boolean,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: "Comentários", in the order they were written, each with its replies.
+    val threads: List<BillCommentThread>,
+    // Why: what is typed in "Escreva um comentário".
+    val commentDraft: String,
+    // Why: "Respondendo a Diego" while not null.
+    val replyTarget: BillReplyTarget?,
+    // Why: "Histórico", the most recent first, by day; never the comments.
+    val history: List<BillHistoryDay>,
+    // Why: "Sem internet. Comentários e fotos ficam na fila e saem ao reconectar."
+    val isOnline: Boolean,
+    // Why: "Desfazer" saving the bill as it was.
+    val isUndoing: Boolean,
 ) {
+    // Why: the count beside "Comentários", replies included.
+    val commentCount: Int
+        get() = threads.sumOf { 1 + it.replies.size }
+
+    // Why: "Enviar comentário" stays disabled until something is typed, up to what the server takes.
+    val canSendComment: Boolean
+        get() = isLoaded && !isDeleting && BillCommentRules.isBodyValid(commentDraft)
+
+    // Why: "Nenhum comentário ainda. Pergunte ou combine algo sobre esta conta."
+    val showsNoComments: Boolean
+        get() = isLoaded && threads.isEmpty()
+
     // Why: "Alimentação › Mercado" under the bill's title, "Outros" for none.
     val category: Category
         get() = categories.resolve(categoryId)

@@ -53,7 +53,7 @@ class ActivityRepositoryImplTest {
                 entity(
                     id = "comment",
                     seq = 1L,
-                    kind = "comment_added",
+                    kind = "poll_created",
                 ),
             ),
         )
@@ -425,7 +425,7 @@ class ActivityRepositoryImplTest {
             dto(
                 id = "unknown",
                 seq = 98L,
-                kind = "comment_added",
+                kind = "poll_created",
             ),
         )
 
@@ -1011,6 +1011,9 @@ private class FakeActivityLocalDataSource : ActivityLocalDataSource {
 
     override fun observeEvents(): Flow<List<ActivityEventEntity>> = events
 
+    override fun observeEventsAbout(targetId: String): Flow<List<ActivityEventEntity>> =
+        events.map { list -> list.filter { it.targetId == targetId }.sortedByDescending { it.occurredAt } }
+
     override fun observeReadEventIds(): Flow<List<String>> = reads.map { it.keys.toList() }
 
     override fun observeState(): Flow<ActivityStateEntity?> = state
@@ -1150,6 +1153,16 @@ private class FakeActivityRemoteDataSource : ActivityRemoteDataSource {
         failIfDown()
         beforeCalls += beforeSeq to limit
         return olderPages.removeFirstOrNull().orEmpty()
+    }
+
+    // Why: what fetchEventsAbout answers, the server's history of one bill.
+    var eventsAbout: List<ActivityEventDto> = emptyList()
+    val aboutCalls = mutableListOf<String>()
+
+    override suspend fun fetchEventsAbout(targetId: String): List<ActivityEventDto> {
+        failIfDown()
+        aboutCalls += targetId
+        return eventsAbout
     }
 
     override suspend fun insertCharges(events: List<ChargeEventDto>) {

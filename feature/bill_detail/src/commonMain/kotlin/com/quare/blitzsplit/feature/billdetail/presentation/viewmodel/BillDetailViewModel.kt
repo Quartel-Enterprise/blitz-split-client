@@ -2,6 +2,10 @@ package com.quare.blitzsplit.feature.billdetail.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
+import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveBillHistory
+import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
@@ -12,12 +16,15 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
+import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
@@ -29,10 +36,14 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.historyOf
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.undoOf
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,12 +52,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import software.quare.connectivity.NetworkConnectivityObserver
 
 class BillDetailViewModel(
     private val route: Route.BillDetail,
@@ -55,11 +69,17 @@ class BillDetailViewModel(
     private val noticeBillGone: NoticeBillGone,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
+    private val addBillComment: AddBillComment,
+    private val updateExpense: UpdateExpense,
+    private val loadBillHistory: LoadBillHistory,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
     observeCategoryTree: ObserveCategoryTree,
+    observeBillComments: ObserveBillComments,
+    observeBillHistory: ObserveBillHistory,
+    connectivityObserver: NetworkConnectivityObserver,
 ) : ViewModel() {
     val uiState: StateFlow<BillDetailUiState>
         field = MutableStateFlow(
@@ -81,6 +101,12 @@ class BillDetailViewModel(
                 deletion = null,
                 isDeleting = false,
                 isLoaded = false,
+                threads = emptyList(),
+                commentDraft = "",
+                replyTarget = null,
+                history = emptyList(),
+                isOnline = true,
+                isUndoing = false,
             ),
         )
 
@@ -92,6 +118,9 @@ class BillDetailViewModel(
 
     private var expense: Expense? = null
     private var myMemberId: String? = null
+    private var shownGroup: Group? = null
+    private var comments: List<BillComment> = emptyList()
+    private var events: List<ActivityEvent> = emptyList()
 
     // Why: one read of the bill's group, shared by the bill and by what deleting it unsettles.
     private val group: SharedFlow<Group?> = observeGroup(route.groupId)
@@ -123,6 +152,23 @@ class BillDetailViewModel(
         deletionSettledPair
             .onEach(::showDeletionSettledPair)
             .launchIn(viewModelScope)
+        observeBillComments(route.expenseId)
+            .onEach { comments ->
+                this.comments = comments
+                showThreads()
+            }.launchIn(viewModelScope)
+        observeBillHistory(route.expenseId)
+            .onEach { events ->
+                this.events = events
+                showHistory()
+            }.launchIn(viewModelScope)
+        connectivityObserver
+            .observe()
+            .distinctUntilChanged()
+            .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
+            .filter { it }
+            .onEach { loadBillHistory(route.expenseId) }
+            .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isGone) leave() }
             .launchIn(viewModelScope)
@@ -148,6 +194,16 @@ class BillDetailViewModel(
                     )
                 }
             }
+
+            is BillDetailUiEvent.OnCommentChanged -> uiState.update { it.copy(commentDraft = event.text) }
+
+            BillDetailUiEvent.OnSendCommentClicked -> sendComment()
+
+            is BillDetailUiEvent.OnReplyClicked -> replyTo(event.commentId)
+
+            BillDetailUiEvent.OnReplyCancelled -> uiState.update { it.copy(replyTarget = null) }
+
+            BillDetailUiEvent.OnUndoClicked -> undo()
         }
     }
 
@@ -187,6 +243,7 @@ class BillDetailViewModel(
         expense: Expense,
     ) {
         this.expense = expense
+        shownGroup = group
         val me = group.members.firstOrNull { it.isMe }
         myMemberId = me?.id
         val membersById = group.members.associateBy { it.id }
@@ -209,6 +266,98 @@ class BillDetailViewModel(
                 deletion = state.deletion?.let { BillDeletion.of(expense, me?.id, deletionSettledPair.value) },
                 isLoaded = true,
             )
+        }
+        showThreads()
+        showHistory()
+    }
+
+    private fun showThreads() {
+        val group = shownGroup ?: return
+        uiState.update {
+            it.copy(threads = threadsOf(comments, group, currentTimeMillis(), currentTimeZone()))
+        }
+    }
+
+    private fun showHistory() {
+        val group = shownGroup ?: return
+        val expense = expense ?: return
+        uiState.update {
+            it.copy(history = historyOf(events, expense, group, currentTimeMillis(), currentTimeZone()))
+        }
+    }
+
+    // Why: a reply to a reply joins its thread and names whom it answers.
+    private fun replyTo(commentId: String) {
+        val thread = uiState.value.threads.firstOrNull { thread ->
+            thread.comment.id == commentId || thread.replies.any { it.id == commentId }
+        } ?: return
+        val comment = (listOf(thread.comment) + thread.replies).first { it.id == commentId }
+        uiState.update {
+            it.copy(
+                replyTarget = BillReplyTarget(
+                    threadId = thread.comment.id,
+                    commentId = comment.id,
+                    name = comment.authorName,
+                    isMe = comment.isMe,
+                ),
+            )
+        }
+    }
+
+    private fun sendComment() {
+        val state = uiState.value
+        if (!state.canSendComment) return
+        val me = shownGroup?.members?.firstOrNull { it.isMe }
+        val replyTarget = state.replyTarget
+        uiState.update {
+            it.copy(
+                commentDraft = "",
+                replyTarget = null,
+            )
+        }
+        viewModelScope.launch {
+            addBillComment(
+                expenseId = route.expenseId,
+                groupId = route.groupId,
+                body = state.commentDraft,
+                threadId = replyTarget?.threadId,
+                replyToName = replyTarget?.name?.takeIf { replyTarget.commentId != replyTarget.threadId },
+                authorMemberId = me?.id,
+                authorName = me?.name,
+            ).onFailure {
+                uiState.update {
+                    it.copy(
+                        commentDraft = state.commentDraft,
+                        replyTarget = replyTarget,
+                    )
+                }
+                uiAction.emit(BillDetailUiAction.ShowCommentError)
+            }
+        }
+    }
+
+    // Why: the latest edit's "before" saved over the bill, offline too, as a new edit everyone sees.
+    private fun undo() {
+        val state = uiState.value
+        val expense = expense ?: return
+        val event = events.firstOrNull() ?: return
+        if (state.isUndoing || !state.areActionsEnabled) return
+        val undo = undoOf(event, expense) ?: return
+        uiState.update { it.copy(isUndoing = true) }
+        viewModelScope.launch {
+            updateExpense(
+                expenseId = route.expenseId,
+                groupId = route.groupId,
+                description = undo.description,
+                amountMinor = undo.amountMinor,
+                payers = undo.payers,
+                splitMode = undo.splitMode,
+                shares = undo.shares,
+                items = null,
+                categoryId = undo.categoryId,
+                spentAt = undo.spentAt,
+            ).onFailure { uiAction.emit(BillDetailUiAction.ShowUndoError) }
+            uiState.update { it.copy(isUndoing = false) }
         }
     }
 

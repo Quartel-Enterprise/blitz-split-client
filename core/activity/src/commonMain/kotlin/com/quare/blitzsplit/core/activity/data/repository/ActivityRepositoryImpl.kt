@@ -39,12 +39,25 @@ class ActivityRepositoryImpl(
     private val olderEvents = MutableStateFlow<List<ActivityEvent>>(emptyList())
     private val hasOlder = MutableStateFlow(true)
 
+    // Why: the bills' histories loaded from the server this session, by bill.
+    private val eventsAbout = MutableStateFlow<Map<String, List<ActivityEvent>>>(emptyMap())
+
+    // Why: an attachment or the share link only shows in its bill's history, never in the feed nor its count.
     override fun observeEvents(): Flow<List<ActivityEvent>> = combine(
         local.observeEvents().map { entities -> entities.mapNotNull(mapper::toDomain) },
         olderEvents,
     ) { recent, older ->
         val recentIds = recent.mapTo(HashSet()) { it.id }
-        recent + older.filterNot { it.id in recentIds }
+        (recent + older.filterNot { it.id in recentIds }).filter { it.kind.isInFeed }
+    }.distinctUntilChanged()
+
+    override fun observeEventsAbout(targetId: String): Flow<List<ActivityEvent>> = combine(
+        local.observeEventsAbout(targetId).map { entities -> entities.mapNotNull(mapper::toDomain) },
+        eventsAbout.map { it[targetId].orEmpty() },
+    ) { recent, loaded ->
+        val recentIds = recent.mapTo(HashSet()) { it.id }
+        (recent + loaded.filterNot { it.id in recentIds })
+            .sortedWith(compareByDescending<ActivityEvent> { it.occurredAt }.thenByDescending { it.seq })
     }.distinctUntilChanged()
 
     override fun observeQueued(): Flow<List<QueuedChange>> = combine(
@@ -123,6 +136,11 @@ class ActivityRepositoryImpl(
         if (page.size < OLDER_PAGE_SIZE) hasOlder.value = false
     }
 
+    override suspend fun loadEventsAbout(targetId: String): Result<Unit> = suspendRunCatching {
+        val events = remote.fetchEventsAbout(targetId).map(mapper::toEntity).mapNotNull(mapper::toDomain)
+        eventsAbout.update { it + (targetId to events) }
+    }
+
     // Why: before the download, so the charges sent here come back in the same sync with the server's seq.
     override suspend fun uploadPendingActivity(userId: String): Result<Unit> = suspendRunCatching {
         val charges = local.getPendingEvents().filter { it.kind == ActivityKind.CHARGE_SENT.code }
@@ -164,6 +182,7 @@ class ActivityRepositoryImpl(
         if (owner != null && owner != userId) {
             local.clear()
             olderEvents.value = emptyList()
+            eventsAbout.value = emptyMap()
             hasOlder.value = true
         }
         remote.fetchReadMark()?.let { local.applyRemoteMark(it.readThroughSeq) }
@@ -193,6 +212,7 @@ class ActivityRepositoryImpl(
     override suspend fun clear() {
         local.clear()
         olderEvents.value = emptyList()
+        eventsAbout.value = emptyMap()
         hasOlder.value = true
     }
 

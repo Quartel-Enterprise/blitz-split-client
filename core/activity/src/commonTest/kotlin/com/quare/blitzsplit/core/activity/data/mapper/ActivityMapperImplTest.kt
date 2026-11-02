@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
+import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
@@ -55,6 +56,8 @@ class ActivityMapperImplTest {
                 fromMemberId = null,
                 toMemberId = null,
                 changes = emptyList(),
+                sharesCount = null,
+                body = null,
                 isPending = false,
             ),
             event,
@@ -128,7 +131,7 @@ class ActivityMapperImplTest {
     @Test
     fun `GIVEN a kind this version does not know WHEN reading it THEN it stays out of the feed`() {
         // Given
-        val entity = entity(kind = "comment_added")
+        val entity = entity(kind = "poll_created")
 
         // When
         val event = mapper.toDomain(entity)
@@ -197,18 +200,29 @@ class ActivityMapperImplTest {
                 ),
                 ActivityChange(
                     field = ActivityField.PAYERS,
-                    before = ActivityValue.none.copy(memberIds = listOf("ana")),
-                    after = ActivityValue.none.copy(memberIds = listOf("ana", "bruno")),
+                    before = ActivityValue.none.copy(
+                        memberIds = listOf("ana"),
+                        memberValues = listOf(ActivityMemberValue("ana", 61_200L)),
+                    ),
+                    after = ActivityValue.none.copy(
+                        memberIds = listOf("ana", "bruno"),
+                        memberValues = listOf(
+                            ActivityMemberValue("ana", 32_100L),
+                            ActivityMemberValue("bruno", 32_100L),
+                        ),
+                    ),
                 ),
                 ActivityChange(
                     field = ActivityField.SPLIT,
                     before = ActivityValue.none.copy(
                         code = "equal",
                         memberIds = listOf("ana"),
+                        memberValues = listOf(ActivityMemberValue("ana", 1L), ActivityMemberValue("bruno", 0L)),
                     ),
                     after = ActivityValue.none.copy(
                         code = "shares",
                         memberIds = listOf("ana", "bruno"),
+                        memberValues = listOf(ActivityMemberValue("ana", 3L), ActivityMemberValue("bruno", 1L)),
                     ),
                 ),
             ),
@@ -275,7 +289,7 @@ class ActivityMapperImplTest {
             kind = "bill_edited",
             data = """
                 {"changes":[
-                  {"field":"category","before":"food","after":"home"},
+                  {"field":"tags","before":"food","after":"home"},
                   {"field":"amount","before":100,"after":200}
                 ]}
             """,

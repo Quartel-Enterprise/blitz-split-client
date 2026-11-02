@@ -78,6 +78,8 @@ class ActivityFeedTest {
         fromMemberId = "ana",
         toMemberId = "pierre",
         changes = emptyList(),
+        sharesCount = null,
+        body = null,
         isPending = seq == null,
     )
 

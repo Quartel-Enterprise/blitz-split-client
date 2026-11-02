@@ -1366,6 +1366,8 @@ class GlobalBalancesViewModelTest {
         fromMemberId = null,
         toMemberId = null,
         changes = emptyList(),
+        sharesCount = null,
+        body = null,
         isPending = false,
     )
 
