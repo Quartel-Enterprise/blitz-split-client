@@ -51,7 +51,7 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `FoldDialog(onDismissRequest, properties, placement, content)` | A dialog off the hinge: `DialogPlacement.Centered`, `EndHalf` (a book's right half, the other half under the scrim) or `TopHalf` (a tabletop's). `rememberDialogPlacement()` is the canvas' default per posture (a tabletop lying down draws its dialogs like the book's, in the right half above its hinge); `rememberDialogPlacement(isTopHalfOnTabletop = true)` where the boards put them on a tabletop's top half even lying down (flow 2). The content brings its own surface, as in a centered dialog; one that replaces Material's `BasicAlertDialog` puts `Modifier.alertDialogPane(title)` on it, for the 280 to 560 dp width and the pane title TalkBack says |
 | `FoldDialogSceneStrategy.dialogMetadataOf(properties, isTopHalfOnTabletop)` | A navigation entry in a `FoldDialog` over the entry under it (`AppNavDisplay` uses it for every dialog route); `isTopHalfOnTabletop` for a flow whose boards put it in a tabletop's top half even lying down (flow 2's Novo grupo) |
 | `rememberUsesFormDialog()` | Editar grupo, the keys, Excluir conta: a dialog on a tablet, full screen on any foldable |
-| `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento, Cobrar: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
+| `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
 | `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)`, a cover screen one `coverFoldLayoutOf(360.dp, 374.dp)` |
 | `HomeNavigationRail` / `WithGroupNavigationRail` | The home's rail (no labels on a phone lying down nor a tabletop), and the same rail beside a group's screen drawn alone wider than a phone upright, never on a tabletop nor in the pane beside the list, with the tab the group was opened from selected (`homeTab`) and tappable again to go back to it (`reselects`), Atividade's unread badge from the screen's own state (`activityUnreadCount`); its content's Scaffold leaves out the start inset (`toGroupRailInsets`) |
@@ -63,11 +63,12 @@ drawn like it (Convidar's "Trocar o link?" in a book's right half and a tabletop
 dialogs in a book's right half).
 
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
-Perfil, Editar perfil and the keys on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
-"Não estou na lista", the profile's dialogs and Excluir conta),
-`TopBottomHalvesLayout` (Convidar and Convite on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
+Perfil, Editar perfil, the keys and Estatísticas on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
+"Não estou na lista", the profile's dialogs, Excluir conta and Cobrar),
+`TopBottomHalvesLayout` (Convidar, Convite and Estatísticas on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
 their layout math (right to left, a hinge band partly off the layout) has only run in previews. Each flow's
 responsive slice adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then.
+Estatísticas in the group's pane on a tablet lying down has only run in builds too.
 `FoldDialog` and `FoldDialogSceneStrategy` already draw every dialog route.
 
 The two `rememberUses…Dialog` rules are the presentations of today. A flow whose boards draw something else on a
@@ -119,14 +120,16 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | Piece | Use it for |
 | --- | --- |
 | `TwoColumnsLayout(firstWidth:secondWidth:spacing:maxWidth:alignment:first:second:)` | Two columns of one screen in a container of at most 920 pt (or `maxWidth`), the first fixed (or half), or the second fixed (Convidar's QR card); on an iPhone Duo whose fold runs down, each column on its side of the fold |
-| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo and Editar perfil use it; Editar grupo, Registrar pagamento, Cobrar to come): about 540 pt on iPad |
+| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo and Editar perfil use it; Cobrar too, a large detent there so it stays in the middle; Editar grupo, Registrar pagamento to come): about 540 pt on iPad |
 | `billSheetSizing(in: windowLayout)` | A bill's sheet: 820×640 lying down, 620×860 upright, never more than the window. Check on a device that the sheet's two columns still fit when adopting it |
-| `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` doesn't cover (a top and bottom split upright, a custom overlay) |
+| `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` and `FoldHalves` don't cover (a list ending at the fold, a custom overlay); `verticalFrame` and `horizontalFrame` say which way it runs |
+| `ListDetailSeparator(fold:)` | Between a list and the column beside it: the fold's band kept empty (`verticalFrame`), else a divider |
+| `FoldHalves(centersTop:scrollsHalves:splits:top:bottom:single:)` | The Duo open upright, as a notebook, where the boards draw their own version (2.2, 3.1, 6.2, 6.5, 6.6, 7.1, 7.2): `top` above the fold, `bottom` below it, each scrolling on its own (`scrollsHalves: false` for a Form or a List in each half); `single`, the screen's one column, everywhere else and while `splits` is false. Its first frame takes the window's fold (`windowFold`), so a screen opening on the fold never rebuilds what it holds |
+| `foldSheetPlacement(isForm:)` | On a sheet's content (`formSheetSizing()` already has it with `isForm`, the root's sheet from `AppRoute.usesFormSheet`): with the fold running down the window (`windowFold`, read by the root over the whole window) the sheet opens in the leading half, no wider than it (`presentationPlacement(.leading)`, iOS 27.0), with what it opened over in the other half; everywhere else the system places it at its own size, the form's or the system's. A routed screen that adopts another sizing (`billSheetSizing`) needs its route's sizing at the root too |
+| `ToolbarContent.prefersVerticalBar()` / `.readingVerticalBar($isVertical)` | A toolbar item the boards put in the closed Duo's vertical bar (`axisBehavior(.verticalPreferred)`: the avatar, "Rachar conta"), and whether the bar is vertical now (`toolbarVerticalEdge`), so a button drops its title (`SplitBillButton(showsTitle:)`) or leaves the bottom bar for it |
 
-Not checked on a device yet: `TwoColumnsLayout` (Boas-vindas, Seu perfil, Recuperar, Novo grupo's sheet lying down,
-Perfil and Editar perfil lying down), `FoldDivision` / `.readingFoldDivision` (also the empty home and Perfil on an
-iPhone Duo open) and `billSheetSizing`, which no screen uses yet; the per-flow slices check them on the iPhone Duo
-simulator and an iPad. `formSheetSizing()` sizes the recovery code's, Novo grupo's and Editar perfil's sheets.
+`formSheetSizing()` sizes the recovery code's, Novo grupo's and Editar perfil's sheets; `billSheetSizing` no screen
+uses yet. Not checked on a device yet: Estatísticas in an iPad's group pane.
 
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind
@@ -136,10 +139,14 @@ boards split there; `isActive` says the device is partially open, `isVertical` w
 notebook. Apple steers layout to these regions, not to the hinge's angle, so `onHingeChange` (live status and angle,
 for interactions) is not read. Before building anything by hand for the Duo:
 
-- System sheets, alerts, menus, split views and tab bars already keep off the fold and the camera.
-- Built with the 27.1 SDK, the closed Duo's vertical bars (back, glass buttons, tabs on the camera's edge) are the
-  system's vertical toolbars (`toolbarVerticalBehavior`, `axisBehavior`, the `toolbarVerticalEdge` environment
-  value); a screen only tunes them.
+- System sheets, alerts, menus, split views and tab bars already keep off the fold and the camera, but a form sheet
+  keeps its width over the fold: `foldSheetPlacement()` moves it into the leading half.
+- Built with the 27.1 SDK, the closed Duo's vertical bars (back, glass buttons, a sheet's ✕ and ✓, tabs on the
+  camera's edge) are the system's vertical toolbars, and the open Duo lying down keeps the tabs and the bar there too;
+  a screen only tunes them with `prefersVerticalBar()`, and a button drops its title wherever the bar is vertical. A `NavigationStack` nested beside another (Grupos' and Contatos' list beside the
+  detail) keeps its own horizontal toolbar and leaves about 84 pt on its trailing side for a vertical bar, so its List
+  ends short of the fold; `toolbarVerticalBehavior(.disabled)` there would take the tabs' vertical bar away too, so
+  it stays.
 - `ArrangementView` (`.arrangementViewStyle(.split)`) places two related views on each side of the fold, an option
   for a screen whose two halves are one unit. It is iOS 27.1 only, so it needs an iOS 26 fallback beside it.
 - The Mac builds with the macOS 27 SDK, which has none of these: they stay behind `#if os(iOS)`.
@@ -150,8 +157,9 @@ what the profile opens (`AppRoute.opensInSettings`: a key, deleting the account)
 on the Settings window that the main window never draws (see
 [navigation.md](navigation.md#the-macs-ajustes-two-windows-one-back-stack)).
 
-The boards' Duo measures are provisional (taken from Apple's diagrams); compare with Apple's template before matching
-a number exactly.
+The boards' Duo measures are provisional (taken from Apple's diagrams): the iOS 27.2 simulator's Duo is about 466×678
+pt closed and 951×669 pt open, with a 40 pt fold (its 20 pt margins included) at x = 455.5 lying down. Compare with
+Apple's template before matching a number exactly.
 
 ### Web
 

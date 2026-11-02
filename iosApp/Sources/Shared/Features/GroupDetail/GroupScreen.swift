@@ -90,6 +90,8 @@ private struct GroupScreenBars: ViewModifier {
     #else
     @Environment(\.isNarrowWindow) private var isNarrowWindow
     #endif
+    /// An iPhone Duo's vertical bar (iOS 27.1), which takes the main button as its plus alone.
+    @State private var hasVerticalBar = false
 
     private var isLoaded: Bool {
         header != nil
@@ -97,6 +99,7 @@ private struct GroupScreenBars: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            .readingVerticalBar($hasVerticalBar)
             .navigationTitle(Text(verbatim: header?.groupName ?? ""))
             #if os(iOS)
             .toolbarTitleDisplayMode(.inline)
@@ -141,7 +144,7 @@ private struct GroupScreenBars: ViewModifier {
         if showsSplitBill {
             mainButton { splitBillButton }
         } else if let addPerson {
-            mainButton { AddPersonButton(action: addPerson) }
+            mainButton { AddPersonButton(showsTitle: !hasVerticalBar, action: addPerson) }
         }
     }
 
@@ -153,6 +156,7 @@ private struct GroupScreenBars: ViewModifier {
             ToolbarItem(placement: .bottomBar) { button() }
         } else {
             ToolbarItem(placement: .primaryAction) { button() }
+                .prefersVerticalBar()
         }
         #else
         ToolbarItem(placement: .primaryAction) { button() }
@@ -219,13 +223,14 @@ private struct GroupScreenBars: ViewModifier {
     }
 
     private var splitBillButton: some View {
-        SplitBillButton(action: actions.splitBill)
+        SplitBillButton(showsTitle: !hasVerticalBar, action: actions.splitBill)
     }
 
     #if os(iOS)
-    /// The upright iPhone: "Split a bill" goes to the bottom toolbar, under the thumb.
+    /// The upright iPhone: "Split a bill" goes to the bottom toolbar, under the thumb, except into an iPhone Duo's
+    /// vertical bar, right under Back, as the boards draw it.
     private var usesBottomBar: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular
+        horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
     }
     #endif
 }
@@ -372,7 +377,8 @@ struct BalanceCard: View {
 #if os(iOS)
 /// The group's screen on iPhone upright and iPad: one column (640 wide at most on iPad) with the header, the balance
 /// card and the tabs over the picked tab's sections. iPhone lying down: the header and the card on the left, the tabs
-/// and the sections on the right. Only the sections change with the tab.
+/// and the sections on the right. An iPhone Duo open upright: the header and the card above the fold, the tabs and the
+/// sections below it (3.3, 6.2), on every tab so the header never moves. Only the sections change with the tab.
 struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
     let hasExpenses: Bool
@@ -386,24 +392,41 @@ struct PhoneGroupScaffold<Sections: View>: View {
         Group {
             if usesTwoColumns {
                 HStack(alignment: .top, spacing: 8) {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            top
-                            balanceCard
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
-                    }
-                    .frame(width: 328)
+                    summary
+                        .frame(width: 328)
                     list(withHeader: false)
                 }
             } else {
-                list(withHeader: true)
-                    .frame(maxWidth: 640)
-                    .frame(maxWidth: .infinity)
+                // An iPhone Duo open upright: the header and the card above the fold, the tabs below it
+                FoldHalves(scrollsHalves: false) {
+                    summary
+                        .scrollBounceBehavior(.basedOnSize)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                } bottom: {
+                    list(withHeader: false)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                } single: {
+                    list(withHeader: true)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
         .background(Palette.groupedBackground)
+    }
+
+    /// The header and the card beside or above the tabs.
+    private var summary: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                top
+                balanceCard
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+        }
     }
 
     private var top: some View {

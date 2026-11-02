@@ -23,37 +23,52 @@ struct ProfileToolbarButton: View {
 }
 
 /// "Split a bill" spelled out with its plus, a toolbar draws a Label as its icon only: iOS's tinted glass item (iOS
-/// has no FAB), the Mac window's prominent button.
+/// has no FAB), the Mac window's prominent button. In an iPhone Duo's vertical bar, the plus alone (`showsTitle`).
 struct SplitBillButton: View {
+    var showsTitle = true
     let action: () -> Void
 
     var body: some View {
-        ProminentBarButton(title: "Split a bill", systemImage: "plus", action: action)
+        ProminentBarButton(title: "Split a bill", systemImage: "plus", showsTitle: showsTitle, action: action)
     }
 }
 
 /// Members' "Add person", in the place the group's other tabs give "Split a bill".
 struct AddPersonButton: View {
+    var showsTitle = true
     let action: () -> Void
 
     var body: some View {
-        ProminentBarButton(title: "Add person", systemImage: "person.badge.plus", action: action)
+        ProminentBarButton(
+            title: "Add person",
+            systemImage: "person.badge.plus",
+            showsTitle: showsTitle,
+            action: action,
+        )
     }
 }
 
-/// A toolbar's main button spelled out with its icon.
+/// A toolbar's main button spelled out with its icon, or its icon alone in an iPhone Duo's vertical bar, which has
+/// no room for words.
 private struct ProminentBarButton: View {
     let title: LocalizedStringKey
     let systemImage: String
+    let showsTitle: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: systemImage)
-                Text(title)
+            if showsTitle {
+                HStack(spacing: 6) {
+                    Image(systemName: systemImage)
+                    Text(title)
+                }
+                .fontWeight(.semibold)
+            } else {
+                Label(title, systemImage: systemImage)
+                    .labelStyle(.iconOnly)
+                    .fontWeight(.semibold)
             }
-            .fontWeight(.semibold)
         }
         #if os(iOS)
         .buttonStyle(.glassProminent)
@@ -78,6 +93,64 @@ struct HiddenTabTitle: ToolbarContent {
                 .accessibilityAddTraits(.isHeader)
         }
         .sharedBackgroundVisibility(.hidden)
+    }
+}
+#endif
+
+extension ToolbarContent {
+    /// Moves the item into the vertical glass bar an iPhone Duo draws on its camera's edge (iOS 27.1), where the
+    /// boards put the home tabs' Perfil, + and QR, at the top of the bar, the tabs at its bottom. Anywhere the bar
+    /// lies flat, and on the Mac, the item stays where its placement puts it.
+    @ToolbarContentBuilder
+    func prefersVerticalBar() -> some ToolbarContent {
+        #if os(iOS)
+        if #available(iOS 27.1, *) {
+            axisBehavior(.verticalPreferred)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
+}
+
+extension View {
+    /// Keeps `isVertical` on whether this screen's toolbar is the vertical glass bar an iPhone Duo draws on its
+    /// camera's edge (iOS 27.1's `toolbarVerticalEdge`), where a screen moves the main button it floats under the
+    /// thumb into the bar; false anywhere else.
+    func readingVerticalBar(_ isVertical: Binding<Bool>) -> some View {
+        modifier(VerticalBarReading(isVertical: isVertical))
+    }
+}
+
+private struct VerticalBarReading: ViewModifier {
+    @Binding var isVertical: Bool
+
+    func body(content: Content) -> some View {
+        #if os(iOS)
+        if #available(iOS 27.1, *) {
+            content.modifier(VerticalEdgeReading(isVertical: $isVertical))
+        } else {
+            content
+        }
+        #else
+        content
+        #endif
+    }
+}
+
+#if os(iOS)
+@available(iOS 27.1, *)
+private struct VerticalEdgeReading: ViewModifier {
+    @Binding var isVertical: Bool
+
+    @Environment(\.toolbarVerticalEdge) private var edge
+
+    func body(content: Content) -> some View {
+        content.onChange(of: edge != nil, initial: true) { _, isVerticalNow in
+            isVertical = isVerticalNow
+        }
     }
 }
 #endif
