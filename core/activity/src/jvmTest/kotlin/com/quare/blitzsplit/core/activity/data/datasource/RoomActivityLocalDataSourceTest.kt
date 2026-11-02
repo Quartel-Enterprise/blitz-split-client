@@ -527,6 +527,47 @@ class RoomActivityLocalDataSourceTest {
     }
 
     @Test
+    fun `GIVEN events about two bills WHEN observing one THEN gives its own the most recent first`() = runTest {
+        // Given
+        prepareScenario(
+            events = listOf(
+                event(
+                    id = "older",
+                    seq = 1L,
+                    targetId = "bill-1",
+                    occurredAt = 1_000L,
+                ),
+                event(
+                    id = "other-bill",
+                    seq = 2L,
+                    targetId = "bill-2",
+                    occurredAt = 2_000L,
+                ),
+                event(
+                    id = "newer",
+                    seq = 3L,
+                    kind = "attachment_added",
+                    targetId = "bill-1",
+                    occurredAt = 3_000L,
+                ),
+                event(
+                    id = "same-time-later",
+                    seq = 4L,
+                    kind = "comment_added",
+                    targetId = "bill-1",
+                    occurredAt = 1_000L,
+                ),
+            ),
+        )
+
+        // When
+        val events = dataSource.observeEventsAbout("bill-1").first()
+
+        // Then
+        assertEquals(listOf("newer", "same-time-later", "older"), events.map { it.id })
+    }
+
+    @Test
     fun `GIVEN a charge not up yet and synced events WHEN asking the oldest and newest seq THEN ignores the charge`() =
         runTest {
             // Given
