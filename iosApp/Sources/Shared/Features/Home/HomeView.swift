@@ -60,6 +60,8 @@ struct HomeView: View {
 
     @State private var layout = ScreenLayout()
     @State private var division: FoldDivision?
+    /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" under the profile.
+    @State private var hasVerticalBar = false
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -93,6 +95,7 @@ struct HomeView: View {
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
         .readingFoldDivision($division)
+        .readingVerticalBar($hasVerticalBar)
         // Record payment, which "Who paid whom?" or a face's settling up opened over Home, just closed
         .recordedPaymentNotice(
             state.recordedPayment,
@@ -105,9 +108,11 @@ struct HomeView: View {
         .toolbar {
             HiddenTabTitle(title: HomeCopy.tabTitle)
             ToolbarItem(placement: .primaryAction) { profileButton }
+                .prefersVerticalBar()
             if state.showsSplitBillButton, !usesBottomButton {
                 ToolbarSpacer(.fixed, placement: .primaryAction)
                 ToolbarItem(placement: .primaryAction) { splitBillButton }
+                    .prefersVerticalBar()
             }
         }
         // The upright iPhone: "Split a bill" floats over the tab bar, under the thumb, as the canvas draws it
@@ -209,7 +214,7 @@ struct HomeView: View {
     /// The upright iPhone keeps "Split a bill" under the thumb; lying down and with an iPad's room it is the bar's
     /// tinted glass item.
     private var usesBottomButton: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular
+        horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
     }
     #endif
 
@@ -350,7 +355,7 @@ struct HomeView: View {
     }
 
     private var splitBillButton: some View {
-        SplitBillButton {
+        SplitBillButton(showsTitle: !hasVerticalBar) {
             model.send(HomeUiEventOnSplitBillClicked.shared)
         }
     }

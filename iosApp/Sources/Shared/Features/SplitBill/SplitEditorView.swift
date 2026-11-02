@@ -287,7 +287,7 @@ struct SplitLeadHeader: View {
 
 #if os(iOS)
 /// Pushed inside the bill's sheet. Lying down and on iPad: the summary, the modes and the status on the left, the
-/// people on the right.
+/// people on the right; above and below the fold of an iPhone Duo open upright.
 struct PhoneSplitEditor: View {
     let model: SplitBillModel
 
@@ -302,9 +302,17 @@ struct PhoneSplitEditor: View {
                         Form { people(editor) }
                     }
                 } else {
-                    Form {
-                        overview(editor)
-                        people(editor)
+                    // An iPhone Duo open upright: the summary, the modes and the status above the fold, the people
+                    // below it (7.2)
+                    FoldHalves(scrollsHalves: false) {
+                        Form { overview(editor) }
+                    } bottom: {
+                        Form { people(editor) }
+                    } single: {
+                        Form {
+                            overview(editor)
+                            people(editor)
+                        }
                     }
                 }
             }

@@ -47,16 +47,15 @@ final class DefaultSplitModel {
     }
 }
 
-/// "Default split" (6.7), pushed inside Edit group's sheet on iPhone, iPad and Mac, with Save (✓) in the bar. With an
-/// iPad's room the sheet grows to the canvas' 820×640 lying down and 620×860 upright. Lying down, on an iPad lying down
-/// and in the Mac's sheet: the ways to split on the left, the people and the example bill on the right.
+/// "Default split" (6.7), pushed inside Edit group's sheet on iPhone, iPad and Mac, with Save (✓) in the bar. Lying
+/// down, on an iPad lying down and in the Mac's sheet: the ways to split on the left, the people and the example bill
+/// on the right.
 struct DefaultSplitView: View {
     let route: RouteDefaultSplit
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: DefaultSplitModel?
     @State private var layout = ScreenLayout()
-    @Environment(\.windowLayout) private var windowLayout
 
     var body: some View {
         Group {
@@ -110,14 +109,14 @@ struct DefaultSplitView: View {
                 .disabled(model?.state.canSave != true)
             }
         }
-        #if os(iOS)
-        .billSheetSizing(in: windowLayout)
-        #endif
         #if os(macOS)
         .frame(minWidth: 460, idealWidth: 760, minHeight: 400, idealHeight: 560)
         #endif
         .sheet(isPresented: exceptionShown) {
-            if let model { ExceptionSheet(model: model) }
+            if let model {
+                ExceptionSheet(model: model)
+                    .foldSheetPlacement(isForm: true)
+            }
         }
         .onAppear {
             if model == nil { model = DefaultSplitModel(route: route) }

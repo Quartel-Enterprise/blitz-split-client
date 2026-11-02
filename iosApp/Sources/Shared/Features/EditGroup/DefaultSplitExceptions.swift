@@ -160,9 +160,6 @@ struct ExceptionSheet: View {
                 }
             }
         }
-        #if os(iOS)
-        .formSheetSizing()
-        #endif
         #if os(macOS)
         .frame(width: 520, height: 560)
         #endif

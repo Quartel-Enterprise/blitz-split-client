@@ -146,6 +146,7 @@ struct GroupsView: View {
                 joinButton
                 profileButton
             }
+            .prefersVerticalBar()
             ToolbarSpacer(.fixed, placement: .primaryAction)
             ToolbarItem(placement: .primaryAction) {
                 Button("Split a bill", systemImage: "plus") {
@@ -153,6 +154,7 @@ struct GroupsView: View {
                 }
                 .buttonStyle(.glassProminent)
             }
+            .prefersVerticalBar()
         }
         #else
         .navigationSubtitle(macSubtitle)
