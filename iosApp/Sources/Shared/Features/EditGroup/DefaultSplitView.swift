@@ -115,7 +115,7 @@ struct DefaultSplitView: View {
         .sheet(isPresented: exceptionShown) {
             if let model {
                 ExceptionSheet(model: model)
-                    .foldSheetPlacement()
+                    .foldSheetPlacement(isForm: true)
             }
         }
         .onAppear {

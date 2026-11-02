@@ -50,7 +50,7 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `TopBottomHalvesLayout(top, bottom, gap)` | A screen with a tabletop board of its own: what is read or scanned on top, the controls at the bottom. Needs a bounded height; each half scrolls on its own |
 | `FoldDialog(onDismissRequest, properties, placement, content)` | A dialog off the hinge: `DialogPlacement.Centered`, `EndHalf` (a book's right half, the other half under the scrim) or `TopHalf` (a tabletop's). `rememberDialogPlacement()` is the canvas' default per posture (a tabletop lying down draws its dialogs like the book's, in the right half above its hinge); `rememberDialogPlacement(isTopHalfOnTabletop = true)` where the boards put them on a tabletop's top half even lying down (flow 2). The content brings its own surface, as in a centered dialog; one that replaces Material's `BasicAlertDialog` puts `Modifier.alertDialogPane(title)` on it, for the 280 to 560 dp width and the pane title TalkBack says |
 | `FoldDialogSceneStrategy.dialogMetadataOf(properties, isTopHalfOnTabletop)` | A navigation entry in a `FoldDialog` over the entry under it (`AppNavDisplay` uses it for every dialog route); `isTopHalfOnTabletop` for a flow whose boards put it in a tabletop's top half even lying down (flow 2's Novo grupo) |
-| `rememberUsesFormDialog()` | Editar grupo, the keys, Excluir conta: a dialog on a tablet, full screen on any foldable |
+| `rememberUsesFormDialog()` | The keys, Excluir conta: a dialog on a tablet, full screen on any foldable. Flow 6 has its own rules in `:android:feature:edit_group`: Editar grupo is a dialog on anything wider than a phone (`rememberUsesEditGroupDialog()`, off the hinge as every dialog), Divisão padrão on a tablet, a book and a tabletop, full screen on a foldable upright (`rememberUsesDefaultSplitDialog()`) |
 | `rememberUsesGroupDialog()` | Rachar conta, Conta: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop (Registrar pagamento has its own) |
 | `rememberFormPresentation()` | Registrar pagamento and Convidar of Contatos: a sheet on a phone, a dialog wider, a book's in the right half, full screen on a tabletop split on the hinge (`TabletopGap` apart); each entry keeps the one it opened with, as its scene does |
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
@@ -69,7 +69,7 @@ lying down are still preview only for them.
 
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
 Perfil, Editar perfil, the keys and Estatísticas on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
-"Não estou na lista", the profile's dialogs, Excluir conta and Cobrar),
+"Não estou na lista", the profile's dialogs, Excluir conta, Cobrar, Editar grupo, Divisão padrão and its exception, Membros' dialogs),
 `TopBottomHalvesLayout` (Convidar, Convite and Estatísticas on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
 their layout math (right to left, a hinge band partly off the layout) has only run in previews. Each flow's
 responsive slice adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then.
@@ -125,7 +125,7 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | Piece | Use it for |
 | --- | --- |
 | `TwoColumnsLayout(firstWidth:secondWidth:spacing:maxWidth:alignment:first:second:)` | Two columns of one screen in a container of at most 920 pt (or `maxWidth`), the first fixed (or half), or the second fixed (Convidar's QR card); on an iPhone Duo whose fold runs down, each column on its side of the fold |
-| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo, Editar perfil and Registrar pagamento use it; Cobrar too, a large detent there so it stays in the middle; Editar grupo to come): about 540 pt on iPad |
+| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo, Editar perfil, Editar grupo, Divisão padrão's exception and Registrar pagamento use it; Cobrar too, a large detent there so it stays in the middle): about 540 pt on iPad |
 | `billSheetSizing(in: windowLayout)` | A bill's sheet: 820×640 lying down, 620×860 upright, never more than the window. Check on a device that the sheet's two columns still fit when adopting it |
 | `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` and `FoldHalves` don't cover (a list ending at the fold, a custom overlay); `verticalFrame` and `horizontalFrame` say which way it runs |
 | `ListDetailSeparator(fold:)` | Between a list and the column beside it: the fold's band kept empty (`verticalFrame`), else a divider |
@@ -133,8 +133,9 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | `foldSheetPlacement(isForm:)` | On a sheet's content (`formSheetSizing()` already has it with `isForm`, the root's sheet from `AppRoute.usesFormSheet`): with the fold running down the window (`windowFold`, read by the root over the whole window) the sheet opens in the leading half, no wider than it (`presentationPlacement(.leading)`, iOS 27.0), with what it opened over in the other half; everywhere else the system places it at its own size, the form's or the system's. A routed screen that adopts another sizing (`billSheetSizing`) needs its route's sizing at the root too |
 | `ToolbarContent.prefersVerticalBar()` / `.readingVerticalBar($isVertical)` | A toolbar item the boards put in the closed Duo's vertical bar (`axisBehavior(.verticalPreferred)`: the avatar, "Rachar conta"), and whether the bar is vertical now (`toolbarVerticalEdge`), so a button drops its title (`SplitBillButton(showsTitle:)`) or leaves the bottom bar for it |
 
-`formSheetSizing()` sizes the recovery code's, Novo grupo's and Editar perfil's sheets; `billSheetSizing` no screen
-uses yet. Not checked on a device yet: Estatísticas in an iPad's group pane.
+`formSheetSizing()` sizes the recovery code's, Novo grupo's, Editar perfil's and Editar grupo's sheets (Divisão padrão,
+pushed inside Editar grupo's, keeps its size for now, not the boards' 820×640); `billSheetSizing` no screen uses yet.
+Not checked on a device yet: Estatísticas in an iPad's group pane.
 
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind

@@ -169,7 +169,7 @@ enum AppRoute: Hashable, Identifiable {
     /// iPhone Duo's fold included (`foldSheetPlacement(isForm:)`).
     var usesFormSheet: Bool {
         switch self {
-        case .createGroup, .contactInvite, .editProfile, .registerPayment, .settleUp, .pickPayment: true
+        case .createGroup, .contactInvite, .editProfile, .editGroup, .registerPayment, .settleUp, .pickPayment: true
         default: false
         }
     }
