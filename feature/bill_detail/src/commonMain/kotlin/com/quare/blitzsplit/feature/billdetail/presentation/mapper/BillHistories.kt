@@ -242,10 +242,13 @@ private fun changesOf(
 
             ActivityField.CATEGORY -> BillHistoryChange.Category(change.before.code, change.after.code)
 
-            ActivityField.PAYERS -> BillHistoryChange.Payers(
-                before = namesOf(change.before, group),
-                after = namesOf(change.after, group),
-            )
+            // Why: the same payers paying a new total is the amount's change, already listed.
+            ActivityField.PAYERS ->
+                BillHistoryChange
+                    .Payers(
+                        before = namesOf(change.before, group),
+                        after = namesOf(change.after, group),
+                    ).takeIf { change.before.memberIds.toSet() != change.after.memberIds.toSet() }
 
             ActivityField.SPLIT -> splitChangeOf(change, byField, event, group, expense)
 

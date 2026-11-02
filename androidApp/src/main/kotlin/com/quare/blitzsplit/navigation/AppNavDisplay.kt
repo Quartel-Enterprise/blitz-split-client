@@ -121,6 +121,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
+    /*
+     * Why: Conta (7.3) is the group's dialog, and a book draws it too, in its right half with the group in the other;
+     * a tabletop like the book, above its hinge lying down.
+     */
+    val usesBillDetailDialog = usesBillDialog || formFactor == FormFactor.Book || formFactor == FormFactor.Tabletop
+    val billDetailMetadata = if (usesBillDetailDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
     val contactInvitePresentation = rememberContactInvitePresentation()
     val contactInviteMetadata = when (contactInvitePresentation) {
         ContactInvitePresentation.BottomSheet -> BottomSheetSceneStrategy.bottomSheet
@@ -224,10 +234,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 )
             }
             // Why: like Rachar conta, a tablet and the upright foldable keep the group behind the bill.
-            entry<Route.BillDetail>(metadata = billDialogMetadata) { route ->
+            entry<Route.BillDetail>(metadata = billDetailMetadata) { route ->
                 BillDetailScreen(
                     route = route,
-                    isDialog = usesBillDialog,
+                    isDialog = usesBillDetailDialog,
                 )
             }
             entry<Route.GroupStats> { route -> GroupStatsScreen(route) }

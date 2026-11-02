@@ -284,8 +284,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
     with its category over the title and Editar and Apagar in the top bar (no Compartilhar nor attachments yet). A
-    phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side
-    sheet (a drawer on a phone), all over the group.
+    phone opens it full screen; Android tablets open it as a dialog (in a book's right half, a tabletop alike), iPad
+    and Mac as a sheet, and the web as a side sheet (a drawer on a phone), all over the group.
   - Conta's "Comentários" (7.3c to 7.3f): anyone in the group comments, offline too (the comment waits in the queue,
     "Na fila · sai ao reconectar", like a bill, `bill_comments`), and "Responder" answers a comment or a reply, one
     level deep: a reply to a reply joins its thread and names whom it answers. A comment is never edited nor

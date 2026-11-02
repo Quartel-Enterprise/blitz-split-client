@@ -97,7 +97,7 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   return (
     <>
       <Screen name={pageName} route={page} />
-      {bill && <BillDetailSheet key={`${bill.groupId}/${bill.expenseId}`} route={bill} isCovered={bill !== top} />}
+      {bill && <BillDetailSheet key={`bill:${bill.groupId}/${bill.expenseId}`} route={bill} isCovered={bill !== top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}

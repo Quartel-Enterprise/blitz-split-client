@@ -63,6 +63,7 @@
     <string name="activity_kind_member_released">%1$s released the name %2$s</string>
     <string name="activity_kind_member_renamed">%1$s renamed %2$s</string>
     <string name="activity_kind_charge_sent">%1$s asked %2$s to pay</string>
+    <string name="activity_kind_comment_added">%1$s commented on %2$s</string>
     <string name="activity_detail_amount_split">%1$s · %2$s</string>
     <string name="activity_detail_bill_gone">%s · the bill no longer exists</string>
     <string name="activity_detail_payment">%1$s → %2$s · %3$s · %4$s</string>
@@ -71,6 +72,7 @@
     <string name="activity_detail_link_changed">The old link stopped working</string>
     <string name="activity_detail_released">The name is free for someone to join as</string>
     <string name="activity_detail_charge">%s · message sent</string>
+    <string name="activity_detail_comment">“%s”</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
     <string name="activity_deleted_notice_bill">%1$s was deleted by %2$s on %3$s. The record stays in the feed, but the bill no longer opens.</string>
     <string name="activity_deleted_notice_group">%1$s was deleted by %2$s on %3$s. The record stays in the feed, but the group no longer opens.</string>
@@ -89,6 +91,11 @@
     <string name="activity_field_color">Color</string>
     <string name="activity_field_currency">Currency</string>
     <string name="activity_field_default_split">Default split</string>
+    <string name="activity_field_category">Category</string>
+    <string name="activity_field_visibility">Link</string>
+    <string name="activity_visibility_members">Only who\'s in the bill</string>
+    <string name="activity_visibility_anyone">Anyone with the link</string>
+    <string name="activity_visibility_off">Off</string>
     <string name="activity_split_equal">Equal</string>
     <string name="activity_split_amount">Amounts</string>
     <string name="activity_split_percent">Percentage</string>

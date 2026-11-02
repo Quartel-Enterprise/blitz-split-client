@@ -509,7 +509,8 @@ private struct ActivityRow: View {
                         Text(verbatim: detail)
                             .font(detailFont)
                             .foregroundStyle(.secondary)
-                            .lineLimit(showsDetail ? 1 : 2)
+                            // A comment's text keeps its two lines beside the detail too
+                            .lineLimit(showsDetail && item.kind != .commentAdded ? 1 : 2)
                     }
                     ActivityRowMeta(item: item)
                 }
