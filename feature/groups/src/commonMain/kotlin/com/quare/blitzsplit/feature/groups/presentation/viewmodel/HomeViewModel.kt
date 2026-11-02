@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
@@ -96,6 +97,7 @@ class HomeViewModel(
     observeGroupDeletions: ObserveGroupDeletions,
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
+    observeMapCategories: ObserveMapCategories,
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState>
         field = MutableStateFlow(
@@ -184,15 +186,16 @@ class HomeViewModel(
                 timeZone = currentTimeZone(),
             )
         }
-        combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
-            .map { items ->
-                HomeData(
-                    groups = items.map { it.group },
-                    rows = rowsOf(items, activityClock()),
-                    latestBills = latestBillsOf(items),
-                    pendingChangeCount = pendingChangeCountOf(items),
-                )
-            }.combine(observePinnedGroupIds(), ::Pair)
+        combine(observeGroups(), observeGroupsMoney(), observeMapCategories()) { groups, money, categories ->
+            groupsWithMoneyOf(groups, money) to categories
+        }.map { (items, categories) ->
+            HomeData(
+                groups = items.map { it.group },
+                rows = rowsOf(items, activityClock()),
+                latestBills = latestBillsOf(items, categories),
+                pendingChangeCount = pendingChangeCountOf(items),
+            )
+        }.combine(observePinnedGroupIds(), ::Pair)
             // Why: the ages and the days again each minute, not the balances, so Início says "ontem" after midnight.
             .combine(minuteTicks()) { dataAndPins, _ -> dataAndPins }
             .onEach { (data, pinnedIds) ->

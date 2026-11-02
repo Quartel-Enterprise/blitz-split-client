@@ -562,11 +562,8 @@ struct HomeBillsSection: View {
             send(HomeUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id))
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: "receipt")
-                    .foregroundStyle(Palette.accent)
-                    .frame(width: 36, height: 36)
-                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
-                    .accessibilityHidden(true)
+                // The category's badge, as Despesas draws it (6.1)
+                CategoryBadge(category: bill.category, size: 38)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(verbatim: bill.description_)
                         .lineLimit(1)

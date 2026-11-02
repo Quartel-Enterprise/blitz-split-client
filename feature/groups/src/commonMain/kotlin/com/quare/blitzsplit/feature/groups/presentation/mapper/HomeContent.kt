@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
@@ -59,11 +60,18 @@ internal fun homeGroupsOf(
  */
 internal fun homeBillDaysOf(
     groups: List<GroupWithMoney>,
+    categories: CategoryTree,
     clock: ActivityClock,
-): List<HomeBillDay> = billDaysOf(latestBillsOf(groups), clock)
+): List<HomeBillDay> = billDaysOf(latestBillsOf(groups, categories), clock)
 
-// Why: read again only when the bills change; the minute's tick just puts them in their days again.
-internal fun latestBillsOf(groups: List<GroupWithMoney>): List<DatedHomeBill> = groups
+/*
+ * Why: read again only when the bills or the categories change; the minute's tick just puts them in their days again.
+ * The categories are every group's, merged, as Atividade reads them: a group's own category has the id only it uses.
+ */
+internal fun latestBillsOf(
+    groups: List<GroupWithMoney>,
+    categories: CategoryTree,
+): List<DatedHomeBill> = groups
     .flatMap { item ->
         val meId = item.group.members
             .firstOrNull { it.isMe }
@@ -82,6 +90,7 @@ internal fun latestBillsOf(groups: List<GroupWithMoney>): List<DatedHomeBill> = 
                     currency = item.group.currency,
                     payers = payersOf.of(expense),
                     myBalanceMinor = myBalance,
+                    category = categories.resolve(expense.categoryId),
                     isPending = expense.isPending,
                 ),
             )
