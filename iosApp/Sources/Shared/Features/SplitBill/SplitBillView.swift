@@ -747,7 +747,7 @@ private struct MatchedTerms: View {
     let matches: [CategoryMatch]
 
     var body: some View {
-        HStack(spacing: 6) {
+        TermFlowLayout(spacing: 6) {
             ForEach(Array(matches.enumerated()), id: \.offset) { index, match in
                 Text(verbatim: match.term)
                     .font(.footnote.weight(index == 0 ? .semibold : .regular))
