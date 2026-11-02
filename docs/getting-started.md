@@ -57,6 +57,14 @@ Run the `androidApp` module from Android Studio, or build it from the terminal:
 ./gradlew :androidApp:assembleDebug
 ```
 
+A debug build is signed with your machine's `~/.android/debug.keystore`, so a group's invite link
+(`blitzsplit.com/g/<code>`) only opens it once that key's SHA-256 is in `assetlinks.json`: otherwise Android fails the
+App Links verification and the link opens in the browser. `adb shell pm get-app-links com.quare.blitzsplit` says
+`verified` once it works, `legacy_failure` while the key is missing. Add the fingerprint that
+`keytool -list -v -keystore ~/.android/debug.keystore -storepass android` prints to
+`webApp/public/.well-known/assetlinks.json` and to the same file in `blitz-split-site`, which serves blitzsplit.com,
+then run `adb shell pm verify-app-links --re-verify com.quare.blitzsplit`.
+
 ## Build and run the Apple app
 
 The Xcode project is generated, not versioned. Generate it, then open it:
@@ -74,6 +82,11 @@ changing `iosApp/project.yml` or `version.properties`.
 
 The project signs automatically with the team in `project.yml`; Sign in with Apple and the `webcredentials`
 associated domain need a team that holds those capabilities for `com.quare.blitzsplit`.
+
+A group's invite link opens the app through the `applinks` associated domain, once the system has downloaded
+blitzsplit.com's `apple-app-site-association` after the install: a link opened in the first seconds still goes to
+Safari. Test it with `xcrun simctl openurl <udid> https://blitzsplit.com/g/<code>`, or by tapping the link in Notes
+or Messages; a link typed into Safari's address bar always stays in Safari.
 
 ## Build and run the web app
 
