@@ -117,6 +117,7 @@ private fun MembersOverlay(viewModel: MembersViewModel) {
         PersonalInviteSheet(
             invite = invite,
             groupName = state.groupName,
+            currency = state.currency,
             onEvent = viewModel::onEvent,
         )
     }

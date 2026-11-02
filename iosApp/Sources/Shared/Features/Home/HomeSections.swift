@@ -549,8 +549,9 @@ struct HomeBillsSection: View {
             ForEach(rows.indices, id: \.self) { index in
                 rows[index]
                 if index < rows.count - 1 {
+                    // Under the text: 16 of padding, the 38 pt badge and 12 of spacing
                     Divider()
-                        .padding(.leading, 64)
+                        .padding(.leading, 66)
                 }
             }
         }
@@ -562,11 +563,8 @@ struct HomeBillsSection: View {
             send(HomeUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id))
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: "receipt")
-                    .foregroundStyle(Palette.accent)
-                    .frame(width: 36, height: 36)
-                    .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
-                    .accessibilityHidden(true)
+                // The category's badge, as Despesas draws it (6.1)
+                CategoryBadge(category: bill.category, size: 38)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(verbatim: bill.description_)
                         .lineLimit(1)
@@ -605,9 +603,10 @@ struct HomeBillsSection: View {
 private struct SkeletonBillRow: View {
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10)
+            // The category badge's size and corners
+            RoundedRectangle(cornerRadius: 38 * 0.3)
                 .fill(.fill.tertiary)
-                .frame(width: 36, height: 36)
+                .frame(width: 38, height: 38)
             VStack(alignment: .leading, spacing: 6) {
                 Capsule().fill(.fill.tertiary).frame(width: 120, height: 12)
                 Capsule().fill(.fill.quaternary).frame(width: 180, height: 10)

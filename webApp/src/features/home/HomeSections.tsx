@@ -1,4 +1,4 @@
-import { ChevronRight, Pin, ReceiptText } from 'lucide-react'
+import { ChevronRight, Pin } from 'lucide-react'
 import type { HomePresenter, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type RefObject } from 'react'
 import { Avatar } from '@/components/common'
@@ -9,6 +9,7 @@ import { paidText as payersText } from '@/features/groups/GroupsSearchDialog'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
+import { CategoryBadge } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
 interface SectionProps {
@@ -354,14 +355,6 @@ function PendingDot() {
   return <span aria-hidden className="size-[7px] shrink-0 rounded-full bg-orange-500" />
 }
 
-function BillIcon({ className }: { className?: string }) {
-  return (
-    <span aria-hidden className={cn('flex shrink-0 items-center justify-center rounded-lg bg-muted', className)}>
-      <ReceiptText className="size-4" />
-    </span>
-  )
-}
-
 /**
  * "Últimas despesas": the five latest bills you paid or take part in, from every group, the most recent first. A
  * table on the desktop (Despesa, Grupo, Quando, Total, Sua parte), a list below it with the group and the day in the
@@ -402,7 +395,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
                 <tr key={bill.id} onClick={() => open(bill)} className="cursor-pointer hover:bg-accent">
                   <td className="px-4 py-2.5">
                     <span className="flex min-w-0 items-center gap-2.5">
-                      <BillIcon className="size-8" />
+                      <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
                       <span className="flex min-w-0 flex-col">
                         <button
                           onClick={(event) => {
@@ -437,7 +430,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
                   onClick={() => open(bill)}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
                 >
-                  <BillIcon className="size-9" />
+                  <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="truncate font-medium">{bill.description}</span>
                     <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
@@ -459,7 +452,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
         <div aria-hidden className="divide-y border-t">
           {[0, 1, 2].map((index) => (
             <div key={index} className="flex items-center gap-3 px-4 py-3">
-              <Skeleton className="size-8 rounded-lg" />
+              <Skeleton className="size-9 rounded-lg" />
               <span className="flex flex-1 flex-col gap-2">
                 <Skeleton className="h-3 w-2/5" />
                 <Skeleton className="h-2.5 w-1/4" />

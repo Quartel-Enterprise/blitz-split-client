@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -252,8 +252,8 @@ private fun BillDayColumn(
 }
 
 /*
- * Why: a bill: "Mercado", "Viagem Floripa · Você pagou" ("na fila · " while it waits to go up), its total and what it
- * does to your balance. Bills have no category yet, so every one wears the same receipt.
+ * Why: a bill: its category's badge, "Mercado", "Viagem Floripa · Você pagou" ("na fila · " while it waits to go up),
+ * its total and what it does to your balance.
  */
 @Composable
 internal fun HomeBillRow(
@@ -279,21 +279,8 @@ internal fun HomeBillRow(
             horizontalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(if (isCompact) 40.dp else 44.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceContainerHigh,
-                        RoundedCornerShape(if (isCompact) 12.dp else 14.dp),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ReceiptLong,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            // Why: as Despesas draws it (6.1).
+            CategoryBadge(category = bill.category)
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -393,10 +380,11 @@ private fun BillSkeletonColumn() {
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Why: the category badge's size and corners, so the rows don't jump once the bills come down.
                 SkeletonBox(
-                    width = 44.dp,
-                    height = 44.dp,
-                    shape = RoundedCornerShape(14.dp),
+                    width = 40.dp,
+                    height = 40.dp,
+                    shape = RoundedCornerShape(12.dp),
                 )
                 Column(
                     modifier = Modifier.weight(1f),
