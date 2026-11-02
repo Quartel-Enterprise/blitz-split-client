@@ -1,17 +1,19 @@
 package com.quare.blitzsplit.core.groups.domain
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class UpdateGroupUseCaseTest {
@@ -168,6 +170,79 @@ class UpdateGroupUseCaseTest {
         )
     }
 
+    @Test
+    fun `GIVEN a new shape and a photo picked here WHEN editing the group THEN writes both as chosen`() = runTest {
+        // Given
+        prepareScenario()
+        val photo = ProfilePhoto.Pending(byteArrayOf(1, 2, 3))
+
+        // When
+        useCase(
+            groupId = "group-1",
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = GroupShape.CIRCLE,
+            photo = photo,
+            currency = GroupCurrency.BRL,
+        )
+
+        // Then
+        val group = repository.groups.value.single()
+        assertEquals(GroupShape.CIRCLE, group.shape)
+        assertEquals(ProfilePhoto.Pending(byteArrayOf(1, 2, 3)), group.photo)
+    }
+
+    @Test
+    fun `GIVEN the server photo kept WHEN editing the group THEN writes that photo`() = runTest {
+        // Given
+        prepareScenario()
+        val photo = ProfilePhoto.Remote("https://cdn.test/group-photos/group-1/photo.jpg?v=1")
+
+        // When
+        useCase(
+            groupId = "group-1",
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = GroupShape.SQUARE,
+            photo = photo,
+            currency = GroupCurrency.BRL,
+        )
+
+        // Then
+        assertEquals(
+            photo,
+            repository.groups.value
+                .single()
+                .photo,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group with a photo WHEN editing it without one THEN writes no photo`() = runTest {
+        // Given
+        prepareScenario(storedPhoto = ProfilePhoto.Remote("https://cdn.test/group-photos/group-1/photo.jpg?v=1"))
+
+        // When
+        useCase(
+            groupId = "group-1",
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = GroupShape.SQUARE,
+            photo = null,
+            currency = GroupCurrency.BRL,
+        )
+
+        // Then
+        assertNull(
+            repository.groups.value
+                .single()
+                .photo,
+        )
+    }
+
     private val trip = Group(
         id = "group-1",
         name = "Viagem Floripa",
@@ -198,8 +273,11 @@ class UpdateGroupUseCaseTest {
     private fun prepareScenario(
         now: Long = 0L,
         updateGroupError: Throwable? = null,
+        storedPhoto: ProfilePhoto? = null,
     ) {
-        repository = FakeGroupRepository(listOf(trip)).also { it.updateGroupError = updateGroupError }
+        repository = FakeGroupRepository(listOf(trip.copy(photo = storedPhoto))).also {
+            it.updateGroupError = updateGroupError
+        }
         useCase = UpdateGroupUseCase(
             repository = repository,
             currentTimeMillis = { now },

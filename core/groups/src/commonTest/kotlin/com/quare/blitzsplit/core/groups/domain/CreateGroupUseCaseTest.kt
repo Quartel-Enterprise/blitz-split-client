@@ -283,6 +283,28 @@ class CreateGroupUseCaseTest {
         assertTrue(repository.createdGroups.single().isCreatedByMe)
     }
 
+    @Test
+    fun `GIVEN a shape WHEN creating the group THEN stores that shape and no photo`() = runTest {
+        // Given
+        prepareScenario()
+        val shape = GroupShape.PETAL
+
+        // When
+        useCase(
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = shape,
+            currency = GroupCurrency.BRL,
+            members = listOf(me),
+        )
+
+        // Then
+        val created = repository.createdGroups.single()
+        assertEquals(GroupShape.PETAL, created.shape)
+        assertNull(created.photo)
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),
