@@ -51,7 +51,6 @@ fun Navigator.openFromGroupScreen(
         stack.getOrNull(stack.lastIndex - 1) == from
     when {
         top == from || (isUnderItsBill && next == Route.Profile) -> navigate(next)
-
         isUnderItsBill -> replaceTop(next)
     }
 }

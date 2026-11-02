@@ -57,7 +57,7 @@ fun SplitBillScreen(
         }
     }
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
-    BackHandler { viewModel.onEvent(state.backEvent()) }
+    BackHandler { viewModel.onEvent(state.toBackEvent()) }
     /*
      * Why: a new bill on a tabletop splits on the hinge, but Item, Categoria and Nova categoria have no tabletop board
      * of their own: they open as the book draws them, a dialog in a half, over the bill or the items under them.
@@ -155,7 +155,7 @@ fun SplitBillScreen(
     }
     if (opensPagesInHalf && billPages.hasHalfPage) {
         FoldDialog(
-            onDismissRequest = { viewModel.onEvent(state.backEvent()) },
+            onDismissRequest = { viewModel.onEvent(state.toBackEvent()) },
             properties = DialogProperties(
                 dismissOnClickOutside = false,
                 usePlatformDefaultWidth = false,
@@ -237,7 +237,7 @@ fun SplitBillScreen(
 }
 
 // Why: back closes the deepest page over the bill, then the bill; a tabletop's half page closes the same way.
-private fun SplitBillUiState.backEvent(): SplitBillUiEvent = when {
+private fun SplitBillUiState.toBackEvent(): SplitBillUiEvent = when {
     categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
     categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
     itemEditor != null -> SplitBillUiEvent.OnItemDismissed

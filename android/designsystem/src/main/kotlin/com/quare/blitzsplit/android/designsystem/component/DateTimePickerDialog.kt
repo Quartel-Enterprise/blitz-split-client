@@ -41,9 +41,8 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 
+// Why: the picker, and the book's half it needs with FoldDialog's 16dp margin on each side of it.
 private val pickerWidth = 360.dp
-
-// Why: the picker and FoldDialog's 16dp margin on each side of it.
 private val bookHalfMinWidth = pickerWidth + 32.dp
 
 /*
