@@ -3,6 +3,7 @@ import { paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
 import { locale, t, type MessageKey } from '@/i18n'
 import { avatarColorLabel } from '@/lib/avatar'
+import { categoryName } from '@/lib/categories'
 import { formatLongDay, formatShortDate, formatTime, relativeDayOf } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 
@@ -31,6 +32,7 @@ const verbs: Record<string, MessageKey> = {
   member_released: 'activity_memberReleased',
   member_renamed: 'activity_memberRenamed',
   charge_sent: 'activity_chargeSent',
+  comment_added: 'activity_commentAdded',
 }
 
 // Why: these kinds are about the group itself, named by the group rather than by the item's subject.
@@ -47,6 +49,7 @@ const fieldLabels: Record<string, MessageKey> = {
   color: 'activity_fieldColor',
   currency: 'activity_fieldCurrency',
   default_split: 'activity_fieldDefaultSplit',
+  category: 'activity_fieldCategory',
 }
 
 // Why: a bill's SplitMode and a group's DefaultSplitMode, by their codes.
@@ -112,6 +115,7 @@ export function valueText(field: string, value: JsActivityValue): string {
   if (field === 'split' || field === 'default_split') return splitModeLabel(value.code) || '—'
   if (field === 'type' && value.code) return groupTypeLabel(value.code)
   if (field === 'color' && value.code) return avatarColorLabel(value.code)
+  if (field === 'category') return value.category ? categoryName(value.category) : '—'
   if (field === 'payers') {
     const names = [...value.names, ...(value.hasFormerMember ? [t('balance_formerMember')] : [])]
     return names.length > 0 ? formatNames(names) : '—'
@@ -168,6 +172,8 @@ export function detailLine(item: JsActivityItem): string {
       return t('activity_detailMemberReleased')
     case 'charge_sent':
       return t('activity_detailChargeSent', { amount })
+    case 'comment_added':
+      return item.body ? `“${item.body}”` : ''
     default:
       return amount
   }

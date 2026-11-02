@@ -94,23 +94,7 @@ internal fun BillSummaryColumn(
                 fontWeight = FontWeight.Medium,
             )
         }
-        if (state.isPending) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(MaterialTheme.colorScheme.tertiary, CircleShape),
-                )
-                Text(
-                    text = stringResource(R.string.bill_detail_pending),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+        if (state.isPending) PendingLine(stringResource(R.string.bill_detail_pending))
     }
 }
 

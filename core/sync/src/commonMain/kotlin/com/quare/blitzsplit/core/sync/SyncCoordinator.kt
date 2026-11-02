@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.sync
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
@@ -46,6 +47,7 @@ class SyncCoordinator(
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
     private val categoryTermRepository: CategoryTermRepository,
+    private val billCommentRepository: BillCommentRepository,
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
     private val firstDownload: FirstDownload,
@@ -177,6 +179,15 @@ class SyncCoordinator(
         } else {
             Result.success(Unit)
         }
+        // Why: the bills' comments after the bills they are on, which the server needs to take them; never the money's.
+        val commentsSynced = if (groupsSynced.isSuccess) {
+            suspendRunCatching {
+                billCommentRepository.download(userId).getOrThrow()
+                billCommentRepository.uploadPending(userId).getOrThrow()
+            }
+        } else {
+            Result.success(Unit)
+        }
         /*
          * Why: after every push, whose events the server records as they arrive, so the feed comes down with them; up
          * first, so a charge sent here comes back with its place in the feed. A failure fails the sync like the others.
@@ -198,6 +209,7 @@ class SyncCoordinator(
         groupsSynced.getOrThrow()
         memberKeysSynced.getOrThrow()
         pinsSynced.getOrThrow()
+        commentsSynced.getOrThrow()
         activitySynced.getOrThrow()
         hiddenContactsSynced.getOrThrow()
     }
@@ -272,7 +284,7 @@ class SyncCoordinator(
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
      * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions, the hidden
-     * contacts, the pins and the category map's terms makes each new change count, while one going out triggers
+     * contacts, the pins, the category map's terms and the comments makes each new change count, while one going out triggers
      * nothing.
      */
     private suspend fun syncWhenDue() {
@@ -285,6 +297,7 @@ class SyncCoordinator(
             hiddenContactRepository.observeHidden(),
             groupPinRepository.observePinnedGroupIds(),
             categoryTermRepository.observeChanges(),
+            billCommentRepository.observePendingIds(),
         ) { lists -> lists.toList() }
         combine(
             connectivityObserver.observe(),
@@ -341,7 +354,10 @@ class SyncCoordinator(
         combine(
             notificationPreferencesRepository.observeHasPendingChanges(),
             categoryTermRepository.observeHasPendingChanges(),
-        ) { hasPendingPreferences, hasPendingTerms -> hasPendingPreferences || hasPendingTerms },
+            billCommentRepository.observeHasPendingChanges(),
+        ) { hasPendingPreferences, hasPendingTerms, hasPendingComments ->
+            hasPendingPreferences || hasPendingTerms || hasPendingComments
+        },
         groupRepository.observeHasPendingChanges(),
         combine(
             expenseRepository.observeHasPendingChanges(),

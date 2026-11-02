@@ -45,6 +45,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link; the `leave_group` and `delete_group` functions and the `removed_groups` table |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
+| `SupabaseBillCommentRemoteDataSource` | the `bill_comments` table (Postgrest): the comments on the bills of the user's groups |
 | `SupabaseHiddenContactRemoteDataSource` | the `hidden_contacts` table (Postgrest): the people the user hid from Contatos |
 | `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
@@ -123,6 +124,15 @@ suspend fun syncNow(): Result<Unit> {
                 } else {
                     Result.success(Unit)
                 }
+                // The bills' comments after the bills they are on, which never hold the money back either
+                val commentsSynced = if (areGroupsSynced) {
+                    suspendRunCatching {
+                        billCommentRepository.download(userId).getOrThrow()
+                        billCommentRepository.uploadPending(userId).getOrThrow()
+                    }
+                } else {
+                    Result.success(Unit)
+                }
                 offerRecoveryCodeIfDue()
                 signOutIfScheduledAndSynced()
                 keysSynced.getOrThrow()
@@ -130,6 +140,7 @@ suspend fun syncNow(): Result<Unit> {
                 termsSynced.getOrThrow()
                 groupsSynced.getOrThrow()
                 pinsSynced.getOrThrow()
+                commentsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
         }
     } finally {
@@ -305,6 +316,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   (`ownerUserId`, claimed by the first sync, dropped on a switch, cleared on sign out). A null category is a term
   removed and `isDeleted` a change "Restaurar padrão" undid, which stays so its version still wins; the download is
   Last-Write-Wins per word, a newer server row winning even over a change not pushed yet.
+- **Comments** (`:core:expenses`): a bill's comments (`bill_comment`, `bill_comments` on the server, 7.3) are
+  never edited nor deleted, so they have no `updatedAt` and no Last-Write-Wins: a comment written here waits with
+  `pendingSync` and goes up once, inserted with `ignoreDuplicates` (an answer lost on the way goes up again as the same
+  row), in the order written, so a reply never goes up before its comment. They sync in their own step after the bills
+  they are on, down then up, and never hold the money back. Down replaces the device's copy with the server's (which
+  stamps the author) for the bills on the device, and drops a synced comment the server no longer has; the server
+  drops a comment whose bill was deleted meanwhile, and the bill's `ON DELETE CASCADE` takes its comments off the
+  device. Their pending flag joins `observeHasPendingChanges()` and their pending ids `syncWhenDue()`.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 - **Activity** (`:core:activity`): the "Atividade" feed is a log the server writes (`activity_events`, by triggers
@@ -317,9 +336,11 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   then everything older than 90 days goes, and so does what belongs to a group no longer on the device, except its
   `group_deleted`. Older pages come from the server only online, into memory. Changes not up yet ("Aguardando
   envio") are not events: the feed reads them from the pending bills, payments and groups. A user switch or a sign
-  out clears it all.
+  out clears it all. A bill's photos and share link (`attachment_*`, `bill_link_changed`) stay out of the feed and its
+  unread count (`ActivityKind.isInFeed`): only Conta's history shows them, from the device's events about the bill
+  (`observeEventsAbout`) and, online, the server's whole history of it, loaded into memory (`loadEventsAbout`).
 
-A new synced table follows the same shape: `updatedAt` and `pendingSync` columns, an `applyRemote` query with the
+A new synced table follows the same shape (an insert-only one like the comments drops the versions): `updatedAt` and `pendingSync` columns, an `applyRemote` query with the
 same guard, a `markSynced` that compares `updatedAt`, and a pull and push step in `syncNow()`. Its pending flag
 also joins `observeHasPendingChanges()` in `observeState()` and `syncWhenDue()`, or its changes neither show as
 pending nor trigger a sync.

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
+import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
@@ -55,6 +56,8 @@ class ActivityMapperImplTest {
                 fromMemberId = null,
                 toMemberId = null,
                 changes = emptyList(),
+                sharesCount = null,
+                body = null,
                 isPending = false,
             ),
             event,
@@ -128,7 +131,7 @@ class ActivityMapperImplTest {
     @Test
     fun `GIVEN a kind this version does not know WHEN reading it THEN it stays out of the feed`() {
         // Given
-        val entity = entity(kind = "comment_added")
+        val entity = entity(kind = "poll_created")
 
         // When
         val event = mapper.toDomain(entity)
@@ -197,18 +200,29 @@ class ActivityMapperImplTest {
                 ),
                 ActivityChange(
                     field = ActivityField.PAYERS,
-                    before = ActivityValue.none.copy(memberIds = listOf("ana")),
-                    after = ActivityValue.none.copy(memberIds = listOf("ana", "bruno")),
+                    before = ActivityValue.none.copy(
+                        memberIds = listOf("ana"),
+                        memberValues = listOf(ActivityMemberValue("ana", 61_200L)),
+                    ),
+                    after = ActivityValue.none.copy(
+                        memberIds = listOf("ana", "bruno"),
+                        memberValues = listOf(
+                            ActivityMemberValue("ana", 32_100L),
+                            ActivityMemberValue("bruno", 32_100L),
+                        ),
+                    ),
                 ),
                 ActivityChange(
                     field = ActivityField.SPLIT,
                     before = ActivityValue.none.copy(
                         code = "equal",
                         memberIds = listOf("ana"),
+                        memberValues = listOf(ActivityMemberValue("ana", 1L), ActivityMemberValue("bruno", 0L)),
                     ),
                     after = ActivityValue.none.copy(
                         code = "shares",
                         memberIds = listOf("ana", "bruno"),
+                        memberValues = listOf(ActivityMemberValue("ana", 3L), ActivityMemberValue("bruno", 1L)),
                     ),
                 ),
             ),
@@ -275,7 +289,7 @@ class ActivityMapperImplTest {
             kind = "bill_edited",
             data = """
                 {"changes":[
-                  {"field":"category","before":"food","after":"home"},
+                  {"field":"tags","before":"food","after":"home"},
                   {"field":"amount","before":100,"after":200}
                 ]}
             """,
@@ -516,6 +530,212 @@ class ActivityMapperImplTest {
 
         // Then
         assertEquals(ActivityKind.GROUP_EDITED, queued.kind)
+    }
+
+    @Test
+    fun `GIVEN a comment added WHEN reading it THEN keeps its text and the bill it is about`() {
+        // Given
+        val entity = entity(
+            kind = "comment_added",
+            data = """{"actor_name":"Ana","description":"Mercado","body":"Faltou o pão"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(ActivityKind.COMMENT_ADDED, event?.kind)
+        assertEquals("Faltou o pão", event?.body)
+        assertEquals("Mercado", event?.subject)
+        assertEquals("target-1", event?.targetId)
+    }
+
+    @Test
+    fun `GIVEN an event with no comment text WHEN reading it THEN it has no body`() {
+        // Given
+        val entity = entity(
+            kind = "comment_added",
+            data = """{"body":null}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.body)
+    }
+
+    @Test
+    fun `GIVEN a bill split among five WHEN reading it THEN says how many take part`() {
+        // Given
+        val entity = entity(
+            kind = "bill_created",
+            data = """{"description":"Mercado","split_mode":"equal","shares_count":5}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(5, event?.sharesCount)
+        assertEquals("equal", event?.code)
+    }
+
+    @Test
+    fun `GIVEN a photo added to a bill WHEN reading it THEN its code is the attachment kind`() {
+        // Given
+        val entity = entity(
+            kind = "attachment_added",
+            data = """{"description":"Mercado","attachment_kind":"photo"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(ActivityKind.ATTACHMENT_ADDED, event?.kind)
+        assertEquals("photo", event?.code)
+    }
+
+    @Test
+    fun `GIVEN the share link of a bill changed WHEN reading it THEN its code is the visibility`() {
+        // Given
+        val entity = entity(
+            kind = "bill_link_changed",
+            data = """{"description":"Mercado","visibility":"anyone"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(ActivityKind.BILL_LINK_CHANGED, event?.kind)
+        assertEquals("anyone", event?.code)
+    }
+
+    @Test
+    fun `GIVEN a split mode and a visibility WHEN reading the code THEN the split mode wins`() {
+        // Given
+        val entity = entity(
+            kind = "bill_created",
+            data = """{"split_mode":"shares","attachment_kind":"photo","visibility":"members"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("shares", event?.code)
+    }
+
+    @Test
+    fun `GIVEN a photo added whose data has a split mode WHEN reading it THEN its code is the attachment kind`() {
+        // Given
+        val entity = entity(
+            kind = "attachment_added",
+            data = """{"split_mode":"equal","attachment_kind":"receipt"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("receipt", event?.code)
+    }
+
+    @Test
+    fun `GIVEN a link changed whose data has a split mode WHEN reading it THEN its code is the visibility`() {
+        // Given
+        val entity = entity(
+            kind = "bill_link_changed",
+            data = """{"split_mode":"equal","visibility":"anyone"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("anyone", event?.code)
+    }
+
+    @Test
+    fun `GIVEN a bill with no code in its data WHEN reading it THEN has no code nor shares count`() {
+        // Given
+        val entity = entity(
+            kind = "bill_deleted",
+            data = """{"description":"Mercado"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.code)
+        assertNull(event?.sharesCount)
+    }
+
+    @Test
+    fun `GIVEN the category and the link visibility changed WHEN reading the edit THEN reads both as codes`() {
+        // Given
+        val entity = entity(
+            kind = "bill_edited",
+            data = """
+                {"changes":[
+                  {"field":"category","before":null,"after":"food.market"},
+                  {"field":"visibility","before":"members","after":null}
+                ]}
+            """,
+        )
+
+        // When
+        val changes = mapper.toDomain(entity)?.changes
+
+        // Then
+        assertEquals(
+            listOf(
+                ActivityChange(
+                    field = ActivityField.CATEGORY,
+                    before = ActivityValue.none,
+                    after = ActivityValue.none.copy(code = "food.market"),
+                ),
+                ActivityChange(
+                    field = ActivityField.VISIBILITY,
+                    before = ActivityValue.none.copy(code = "members"),
+                    after = ActivityValue.none,
+                ),
+            ),
+            changes,
+        )
+    }
+
+    @Test
+    fun `GIVEN a payer with no amount WHEN reading the payers change THEN names the payer with no value`() {
+        // Given
+        val entity = entity(
+            kind = "bill_edited",
+            data = """
+                {"changes":[
+                  {"field":"payers","before":[{"member_id":"ana"}],
+                   "after":[{"amount_minor":100},{"member_id":"bruno","amount_minor":100}]}
+                ]}
+            """,
+        )
+
+        // When
+        val change = mapper.toDomain(entity)?.changes?.single()
+
+        // Then
+        assertEquals(
+            ActivityChange(
+                field = ActivityField.PAYERS,
+                before = ActivityValue.none.copy(memberIds = listOf("ana")),
+                after = ActivityValue.none.copy(
+                    memberIds = listOf("bruno"),
+                    memberValues = listOf(ActivityMemberValue("bruno", 100L)),
+                ),
+            ),
+            change,
+        )
     }
 
     private fun json(text: String): JsonObject = Json.parseToJsonElement(text).jsonObject

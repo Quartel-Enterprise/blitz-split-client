@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
+import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
@@ -19,6 +20,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextForm
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
+import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -44,21 +46,44 @@ private val groupObjectKinds = setOf(
 @StringRes
 private fun sentenceOf(kind: ActivityKind): Int = when (kind) {
     ActivityKind.BILL_CREATED -> R.string.activity_kind_bill_created
+
     ActivityKind.BILL_EDITED -> R.string.activity_kind_bill_edited
+
     ActivityKind.BILL_DELETED -> R.string.activity_kind_bill_deleted
+
     ActivityKind.PAYMENT_RECORDED -> R.string.activity_kind_payment_recorded
+
     ActivityKind.PAYMENT_UNDONE -> R.string.activity_kind_payment_undone
+
     ActivityKind.GROUP_CREATED -> R.string.activity_kind_group_created
+
     ActivityKind.GROUP_EDITED -> R.string.activity_kind_group_edited
+
     ActivityKind.GROUP_DELETED -> R.string.activity_kind_group_deleted
+
     ActivityKind.INVITE_LINK_CHANGED -> R.string.activity_kind_invite_link_changed
+
     ActivityKind.MEMBER_ADDED -> R.string.activity_kind_member_added
+
     ActivityKind.MEMBER_JOINED -> R.string.activity_kind_member_joined
+
     ActivityKind.MEMBER_LEFT -> R.string.activity_kind_member_left
+
     ActivityKind.MEMBER_REMOVED -> R.string.activity_kind_member_removed
+
     ActivityKind.MEMBER_RELEASED -> R.string.activity_kind_member_released
+
     ActivityKind.MEMBER_RENAMED -> R.string.activity_kind_member_renamed
+
     ActivityKind.CHARGE_SENT -> R.string.activity_kind_charge_sent
+
+    ActivityKind.COMMENT_ADDED -> R.string.activity_kind_comment_added
+
+    // Why: a bill's attachments and share link only make its history (isInFeed), so the feed never draws them.
+    ActivityKind.ATTACHMENT_ADDED,
+    ActivityKind.ATTACHMENT_REMOVED,
+    ActivityKind.BILL_LINK_CHANGED,
+    -> R.string.activity_kind_bill_edited
 }
 
 // Why: what the sentence's second name is: the bill, the group itself, or the member the event is about.
@@ -146,9 +171,15 @@ internal fun detailTextOf(item: ActivityItem): String? {
 
         ActivityKind.CHARGE_SENT -> amount?.let { stringResource(R.string.activity_detail_charge, it) }
 
+        // Why: "“A cerveja que ficou comigo foi do Bruno…”", the comment under "Carla comentou em Jantar".
+        ActivityKind.COMMENT_ADDED -> item.body?.let { stringResource(R.string.activity_detail_comment, it) }
+
         ActivityKind.MEMBER_ADDED,
         ActivityKind.MEMBER_LEFT,
         ActivityKind.MEMBER_REMOVED,
+        ActivityKind.ATTACHMENT_ADDED,
+        ActivityKind.ATTACHMENT_REMOVED,
+        ActivityKind.BILL_LINK_CHANGED,
         -> null
     }
 }
@@ -191,6 +222,8 @@ internal fun fieldLabelOf(field: ActivityField): String = stringResource(
         ActivityField.COLOR -> R.string.activity_field_color
         ActivityField.CURRENCY -> R.string.activity_field_currency
         ActivityField.DEFAULT_SPLIT -> R.string.activity_field_default_split
+        ActivityField.CATEGORY -> R.string.activity_field_category
+        ActivityField.VISIBILITY -> R.string.activity_field_visibility
     },
 )
 
@@ -239,6 +272,17 @@ internal fun changeValueTextOf(
         ActivityField.DEFAULT_SPLIT -> value.code?.let(DefaultSplitMode::fromCodeOrNull)?.let {
             stringResource(it.labelRes)
         }
+
+        // Why: resolved in every group's categories, so a group's own is named too; none is "Outros".
+        ActivityField.CATEGORY -> value.category?.let { categoryName(it) }
+
+        ActivityField.VISIBILITY -> stringResource(
+            when (BillLinkVisibility.fromCodeOrNull(value.code)) {
+                BillLinkVisibility.MEMBERS -> R.string.activity_visibility_members
+                BillLinkVisibility.ANYONE -> R.string.activity_visibility_anyone
+                null -> R.string.activity_visibility_off
+            },
+        )
     } ?: empty
 }
 

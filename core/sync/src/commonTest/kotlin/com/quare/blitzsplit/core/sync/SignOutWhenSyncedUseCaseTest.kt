@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.sync
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -83,6 +84,7 @@ class SignOutWhenSyncedUseCaseTest {
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
                 categoryTermRepository = FakeCategoryTermRepository(),
+                billCommentRepository = FakeBillCommentRepository(),
                 activityRepository = FakeActivityRepository(),
                 hiddenContactRepository = FakeHiddenContactRepository(),
                 firstDownload = FirstDownload(),

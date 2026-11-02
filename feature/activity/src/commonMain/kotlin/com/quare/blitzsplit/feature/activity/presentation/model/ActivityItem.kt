@@ -32,6 +32,8 @@ data class ActivityItem(
     val toName: String?,
     val toIsMe: Boolean,
     val changes: List<ActivityChangeRow>,
+    // Why: what a comment says, cut to what a row shows; null for anything else.
+    val body: String?,
     // Why: saved on this device and not up yet: "Aguardando envio" with the orange dot.
     val isPending: Boolean,
     val isUnread: Boolean,

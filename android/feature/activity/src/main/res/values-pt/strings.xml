@@ -63,6 +63,7 @@
     <string name="activity_kind_member_released">%1$s liberou o nome %2$s</string>
     <string name="activity_kind_member_renamed">%1$s renomeou %2$s</string>
     <string name="activity_kind_charge_sent">%1$s cobrou %2$s</string>
+    <string name="activity_kind_comment_added">%1$s comentou em %2$s</string>
     <string name="activity_detail_amount_split">%1$s · %2$s</string>
     <string name="activity_detail_bill_gone">%s · a conta não existe mais</string>
     <string name="activity_detail_payment">%1$s → %2$s · %3$s · %4$s</string>
@@ -71,6 +72,7 @@
     <string name="activity_detail_link_changed">O link antigo parou de funcionar</string>
     <string name="activity_detail_released">O nome fica livre para alguém entrar</string>
     <string name="activity_detail_charge">%s · mensagem enviada</string>
+    <string name="activity_detail_comment">“%s”</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
     <string name="activity_deleted_notice_bill">%1$s foi apagada por %2$s em %3$s. O registro fica no feed, mas a conta não abre mais.</string>
     <string name="activity_deleted_notice_group">%1$s foi apagado por %2$s em %3$s. O registro fica no feed, mas o grupo não abre mais.</string>
@@ -89,6 +91,11 @@
     <string name="activity_field_color">Cor</string>
     <string name="activity_field_currency">Moeda</string>
     <string name="activity_field_default_split">Divisão padrão</string>
+    <string name="activity_field_category">Categoria</string>
+    <string name="activity_field_visibility">Link</string>
+    <string name="activity_visibility_members">Só quem está na conta</string>
+    <string name="activity_visibility_anyone">Qualquer pessoa com o link</string>
+    <string name="activity_visibility_off">Desativado</string>
     <string name="activity_split_equal">Igual</string>
     <string name="activity_split_amount">Valores</string>
     <string name="activity_split_percent">Porcentagem</string>

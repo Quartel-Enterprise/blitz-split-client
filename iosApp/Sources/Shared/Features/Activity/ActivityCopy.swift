@@ -53,12 +53,15 @@ enum ActivityCopy {
         case .memberReleased:
             return Text("\(who) released the name \(what)", comment: "Activity: the creator released a member's name")
         case .memberRenamed: return Text("\(who) renamed \(what)", comment: "Activity: someone renamed a member")
+        case .commentAdded:
+            return Text("\(who) commented on \(what)", comment: "Activity: someone commented on a bill")
         default: return Text("\(who) sent a request to \(what)", comment: "Activity: someone asked a member to pay")
         }
     }
 
-    /// The line under the headline: "R$ 642,00 · Equal", "Ana → You · R$ 50,00 · Pix", or an edit's first change
-    /// "Amount R$ 612,00 → R$ 642,00 · 2 more changes". Nil when there is nothing more to say.
+    /// The line under the headline: "R$ 642,00 · Equal", "Ana → You · R$ 50,00 · Pix", an edit's first change
+    /// "Amount R$ 612,00 → R$ 642,00 · 2 more changes", or a comment's text in quotes. Nil when there is nothing more
+    /// to say.
     static func detail(_ item: ActivityItem) -> String? {
         if let first = item.changes.first {
             let change = changeLine(first)
@@ -97,6 +100,8 @@ enum ActivityCopy {
             return String(localized: "Whoever joined as \(object(item)) left the group")
         case .memberRenamed:
             return nil
+        case .commentAdded:
+            return item.body.map { "“\($0)”" }
         default:
             return joined([amountText, String(localized: "message sent")])
         }
@@ -140,6 +145,7 @@ enum ActivityCopy {
         if item.isTargetDeleted || item.kind == .billDeleted || item.kind == .groupDeleted { return "trash" }
         switch item.kind {
         case .billCreated, .billEdited: return "banknote"
+        case .commentAdded: return "text.bubble"
         case .paymentRecorded: return "checkmark"
         case .paymentUndone: return "arrow.uturn.backward"
         case .groupCreated: return "plus"
@@ -158,7 +164,7 @@ enum ActivityCopy {
             return (Palette.errorContainer, Palette.onErrorContainer)
         }
         switch item.kind.type {
-        case .bills, .charges: return (Palette.pixTile, Palette.onPixTile)
+        case .bills, .comments, .charges: return (Palette.pixTile, Palette.onPixTile)
         case .payments: return (Palette.infoContainer, Palette.onInfoContainer)
         default: return (Palette.segmentThumb, .primary)
         }
@@ -178,6 +184,8 @@ enum ActivityCopy {
         case .type: String(localized: "Type")
         case .color: String(localized: "Color", comment: "A group's avatar color, in what an edit changed")
         case .currency: String(localized: "Currency")
+        case .category: String(localized: "Category")
+        case .visibility: String(localized: "Link", comment: "Who may open a bill's share link, in what an edit changed")
         default: String(localized: "Default split")
         }
     }
@@ -194,6 +202,13 @@ enum ActivityCopy {
         case .type: value.code.flatMap { GroupType.companion.fromCodeOrNull(code: $0) }?.typeLabel
         case .color: value.code.flatMap { AvatarColor.companion.fromCodeOrNull(code: $0) }?.label
         case .currency: value.code
+        // Resolved in every group's categories, so a group's own is named too; none is "Other"
+        case .category: value.category.map { CategoryCopy.name($0) }
+        case .visibility: value.code.map { code in
+                code == BillLinkVisibility.anyone.code
+                    ? String(localized: "Anyone with the link")
+                    : String(localized: "Only people in the bill")
+            } ?? String(localized: "Off", comment: "A bill's share link, turned off")
         case .defaultSplit: value.code.map { code in
                 DefaultSplitMode.companion.fromCodeOrNull(code: code).map(DefaultSplitCopy.modeLabel) ?? code
             }

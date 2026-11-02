@@ -129,6 +129,8 @@ class MarkAllActivityReadUseCaseTest {
         fromMemberId = null,
         toMemberId = null,
         changes = emptyList(),
+        sharesCount = null,
+        body = null,
         isPending = seq == null,
     )
 

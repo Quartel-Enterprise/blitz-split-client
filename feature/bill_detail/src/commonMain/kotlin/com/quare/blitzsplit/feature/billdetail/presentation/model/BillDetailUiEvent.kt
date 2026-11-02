@@ -16,4 +16,22 @@ sealed interface BillDetailUiEvent : UiEvent {
 
     // Why: "Cancelar" on "Apagar esta conta?", or the dialog closed some other way.
     data object OnDeleteDismissed : BillDetailUiEvent
+
+    data class OnCommentChanged(
+        val text: String,
+    ) : BillDetailUiEvent
+
+    // Why: "Enviar comentário", offline too: it waits in the queue.
+    data object OnSendCommentClicked : BillDetailUiEvent
+
+    // Why: "Responder" under a comment or a reply.
+    data class OnReplyClicked(
+        val commentId: String,
+    ) : BillDetailUiEvent
+
+    // Why: the ✕ of "Respondendo a Diego".
+    data object OnReplyCancelled : BillDetailUiEvent
+
+    // Why: "Desfazer" on the history's latest edit.
+    data object OnUndoClicked : BillDetailUiEvent
 }

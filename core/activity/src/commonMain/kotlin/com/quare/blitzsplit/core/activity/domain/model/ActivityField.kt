@@ -14,6 +14,10 @@ enum class ActivityField(
     COLOR("color"),
     CURRENCY("currency"),
     DEFAULT_SPLIT("default_split"),
+    CATEGORY("category"),
+
+    // Why: who may open a bill's share link (7.3e), "members" or "anyone"; null once it was turned off.
+    VISIBILITY("visibility"),
     ;
 
     companion object {

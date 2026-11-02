@@ -25,6 +25,8 @@ fun BillDetailScreen(
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             BillDetailUiAction.ShowDeleteError -> R.string.bill_detail_delete_error
+            BillDetailUiAction.ShowCommentError -> R.string.bill_detail_comment_error
+            BillDetailUiAction.ShowUndoError -> R.string.bill_detail_undo_error
         }
     }
     BackHandler { viewModel.onEvent(BillDetailUiEvent.OnBackClicked) }

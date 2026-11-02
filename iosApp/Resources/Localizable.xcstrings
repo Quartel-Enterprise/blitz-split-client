@@ -49,6 +49,215 @@
         }
       }
     },
+    "%@ attached %lld photos" : {
+      "comment" : "Bill history: photos added in a row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ anexou %2$lld fotos"
+          }
+        }
+      }
+    },
+    "%@ attached a photo" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ anexou uma foto"
+          }
+        }
+      }
+    },
+    "%@ attached the receipt" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ anexou o cupom fiscal"
+          }
+        }
+      }
+    },
+    "%@ changed the amount" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mudou o valor"
+          }
+        }
+      }
+    },
+    "%@ changed the category" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ trocou a categoria"
+          }
+        }
+      }
+    },
+    "%@ changed the date" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mudou a data"
+          }
+        }
+      }
+    },
+    "%@ changed the description" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mudou a descrição"
+          }
+        }
+      }
+    },
+    "%@ changed the split" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mudou a divisão"
+          }
+        }
+      }
+    },
+    "%@ changed who paid" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ mudou quem pagou"
+          }
+        }
+      }
+    },
+    "%@ commented on %@" : {
+      "comment" : "Activity: someone commented on a bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ comentou em %2$@"
+          }
+        }
+      }
+    },
+    "%@ created the bill" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ criou a conta"
+          }
+        }
+      }
+    },
+    "%@ created the bill offline" : {
+      "comment" : "Bill history: created and not up yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ criou a conta sem internet"
+          }
+        }
+      }
+    },
+    "%@ edited the bill" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ editou a conta"
+          }
+        }
+      }
+    },
+    "%@ edited the bill offline" : {
+      "comment" : "Bill history: edited and not up yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ editou a conta sem internet"
+          }
+        }
+      }
+    },
+    "%@ made the link only for people in the bill" : {
+      "comment" : "Bill history: the share link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ deixou o link só para quem está na conta"
+          }
+        }
+      }
+    },
+    "%@ removed a photo" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ tirou uma foto"
+          }
+        }
+      }
+    },
+    "%@ removed the receipt" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ tirou o cupom fiscal"
+          }
+        }
+      }
+    },
+    "%@ turned off the link" : {
+      "comment" : "Bill history: the share link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ desativou o link"
+          }
+        }
+      }
+    },
+    "%@ turned on the link for anyone" : {
+      "comment" : "Bill history: the share link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ativou o link para qualquer pessoa"
+          }
+        }
+      }
+    },
     "After" : {
       "comment" : "The Mac's table of what an edit changed",
       "localizations" : {
@@ -214,6 +423,17 @@
         }
       }
     },
+    "Anyone with the link" : {
+      "comment" : "Who may open a bill's share link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa com o link"
+          }
+        }
+      }
+    },
     "Before" : {
       "comment" : "The Mac's table of what an edit changed",
       "localizations" : {
@@ -221,6 +441,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Antes"
+          }
+        }
+      }
+    },
+    "Bill" : {
+      "comment" : "The narrow Mac sheet's segment with the bill itself",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta"
           }
         }
       }
@@ -258,6 +489,17 @@
         }
       }
     },
+    "Cancel reply" : {
+      "comment" : "Closes \"Replying to\" over the bill's comment field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar resposta"
+          }
+        }
+      }
+    },
     "Changes in %@" : {
       "comment" : "The changes of an edited bill in Activity, for VoiceOver",
       "localizations" : {
@@ -287,6 +529,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cor"
+          }
+        }
+      }
+    },
+    "Comment" : {
+      "comment" : "The bill's comment field, for a screen reader",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comentário"
           }
         }
       }
@@ -408,6 +661,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ · todos acertaram em %2$@"
+          }
+        }
+      }
+    },
+    "Couldn't send the comment. Try again." : {
+      "comment" : "The bill's comment couldn't be kept on the device",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para enviar o comentário. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't undo. Try again." : {
+      "comment" : "Undo on the bill's history failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para desfazer. Tente de novo."
           }
         }
       }
@@ -810,6 +1085,17 @@
         }
       }
     },
+    "History" : {
+      "comment" : "The bill's history section",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Histórico"
+          }
+        }
+      }
+    },
     "Item details show up here." : {
       "comment" : "The column beside Activity's list with no item yet",
       "localizations" : {
@@ -850,6 +1136,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ saiu de %2$@"
+          }
+        }
+      }
+    },
+    "Link" : {
+      "comment" : "Who may open a bill's share link, in what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
           }
         }
       }
@@ -1024,6 +1321,17 @@
         }
       }
     },
+    "No comments yet. Ask or agree on something about this bill." : {
+      "comment" : "The bill's comments while there is none",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum comentário ainda. Pergunte ou combine algo sobre esta conta."
+          }
+        }
+      }
+    },
     "Nothing here yet" : {
       "comment" : "Activity with nothing in it",
       "localizations" : {
@@ -1042,6 +1350,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nada com esses filtros"
+          }
+        }
+      }
+    },
+    "Off" : {
+      "comment" : "A bill's share link, turned off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativado"
+          }
+        }
+      }
+    },
+    "Offline. Comments and photos wait in the queue and go up once you're back online." : {
+      "comment" : "The bill's offline banner",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem internet. Comentários e fotos ficam na fila e saem ao reconectar."
           }
         }
       }
@@ -1068,6 +1398,17 @@
         }
       }
     },
+    "Only people in the bill" : {
+      "comment" : "Who may open a bill's share link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só quem está na conta"
+          }
+        }
+      }
+    },
     "Open bill" : {
       "comment" : "Opens the bill of an Activity item",
       "localizations" : {
@@ -1086,6 +1427,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir grupo"
+          }
+        }
+      }
+    },
+    "out" : {
+      "comment" : "Bill history: someone not in the split on that side",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fora"
           }
         }
       }
@@ -1134,6 +1486,28 @@
         }
       }
     },
+    "Queued" : {
+      "comment" : "A history line done offline and not up yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na fila"
+          }
+        }
+      }
+    },
+    "Queued · goes up once you're back online" : {
+      "comment" : "A comment saved on this device and not on the server yet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na fila · sai ao reconectar"
+          }
+        }
+      }
+    },
     "Remove filter %@" : {
       "comment" : "Removes one of Activity's filters",
       "localizations" : {
@@ -1163,6 +1537,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ renomeou %2$@"
+          }
+        }
+      }
+    },
+    "Reply" : {
+      "comment" : "Answers a comment on the bill",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Responder"
+          }
+        }
+      }
+    },
+    "Replying to %@" : {
+      "comment" : "Over the bill's comment field while answering someone",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respondendo a %@"
+          }
+        }
+      }
+    },
+    "Replying to you" : {
+      "comment" : "Over the bill's comment field while answering your own comment",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respondendo a você"
           }
         }
       }
@@ -1333,6 +1740,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$lld termos com “%2$@”"
+          }
+        }
+      }
+    },
+    "Send comment" : {
+      "comment" : "The bill's comment send button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar comentário"
           }
         }
       }
@@ -1572,6 +1990,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não lida"
+          }
+        }
+      }
+    },
+    "Via link" : {
+      "comment" : "A comment written through the bill's open link, by someone out of the group",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelo link"
           }
         }
       }
@@ -3747,6 +4176,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Palavra ou frase"
+          }
+        }
+      }
+    },
+    "Write a comment" : {
+      "comment" : "The placeholder of the bill's comment field",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escreva um comentário"
           }
         }
       }

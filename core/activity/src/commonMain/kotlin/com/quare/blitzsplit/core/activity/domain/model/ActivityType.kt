@@ -5,7 +5,7 @@ enum class ActivityType {
     BILLS,
     PAYMENTS,
 
-    // Why: in the filter already, though nothing makes a comment yet (bills have no comments).
+    // Why: a bill's comments (7.3).
     COMMENTS,
     PEOPLE_AND_GROUPS,
     CHARGES,

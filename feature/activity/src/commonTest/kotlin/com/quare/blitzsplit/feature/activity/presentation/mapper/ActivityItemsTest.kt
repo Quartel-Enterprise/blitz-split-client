@@ -10,6 +10,10 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityTargets
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
 import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.model.QueuedChange
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -701,6 +705,10 @@ class ActivityItemsTest {
                 ActivityKind.MEMBER_RELEASED to ActivityTarget.MEMBERS,
                 ActivityKind.MEMBER_RENAMED to ActivityTarget.MEMBERS,
                 ActivityKind.CHARGE_SENT to ActivityTarget.BALANCES,
+                ActivityKind.COMMENT_ADDED to ActivityTarget.BILL,
+                ActivityKind.ATTACHMENT_ADDED to ActivityTarget.BILL,
+                ActivityKind.ATTACHMENT_REMOVED to ActivityTarget.BILL,
+                ActivityKind.BILL_LINK_CHANGED to ActivityTarget.BILL,
             ),
             targets,
         )
@@ -745,6 +753,47 @@ class ActivityItemsTest {
 
         // Then
         assertEquals(setOf("user:ana", "name:carla"), personKeys)
+    }
+
+    @Test
+    fun `GIVEN a bill moved to a category of its group WHEN building the feed THEN names it from the group`() {
+        // Given
+        val beach = GroupCategory(
+            id = "category-beach",
+            groupId = FLORIPA,
+            parentId = null,
+            name = "Praia",
+            icon = CategoryIcon.SUN,
+            createdByMemberId = null,
+            isDeleted = false,
+            isPending = false,
+        )
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "edit",
+                    kind = ActivityKind.BILL_EDITED,
+                    groupId = FLORIPA,
+                    changes = listOf(
+                        ActivityChange(
+                            field = ActivityField.CATEGORY,
+                            before = ActivityValue.none,
+                            after = ActivityValue.none.copy(code = beach.id),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val change = entriesOf(feed, groups, CategoryTree.ofGroups(listOf(beach)))
+            .single()
+            .item.changes
+            .single()
+
+        // Then
+        assertEquals(AppCategory.OTHER, change.before.category?.app)
+        assertEquals("Praia", change.after.category?.name)
     }
 
     @Test
@@ -1058,6 +1107,12 @@ class ActivityItemsTest {
         updatedAt = 0L,
     )
 
+    // Why: the app's categories only, for the cases that don't name one.
+    private fun entriesOf(
+        feed: ActivityFeed,
+        groups: List<Group>,
+    ): List<FeedEntry> = entriesOf(feed, groups, CategoryTree.appOnly)
+
     private fun feed(
         events: List<ActivityEvent> = emptyList(),
         queued: List<QueuedChange> = emptyList(),
@@ -1112,6 +1167,8 @@ class ActivityItemsTest {
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
         changes = changes,
+        sharesCount = null,
+        body = null,
         isPending = false,
     )
 
@@ -1168,6 +1225,7 @@ class ActivityItemsTest {
         code = null,
         names = names,
         hasFormerMember = hasFormerMember,
+        category = null,
     )
 
     private fun item(

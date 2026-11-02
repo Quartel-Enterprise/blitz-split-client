@@ -10,6 +10,8 @@ data class ActivityValue(
     val millis: Long?,
     val code: String?,
     val memberIds: List<String>,
+    // Why: what each member's entry holds: a payer's amount, or the weight of a part of the split, to undo an edit.
+    val memberValues: List<ActivityMemberValue>,
 ) {
     companion object {
         val none: ActivityValue = ActivityValue(
@@ -18,6 +20,7 @@ data class ActivityValue(
             millis = null,
             code = null,
             memberIds = emptyList(),
+            memberValues = emptyList(),
         )
     }
 }

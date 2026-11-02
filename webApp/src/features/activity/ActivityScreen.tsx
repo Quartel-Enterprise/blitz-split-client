@@ -1,4 +1,4 @@
-import { CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
+import { CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -218,7 +218,8 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
         <ActorFace item={item} className="size-8 text-xs" badgeClassName="size-4 [&>svg]:size-2.5" />
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <HeadlineLine item={item} className="text-sm leading-5" />
-          <span className={cn('text-[13px] leading-[18px] text-muted-foreground', isWide ? 'line-clamp-1' : 'line-clamp-2')}>{detailLine(item)}</span>
+          {/* Why: a comment's quoted text keeps its two lines on the desktop too. */}
+          <span className={cn('text-[13px] leading-[18px] text-muted-foreground', isWide && item.kind !== 'comment_added' ? 'line-clamp-1' : 'line-clamp-2')}>{detailLine(item)}</span>
           <ItemMeta item={item} />
         </span>
         {item.isUnread && (
@@ -328,6 +329,8 @@ function kindIcon(item: JsActivityItem): ReactNode {
       return <UserRound />
     case 'charge_sent':
       return <Send />
+    case 'comment_added':
+      return <MessageSquare />
     default:
       return <Receipt />
   }

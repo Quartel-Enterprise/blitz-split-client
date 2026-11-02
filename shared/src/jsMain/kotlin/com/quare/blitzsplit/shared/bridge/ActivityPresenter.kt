@@ -35,6 +35,8 @@ class JsActivityValue(
     val names: Array<String>,
     // Why: someone no longer in the group, whom the page writes "Ex-membro".
     val hasFormerMember: Boolean,
+    // Why: a bill's category, resolved in every group's categories (Outros for none); null for any other field.
+    val category: JsCategory?,
 )
 
 class JsActivityChange(
@@ -85,6 +87,8 @@ class JsActivityItem(
     val toName: String?,
     val toIsMe: Boolean,
     val changes: Array<JsActivityChange>,
+    // Why: what a comment says, cut to what a row shows.
+    val body: String?,
     val moreChangesCount: Int,
     val hasChangesToShow: Boolean,
     val isPending: Boolean,
@@ -375,6 +379,7 @@ private fun toJsActivityValue(value: ActivityChangeValue): JsActivityValue = JsA
     code = value.code,
     names = value.names.toTypedArray(),
     hasFormerMember = value.hasFormerMember,
+    category = value.category?.let(::toJsCategory),
 )
 
 private fun toJsActivityChange(change: ActivityChangeRow): JsActivityChange = JsActivityChange(
@@ -413,6 +418,7 @@ private fun toJsActivityItem(
     toName = item.toName,
     toIsMe = item.toIsMe,
     changes = item.changes.map(::toJsActivityChange).toTypedArray(),
+    body = item.body,
     moreChangesCount = item.moreChangesCount,
     hasChangesToShow = item.hasChangesToShow,
     isPending = item.isPending,

@@ -1,6 +1,6 @@
 import { Pencil, Trash2, X } from 'lucide-react'
 import { BillDetailPresenter, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -8,36 +8,38 @@ import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t, type MessageKey } from '@/i18n'
+import { t } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
+import { BillComments, CommentComposer } from './BillComments'
 import { BillDeleteDialog } from './BillDeleteDialog'
+import { BillHistory } from './BillHistory'
+import { splitTitles } from './billHistoryText'
 
 type Money = (minor: number) => string
-
-// Why: the split's header names its mode with how many are in it.
-const splitTitles: Record<string, MessageKey> = {
-  equal: 'billDetail_splitEqual',
-  amount: 'billDetail_splitAmount',
-  percent: 'billDetail_splitPercent',
-  shares: 'billDetail_splitShares',
-  items: 'billDetail_splitItems',
-}
 
 /**
  * "Conta", a bill of the group: a side panel over Despesas do grupo (which stays mounted under it) on desktop and
  * tablet, a drawer on the phone. Editar opens Editar conta in its place, so the panel closes while it is `isCovered`
  * and keeps its presenter, coming back as it was when Editar conta closes. Closing it any way is the ViewModel's back.
+ *
+ * The bill comes first, then Comentários and Histórico, with the composer pinned under them: from the desktop the
+ * 880 px panel puts the bill on the left and the conversation on the right, each scrolling on its own; the tablet's
+ * 560 px panel and the phone's drawer scroll it all in one column over the composer.
  */
 export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovered: boolean }) {
   const presenter = usePresenter(() => new BillDetailPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsBillDetailState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  const isWide = useMediaQuery('(min-width: 1024px)')
+  const composerRef = useRef<HTMLTextAreaElement>(null)
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'delete-error') toast(t('billDetail_deleteError'))
+    if (action === 'comment-error') toast(t('billDetail_commentError'))
+    if (action === 'undo-error') toast(t('billDetail_undoError'))
   })
   if (!presenter || !state?.isLoaded) return null
 
@@ -45,7 +47,24 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.back()
   }
+  // Why: "Responder" leaves the person typing the reply.
+  const onReply = (commentId: string) => {
+    presenter.reply(commentId)
+    composerRef.current?.focus()
+  }
   const actions = <BillActions presenter={presenter} state={state} />
+  const offline = !state.isOnline && (
+    <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-[13px] leading-[18px] text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
+      {t('billDetail_offline')}
+    </p>
+  )
+  const conversation = (
+    <>
+      <BillComments state={state} onReply={onReply} />
+      <BillHistory history={state.history} isUndoing={state.isUndoing} money={money} onUndo={() => presenter.undo()} />
+    </>
+  )
+  const composer = (className: string) => <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className={className} />
   const deletion = state.deletion && (
     <BillDeleteDialog
       deletion={state.deletion}
@@ -56,27 +75,54 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     />
   )
 
-  return isDesktop ? (
-    <>
-      <Sheet open={!isCovered} onOpenChange={onOpenChange}>
-        <SheetContent side="right" showCloseButton={false} className="w-full gap-0 sm:max-w-[560px] lg:max-w-[880px]">
-          <header className="flex h-14 shrink-0 items-center gap-1 border-b pr-3 pl-6">
-            <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
-            {actions}
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon-sm" aria-label={t('common_close')} className="text-muted-foreground">
-                <X />
-              </Button>
-            </SheetClose>
-          </header>
-          <div className="flex-1 overflow-y-auto p-6">
-            <BillBody state={state} money={money} title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>} description={<SheetDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</SheetDescription>} />
-          </div>
-        </SheetContent>
-      </Sheet>
-      {deletion}
-    </>
-  ) : (
+  if (isDesktop) {
+    const body = (
+      <BillBody
+        state={state}
+        money={money}
+        title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>}
+        description={<SheetDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</SheetDescription>}
+      />
+    )
+    return (
+      <>
+        <Sheet open={!isCovered} onOpenChange={onOpenChange}>
+          <SheetContent side="right" showCloseButton={false} className="w-full gap-0 sm:max-w-[560px] lg:max-w-[880px]">
+            <header className="flex h-14 shrink-0 items-center gap-1 border-b pr-3 pl-6">
+              <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
+              {actions}
+              <SheetClose asChild>
+                <Button variant="ghost" size="icon-sm" aria-label={t('common_close')} className="text-muted-foreground">
+                  <X />
+                </Button>
+              </SheetClose>
+            </header>
+            {offline && <div className="shrink-0 px-6 pt-4">{offline}</div>}
+            {isWide ? (
+              <div className="grid min-h-0 flex-1 grid-cols-2 gap-8 px-6">
+                <div className="min-w-0 overflow-y-auto py-6">{body}</div>
+                <div className="flex min-h-0 min-w-0 flex-col">
+                  <div className="flex flex-1 flex-col gap-6 overflow-y-auto py-6">{conversation}</div>
+                  {composer('shrink-0 border-t pt-3 pb-6')}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6">
+                  {body}
+                  {conversation}
+                </div>
+                {composer('shrink-0 border-t px-6 pt-3 pb-6')}
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
+        {deletion}
+      </>
+    )
+  }
+
+  return (
     <>
       <Drawer open={!isCovered} onOpenChange={onOpenChange} repositionInputs={false}>
         <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
@@ -84,9 +130,18 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
             <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
             {actions}
           </DrawerHeader>
-          <div className="overflow-y-auto p-4 pb-6">
-            <BillBody state={state} money={money} title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>} description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>} />
+          <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-4 pb-6">
+            {offline}
+            <BillBody
+              state={state}
+              money={money}
+              title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
+              description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>}
+            />
+            {conversation}
           </div>
+          {/* Why: on the phone the composer stays at the bottom, the bill and the conversation scrolling above it. */}
+          {composer('shrink-0 border-t px-4 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]')}
         </DrawerContent>
       </Drawer>
       {deletion}
@@ -113,15 +168,12 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
   )
 }
 
-/**
- * The bill: what, when, how much and who paid, "Sua parte" for someone in it, and each person's part. The panel's
- * two columns put the split beside the summary on desktop, one under the other below that.
- */
+/** The bill: what, when, how much and who paid, "Sua parte" for someone in it, and each person's part. */
 function BillBody({ state, money, title, description }: { state: JsBillDetailState; money: Money; title: ReactNode; description: ReactNode }) {
   const paid = paidText(state.payers)
   const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
   return (
-    <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+    <div className="flex flex-col gap-6">
       <div className="flex min-w-0 flex-col gap-5">
         <div className="flex items-center gap-3">
           <CategoryBadge category={state.category} />

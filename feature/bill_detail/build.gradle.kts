@@ -10,15 +10,18 @@ kotlin {
             api(projects.core.navigation)
             api(projects.core.expenses)
             implementation(projects.core.groups)
+            implementation(projects.core.activity)
             implementation(projects.core.utils)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)
+            implementation(libs.quare.connectivity)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.groups.testing)
             implementation(projects.core.expenses.testing)
+            implementation(projects.core.activity.testing)
         }
     }
 }

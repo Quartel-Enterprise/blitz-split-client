@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.core.activity.data
 
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.data.datasource.ActivityLocalDataSource
 import com.quare.blitzsplit.core.activity.data.datasource.ActivityRemoteDataSource
 import com.quare.blitzsplit.core.activity.data.dto.ActivityEventDto
@@ -12,6 +14,9 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ActivityReadState
 import com.quare.blitzsplit.core.activity.domain.model.ActivityTargets
 import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityUnreadCountUseCase
+import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.QueuedBillRow
@@ -23,7 +28,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -53,7 +59,7 @@ class ActivityRepositoryImplTest {
                 entity(
                     id = "comment",
                     seq = 1L,
-                    kind = "comment_added",
+                    kind = "poll_created",
                 ),
             ),
         )
@@ -425,7 +431,7 @@ class ActivityRepositoryImplTest {
             dto(
                 id = "unknown",
                 seq = 98L,
-                kind = "comment_added",
+                kind = "poll_created",
             ),
         )
 
@@ -868,6 +874,392 @@ class ActivityRepositoryImplTest {
         assertTrue(repository.observeHasOlder().first())
     }
 
+    @Test
+    fun `GIVEN photos and a share link change on the device WHEN observing the feed THEN leaves them out`() = runTest {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(
+                entity(
+                    id = "comment",
+                    seq = 5L,
+                    kind = "comment_added",
+                ),
+                entity(
+                    id = "link",
+                    seq = 4L,
+                    kind = "bill_link_changed",
+                ),
+                entity(
+                    id = "photo-removed",
+                    seq = 3L,
+                    kind = "attachment_removed",
+                ),
+                entity(
+                    id = "photo-added",
+                    seq = 2L,
+                    kind = "attachment_added",
+                ),
+                entity(
+                    id = "bill",
+                    seq = 1L,
+                ),
+            ),
+        )
+
+        // When
+        val events = repository.observeEvents().first()
+
+        // Then
+        assertEquals(listOf("comment", "bill"), events.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN an older page with a photo added WHEN loading it THEN the feed leaves the photo out`() = runTest {
+        // Given
+        prepareScenario(storedEvents = listOf(entity(seq = 100L)))
+        remote.olderPages += listOf(
+            dto(
+                id = "photo",
+                seq = 99L,
+                kind = "attachment_added",
+            ),
+            dto(
+                id = "older-bill",
+                seq = 98L,
+            ),
+        )
+
+        // When
+        repository.loadOlder()
+
+        // Then
+        assertEquals(listOf(EVENT_ID, "older-bill"), repository.observeEvents().first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a photo and a share link changed by someone else WHEN counting unread THEN neither counts`() = runTest {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(
+                entity(
+                    id = "comment",
+                    seq = 3L,
+                    kind = "comment_added",
+                ),
+                entity(
+                    id = "photo",
+                    seq = 2L,
+                    kind = "attachment_added",
+                ),
+                entity(
+                    id = "link",
+                    seq = 1L,
+                    kind = "bill_link_changed",
+                ),
+            ),
+        )
+        val unreadCount = ObserveActivityUnreadCountUseCase(
+            repository = repository,
+            observeAccountStatus = ObserveAccountStatusUseCase(
+                FakeAccountRepository(
+                    initialStatus = AccountStatus.Connected(
+                        FakeAccountRepository.CONNECTED_USER_ID,
+                        AccountProvider.GOOGLE,
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val count = unreadCount().first()
+
+        // Then
+        assertEquals(1, count)
+    }
+
+    @Test
+    fun `GIVEN events about two bills on the device WHEN observing one history THEN gives its own newest first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    entity(
+                        id = "created",
+                        seq = 1L,
+                        occurredAt = 1_000L,
+                    ),
+                    entity(
+                        id = "other-bill",
+                        seq = 2L,
+                        targetId = "bill-2",
+                        occurredAt = 2_000L,
+                    ),
+                    entity(
+                        id = "photo",
+                        seq = 3L,
+                        kind = "attachment_added",
+                        occurredAt = 3_000L,
+                    ),
+                    entity(
+                        id = "comment",
+                        seq = 4L,
+                        kind = "comment_added",
+                        occurredAt = 4_000L,
+                    ),
+                ),
+            )
+
+            // When
+            val history = repository.observeEventsAbout(BILL_ID).first()
+
+            // Then
+            assertEquals(listOf("comment", "photo", "created"), history.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the server history of a bill WHEN loading it THEN asks for that bill and adds the older events`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    entity(
+                        id = "edited",
+                        seq = 300L,
+                        occurredAt = ninetyDaysAgo + 5_000L,
+                    ),
+                ),
+            )
+            remote.eventsAbout = listOf(
+                dto(
+                    id = "photo",
+                    seq = 20L,
+                    kind = "attachment_added",
+                    occurredAt = 2_000L,
+                ),
+                dto(
+                    id = "created",
+                    seq = 10L,
+                    occurredAt = 1_000L,
+                ),
+            )
+
+            // When
+            val result = repository.loadEventsAbout(BILL_ID)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(BILL_ID), remote.aboutCalls)
+            assertEquals(
+                listOf("edited", "photo", "created"),
+                repository.observeEventsAbout(BILL_ID).first().map { it.id },
+            )
+        }
+
+    @Test
+    fun `GIVEN an event on the device and in the loaded history WHEN observing it THEN shows the device copy once`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(
+                    entity(
+                        seq = 7L,
+                        data = """{"description":"Mercado e feira"}""",
+                    ),
+                ),
+            )
+            remote.eventsAbout = listOf(
+                dto(
+                    seq = 7L,
+                    data = """{"description":"Mercado"}""",
+                ),
+            )
+
+            // When
+            repository.loadEventsAbout(BILL_ID)
+
+            // Then
+            val history = repository.observeEventsAbout(BILL_ID).first()
+            assertEquals(listOf(EVENT_ID), history.map { it.id })
+            assertEquals("Mercado e feira", history.single().subject)
+        }
+
+    @Test
+    fun `GIVEN a loaded history WHEN a sync brings one of its events to the device THEN shows it once`() = runTest {
+        // Given
+        prepareScenario()
+        remote.eventsAbout = listOf(dto(seq = 7L))
+        repository.loadEventsAbout(BILL_ID)
+
+        // When
+        local.events.value = listOf(entity(seq = 7L))
+
+        // Then
+        assertEquals(listOf(EVENT_ID), repository.observeEventsAbout(BILL_ID).first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN events at the same moment WHEN observing the history THEN the later seq comes first`() = runTest {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(
+                entity(
+                    id = "device-earlier",
+                    seq = 11L,
+                    occurredAt = 5_000L,
+                ),
+            ),
+        )
+        remote.eventsAbout = listOf(
+            dto(
+                id = "loaded-later",
+                seq = 12L,
+                occurredAt = 5_000L,
+            ),
+            dto(
+                id = "loaded-earliest",
+                seq = 10L,
+                occurredAt = 5_000L,
+            ),
+        )
+
+        // When
+        repository.loadEventsAbout(BILL_ID)
+
+        // Then
+        assertEquals(
+            listOf("loaded-later", "device-earlier", "loaded-earliest"),
+            repository.observeEventsAbout(BILL_ID).first().map { it.id },
+        )
+    }
+
+    @Test
+    fun `GIVEN no connection WHEN loading a bill history THEN fails and shows what the device keeps`() = runTest {
+        // Given
+        prepareScenario(storedEvents = listOf(entity(seq = 7L)))
+        remote.error = IllegalStateException("no connection")
+
+        // When
+        val result = repository.loadEventsAbout(BILL_ID)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(EVENT_ID), repository.observeEventsAbout(BILL_ID).first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a history loaded WHEN loading it again fails THEN keeps what was loaded`() = runTest {
+        // Given
+        prepareScenario()
+        remote.eventsAbout = listOf(dto(seq = 7L))
+        repository.loadEventsAbout(BILL_ID)
+        remote.error = IllegalStateException("no connection")
+
+        // When
+        val result = repository.loadEventsAbout(BILL_ID)
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(listOf(EVENT_ID), repository.observeEventsAbout(BILL_ID).first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN the history of one bill loaded WHEN observing another bill THEN shows none of it`() = runTest {
+        // Given
+        prepareScenario()
+        remote.eventsAbout = listOf(dto(seq = 7L))
+        repository.loadEventsAbout(BILL_ID)
+
+        // When
+        val history = repository.observeEventsAbout("bill-2").first()
+
+        // Then
+        assertTrue(history.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a loaded history with a kind unknown WHEN observing it THEN leaves that event out`() = runTest {
+        // Given
+        prepareScenario()
+        remote.eventsAbout = listOf(
+            dto(
+                id = "known",
+                seq = 8L,
+            ),
+            dto(
+                id = "unknown",
+                seq = 7L,
+                kind = "poll_created",
+            ),
+        )
+
+        // When
+        repository.loadEventsAbout(BILL_ID)
+
+        // Then
+        assertEquals(listOf("known"), repository.observeEventsAbout(BILL_ID).first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a bill history loaded WHEN observing the feed THEN the feed does not show it`() = runTest {
+        // Given
+        prepareScenario(storedEvents = listOf(entity(seq = 100L)))
+        remote.eventsAbout = listOf(
+            dto(
+                id = "old-created",
+                seq = 10L,
+            ),
+        )
+        repository.loadEventsAbout(BILL_ID)
+
+        // When
+        val feed = repository.observeEvents().first()
+
+        // Then
+        assertEquals(listOf(EVENT_ID), feed.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a bill history of another account loaded WHEN downloading the user feed THEN forgets it`() = runTest {
+        // Given
+        prepareScenario(storedState = state(ownerUserId = "other-user"))
+        remote.eventsAbout = listOf(dto(seq = 7L))
+        repository.loadEventsAbout(BILL_ID)
+
+        // When
+        repository.downloadActivity(USER_ID)
+
+        // Then
+        assertTrue(repository.observeEventsAbout(BILL_ID).first().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a bill history of the same account loaded WHEN downloading THEN keeps it`() = runTest {
+        // Given
+        prepareScenario(storedState = state(ownerUserId = USER_ID))
+        remote.eventsAbout = listOf(dto(seq = 7L))
+        repository.loadEventsAbout(BILL_ID)
+
+        // When
+        repository.downloadActivity(USER_ID)
+
+        // Then
+        assertEquals(listOf(EVENT_ID), repository.observeEventsAbout(BILL_ID).first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN a bill history loaded WHEN clearing THEN forgets it`() = runTest {
+        // Given
+        prepareScenario()
+        remote.eventsAbout = listOf(dto(seq = 7L))
+        repository.loadEventsAbout(BILL_ID)
+
+        // When
+        repository.clear()
+
+        // Then
+        assertTrue(repository.observeEventsAbout(BILL_ID).first().isEmpty())
+    }
+
     private fun page(
         from: Long,
         size: Int,
@@ -884,6 +1276,8 @@ class ActivityRepositoryImplTest {
         seq: Long,
         kind: String = "bill_created",
         groupId: String = GROUP_ID,
+        occurredAt: Long = now - 1_000L,
+        data: String = "{}",
     ): ActivityEventDto = ActivityEventDto(
         id = id,
         seq = seq,
@@ -891,9 +1285,9 @@ class ActivityRepositoryImplTest {
         kind = kind,
         actorUserId = "ana-user",
         actorMemberId = "ana",
-        targetId = "bill-1",
-        occurredAt = now - 1_000L,
-        data = JsonObject(emptyMap()),
+        targetId = BILL_ID,
+        occurredAt = occurredAt,
+        data = Json.parseToJsonElement(data).jsonObject,
     )
 
     private fun entity(
@@ -902,6 +1296,9 @@ class ActivityRepositoryImplTest {
         kind: String = "bill_created",
         actorUserId: String? = "ana-user",
         pendingSync: Boolean = false,
+        targetId: String = BILL_ID,
+        occurredAt: Long = now - 1_000L,
+        data: String = "{}",
     ): ActivityEventEntity = ActivityEventEntity(
         id = id,
         seq = seq,
@@ -909,9 +1306,9 @@ class ActivityRepositoryImplTest {
         kind = kind,
         actorUserId = actorUserId,
         actorMemberId = "ana",
-        targetId = "bill-1",
-        occurredAt = now - 1_000L,
-        data = "{}",
+        targetId = targetId,
+        occurredAt = occurredAt,
+        data = data,
         pendingSync = pendingSync,
     )
 
@@ -985,6 +1382,7 @@ class ActivityRepositoryImplTest {
         const val USER_ID = "user-1"
         const val EVENT_ID = "event-1"
         const val GROUP_ID = "group-1"
+        const val BILL_ID = "bill-1"
     }
 }
 
@@ -1010,6 +1408,9 @@ private class FakeActivityLocalDataSource : ActivityLocalDataSource {
     var writeError: Throwable? = null
 
     override fun observeEvents(): Flow<List<ActivityEventEntity>> = events
+
+    override fun observeEventsAbout(targetId: String): Flow<List<ActivityEventEntity>> =
+        events.map { list -> list.filter { it.targetId == targetId }.sortedByDescending { it.occurredAt } }
 
     override fun observeReadEventIds(): Flow<List<String>> = reads.map { it.keys.toList() }
 
@@ -1150,6 +1551,16 @@ private class FakeActivityRemoteDataSource : ActivityRemoteDataSource {
         failIfDown()
         beforeCalls += beforeSeq to limit
         return olderPages.removeFirstOrNull().orEmpty()
+    }
+
+    // Why: what fetchEventsAbout answers, the server's history of one bill.
+    var eventsAbout: List<ActivityEventDto> = emptyList()
+    val aboutCalls = mutableListOf<String>()
+
+    override suspend fun fetchEventsAbout(targetId: String): List<ActivityEventDto> {
+        failIfDown()
+        aboutCalls += targetId
+        return eventsAbout
     }
 
     override suspend fun insertCharges(events: List<ChargeEventDto>) {
