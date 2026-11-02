@@ -42,8 +42,9 @@ final class BillDetailModel {
     }
 }
 
-/// "Bill": one bill of the group, what it was, who paid and how it splits. Pushed over the group on iPhone, a form
-/// sheet on iPad and a sheet on the Mac's window; Edit and Delete in the toolbar (on the Mac, in the sheet's header).
+/// "Bill": one bill of the group, what it was, who paid and how it splits. Pushed over the group on iPhone, a sheet
+/// on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the Mac; Edit and Delete in the toolbar
+/// (on the Mac, in the inspector's header).
 struct BillDetailView: View {
     let route: RouteBillDetail
 
@@ -52,9 +53,10 @@ struct BillDetailView: View {
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    /// The window under the sheet, not the sheet: whether this bill is a sheet that closes or a pushed screen.
-    @Environment(\.windowLayout) private var windowLayout
     #endif
+    /// The window under the sheet or the inspector, not them: whether this bill is a sheet that closes or a pushed
+    /// screen, and how wide the Mac's inspector is.
+    @Environment(\.windowLayout) private var windowLayout
 
     var body: some View {
         Group {
@@ -66,17 +68,23 @@ struct BillDetailView: View {
                 #endif
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
-                    #if os(macOS)
-                    .frame(width: 560, height: 480)
-                    #endif
             }
         }
         #if os(iOS)
+        // A sheet with an iPad's room, 820×640 lying down and 620×860 upright as the canvas draws it
+        .billSheetSizing(in: windowLayout)
         .navigationTitle(Text(verbatim: model?.state.groupName ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         // On iPhone the bill keeps the group's own bars, without the app's tabs
         .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
         .toolbar { toolbar }
+        #else
+        // Set while the bill loads too, so the inspector opens at its width rather than jumping to it
+        .inspectorColumnWidth(
+            min: MacBillInspector.narrowWidth,
+            ideal: MacBillInspector.width(in: windowLayout),
+            max: MacBillInspector.wideWidth,
+        )
         #endif
         .billDeletionAlert(
             model?.state.deletion,
@@ -339,9 +347,13 @@ private struct PhoneBillDetail: View {
 #endif
 
 #if os(macOS)
-/// The sheet on the window: the bill's header with Edit… and Delete, the bill and its split, and Close.
+/// The window's inspector on the right (decision 3, F7Mac): the bill's header with Edit… and Delete, then the bill
+/// beside its split in the standard window's 720 pt, one column in a narrow window's 330 pt.
 private struct MacBillDetail: View {
     let model: BillDetailModel
+
+    @State private var layout = ScreenLayout()
+    @FocusState private var isFocused: Bool
 
     private var state: BillDetailUiState {
         model.state
@@ -350,25 +362,36 @@ private struct MacBillDetail: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-                .padding(20)
+                .padding(18)
             Divider()
             ScrollView {
-                content
-                    .padding(20)
-            }
-            .frame(minHeight: 240, idealHeight: 460, maxHeight: 620)
-            Divider()
-            HStack {
-                Spacer()
-                Button("Close") {
-                    model.send(BillDetailUiEventOnBackClicked.shared)
+                Group {
+                    if layout.size.width >= MacBillInspector.twoColumnsWidth {
+                        HStack(alignment: .top, spacing: 20) {
+                            billColumn
+                            Divider()
+                            splitColumn
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 20) {
+                            billColumn
+                            splitColumn
+                        }
+                    }
                 }
-                .keyboardShortcut(.cancelAction)
+                .padding(18)
             }
-            .controlSize(.large)
-            .padding(16)
         }
-        .frame(width: 560)
+        .measuringScreenLayout($layout)
+        .background(Palette.groupedBackground)
+        // Esc closes it while the focus is in it, which it takes as it opens, so a field elsewhere keeps its own Esc
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onExitCommand {
+            model.send(BillDetailUiEventOnBackClicked.shared)
+        }
     }
 
     private var header: some View {
@@ -402,10 +425,17 @@ private struct MacBillDetail: View {
             }
             .help(Text(BillCopy.delete))
             .disabled(!state.areActionsEnabled)
+            Button("Close", systemImage: "xmark") {
+                model.send(BillDetailUiEventOnBackClicked.shared)
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+            .help(Text("Close"))
         }
     }
 
-    private var content: some View {
+    /// What the bill was: the total, who paid and this device's user's share.
+    private var billColumn: some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: state.currency.format(state.totalMinor))
@@ -427,21 +457,40 @@ private struct MacBillDetail: View {
                         .background(Palette.card, in: .rect(cornerRadius: 10))
                 }
             }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(verbatim: BillCopy.splitHeader(state.splitMode, count: state.participantCount))
-                    .font(.headline)
-                VStack(spacing: 0) {
-                    ForEach(Array(state.people.enumerated()), id: \.element.memberId) { index, row in
-                        if index > 0 { Divider() }
-                        ShareRow(row: row, currency: state.currency, avatarSize: 24)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                    }
-                }
-                .background(Palette.card, in: .rect(cornerRadius: 10))
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var splitColumn: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(verbatim: BillCopy.splitHeader(state.splitMode, count: state.participantCount))
+                .font(.headline)
+            VStack(spacing: 0) {
+                ForEach(Array(state.people.enumerated()), id: \.element.memberId) { index, row in
+                    if index > 0 { Divider() }
+                    ShareRow(row: row, currency: state.currency, avatarSize: 24)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                }
+            }
+            .background(Palette.card, in: .rect(cornerRadius: 10))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// The inspector's widths the canvas draws: 720 pt in the standard window, 330 pt in a narrow one, where the window
+/// would leave the groups too little room beside 720 pt.
+private enum MacBillInspector {
+    static let wideWidth: CGFloat = 720
+    static let narrowWidth: CGFloat = 330
+    /// The bill beside its split from here, as the 720 pt inspector draws them.
+    static let twoColumnsWidth: CGFloat = 600
+    /// The narrowest window that keeps the sidebar and a list beside the 720 pt inspector.
+    static let wideWindowWidth: CGFloat = 1180
+
+    static func width(in window: ScreenLayout) -> CGFloat {
+        window.size.width >= wideWindowWidth ? wideWidth : narrowWidth
     }
 }
 #endif

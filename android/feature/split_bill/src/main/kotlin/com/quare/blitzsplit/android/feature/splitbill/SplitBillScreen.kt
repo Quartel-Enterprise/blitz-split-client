@@ -5,16 +5,21 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryForm
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryPicker
@@ -22,6 +27,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,7 +43,7 @@ private const val PAGE_CATEGORY_FORM = 5
 @Composable
 fun SplitBillScreen(
     route: Route.SplitBill,
-    // Why: a tablet and the upright foldable keep the group behind the bill, as a dialog.
+    // Why: anywhere wider than a phone the group stays behind the bill, as a dialog, but under a new bill on a tabletop.
     isDialog: Boolean,
     viewModel: SplitBillViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
@@ -51,30 +57,32 @@ fun SplitBillScreen(
         }
     }
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
-    BackHandler {
-        viewModel.onEvent(
-            when {
-                state.categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
-                state.categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
-                state.itemEditor != null -> SplitBillUiEvent.OnItemDismissed
-                state.itemsEditor != null -> SplitBillUiEvent.OnItemsDismissed
-                state.splitEditor != null -> SplitBillUiEvent.OnSplitDismissed
-                else -> SplitBillUiEvent.OnCloseClicked
-            },
-        )
+    BackHandler { viewModel.onEvent(state.toBackEvent()) }
+    /*
+     * Why: a new bill on a tabletop splits on the hinge, but Item, Categoria and Nova categoria have no tabletop board
+     * of their own: they open as the book draws them, a dialog in a half, over the bill or the items under them.
+     */
+    val opensPagesInHalf = rememberUsesTabletopHalves(isDialog)
+    val billPages = BillPages(
+        split = state.splitEditor,
+        items = state.itemsEditor,
+        item = state.itemEditor,
+        categoryPicker = state.categoryPicker,
+        categoryForm = state.categoryForm,
+    )
+    // Why: a page in the half shows its snackbar alone, rather than once more under its scrim.
+    val idleSnackbarHostState = remember { SnackbarHostState() }
+    val pagesSnackbarHostState = if (opensPagesInHalf && billPages.hasHalfPage) {
+        idleSnackbarHostState
+    } else {
+        snackbarHostState
     }
     /*
      * Why: Dividir over the bill, "Itens da conta" in Dividir's place and "Item" over it, "Categoria" and its form in
      * the bill's place, each kept while it fades out.
      */
     AnimatedContent(
-        targetState = BillPages(
-            split = state.splitEditor,
-            items = state.itemsEditor,
-            item = state.itemEditor,
-            categoryPicker = state.categoryPicker,
-            categoryForm = state.categoryForm,
-        ),
+        targetState = if (opensPagesInHalf) billPages.toPagesUnderHalf() else billPages,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         contentKey = { pages ->
             when {
@@ -98,7 +106,7 @@ fun SplitBillScreen(
                 state = state,
                 form = categoryForm,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (categoryPicker != null) {
@@ -106,14 +114,14 @@ fun SplitBillScreen(
                 state = state,
                 picker = categoryPicker,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (item != null) {
             ItemEditorContent(
                 editor = item,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (items != null) {
@@ -121,14 +129,14 @@ fun SplitBillScreen(
                 state = state,
                 items = items,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (editor == null) {
             SplitBillContent(
                 state = state,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onWhenClick = {
                     viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
                     isPickingSpentAt = true
@@ -140,6 +148,22 @@ fun SplitBillScreen(
                 state = state,
                 editor = editor,
                 isDialog = isDialog,
+                snackbarHostState = pagesSnackbarHostState,
+                onEvent = viewModel::onEvent,
+            )
+        }
+    }
+    if (opensPagesInHalf && billPages.hasHalfPage) {
+        FoldDialog(
+            onDismissRequest = { viewModel.onEvent(state.toBackEvent()) },
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        ) {
+            HalfPageContent(
+                state = state,
+                pages = billPages,
                 snackbarHostState = snackbarHostState,
                 onEvent = viewModel::onEvent,
             )
@@ -212,6 +236,53 @@ fun SplitBillScreen(
     }
 }
 
+// Why: back closes the deepest page over the bill, then the bill; a tabletop's half page closes the same way.
+private fun SplitBillUiState.toBackEvent(): SplitBillUiEvent = when {
+    categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
+    categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
+    itemEditor != null -> SplitBillUiEvent.OnItemDismissed
+    itemsEditor != null -> SplitBillUiEvent.OnItemsDismissed
+    splitEditor != null -> SplitBillUiEvent.OnSplitDismissed
+    else -> SplitBillUiEvent.OnCloseClicked
+}
+
+// Why: Item, Categoria or Nova categoria in a tabletop's half, drawn as the dialog they are on a book.
+@Composable
+private fun HalfPageContent(
+    state: SplitBillUiState,
+    pages: BillPages,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    val item = pages.item
+    val categoryPicker = pages.categoryPicker
+    val categoryForm = pages.categoryForm
+    when {
+        categoryForm != null -> CategoryFormContent(
+            state = state,
+            form = categoryForm,
+            isDialog = true,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+
+        categoryPicker != null -> CategoryPickerContent(
+            state = state,
+            picker = categoryPicker,
+            isDialog = true,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+
+        item != null -> ItemEditorContent(
+            editor = item,
+            isDialog = true,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+        )
+    }
+}
+
 // Why: what covers the bill, from the deepest: the category's form, the picker, an item, the items, Dividir.
 private data class BillPages(
     val split: SplitEditor?,
@@ -219,4 +290,14 @@ private data class BillPages(
     val item: ItemEditor?,
     val categoryPicker: CategoryPicker?,
     val categoryForm: CategoryForm?,
-)
+) {
+    val hasHalfPage: Boolean
+        get() = item != null || categoryPicker != null || categoryForm != null
+
+    // Why: what stays under the half on a tabletop, the bill or the items.
+    fun toPagesUnderHalf(): BillPages = copy(
+        item = null,
+        categoryPicker = null,
+        categoryForm = null,
+    )
+}

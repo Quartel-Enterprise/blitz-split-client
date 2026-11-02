@@ -49,6 +49,7 @@ import com.quare.blitzsplit.android.designsystem.format.imageVector
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
@@ -404,6 +405,7 @@ internal fun DeleteCategoryDialog(
         onConfirm = { onEvent(SplitBillUiEvent.OnCategoryDeleteConfirmed) },
         onDismiss = { onEvent(SplitBillUiEvent.OnCategoryDeleteDismissed) },
         isBusy = deletion.isDeleting,
+        placement = rememberDialogPlacement(),
     )
 }
 

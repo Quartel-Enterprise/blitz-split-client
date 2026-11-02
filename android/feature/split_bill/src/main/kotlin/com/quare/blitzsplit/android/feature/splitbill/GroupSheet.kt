@@ -6,13 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -27,20 +23,15 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 
 // Why: "Rachar em qual grupo?" marks a group until "Continuar"; dismissing it leaves the bill in its group.
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GroupSheet(
     groups: List<BillGroup>,
     selection: GroupSelection,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    ModalBottomSheet(
+    BillSheet(
+        title = stringResource(R.string.split_bill_group_title),
         onDismissRequest = { onEvent(SplitBillUiEvent.OnGroupDismissed) },
-        sheetState = rememberBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
-        ),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         GroupColumn(
             groups = groups,

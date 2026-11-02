@@ -1306,6 +1306,78 @@ class GroupDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN a bill of the group beside it WHEN tapping another bill THEN takes its place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense("dinner", spentAt = thisMorning),
+                    expense("taxi", spentAt = thisMorning),
+                ),
+            )
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked("taxi"))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "taxi")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill of the group beside it WHEN opening the stats THEN they take the place of the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.GroupStats(GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill of the group beside it WHEN protecting the access THEN the profile opens over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner"), Route.Profile),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen over the group WHEN tapping a bill THEN stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+        navigator.navigate(Route.EditGroup(GROUP_ID))
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseClicked("dinner"))
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
     fun `GIVEN an open bill deleted elsewhere WHEN its screen closes THEN says it was deleted once`() =
         runTest(testDispatcher) {
             // Given

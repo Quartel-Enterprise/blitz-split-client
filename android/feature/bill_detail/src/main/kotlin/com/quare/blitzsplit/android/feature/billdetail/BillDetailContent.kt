@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,12 +36,13 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
-import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormColumns
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
@@ -60,8 +63,8 @@ fun BillDetailContent(
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val layout = rememberDeviceLayout()
-    val usesTwoColumns = if (isDialog) layout.isTablet && layout.isLandscape else layout.isLandscape
+    // Why: a dialog is two columns wide on a tablet lying down only, one column in a book's or a tabletop's half.
+    val usesTwoColumns = rememberUsesFormColumns(isDialog)
     if (isDialog) {
         DialogCard(
             isWide = usesTwoColumns,
@@ -283,6 +286,34 @@ private fun BillDetailContentPayerPreview() {
 @Composable
 private fun BillDetailContentPendingPreview() {
     PreviewBillDetailContent(createPreviewBillDetailState(isPending = true))
+}
+
+// Why: a preview draws no dialog window, so the book's right half, where Conta opens, is drawn by hand around it.
+@Preview(
+    name = "Book",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun BillDetailContentBookPreview() {
+    BlitzSplitTheme {
+        Surface(color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                Box(modifier = Modifier.width(376.dp)) {
+                    BillDetailContent(
+                        state = createPreviewBillDetailState(),
+                        isDialog = true,
+                        snackbarHostState = SnackbarHostState(),
+                        onEvent = {},
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
