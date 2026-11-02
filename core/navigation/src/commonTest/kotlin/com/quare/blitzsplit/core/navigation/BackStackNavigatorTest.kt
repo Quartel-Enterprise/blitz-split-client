@@ -176,6 +176,33 @@ class BackStackNavigatorTest {
         assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN a group over the home WHEN replacing above the home with two routes THEN both take its place`() {
+        // Given
+        prepareScenario(startRoute = Route.Home)
+        navigator.navigate(
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.MEMBERS,
+            ),
+        )
+        val group = Route.GroupDetail(
+            "flat",
+            joinedAs = null,
+            tab = GroupTab.EXPENSES,
+        )
+
+        // When
+        navigator.replaceAbove(
+            size = 1,
+            routes = listOf(Route.Groups, group),
+        )
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Groups, group), navigator.backStack.value)
+    }
+
     private fun prepareScenario(startRoute: Route) {
         navigator = BackStackNavigator(startRoute = startRoute)
     }

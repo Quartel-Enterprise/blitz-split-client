@@ -16,7 +16,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
-import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
@@ -27,7 +27,6 @@ import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
-import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
@@ -161,15 +160,15 @@ class HomeViewModel(
             connectivityObserver.observe(),
             recoveryCodeCardDismissal.isDismissed,
         ) { profile, account, syncState, isOnline, isCardDismissed ->
-            val displayName = profile?.displayName?.trim().orEmpty()
+            val badge = UserBadge.of(profile, account.status)
             val isAnonymous = account.status is AccountStatus.Anonymous
             uiState.update { state ->
                 state.copy(
-                    displayName = displayName,
-                    avatarInitial = Initials.firstOf(displayName),
-                    avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                    photoUrl = profile?.photo?.toImageUrl(),
-                    accountProvider = (account.status as? AccountStatus.Connected)?.provider,
+                    displayName = badge.displayName,
+                    avatarInitial = badge.avatarInitial,
+                    avatarColor = badge.avatarColor,
+                    photoUrl = badge.photoUrl,
+                    accountProvider = badge.accountProvider,
                     syncBadge = SyncBadge.ofOrNull(syncState, isOnline),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&

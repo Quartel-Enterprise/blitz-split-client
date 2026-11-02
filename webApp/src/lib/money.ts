@@ -33,7 +33,15 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
 
 /** A balance with its sign, "+R$ 600,00" or "−R$ 118,00" (a true minus sign), and no sign at zero. */
 export function formatSignedMoney(minor: number, currency: string, fractionDigits: number): string {
-  const amount = formatMoney(Math.abs(minor), currency, fractionDigits)
+  return withSign(minor, formatMoney(Math.abs(minor), currency, fractionDigits))
+}
+
+/** A balance with its sign and no symbol, "+214,90" or "−98,00", where the currency is the line's own. */
+export function formatSignedPlainMoney(minor: number, fractionDigits: number): string {
+  return withSign(minor, formatPlainMoney(Math.abs(minor), fractionDigits))
+}
+
+function withSign(minor: number, amount: string): string {
   if (minor > 0) return `+${amount}`
   if (minor < 0) return `−${amount}`
   return amount

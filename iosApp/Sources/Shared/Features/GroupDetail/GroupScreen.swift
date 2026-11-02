@@ -87,6 +87,8 @@ private struct GroupScreenBars: ViewModifier {
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    #else
+    @Environment(\.isNarrowWindow) private var isNarrowWindow
     #endif
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes the main button as its plus alone.
     @State private var hasVerticalBar = false
@@ -121,9 +123,12 @@ private struct GroupScreenBars: ViewModifier {
                 .accessibilityAddTraits(.isHeader)
         }
         #else
-        ToolbarItem(placement: .principal) {
-            GroupTabsPicker(selected: tab, onSelect: actions.select)
-                .disabled(!isLoaded)
+        // A narrow window draws them below the toolbar instead (`MacGroupTop`)
+        if !isNarrowWindow {
+            ToolbarItem(placement: .principal) {
+                GroupTabsPicker(selected: tab, onSelect: actions.select)
+                    .disabled(!isLoaded)
+            }
         }
         #endif
         ToolbarItem(placement: .primaryAction) {
@@ -483,12 +488,20 @@ struct PhoneGroupScaffold<Sections: View>: View {
 
 #if os(macOS)
 /// The top of the group's screen in a Mac window, over every tab: the group's strip (icon, faces, who hasn't joined) and the balance card.
+/// A narrow window puts the tabs above them, below the toolbar.
 struct MacGroupTop: View {
     let header: GroupHeader
+    let tab: GroupTab
     let actions: GroupScreenActions
+
+    @Environment(\.isNarrowWindow) private var isNarrowWindow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if isNarrowWindow {
+                GroupTabsPicker(selected: tab, onSelect: actions.select)
+                    .fixedSize()
+            }
             HStack(spacing: 12) {
                 GroupAvatar(initials: header.groupInitials, color: header.groupColor, size: 36)
                     .accessibilityHidden(true)

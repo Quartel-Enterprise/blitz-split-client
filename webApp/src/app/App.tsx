@@ -1,6 +1,7 @@
 import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { HomeSidebarProvider } from '@/components/HomeSidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
@@ -49,11 +50,16 @@ export function App() {
   if (!isReady || !backStack) return null
   return (
     <>
-      <StackLayers backStack={backStack} />
+      <HomeSidebarProvider isActive={backStack.some((route) => SHELL_PAGES.has(route.name))}>
+        <StackLayers backStack={backStack} />
+      </HomeSidebarProvider>
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
 }
+
+// Why: the pages that draw inside the home's frame (`PageShell`), which read the sidebar.
+const SHELL_PAGES = new Set(['group-detail', 'group-stats', 'profile', 'edit-profile'])
 
 /**
  * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)

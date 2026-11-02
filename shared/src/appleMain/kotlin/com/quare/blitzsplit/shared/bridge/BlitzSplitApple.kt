@@ -20,6 +20,7 @@ import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfi
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
+import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
 import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewModel
@@ -87,6 +88,9 @@ object BlitzSplitApple : KoinComponent {
     fun createHomeViewModel(): ViewModelHolder<HomeViewModel> = ViewModelHolder(HomeViewModel::class) { get() }
 
     fun createGroupsViewModel(): ViewModelHolder<GroupsViewModel> = ViewModelHolder(GroupsViewModel::class) { get() }
+
+    fun createHomeSidebarViewModel(): ViewModelHolder<HomeSidebarViewModel> =
+        ViewModelHolder(HomeSidebarViewModel::class) { get() }
 
     fun createCreateGroupViewModel(): ViewModelHolder<CreateGroupViewModel> =
         ViewModelHolder(CreateGroupViewModel::class) { get() }

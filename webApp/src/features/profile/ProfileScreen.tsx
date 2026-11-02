@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, providerLabel } from '@/components/common'
+import { PageShell } from '@/components/HomeSidebar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,8 +26,9 @@ const themes: { code: string; label: MessageKey }[] = [
 ]
 
 /**
- * The profile page. Name, photo and color are edited right here, in "Your profile". On desktop (1024+)
- * the account sits in the left column under it; on tablet and phone everything is one column.
+ * The profile page, in the home's frame with its footer selected. Name, photo and color are edited right here, in
+ * "Your profile". On desktop (1024+) the account sits in the left column under it; on tablet and phone everything is
+ * one column, the phone with back on top and the home's navigation at the bottom.
  */
 export function ProfileScreen() {
   const presenter = usePresenter(() => new ProfilePresenter())
@@ -42,65 +44,78 @@ export function ProfileScreen() {
   })
   if (!presenter || !state) return null
 
+  const visibility = (
+    <Button variant="ghost" size="icon" aria-label={t('profile_visibility')} onClick={() => presenter.visibilityInfo()}>
+      <Info />
+    </Button>
+  )
   return (
-    <div className="min-h-dvh bg-muted/40">
-      <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/95 px-2 backdrop-blur sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
-          <ArrowLeft />
-        </Button>
-        <h1 className="mr-auto text-lg font-semibold">{t('profile_title')}</h1>
-        <Button variant="ghost" size="icon" aria-label={t('profile_visibility')} onClick={() => presenter.visibilityInfo()}>
-          <Info />
-        </Button>
-      </header>
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4 sm:p-8">
-        {state.showsOfflineNotice && (
-          <div role="status" className="flex items-start gap-3 rounded-lg border bg-card p-3 text-sm">
-            <CloudOff className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-            <p>
-              <strong className="font-semibold">{t('profile_offlineTitle')}</strong> {t('profile_offlineBody')}
-            </p>
-          </div>
-        )}
-        {/* One column below 1024 (profile, keys, account…); the columns only group the cards from there up */}
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start">
-          <div className="contents lg:flex lg:flex-col lg:gap-4">
-            <div className="order-1">
-              <EditProfileCard isPending={state.showsProfilePending} />
+    <PageShell phoneBars="nav">
+      <div className="flex-1 bg-muted/40">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/95 px-2 backdrop-blur md:hidden">
+          <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
+            <ArrowLeft />
+          </Button>
+          <h1 className="mr-auto text-lg font-semibold">{t('profile_title')}</h1>
+          {visibility}
+        </header>
+        <main className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4 sm:p-8">
+          {/* Why: the sidebar's selected footer already says where this is; the heading says what it is for. */}
+          <div className="hidden items-start gap-3 md:flex">
+            <div className="mr-auto flex flex-col gap-1">
+              <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('profile_title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('profile_subtitle')}</p>
             </div>
-            <AccountCard presenter={presenter} state={state} className="order-3" />
+            {visibility}
           </div>
-          <div className="contents lg:flex lg:flex-col lg:gap-4">
-            <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
-            <AppearanceCard presenter={presenter} state={state} className="order-4" />
-            <NotificationSettingsCard className="order-5" />
-            <Card className="order-5">
-              <CardHeader>
-                <CardTitle>{t('profile_categoryMap')}</CardTitle>
-                <CardDescription>{t('profile_categoryMapDetail')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" onClick={() => presenter.categoryMap()}>
-                  <Tag /> {t('profile_categoryMapOpen')}
-                </Button>
-              </CardContent>
-            </Card>
-            <AboutCard presenter={presenter} className="order-6" />
-            <Button
-              variant="outline"
-              className="order-7 text-destructive hover:text-destructive"
-              disabled={!state.canSignOut}
-              onClick={() => presenter.signOut()}
-            >
-              <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
-            </Button>
-            {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
+          {state.showsOfflineNotice && (
+            <div role="status" className="flex items-start gap-3 rounded-lg border bg-card p-3 text-sm">
+              <CloudOff className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+              <p>
+                <strong className="font-semibold">{t('profile_offlineTitle')}</strong> {t('profile_offlineBody')}
+              </p>
+            </div>
+          )}
+          {/* One column below 1024 (profile, keys, account…); the columns only group the cards from there up */}
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start">
+            <div className="contents lg:flex lg:flex-col lg:gap-4">
+              <div className="order-1">
+                <EditProfileCard isPending={state.showsProfilePending} />
+              </div>
+              <AccountCard presenter={presenter} state={state} className="order-3" />
+            </div>
+            <div className="contents lg:flex lg:flex-col lg:gap-4">
+              <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
+              <AppearanceCard presenter={presenter} state={state} className="order-4" />
+              <NotificationSettingsCard className="order-5" />
+              <Card className="order-5">
+                <CardHeader>
+                  <CardTitle>{t('profile_categoryMap')}</CardTitle>
+                  <CardDescription>{t('profile_categoryMapDetail')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" onClick={() => presenter.categoryMap()}>
+                    <Tag /> {t('profile_categoryMapOpen')}
+                  </Button>
+                </CardContent>
+              </Card>
+              <AboutCard presenter={presenter} className="order-6" />
+              <Button
+                variant="outline"
+                className="order-7 text-destructive hover:text-destructive"
+                disabled={!state.canSignOut}
+                onClick={() => presenter.signOut()}
+              >
+                <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
+              </Button>
+              {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
+            </div>
           </div>
-        </div>
-      </main>
-      <ProfileDialogs presenter={presenter} state={state} />
-      {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
-    </div>
+        </main>
+        <ProfileDialogs presenter={presenter} state={state} />
+        {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
+      </div>
+    </PageShell>
   )
 }
 
