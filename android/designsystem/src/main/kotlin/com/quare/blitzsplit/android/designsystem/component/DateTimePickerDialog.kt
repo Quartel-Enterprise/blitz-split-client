@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
@@ -40,6 +42,9 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 
 private val pickerWidth = 360.dp
+
+// Why: the picker and FoldDialog's 16dp margin on each side of it.
+private val bookHalfMinWidth = pickerWidth + 32.dp
 
 /*
  * Why: "Quando" of a bill or a payment picks a date and then a time (Pierre's call), in the device's time zone. The
@@ -58,11 +63,21 @@ fun DateTimePickerDialog(
     val pickedDateTime = remember(epochMillis, zone) { Instant.ofEpochMilli(epochMillis).atZone(zone) }
     var pickedDayUtcMillis by rememberSaveable { mutableStateOf<Long?>(null) }
     /*
-     * Why: a book draws it in the half the bill or the payment is in, off the hinge; a tabletop's half is too short
-     * for a calendar, so it stays centered there.
+     * Why: a book draws it in the half the bill or the payment is in, off the hinge, where that half holds the
+     * calendar's 360dp (a Galaxy Z Fold's narrower halves keep it centered); a tabletop's half is too short for a
+     * calendar, so it stays centered there.
      */
     val fold = rememberFoldLayout()
-    val isInBookHalf = fold.bookSplit != null && fold.tabletopSplit == null
+    val bookSplit = fold.bookSplit
+    val isInBookHalf = bookSplit != null &&
+        fold.tabletopSplit == null &&
+        min(
+            bookSplit.bandStart - fold.windowBounds.left,
+            fold.windowBounds.right - bookSplit.bandEnd,
+        ) >= bookHalfMinWidth
+    val dismiss: @Composable () -> Unit = {
+        TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
+    }
     val pickedDay = pickedDayUtcMillis
     if (pickedDay == null) {
         val lastDay = remember(latestMillis, zone) { Instant.ofEpochMilli(latestMillis).atZone(zone).toLocalDate() }
@@ -75,9 +90,6 @@ fun DateTimePickerDialog(
                 onClick = { pickedDayUtcMillis = dateState.selectedDateMillis },
                 enabled = dateState.selectedDateMillis != null,
             ) { Text(stringResource(R.string.designsystem_picker_next)) }
-        }
-        val dismiss: @Composable () -> Unit = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
         }
         if (isInBookHalf) {
             BookHalfPickerDialog(
@@ -115,9 +127,6 @@ fun DateTimePickerDialog(
                 },
             ) { Text(stringResource(R.string.designsystem_picker_done)) }
         }
-        val dismiss: @Composable () -> Unit = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
-        }
         if (isInBookHalf) {
             BookHalfPickerDialog(
                 onDismiss = onDismiss,
@@ -125,9 +134,11 @@ fun DateTimePickerDialog(
                 confirmButton = confirm,
                 dismissButton = dismiss,
             ) {
+                // Why: a book lying down would pick the clock beside its inputs, wider than the half's 360dp.
                 TimePicker(
                     state = timeState,
                     modifier = Modifier.padding(top = 8.dp),
+                    layoutType = TimePickerLayoutType.Vertical,
                 )
             }
         } else {

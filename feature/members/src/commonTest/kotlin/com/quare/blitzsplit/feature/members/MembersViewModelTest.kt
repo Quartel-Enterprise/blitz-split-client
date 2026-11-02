@@ -245,6 +245,27 @@ class MembersViewModelTest {
     }
 
     @Test
+    fun `GIVEN a bill of the group beside it WHEN tapping share THEN Convidar takes the place of the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.BillDetail("group-1", "dinner"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.Invite("group-1", isNewGroup = false),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN someone whose link has not come yet WHEN tapping their personal invite THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given

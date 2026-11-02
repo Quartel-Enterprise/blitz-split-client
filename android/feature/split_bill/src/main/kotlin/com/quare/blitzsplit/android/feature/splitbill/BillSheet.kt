@@ -2,7 +2,6 @@ package com.quare.blitzsplit.android.feature.splitbill
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -11,14 +10,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.paneTitle
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
-
-private val halfPaneMaxWidth = 560.dp
 
 /*
  * Why: "Quem pagou", "Várias pessoas pagaram" and "Rachar em qual grupo?" rise from the bottom over the bill, but a
@@ -50,9 +46,7 @@ internal fun BillSheet(
             placement = placement,
         ) {
             Surface(
-                modifier = Modifier
-                    .widthIn(max = halfPaneMaxWidth)
-                    .semantics { paneTitle = title },
+                modifier = Modifier.alertDialogPane(title),
                 shape = MaterialTheme.shapes.extraLarge,
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {

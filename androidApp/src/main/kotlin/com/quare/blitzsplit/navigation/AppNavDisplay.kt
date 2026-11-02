@@ -96,7 +96,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      * a foldable upright, in a book's right half and in a tabletop's top half, never over the hinge.
      */
     val formFactor = rememberFoldLayout().formFactor
-    val usesCreateGroupDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val isWiderThanPhone = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val usesCreateGroupDialog = isWiderThanPhone
     val createGroupMetadata = if (usesCreateGroupDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(
             properties = dialogProperties,
@@ -126,7 +127,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      * and a foldable upright, 920dp on a tablet lying down, in a book's right half with the group under the scrim. A
      * tabletop splits a new bill on its hinge, full screen, and draws Conta and Editar conta as the book does.
      */
-    val opensBillOverGroup = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val opensBillOverGroup = isWiderThanPhone
     val billOverGroupMetadata = if (opensBillOverGroup) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {

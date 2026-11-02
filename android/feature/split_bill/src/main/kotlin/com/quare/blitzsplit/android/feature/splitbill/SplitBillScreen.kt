@@ -57,18 +57,7 @@ fun SplitBillScreen(
         }
     }
     var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
-    BackHandler {
-        viewModel.onEvent(
-            when {
-                state.categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
-                state.categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
-                state.itemEditor != null -> SplitBillUiEvent.OnItemDismissed
-                state.itemsEditor != null -> SplitBillUiEvent.OnItemsDismissed
-                state.splitEditor != null -> SplitBillUiEvent.OnSplitDismissed
-                else -> SplitBillUiEvent.OnCloseClicked
-            },
-        )
-    }
+    BackHandler { viewModel.onEvent(state.backEvent()) }
     /*
      * Why: a new bill on a tabletop splits on the hinge, but Item, Categoria and Nova categoria have no tabletop board
      * of their own: they open as the book draws them, a dialog in a half, over the bill or the items under them.
@@ -166,15 +155,7 @@ fun SplitBillScreen(
     }
     if (opensPagesInHalf && billPages.hasHalfPage) {
         FoldDialog(
-            onDismissRequest = {
-                viewModel.onEvent(
-                    when {
-                        state.categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
-                        state.categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
-                        else -> SplitBillUiEvent.OnItemDismissed
-                    },
-                )
-            },
+            onDismissRequest = { viewModel.onEvent(state.backEvent()) },
             properties = DialogProperties(
                 dismissOnClickOutside = false,
                 usePlatformDefaultWidth = false,
@@ -253,6 +234,16 @@ fun SplitBillScreen(
             onDismiss = { isPickingSpentAt = false },
         )
     }
+}
+
+// Why: back closes the deepest page over the bill, then the bill; a tabletop's half page closes the same way.
+private fun SplitBillUiState.backEvent(): SplitBillUiEvent = when {
+    categoryForm != null -> SplitBillUiEvent.OnCategoryFormDismissed
+    categoryPicker != null -> SplitBillUiEvent.OnCategoryDismissed
+    itemEditor != null -> SplitBillUiEvent.OnItemDismissed
+    itemsEditor != null -> SplitBillUiEvent.OnItemsDismissed
+    splitEditor != null -> SplitBillUiEvent.OnSplitDismissed
+    else -> SplitBillUiEvent.OnCloseClicked
 }
 
 // Why: Item, Categoria or Nova categoria in a tabletop's half, drawn as the dialog they are on a book.

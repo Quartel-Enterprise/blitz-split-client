@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
@@ -169,21 +170,11 @@ internal class GroupScreen(
     }
 
     fun open(next: Route) {
-        when {
-            isOnTop() -> useCases.navigator.navigate(next)
-
-            /*
-             * Why: the Mac draws the group's bill beside it (its inspector), so the group still takes clicks: what it
-             * opens then takes the bill's place, another bill included.
-             */
-            isUnderItsBill() -> useCases.navigator.replaceTop(next)
-        }
-    }
-
-    private fun isUnderItsBill(): Boolean {
-        val stack = useCases.navigator.backStack.value
-        val top = stack.lastOrNull() as? Route.BillDetail ?: return false
-        return top.groupId == groupId && stack.getOrNull(stack.lastIndex - 1) == route
+        useCases.navigator.openFromGroupScreen(
+            from = route,
+            groupId = groupId,
+            next = next,
+        )
     }
 
     // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.

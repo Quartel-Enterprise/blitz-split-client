@@ -1345,6 +1345,23 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill of the group beside it WHEN protecting the access THEN the profile opens over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner"), Route.Profile),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN another screen over the group WHEN tapping a bill THEN stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
