@@ -636,6 +636,7 @@ class PayReceiverViewModelTest {
         hasJoined = userId != null,
         userId = userId,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: a bill the payer paid whole for the debtor alone, so the debtor owes the payer all of it.

@@ -334,7 +334,7 @@ class GroupDetailUiStateTest {
             groupInitials = "VF",
             groupColor = AvatarColor.LILAC,
             currency = GroupCurrency.BRL,
-            faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH) },
+            faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH, photoUrl = null) },
             memberCount = memberCount,
             notJoinedCount = 0,
             totalSpentMinor = if (hasBills) 12_000 else 0,

@@ -405,6 +405,7 @@ private fun ExceptionPeopleList(
                         initial = person.initials,
                         color = person.avatarColor,
                         size = 32.dp,
+                        photoUrl = person.photoUrl,
                     )
                     Text(
                         text = name,

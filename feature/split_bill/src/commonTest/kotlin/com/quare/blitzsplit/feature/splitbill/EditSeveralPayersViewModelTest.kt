@@ -427,6 +427,7 @@ class EditSeveralPayersViewModelTest {
         hasJoined = hasJoined,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun prepareScenario(

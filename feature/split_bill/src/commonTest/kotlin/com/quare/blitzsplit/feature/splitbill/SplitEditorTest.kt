@@ -1097,6 +1097,7 @@ class SplitEditorTest {
         name = id,
         initials = "",
         avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
         isMe = id == PIERRE,
         hasJoined = true,
     )

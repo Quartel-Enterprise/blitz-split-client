@@ -529,6 +529,7 @@ class GroupsRowActionsTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun prepareScenario(

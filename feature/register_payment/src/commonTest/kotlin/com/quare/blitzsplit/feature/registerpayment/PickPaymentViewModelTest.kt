@@ -134,6 +134,7 @@ class PickPaymentViewModelTest {
                     name = "Pierre Vieira",
                     initials = "P",
                     avatarColor = AvatarColor.BLUE,
+                    photoUrl = null,
                     isMe = true,
                 ),
                 pair.from,
@@ -144,6 +145,7 @@ class PickPaymentViewModelTest {
                     name = "Ana Paula",
                     initials = "AP",
                     avatarColor = AvatarColor.PEACH,
+                    photoUrl = null,
                     isMe = false,
                 ),
                 pair.to,
@@ -575,6 +577,7 @@ class PickPaymentViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun group(

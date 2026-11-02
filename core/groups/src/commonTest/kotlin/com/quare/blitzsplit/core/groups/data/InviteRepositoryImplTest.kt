@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
@@ -436,6 +437,8 @@ private class FakeInviteRemoteDataSource(
     override suspend fun fetchGroups(): List<GroupDto> = error("unused")
 
     override suspend fun fetchMembers(): List<GroupMemberDto> = error("unused")
+
+    override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> = error("unused")
 
     override suspend fun rotateInviteCode(groupId: String): String = error("unused")
 

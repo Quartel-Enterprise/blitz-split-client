@@ -9,6 +9,8 @@ data class SearchPersonHit(
     val nameMatch: TextMatch,
     val initial: String,
     val color: AvatarColor,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     val groupId: String,
     val groupName: String,
 )

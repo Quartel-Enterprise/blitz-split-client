@@ -317,10 +317,10 @@ class GroupDetailViewModelTest {
             // Then
             assertEquals(
                 listOf(
-                    GroupFace("A", AvatarColor.PEACH),
-                    GroupFace("P", AvatarColor.BLUE),
-                    GroupFace("B", AvatarColor.GREEN),
-                    GroupFace("C", AvatarColor.LILAC),
+                    GroupFace("A", AvatarColor.PEACH, photoUrl = null),
+                    GroupFace("P", AvatarColor.BLUE, photoUrl = null),
+                    GroupFace("B", AvatarColor.GREEN, photoUrl = null),
+                    GroupFace("C", AvatarColor.LILAC, photoUrl = null),
                 ),
                 state.header.faces,
             )
@@ -354,7 +354,7 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf(GroupFace("E", AvatarColor.SAND)), state.header.faces)
+            assertEquals(listOf(GroupFace("E", AvatarColor.SAND, photoUrl = null)), state.header.faces)
         }
 
     @Test
@@ -2081,6 +2081,7 @@ class GroupDetailViewModelTest {
         hasJoined = hasJoined,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun share(

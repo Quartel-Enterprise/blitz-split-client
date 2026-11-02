@@ -111,7 +111,7 @@ export function ExceptionBody({ presenter, state, editor }: { presenter: Default
                 onChange={() => presenter.toggleExceptionPerson(row.id)}
               />
             )}
-            <Avatar initial={row.initials} color={row.color} className="size-8 text-xs" />
+            <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
             <span className="min-w-0 flex-1 truncate">{row.isMe ? t('splitBill_you') : row.name}</span>
             {editor.mode === 'shares' && (
               <span className="flex items-center gap-1">

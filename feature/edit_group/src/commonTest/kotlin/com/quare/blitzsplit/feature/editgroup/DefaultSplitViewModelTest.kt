@@ -436,6 +436,7 @@ class DefaultSplitViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private val home = Group(

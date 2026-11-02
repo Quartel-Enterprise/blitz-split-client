@@ -10,6 +10,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 class JsGroupFace(
     val initials: String,
     val color: String,
+    val photoUrl: String?,
 )
 
 // Why: "Seu saldo neste grupo", amounts in the currency's minor unit, as numbers JavaScript reads exactly.
@@ -64,7 +65,7 @@ internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader
     isPinned = header.isPinned,
 )
 
-internal fun toJsGroupFace(face: GroupFace): JsGroupFace = JsGroupFace(face.initials, face.color.code)
+internal fun toJsGroupFace(face: GroupFace): JsGroupFace = JsGroupFace(face.initials, face.color.code, face.photoUrl)
 
 internal fun toJsMemberBalance(balance: MemberBalance): JsMemberBalance = JsMemberBalance(
     receivesMinor = balance.receivesMinor.toDouble(),

@@ -22,6 +22,7 @@ class JsPaymentPerson(
     val name: String,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val isMe: Boolean,
 )
 
@@ -210,6 +211,7 @@ internal fun toJsPaymentPerson(person: PaymentPerson): JsPaymentPerson = JsPayme
     name = person.name,
     initials = person.initials,
     color = person.avatarColor.code,
+    photoUrl = person.photoUrl,
     isMe = person.isMe,
 )
 

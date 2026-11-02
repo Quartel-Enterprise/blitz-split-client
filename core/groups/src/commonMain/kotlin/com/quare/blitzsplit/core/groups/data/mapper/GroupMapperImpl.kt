@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitDto
 import com.quare.blitzsplit.core.groups.data.dto.DefaultSplitWeightDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
@@ -15,6 +16,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
@@ -34,8 +36,11 @@ class GroupMapperImpl : GroupMapper {
     override fun toDomain(
         groups: List<GroupEntity>,
         members: List<GroupMemberEntity>,
+        photos: List<MemberPhotoEntity>,
+        myPhotoUrl: String?,
     ): List<Group> {
         val membersByGroup = members.groupBy { it.groupId }
+        val photoUrlsByUserId = photos.associate { it.userId to it.photoUrl }
         return groups.map { group ->
             val ofGroup = membersByGroup[group.id].orEmpty()
             // Why: a removal not up yet still leaves the group pending.
@@ -45,7 +50,18 @@ class GroupMapperImpl : GroupMapper {
                 type = GroupType.fromCodeOrNull(group.type) ?: GroupType.OTHER,
                 color = AvatarColor.fromCodeOrNull(group.color) ?: AvatarColor.default,
                 currency = GroupCurrency.fromCodeOrNull(group.currency) ?: GroupCurrency.fallback,
-                members = ofGroup.filterNot { it.isRemoved }.map(::toDomain),
+                members = ofGroup
+                    .filterNot { it.isRemoved }
+                    .map { member ->
+                        toDomain(
+                            entity = member,
+                            photoUrl = if (member.isMe) {
+                                myPhotoUrl
+                            } else {
+                                member.userId?.let(photoUrlsByUserId::get)
+                            },
+                        )
+                    },
                 isPending = group.pendingSync || ofGroup.any { it.pendingSync },
                 inviteCode = group.inviteCode,
                 // Why: both are null for a group made here before any account, which the first sync gives this one.
@@ -190,7 +206,18 @@ class GroupMapperImpl : GroupMapper {
         inviteCode = dto.inviteCode,
     )
 
-    private fun toDomain(entity: GroupMemberEntity): GroupMember = GroupMember(
+    // Why: a profile with no photo is no row, so its face keeps the initials.
+    override fun toEntity(dto: MemberPhotoDto): MemberPhotoEntity? = dto.photoUrl?.let {
+        MemberPhotoEntity(
+            userId = dto.userId,
+            photoUrl = it,
+        )
+    }
+
+    private fun toDomain(
+        entity: GroupMemberEntity,
+        photoUrl: String?,
+    ): GroupMember = GroupMember(
         id = entity.id,
         name = entity.name,
         avatarColor = AvatarColor.fromCodeOrNull(entity.avatarColor) ?: AvatarColor.default,
@@ -198,6 +225,7 @@ class GroupMapperImpl : GroupMapper {
         hasJoined = entity.isMe || entity.userId != null,
         userId = entity.userId,
         inviteCode = entity.inviteCode,
+        photoUrl = photoUrl,
     )
 
     override fun encode(

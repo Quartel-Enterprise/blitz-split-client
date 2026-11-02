@@ -272,7 +272,7 @@ private struct ContactProfileHeader: View {
             ? AnyLayout(HStackLayout(spacing: 14))
             : AnyLayout(VStackLayout(spacing: 8))
         layout {
-            AvatarPhoto(initial: state.initials, color: contact.color, photoUrl: nil, size: isRow ? 56 : 88)
+            AvatarPhoto(initial: state.initials, color: contact.color, photoUrl: contact.photoUrl, size: isRow ? 56 : 88)
                 .accessibilityHidden(true)
             VStack(alignment: isRow ? .leading : .center, spacing: 4) {
                 Text(verbatim: contact.name)

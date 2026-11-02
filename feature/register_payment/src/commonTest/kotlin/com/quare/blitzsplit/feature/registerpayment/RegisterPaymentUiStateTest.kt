@@ -516,8 +516,22 @@ class RegisterPaymentUiStateTest {
         assertFalse(canMarkAsPaid)
     }
 
-    private val me = PaymentPerson("member-2", "Pierre", "PI", AvatarColor.BLUE, isMe = true)
-    private val ana = PaymentPerson("member-1", "Ana", "AN", AvatarColor.PEACH, isMe = false)
+    private val me = PaymentPerson(
+        "member-2",
+        "Pierre",
+        "PI",
+        AvatarColor.BLUE,
+        photoUrl = null,
+        isMe = true,
+    )
+    private val ana = PaymentPerson(
+        "member-1",
+        "Ana",
+        "AN",
+        AvatarColor.PEACH,
+        photoUrl = null,
+        isMe = false,
+    )
     private val twoGroups = listOf("floripa", "ape").map { groupId ->
         PersonGroupBalance(
             groupId = groupId,
@@ -530,7 +544,14 @@ class RegisterPaymentUiStateTest {
         )
     }
 
-    private val diego = PaymentPerson("member-4", "Diego", "DI", AvatarColor.SAND, isMe = false)
+    private val diego = PaymentPerson(
+        "member-4",
+        "Diego",
+        "DI",
+        AvatarColor.SAND,
+        photoUrl = null,
+        isMe = false,
+    )
 
     private val pixPhone = key("phone", PaymentKeyType.PHONE, "+5521987654321", isDefault = true)
     private val pixEmail = key("email", PaymentKeyType.EMAIL, "ana@email.com")

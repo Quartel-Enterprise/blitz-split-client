@@ -194,9 +194,9 @@ class GroupDetailBalancesViewModelTest {
                         fromMemberId = PIERRE,
                         toMemberId = BRUNO,
                         fromName = "Pierre",
-                        fromFace = GroupFace("P", AvatarColor.BLUE),
+                        fromFace = GroupFace("P", AvatarColor.BLUE, photoUrl = null),
                         toName = "Bruno",
-                        toFace = GroupFace("B", AvatarColor.GREEN),
+                        toFace = GroupFace("B", AvatarColor.GREEN, photoUrl = null),
                         amountMinor = 3_000,
                         kind = DebtKind.YOU_OWE,
                     ),
@@ -339,9 +339,9 @@ class GroupDetailBalancesViewModelTest {
                         fromMemberId = ANA,
                         toMemberId = CARLA,
                         fromName = "Ana",
-                        fromFace = GroupFace("A", AvatarColor.PEACH),
+                        fromFace = GroupFace("A", AvatarColor.PEACH, photoUrl = null),
                         toName = "Carla",
-                        toFace = GroupFace("C", AvatarColor.LILAC),
+                        toFace = GroupFace("C", AvatarColor.LILAC, photoUrl = null),
                         amountMinor = 10_000,
                         kind = DebtKind.BETWEEN_OTHERS,
                     ),
@@ -349,9 +349,9 @@ class GroupDetailBalancesViewModelTest {
                         fromMemberId = BRUNO,
                         toMemberId = ANA,
                         fromName = "Bruno",
-                        fromFace = GroupFace("B", AvatarColor.GREEN),
+                        fromFace = GroupFace("B", AvatarColor.GREEN, photoUrl = null),
                         toName = "Ana",
-                        toFace = GroupFace("A", AvatarColor.PEACH),
+                        toFace = GroupFace("A", AvatarColor.PEACH, photoUrl = null),
                         amountMinor = 4_000,
                         kind = DebtKind.BETWEEN_OTHERS,
                     ),
@@ -413,7 +413,7 @@ class GroupDetailBalancesViewModelTest {
             assertEquals(ANA, row.fromMemberId)
             assertEquals("member-gone", row.toMemberId)
             assertEquals("Ana", row.fromName)
-            assertEquals(GroupFace("A", AvatarColor.PEACH), row.fromFace)
+            assertEquals(GroupFace("A", AvatarColor.PEACH, photoUrl = null), row.fromFace)
             assertNull(row.toName)
             assertNull(row.toFace)
         }
@@ -850,6 +850,7 @@ class GroupDetailBalancesViewModelTest {
         hasJoined = hasJoined,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: one payer, split in equal halves with the other member, so the other owes the payer half the bill.

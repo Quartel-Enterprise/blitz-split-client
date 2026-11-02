@@ -1253,6 +1253,7 @@ class GlobalBalancesViewModelTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
     )
@@ -1265,6 +1266,7 @@ class GlobalBalancesViewModelTest {
         hasJoined = true,
         userId = "pierre",
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun joined(
@@ -1279,6 +1281,7 @@ class GlobalBalancesViewModelTest {
         hasJoined = true,
         userId = userId,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun group(

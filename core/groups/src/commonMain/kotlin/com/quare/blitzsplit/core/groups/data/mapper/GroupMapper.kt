@@ -2,18 +2,27 @@ package com.quare.blitzsplit.core.groups.data.mapper
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 
 interface GroupMapper {
-    // Why: each group with its own members, in the order the tables keep them, without the ones removed here.
+    /*
+     * Why: each group with its own members, in the order the tables keep them, without the ones removed here. Each
+     * member who joined gets their account's photo, and this device's user the profile's, which may be newer.
+     */
     fun toDomain(
         groups: List<GroupEntity>,
         members: List<GroupMemberEntity>,
+        photos: List<MemberPhotoEntity>,
+        myPhotoUrl: String?,
     ): List<Group>
+
+    fun toEntity(dto: MemberPhotoDto): MemberPhotoEntity?
 
     // Why: a new group, pending until the sync. With no owner, it is kept by whoever the first sync runs under.
     fun toEntity(

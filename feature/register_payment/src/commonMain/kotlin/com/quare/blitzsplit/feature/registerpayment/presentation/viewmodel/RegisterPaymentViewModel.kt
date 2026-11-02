@@ -284,6 +284,7 @@ class RegisterPaymentViewModel(
             name = person.name.orEmpty(),
             initials = person.name?.let(Initials::of).orEmpty(),
             avatarColor = person.face?.color ?: AvatarColor.default,
+            photoUrl = person.face?.photoUrl,
             isMe = false,
         ).takeIf { person.name != null }
         val owesMe = person.netMinor > 0
@@ -439,6 +440,7 @@ class RegisterPaymentViewModel(
         name = member.name,
         initials = Initials.ofMember(member.name, member.isMe),
         avatarColor = member.avatarColor,
+        photoUrl = member.photoUrl,
         isMe = member.isMe,
     )
 

@@ -115,6 +115,7 @@ private fun MemberRow(
             AvatarBadge(
                 initial = member.initials,
                 color = member.avatarColor,
+                photoUrl = member.photoUrl,
             )
             Column(
                 modifier = Modifier.weight(1f),

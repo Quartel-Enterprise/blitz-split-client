@@ -8,6 +8,8 @@ data class StatsPersonRow(
     val name: String?,
     val initials: String,
     val avatarColor: AvatarColor,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     val isMe: Boolean,
     val amountMinor: Long,
     // Why: the bar, scaled by the largest amount of the list.

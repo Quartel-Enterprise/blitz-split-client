@@ -28,6 +28,7 @@ class JsSearchPersonHit(
     val nameMatch: JsTextMatch,
     val initial: String,
     val color: String,
+    val photoUrl: String?,
     val groupId: String,
     val groupName: String,
 )
@@ -98,6 +99,7 @@ private fun toJsSearchPersonHit(hit: SearchPersonHit): JsSearchPersonHit = JsSea
     nameMatch = toJsTextMatch(hit.nameMatch),
     initial = hit.initial,
     color = hit.color.code,
+    photoUrl = hit.photoUrl,
     groupId = hit.groupId,
     groupName = hit.groupName,
 )

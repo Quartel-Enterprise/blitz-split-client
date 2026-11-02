@@ -61,6 +61,7 @@ internal fun ContactListRow(
         AvatarBadge(
             initial = row.initials,
             color = row.color,
+            photoUrl = row.photoUrl,
             size = faceSize,
         )
         NameColumn(

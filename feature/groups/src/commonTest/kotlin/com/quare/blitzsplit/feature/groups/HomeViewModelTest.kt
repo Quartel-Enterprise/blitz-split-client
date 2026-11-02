@@ -1887,6 +1887,7 @@ class HomeViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: one payer for the whole bill, split over the members given.

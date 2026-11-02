@@ -121,6 +121,7 @@ class PickPaymentViewModel(
         name = member.name,
         initials = Initials.ofMember(member.name, member.isMe),
         avatarColor = member.avatarColor,
+        photoUrl = member.photoUrl,
         isMe = member.isMe,
     )
 }

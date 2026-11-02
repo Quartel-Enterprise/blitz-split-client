@@ -12,6 +12,8 @@ data class ChargeDraft(
     val name: String?,
     val initials: String,
     val color: AvatarColor?,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     val currency: GroupCurrency,
     val amountMinor: Long,
     // Why: "· Viagem Floripa", and the groups the message names, the most recently active first.

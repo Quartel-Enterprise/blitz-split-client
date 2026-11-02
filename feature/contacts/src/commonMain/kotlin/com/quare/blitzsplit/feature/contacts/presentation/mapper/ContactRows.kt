@@ -9,6 +9,7 @@ internal fun rowOf(contact: Contact): ContactRow = ContactRow(
     name = contact.name,
     initials = Initials.of(contact.name),
     color = contact.color,
+    photoUrl = contact.photoUrl,
     net = contact.net,
     groupCount = contact.groups.size,
     firstGroupName = contact.groups.first().groupName,

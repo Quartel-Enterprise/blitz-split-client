@@ -434,6 +434,7 @@ class SettleUpViewModelTest {
                 hasJoined = true,
                 userId = "pierre",
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 carlaId,
@@ -443,6 +444,7 @@ class SettleUpViewModelTest {
                 hasJoined = carlaUserId != null,
                 userId = carlaUserId,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,

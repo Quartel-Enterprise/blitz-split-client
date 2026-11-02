@@ -301,7 +301,7 @@ function PersonFace({
     >
       <span className="relative flex">
         {person.color ? (
-          <Avatar initial={person.initials} color={person.color} className="size-12 text-base md:size-14 md:text-lg" />
+          <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-12 text-base md:size-14 md:text-lg" />
         ) : (
           <span aria-hidden className="size-12 rounded-full bg-muted md:size-14" />
         )}
