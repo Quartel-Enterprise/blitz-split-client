@@ -179,6 +179,8 @@ class JsSplitBillState(
     val receipt: JsBillReceipt?,
     val showsScanReceipt: Boolean,
     val canScanReceipt: Boolean,
+    // Why: "Ler cupom fiscal" needs the internet; its help says so offline.
+    val isOnline: Boolean,
     // Why: the file picker to open, from Início's "Ler cupom fiscal", once "Rachar em qual grupo?" was answered.
     val showsReceiptCamera: Boolean,
     val showsReceiptFailure: Boolean,
@@ -285,6 +287,7 @@ class SplitBillPresenter(
                 },
                 showsScanReceipt = state.showsScanReceipt,
                 canScanReceipt = state.canScanReceipt,
+                isOnline = state.isOnline,
                 showsReceiptCamera = state.showsReceiptCamera,
                 showsReceiptFailure = state.showsReceiptFailure,
             )
