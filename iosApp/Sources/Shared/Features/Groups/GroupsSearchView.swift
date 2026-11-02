@@ -214,7 +214,7 @@ private struct SearchPersonRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: hit.initial, color: hit.color, photoUrl: nil, size: 36)
+            AvatarPhoto(initial: hit.initial, color: hit.color, photoUrl: hit.photoUrl, size: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(GroupsSearchCopy.marked(hit.name, hit.nameMatch))
                     .lineLimit(1)

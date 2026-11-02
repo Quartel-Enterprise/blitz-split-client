@@ -48,6 +48,7 @@ internal fun ConsumerFacesRow(people: List<BillPerson>) {
                 AvatarBadge(
                     initial = person.initials,
                     color = person.avatarColor,
+                    photoUrl = person.photoUrl,
                     size = 24.dp,
                 )
             }

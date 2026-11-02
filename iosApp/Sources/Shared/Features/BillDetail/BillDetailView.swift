@@ -136,7 +136,7 @@ private struct PayerLine: View {
             if !faces.isEmpty {
                 HStack(spacing: -size * 0.3) {
                     ForEach(Array(faces.enumerated()), id: \.offset) { _, payer in
-                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: size)
+                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: payer.photoUrl, size: size)
                     }
                 }
                 .accessibilityHidden(true)
@@ -228,7 +228,7 @@ private struct ShareAvatar: View {
                     .frame(width: size, height: size)
                     .background(.fill.tertiary, in: .circle)
             } else {
-                AvatarPhoto(initial: row.initials, color: row.avatarColor, photoUrl: nil, size: size)
+                AvatarPhoto(initial: row.initials, color: row.avatarColor, photoUrl: row.photoUrl, size: size)
             }
         }
         .accessibilityHidden(true)

@@ -43,6 +43,7 @@ class CreateGroupUseCase(
                             hasJoined = member.isMe,
                             userId = null,
                             inviteCode = null,
+                            photoUrl = null,
                         )
                     },
                     isPending = true,

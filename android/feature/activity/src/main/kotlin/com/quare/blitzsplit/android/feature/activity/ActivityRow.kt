@@ -24,14 +24,11 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -56,6 +54,8 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityType
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
+
+private val groupDotSize = 12.dp
 
 // Why: the small badge on the avatar says what kind of event it is; a deleted target shows the trash.
 internal fun iconOf(item: ActivityItem): ImageVector = when {
@@ -123,7 +123,6 @@ internal fun ActorAvatarIcon(
 }
 
 // Why: the group's own shape and color from Grupos, small before its name.
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun GroupDotIcon(
     color: AvatarColor?,
@@ -132,10 +131,10 @@ internal fun GroupDotIcon(
     val isDark = LocalIsDarkTheme.current
     Box(
         modifier = modifier
-            .size(12.dp)
+            .size(groupDotSize)
             .background(
                 color?.toContainerColor(isDark) ?: MaterialTheme.colorScheme.outlineVariant,
-                MaterialShapes.Cookie4Sided.toShape(),
+                groupShapeOf(groupDotSize),
             ),
     )
 }

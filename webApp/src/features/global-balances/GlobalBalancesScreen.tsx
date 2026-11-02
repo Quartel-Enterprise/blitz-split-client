@@ -278,7 +278,7 @@ function PersonSummary({ row, name }: { row: JsPersonRow; name: string }) {
 // Why: a blank face for someone no longer in the group, as the group's Saldos draws them.
 function PersonFace({ row, className }: { row: JsPersonRow; className: string }) {
   if (!row.color) return <span aria-hidden className={cn('shrink-0 rounded-full bg-muted', className)} />
-  return <Avatar initial={row.initials} color={row.color} className={className} />
+  return <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className={className} />
 }
 
 /** Recebi and Cobrar for someone who owes you, else Acertar: in the row and in the desktop's pane. */

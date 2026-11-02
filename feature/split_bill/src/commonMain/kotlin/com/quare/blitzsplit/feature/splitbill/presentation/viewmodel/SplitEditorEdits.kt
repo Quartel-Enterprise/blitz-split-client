@@ -61,6 +61,7 @@ internal fun GroupMember.toBillPerson(): BillPerson = BillPerson(
     name = name,
     initials = Initials.ofMember(name, isMe),
     avatarColor = avatarColor,
+    photoUrl = photoUrl,
     isMe = isMe,
     hasJoined = hasJoined,
 )

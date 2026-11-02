@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.groups.data.mapper
 
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
+import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -11,6 +12,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -43,7 +45,12 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members)
+        val mapped = mapper.toDomain(
+            groups,
+            members,
+            photos = emptyList(),
+            myPhotoUrl = null,
+        )
 
         // Then
         assertEquals(listOf("group-1", "group-2"), mapped.map { it.id })
@@ -63,7 +70,12 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members)
+        val mapped = mapper.toDomain(
+            groups,
+            members,
+            photos = emptyList(),
+            myPhotoUrl = null,
+        )
 
         // Then
         assertEquals(emptyList(), mapped.single().members)
@@ -82,7 +94,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals("Viagem Floripa", mapped.name)
@@ -102,7 +120,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(GroupType.OTHER, mapped.type)
@@ -119,7 +143,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(AvatarColor.default, mapped.color)
@@ -136,7 +166,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(GroupCurrency.USD, mapped.currency)
@@ -154,7 +190,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(AvatarColor.default, mapped.members.single().avatarColor)
@@ -173,7 +215,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(
@@ -185,6 +233,7 @@ class GroupMapperImplTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             mapped.members.single(),
         )
@@ -204,8 +253,12 @@ class GroupMapperImplTest {
 
         // When
         val member = mapper
-            .toDomain(groups, members)
-            .single()
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
             .members
             .single()
 
@@ -228,8 +281,12 @@ class GroupMapperImplTest {
 
         // When
         val member = mapper
-            .toDomain(groups, members)
-            .single()
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
             .members
             .single()
 
@@ -252,8 +309,12 @@ class GroupMapperImplTest {
 
         // When
         val member = mapper
-            .toDomain(groups, members)
-            .single()
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
             .members
             .single()
 
@@ -272,7 +333,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertTrue(mapped.isPending)
@@ -295,7 +362,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertTrue(mapped.isPending)
@@ -318,7 +391,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertFalse(mapped.isPending)
@@ -646,7 +725,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals("aB3dE5gH", mapped.inviteCode)
@@ -658,7 +743,13 @@ class GroupMapperImplTest {
         val groups = listOf(groupEntity(id = "group-1"))
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertNull(mapped.inviteCode)
@@ -726,7 +817,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(listOf("m-1", "m-3"), mapped.members.map { it.id })
@@ -754,7 +851,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertTrue(mapped.isPending)
@@ -772,6 +875,7 @@ class GroupMapperImplTest {
             hasJoined = false,
             userId = null,
             inviteCode = null,
+            photoUrl = null,
         )
 
         // When
@@ -844,7 +948,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals("Xy7kQ2", mapped.members.single().inviteCode)
@@ -857,7 +967,13 @@ class GroupMapperImplTest {
         val members = listOf(memberEntity(id = "m-1"))
 
         // When
-        val mapped = mapper.toDomain(groups, members).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertNull(mapped.members.single().inviteCode)
@@ -889,6 +1005,7 @@ class GroupMapperImplTest {
             hasJoined = false,
             userId = null,
             inviteCode = "Xy7kQ2",
+            photoUrl = null,
         )
 
         // When
@@ -930,7 +1047,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertTrue(mapped.isCreatedByMe)
@@ -949,7 +1072,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertTrue(mapped.isCreatedByMe)
@@ -967,7 +1096,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertFalse(mapped.isCreatedByMe)
@@ -985,7 +1120,13 @@ class GroupMapperImplTest {
         )
 
         // When
-        val mapped = mapper.toDomain(groups, emptyList()).single()
+        val mapped = mapper
+            .toDomain(
+                groups,
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertFalse(mapped.isCreatedByMe)
@@ -1089,6 +1230,7 @@ class GroupMapperImplTest {
                 hasJoined = true,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 id = "m-2",
@@ -1098,6 +1240,7 @@ class GroupMapperImplTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 id = "m-3",
@@ -1107,6 +1250,7 @@ class GroupMapperImplTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = true,
@@ -1123,7 +1267,13 @@ class GroupMapperImplTest {
         val stored = groupEntity(id = "group-1").copy(defaultSplit = mapper.encode(split, over = null))
 
         // When
-        val group = mapper.toDomain(listOf(stored), emptyList()).single()
+        val group = mapper
+            .toDomain(
+                listOf(stored),
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertEquals(split, group.defaultSplit)
@@ -1135,7 +1285,13 @@ class GroupMapperImplTest {
         val stored = groupEntity(id = "group-1").copy(defaultSplit = """{"mode":"items","weights":[]}""")
 
         // When
-        val group = mapper.toDomain(listOf(stored), emptyList()).single()
+        val group = mapper
+            .toDomain(
+                listOf(stored),
+                emptyList(),
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
 
         // Then
         assertNull(group.defaultSplit)
@@ -1173,7 +1329,17 @@ class GroupMapperImplTest {
             text,
         )
         val back = groupEntity(id = "group-1").copy(defaultSplit = text)
-        assertEquals(split, mapper.toDomain(listOf(back), emptyList()).single().defaultSplit)
+        assertEquals(
+            split,
+            mapper
+                .toDomain(
+                    listOf(back),
+                    emptyList(),
+                    photos = emptyList(),
+                    myPhotoUrl = null,
+                ).single()
+                .defaultSplit,
+        )
     }
 
     @Test
@@ -1190,6 +1356,259 @@ class GroupMapperImplTest {
         assertTrue(mapper.decodeIncomes("not json").isEmpty())
     }
 
+    @Test
+    fun `GIVEN a member who joined with a photo WHEN mapping to the domain THEN the member shows that photo`() {
+        // Given
+        val members = listOf(
+            memberEntity(
+                id = "m-2",
+                userId = "user-2",
+            ),
+        )
+        val photos = listOf(
+            photo(
+                userId = "user-2",
+                photoUrl = "https://photos/ana.jpg",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(listOf(groupEntity(id = "group-1")), members, photos, myPhotoUrl = null)
+
+        // Then
+        assertEquals(
+            "https://photos/ana.jpg",
+            mapped
+                .single()
+                .members
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN a member that is just a name WHEN mapping to the domain THEN the member has no photo`() {
+        // Given
+        val members = listOf(
+            memberEntity(
+                id = "m-3",
+                userId = null,
+            ),
+        )
+        val photos = listOf(
+            photo(
+                userId = "user-2",
+                photoUrl = "https://photos/ana.jpg",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(listOf(groupEntity(id = "group-1")), members, photos, myPhotoUrl = null)
+
+        // Then
+        assertNull(
+            mapped
+                .single()
+                .members
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN a member who joined with no photo stored WHEN mapping to the domain THEN the member has no photo`() {
+        // Given
+        val members = listOf(
+            memberEntity(
+                id = "m-2",
+                userId = "user-2",
+            ),
+        )
+        val photos = listOf(
+            photo(
+                userId = "user-3",
+                photoUrl = "https://photos/bruno.jpg",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(listOf(groupEntity(id = "group-1")), members, photos, myPhotoUrl = null)
+
+        // Then
+        assertNull(
+            mapped
+                .single()
+                .members
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN this device user with a stored photo WHEN mapping to the domain THEN shows the profile photo instead`() {
+        // Given
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                userId = "user-1",
+                isMe = true,
+            ),
+        )
+        val photos = listOf(
+            photo(
+                userId = "user-1",
+                photoUrl = "https://photos/pierre-synced.jpg",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(
+            groups = listOf(groupEntity(id = "group-1")),
+            members = members,
+            photos = photos,
+            myPhotoUrl = "https://photos/pierre-local.jpg",
+        )
+
+        // Then
+        assertEquals(
+            "https://photos/pierre-local.jpg",
+            mapped
+                .single()
+                .members
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN this device user removed the profile photo WHEN mapping to the domain THEN shows no photo`() {
+        // Given
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                userId = "user-1",
+                isMe = true,
+            ),
+        )
+        val photos = listOf(
+            photo(
+                userId = "user-1",
+                photoUrl = "https://photos/pierre-synced.jpg",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(listOf(groupEntity(id = "group-1")), members, photos, myPhotoUrl = null)
+
+        // Then
+        assertNull(
+            mapped
+                .single()
+                .members
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN this device user before any account WHEN mapping to the domain THEN shows the profile photo`() {
+        // Given
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                userId = null,
+                isMe = true,
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(
+            groups = listOf(groupEntity(id = "group-1")),
+            members = members,
+            photos = emptyList(),
+            myPhotoUrl = "https://photos/pierre-local.jpg",
+        )
+
+        // Then
+        assertEquals(
+            "https://photos/pierre-local.jpg",
+            mapped
+                .single()
+                .members
+                .single()
+                .photoUrl,
+        )
+    }
+
+    @Test
+    fun `GIVEN the same account in two groups WHEN mapping to the domain THEN both show the same photo`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"), groupEntity(id = "group-2"))
+        val members = listOf(
+            memberEntity(
+                id = "m-2",
+                groupId = "group-1",
+                userId = "user-2",
+            ),
+            memberEntity(
+                id = "m-5",
+                groupId = "group-2",
+                userId = "user-2",
+            ),
+        )
+        val photos = listOf(
+            photo(
+                userId = "user-2",
+                photoUrl = "https://photos/ana.jpg",
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(groups, members, photos, myPhotoUrl = null)
+
+        // Then
+        assertEquals(
+            listOf("https://photos/ana.jpg", "https://photos/ana.jpg"),
+            mapped.map { it.members.single().photoUrl },
+        )
+    }
+
+    @Test
+    fun `GIVEN a profile without a photo WHEN mapping it to an entity THEN there is no row`() {
+        // Given
+        val dto = MemberPhotoDto(
+            userId = "user-2",
+            photoUrl = null,
+        )
+
+        // When
+        val entity = mapper.toEntity(dto)
+
+        // Then
+        assertNull(entity)
+    }
+
+    @Test
+    fun `GIVEN a profile with a photo WHEN mapping it to an entity THEN the row has its account and photo`() {
+        // Given
+        val dto = MemberPhotoDto(
+            userId = "user-2",
+            photoUrl = "https://photos/ana.jpg",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto)
+
+        // Then
+        assertEquals(
+            photo(
+                userId = "user-2",
+                photoUrl = "https://photos/ana.jpg",
+            ),
+            entity,
+        )
+    }
+
     private fun serverGroup(defaultSplit: JsonObject): GroupDto = GroupDto(
         id = "group-1",
         createdBy = "user-1",
@@ -1201,6 +1620,14 @@ class GroupMapperImplTest {
         updatedAt = 2L,
         inviteCode = null,
         defaultSplit = defaultSplit,
+    )
+
+    private fun photo(
+        userId: String,
+        photoUrl: String,
+    ): MemberPhotoEntity = MemberPhotoEntity(
+        userId = userId,
+        photoUrl = photoUrl,
     )
 
     private fun groupEntity(

@@ -181,7 +181,7 @@ struct PaymentFaces: View {
     @ViewBuilder
     private func face(_ person: PaymentPerson?) -> some View {
         if let person {
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
         } else {
             // Someone no longer in the group, a blank face as Saldos draws them
             Circle()

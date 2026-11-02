@@ -352,7 +352,7 @@ private struct DebtFaces: View {
     @ViewBuilder
     private func face(_ face: GroupFace?) -> some View {
         if let face {
-            AvatarPhoto(initial: face.initials, color: face.color, photoUrl: nil, size: size)
+            AvatarPhoto(initial: face.initials, color: face.color, photoUrl: face.photoUrl, size: size)
         } else {
             Circle()
                 .fill(.fill.tertiary)

@@ -138,6 +138,7 @@ private fun DebtFaceBadge(face: GroupFace?) {
             AvatarBadge(
                 initial = face.initials,
                 color = face.color,
+                photoUrl = face.photoUrl,
                 size = debtFaceSize,
             )
         }

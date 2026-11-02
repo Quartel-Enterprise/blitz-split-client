@@ -137,7 +137,7 @@ function BillBody({ state, money, title, description }: { state: JsBillDetailSta
             {faces.length > 0 && (
               <span aria-hidden className="flex shrink-0">
                 {faces.map((payer, index) => (
-                  <Avatar key={index} initial={payer.initials} color={payer.color} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
+                  <Avatar key={index} initial={payer.initials} color={payer.color} photoUrl={payer.photoUrl} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
                 ))}
               </span>
             )}
@@ -222,7 +222,7 @@ function ShareRow({ row, money }: { row: JsBillShareRow; money: Money }) {
           : null
   return (
     <li className="flex min-h-12 items-center gap-3 py-2">
-      <Avatar initial={row.initials} color={row.color} className="size-8 text-xs" />
+      <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{name}</span>
         {subtitle && <span className="truncate text-xs text-muted-foreground">{subtitle}</span>}

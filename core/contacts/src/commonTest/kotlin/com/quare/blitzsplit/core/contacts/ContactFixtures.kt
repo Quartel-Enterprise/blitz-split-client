@@ -33,6 +33,7 @@ internal fun member(
     hasJoined = isMe || userId != null,
     userId = userId,
     inviteCode = inviteCode,
+    photoUrl = null,
 )
 
 // Why: this device's user is a member of their own in each group, as the device has them.
@@ -192,6 +193,7 @@ internal fun contact(
     key = key,
     name = name,
     color = color,
+    photoUrl = null,
     userId = userId,
     groups = groups,
     nets = nets,

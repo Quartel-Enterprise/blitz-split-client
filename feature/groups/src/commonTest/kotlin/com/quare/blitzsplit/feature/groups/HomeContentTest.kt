@@ -95,6 +95,7 @@ class HomeContentTest {
                     name = "Ana Paula",
                     initials = "AP",
                     color = AvatarColor.PEACH,
+                    photoUrl = null,
                     currency = GroupCurrency.USD,
                     netMinor = 3200L,
                     isGuest = true,
@@ -492,7 +493,7 @@ class HomeContentTest {
     ): PersonBalance = PersonBalance(
         key = key,
         name = name,
-        face = name?.let { GroupFace(it.take(1).uppercase(), color) },
+        face = name?.let { GroupFace(it.take(1).uppercase(), color, photoUrl = null) },
         currency = currency,
         netMinor = netMinor,
         groups = emptyList(),
@@ -582,6 +583,7 @@ class HomeContentTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: one payer for the whole bill, split over the members given.

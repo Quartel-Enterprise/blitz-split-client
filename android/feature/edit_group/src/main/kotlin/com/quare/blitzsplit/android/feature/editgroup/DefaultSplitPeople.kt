@@ -128,6 +128,7 @@ private fun PersonRow(
             AvatarBadge(
                 initial = person.initials,
                 color = person.avatarColor,
+                photoUrl = person.photoUrl,
                 size = 36.dp,
             )
             Column(modifier = Modifier.weight(1f)) {

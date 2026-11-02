@@ -375,7 +375,7 @@ function PayerField({ presenter, state, money }: { presenter: SplitBillPresenter
         {faces.length > 0 && (
           <span aria-hidden className="flex shrink-0">
             {faces.map((person, index) => (
-              <Avatar key={person.id} initial={person.initials} color={person.color} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
+              <Avatar key={person.id} initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
             ))}
           </span>
         )}
@@ -481,7 +481,7 @@ function SplitSummary({ presenter, split, summary, money }: { presenter: SplitBi
     >
       <span aria-hidden className="flex shrink-0">
         {faces.map((person, index) => (
-          <Avatar key={person.id} initial={person.initials} color={person.color} className={cn('size-6 border-2 border-card text-[10px]', index > 0 && '-ml-2')} />
+          <Avatar key={person.id} initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={cn('size-6 border-2 border-card text-[10px]', index > 0 && '-ml-2')} />
         ))}
         {extra > 0 && (
           <span className="-ml-2 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-card bg-muted px-1 text-[10px] font-semibold">+{extra}</span>
@@ -538,7 +538,7 @@ function PayerList({ presenter, state }: { presenter: SplitBillPresenter; state:
     <div role="radiogroup" aria-label={t('splitBill_payer')} className="flex flex-col divide-y overflow-hidden rounded-lg border">
       {state.people.map((person) => (
         <PayerRow key={person.id} isSelected={person.id === state.payerSelection} onPick={() => presenter.pickPayer(person.id)}>
-          <Avatar initial={person.initials} color={person.color} className="size-8 text-xs" />
+          <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-8 text-xs" />
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="truncate font-medium">{personName(person)}</span>
             {!person.hasJoined && <span className="text-xs text-muted-foreground">{t('splitBill_notJoined')}</span>}
@@ -624,7 +624,7 @@ function SeveralPayersBody({ presenter, state, amounts, money }: { presenter: Sp
         {amounts.rows.map((row) => (
           <li key={row.memberId} className="flex min-h-12 items-center gap-3 px-3 py-1.5">
             {row.person ? (
-              <Avatar initial={row.person.initials} color={row.person.color} className="size-8 text-xs" />
+              <Avatar initial={row.person.initials} color={row.person.color} photoUrl={row.person.photoUrl} className="size-8 text-xs" />
             ) : (
               <span aria-hidden className="size-8 shrink-0 rounded-full bg-muted" />
             )}

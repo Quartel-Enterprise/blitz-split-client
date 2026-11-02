@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
@@ -48,8 +49,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         ActivityBackfillEntity::class,
         HiddenContactEntity::class,
         GroupPinEntity::class,
+        MemberPhotoEntity::class,
     ],
-    version = 22,
+    version = 23,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -135,6 +137,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 21,
             to = 22,
+        ),
+        AutoMigration(
+            from = 22,
+            to = 23,
         ),
     ],
 )

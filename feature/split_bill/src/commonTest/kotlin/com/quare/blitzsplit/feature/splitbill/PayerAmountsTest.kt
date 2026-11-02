@@ -170,6 +170,7 @@ class PayerAmountsTest {
         name = id,
         initials = "",
         avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
         isMe = false,
         hasJoined = true,
     )

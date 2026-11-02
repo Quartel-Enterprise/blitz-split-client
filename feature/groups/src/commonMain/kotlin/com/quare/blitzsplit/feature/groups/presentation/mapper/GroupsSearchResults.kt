@@ -89,6 +89,7 @@ private fun personHitsOf(
                     nameMatch = match,
                     initial = Initials.firstOf(member.name),
                     color = member.avatarColor,
+                    photoUrl = member.photoUrl,
                     groupId = group.id,
                     groupName = group.name,
                 )

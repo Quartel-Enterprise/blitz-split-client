@@ -14,6 +14,8 @@ data class HomePerson(
     val name: String?,
     val initials: String,
     val color: AvatarColor?,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     val currency: GroupCurrency,
     // Why: positive when they owe you ("te deve"), negative when you owe them ("você deve").
     val netMinor: Long,

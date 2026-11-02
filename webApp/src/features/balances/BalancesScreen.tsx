@@ -185,5 +185,5 @@ function DebtRowItem({ debt, presenter, formats }: { debt: JsDebtRow; presenter:
 /** A member's face, or a blank avatar for someone no longer in the group. */
 function Face({ face }: { face: JsGroupFace | null | undefined }) {
   if (!face) return <span className="size-8 shrink-0 rounded-full border border-dashed bg-muted" />
-  return <Avatar initial={face.initials} color={face.color} className="size-8 text-xs" />
+  return <Avatar initial={face.initials} color={face.color} photoUrl={face.photoUrl} className="size-8 text-xs" />
 }

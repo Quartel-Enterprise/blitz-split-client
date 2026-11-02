@@ -61,6 +61,7 @@ internal fun GroupFacesRow(
                     AvatarBadge(
                         initial = face.initials,
                         color = face.color,
+                        photoUrl = face.photoUrl,
                         size = faceSize,
                     )
                 }

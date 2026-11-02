@@ -129,7 +129,7 @@ function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money
 function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; member: JsMembersMember; money: (minor: number) => string }) {
   return (
     <li className="flex items-center gap-3 py-2.5 pr-2 pl-4">
-      <Avatar initial={member.initials} color={member.color} className="size-10 text-sm" />
+      <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">
           {member.name}

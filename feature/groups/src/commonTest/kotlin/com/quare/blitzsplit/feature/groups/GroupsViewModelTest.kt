@@ -1010,14 +1010,17 @@ class GroupsViewModelTest {
                     MemberFace(
                         initial = "P",
                         color = AvatarColor.GREEN,
+                        photoUrl = null,
                     ),
                     MemberFace(
                         initial = "A",
                         color = AvatarColor.PEACH,
+                        photoUrl = null,
                     ),
                     MemberFace(
                         initial = "B",
                         color = AvatarColor.SAND,
+                        photoUrl = null,
                     ),
                 ),
                 extraMemberCount = 0,
@@ -1102,14 +1105,17 @@ class GroupsViewModelTest {
                     MemberFace(
                         initial = "P",
                         color = AvatarColor.GREEN,
+                        photoUrl = null,
                     ),
                     MemberFace(
                         initial = "A",
                         color = AvatarColor.PEACH,
+                        photoUrl = null,
                     ),
                     MemberFace(
                         initial = "B",
                         color = AvatarColor.SAND,
+                        photoUrl = null,
                     ),
                 ),
                 row.faces,
@@ -1165,6 +1171,7 @@ class GroupsViewModelTest {
                     MemberFace(
                         initial = "P",
                         color = AvatarColor.GREEN,
+                        photoUrl = null,
                     ),
                 ),
                 row.faces,
@@ -2601,6 +2608,7 @@ class GroupsViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun prepareScenario(

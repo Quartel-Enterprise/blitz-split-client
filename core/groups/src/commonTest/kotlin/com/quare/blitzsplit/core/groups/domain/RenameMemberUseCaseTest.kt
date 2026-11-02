@@ -98,6 +98,7 @@ class RenameMemberUseCaseTest {
                 hasJoined = true,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 id = "m-2",
@@ -107,6 +108,7 @@ class RenameMemberUseCaseTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,

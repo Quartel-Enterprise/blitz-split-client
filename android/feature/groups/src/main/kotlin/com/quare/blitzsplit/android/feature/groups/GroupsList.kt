@@ -394,6 +394,7 @@ internal fun MemberFacesRow(group: GroupRow) {
             AvatarBadge(
                 initial = face.initial,
                 color = face.color,
+                photoUrl = face.photoUrl,
                 size = 22.dp,
             )
         }

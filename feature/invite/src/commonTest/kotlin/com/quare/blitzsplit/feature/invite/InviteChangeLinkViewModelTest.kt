@@ -456,6 +456,7 @@ class InviteChangeLinkViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val ana = GroupMember(
         "member-2",
@@ -465,6 +466,7 @@ class InviteChangeLinkViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: a group this device's user created and that already synced, so it has a link to change.

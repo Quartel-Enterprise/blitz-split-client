@@ -79,6 +79,7 @@ internal fun BillDetailsSection(
                 else -> AvatarBadge(
                     initial = payer.initials,
                     color = payer.avatarColor,
+                    photoUrl = payer.photoUrl,
                 )
             }
         }
@@ -129,6 +130,7 @@ private fun StackedFacesRow(people: List<BillPerson>) {
                 AvatarBadge(
                     initial = person.initials,
                     color = person.avatarColor,
+                    photoUrl = person.photoUrl,
                     size = splitFaceSize,
                 )
             }

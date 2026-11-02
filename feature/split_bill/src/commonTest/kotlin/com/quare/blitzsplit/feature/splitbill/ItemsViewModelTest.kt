@@ -504,6 +504,7 @@ class ItemsViewModelTest {
         hasJoined = isMe,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun prepareScenario(

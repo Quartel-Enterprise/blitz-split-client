@@ -1339,6 +1339,7 @@ class JoinInviteViewModelTest {
                 hasJoined = true,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,

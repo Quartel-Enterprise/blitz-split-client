@@ -887,6 +887,7 @@ class InviteViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val ana = GroupMember(
         "member-2",
@@ -896,6 +897,7 @@ class InviteViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val bruno = GroupMember(
         "member-3",
@@ -905,6 +907,7 @@ class InviteViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val carla = GroupMember(
         "member-4",
@@ -914,6 +917,7 @@ class InviteViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private val trip = Group(

@@ -357,6 +357,7 @@ private fun createPreviewPerson(
     name = name,
     initials = name.take(2).uppercase(),
     avatarColor = if (isMe) AvatarColor.BLUE else AvatarColor.GREEN,
+    photoUrl = null,
     isMe = isMe,
     isNew = false,
     isIncluded = true,

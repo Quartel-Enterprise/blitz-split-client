@@ -66,6 +66,7 @@ class MembersUiStateTest {
         name = "Ana",
         initials = "AN",
         avatarColor = AvatarColor.PEACH,
+        photoUrl = null,
         isMe = isMe,
         hasJoined = hasJoined,
         personalLink = null,

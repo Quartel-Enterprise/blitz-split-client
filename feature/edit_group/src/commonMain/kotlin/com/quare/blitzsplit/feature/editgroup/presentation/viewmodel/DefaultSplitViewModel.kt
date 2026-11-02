@@ -205,6 +205,7 @@ class DefaultSplitViewModel(
             name = member.name,
             initials = Initials.ofMember(member.name, member.isMe),
             avatarColor = member.avatarColor,
+            photoUrl = member.photoUrl,
             isMe = member.isMe,
             isNew = false,
             isIncluded = mode != DefaultSplitMode.EQUAL || weight > 0,

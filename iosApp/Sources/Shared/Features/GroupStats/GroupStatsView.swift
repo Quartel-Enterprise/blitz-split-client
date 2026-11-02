@@ -407,7 +407,7 @@ private struct StatsPersonLine: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 36)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 36)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .firstTextBaseline) {

@@ -221,6 +221,7 @@ private fun SearchPersonRow(
             AvatarBadge(
                 initial = hit.initial,
                 color = hit.color,
+                photoUrl = hit.photoUrl,
                 size = 48.dp,
             )
         },

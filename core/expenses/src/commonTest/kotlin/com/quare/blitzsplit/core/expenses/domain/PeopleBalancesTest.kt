@@ -429,6 +429,7 @@ class PeopleBalancesTest {
         hasJoined = isMe || userId != null,
         userId = userId,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun group(

@@ -52,6 +52,7 @@ internal fun member(
     hasJoined = userId != null,
     userId = userId,
     inviteCode = inviteCode,
+    photoUrl = null,
 )
 
 internal fun me(
@@ -65,6 +66,7 @@ internal fun me(
     hasJoined = true,
     userId = "pierre",
     inviteCode = inviteCode,
+    photoUrl = null,
 )
 
 internal fun group(

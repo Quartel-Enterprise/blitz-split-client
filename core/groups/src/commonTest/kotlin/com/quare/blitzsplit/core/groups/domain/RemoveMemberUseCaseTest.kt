@@ -60,6 +60,7 @@ class RemoveMemberUseCaseTest {
                 hasJoined = true,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 id = "m-2",
@@ -69,6 +70,7 @@ class RemoveMemberUseCaseTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,

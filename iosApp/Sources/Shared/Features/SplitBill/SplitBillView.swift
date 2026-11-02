@@ -233,7 +233,7 @@ private struct SplitFaces: View {
     var body: some View {
         HStack(spacing: -size * 0.3) {
             ForEach(people.prefix(4), id: \.id) { person in
-                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
                     .overlay(Circle().strokeBorder(Palette.card, lineWidth: 1.5))
             }
         }
@@ -411,7 +411,7 @@ private struct PhoneSplitBill: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     } else if let payer = state.payer {
-                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: 24)
+                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: payer.photoUrl, size: 24)
                         Text(verbatim: SplitBillCopy.name(payer))
                             .foregroundStyle(.secondary)
                     } else if state.isPayerFormerMember {
@@ -582,7 +582,7 @@ private struct PayerSheet: View {
                         model.send(SplitBillUiEventOnPayerPicked(memberId: person.id))
                     } label: {
                         HStack(spacing: 12) {
-                            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 32)
+                            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(verbatim: SplitBillCopy.name(person))
                                 if !person.hasJoined {
@@ -758,7 +758,7 @@ private struct PayerAmountFace: View {
 
     var body: some View {
         if let person = row.person {
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
         } else {
             Circle()
                 .fill(.fill.tertiary)

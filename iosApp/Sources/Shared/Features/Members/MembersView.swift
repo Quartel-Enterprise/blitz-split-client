@@ -333,7 +333,7 @@ private struct MemberRow: View {
             }
         } label: {
             HStack(spacing: 12) {
-                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
                 VStack(alignment: .leading, spacing: 2) {
                     if member.isMe {
                         Text("\(member.name) (you)")
@@ -503,7 +503,7 @@ private struct PhonePersonalInvite: View {
             ScrollView {
                 VStack(spacing: 16) {
                     VStack(spacing: 6) {
-                        AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 60)
+                        AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 60)
                         Text(verbatim: member.name)
                             .font(.title2.bold())
                         personalInviteText(memberName: member.name)
@@ -574,7 +574,7 @@ private struct MacPersonalInvite: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 40)
+                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 40)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Personal invite for \(member.name)")
                         .font(.headline)

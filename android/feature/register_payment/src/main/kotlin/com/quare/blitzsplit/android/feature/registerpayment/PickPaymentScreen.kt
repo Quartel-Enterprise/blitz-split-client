@@ -345,6 +345,7 @@ private fun createPreviewPerson(
     name = name,
     initials = name.take(2).uppercase(),
     avatarColor = color,
+    photoUrl = null,
     isMe = isMe,
 )
 
