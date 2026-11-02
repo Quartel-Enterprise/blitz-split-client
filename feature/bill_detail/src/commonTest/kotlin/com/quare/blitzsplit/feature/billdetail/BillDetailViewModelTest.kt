@@ -1,10 +1,17 @@
 package com.quare.blitzsplit.feature.billdetail
 
+import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
+import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
+import com.quare.blitzsplit.core.activity.domain.model.ActivityField
+import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
+import com.quare.blitzsplit.core.activity.domain.model.ActivityMemberValue
+import com.quare.blitzsplit.core.activity.domain.model.ActivityValue
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -42,7 +49,9 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
@@ -1429,6 +1438,729 @@ class BillDetailViewModelTest {
             assertNull(deletedBills.observeNoticeGroupId().first())
         }
 
+    @Test
+    fun `GIVEN the bill is open WHEN typing a comment THEN keeps the draft and it can be sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val typed = "Quem pagou o estacionamento?"
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged(typed))
+
+            // Then
+            assertEquals(typed, viewModel.uiState.value.commentDraft)
+            assertTrue(viewModel.uiState.value.canSendComment)
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN typing only spaces THEN the comment cannot be sent`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("   "))
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSendComment)
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN typing over 1000 letters THEN the comment cannot be sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("a".repeat(1_001)))
+
+            // Then
+            assertFalse(viewModel.uiState.value.canSendComment)
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN typing 1000 letters between spaces THEN the comment can be sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("  " + "a".repeat(1_000) + "  "))
+
+            // Then
+            assertTrue(viewModel.uiState.value.canSendComment)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN typing a comment THEN it cannot be sent and no empty state shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isRoomRead = false)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo o carvão"))
+
+            // Then
+            assertFalse(viewModel.uiState.value.canSendComment)
+            assertFalse(viewModel.uiState.value.showsNoComments)
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN typing a comment THEN it cannot be sent`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo o carvão"))
+
+        // Then
+        assertFalse(viewModel.uiState.value.canSendComment)
+    }
+
+    @Test
+    fun `GIVEN no internet and a comment typed WHEN sending it THEN keeps it on the device in the queue as the user`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("  Paguei no Pix  "))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            val saved = comments.comments.value.single()
+            assertEquals("Paguei no Pix", saved.body)
+            assertEquals(EXPENSE_ID, saved.expenseId)
+            assertEquals(GROUP_ID, saved.groupId)
+            assertEquals(PIERRE, saved.authorMemberId)
+            assertEquals("Pierre", saved.authorName)
+            assertNull(saved.threadId)
+            assertNull(saved.replyToName)
+            assertEquals(nowMillis, saved.postedAt)
+            assertTrue(saved.isPending)
+            val state = viewModel.uiState.value
+            assertEquals("", state.commentDraft)
+            assertNull(state.replyTarget)
+            val row = state.threads.single().comment
+            assertTrue(row.isPending)
+            assertTrue(row.isMe)
+            assertEquals("Paguei no Pix", row.body)
+            assertEquals(1, state.commentCount)
+            assertFalse(state.showsNoComments)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN only spaces typed WHEN sending the comment THEN nothing is saved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("   "))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertTrue(comments.comments.value.isEmpty())
+        assertEquals("   ", viewModel.uiState.value.commentDraft)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the device cannot keep the comment WHEN sending a reply THEN brings it back and says so`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(comment(id = "c1")),
+                commentError = IllegalStateException("bill gone"),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("Eu levo", state.commentDraft)
+            assertEquals(
+                BillReplyTarget(
+                    threadId = "c1",
+                    commentId = "c1",
+                    name = "Bruno",
+                    isMe = false,
+                ),
+                state.replyTarget,
+            )
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowCommentError), actions)
+            assertEquals(listOf("c1"), comments.comments.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the bill is open WHEN a sync brings a comment by Bruno THEN shows it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        comments.comments.value = listOf(
+            comment(
+                id = "c1",
+                body = "Quem trouxe o carvão?",
+            ),
+        )
+
+        // Then
+        val row = viewModel.uiState.value.threads
+            .single()
+            .comment
+        assertEquals("Bruno", row.authorName)
+        assertEquals("Quem trouxe o carvão?", row.body)
+        assertFalse(row.isMe)
+        assertFalse(row.isPending)
+    }
+
+    @Test
+    fun `GIVEN two comments and a reply WHEN the bill opens THEN counts the reply too and shows the thread`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(
+                    comment(
+                        id = "c1",
+                        postedAt = earlierToday,
+                    ),
+                    comment(
+                        id = "c2",
+                        postedAt = earlierToday + 1,
+                    ),
+                    comment(
+                        id = "r1",
+                        threadId = "c1",
+                        authorMemberId = ANA,
+                        authorName = "Ana",
+                        postedAt = laterToday,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(3, state.commentCount)
+            assertFalse(state.showsNoComments)
+            assertEquals(listOf("c1", "c2"), state.threads.map { it.comment.id })
+            assertEquals(
+                listOf("r1"),
+                state.threads
+                    .first()
+                    .replies
+                    .map { it.id },
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill without comments WHEN it opens THEN says there are none yet`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsNoComments)
+        assertEquals(0, state.commentCount)
+    }
+
+    @Test
+    fun `GIVEN a comment by Ana WHEN a sync renames her THEN the comment shows her new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(
+                    comment(
+                        authorMemberId = ANA,
+                        authorName = "Ana",
+                    ),
+                ),
+            )
+            val renamed = trip.copy(members = listOf(ana.copy(name = "Ana Paula"), pierre, bruno, carla))
+
+            // When
+            groups.groups.value = listOf(renamed)
+
+            // Then
+            assertEquals(
+                "Ana Paula",
+                viewModel.uiState.value.threads
+                    .single()
+                    .comment.authorName,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment by Bruno WHEN replying to it THEN says it answers Bruno in his thread`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+
+            // Then
+            assertEquals(
+                BillReplyTarget(
+                    threadId = "c1",
+                    commentId = "c1",
+                    name = "Bruno",
+                    isMe = false,
+                ),
+                viewModel.uiState.value.replyTarget,
+            )
+        }
+
+    @Test
+    fun `GIVEN a comment by the device user WHEN replying to it THEN the reply answers them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedComments = listOf(
+                    comment(
+                        id = "c1",
+                        authorMemberId = PIERRE,
+                        authorName = "Pierre",
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+
+            // Then
+            assertEquals(
+                BillReplyTarget(
+                    threadId = "c1",
+                    commentId = "c1",
+                    name = "Pierre",
+                    isMe = true,
+                ),
+                viewModel.uiState.value.replyTarget,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana replied to Bruno WHEN replying to Ana THEN the reply joins the thread of Bruno and answers Ana`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = threadWithReply)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("r1"))
+
+            // Then
+            assertEquals(
+                BillReplyTarget(
+                    threadId = "c1",
+                    commentId = "r1",
+                    name = "Ana",
+                    isMe = false,
+                ),
+                viewModel.uiState.value.replyTarget,
+            )
+        }
+
+    @Test
+    fun `GIVEN replying to the reply of Ana WHEN sending THEN the comment joins the thread and names Ana`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = threadWithReply)
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("r1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Combinado"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            val sent = comments.comments.value.single { it.id !in setOf("c1", "r1") }
+            assertEquals("c1", sent.threadId)
+            assertEquals("Ana", sent.replyToName)
+            val state = viewModel.uiState.value
+            assertNull(state.replyTarget)
+            assertEquals("", state.commentDraft)
+            assertEquals(
+                listOf("r1", sent.id),
+                state.threads
+                    .single()
+                    .replies
+                    .map { it.id },
+            )
+            assertEquals(3, state.commentCount)
+        }
+
+    @Test
+    fun `GIVEN replying to the comment of Bruno WHEN sending THEN the comment joins his thread naming nobody`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // Then
+            val sent = comments.comments.value.single { it.id != "c1" }
+            assertEquals("c1", sent.threadId)
+            assertNull(sent.replyToName)
+            assertNull(viewModel.uiState.value.replyTarget)
+        }
+
+    @Test
+    fun `GIVEN replying to Bruno WHEN cancelling the reply THEN the composer answers nobody`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyCancelled)
+
+            // Then
+            assertNull(viewModel.uiState.value.replyTarget)
+        }
+
+    @Test
+    fun `GIVEN replying to Bruno WHEN replying to a comment that is not there THEN still answers Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("unknown"))
+
+            // Then
+            assertEquals(
+                "c1",
+                viewModel.uiState.value.replyTarget
+                    ?.commentId,
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana created the bill WHEN it opens THEN the history says she created it today`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(created))
+
+            // When
+            val history = viewModel.uiState.value.history
+
+            // Then
+            val day = history.single()
+            assertEquals(RelativeDay.TODAY, day.relativeDay)
+            val entry = day.entries.single()
+            assertEquals(BillHistoryKind.CREATED, entry.kind)
+            assertEquals("Ana", entry.actorName)
+            assertEquals(48_000, entry.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN Ana edited the bill last WHEN it opens THEN her edit can be undone`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = listOf(totalEdit, created))
+
+        // When
+        val entries = viewModel.uiState.value.history
+            .flatMap { it.entries }
+
+        // Then
+        assertEquals(listOf(true, false), entries.map { it.canUndo })
+        assertFalse(viewModel.uiState.value.isUndoing)
+    }
+
+    @Test
+    fun `GIVEN Ana edited the bill last WHEN tapping Desfazer THEN saves the bill as it was before her edit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = listOf(totalEdit, created))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            val saved = expenses.updatedExpenses.single()
+            assertEquals("Feira", saved.description)
+            assertEquals(30_000, saved.amountMinor)
+            assertEquals(listOf(paid(ANA, 30_000)), saved.payers)
+            assertEquals(SplitMode.EQUAL, saved.splitMode)
+            assertEquals(listOf(share(ANA, 10_000), share(PIERRE, 10_000), share(BRUNO, 10_000)), saved.shares)
+            assertNull(saved.items)
+            assertNull(saved.categoryId)
+            assertEquals(earlierToday, saved.spentAt)
+            assertEquals(GROUP_ID, saved.groupId)
+            assertFalse(viewModel.uiState.value.isUndoing)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Ana gave a bill without category Mercado WHEN tapping Desfazer THEN the bill has no category again`() =
+        runTest(testDispatcher) {
+            // Given
+            val categoryEdit = historyEvent(
+                id = "edit",
+                kind = ActivityKind.BILL_EDITED,
+                occurredAt = laterToday,
+                changes = listOf(
+                    ActivityChange(
+                        field = ActivityField.CATEGORY,
+                        before = ActivityValue.none,
+                        after = ActivityValue.none.copy(code = AppCategory.FOOD_MARKET.key),
+                    ),
+                ),
+            )
+            prepareScenario(
+                storedExpense = expense().copy(categoryId = AppCategory.FOOD_MARKET.key),
+                storedEvents = listOf(categoryEdit, created),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            assertNull(expenses.updatedExpenses.single().categoryId)
+        }
+
+    @Test
+    fun `GIVEN Desfazer tapped WHEN the save is on its way THEN shows it is undoing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(totalEdit, created),
+            updateGate = CompletableDeferred(),
+        )
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isUndoing)
+        assertTrue(expenses.updatedExpenses.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Desfazer tapped twice in a row WHEN the save finishes THEN saves the bill once`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                storedEvents = listOf(totalEdit, created),
+                updateGate = gate,
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(1, expenses.updatedExpenses.size)
+            assertFalse(viewModel.uiState.value.isUndoing)
+        }
+
+    @Test
+    fun `GIVEN the device cannot save the bill WHEN tapping Desfazer THEN keeps the bill and says it failed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(totalEdit, created),
+                updateError = IllegalStateException("disk full"),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowUndoError), actions)
+            assertFalse(viewModel.uiState.value.isUndoing)
+            assertEquals(
+                "Mercado",
+                expenses.expenses.value
+                    .single()
+                    .description,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bill changed since the latest edit WHEN tapping Desfazer THEN nothing is saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpense = expense(description = "Mercado do Zé"),
+                storedEvents = listOf(descriptionEdit("Feira", "Mercado"), created),
+            )
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            assertTrue(expenses.updatedExpenses.isEmpty())
+            assertFalse(viewModel.uiState.value.isUndoing)
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping Desfazer THEN nothing is saved`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedEvents = listOf(totalEdit, created),
+            deleteGate = CompletableDeferred(),
+        )
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+        // Then
+        assertTrue(expenses.updatedExpenses.isEmpty())
+        assertFalse(viewModel.uiState.value.isUndoing)
+    }
+
+    @Test
+    fun `GIVEN two edits in a row WHEN the bill opens THEN only the latest can be undone`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedEvents = twoEdits)
+
+        // When
+        val entries = viewModel.uiState.value.history
+            .flatMap { it.entries }
+
+        // Then
+        assertEquals(listOf("edit-2", "edit-1", "created"), entries.map { it.id })
+        assertEquals(listOf(true, false, false), entries.map { it.canUndo })
+    }
+
+    @Test
+    fun `GIVEN two edits in a row WHEN undoing the latest THEN the bill waits to go up with nothing to undo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = twoEdits)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isPending)
+            assertEquals("Feira", state.description)
+            val entries = state.history.flatMap { it.entries }
+            assertTrue(entries.none { it.canUndo })
+            assertEquals(BillHistoryKind.EDITED, entries.first().kind)
+            assertTrue(entries.first().isPending)
+        }
+
+    @Test
+    fun `GIVEN the latest edit undone WHEN tapping Desfazer again THEN nothing more is saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedEvents = twoEdits)
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            assertEquals(listOf("Feira"), expenses.updatedExpenses.map { it.description })
+        }
+
+    @Test
+    fun `GIVEN internet WHEN the bill opens THEN asks the server for its whole history`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = true)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.isOnline)
+        assertEquals(listOf(EXPENSE_ID), activity.loadedHistoryIds)
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN the bill opens THEN says it is offline and asks the server nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isOnline)
+            assertTrue(activity.loadedHistoryIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill open offline WHEN the internet comes back THEN asks the server for its history`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertTrue(viewModel.uiState.value.isOnline)
+            assertEquals(listOf(EXPENSE_ID), activity.loadedHistoryIds)
+        }
+
+    @Test
+    fun `GIVEN the bill open online WHEN the internet goes THEN says it is offline`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(online = true)
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertFalse(viewModel.uiState.value.isOnline)
+        assertEquals(listOf(EXPENSE_ID), activity.loadedHistoryIds)
+    }
+
+    @Test
+    fun `GIVEN the internet went and came back WHEN it comes back again THEN asks the server each time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = true)
+            isOnline.value = false
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertEquals(listOf(EXPENSE_ID, EXPENSE_ID), activity.loadedHistoryIds)
+        }
+
+    @Test
+    fun `GIVEN the server keeps older events WHEN the bill opens online THEN the history shows them too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedEvents = listOf(descriptionEdit("Feira", "Mercado")),
+                serverHistory = listOf(created.copy(occurredAt = lastWeek)),
+            )
+
+            // When
+            val history = viewModel.uiState.value.history
+
+            // Then
+            assertEquals(listOf(RelativeDay.TODAY, RelativeDay.OTHER), history.map { it.relativeDay })
+            assertEquals(
+                listOf(BillHistoryKind.EDITED, BillHistoryKind.CREATED),
+                history.flatMap { day -> day.entries.map { it.kind } },
+            )
+        }
+
     private val route = Route.BillDetail(
         groupId = GROUP_ID,
         expenseId = EXPENSE_ID,
@@ -1546,6 +2278,141 @@ class BillDetailViewModelTest {
         updatedByMemberId = null,
     )
 
+    private fun comment(
+        id: String = "comment-1",
+        authorMemberId: String? = BRUNO,
+        authorName: String? = "Bruno",
+        threadId: String? = null,
+        body: String = "Quem trouxe o carvão?",
+        postedAt: Long = earlierToday,
+    ): BillComment = BillComment(
+        id = id,
+        expenseId = EXPENSE_ID,
+        groupId = GROUP_ID,
+        authorUserId = null,
+        authorMemberId = authorMemberId,
+        authorName = authorName,
+        threadId = threadId,
+        replyToName = null,
+        body = body,
+        viaLink = false,
+        postedAt = postedAt,
+        isPending = false,
+    )
+
+    // Why: Bruno asked something and Ana answered him.
+    private val threadWithReply = listOf(
+        comment(
+            id = "c1",
+            postedAt = earlierToday,
+        ),
+        comment(
+            id = "r1",
+            authorMemberId = ANA,
+            authorName = "Ana",
+            threadId = "c1",
+            postedAt = laterToday,
+        ),
+    )
+
+    private fun historyEvent(
+        id: String,
+        kind: ActivityKind,
+        occurredAt: Long,
+        changes: List<ActivityChange> = emptyList(),
+    ): ActivityEvent = ActivityEvent(
+        id = id,
+        seq = 1L,
+        groupId = GROUP_ID,
+        kind = kind,
+        actorUserId = null,
+        actorMemberId = ANA,
+        actorName = "Ana",
+        groupName = "Viagem de Floripa",
+        targetId = EXPENSE_ID,
+        occurredAt = occurredAt,
+        subject = "Mercado",
+        amountMinor = 48_000,
+        code = SplitMode.EQUAL.code.takeIf { kind == ActivityKind.BILL_CREATED },
+        fromMemberId = null,
+        toMemberId = null,
+        changes = changes,
+        sharesCount = 3.takeIf { kind == ActivityKind.BILL_CREATED },
+        body = null,
+        isPending = false,
+    )
+
+    private fun descriptionEdit(
+        before: String,
+        after: String,
+        id: String = "edit",
+        occurredAt: Long = laterToday,
+    ): ActivityEvent = historyEvent(
+        id = id,
+        kind = ActivityKind.BILL_EDITED,
+        occurredAt = occurredAt,
+        changes = listOf(
+            ActivityChange(
+                field = ActivityField.DESCRIPTION,
+                before = ActivityValue.none.copy(text = before),
+                after = ActivityValue.none.copy(text = after),
+            ),
+        ),
+    )
+
+    private val created = historyEvent(
+        id = "created",
+        kind = ActivityKind.BILL_CREATED,
+        occurredAt = earlierToday,
+    )
+
+    // Why: Ana turned "Feira", R$ 300 she paid, into the default bill, "Mercado", R$ 480 she paid.
+    private val totalEdit = historyEvent(
+        id = "edit",
+        kind = ActivityKind.BILL_EDITED,
+        occurredAt = laterToday,
+        changes = listOf(
+            ActivityChange(
+                field = ActivityField.AMOUNT,
+                before = ActivityValue.none.copy(minor = 30_000),
+                after = ActivityValue.none.copy(minor = 48_000),
+            ),
+            ActivityChange(
+                field = ActivityField.PAYERS,
+                before = ActivityValue.none.copy(
+                    memberIds = listOf(ANA),
+                    memberValues = listOf(ActivityMemberValue(ANA, 30_000)),
+                ),
+                after = ActivityValue.none.copy(
+                    memberIds = listOf(ANA),
+                    memberValues = listOf(ActivityMemberValue(ANA, 48_000)),
+                ),
+            ),
+            ActivityChange(
+                field = ActivityField.DESCRIPTION,
+                before = ActivityValue.none.copy(text = "Feira"),
+                after = ActivityValue.none.copy(text = "Mercado"),
+            ),
+        ),
+    )
+
+    // Why: "Padaria" became "Feira", then "Mercado", the most recent first.
+    private val twoEdits = listOf(
+        descriptionEdit(
+            "Feira",
+            "Mercado",
+            id = "edit-2",
+            occurredAt = laterToday,
+        ),
+        descriptionEdit(
+            "Padaria",
+            "Feira",
+            id = "edit-1",
+            occurredAt = earlierToday + 30 * 60_000L,
+        ),
+        created,
+    )
+
     private fun TestScope.prepareScenario(
         storedExpense: Expense? = expense(),
         isRoomRead: Boolean = true,
@@ -1553,20 +2420,30 @@ class BillDetailViewModelTest {
         deleteError: Throwable? = null,
         deleteGate: CompletableDeferred<Unit>? = null,
         storedSettlements: List<Settlement> = emptyList(),
+        storedComments: List<BillComment> = emptyList(),
+        storedEvents: List<ActivityEvent> = emptyList(),
+        serverHistory: List<ActivityEvent> = emptyList(),
+        online: Boolean = true,
+        commentError: Throwable? = null,
+        updateError: Throwable? = null,
+        updateGate: CompletableDeferred<Unit>? = null,
     ) {
+        isOnline.value = online
         groups = FakeGroupRepository(initialGroups = listOf(trip))
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense)).also {
             it.deleteError = deleteError
             it.deleteGate = deleteGate
+            it.updateError = updateError
+            it.updateGate = updateGate
         }
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(groupRoute)
             it.navigate(route)
         }
         deletedBills = InMemoryDeletedBillRepository()
-        comments = FakeBillCommentRepository()
-        activity = FakeActivityRepository()
+        comments = FakeBillCommentRepository(initialComments = storedComments).also { it.addError = commentError }
+        activity = FakeActivityRepository(initialEvents = storedEvents).also { it.historyPage = serverHistory }
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(

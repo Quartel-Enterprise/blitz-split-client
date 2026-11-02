@@ -36,6 +36,9 @@ class FakeExpenseRepository(
 
     // Why: while set, a delete waits for it, so a test can act while the delete is in flight.
     var deleteGate: CompletableDeferred<Unit>? = null
+
+    // Why: while set, an update waits for it, so a test can act while the save is in flight.
+    var updateGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
 
@@ -74,6 +77,7 @@ class FakeExpenseRepository(
         expense: Expense,
         updatedAt: Long,
     ): Result<Unit> {
+        updateGate?.await()
         updateError?.let { return Result.failure(it) }
         val current = expenses.value.firstOrNull { it.id == expense.id }
             ?: return Result.failure(IllegalStateException("No bill ${expense.id}"))

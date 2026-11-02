@@ -102,7 +102,9 @@ internal fun undoOf(
         payers = payers,
         splitMode = splitMode,
         shares = shares,
-        categoryId = changes[ActivityField.CATEGORY]?.let { it.before.code } ?: expense.categoryId,
+        // Why: a "before" without a category (Outros) is put back too, so no fallback to the bill's.
+        categoryId = changes[ActivityField.CATEGORY]?.before?.code.takeIf { ActivityField.CATEGORY in changes }
+            ?: expense.categoryId.takeIf { ActivityField.CATEGORY !in changes },
         spentAt = changes[ActivityField.SPENT_AT]?.before?.millis ?: expense.spentAt,
     )
 }
@@ -139,7 +141,8 @@ private fun pendingEntryOf(
 ): BillHistoryEntry? {
     if (!expense.isPending) return null
     val me = group.members.firstOrNull { it.isMe }
-    val isNew = events.none { it.kind == ActivityKind.BILL_CREATED }
+    // Why: any event about it means the server has it, also once its creation is older than the device keeps.
+    val isNew = events.isEmpty()
     val actor = actorOf(me, me?.name, isMe = true)
     return BillHistoryEntry(
         id = "pending:${expense.id}",
