@@ -33,8 +33,9 @@ final class EditGroupModel {
     }
 }
 
-/// "Edit group": a sheet over the group on iPhone, iPad and Mac, with Cancel and Save (✓) in the bar. The same
-/// fields as "New group": the avatar changes color on a tap, and the currency locks once the group has a bill.
+/// "Edit group": a sheet over the group on iPhone, iPad and Mac, with Cancel and Save (✓) in the bar, the canvas' 540 pt
+/// form sheet with an iPad's room. The same fields as "New group": the avatar changes color on a tap, and the currency
+/// locks once the group has a bill. An iPhone lying down puts the avatar and "Change color" in one compact row.
 struct EditGroupView: View {
     let route: RouteEditGroup
 
@@ -69,6 +70,9 @@ struct EditGroupView: View {
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true)
+        #if os(iOS)
+        .formSheetSizing()
+        #endif
         #if os(macOS)
         .frame(minWidth: 460, idealWidth: 500, minHeight: 400, idealHeight: 560)
         #endif
@@ -81,8 +85,21 @@ struct EditGroupView: View {
 private struct EditGroupForm: View {
     let model: EditGroupModel
 
+    #if os(iOS)
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    #endif
+
     private var state: EditGroupUiState {
         model.state
+    }
+
+    /// An iPhone lying down, whose sheet is too short for the big avatar over the fields.
+    private var usesCompactIcon: Bool {
+        #if os(iOS)
+        verticalSizeClass == .compact
+        #else
+        false
+        #endif
     }
 
     var body: some View {
@@ -94,11 +111,14 @@ private struct EditGroupForm: View {
                 }
             }
             Section {
-                VStack(spacing: 8) {
+                let layout = usesCompactIcon
+                    ? AnyLayout(HStackLayout(spacing: 12))
+                    : AnyLayout(VStackLayout(spacing: 8))
+                layout {
                     Button {
                         model.send(EditGroupUiEventOnColorClicked.shared)
                     } label: {
-                        GroupAvatar(initials: state.initials, color: state.color, size: 96)
+                        GroupAvatar(initials: state.initials, color: state.color, size: usesCompactIcon ? 56 : 96)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Change the group's color")

@@ -55,7 +55,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
     lying down and a tabletop, and stays, without "Rachar conta", beside a group's Despesas, Saldos, Membros and
     Estatísticas drawn alone anywhere wider than a phone upright (a phone lying down, a tablet or a foldable upright,
-    Estatísticas over a whole tablet or book; never on a tabletop, nor beside the home's list, which has its own), the
+    Estatísticas over a whole book; never on a tabletop, nor beside the home's list, which has its own), the
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
     to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
     `OnRailTabClicked`).
@@ -181,8 +181,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). With no group at all
     (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
     exists, while a book and an iPhone Duo open keep the half past the fold, saying "Nenhum grupo aberto"
-    (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane: anything else above the groups
-    (Estatísticas, the profile, a joined invite, Convidar on an Android tablet and an iPad) covers the whole window,
+    (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane, and the Estatísticas they open on a
+    tablet lying down and an iPad lying down (decision 2: with its back arrow, the list still tappable beside it; a
+    book and an iPhone Duo open draw it across the fold): anything else above the groups (the profile, a joined
+    invite, Convidar on an Android tablet and an iPad) covers the whole window,
     and a dialog or sheet (Rachar conta, Conta) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Rachar conta": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.
@@ -241,14 +243,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
     chave Pix" is on, which locks once the message is edited), "Enviar" opens the system share (a ShareLink on Apple,
     `navigator.share` or a copy on the web) and "Copiar mensagem" copies; a bottom sheet on an Android phone and a
-    560 dp dialog on its tablets, a sheet on iOS and macOS, a 480 px dialog on the web (a drawer on a phone). It all
+    560 dp dialog on its tablets, a book's right half and a tabletop's top half (its right half above the hinge lying
+    down) with the people under the scrim, a
+    sheet on iOS (the whole screen on an iPhone lying down, whom and the message beside the Pix key and the buttons;
+    a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone). It all
     works offline on the device's data, and has no "Rachar conta". An Android tablet lying down, an unfolded book, an
     iPad lying down, the web's desktop (from 1024 px) and a Mac window wide enough for the inspector list the people
     beside the one picked (`GlobalBalancesUiState.selectedPerson`, the first listed until a row is picked or once the
     filter hides the pick): their groups by name, "Carla te deve R$ 32,90" with the actions, "Por grupo" (a table on
     the web) and "O líquido já compensa os grupos: Cobrar e Recebi usam R$ 32,90. O app anota um pagamento em cada
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
-    column with "Por grupo" in the row, the filter beside the list on a phone lying down.
+    column with "Por grupo" in the row, the filter beside the list on a phone lying down (on an iPhone, Saldo geral
+    and the filter stay still in a 300 pt column on the left while the people scroll on the right).
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's
@@ -317,8 +323,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     period's spending as a ring in each main category's fixed color, the largest in its center, then each main
     category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
     to 100), a bill without a category counted in Outros and one of a deleted category in its parent or Outros.
-    There is no first-download progress ("Total gasto até agora", 5.1d) yet. A phone scrolls one column; a tablet
-    lying down, the web from the tablet up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, the web and the Mac with four summary cards.
+    There is no first-download progress ("Total gasto até agora", 5.1d) yet. A phone, a tablet and a foldable upright
+    scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
+    categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
+    tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"
+    first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
+    a small bar with the period, the total and "Ao longo do tempo" side by side in the top half, against the hinge,
+    and "Por categoria" and "Por pessoa" side by side in the bottom half, scrolling, without the grains' note nor
+    "Maior despesa". The web from the tablet
+    up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, with four summary cards.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
     conta"; saving goes back to Conta. Members who left the group are dropped from the edited split, but a payer who
@@ -354,7 +367,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
     after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
     the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
-    link. The released person gets no notice: the group just leaves their devices on the next sync.
+    link. The released person gets no notice: the group just leaves their devices on the next sync. On Android its
+    dialogs (rename, add, remove, release, and "Convite pessoal", a bottom sheet elsewhere) open in a book's right half;
+    a phone lying down, Android and iPhone, draws it in the group's two columns, the header and balance on the left.
   - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (no simplifying debts across the
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
@@ -380,12 +395,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     stays editable. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
-    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS, a dialog on the web and
-    on Android tablets. Its last row, under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
+    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
+    with an iPad's room, the avatar beside "Trocar cor" on an iPhone lying down) and a dialog on the web; on Android
+    full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
+    anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
+    under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
   - "Divisão padrão" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), in its
-    dialog's place on the web (a drawer on a phone), and the way Editar grupo opens on Android (a dialog on a
-    tablet). It sets how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
+    dialog's place on the web (a drawer on a phone), and on Android full screen on a phone and a foldable upright, a
+    dialog on a tablet (920 dp in two columns lying down, 560 dp upright) and in a book's right half in one column (off
+    the hinge as every dialog). It sets
+    how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
     percentages they give (`IncomePercents`). "Numa conta de R$ 100,00: Pierre R$ 75,00 · Ana R$ 25,00" with the bar
@@ -398,7 +418,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     precisar.", until someone saves). Two columns lying down (the ways to split, the people with the example), in
     the Mac's sheet, an iPad lying down and the web from 1024 px. "Exceções por categoria" (6.7f) lists the categories
     that split their own way ("Nenhuma. Todas as categorias seguem a divisão acima."): "Adicionar exceção" opens
-    "Exceção por categoria" (a bottom sheet on Android, a sheet on iOS and macOS, in the dialog's place on the web),
+    "Exceção por categoria" (a bottom sheet on Android where Divisão padrão is full screen, a 480 dp dialog where it
+    is a dialog, in a book's right half; a sheet on iOS and macOS, 540 pt with an iPad's room; in the dialog's place
+    on the web),
     one main category or subcategory (each at most once) split by Igual (who is in it), Partes or Porcentagem (whole
     numbers adding up to 100), with its own example, saved with the rest of the default by Salvar
     (`GroupDefaultSplit.exceptions`, `ExceptionEditor`). A new bill of that category, or of a subcategory of it

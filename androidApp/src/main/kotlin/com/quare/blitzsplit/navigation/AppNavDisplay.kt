@@ -36,6 +36,8 @@ import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
+import com.quare.blitzsplit.android.feature.editgroup.rememberUsesDefaultSplitDialog
+import com.quare.blitzsplit.android.feature.editgroup.rememberUsesEditGroupDialog
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
@@ -115,6 +117,18 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
+    val usesEditGroupDialog = rememberUsesEditGroupDialog()
+    val editGroupMetadata = if (usesEditGroupDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
+    val usesDefaultSplitDialog = rememberUsesDefaultSplitDialog()
+    val defaultSplitMetadata = if (usesDefaultSplitDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
     val usesBillDialog = rememberUsesGroupDialog()
     val billDialogMetadata = if (usesBillDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
@@ -155,6 +169,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     val groupsMetadata = remember(listDetail, isHomeEmpty) {
         homeListPaneMetadataOf(
             listDetail = listDetail,
@@ -212,18 +227,18 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     )
                 }
             }
-            // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
-            entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
+            // Why: wider than a phone the group stays behind the form, in a book's right half on a foldable.
+            entry<Route.EditGroup>(metadata = editGroupMetadata) { route ->
                 EditGroupScreen(
                     route = route,
-                    isDialog = usesFormDialog,
+                    isDialog = usesEditGroupDialog,
                 )
             }
-            // Why: over Editar grupo, the same way: a dialog on a tablet, full screen elsewhere (two columns lying down).
-            entry<Route.DefaultSplit>(metadata = formDialogMetadata) { route ->
+            // Why: over Editar grupo: a dialog on a tablet and a book, full screen on a phone and a foldable upright.
+            entry<Route.DefaultSplit>(metadata = defaultSplitMetadata) { route ->
                 DefaultSplitScreen(
                     route = route,
-                    isDialog = usesFormDialog,
+                    isDialog = usesDefaultSplitDialog,
                 )
             }
             // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.
@@ -240,7 +255,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesBillDetailDialog,
                 )
             }
-            entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
+            /*
+             * Why: a tablet lying down draws it in the group's pane beside the groups, with its back arrow (decision 2);
+             * a book and everywhere else cover the window, the book split on its hinge.
+             */
+            entry<Route.GroupStats>(metadata = groupStatsMetadata) { route ->
+                InGroupPane { GroupStatsScreen(route) }
+            }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
             entry<Route.RegisterPayment>(
                 metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,

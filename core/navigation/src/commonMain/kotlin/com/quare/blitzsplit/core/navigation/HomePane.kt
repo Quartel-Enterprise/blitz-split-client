@@ -5,19 +5,27 @@ package com.quare.blitzsplit.core.navigation
  * route right above the groups, so one back stack still drives every platform: each UI only decides, from its window,
  * whether it draws that route in the pane beside the list or over it, as a phone does.
  *
- * The group screens right above the groups. Another group may stack on the one a row opened (a bill saved in another
- * group, Convidar's "Ir para o grupo"), and the pane shows the last of them.
+ * The group screens right above the groups, with the Estatísticas a group opens, which a tablet lying down draws in
+ * the same pane (decision 2). Another group may stack on the one a row opened (a bill saved in another group,
+ * Convidar's "Ir para o grupo"), and the pane shows the last of them.
  */
 private fun List<Route>.findGroupsAboveGroups(): List<Route> {
     val groupsIndex = indexOf(Route.Groups)
     if (groupsIndex < 0) return emptyList()
-    return drop(groupsIndex + 1).takeWhile { groupScreenIdOrNull(it) != null }
+    return drop(groupsIndex + 1).takeWhile { paneGroupIdOrNull(it) != null }
+}
+
+// Why: the group whose screen the pane beside the groups draws: any of its tabs, or its Estatísticas.
+private fun paneGroupIdOrNull(route: Route): String? = if (route is Route.GroupStats) {
+    route.groupId
+} else {
+    groupScreenIdOrNull(route)
 }
 
 // Why: the group the pane beside the groups shows.
-fun List<Route>.groupBesideGroupsOrNull(): String? = findGroupsAboveGroups().lastOrNull()?.let(::groupScreenIdOrNull)
+fun List<Route>.groupBesideGroupsOrNull(): String? = findGroupsAboveGroups().lastOrNull()?.let(::paneGroupIdOrNull)
 
-// Why: nothing but the pane's groups is above the groups, so the list beside it is in sight and can be tapped.
+// Why: nothing but the pane's screens is above the groups, so the list beside it is in sight and can be tapped.
 fun List<Route>.showsOnlyPaneAboveGroups(): Boolean {
     val groupsIndex = indexOf(Route.Groups)
     return groupsIndex in 0 until lastIndex && findGroupsAboveGroups().size == lastIndex - groupsIndex

@@ -28,10 +28,12 @@ final class GroupStatsModel {
 }
 
 /// "Statistics" (6.6): what the group spent in a period and who spent it, from the bills on the device, offline too.
-/// Pushed over the group with the system's Back and no "Split a bill". iPhone upright and iPad upright scroll one
-/// column (the total, By person, Over time, Biggest expense), split on the fold of an iPhone Duo open upright; lying
-/// down, iPad and a Mac window put Over time and the biggest bill in a second column, By person too after an iPhone
-/// Duo's fold. The Mac keeps the period in a toolbar pull-down and the total in four panels.
+/// Pushed over the group with the system's Back and no "Split a bill"; an iPad lying down pushes it in the group's
+/// column beside the groups (decision 2). iPhone upright and iPad upright scroll one column (the total, By category,
+/// By person, Over time, Biggest expense), split on the fold of an iPhone Duo open upright; lying down, in the iPad's
+/// column and across an iPhone Duo open lying down, the total and By category take the first column and By person,
+/// Over time and the biggest bill the second, as the boards draw them. A Mac window keeps By person under By category,
+/// its period in a toolbar pull-down and the total in four panels.
 struct GroupStatsView: View {
     let route: RouteGroupStats
 
@@ -40,6 +42,9 @@ struct GroupStatsView: View {
     @State private var isPickingDates = false
     @State private var layout = ScreenLayout()
 
+    /// In the iPad's column beside the groups, upright as it is, the boards still draw two columns.
+    @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -47,7 +52,11 @@ struct GroupStatsView: View {
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
-                StatsScroll(model: model, layout: layout, pickDates: { isPickingDates = true })
+                StatsScroll(
+                    model: model,
+                    usesTwoColumns: layout.usesTwoColumns || showsGroupBesideList,
+                    pickDates: { isPickingDates = true },
+                )
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
             }
@@ -133,14 +142,12 @@ private struct StatsPeriodMenu: View {
 
 private struct StatsScroll: View {
     let model: GroupStatsModel
-    let layout: ScreenLayout
+    let usesTwoColumns: Bool
     let pickDates: () -> Void
-
-    @State private var division: FoldDivision?
 
     var body: some View {
         #if os(iOS)
-        if !layout.usesTwoColumns {
+        if !usesTwoColumns {
             // An iPhone Duo open upright: the total and Over time above the fold, the categories, By person and the
             // biggest bill below it (6.6)
             FoldHalves(splits: model.state.showsStats) {
@@ -182,27 +189,27 @@ private struct StatsScroll: View {
                 StatsTopLine(model: model, pickDates: pickDates)
                 #endif
                 if state.showsStats {
-                    if layout.usesTwoColumns {
+                    if usesTwoColumns {
                         #if os(macOS)
                         StatsSummaryPanels(state: state)
                             .padding(.bottom, 4)
                         #endif
-                        // An iPhone Duo open splits on its fold, By person moving after it (the boards' 6.6)
+                        // An iPhone Duo open splits on its fold (the boards' 6.6)
                         TwoColumnsLayout(spacing: 16, maxWidth: 1100) {
                             VStack(alignment: .leading, spacing: 0) {
                                 #if os(iOS)
                                 StatsHeroCard(state: state)
                                 #endif
                                 StatsCategoriesSection(state: state, pieSize: 112)
-                                if division?.verticalFrame == nil {
-                                    StatsPeopleSection(model: model)
-                                }
+                                #if os(macOS)
+                                StatsPeopleSection(model: model)
+                                #endif
                             }
                         } second: {
                             VStack(alignment: .leading, spacing: 0) {
-                                if division?.verticalFrame != nil {
-                                    StatsPeopleSection(model: model)
-                                }
+                                #if os(iOS)
+                                StatsPeopleSection(model: model)
+                                #endif
                                 StatsOverTimeSection(model: model)
                                 StatsBiggestSection(model: model)
                             }
@@ -225,10 +232,9 @@ private struct StatsScroll: View {
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
-            .frame(maxWidth: layout.usesTwoColumns ? 1100 : 640)
+            .frame(maxWidth: usesTwoColumns ? 1100 : 640)
             .frame(maxWidth: .infinity)
         }
-        .readingFoldDivision($division)
         .background(Palette.groupedBackground)
     }
 }

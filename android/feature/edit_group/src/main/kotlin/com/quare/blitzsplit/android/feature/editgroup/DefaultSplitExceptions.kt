@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
@@ -36,21 +37,26 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.ChoiceChipSurface
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.ExceptionEditor
 import com.quare.blitzsplit.feature.editgroup.presentation.model.ExceptionRow
+
+private val exceptionDialogWidth = 480.dp
 
 /*
  * Why: "Exceções por categoria" (6.7f) under the example: each category that splits its own way, or "Nenhuma", and
@@ -150,24 +156,65 @@ private fun sharesTextOf(values: List<Long>): String = if (values.size == 2) {
     values.joinToString(" · ")
 }
 
-// Why: "Exceção por categoria": one category, its own way and who is in it, saved only on "Salvar exceção".
+/*
+ * Why: "Exceção por categoria": one category, its own way and who is in it, saved only on "Salvar exceção". A bottom
+ * sheet where Divisão padrão is full screen; where it is a dialog, a 480dp dialog over it, in a book's right half on a
+ * foldable, never over the hinge.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ExceptionSheet(
     state: DefaultSplitUiState,
     editor: ExceptionEditor,
     money: MoneyFormatter,
+    isDialog: Boolean,
     onEvent: (DefaultSplitUiEvent) -> Unit,
 ) {
+    val onDismiss = { onEvent(DefaultSplitUiEvent.OnExceptionDismissed) }
+    if (isDialog) {
+        val title = stringResource(R.string.default_split_exception_title)
+        FoldDialog(
+            onDismissRequest = onDismiss,
+            // Why: like every dialog route, a stray tap outside keeps the parts typed.
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        ) {
+            Surface(
+                modifier = Modifier
+                    .widthIn(max = exceptionDialogWidth)
+                    .fillMaxWidth()
+                    .semantics { paneTitle = title },
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            ) {
+                ExceptionFormColumn(
+                    state = state,
+                    editor = editor,
+                    money = money,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(24.dp),
+                )
+            }
+        }
+        return
+    }
     ModalBottomSheet(
-        onDismissRequest = { onEvent(DefaultSplitUiEvent.OnExceptionDismissed) },
+        onDismissRequest = onDismiss,
         sheetState = rememberBottomSheetState(
             initialValue = SheetValue.Hidden,
             enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
         ),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Column(
+        ExceptionFormColumn(
+            state = state,
+            editor = editor,
+            money = money,
+            onEvent = onEvent,
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(
@@ -175,78 +222,91 @@ internal fun ExceptionSheet(
                     end = 24.dp,
                     bottom = 24.dp,
                 ),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = stringResource(R.string.default_split_exception_title),
-                    modifier = Modifier.semantics { heading() },
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-                Text(
-                    text = stringResource(R.string.default_split_exception_lead),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            SectionLabel(stringResource(R.string.default_split_exception_category))
-            CategoryChipRow(
-                categories = state.exceptionMains,
-                selectedId = editor.categoryId,
-                openId = editor.openMainId,
-                onEvent = onEvent,
-            )
-            val subcategories = state.exceptionSubcategories
-            if (subcategories.isNotEmpty()) {
-                CategoryChipRow(
-                    categories = subcategories,
-                    selectedId = editor.categoryId,
-                    openId = null,
-                    onEvent = onEvent,
-                )
-            }
-            SectionLabel(stringResource(R.string.default_split_exception_how))
-            ConnectedButtonRow(
-                labels = state.exceptionModes.map { stringResource(it.exceptionLabelRes) },
-                selectedIndex = state.exceptionModes.indexOf(editor.mode),
-                groupLabel = stringResource(R.string.default_split_exception_how),
-                onClick = { index ->
-                    onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(state.exceptionModes[index]))
-                },
-                itemRole = Role.RadioButton,
-                height = 44.dp,
-            )
-            ExceptionPeopleList(
-                editor = editor,
-                onEvent = onEvent,
+        )
+    }
+}
+
+@Composable
+private fun ExceptionFormColumn(
+    state: DefaultSplitUiState,
+    editor: ExceptionEditor,
+    money: MoneyFormatter,
+    onEvent: (DefaultSplitUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = stringResource(R.string.default_split_exception_title),
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.headlineSmall,
             )
             Text(
-                text = exceptionStatusOf(state, editor, money),
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                style = MaterialTheme.typography.bodySmall,
-                color = if (editor.showsPercentError || state.isExceptionCategoryTaken) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
+                text = stringResource(R.string.default_split_exception_lead),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-            ) {
-                if (editor.editedCategoryId != null) {
-                    TextButton(onClick = { onEvent(DefaultSplitUiEvent.OnExceptionRemoveClicked) }) {
-                        Text(
-                            text = stringResource(R.string.default_split_exception_remove),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
+        }
+        SectionLabel(stringResource(R.string.default_split_exception_category))
+        CategoryChipRow(
+            categories = state.exceptionMains,
+            selectedId = editor.categoryId,
+            openId = editor.openMainId,
+            onEvent = onEvent,
+        )
+        val subcategories = state.exceptionSubcategories
+        if (subcategories.isNotEmpty()) {
+            CategoryChipRow(
+                categories = subcategories,
+                selectedId = editor.categoryId,
+                openId = null,
+                onEvent = onEvent,
+            )
+        }
+        SectionLabel(stringResource(R.string.default_split_exception_how))
+        ConnectedButtonRow(
+            labels = state.exceptionModes.map { stringResource(it.exceptionLabelRes) },
+            selectedIndex = state.exceptionModes.indexOf(editor.mode),
+            groupLabel = stringResource(R.string.default_split_exception_how),
+            onClick = { index ->
+                onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(state.exceptionModes[index]))
+            },
+            itemRole = Role.RadioButton,
+            height = 44.dp,
+        )
+        ExceptionPeopleList(
+            editor = editor,
+            onEvent = onEvent,
+        )
+        Text(
+            text = exceptionStatusOf(state, editor, money),
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            style = MaterialTheme.typography.bodySmall,
+            color = if (editor.showsPercentError || state.isExceptionCategoryTaken) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+        ) {
+            if (editor.editedCategoryId != null) {
+                TextButton(onClick = { onEvent(DefaultSplitUiEvent.OnExceptionRemoveClicked) }) {
+                    Text(
+                        text = stringResource(R.string.default_split_exception_remove),
+                        color = MaterialTheme.colorScheme.error,
+                    )
                 }
-                Button(
-                    onClick = { onEvent(DefaultSplitUiEvent.OnExceptionSaveClicked) },
-                    enabled = state.canSaveException,
-                ) { Text(stringResource(R.string.default_split_exception_save)) }
             }
+            Button(
+                onClick = { onEvent(DefaultSplitUiEvent.OnExceptionSaveClicked) },
+                enabled = state.canSaveException,
+            ) { Text(stringResource(R.string.default_split_exception_save)) }
         }
     }
 }
