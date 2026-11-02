@@ -5,7 +5,9 @@ import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 
 class UpdateGroupUseCase(
@@ -17,12 +19,16 @@ class UpdateGroupUseCase(
         name: String,
         type: GroupType,
         color: AvatarColor,
+        shape: GroupShape,
+        photo: ProfilePhoto?,
         currency: GroupCurrency,
     ): Result<Unit> = repository.updateGroup(
         groupId = groupId,
         name = GroupNameRules.toCapped(name.trim()),
         type = type,
         color = color,
+        shape = shape,
+        photo = photo,
         currency = currency,
         updatedAt = currentTimeMillis(),
     )

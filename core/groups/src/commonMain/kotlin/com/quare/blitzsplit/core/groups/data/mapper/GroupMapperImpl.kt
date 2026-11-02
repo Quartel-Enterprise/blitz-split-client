@@ -13,7 +13,9 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
@@ -49,6 +51,8 @@ class GroupMapperImpl : GroupMapper {
                 name = group.name,
                 type = GroupType.fromCodeOrNull(group.type) ?: GroupType.OTHER,
                 color = AvatarColor.fromCodeOrNull(group.color) ?: AvatarColor.default,
+                shape = GroupShape.fromCodeOrNull(group.shape) ?: GroupShape.fallback,
+                photo = group.pendingPhoto?.let(ProfilePhoto::Pending) ?: group.photoUrl?.let(ProfilePhoto::Remote),
                 currency = GroupCurrency.fromCodeOrNull(group.currency) ?: GroupCurrency.fallback,
                 members = ofGroup
                     .filterNot { it.isRemoved }
@@ -83,6 +87,9 @@ class GroupMapperImpl : GroupMapper {
         color = group.color.code,
         currency = group.currency.code,
         createdBy = ownerUserId,
+        shape = group.shape.code,
+        photoUrl = (group.photo as? ProfilePhoto.Remote)?.url,
+        pendingPhoto = (group.photo as? ProfilePhoto.Pending)?.jpeg,
         addedAt = createdAt,
         updatedAt = createdAt,
         pendingSync = true,
@@ -140,12 +147,15 @@ class GroupMapperImpl : GroupMapper {
     override fun toDto(
         entity: GroupEntity,
         userId: String,
+        photoUrl: String?,
     ): GroupDto = GroupDto(
         id = entity.id,
         createdBy = entity.createdBy ?: userId,
         name = entity.name,
         type = entity.type,
         color = entity.color,
+        shape = entity.shape,
+        photoUrl = photoUrl,
         currency = entity.currency,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
@@ -179,6 +189,8 @@ class GroupMapperImpl : GroupMapper {
         color = dto.color,
         currency = dto.currency,
         createdBy = dto.createdBy,
+        shape = dto.shape,
+        photoUrl = dto.photoUrl,
         addedAt = dto.addedAt,
         updatedAt = dto.updatedAt,
         pendingSync = false,

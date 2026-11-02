@@ -39,6 +39,9 @@ interface GroupLocalDataSource {
         name: String,
         type: String,
         color: String,
+        shape: String,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
         currency: String,
         updatedAt: Long,
     )
@@ -68,6 +71,12 @@ interface GroupLocalDataSource {
     suspend fun insertGroupWithMembers(
         group: GroupEntity,
         members: List<GroupMemberEntity>,
+    )
+
+    suspend fun markGroupPhotoUploaded(
+        id: String,
+        syncedUpdatedAt: Long,
+        photoUrl: String,
     )
 
     suspend fun markGroupSynced(

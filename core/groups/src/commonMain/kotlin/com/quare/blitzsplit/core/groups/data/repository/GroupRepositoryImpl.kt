@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.data.repository
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
@@ -14,10 +15,13 @@ import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepositor
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
+import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -29,6 +33,7 @@ import kotlinx.coroutines.flow.map
 class GroupRepositoryImpl(
     private val local: GroupLocalDataSource,
     private val remote: GroupRemoteDataSource,
+    private val photoRemote: GroupPhotoRemoteDataSource,
     private val profileLocal: ProfileLocalDataSource,
     private val profileMapper: ProfileMapper,
     private val mapper: GroupMapper,
@@ -82,6 +87,8 @@ class GroupRepositoryImpl(
         name: String,
         type: GroupType,
         color: AvatarColor,
+        shape: GroupShape,
+        photo: ProfilePhoto?,
         currency: GroupCurrency,
         updatedAt: Long,
     ): Result<Unit> = suspendRunCatching {
@@ -90,6 +97,9 @@ class GroupRepositoryImpl(
             name = name,
             type = type.code,
             color = color.code,
+            shape = shape.code,
+            photoUrl = (photo as? ProfilePhoto.Remote)?.url,
+            pendingPhoto = (photo as? ProfilePhoto.Pending)?.jpeg,
             currency = currency.code,
             updatedAt = updatedAt,
         )
@@ -205,8 +215,9 @@ class GroupRepositoryImpl(
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)
      * instead of its members going up without it. A new group's invite code comes back with it, and a new member's
      * with it: the sync downloads before it uploads, so waiting for the next download would keep "Convidar" and the
-     * personal invite without a link until then. The members removed here go last, and leave the device once the
-     * server deleted them.
+     * personal invite without a link until then. A photo picked here goes up once its group and members did, since
+     * only the group's members may upload it, and its row already names its URL. The members removed here go last,
+     * and leave the device once the server deleted them.
      */
     override suspend fun uploadPendingGroups(userId: String): Result<Unit> = suspendRunCatching {
         val pendingMembers = local.getPendingMembers(userId)
@@ -214,7 +225,15 @@ class GroupRepositoryImpl(
         val removedMemberIds = local.getRemovedMemberIds(userId)
         if (pendingGroups.isNotEmpty()) {
             remote
-                .upsertGroups(pendingGroups.map { mapper.toDto(it, userId) })
+                .upsertGroups(
+                    pendingGroups.map {
+                        mapper.toDto(
+                            entity = it,
+                            userId = userId,
+                            photoUrl = photoUrlOf(it),
+                        )
+                    },
+                )
                 .forEach { dto ->
                     dto.inviteCode?.let {
                         local.updateInviteCode(
@@ -230,6 +249,21 @@ class GroupRepositoryImpl(
                 .mapNotNull { dto -> dto.inviteCode?.let { dto.id to it } }
                 .toMap()
             if (codesById.isNotEmpty()) local.updateMemberInviteCodes(codesById)
+        }
+        pendingGroups.forEach { group ->
+            val jpeg = group.pendingPhoto ?: return@forEach
+            photoRemote.upload(
+                groupId = group.id,
+                jpeg = jpeg,
+            )
+            local.markGroupPhotoUploaded(
+                id = group.id,
+                syncedUpdatedAt = group.updatedAt,
+                photoUrl = photoRemote.urlOf(
+                    groupId = group.id,
+                    version = group.updatedAt,
+                ),
+            )
         }
         // Why: before the deletes, so one that fails doesn't push again what the server already took.
         pendingGroups.forEach {
@@ -248,6 +282,16 @@ class GroupRepositoryImpl(
             remote.deleteMembers(removedMemberIds)
             local.deleteRemovedMembers(removedMemberIds)
         }
+    }
+
+    // Why: a photo still to upload goes up under this change's version, which keeps the caches from the old one.
+    private fun photoUrlOf(group: GroupEntity): String? = if (group.pendingPhoto != null) {
+        photoRemote.urlOf(
+            groupId = group.id,
+            version = group.updatedAt,
+        )
+    } else {
+        group.photoUrl
     }
 
     /*

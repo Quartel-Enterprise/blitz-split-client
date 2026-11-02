@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.domain.usecase
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 
 fun interface CreateGroup {
@@ -11,6 +12,7 @@ fun interface CreateGroup {
         name: String,
         type: GroupType,
         color: AvatarColor,
+        shape: GroupShape,
         currency: GroupCurrency,
         members: List<NewGroupMember>,
     ): Result<String>
