@@ -49,6 +49,13 @@ sign ins, the Google and Apple providers with their authorized client ids, the r
 `borarachar://auth-callback` and the site URL of the web app. The list is in `docs/auth.md` of the
 `blitz-split-api` repository; a sign in that fails right after a fresh setup is usually one of them.
 
+### Push notifications
+
+Every build runs without them. Android gets them only once its Firebase config is set (`FIREBASE_APP_ID`,
+`FIREBASE_API_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_SENDER_ID`, read like the settings above) and the web once
+`VITE_VAPID_PUBLIC_KEY` is; the Apple app needs nothing here. The server's side and the rest are in
+[push-notifications.md](push-notifications.md).
+
 ## Build and run the Android app
 
 Run the `androidApp` module from Android Studio, or build it from the terminal:

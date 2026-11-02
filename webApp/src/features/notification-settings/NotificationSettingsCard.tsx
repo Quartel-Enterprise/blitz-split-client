@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
+import { startWebPush } from '@/push/webPush'
 
 const labels: Record<string, { title: MessageKey; detail: MessageKey }> = {
   NEW_EXPENSE: { title: 'notifications_newExpense', detail: 'notifications_newExpenseDetail' },
@@ -46,6 +47,7 @@ export function NotificationSettingsCard({ className }: { className?: string }) 
       void Notification.requestPermission().then(() => {
         const permission = readPermission()
         if (permission) presenter?.permissionChecked(permission)
+        void startWebPush()
       })
     },
   )

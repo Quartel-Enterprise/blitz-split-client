@@ -42,6 +42,7 @@ import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -5936,6 +5937,7 @@ class SyncCoordinatorTest {
             ),
             activityRepository = RecordingActivityRepository(activity, commentAndActivityCalls),
             hiddenContactRepository = FakeHiddenContactRepository(),
+            pushDeviceRepository = FakePushDeviceRepository(),
             firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             scope = backgroundScope,

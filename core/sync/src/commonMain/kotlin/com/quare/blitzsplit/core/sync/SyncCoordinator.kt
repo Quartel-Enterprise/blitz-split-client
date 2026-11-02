@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
+import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -52,6 +53,7 @@ class SyncCoordinator(
     private val billAttachmentRepository: BillAttachmentRepository,
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
+    private val pushDeviceRepository: PushDeviceRepository,
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
@@ -86,6 +88,7 @@ class SyncCoordinator(
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
         scope.launch { syncWhenDue() }
+        scope.launch { registerPushDevice() }
     }
 
     // Why: the retry outlives the screen that asked for it, like every other sync.
@@ -350,6 +353,8 @@ class SyncCoordinator(
      * Apple session behind the welcome, where a new profile would overwrite the account's.
      */
     private suspend fun clearSession() {
+        // Why: while the session still says whose token it is. Offline it stays theirs until someone registers it.
+        pushDeviceRepository.unregister()
         accountRepository.signOut()
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()
@@ -419,6 +424,21 @@ class SyncCoordinator(
                 previousUserId = userId
                 if (isSwitch) syncUntilSettled()
             }
+    }
+
+    /*
+     * Why: Atividade's push notifications go to the devices of the account signed in, so this device's token goes to
+     * the server for each user it signs in as, an anonymous one included, once online. A failure waits for the next
+     * change: back online, another token or another user.
+     */
+    private suspend fun registerPushDevice() {
+        combine(
+            pushDeviceRepository.observeDevice(),
+            accountRepository.observeStatus().map(::userIdOrNull),
+            connectivityObserver.observe(),
+        ) { device, userId, isOnline -> if (device != null && userId != null && isOnline) device to userId else null }
+            .distinctUntilChanged()
+            .collect { registration -> registration?.let { (_, userId) -> pushDeviceRepository.register(userId) } }
     }
 
     private fun userIdOrNull(status: AccountStatus): String? = when (status) {

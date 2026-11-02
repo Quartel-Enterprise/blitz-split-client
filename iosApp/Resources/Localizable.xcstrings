@@ -16710,6 +16710,276 @@
           }
         }
       }
+    },
+    "push.reminder.title" : {
+      "comment" : "Title of the weekly settle-up reminder (push notification)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settle-up reminder"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembrete de acerto"
+          }
+        }
+      }
+    },
+    "push.bill_created" : {
+      "comment" : "Push notification: someone added a bill you're in. 1: who, 2: the bill",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ added “%2$@” with you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ lançou “%2$@” com você"
+          }
+        }
+      }
+    },
+    "push.bill_edited" : {
+      "comment" : "Push notification: someone edited a bill you're in. 1: who, 2: the bill",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ edited “%2$@”"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ editou “%2$@”"
+          }
+        }
+      }
+    },
+    "push.bill_deleted" : {
+      "comment" : "Push notification: someone deleted a bill you were in. 1: who, 2: the bill",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ deleted “%2$@”"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ apagou “%2$@”"
+          }
+        }
+      }
+    },
+    "push.comment_added" : {
+      "comment" : "Push notification: a comment on a bill you're in. 1: who, 2: the bill, 3: the comment",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ commented on “%2$@”: %3$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ comentou em “%2$@”: %3$@"
+          }
+        }
+      }
+    },
+    "push.payment_paid_you" : {
+      "comment" : "Push notification: someone recorded paying you. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked that they paid you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que te pagou"
+          }
+        }
+      }
+    },
+    "push.payment_to_you" : {
+      "comment" : "Push notification: someone recorded a payment to you. 1: who recorded it, 2: who paid",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked that %2$@ paid you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que %2$@ te pagou"
+          }
+        }
+      }
+    },
+    "push.payment_received_yours" : {
+      "comment" : "Push notification: whom you paid recorded your payment. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked your payment as received"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que recebeu seu pagamento"
+          }
+        }
+      }
+    },
+    "push.payment_from_you" : {
+      "comment" : "Push notification: someone recorded a payment of yours. 1: who recorded it, 2: whom you paid",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marked that you paid %2$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ marcou que você pagou %2$@"
+          }
+        }
+      }
+    },
+    "push.payment_undone" : {
+      "comment" : "Push notification: someone undid a payment you're in. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ undid a payment with you"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ desfez um pagamento com você"
+          }
+        }
+      }
+    },
+    "push.charge_sent" : {
+      "comment" : "Push notification: someone sent you a charge from Saldos. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ sent you a reminder to settle up"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te cobrou"
+          }
+        }
+      }
+    },
+    "push.settle_reminder" : {
+      "comment" : "Weekly settle-up reminder for one group. 1: the group",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have an open balance in %1$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem saldo em aberto em %1$@"
+          }
+        }
+      }
+    },
+    "push.settle_reminders" : {
+      "comment" : "Weekly settle-up reminder for several groups. 1: how many",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have open balances in %1$@ groups"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você tem saldo em aberto em %1$@ grupos"
+          }
+        }
+      }
+    },
+    "push.added_to_group" : {
+      "comment" : "Push notification: someone added your account to a group. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ added you to the group"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te adicionou ao grupo"
+          }
+        }
+      }
+    },
+    "push.member_joined" : {
+      "comment" : "Push notification: someone joined one of your groups. 1: who",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ joined the group"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ entrou no grupo"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

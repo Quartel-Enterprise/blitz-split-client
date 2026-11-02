@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bora Rachar</string>
+    <!-- Atividade's push notifications: the channels are Perfil › Notificações' toggles -->
+    <string name="push_channel_new_expense">Nova despesa nos meus grupos</string>
+    <string name="push_channel_new_expense_description">Quando alguém lança uma despesa com você</string>
+    <string name="push_channel_payment_marked">Alguém marcou um pagamento para mim</string>
+    <string name="push_channel_payment_marked_description">Quando alguém diz que já te pagou</string>
+    <string name="push_channel_settle_reminders">Lembretes de acerto</string>
+    <string name="push_channel_settle_reminders_description">Uma vez por semana, se houver saldo em aberto</string>
+    <string name="push_channel_invites">Convites e novos membros</string>
+    <string name="push_channel_invites_description">Quando alguém entra num grupo seu</string>
+    <string name="push_reminder_title">Lembrete de acerto</string>
+    <string name="push_bill_created">%1$s lançou “%2$s” com você</string>
+    <string name="push_bill_edited">%1$s editou “%2$s”</string>
+    <string name="push_bill_deleted">%1$s apagou “%2$s”</string>
+    <string name="push_comment_added">%1$s comentou em “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s marcou que te pagou</string>
+    <string name="push_payment_to_you">%1$s marcou que %2$s te pagou</string>
+    <string name="push_payment_received_yours">%1$s marcou que recebeu seu pagamento</string>
+    <string name="push_payment_from_you">%1$s marcou que você pagou %2$s</string>
+    <string name="push_payment_undone">%1$s desfez um pagamento com você</string>
+    <string name="push_charge_sent">%1$s te cobrou</string>
+    <string name="push_settle_reminder">Você tem saldo em aberto em %1$s</string>
+    <string name="push_settle_reminders">Você tem saldo em aberto em %1$s grupos</string>
+    <string name="push_added_to_group">%1$s te adicionou ao grupo</string>
+    <string name="push_member_joined">%1$s entrou no grupo</string>
 </resources>

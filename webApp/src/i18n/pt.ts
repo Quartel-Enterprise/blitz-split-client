@@ -656,6 +656,23 @@ export const pt: Record<MessageKey, string> = {
   notifications_invites: 'Convites e novos membros',
   notifications_invitesDetail: 'Quando alguém entra num grupo seu',
 
+  // Atividade's push notifications, worded by the service worker: {1}, {2}… are the server's words, in order
+  push_reminderTitle: 'Lembrete de acerto',
+  push_billCreated: '{1} lançou “{2}” com você',
+  push_billEdited: '{1} editou “{2}”',
+  push_billDeleted: '{1} apagou “{2}”',
+  push_commentAdded: '{1} comentou em “{2}”: {3}',
+  push_paymentPaidYou: '{1} marcou que te pagou',
+  push_paymentToYou: '{1} marcou que {2} te pagou',
+  push_paymentReceivedYours: '{1} marcou que recebeu seu pagamento',
+  push_paymentFromYou: '{1} marcou que você pagou {2}',
+  push_paymentUndone: '{1} desfez um pagamento com você',
+  push_chargeSent: '{1} te cobrou',
+  push_settleReminder: 'Você tem saldo em aberto em {1}',
+  push_settleReminders: 'Você tem saldo em aberto em {1} grupos',
+  push_addedToGroup: '{1} te adicionou ao grupo',
+  push_memberJoined: '{1} entrou no grupo',
+
   profile_title: 'Perfil',
   profile_subtitle: 'Seu nome e suas chaves aparecem só para quem está nos seus grupos.',
   profile_visibility: 'Quem vê seu perfil',

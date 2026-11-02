@@ -3,15 +3,20 @@ package com.quare.blitzsplit.shared.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
+import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +36,9 @@ class AppViewModel(
     private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
     private val observeThemePreference: ObserveThemePreference,
     private val linkInbox: LinkInbox,
+    private val markActivityRead: MarkActivityRead,
+    private val observeGroup: ObserveGroup,
+    private val syncNow: SyncNow,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -96,6 +104,7 @@ class AppViewModel(
             .onEach { url ->
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
+                PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
                 SharedBillLink.codeOf(url)?.let { code -> return@onEach openSharedBill(code) }
                 val target = InviteLink.targetOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(
@@ -115,6 +124,24 @@ class AppViewModel(
     private fun openSharedBill(code: String) {
         val openIndex = navigator.backStack.value.indexOfFirst { it is Route.SharedBill && it.code == code }
         if (openIndex < 0) navigator.navigate(Route.SharedBill(code)) else navigator.popTo(openIndex + 1)
+    }
+
+    /*
+     * Why: a push notification's tap opens its tab, then what it is about once its group is on the device, after a
+     * sync when it isn't yet (a group the person was just added to), unless the person moved on meanwhile. The event
+     * is read, as its tap in Atividade makes it. Without a profile there is no home, and nothing opens.
+     */
+    private suspend fun openPushLink(link: PushLink) {
+        link.eventId?.let { eventId -> viewModelScope.launch { markActivityRead(eventId) } }
+        if (Route.Home !in navigator.backStack.value) return
+        navigator.openHomeTab(link.homeTab)
+        val groupId = link.groupId ?: return
+        val tabTop = navigator.backStack.value
+        if (observeGroup(groupId).first() == null) {
+            syncNow()
+            if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return
+        }
+        link.routesAbove.forEach(navigator::navigate)
     }
 
     // Why: signing out, now or once synced, erases the profile wherever the app is, and only the welcome is left.
