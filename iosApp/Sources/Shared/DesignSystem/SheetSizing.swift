@@ -7,28 +7,31 @@ extension View {
     /// Cobrar): the system's form sheet, about 540 pt wide on iPad.
     func formSheetSizing() -> some View {
         presentationSizing(.form)
+            .foldSheetPlacement(isForm: true)
     }
 
-    /// A bill (Rachar conta, Conta): 820×640 where the window lies down and 620×860 upright, as the canvas draws them
-    /// with an iPad's room, never more than the window under it; an iPhone's sheet stays as the system draws it. Two
-    /// columns inside follow the sheet's own width (`ScreenLayout.usesTwoColumns`): the 820 pt sheet splits, the
-    /// 620 pt one doesn't.
+    /// A bill (Rachar conta, Conta) at `ScreenLayout.billSheetSize`; an iPhone's sheet stays as the system draws it.
+    /// Two columns inside follow the sheet's own width (`ScreenLayout.usesTwoColumns`): the 820 pt sheet splits, the
+    /// 620 pt one doesn't. The root's sheet asks for the same size (`AppRoute.usesBillSheet`), since its own sizing
+    /// (`foldSheetPlacement`) is the one iOS 27 keeps.
     @ViewBuilder
     func billSheetSizing(in window: ScreenLayout) -> some View {
-        if window.isLarge {
-            let isLyingDown = window.size.width > window.size.height
-            let size = isLyingDown ? CGSize(width: 820, height: 640) : CGSize(width: 620, height: 860)
-            presentationSizing(
-                FixedSheetSizing(
-                    size: CGSize(
-                        width: min(size.width, window.size.width),
-                        height: min(size.height, window.size.height),
-                    ),
-                ),
-            )
+        if let size = window.billSheetSize {
+            presentationSizing(FixedSheetSizing(size: size))
         } else {
             self
         }
+    }
+}
+
+extension ScreenLayout {
+    /// A bill's sheet with an iPad's room: 820×640 where the window lies down and 620×860 upright, as the canvas draws
+    /// them, never more than the window under it. Nil without an iPad's room.
+    var billSheetSize: CGSize? {
+        guard isLarge else { return nil }
+        let isLyingDown = size.width > size.height
+        let bill = isLyingDown ? CGSize(width: 820, height: 640) : CGSize(width: 620, height: 860)
+        return CGSize(width: min(bill.width, size.width), height: min(bill.height, size.height))
     }
 }
 

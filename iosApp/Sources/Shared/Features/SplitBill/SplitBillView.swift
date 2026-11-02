@@ -293,11 +293,22 @@ private struct PhoneSplitBill: View {
                     }
                 }
             } else {
-                Form {
-                    whatSections
-                    detailsSection
-                    settledPairSection
-                    deleteSection
+                // An iPhone Duo open upright: the same halves above and below the fold (7.1)
+                FoldHalves(scrollsHalves: false) {
+                    Form { whatSections }
+                } bottom: {
+                    Form {
+                        detailsSection
+                        settledPairSection
+                        deleteSection
+                    }
+                } single: {
+                    Form {
+                        whatSections
+                        detailsSection
+                        settledPairSection
+                        deleteSection
+                    }
                 }
             }
         }
@@ -328,13 +339,16 @@ private struct PhoneSplitBill: View {
         }
         .sheet(isPresented: groupShown) {
             GroupSheet(model: model)
+                .foldSheetPlacement()
         }
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
             if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
                 SeveralPayersSheet(model: model)
+                    .foldSheetPlacement()
             } else {
                 PayerSheet(model: model)
+                    .foldSheetPlacement()
             }
         }
         .onAppear {

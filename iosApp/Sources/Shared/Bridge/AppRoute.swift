@@ -172,7 +172,25 @@ enum AppRoute: Hashable, Identifiable {
         #endif
     }
 
-    /// A group's screen, whatever tab it shows: the only screen the column beside the list draws, and the one whose
+    /// A screen drawn as a form sheet (`formSheetSizing()`), which the root's sheet keeps at the form's size, the
+    /// iPhone Duo's fold included (`foldSheetPlacement(isForm:)`).
+    var usesFormSheet: Bool {
+        switch self {
+        case .createGroup, .contactInvite, .editProfile: true
+        default: false
+        }
+    }
+
+    /// A bill's screen (Rachar conta, Conta), which the root's sheet keeps at the bill's size with an iPad's room
+    /// (`billSheetSizing(in:)`), the iPhone Duo's fold included (`foldSheetPlacement(isBill:)`).
+    var usesBillSheet: Bool {
+        switch self {
+        case .splitBill, .billDetail: true
+        default: false
+        }
+    }
+
+    /// A group's screen, whatever tab it shows: the screen that roots the column beside the list, and the one whose
     /// "Invite people" (Members' Share) anchors the Mac's invite popover.
     var isGroupScreen: Bool {
         if case .groupDetail = self { return true }
