@@ -321,13 +321,13 @@ the apps: clones of 70 tokens or more with at least 5 lines of code in each copy
 ./scripts/cpd.sh --update-baseline --allow-new  # also take more copied code in, only when the copy is on purpose
 ```
 
-`.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code. jscpd only compares files of
-the same language (`.ts` and `.tsx` count as one), so a screen drawn by Compose, SwiftUI and React is never a clone.
-The check itself is shared with the other Quare apps in
+`.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code. jscpd only compares files of the
+same language (`.ts` and `.tsx` count as one), so a screen drawn by Compose, SwiftUI and React is never a clone. The
+check itself is shared with the other Quare apps in
 [copied-code-check](https://github.com/Quartel-Enterprise/copied-code-check): `scripts/cpd.sh` is its wrapper, which
-never changes, and runs the release that the `Quartel-Enterprise/copied-code-check@X.Y.Z` line of `duplication.yml`
-pins, with the jscpd release it locks. It needs Node.js 18 or later, plus `curl`, `tar` and access to github.com
-the first time it runs a release. A change to how the check counts
+never changes, and runs the release that the `Quartel-Enterprise/copied-code-check@X.Y.Z` line of `duplication.yml` pins
+(every workflow that uses the action has to pin the same one), with the jscpd release it locks. It needs Node.js 18 or
+later, plus `curl`, `tar` and access to github.com the first time it runs a release. A change to how the check counts
 goes to that repository, then a bump of the line here (Dependabot proposes it).
 
 `.jscpd-baseline.json` holds how many lines of code of each file are copied today. A file with more fails the check:
