@@ -29,18 +29,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
@@ -52,7 +54,8 @@ private val chargeWidth = 560.dp
 
 /*
  * Why: "Cobrar" moves no money and sends nothing by itself: a message to edit, Enviar for the system's share sheet and
- * Copiar mensagem. A bottom sheet on a phone (560dp wide lying down), a 560dp dialog on a tablet.
+ * Copiar mensagem. A bottom sheet on a phone (560dp wide lying down), a 560dp dialog elsewhere, in the half after the
+ * hinge on a book and a tabletop (FoldDialog), with the people under the scrim.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,22 +65,8 @@ internal fun ChargeSheet(
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
     val onDismiss = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) }
-    if (rememberUsesGroupDialog()) {
-        Dialog(onDismissRequest = onDismiss) {
-            Surface(
-                modifier = Modifier.widthIn(max = chargeWidth),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                ChargeColumn(
-                    charge = charge,
-                    pixKey = pixKey,
-                    onEvent = onEvent,
-                    modifier = Modifier.padding(24.dp),
-                )
-            }
-        }
-    } else {
+    val formFactor = rememberFoldLayout().formFactor
+    if (formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape) {
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetMaxWidth = chargeWidth,
@@ -92,6 +81,28 @@ internal fun ChargeSheet(
                     bottom = 24.dp,
                 ),
             )
+        }
+    } else {
+        val title = stringResource(
+            R.string.global_balances_charge_title,
+            charge.name ?: stringResource(DesignR.string.designsystem_former_member),
+        )
+        FoldDialog(onDismissRequest = onDismiss) {
+            Surface(
+                modifier = Modifier
+                    .widthIn(max = chargeWidth)
+                    .fillMaxWidth()
+                    .semantics { paneTitle = title },
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                ChargeColumn(
+                    charge = charge,
+                    pixKey = pixKey,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(24.dp),
+                )
+            }
         }
     }
 }

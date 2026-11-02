@@ -1,13 +1,19 @@
 package com.quare.blitzsplit.android.feature.globalbalances
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.PersonGroupBalance
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.globalbalances.presentation.model.ChargeDraft
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiState
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.PersonRow
 
@@ -41,6 +47,21 @@ private val previewPeople = listOf(
         ),
         isExpanded = true,
     ),
+)
+private val previewCharge = ChargeDraft(
+    personId = "Carla",
+    name = "Carla",
+    initials = "CA",
+    color = AvatarColor.LILAC,
+    currency = GroupCurrency.BRL,
+    amountMinor = 3_290L,
+    groupNames = listOf("Viagem Floripa", "Apê 302", "Churrasco de sábado"),
+    isGuest = false,
+    guestBills = emptyList(),
+    guestPaidMinor = null,
+    hasPixKey = false,
+    pixKeyChoice = null,
+    editedMessage = null,
 )
 
 private fun createPreviewPart(
@@ -126,6 +147,39 @@ private fun GlobalBalancesSettledPreview() {
     BlitzSplitTheme {
         GlobalBalancesContent(
             state = createPreviewState(emptyList()),
+            onEvent = {},
+        )
+    }
+}
+
+// Why: the board draws no tabletop for page 8: Saldos stays as on the book, Cobrar in the half after the hinge.
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun GlobalBalancesTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            GlobalBalancesContent(
+                state = createPreviewState(previewPeople),
+                onEvent = {},
+            )
+        }
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun ChargeSheetPreview() {
+    BlitzSplitTheme {
+        GlobalBalancesContent(
+            state = createPreviewState(previewPeople),
+            onEvent = {},
+        )
+        ChargeSheet(
+            charge = previewCharge,
+            pixKey = null,
             onEvent = {},
         )
     }
