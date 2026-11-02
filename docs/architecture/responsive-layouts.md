@@ -51,7 +51,8 @@ The pieces built on it, in `:android:designsystem`'s `layout` package:
 | `FoldDialog(onDismissRequest, properties, placement, content)` | A dialog off the hinge: `DialogPlacement.Centered`, `EndHalf` (a book's right half, the other half under the scrim) or `TopHalf` (a tabletop's). `rememberDialogPlacement()` is the canvas' default per posture (a tabletop lying down draws its dialogs like the book's, in the right half above its hinge); `rememberDialogPlacement(isTopHalfOnTabletop = true)` where the boards put them on a tabletop's top half even lying down (flow 2). The content brings its own surface, as in a centered dialog; one that replaces Material's `BasicAlertDialog` puts `Modifier.alertDialogPane(title)` on it, for the 280 to 560 dp width and the pane title TalkBack says |
 | `FoldDialogSceneStrategy.dialogMetadataOf(properties, isTopHalfOnTabletop)` | A navigation entry in a `FoldDialog` over the entry under it (`AppNavDisplay` uses it for every dialog route); `isTopHalfOnTabletop` for a flow whose boards put it in a tabletop's top half even lying down (flow 2's Novo grupo) |
 | `rememberUsesFormDialog()` | The keys, Excluir conta: a dialog on a tablet, full screen on any foldable. Flow 6 has its own rules in `:android:feature:edit_group`: Editar grupo is a dialog on anything wider than a phone (`rememberUsesEditGroupDialog()`, off the hinge as every dialog), Divisão padrão on a tablet, a book and a tabletop, full screen on a foldable upright (`rememberUsesDefaultSplitDialog()`) |
-| `rememberUsesGroupDialog()` | Rachar conta, Conta, Registrar pagamento: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop |
+| `rememberUsesGroupDialog()` | Rachar conta, Conta: a dialog on a tablet and a foldable upright, full screen or a sheet on a phone, a book and a tabletop (Registrar pagamento has its own) |
+| `rememberFormPresentation()` | Registrar pagamento and Convidar of Contatos: a sheet on a phone, a dialog wider, a book's in the right half, full screen on a tabletop split on the hinge (`TabletopGap` apart); each entry keeps the one it opened with, as its scene does |
 | `rememberListDetailLayout()` | The home's list and detail (Grupos, Saldos): a tablet lying down (520 dp list) and a book (the half before the hinge), `paneSpacing` apart (the band the hinge reports on a book, at least 24 dp) |
 | `@DevicePreviews` | Phone, phone lying down, tablet both ways, foldable upright (673×841) and book (841×673, split in the middle by its size). A tabletop preview provides `LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)`, a cover screen one `coverFoldLayoutOf(360.dp, 374.dp)` |
 | `HomeNavigationRail` / `WithGroupNavigationRail` | The home's rail (no labels on a phone lying down nor a tabletop), and the same rail beside a group's screen drawn alone wider than a phone upright, never on a tabletop nor in the pane beside the list, with the tab the group was opened from selected (`homeTab`) and tappable again to go back to it (`reselects`), Atividade's unread badge from the screen's own state (`activityUnreadCount`); its content's Scaffold leaves out the start inset (`toGroupRailInsets`) |
@@ -61,6 +62,10 @@ alert `FoldAlertDialog(..., placement = rememberDialogPlacement(...))` (the icon
 `AlertDialog`, which `ConfirmDialog` is built on): centered it is Material's `AlertDialog`, in a half a `FoldDialog`
 drawn like it (Convidar's "Trocar o link?" in a book's right half and a tabletop's top half, the profile's sign out
 dialogs in a book's right half).
+
+Checked on the Pixel Fold emulator: Registrar pagamento in a book's right half (`FoldDialog`) and full screen on a
+tabletop (`TopBottomHalvesLayout`), and the group's Saldos drawn alone on a tabletop; the Galaxy Z Fold and the phone
+lying down are still preview only for them.
 
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
 Perfil, Editar perfil, the keys and Estatísticas on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
@@ -120,7 +125,7 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | Piece | Use it for |
 | --- | --- |
 | `TwoColumnsLayout(firstWidth:secondWidth:spacing:maxWidth:alignment:first:second:)` | Two columns of one screen in a container of at most 920 pt (or `maxWidth`), the first fixed (or half), or the second fixed (Convidar's QR card); on an iPhone Duo whose fold runs down, each column on its side of the fold |
-| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo, Editar perfil, Editar grupo and Divisão padrão's exception use it; Cobrar too, a large detent there so it stays in the middle; Registrar pagamento to come): about 540 pt on iPad |
+| `formSheetSizing()` | A form sheet over the screen behind it (the recovery code, Novo grupo, Editar perfil, Editar grupo, Divisão padrão's exception and Registrar pagamento use it; Cobrar too, a large detent there so it stays in the middle): about 540 pt on iPad |
 | `billSheetSizing(in: windowLayout)` | A bill's sheet: 820×640 lying down, 620×860 upright, never more than the window. Check on a device that the sheet's two columns still fit when adopting it |
 | `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` and `FoldHalves` don't cover (a list ending at the fold, a custom overlay); `verticalFrame` and `horizontalFrame` say which way it runs |
 | `ListDetailSeparator(fold:)` | Between a list and the column beside it: the fold's band kept empty (`verticalFrame`), else a divider |

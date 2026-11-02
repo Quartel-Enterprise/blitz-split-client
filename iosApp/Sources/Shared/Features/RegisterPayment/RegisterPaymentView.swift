@@ -69,7 +69,7 @@ final class RegisterPaymentModel {
 
 /// "Record payment": a payment from one member to another made outside the app, which settles their debt, or, from
 /// the home's Balances, settling up with someone across groups. A sheet over the group (or Balances) on iPhone, iPad
-/// and Mac, as Split a bill is; it closes by itself once saved, or when the debt is gone.
+/// (the 540×620 form sheet) and Mac; it closes by itself once saved, or when the debt is gone.
 struct RegisterPaymentView: View {
     /// Its ViewModel, for a pair of one group or someone across groups.
     private let makeHolder: () -> ViewModelHolder<RegisterPaymentViewModel>
@@ -110,6 +110,10 @@ struct RegisterPaymentView: View {
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true)
+        #if os(iOS)
+        // The canvas' 540×620 form sheet with an iPad's room; an iPhone's sheet keeps the system's width
+        .formSheetSizing()
+        #endif
         .glassToast("Couldn't record the payment. Try again.", trigger: model?.saveErrorCount ?? 0)
         .onAppear {
             if model == nil { model = RegisterPaymentModel(holder: makeHolder()) }
@@ -251,8 +255,15 @@ private struct PaymentAmountHelp: View {
 }
 
 #if os(iOS)
+/// One grouped form on an iPhone upright and in the iPad's 540×620 form sheet, split on the fold of an iPhone Duo open
+/// upright; in an iPhone's sheet lying down two, side by side, as the canvas draws it: who paid whom and the amount,
+/// then how and when, each scrolling on its own, with the confirm as the bar's ✓ since the short sheet has no room for
+/// the button under the form.
 private struct PhoneRegisterPayment: View {
     let model: RegisterPaymentModel
+
+    /// The sheet's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
 
     private var state: RegisterPaymentUiState {
         model.state
@@ -269,23 +280,36 @@ private struct PhoneRegisterPayment: View {
                 howAndWhen
             }
         } single: {
-            Form {
-                whoAndAmount
-                howAndWhen
+            if layout.usesTwoColumns {
+                TwoColumnsLayout(spacing: 8) {
+                    Form { whoAndAmount }
+                } second: {
+                    Form { howAndWhen }
+                }
+            } else {
+                Form {
+                    whoAndAmount
+                    howAndWhen
+                }
             }
         }
         .scrollDismissesKeyboard(.interactively)
         .safeAreaInset(edge: .bottom) {
-            PrimaryButton(
-                title: RegisterPaymentCopy.confirm(state),
-                isEnabled: state.canConfirm,
-                isLoading: state.isSaving,
-            ) {
-                model.send(RegisterPaymentUiEventOnConfirmClicked.shared)
+            if !layout.usesTwoColumns {
+                PrimaryButton(
+                    title: RegisterPaymentCopy.confirm(state),
+                    isEnabled: state.canConfirm,
+                    isLoading: state.isSaving,
+                ) {
+                    confirm()
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 8)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
         .navigationTitle("Record payment")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -295,9 +319,28 @@ private struct PhoneRegisterPayment: View {
                 }
                 .disabled(state.isSaving)
             }
+            if layout.usesTwoColumns {
+                // The bar's ✓ turns into a spinner while saving, as the bottom button does.
+                ToolbarItem(placement: .confirmationAction) {
+                    if state.isSaving {
+                        ProgressView()
+                    } else {
+                        Button(RegisterPaymentCopy.confirm(state), systemImage: "checkmark") {
+                            confirm()
+                        }
+                        .buttonStyle(.glassProminent)
+                        .disabled(!state.canConfirm)
+                    }
+                }
+            }
         }
     }
 
+    private func confirm() {
+        model.send(RegisterPaymentUiEventOnConfirmClicked.shared)
+    }
+
+    /// Who paid whom, what is owed, and the amount (or the groups a net across groups closes).
     @ViewBuilder
     private var whoAndAmount: some View {
         Section {
@@ -342,6 +385,7 @@ private struct PhoneRegisterPayment: View {
         }
     }
 
+    /// How and when it was paid, and what recording it does.
     @ViewBuilder
     private var howAndWhen: some View {
         Section("How it was paid") {

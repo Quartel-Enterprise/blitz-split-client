@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -61,21 +63,10 @@ internal fun GroupTopBar(
     }
     MediumFlexibleTopAppBar(
         title = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                GroupBadge(
-                    initials = header.groupInitials,
-                    color = header.groupColor,
-                    size = 40.dp,
-                )
-                Text(
-                    text = header.groupName,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            GroupTitle(
+                header = header,
+                badgeSize = 40.dp,
+            )
         },
         subtitle = {
             Text(
@@ -84,37 +75,100 @@ internal fun GroupTopBar(
                 overflow = TextOverflow.Ellipsis,
             )
         },
-        navigationIcon = {
-            // Why: beside the home's list the group has nothing to go back to; another row takes its place.
-            if (!LocalInDetailPane.current) {
-                IconButton(onClick = { onAction(GroupAction.BACK) }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(R.string.group_detail_back),
-                    )
-                }
-            }
-        },
+        navigationIcon = { GroupBackButton(onAction) },
         actions = {
-            IconButton(onClick = { onAction(GroupAction.STATS) }) {
-                Icon(
-                    imageVector = Icons.Outlined.BarChart,
-                    contentDescription = stringResource(R.string.group_detail_stats),
-                )
-            }
-            IconButton(onClick = { onAction(GroupAction.INVITE) }) {
-                Icon(
-                    imageVector = Icons.Outlined.PersonAdd,
-                    contentDescription = stringResource(R.string.group_detail_invite),
-                )
-            }
-            GroupMenu(
-                isPinned = header.isPinned,
+            GroupBarActionsComponent(
+                header = header,
                 isOnline = isOnline,
                 onAction = onAction,
             )
         },
         scrollBehavior = scrollBehavior,
+    )
+}
+
+// Why: a tabletop's one-line bar (6.2), which leaves the top half to the balance; the same back arrow and actions.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun GroupCompactTopBar(
+    header: GroupHeader,
+    isOnline: Boolean,
+    onAction: (GroupAction) -> Unit,
+) {
+    TopAppBar(
+        title = {
+            GroupTitle(
+                header = header,
+                badgeSize = 32.dp,
+            )
+        },
+        navigationIcon = { GroupBackButton(onAction) },
+        actions = {
+            GroupBarActionsComponent(
+                header = header,
+                isOnline = isOnline,
+                onAction = onAction,
+            )
+        },
+    )
+}
+
+@Composable
+private fun GroupTitle(
+    header: GroupHeader,
+    badgeSize: Dp,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GroupBadge(
+            initials = header.groupInitials,
+            color = header.groupColor,
+            size = badgeSize,
+        )
+        Text(
+            text = header.groupName,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+// Why: beside the home's list the group has nothing to go back to; another row takes its place.
+@Composable
+private fun GroupBackButton(onAction: (GroupAction) -> Unit) {
+    if (LocalInDetailPane.current) return
+    IconButton(onClick = { onAction(GroupAction.BACK) }) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+            contentDescription = stringResource(R.string.group_detail_back),
+        )
+    }
+}
+
+@Composable
+private fun GroupBarActionsComponent(
+    header: GroupHeader,
+    isOnline: Boolean,
+    onAction: (GroupAction) -> Unit,
+) {
+    IconButton(onClick = { onAction(GroupAction.STATS) }) {
+        Icon(
+            imageVector = Icons.Outlined.BarChart,
+            contentDescription = stringResource(R.string.group_detail_stats),
+        )
+    }
+    IconButton(onClick = { onAction(GroupAction.INVITE) }) {
+        Icon(
+            imageVector = Icons.Outlined.PersonAdd,
+            contentDescription = stringResource(R.string.group_detail_invite),
+        )
+    }
+    GroupMenu(
+        isPinned = header.isPinned,
+        isOnline = isOnline,
+        onAction = onAction,
     )
 }
 

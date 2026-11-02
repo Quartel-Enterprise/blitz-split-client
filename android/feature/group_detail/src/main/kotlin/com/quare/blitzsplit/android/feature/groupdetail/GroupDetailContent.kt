@@ -6,8 +6,10 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.GroupTabFloatingButton
@@ -15,7 +17,10 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -40,6 +45,19 @@ fun GroupDetailContent(
 ) {
     val money = rememberMoneyFormatter(state.header.currency)
     val onAction: (GroupAction) -> Unit = { action -> onEvent(eventOf(action)) }
+    // Why: a tabletop draws Saldos its own way when the group is alone (6.2); beside the list it stays in the pane.
+    val isTabletop = rememberFoldLayout().tabletopSplit != null
+    if (isTabletop && state.tab == GroupTab.BALANCES && !LocalInDetailPane.current) {
+        BalancesTabletopContent(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            money = money,
+            onAction = onAction,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+        return
+    }
     GroupTabScaffold(
         frame = GroupTabFrame(
             header = state.header,
@@ -203,5 +221,23 @@ private fun GroupDetailContentBalancesPreview() {
             membersTab = previewMembersTab,
             onEvent = {},
         )
+    }
+}
+
+@Preview(
+    name = "Tabletop",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun GroupDetailContentBalancesTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            GroupDetailContent(
+                state = createPreviewBalancesState(),
+                snackbarHostState = SnackbarHostState(),
+                membersTab = previewMembersTab,
+                onEvent = {},
+            )
+        }
     }
 }

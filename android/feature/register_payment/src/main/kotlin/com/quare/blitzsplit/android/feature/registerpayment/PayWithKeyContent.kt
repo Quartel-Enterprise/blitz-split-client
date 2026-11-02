@@ -3,14 +3,18 @@ package com.quare.blitzsplit.android.feature.registerpayment
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -42,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
 import com.quare.blitzsplit.android.designsystem.component.QrCodeImage
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
+import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.platform.copyText
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
@@ -58,6 +64,9 @@ internal enum class PayWithKeyLayout {
 
     // Why: the 640dp sheet of a phone lying down: who, how and the default key left; the rest and the buttons right.
     TwoColumns,
+
+    // Why: a tabletop's full screen: who, how and the default key above the hinge; the rest and the buttons under it.
+    TabletopHalves,
 }
 
 /*
@@ -154,6 +163,45 @@ internal fun PayWithKeyContent(
                 )
             }
         }
+
+        // Why: as the form's tabletop, each half scrolling on its own, the top one sitting on the hinge.
+        PayWithKeyLayout.TabletopHalves -> TopBottomHalvesLayout(
+            modifier = modifier,
+            gap = TabletopGap,
+            top = {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomStart,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 48.dp),
+                        verticalArrangement = spacing,
+                        content = who,
+                    )
+                }
+            },
+            bottom = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            start = 48.dp,
+                            end = 48.dp,
+                            bottom = 24.dp,
+                        ),
+                    verticalArrangement = spacing,
+                ) {
+                    rest()
+                    PayButtonRow(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
+            },
+        )
     }
 }
 

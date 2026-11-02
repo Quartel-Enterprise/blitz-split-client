@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.contacts
 import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.designsystem.component.DetailPlaceholderPane
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
@@ -156,7 +157,7 @@ private fun ContactInvitePreview() {
                 isLinkCopied = false,
                 isLoaded = true,
             ),
-            presentation = ContactInvitePresentation.Dialog,
+            presentation = FormPresentation.Dialog,
             onEvent = {},
         )
     }

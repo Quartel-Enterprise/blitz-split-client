@@ -21,6 +21,7 @@
     <string name="register_payment_confirm_paid">Confirm payment</string>
     <string name="register_payment_confirm_between">Record payment</string>
     <string name="register_payment_cancel">Cancel</string>
+    <string name="register_payment_screen_title">Record payment</string>
     <string name="register_payment_close">Close</string>
     <string name="register_payment_save_error">Couldn\'t record the payment. Try again.</string>
     <string name="register_payment_former_member">Former member</string>
