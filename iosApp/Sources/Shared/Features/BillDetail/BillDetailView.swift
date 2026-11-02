@@ -53,9 +53,10 @@ struct BillDetailView: View {
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    /// The window under the sheet, not the sheet: whether this bill is a sheet that closes or a pushed screen.
-    @Environment(\.windowLayout) private var windowLayout
     #endif
+    /// The window under the sheet or the inspector, not them: whether this bill is a sheet that closes or a pushed
+    /// screen, and how wide the Mac's inspector is.
+    @Environment(\.windowLayout) private var windowLayout
 
     var body: some View {
         Group {
@@ -77,6 +78,13 @@ struct BillDetailView: View {
         // On iPhone the bill keeps the group's own bars, without the app's tabs
         .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
         .toolbar { toolbar }
+        #else
+        // Set while the bill loads too, so the inspector opens at its width rather than jumping to it
+        .inspectorColumnWidth(
+            min: MacBillInspector.narrowWidth,
+            ideal: MacBillInspector.width(in: windowLayout),
+            max: MacBillInspector.wideWidth,
+        )
         #endif
         .billDeletionAlert(
             model?.state.deletion,
@@ -344,7 +352,6 @@ private struct PhoneBillDetail: View {
 private struct MacBillDetail: View {
     let model: BillDetailModel
 
-    @Environment(\.windowLayout) private var windowLayout
     @State private var layout = ScreenLayout()
 
     private var state: BillDetailUiState {
@@ -376,14 +383,6 @@ private struct MacBillDetail: View {
         }
         .measuringScreenLayout($layout)
         .background(Palette.groupedBackground)
-        .onExitCommand {
-            model.send(BillDetailUiEventOnBackClicked.shared)
-        }
-        .inspectorColumnWidth(
-            min: MacBillInspector.narrowWidth,
-            ideal: MacBillInspector.width(in: windowLayout),
-            max: MacBillInspector.wideWidth,
-        )
     }
 
     private var header: some View {
@@ -422,6 +421,8 @@ private struct MacBillDetail: View {
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
+            // Esc closes it with the focus anywhere in the window, as it closed the sheet
+            .keyboardShortcut(.cancelAction)
             .help(Text("Close"))
         }
     }

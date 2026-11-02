@@ -61,12 +61,6 @@ final class AppModel {
             closeSettingsEntries(from: buried, of: value)
             return
         }
-        // The inspector shows one bill: another bill clicked while it is open takes its place (decision 3)
-        if routes.count > 2, case .billDetail = routes[routes.count - 1], case .billDetail = routes[routes.count - 2],
-           let route = (value as? [Any])?.last as? any Route {
-            holder.viewModel.navigator.replaceAbove(size: Int32(routes.count - 2), route: route)
-            return
-        }
         #endif
         backStack = routes
     }

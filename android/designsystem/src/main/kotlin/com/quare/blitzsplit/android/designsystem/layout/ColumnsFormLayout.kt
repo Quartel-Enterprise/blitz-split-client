@@ -190,7 +190,8 @@ fun rememberUsesTabletopHalves(isDialog: Boolean): Boolean = !isDialog && rememb
 
 /*
  * Why: the tabletop board: what was typed sits at the bottom of the top half, just above the hinge, and the controls
- * start right under it. The keyboard covers the bottom half only, so the halves never shrink for it.
+ * start right under it. The keyboard covers the bottom half only, so only that half makes room for it (Dividir's
+ * values are typed there).
  */
 @Composable
 private fun TabletopHalvesLayout(
@@ -222,7 +223,9 @@ private fun TabletopHalvesLayout(
         },
         bottom = {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding(),
                 contentAlignment = Alignment.TopCenter,
             ) {
                 Column(

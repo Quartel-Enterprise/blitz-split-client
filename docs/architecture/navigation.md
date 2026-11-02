@@ -117,8 +117,9 @@ Some routes open as a sheet instead of a push (`AppRoute.presentsAsSheet`: a pay
 both sheets ("Editar conta" over a bill's "Conta"), `AppModel.stackedSheet` presents the second over the first
 instead of replacing it, and closing either pops the shared stack down to what is still shown. On the Mac a bill's
 Conta is `AppModel.billInspector` instead, the main window's `.inspector` beside the group, which `path` leaves out
-too: "Editar conta" opens as a sheet over the window with the inspector still shown, another bill clicked replaces
-the one in it (`replaceAbove`), and closing it pops it and whatever was over it. On the Mac, a group's
+too: "Editar conta" opens as a sheet over the window with the inspector still shown, and closing it pops it and
+whatever was over it. The group beside it still takes clicks, so what the group opens then takes the bill's place,
+another bill included (`GroupScreen.open`, a `replaceTop` while its own bill is right above it). On the Mac, a group's
 Convidar over the group is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
 group's "Convidar pessoas" draws it (`.invitePopover(host:)`), Membros' Compartilhar while that tab is picked; closing
 it pops it the same way.

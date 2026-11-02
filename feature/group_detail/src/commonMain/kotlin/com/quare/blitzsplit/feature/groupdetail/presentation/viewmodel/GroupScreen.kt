@@ -169,7 +169,21 @@ internal class GroupScreen(
     }
 
     fun open(next: Route) {
-        if (isOnTop()) useCases.navigator.navigate(next)
+        when {
+            isOnTop() -> useCases.navigator.navigate(next)
+
+            /*
+             * Why: the Mac draws the group's bill beside it (its inspector), so the group still takes clicks: what it
+             * opens then takes the bill's place, another bill included.
+             */
+            isUnderItsBill() -> useCases.navigator.replaceTop(next)
+        }
+    }
+
+    private fun isUnderItsBill(): Boolean {
+        val stack = useCases.navigator.backStack.value
+        val top = stack.lastOrNull() as? Route.BillDetail ?: return false
+        return top.groupId == groupId && stack.getOrNull(stack.lastIndex - 1) == route
     }
 
     // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.

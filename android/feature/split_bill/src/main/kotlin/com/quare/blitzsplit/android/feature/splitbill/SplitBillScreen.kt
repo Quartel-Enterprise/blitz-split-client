@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.DialogProperties
@@ -42,7 +43,7 @@ private const val PAGE_CATEGORY_FORM = 5
 @Composable
 fun SplitBillScreen(
     route: Route.SplitBill,
-    // Why: a tablet and the upright foldable keep the group behind the bill, as a dialog.
+    // Why: anywhere wider than a phone the group stays behind the bill, as a dialog, but under a new bill on a tabletop.
     isDialog: Boolean,
     viewModel: SplitBillViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
@@ -80,6 +81,13 @@ fun SplitBillScreen(
         categoryPicker = state.categoryPicker,
         categoryForm = state.categoryForm,
     )
+    // Why: a page in the half shows its snackbar alone, rather than once more under its scrim.
+    val idleSnackbarHostState = remember { SnackbarHostState() }
+    val pagesSnackbarHostState = if (opensPagesInHalf && billPages.hasHalfPage) {
+        idleSnackbarHostState
+    } else {
+        snackbarHostState
+    }
     /*
      * Why: Dividir over the bill, "Itens da conta" in Dividir's place and "Item" over it, "Categoria" and its form in
      * the bill's place, each kept while it fades out.
@@ -109,7 +117,7 @@ fun SplitBillScreen(
                 state = state,
                 form = categoryForm,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (categoryPicker != null) {
@@ -117,14 +125,14 @@ fun SplitBillScreen(
                 state = state,
                 picker = categoryPicker,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (item != null) {
             ItemEditorContent(
                 editor = item,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (items != null) {
@@ -132,14 +140,14 @@ fun SplitBillScreen(
                 state = state,
                 items = items,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         } else if (editor == null) {
             SplitBillContent(
                 state = state,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onWhenClick = {
                     viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
                     isPickingSpentAt = true
@@ -151,7 +159,7 @@ fun SplitBillScreen(
                 state = state,
                 editor = editor,
                 isDialog = isDialog,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = pagesSnackbarHostState,
                 onEvent = viewModel::onEvent,
             )
         }
