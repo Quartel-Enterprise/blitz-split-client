@@ -523,6 +523,28 @@
         }
       }
     },
+    "Circle" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Círculo"
+          }
+        }
+      }
+    },
+    "Cookie" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biscoito"
+          }
+        }
+      }
+    },
     "Copy code" : {
       "comment" : "Pay with a key (4.5): copies the Pix code",
       "localizations" : {
@@ -1110,12 +1132,32 @@
         }
       }
     },
+    "New photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova foto"
+          }
+        }
+      }
+    },
     "Next" : {
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Próxima"
+          }
+        }
+      }
+    },
+    "No photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem foto"
           }
         }
       }
@@ -1193,6 +1235,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pendente"
+          }
+        }
+      }
+    },
+    "Petal" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pétala"
+          }
+        }
+      }
+    },
+    "Photo" : {
+      "comment" : "A group's photo, in what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
           }
         }
       }
@@ -1811,6 +1875,16 @@
         }
       }
     },
+    "Previous photo" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto anterior"
+          }
+        }
+      }
+    },
     "Queued" : {
       "comment" : "A history line done offline and not up yet",
       "localizations" : {
@@ -2113,6 +2187,17 @@
         }
       }
     },
+    "Shape" : {
+      "comment" : "A group icon's shape, in what an edit changed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forma"
+          }
+        }
+      }
+    },
     "Share bill" : {
       "comment" : "Title of the sheet that shares a bill's link",
       "localizations" : {
@@ -2175,6 +2260,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ rachou %2$@"
+          }
+        }
+      }
+    },
+    "Square" : {
+      "comment" : "A group icon's shape",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quadrado"
           }
         }
       }

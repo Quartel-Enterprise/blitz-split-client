@@ -509,7 +509,7 @@ function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => v
       onClick={onOpen}
       className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
     >
-      <GroupAvatar initials={row.initials} color={row.color} className="size-9 rounded-lg text-xs" />
+      <GroupAvatar initials={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-9 rounded-lg text-xs" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex min-w-0 items-center gap-1.5 font-medium">
           <span className="truncate">{row.name}</span>

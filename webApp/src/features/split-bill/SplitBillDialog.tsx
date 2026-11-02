@@ -318,7 +318,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
 function GroupField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
   const content = (
     <>
-      <GroupAvatar initials={state.groupInitials} color={state.groupColor} className="size-5 rounded-md text-[9px]" />
+      <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 rounded-md text-[9px]" />
       <span className="flex-1 truncate text-left">{state.groupName}</span>
     </>
   )
@@ -375,7 +375,7 @@ function GroupList({ presenter, state }: { presenter: SplitBillPresenter; state:
     <div role="radiogroup" aria-label={t('splitBill_groupTitle')} className="flex flex-col divide-y overflow-hidden rounded-lg border">
       {state.groups.map((group) => (
         <PayerRow key={group.id} isSelected={group.id === state.groupSelection} onPick={() => presenter.pickGroup(group.id)}>
-          <GroupAvatar initials={group.initials} color={group.color} className="size-8 text-xs" />
+          <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-8 text-xs" />
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="truncate font-medium">{group.name}</span>
             <span className="text-xs text-muted-foreground">

@@ -2659,7 +2659,7 @@ class GroupsViewModelTest {
         name = "Viagem Floripa",
         type = GroupType.TRIP,
         color = AvatarColor.LILAC,
-        shape = GroupShape.SQUARE,
+        shape = GroupShape.COOKIE,
         photo = null,
         currency = GroupCurrency.BRL,
         members = listOf(

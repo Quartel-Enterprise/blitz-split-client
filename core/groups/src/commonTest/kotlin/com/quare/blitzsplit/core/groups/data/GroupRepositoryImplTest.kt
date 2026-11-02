@@ -3583,7 +3583,7 @@ class GroupRepositoryImplTest {
         val serverRow = Json.decodeFromString<GroupDto>(
             """
             {"id":"group-1","created_by":"user-1","name":"Apê 302","type":"home","color":"blue","currency":"BRL",
-            "added_at":1,"updated_at":2,"invite_code":"abc",
+            "added_at":1,"updated_at":2,"invite_code":"abc","shape":"petal","photo_url":null,
             "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
             "rounding":[{"category":"food","mode":"equal"}]}}
             """.trimIndent(),

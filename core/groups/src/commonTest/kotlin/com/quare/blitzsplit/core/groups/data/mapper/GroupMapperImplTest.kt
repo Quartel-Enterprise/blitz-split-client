@@ -433,6 +433,7 @@ class GroupMapperImplTest {
                 inviteCode = null,
                 defaultSplit = null,
                 splitIncomes = null,
+                shape = "square",
             ),
             entity,
         )
