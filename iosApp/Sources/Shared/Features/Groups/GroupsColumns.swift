@@ -29,6 +29,12 @@ struct GroupsColumns<ListContent: View>: View {
         layout.showsListDetail && path.allSatisfy(\.isGroupScreen) && !showsEmptyHomeAlone
     }
 
+    /// The list's column beside the group: as wide as the canvas draws it, or up to an iPhone Duo's fold, the group
+    /// starting after it (x = 460 on the boards).
+    private var listWidth: CGFloat {
+        division?.verticalFrame?.minX ?? ScreenLayout.listColumnWidth
+    }
+
     /// No group yet and no fold down the window: the empty home takes the whole tab, as the iPad's board draws it.
     private var showsEmptyHomeAlone: Bool {
         model.state.showsEmptyState && division?.isVertical != true
@@ -47,10 +53,9 @@ struct GroupsColumns<ListContent: View>: View {
                 list()
                     .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
             }
-            .frame(width: showsDetail ? ScreenLayout.listColumnWidth : nil)
+            .frame(width: showsDetail ? listWidth : nil)
             if showsDetail {
-                Divider()
-                    .ignoresSafeArea()
+                ListDetailSeparator(fold: division?.verticalFrame)
                 NavigationStack(path: panePath) {
                     paneRoot
                         .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
