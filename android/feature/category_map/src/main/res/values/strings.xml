@@ -32,6 +32,7 @@
     <string name="category_map_term_help_app">An app term. Restore default brings it back as it came.</string>
     <string name="category_map_term_duplicate">“%1$s” already picks %2$s. Each term has one category.</string>
     <string name="category_map_term_too_short">Use at least 2 letters.</string>
+    <string name="category_map_term_too_long">Use at most 30 letters.</string>
     <string name="category_map_term_invalid">Use only letters, digits and spaces.</string>
     <string name="category_map_category">Category</string>
     <string name="category_map_category_help">It can be the category or a subcategory.</string>

@@ -27,8 +27,9 @@ data class CategoryMapUiState(
     // Why: with Google or Apple the map reaches the person's other devices; otherwise it stays on this one (9.1h).
     val isConnected: Boolean,
 ) {
-    val sections: List<MapSection>
-        get() = categories.branches.mapNotNull { branch ->
+    // Why: once per state, since the list, selectedSection and each platform's layout all read it.
+    val sections: List<MapSection> by lazy {
+        categories.branches.mapNotNull { branch ->
             val main = branch.category
             val rows = (branch.subcategories.map { it to false } + (main to true))
                 .map { (category, isOnlyMain) ->
@@ -46,6 +47,7 @@ data class CategoryMapUiState(
                 rows = rows,
             ).takeUnless { main.isOther && rows.isEmpty() }
         }
+    }
 
     // Why: lying down and on tablets, the category picked beside the list, the first until one is.
     val selectedSection: MapSection?
@@ -55,11 +57,12 @@ data class CategoryMapUiState(
         get() = query.isNotBlank()
 
     // Why: "2 termos com “uber”": each term with a word starting with what is typed, ignoring case and accents.
-    val searchResults: List<MapSearchResult>
-        get() {
-            val folded = CategoryMatcher.keyOf(query)
-            if (folded.isEmpty()) return emptyList()
-            return map.terms.mapNotNull { term ->
+    val searchResults: List<MapSearchResult> by lazy {
+        val folded = CategoryMatcher.keyOf(query)
+        if (folded.isEmpty()) {
+            emptyList()
+        } else {
+            map.terms.mapNotNull { term ->
                 val start = matchStartOrNull(term.key, folded) ?: return@mapNotNull null
                 val category = categories.findOrNull(term.categoryId) ?: return@mapNotNull null
                 val isMarked = TextFolding.toFolded(term.term) == term.key
@@ -72,6 +75,7 @@ data class CategoryMapUiState(
                 )
             }
         }
+    }
 
     val showsNoResult: Boolean
         get() = isSearching && searchResults.isEmpty()
@@ -102,6 +106,7 @@ data class CategoryMapUiState(
             return when {
                 CategoryMatcher.isTermValid(text) -> null
                 text.any { !it.isLetterOrDigit() && it != ' ' } -> TermError.INVALID_CHARACTERS
+                text.length > CategoryMatcher.MAX_TERM_LENGTH -> TermError.TOO_LONG
                 else -> TermError.TOO_SHORT
             }
         }

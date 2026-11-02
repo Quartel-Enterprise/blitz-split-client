@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 
 function termHelp(form: JsTermForm): string {
   if (form.error === 'too-short') return t('categoryMap_termTooShort')
+  if (form.error === 'too-long') return t('categoryMap_termTooLong')
   if (form.error === 'invalid-characters') return t('categoryMap_termInvalid')
   if (form.duplicateTerm && form.duplicateCategory) {
     return t('categoryMap_termDuplicate', { term: form.duplicateTerm, path: categoryPath(form.duplicateCategory, form.duplicateParent) })

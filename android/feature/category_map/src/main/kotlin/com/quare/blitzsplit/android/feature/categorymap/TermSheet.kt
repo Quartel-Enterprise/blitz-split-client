@@ -153,6 +153,8 @@ private fun TermTextField(
     val help = when {
         state.termError == TermError.TOO_SHORT -> stringResource(R.string.category_map_term_too_short)
 
+        state.termError == TermError.TOO_LONG -> stringResource(R.string.category_map_term_too_long)
+
         state.termError == TermError.INVALID_CHARACTERS -> stringResource(R.string.category_map_term_invalid)
 
         duplicate != null && duplicateCategory != null -> stringResource(

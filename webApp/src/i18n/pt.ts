@@ -1626,6 +1626,7 @@ export const pt: Record<MessageKey, string> = {
   categoryMap_termHelpApp: 'Termo do app. Restaurar padrão traz de volta como veio.',
   categoryMap_termDuplicate: '“{term}” já escolhe {path}. Cada termo tem uma categoria só.',
   categoryMap_termTooShort: 'Use pelo menos 2 letras.',
+  categoryMap_termTooLong: 'Use no máximo 30 letras.',
   categoryMap_termInvalid: 'Use só letras, números e espaço.',
   categoryMap_category: 'Categoria',
   categoryMap_categoryHelp: 'Pode ser a categoria ou uma subcategoria.',

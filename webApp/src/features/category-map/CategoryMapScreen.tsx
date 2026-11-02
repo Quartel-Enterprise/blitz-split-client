@@ -48,13 +48,27 @@ export function CategoryMapScreen() {
     toast.error(t('categoryMap_saveError'))
   })
   const removed = state?.removedTerm ?? null
+  // Why: only the latest removed term's toast acts, so an older one closing never drops a newer term's Desfazer.
   useEffect(() => {
     if (!presenter || !removed) return
-    toast(t('categoryMap_removed', { term: removed }), {
-      action: { label: t('categoryMap_undo'), onClick: () => presenter.undoRemove() },
-      onAutoClose: () => presenter.dismissRemoved(),
-      onDismiss: () => presenter.dismissRemoved(),
+    let isCurrent = true
+    const settle = () => {
+      if (isCurrent) presenter.dismissRemoved()
+    }
+    const id = toast(t('categoryMap_removed', { term: removed }), {
+      action: {
+        label: t('categoryMap_undo'),
+        onClick: () => {
+          if (isCurrent) presenter.undoRemove()
+        },
+      },
+      onAutoClose: settle,
+      onDismiss: settle,
     })
+    return () => {
+      isCurrent = false
+      toast.dismiss(id)
+    }
   }, [presenter, removed])
   const [query, setQuery] = useDraft(state?.query ?? '', (value) => {
     presenter?.changeQuery(value)

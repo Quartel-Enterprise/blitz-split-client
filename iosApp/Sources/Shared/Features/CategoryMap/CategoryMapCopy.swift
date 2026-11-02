@@ -54,9 +54,11 @@ enum CategoryMapCopy {
     /// What "Word or phrase" says under the field (9.2a to 9.2d).
     static func termHelp(_ state: CategoryMapUiState, form: TermForm) -> String {
         if let error = state.termError {
-            return error == .tooShort
-                ? String(localized: "Use at least 2 letters.")
-                : String(localized: "Use only letters, digits and spaces.")
+            switch error {
+            case .tooShort: return String(localized: "Use at least 2 letters.")
+            case .tooLong: return String(localized: "Use at most 30 letters.")
+            default: return String(localized: "Use only letters, digits and spaces.")
+            }
         }
         if let duplicate = state.duplicateTerm, let category = state.duplicateCategory {
             let where_ = path(category, in: state)

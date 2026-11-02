@@ -3413,6 +3413,17 @@
         }
       }
     },
+    "Use at most 30 letters." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use no máximo 30 letras."
+          }
+        }
+      }
+    },
     "Use only letters, digits and spaces." : {
       "comment" : "New term",
       "localizations" : {

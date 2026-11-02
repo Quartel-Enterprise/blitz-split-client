@@ -1625,6 +1625,7 @@ export const en = {
   categoryMap_termHelpApp: 'An app term. Restore default brings it back as it came.',
   categoryMap_termDuplicate: '“{term}” already picks {path}. Each term has one category.',
   categoryMap_termTooShort: 'Use at least 2 letters.',
+  categoryMap_termTooLong: 'Use at most 30 letters.',
   categoryMap_termInvalid: 'Use only letters, digits and spaces.',
   categoryMap_category: 'Category',
   categoryMap_categoryHelp: 'It can be the category or a subcategory.',

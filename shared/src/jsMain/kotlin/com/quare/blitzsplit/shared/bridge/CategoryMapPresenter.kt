@@ -62,7 +62,7 @@ class JsTermForm(
     val category: JsCategory?,
     val categoryParent: JsCategory?,
     val isSaving: Boolean,
-    // Why: "too-short" or "invalid-characters", null while the word is fine or empty.
+    // Why: "too-short", "too-long" or "invalid-characters", null while the word is fine or empty.
     val error: String?,
     // Why: the term of another category the word already is, which turns Salvar into "Mover para X".
     val duplicateTerm: String?,

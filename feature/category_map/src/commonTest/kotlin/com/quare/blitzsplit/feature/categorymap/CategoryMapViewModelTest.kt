@@ -105,6 +105,21 @@ class CategoryMapViewModelTest {
     }
 
     @Test
+    fun `GIVEN a new term WHEN typed past 30 letters THEN says it is too long`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnAddTermClicked(AppCategory.LEISURE_PARTIES.key, ""))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnTermTextChanged("a".repeat(31)))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(TermError.TOO_LONG, state.termError)
+        assertFalse(state.canSaveTerm)
+    }
+
+    @Test
     fun `GIVEN uber moved to Festas WHEN saving THEN the map sends it there`() = runTest {
         // Given
         prepareScenario()
