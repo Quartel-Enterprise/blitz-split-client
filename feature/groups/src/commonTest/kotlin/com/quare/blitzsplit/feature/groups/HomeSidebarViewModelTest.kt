@@ -602,6 +602,7 @@ class HomeSidebarViewModelTest {
         id = "member-$name",
         name = name,
         avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
         isMe = false,
         hasJoined = false,
         userId = null,
