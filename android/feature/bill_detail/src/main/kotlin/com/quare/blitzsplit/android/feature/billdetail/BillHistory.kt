@@ -289,6 +289,7 @@ private fun ActorAvatarIcon(entry: BillHistoryEntry) {
         AvatarBadge(
             initial = entry.actorInitials,
             color = entry.actorColor,
+            photoUrl = entry.actorPhotoUrl,
             size = actorAvatarSize,
         )
         Box(

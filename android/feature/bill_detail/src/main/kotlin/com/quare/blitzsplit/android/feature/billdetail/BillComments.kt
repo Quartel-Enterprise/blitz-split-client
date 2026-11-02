@@ -235,6 +235,7 @@ private fun CommentRow(
             AvatarBadge(
                 initial = row.initials,
                 color = row.avatarColor,
+                photoUrl = row.photoUrl,
                 size = if (isReply) replyAvatarSize else commentAvatarSize,
             )
             Column(
@@ -364,6 +365,7 @@ internal fun BillCommentComposerBox(
                 AvatarBadge(
                     initial = me.initials,
                     color = me.avatarColor,
+                    photoUrl = me.photoUrl,
                     size = commentAvatarSize,
                 )
             }

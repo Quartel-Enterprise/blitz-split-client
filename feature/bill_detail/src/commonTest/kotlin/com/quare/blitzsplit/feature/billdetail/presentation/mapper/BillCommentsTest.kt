@@ -243,6 +243,21 @@ class BillCommentsTest {
         assertEquals(RelativeDay.YESTERDAY, row.postedDay)
     }
 
+    @Test
+    fun `GIVEN an author with a photo WHEN gathering the threads THEN the comment shows it in the face`() {
+        // Given
+        val withPhoto = group.copy(
+            members = group.members.map { if (it.id == ANA) it.copy(photoUrl = "https://photos/ana.jpg") else it },
+        )
+        val comments = listOf(comment(authorMemberId = ANA))
+
+        // When
+        val row = threadsOf(comments, withPhoto, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertEquals("https://photos/ana.jpg", row.photoUrl)
+    }
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private val group = Group(
@@ -276,6 +291,7 @@ class BillCommentsTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun comment(

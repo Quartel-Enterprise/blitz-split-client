@@ -45,6 +45,7 @@ private fun rowOf(
         authorName = name,
         initials = name?.let { Initials.ofMember(it, isMe) }.orEmpty(),
         avatarColor = member?.avatarColor ?: AvatarColor.default,
+        photoUrl = member?.photoUrl,
         isMe = isMe,
         viaLink = comment.viaLink,
         replyToName = comment.replyToName,

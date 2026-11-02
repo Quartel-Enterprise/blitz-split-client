@@ -10,6 +10,8 @@ data class BillCommentRow(
     val authorName: String?,
     val initials: String,
     val avatarColor: AvatarColor,
+    // Why: the member's photo in the face, null for none or someone out of the group.
+    val photoUrl: String?,
     val isMe: Boolean,
     // Why: "Pelo link", written by someone out of the group through the bill's open link.
     val viaLink: Boolean,

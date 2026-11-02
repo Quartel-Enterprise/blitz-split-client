@@ -1205,6 +1205,7 @@ class BillHistoriesTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun share(

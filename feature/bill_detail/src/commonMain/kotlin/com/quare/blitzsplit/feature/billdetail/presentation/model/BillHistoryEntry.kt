@@ -11,6 +11,7 @@ data class BillHistoryEntry(
     val actorName: String?,
     val actorInitials: String,
     val actorColor: AvatarColor,
+    val actorPhotoUrl: String?,
     val actorIsMe: Boolean,
     val occurredAt: Long,
     val changes: List<BillHistoryChange>,

@@ -154,6 +154,7 @@ private fun pendingEntryOf(
         actorName = actor.name,
         actorInitials = actor.initials,
         actorColor = actor.color,
+        actorPhotoUrl = actor.photoUrl,
         actorIsMe = true,
         occurredAt = expense.updatedAt.coerceAtMost(nowMillis),
         changes = emptyList(),
@@ -215,6 +216,7 @@ private fun entryOf(
         actorName = actor.name,
         actorInitials = actor.initials,
         actorColor = actor.color,
+        actorPhotoUrl = actor.photoUrl,
         actorIsMe = actorMember?.isMe == true,
         occurredAt = event.occurredAt,
         changes = changesOf(event, group, expense),
@@ -364,5 +366,6 @@ private fun actorOf(
         name = name,
         initials = name?.let { Initials.ofMember(it, isMe) }.orEmpty(),
         color = member?.avatarColor ?: AvatarColor.default,
+        photoUrl = member?.photoUrl,
     )
 }

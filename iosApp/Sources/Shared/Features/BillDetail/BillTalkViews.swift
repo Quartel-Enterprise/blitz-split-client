@@ -64,7 +64,7 @@ struct BillCommentView: View {
             AvatarPhoto(
                 initial: comment.initials,
                 color: comment.avatarColor,
-                photoUrl: nil,
+                photoUrl: comment.photoUrl,
                 size: isReply ? metrics.replyAvatar : metrics.avatar,
             )
             .accessibilityHidden(true)
@@ -172,7 +172,12 @@ struct BillHistoryEntryView: View {
     }
 
     private var face: some View {
-        AvatarPhoto(initial: entry.actorInitials, color: entry.actorColor, photoUrl: nil, size: metrics.avatar)
+        AvatarPhoto(
+            initial: entry.actorInitials,
+            color: entry.actorColor,
+            photoUrl: entry.actorPhotoUrl,
+            size: metrics.avatar,
+        )
             .overlay(alignment: .bottomTrailing) {
                 let badge = metrics.avatar * 0.5
                 Image(systemName: BillCopy.historyIcon(entry))

@@ -58,7 +58,7 @@ function HistoryLine({ entry, hasRail, isUndoing, money, onUndo }: { entry: JsBi
       {/* Why: a line joins the faces of one day, as the canvas draws it. */}
       {hasRail && <span aria-hidden className="absolute top-8 bottom-0.5 left-[13.5px] w-px bg-border" />}
       <span className="relative size-7 shrink-0">
-        <Avatar initial={entry.actorInitials} color={entry.actorColor} className="size-7 text-[11px]" />
+        <Avatar initial={entry.actorInitials} color={entry.actorColor} photoUrl={entry.actorPhotoUrl} className="size-7 text-[11px]" />
         <span aria-hidden className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 border-card bg-foreground text-background [&>svg]:size-2 [&>svg]:stroke-[3.2]">
           {kindIcon(entry)}
         </span>

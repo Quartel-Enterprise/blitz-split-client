@@ -55,7 +55,7 @@ function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isR
   const posted = postedText(row)
   return (
     <article aria-label={`${name}, ${posted}`} className={cn('flex gap-2.5 pb-0.5', isReply ? 'pt-2' : 'pt-3')}>
-      <Avatar initial={row.initials} color={row.color} className={isReply ? 'size-6 text-[10px]' : 'size-7 text-[11px]'} />
+      <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className={isReply ? 'size-6 text-[10px]' : 'size-7 text-[11px]'} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
           <span className="text-sm font-medium">{name}</span>

@@ -6,4 +6,5 @@ internal data class HistoryActor(
     val name: String?,
     val initials: String,
     val color: AvatarColor,
+    val photoUrl: String?,
 )
