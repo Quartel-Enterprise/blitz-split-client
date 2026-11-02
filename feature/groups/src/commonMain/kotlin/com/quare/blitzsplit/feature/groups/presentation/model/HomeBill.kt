@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 // Why: a row of Início's "Últimas despesas": "Mercado · Viagem Floripa · Você pagou · R$ 312,00 · +R$ 249,60".
@@ -14,6 +15,8 @@ data class HomeBill(
     val payers: List<SearchBillPayer>,
     // Why: what the bill does to this device's user's balance: positive "a receber", negative "você deve".
     val myBalanceMinor: Long,
+    // Why: the row's badge, as Despesas draws it (6.1): its category as it reads now, "Outros" for none.
+    val category: Category,
     // Why: "na fila" and the orange dot: saved here and not on the server yet.
     val isPending: Boolean,
 )

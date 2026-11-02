@@ -5,10 +5,12 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodeP
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
@@ -19,9 +21,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -96,6 +100,7 @@ class HomeViewModelTest {
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
+    private lateinit var categories: FakeCategoryRepository
     private lateinit var recordedPayments: InMemoryRecordedPaymentRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var syncState: MutableStateFlow<SyncState>
@@ -1086,6 +1091,39 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill of a group category WHEN someone renames it THEN its row on Inicio follows`() =
+        runTest(testDispatcher) {
+            // Given
+            val barbecue = GroupCategory(
+                id = "barbecue",
+                groupId = "trio",
+                parentId = null,
+                name = "Churrasco",
+                icon = CategoryIcon.GIFT,
+                createdByMemberId = "member-Ana",
+                isDeleted = false,
+                isPending = false,
+            )
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("meat", categoryId = "barbecue")),
+                storedCategories = listOf(barbecue),
+            )
+
+            // When
+            categories.groupCategories.value = listOf(barbecue.copy(name = "Churras"))
+
+            // Then
+            val category = viewModel.uiState.value.billDays
+                .single()
+                .bills
+                .single()
+                .category
+            assertEquals("Churras", category.name)
+            assertEquals(CategoryIcon.GIFT, category.icon)
+        }
+
+    @Test
     fun `GIVEN a bill on Inicio WHEN tapping it THEN opens its Conta over its group`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -1899,6 +1937,7 @@ class HomeViewModelTest {
         splitOver: List<String> = everyone,
         spentAt: Long = daysAgo(5),
         isPending: Boolean = false,
+        categoryId: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
@@ -1912,7 +1951,7 @@ class HomeViewModelTest {
         updatedAt = spentAt,
         updatedByMemberId = null,
         items = null,
-        categoryId = null,
+        categoryId = categoryId,
     )
 
     private fun payment(
@@ -1943,6 +1982,7 @@ class HomeViewModelTest {
         groupsRead: Boolean = true,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
+        storedCategories: List<GroupCategory> = emptyList(),
         pinnedGroupIds: Set<String> = emptySet(),
         isCardDismissedThisLaunch: Boolean = false,
         isFirstDownloadPending: Boolean = false,
@@ -1952,6 +1992,7 @@ class HomeViewModelTest {
         pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
+        categories = FakeCategoryRepository(initialGroupCategories = storedCategories)
         recordedPayments = InMemoryRecordedPaymentRepository()
         isOnline = MutableStateFlow(online)
         this@HomeViewModelTest.syncState = MutableStateFlow(syncState)
@@ -1999,6 +2040,7 @@ class HomeViewModelTest {
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
+            observeMapCategories = ObserveMapCategoriesUseCase(categories),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

@@ -9,6 +9,8 @@ import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.coverFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -226,6 +228,7 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
                     currency = GroupCurrency.BRL,
                     payers = listOf(SearchBillPayer("Pierre", isMe = true)),
                     myBalanceMinor = 24_960L,
+                    category = CategoryTree.appOnly.resolve(AppCategory.FOOD_MARKET.key),
                     isPending = true,
                 ),
             ),
@@ -243,6 +246,7 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
                     currency = GroupCurrency.BRL,
                     payers = listOf(SearchBillPayer("Bruno", isMe = false)),
                     myBalanceMinor = -9_800L,
+                    category = CategoryTree.appOnly.resolve(AppCategory.HOME_POWER.key),
                     isPending = false,
                 ),
             ),
