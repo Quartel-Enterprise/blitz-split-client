@@ -1,8 +1,12 @@
 package com.quare.blitzsplit.feature.groups
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
@@ -271,7 +275,7 @@ class HomeContentTest {
         )
 
         // When
-        val days = homeBillDaysOf(groups, clock)
+        val days = homeBillDaysOf(groups, CategoryTree.appOnly, clock)
 
         // Then
         assertEquals(listOf("h1", "t1", "h2", "h3", "t2"), days.flatMap { day -> day.bills.map { it.id } })
@@ -294,7 +298,7 @@ class HomeContentTest {
         )
 
         // When
-        val days = homeBillDaysOf(groups, clock)
+        val days = homeBillDaysOf(groups, CategoryTree.appOnly, clock)
 
         // Then
         assertEquals(listOf("mine"), days.flatMap { day -> day.bills.map { it.id } })
@@ -317,7 +321,7 @@ class HomeContentTest {
         )
 
         // When
-        val bill = homeBillDaysOf(groups, clock).single().bills.single()
+        val bill = homeBillDaysOf(groups, CategoryTree.appOnly, clock).single().bills.single()
 
         // Then
         assertEquals(6000L, bill.myBalanceMinor)
@@ -343,7 +347,7 @@ class HomeContentTest {
         )
 
         // When
-        val days = homeBillDaysOf(groups, clock)
+        val days = homeBillDaysOf(groups, CategoryTree.appOnly, clock)
 
         // Then
         assertTrue(days.isEmpty())
@@ -363,7 +367,7 @@ class HomeContentTest {
         )
 
         // When
-        val days = homeBillDaysOf(groups, clock)
+        val days = homeBillDaysOf(groups, CategoryTree.appOnly, clock)
 
         // Then
         assertEquals(
@@ -413,7 +417,7 @@ class HomeContentTest {
         )
 
         // When
-        val bill = homeBillDaysOf(groups, clock).single().bills.single()
+        val bill = homeBillDaysOf(groups, CategoryTree.appOnly, clock).single().bills.single()
 
         // Then
         assertEquals(
@@ -435,6 +439,7 @@ class HomeContentTest {
                     ),
                 ),
                 myBalanceMinor = 3000L,
+                category = CategoryTree.appOnly.resolve(null),
                 isPending = true,
             ),
             bill,
@@ -457,11 +462,116 @@ class HomeContentTest {
         )
 
         // When
-        val bill = homeBillDaysOf(groups, clock).single().bills.single()
+        val bill = homeBillDaysOf(groups, CategoryTree.appOnly, clock).single().bills.single()
 
         // Then
         assertEquals(-3000L, bill.myBalanceMinor)
         assertFalse(bill.isPending)
+    }
+
+    @Test
+    fun `GIVEN bills of an app category and of none WHEN listing the latest bills THEN each has it or Outros`() {
+        // Given
+        val groups = listOf(
+            withMoney(
+                trio(),
+                bill(
+                    "market",
+                    spentAt = hoursAgo(1),
+                    categoryId = AppCategory.FOOD_MARKET.key,
+                ),
+                bill("other", spentAt = hoursAgo(2)),
+            ),
+        )
+
+        // When
+        val bills = homeBillDaysOf(groups, CategoryTree.appOnly, clock).single().bills
+
+        // Then
+        assertEquals(listOf(AppCategory.FOOD_MARKET, AppCategory.OTHER), bills.map { it.category.app })
+    }
+
+    @Test
+    fun `GIVEN bills of two groups own categories WHEN listing the latest bills THEN each reads as in its group`() {
+        // Given
+        val beach = groupCategory(
+            id = "beach",
+            groupId = "trip",
+            name = "Praia",
+            icon = CategoryIcon.SUN,
+        )
+        val barbecue = groupCategory(
+            id = "barbecue",
+            groupId = "trio",
+            name = "Churrasco",
+            icon = CategoryIcon.GIFT,
+        )
+        val categories = CategoryTree.ofGroups(listOf(beach, barbecue))
+        val groups = listOf(
+            withMoney(
+                trio(),
+                bill(
+                    "meat",
+                    spentAt = hoursAgo(1),
+                    categoryId = "barbecue",
+                ),
+            ),
+            withMoney(
+                trio(
+                    id = "trip",
+                    name = "Viagem Floripa",
+                    currency = GroupCurrency.BRL,
+                ),
+                bill(
+                    "umbrella",
+                    groupId = "trip",
+                    spentAt = hoursAgo(2),
+                    categoryId = "beach",
+                ),
+            ),
+        )
+
+        // When
+        val bills = homeBillDaysOf(groups, categories, clock).single().bills
+
+        // Then
+        assertEquals(listOf("Churrasco", "Praia"), bills.map { it.category.name })
+        assertEquals(listOf(CategoryIcon.GIFT, CategoryIcon.SUN), bills.map { it.category.icon })
+        assertEquals(
+            listOf(
+                CategoryTree.of(listOf(barbecue)).resolve("barbecue").color,
+                CategoryTree.of(listOf(beach)).resolve("beach").color,
+            ),
+            bills.map { it.category.color },
+        )
+    }
+
+    @Test
+    fun `GIVEN a bill of a deleted group subcategory WHEN listing the latest bills THEN it reads as its parent`() {
+        // Given
+        val barbecue = groupCategory(
+            id = "barbecue",
+            groupId = "trio",
+            name = "Churrasco",
+            parentId = AppCategory.FOOD.key,
+            isDeleted = true,
+        )
+        val groups = listOf(
+            withMoney(
+                trio(),
+                bill(
+                    "meat",
+                    spentAt = hoursAgo(1),
+                    categoryId = "barbecue",
+                ),
+            ),
+        )
+
+        // When
+        val bill = homeBillDaysOf(groups, CategoryTree.ofGroups(listOf(barbecue)), clock).single().bills.single()
+
+        // Then
+        assertEquals(AppCategory.FOOD, bill.category.app)
     }
 
     private val everyone = listOf("Pierre", "Ana", "Bruno")
@@ -595,6 +705,7 @@ class HomeContentTest {
         amountMinor: Long = 9000L,
         splitOver: List<String> = everyone,
         spentAt: Long,
+        categoryId: String? = null,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
@@ -608,6 +719,24 @@ class HomeContentTest {
         updatedAt = spentAt,
         updatedByMemberId = null,
         items = null,
-        categoryId = null,
+        categoryId = categoryId,
+    )
+
+    private fun groupCategory(
+        id: String,
+        groupId: String,
+        name: String,
+        parentId: String? = null,
+        icon: CategoryIcon? = null,
+        isDeleted: Boolean = false,
+    ): GroupCategory = GroupCategory(
+        id = id,
+        groupId = groupId,
+        parentId = parentId,
+        name = name,
+        icon = icon,
+        createdByMemberId = null,
+        isDeleted = isDeleted,
+        isPending = false,
     )
 }
