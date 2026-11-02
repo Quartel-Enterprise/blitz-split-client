@@ -408,9 +408,13 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Membros" (`GroupTab.MEMBERS`, `MembersViewModel`) is the group's tab, and opens from Convidar's "Ver quem já
     entrou". Any member may rename and add members ("Adicionar pessoa", where the other tabs have "Rachar conta"),
     but only a member who hasn't joined can be removed ("Remover do grupo" is disabled for someone who joined),
-    after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal" answers "Em
-    breve". Each member shows their balance ("+R$ 223,50 a receber"), and someone with an open balance can't be
-    removed either ("Carla tem saldo em aberto", `MembersMember.hasOpenBalance`). Only the group's creator sees
+    after confirming "Remover Carla do grupo?" (`MembersUiState.memberToRemove`). "Convite pessoal para Carla" (the
+    menu of someone nobody joined as, disabled until the sync brings their code, then offline too) shows their
+    single use personal link with Copiar and "Compartilhar com Carla", and says what whoever joins through it already
+    finds: "e já vê a parte de R$ 300,00 na despesa lançada" ("nas 3 despesas lançadas", their parts summed;
+    nothing while no bill gives them a part, `PersonalInvite.billCount`). Each member shows their balance ("+R$
+    223,50 a receber"), and someone with an open balance can't be removed either ("Carla tem saldo em aberto",
+    `MembersMember.hasOpenBalance`). Only the group's creator sees
     "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
     after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
     the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
