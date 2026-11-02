@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.groups
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -365,44 +364,14 @@ private fun BillSkeletonColumn() {
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         repeat(SKELETON_BILLS) { index ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.surfaceContainerLowest,
-                        groupedRowShapeOf(index, SKELETON_BILLS),
-                    ).padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp,
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                // Why: the category badge's size and corners, so the rows don't jump once the bills come down.
-                SkeletonBox(
-                    width = 40.dp,
-                    height = 40.dp,
-                    shape = RoundedCornerShape(12.dp),
-                )
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    SkeletonBox(
-                        width = null,
-                        height = 12.dp,
-                        modifier = Modifier.fillMaxWidth(0.6f),
-                    )
-                    SkeletonBox(
-                        width = null,
-                        modifier = Modifier.fillMaxWidth(0.4f),
-                    )
-                }
-                SkeletonBox(
-                    width = 64.dp,
-                    height = 14.dp,
-                )
-            }
+            // Why: the category badge's size and corners, so the rows don't jump once the bills come down.
+            SkeletonListRow(
+                shape = groupedRowShapeOf(index, SKELETON_BILLS),
+                leadingSize = 40.dp,
+                leadingShape = RoundedCornerShape(12.dp),
+                verticalPadding = 12.dp,
+                spacing = 14.dp,
+            )
         }
     }
 }

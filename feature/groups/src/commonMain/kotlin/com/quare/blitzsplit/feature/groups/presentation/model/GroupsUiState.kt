@@ -123,7 +123,7 @@ data class GroupsUiState(
 
     // Why: "Nenhum grupo quitado" on the web's and the Mac's Quitados; a phone hides the empty section instead.
     val showsNoSettledGroups: Boolean
-        get() = groups.isNotEmpty() && filterQuery.isBlank() && settledGroups.isEmpty()
+        get() = groups.isNotEmpty() && filterQuery.isBlank() && settledGroups.isEmpty() && firstDownload == null
 
     // Why: the query is folded once, not once per row.
     private val filteredGroups: List<GroupRow>

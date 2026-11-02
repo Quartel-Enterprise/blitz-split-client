@@ -15,10 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
@@ -105,22 +107,42 @@ private fun GroupSkeletonRow(
     index: Int,
     count: Int,
 ) {
+    // Why: the group badge's size and corners, as the row that will take its place.
+    SkeletonListRow(
+        shape = groupedRowShapeOf(index, count),
+        leadingSize = 48.dp,
+        leadingShape = groupShapeOf(48.dp),
+        verticalPadding = 14.dp,
+        spacing = 16.dp,
+        modifier = Modifier.padding(bottom = 2.dp),
+    )
+}
+
+// Why: a list row in grey (a badge, two lines and an amount) while the first download brings what it stands for.
+@Composable
+internal fun SkeletonListRow(
+    shape: Shape,
+    leadingSize: Dp,
+    leadingShape: Shape,
+    verticalPadding: Dp,
+    spacing: Dp,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        modifier = Modifier
-            .padding(bottom = 2.dp)
+        modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest, groupedRowShapeOf(index, count))
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
             .padding(
                 horizontal = 16.dp,
-                vertical = 14.dp,
+                vertical = verticalPadding,
             ).clearAndSetSemantics {},
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(spacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SkeletonBox(
-            width = 48.dp,
-            height = 48.dp,
-            shape = groupShapeOf(48.dp),
+            width = leadingSize,
+            height = leadingSize,
+            shape = leadingShape,
         )
         Column(
             modifier = Modifier.weight(1f),
@@ -136,6 +158,9 @@ private fun GroupSkeletonRow(
                 modifier = Modifier.fillMaxWidth(0.4f),
             )
         }
-        SkeletonBox(width = 64.dp)
+        SkeletonBox(
+            width = 64.dp,
+            height = 14.dp,
+        )
     }
 }

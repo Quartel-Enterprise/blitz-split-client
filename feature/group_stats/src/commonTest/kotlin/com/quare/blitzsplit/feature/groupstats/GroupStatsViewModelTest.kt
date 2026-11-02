@@ -596,6 +596,91 @@ class GroupStatsViewModelTest {
         }
 
     @Test
+    fun `GIVEN no first download WHEN the statistics open THEN say Total gasto`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.isFirstDownload)
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN the statistics open THEN say Total gasto ate agora`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isFirstDownload)
+        }
+
+    @Test
+    fun `GIVEN a first download pending WHEN it ends THEN the statistics say Total gasto`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            downloading = FirstDownloadProgress(
+                arrivedGroupCount = 1,
+                groupCount = 7,
+            ),
+        )
+
+        // When
+        firstDownload.value = null
+
+        // Then
+        assertFalse(viewModel.uiState.value.isFirstDownload)
+    }
+
+    @Test
+    fun `GIVEN a first download pending WHEN another bill comes down THEN the statistics still say ate agora`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = null,
+                ),
+            )
+
+            // When
+            expenses.expenses.value = tripBills + expense("taxi", 1_000, spentAt = today)
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.expenseCount)
+            assertTrue(viewModel.uiState.value.isFirstDownload)
+        }
+
+    @Test
+    fun `GIVEN a first download pending WHEN picking another period THEN the statistics still say ate agora`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 7,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // Then
+            assertEquals(StatsPeriod.THIS_MONTH, viewModel.uiState.value.period)
+            assertTrue(viewModel.uiState.value.isFirstDownload)
+        }
+
+    @Test
     fun `GIVEN the statistics WHEN the group leaves the device THEN they close`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -835,7 +920,9 @@ class GroupStatsViewModelTest {
         stored: List<Expense> = tripBills,
         keptChart: StatsChartPreferences = StatsChartPreferences.initial,
         groupCategories: List<GroupCategory> = emptyList(),
+        downloading: FirstDownloadProgress? = null,
     ) {
+        firstDownload.value = downloading
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         groups = FakeGroupRepository(initialGroups = listOf(group))
         expenses = FakeExpenseRepository(initialExpenses = stored)
