@@ -1,8 +1,9 @@
 import Shared
 import SwiftUI
 
-/// The tabs of the canvas, all built: Home first, then Groups, Balances, Contacts and Activity. Search is the iPhone's
-/// and the iPad's search tab, once there is a group, and looks in Groups; the Mac searches from Groups' toolbar instead.
+/// The tabs of the canvas, all built: Home first, then Groups, Balances, Contacts and Activity. Search, once there is a
+/// group, is a search tab with a regular width (an iPad) and opens in Groups' place from its magnifier with a compact
+/// one (an iPhone); the Mac searches from Groups' toolbar instead.
 enum MainTab: Hashable {
     case home
     case groups
@@ -242,7 +243,7 @@ struct MainTabView: View {
         )
     }
 
-    /// The search tab is selected: only the iPhone and the iPad have one, the Mac searches in the groups' toolbar. Read
+    /// The search tab is selected: only a regular width has one, the Mac searches in the groups' toolbar. Read
     /// from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups until the watcher catches up.
     private var showsSearchTab: Bool {
         #if os(iOS)

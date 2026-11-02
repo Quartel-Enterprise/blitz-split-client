@@ -190,19 +190,6 @@ class SplitBillViewModelTest {
     }
 
     @Test
-    fun `GIVEN a new bill WHEN the field hands back the same empty amount THEN shows no amount error`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            typeAmount("")
-
-            // Then
-            assertFalse(viewModel.uiState.value.showsAmountError)
-        }
-
-    @Test
     fun `GIVEN the bill WHEN picking yesterday THEN it was spent yesterday`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

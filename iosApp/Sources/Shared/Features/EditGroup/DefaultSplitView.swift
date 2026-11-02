@@ -110,7 +110,7 @@ struct DefaultSplitView: View {
             }
         }
         #if os(macOS)
-        .frame(minWidth: 640, idealWidth: 760, minHeight: 400, idealHeight: 560)
+        .frame(minWidth: 460, idealWidth: 760, minHeight: 400, idealHeight: 560)
         #endif
         .sheet(isPresented: exceptionShown) {
             if let model { ExceptionSheet(model: model) }

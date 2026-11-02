@@ -433,11 +433,9 @@ class SplitBillViewModel(
         uiState.update { it.withSpentAt(epochMillis, currentTimeMillis(), currentTimeZone()) }
     }
 
-    // Why: SwiftUI's field hands its text back as it appears, which is no edit and must not show the error yet.
     private fun changeAmount(text: String) {
         val capped = TypedText.toAmountText(text)
         uiState.update { state ->
-            if (capped == state.amountText) return@update state
             state
                 .copy(
                     amountText = capped,

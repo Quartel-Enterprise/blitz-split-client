@@ -1,9 +1,9 @@
 import Shared
 import SwiftUI
 
-/// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. The
-/// iPhone and the iPad show it in the search tab, under a large title with the field and All / Groups / People /
-/// Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
+/// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. An
+/// iPad shows it in the search tab and an iPhone in Groups' place, under a large title with the field and All / Groups /
+/// People / Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
 /// the members of the group they were found in, an expense its bill over the group. Always a list, even with the grid.
 struct GroupsSearchResultsList: View {
     let model: GroupsModel
@@ -82,9 +82,9 @@ struct GroupsSearchResultsList: View {
 }
 
 #if os(iOS)
-/// The search tab: a large "Search" title, the field under it, and All / Groups / People / Expenses as segments. An
-/// iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt column on the left and the results on
-/// the right.
+/// The search tab, or Groups' place with a compact width: a large "Search" title, the field under it, and All / Groups
+/// / People / Expenses as segments. An iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt
+/// column on the left and the results on the right.
 struct GroupsSearchView: View {
     let model: GroupsModel
     @State private var layout = ScreenLayout()

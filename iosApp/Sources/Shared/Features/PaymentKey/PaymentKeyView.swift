@@ -77,7 +77,6 @@ struct PaymentKeyView: View {
             if let model, model.state.isLoaded {
                 PaymentKeyForm(
                     model: model,
-                    title: title,
                     usesTwoColumns: layout.usesTwoColumns && !isSheet,
                 )
             } else {
@@ -114,7 +113,6 @@ struct PaymentKeyView: View {
 /// key on the right, as the canvas draws it.
 private struct PaymentKeyForm: View {
     let model: PaymentKeyModel
-    let title: LocalizedStringKey
     let usesTwoColumns: Bool
 
     var body: some View {
