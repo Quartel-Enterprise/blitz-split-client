@@ -1,7 +1,10 @@
 package com.quare.blitzsplit.feature.billdetail.di
 
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
+import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.SharedBillViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 /*
@@ -36,4 +39,6 @@ val billDetailModule = module {
             minuteTicks = get(),
         )
     }
+    viewModelOf(::ShareBillViewModel)
+    viewModelOf(::SharedBillViewModel)
 }

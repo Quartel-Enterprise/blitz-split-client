@@ -98,6 +98,20 @@ sealed interface Route {
         val expenseId: String,
     ) : Route
 
+    // Why: "Compartilhar conta" (7.3) over Conta: the bill's link and who may open it, online only.
+    data class ShareBill(
+        val groupId: String,
+        val expenseId: String,
+    ) : Route
+
+    /*
+     * Why: a bill's link opened (7.3h), blitzsplit.com/c/<code>, which only the web receives: over the home, or the
+     * welcome without a profile, as an invite.
+     */
+    data class SharedBill(
+        val code: String,
+    ) : Route
+
     /*
      * Why: "Registrar pagamento", a payment from one member to another made outside the app: Recebi, Já pagou or
      * Acertar in Saldos, or Acertar on the group's balance card. A sheet or a dialog over the group.

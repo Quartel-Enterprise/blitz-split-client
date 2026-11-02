@@ -16,6 +16,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEntry
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryPart
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
@@ -241,16 +242,7 @@ class BillDetailPresenter(
                 totalMinor = state.totalMinor.toDouble(),
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
-                payers = state.payers
-                    .map {
-                        JsBillPayer(
-                            name = it.name,
-                            initials = it.initials,
-                            color = it.avatarColor.code,
-                            photoUrl = it.photoUrl,
-                            isMe = it.isMe,
-                        )
-                    }.toTypedArray(),
+                payers = state.payers.map(::toJsBillPayer).toTypedArray(),
                 isPending = state.isPending,
                 category = toJsCategory(state.category),
                 categoryParent = state.categoryParent?.let(::toJsCategory),
@@ -315,6 +307,11 @@ class BillDetailPresenter(
 
     fun back() {
         viewModel.onEvent(BillDetailUiEvent.OnBackClicked)
+    }
+
+    // Why: "Compartilhar", the bill's link over Conta.
+    fun share() {
+        viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
     }
 
     fun edit() {
@@ -383,7 +380,16 @@ class BillDetailPresenter(
     }
 }
 
-private fun toJsBillShareRow(row: BillShareRow): JsBillShareRow = JsBillShareRow(
+// Why: shared with a bill's link page (SharedBillPresenter), which draws the bill as Conta does.
+internal fun toJsBillPayer(payer: BillPayer): JsBillPayer = JsBillPayer(
+    name = payer.name,
+    initials = payer.initials,
+    color = payer.avatarColor.code,
+    photoUrl = payer.photoUrl,
+    isMe = payer.isMe,
+)
+
+internal fun toJsBillShareRow(row: BillShareRow): JsBillShareRow = JsBillShareRow(
     memberId = row.memberId,
     name = row.name,
     initials = row.initials,
@@ -426,12 +432,12 @@ private fun toJsBillCommentRow(row: BillCommentRow): JsBillCommentRow = JsBillCo
     isPending = row.isPending,
 )
 
-private fun toJsBillCommentThread(thread: BillCommentThread): JsBillCommentThread = JsBillCommentThread(
+internal fun toJsBillCommentThread(thread: BillCommentThread): JsBillCommentThread = JsBillCommentThread(
     comment = toJsBillCommentRow(thread.comment),
     replies = thread.replies.map(::toJsBillCommentRow).toTypedArray(),
 )
 
-private fun toJsBillReplyTarget(target: BillReplyTarget): JsBillReplyTarget = JsBillReplyTarget(
+internal fun toJsBillReplyTarget(target: BillReplyTarget): JsBillReplyTarget = JsBillReplyTarget(
     threadId = target.threadId,
     commentId = target.commentId,
     name = target.name,
@@ -561,7 +567,7 @@ private fun toJsBillHistoryPart(part: BillHistoryPart): JsBillHistoryPart = JsBi
     afterMinor = part.afterMinor?.toDouble(),
 )
 
-private fun toJsBillAttachment(tile: BillAttachmentTile): JsBillAttachment = JsBillAttachment(
+internal fun toJsBillAttachment(tile: BillAttachmentTile): JsBillAttachment = JsBillAttachment(
     id = tile.id,
     isReceipt = tile.isReceipt,
     localImage = tile.localImage,

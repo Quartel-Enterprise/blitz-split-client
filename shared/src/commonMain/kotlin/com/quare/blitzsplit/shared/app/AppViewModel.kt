@@ -3,6 +3,7 @@ package com.quare.blitzsplit.shared.app
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
+import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -95,6 +96,7 @@ class AppViewModel(
             .onEach { url ->
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
+                SharedBillLink.codeOf(url)?.let { code -> return@onEach openSharedBill(code) }
                 val target = InviteLink.targetOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(
                     code = target.code,
@@ -107,6 +109,12 @@ class AppViewModel(
                 }
                 if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
             }.launchIn(viewModelScope)
+    }
+
+    // Why: a bill's link (7.3h) opens its page as an invite does, the same one coming back to the top.
+    private fun openSharedBill(code: String) {
+        val openIndex = navigator.backStack.value.indexOfFirst { it is Route.SharedBill && it.code == code }
+        if (openIndex < 0) navigator.navigate(Route.SharedBill(code)) else navigator.popTo(openIndex + 1)
     }
 
     // Why: signing out, now or once synced, erases the profile wherever the app is, and only the welcome is left.

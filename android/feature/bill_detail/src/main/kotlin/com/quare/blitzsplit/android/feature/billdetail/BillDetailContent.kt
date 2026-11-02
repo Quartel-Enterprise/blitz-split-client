@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -245,6 +246,15 @@ private fun BillTopBarAction(
     state: BillDetailUiState,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
+    IconButton(
+        onClick = { onEvent(BillDetailUiEvent.OnShareClicked) },
+        enabled = state.areActionsEnabled,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Share,
+            contentDescription = stringResource(R.string.bill_detail_share),
+        )
+    }
     IconButton(
         onClick = { onEvent(BillDetailUiEvent.OnEditClicked) },
         enabled = state.areActionsEnabled,

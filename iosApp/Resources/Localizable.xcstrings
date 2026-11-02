@@ -244,6 +244,28 @@
         }
       }
     },
+    "%@ open it with their own account to see and comment." : {
+      "comment" : "Share bill: who opens a members-only link; %@ is a list of names, “Ana, Bruno and Carla”",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entram com a própria conta para ver e comentar."
+          }
+        }
+      }
+    },
+    "%@ opens it with their own account to see and comment." : {
+      "comment" : "Share bill: who opens a members-only link; %@ is one name",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ entra com a própria conta para ver e comentar."
+          }
+        }
+      }
+    },
     "%@ removed a photo" : {
       "comment" : "Bill history",
       "localizations" : {
@@ -404,6 +426,17 @@
         }
       }
     },
+    "Bill “%@” on Blitz Split:" : {
+      "comment" : "The message shared with a bill's link, which follows it; %@ is the bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta “%@” no Bora Rachar:"
+          }
+        }
+      }
+    },
     "Bitcoin" : {
       "comment" : "Pay with a key (4.5): a payment method",
       "localizations" : {
@@ -511,6 +544,28 @@
         }
       }
     },
+    "Couldn't change who can open it. Try again." : {
+      "comment" : "Share bill: changing who can open the link failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para mudar quem pode abrir. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't make the link." : {
+      "comment" : "Share bill: the link couldn't be read or made",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para gerar o link."
+          }
+        }
+      }
+    },
     "Couldn't open this image. Choose another one." : {
       "localizations" : {
         "pt-BR" : {
@@ -527,6 +582,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para remover a foto. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't turn off the link. Try again." : {
+      "comment" : "Share bill: turning the link off failed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para desativar o link. Tente de novo."
           }
         }
       }
@@ -1970,6 +2036,17 @@
         }
       }
     },
+    "Sees it without signing in. To comment, they sign in with an account, even outside the group." : {
+      "comment" : "Share bill: what anyone with the link can do",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vê sem entrar. Para comentar, entra com uma conta, mesmo sem estar no grupo."
+          }
+        }
+      }
+    },
     "Send comment" : {
       "comment" : "The bill's comment send button",
       "localizations" : {
@@ -1977,6 +2054,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enviar comentário"
+          }
+        }
+      }
+    },
+    "Send link" : {
+      "comment" : "Share bill: opens the system share with the bill's link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar link"
+          }
+        }
+      }
+    },
+    "Share bill" : {
+      "comment" : "Title of the sheet that shares a bill's link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar conta"
+          }
+        }
+      }
+    },
+    "Sharing needs the internet." : {
+      "comment" : "Share bill: offline notice",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar precisa de internet."
           }
         }
       }
@@ -2122,6 +2232,17 @@
         }
       }
     },
+    "The link shows the bill, who paid, each one's part, the attachments and the comments. Balances and the group's other bills don't show." : {
+      "comment" : "Share bill: what the link shows",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O link mostra a conta, quem pagou, a parte de cada um, os anexos e os comentários. Saldos e outras contas do grupo não aparecem."
+          }
+        }
+      }
+    },
     "The old link no longer works" : {
       "comment" : "Activity: under a group's changed invite link",
       "localizations" : {
@@ -2255,6 +2376,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ desfez um pagamento"
+          }
+        }
+      }
+    },
+    "Turn off link" : {
+      "comment" : "Share bill: turns the bill's link off",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativar link"
           }
         }
       }
@@ -4462,6 +4594,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Qual palavra de “%1$@” deve escolher %2$@ nas próximas contas?"
+          }
+        }
+      }
+    },
+    "Who can open it" : {
+      "comment" : "Share bill: header of who may open the link",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem pode abrir"
+          }
+        }
+      }
+    },
+    "Whoever is in the group opens it with their own account to see and comment." : {
+      "comment" : "Share bill: who opens a members-only link, when nobody else joined",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem está no grupo entra com a própria conta para ver e comentar."
           }
         }
       }

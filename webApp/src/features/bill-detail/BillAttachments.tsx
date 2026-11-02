@@ -10,14 +10,23 @@ import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
 import { postedText } from './BillComments'
 
-async function onPhotoFile(presenter: BillDetailPresenter, event: ChangeEvent<HTMLInputElement>) {
+/**
+ * What "Anexos" and the viewer read and send: Conta's, or a bill's link page's, which adds and removes nothing (no
+ * photoPicked nor removeAttachment, no photoLimit nor showsAddPhoto).
+ */
+export type AttachmentsPresenter = Pick<BillDetailPresenter, 'openAttachment' | 'showAttachment' | 'closeViewer'> &
+  Partial<Pick<BillDetailPresenter, 'photoPicked' | 'photoUnreadable' | 'removeAttachment'>>
+export type AttachmentsState = Pick<JsBillDetailState, 'attachments' | 'photoCount' | 'viewedAttachmentIndex' | 'isOnline'> &
+  Partial<Pick<JsBillDetailState, 'photoLimit' | 'showsAddPhoto' | 'canAddPhoto' | 'isAddingPhoto'>>
+
+async function onPhotoFile(presenter: AttachmentsPresenter, event: ChangeEvent<HTMLInputElement>) {
   const file = event.target.files?.[0]
   event.target.value = ''
   if (!file) return
   try {
-    presenter.photoPicked(new Int8Array(await file.arrayBuffer()))
+    presenter.photoPicked?.(new Int8Array(await file.arrayBuffer()))
   } catch {
-    presenter.photoUnreadable()
+    presenter.photoUnreadable?.()
   }
 }
 
@@ -94,14 +103,17 @@ function sourceOf(attachment: JsBillAttachment, localUrls: LocalPhotoUrls): stri
 /**
  * "Anexos", with "2 de 5 fotos": the receipt the bill was read from first, then its photos, then "Adicionar foto"
  * while there is room for another. The add tile opens the browser's file chooser, which phones offer the camera in.
+ * A bill's link page has no limit to count against, nor the add tile.
  */
-export function BillAttachments({ presenter, state, localUrls }: { presenter: BillDetailPresenter; state: JsBillDetailState; localUrls: LocalPhotoUrls }) {
+export function BillAttachments({ presenter, state, localUrls }: { presenter: AttachmentsPresenter; state: AttachmentsState; localUrls: LocalPhotoUrls }) {
   const input = useRef<HTMLInputElement>(null)
   return (
     <section aria-labelledby="bill-attachments-title" className="flex min-w-0 flex-col gap-2">
       <h3 id="bill-attachments-title" className="flex justify-between text-sm font-medium">
         <span>{t('billDetail_attachments')}</span>
-        <span className="font-normal text-muted-foreground tabular-nums">{t('billDetail_photoCount', { count: state.photoCount, limit: state.photoLimit })}</span>
+        {state.photoLimit != null && (
+          <span className="font-normal text-muted-foreground tabular-nums">{t('billDetail_photoCount', { count: state.photoCount, limit: state.photoLimit })}</span>
+        )}
       </h3>
       <ul className="flex flex-wrap gap-2">
         {state.attachments.map((attachment) => (
@@ -124,7 +136,7 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: Bi
           </li>
         )}
       </ul>
-      <input ref={input} type="file" accept="image/*" className="hidden" onChange={(event) => onPhotoFile(presenter, event)} />
+      {state.showsAddPhoto && <input ref={input} type="file" accept="image/*" className="hidden" onChange={(event) => onPhotoFile(presenter, event)} />}
     </section>
   )
 }
@@ -203,7 +215,7 @@ const lightButton = 'text-white hover:bg-white/10 hover:text-white disabled:text
  * The lightbox over Conta, from the phone to the desktop: the attachment as large as the window allows, its title,
  * Baixar and Remover foto on top, who added it and when under it, and the arrows (buttons, ← and →) to the others.
  */
-export function AttachmentViewer({ presenter, state, localUrls }: { presenter: BillDetailPresenter; state: JsBillDetailState; localUrls: LocalPhotoUrls }) {
+export function AttachmentViewer({ presenter, state, localUrls }: { presenter: AttachmentsPresenter; state: AttachmentsState; localUrls: LocalPhotoUrls }) {
   const index = state.viewedAttachmentIndex
   const attachment = index != null ? state.attachments[index] : undefined
   const src = attachment && sourceOf(attachment, localUrls)
@@ -216,7 +228,8 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: B
     event.preventDefault()
     presenter.showAttachment(target.id)
   }
-  const hints = [attachment?.canRemove && t('billDetail_attachmentRemoveHint'), pages > 1 && t('billDetail_attachmentPagingHint')].filter(Boolean).join(' ')
+  const removeAttachment = attachment?.canRemove ? presenter.removeAttachment?.bind(presenter) : undefined
+  const hints = [removeAttachment && t('billDetail_attachmentRemoveHint'), pages > 1 && t('billDetail_attachmentPagingHint')].filter(Boolean).join(' ')
   return (
     <Dialog open={attachment != null} onOpenChange={(open) => !open && presenter.closeViewer()}>
       {/* Why: the dialog's own overlay is black at 50%; this layer over it hides the panel under the photo, as a lightbox does. */}
@@ -235,8 +248,8 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: B
                 <Download />
                 <span className="max-sm:sr-only">{t('billDetail_download')}</span>
               </Button>
-              {attachment.canRemove && (
-                <Button variant="ghost" size="sm" className={lightButton} onClick={() => presenter.removeAttachment(attachment.id)}>
+              {removeAttachment && (
+                <Button variant="ghost" size="sm" className={lightButton} onClick={() => removeAttachment(attachment.id)}>
                   <Trash2 />
                   <span className="max-sm:sr-only">{t('billDetail_removePhoto')}</span>
                 </Button>

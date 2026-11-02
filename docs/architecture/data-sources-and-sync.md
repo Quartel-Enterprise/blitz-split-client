@@ -365,6 +365,11 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   out clears it all. A bill's photos and share link (`attachment_*`, `bill_link_changed`) stay out of the feed and its
   unread count (`ActivityKind.isInFeed`): only Conta's history shows them, from the device's events about the bill
   (`observeEventsAbout`) and, online, the server's whole history of it, loaded into memory (`loadEventsAbout`).
+- A bill's share link and the page it opens are online only and never touch Room (`BillShareLinkRepository`): the
+  link is read and changed through `bill_share_links` and the `set_bill_link` / `disable_bill_link` RPCs, the page
+  comes whole from `get_shared_bill` (anon too, for a link open to anyone) with its photos signed for two hours, and
+  a comment on it goes straight up through `comment_on_shared_bill`, then the page reloads. A member's own comments
+  still come down to Conta through `bill_comments` on the next sync.
 
 A new synced table follows the same shape (an insert-only one like the comments drops the versions): `updatedAt` and `pendingSync` columns, an `applyRemote` query with the
 same guard, a `markSynced` that compares `updatedAt`, and a pull and push step in `syncNow()`. Its pending flag

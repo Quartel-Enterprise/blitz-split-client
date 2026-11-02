@@ -150,6 +150,7 @@ private fun createPreviewAttachment(
     addedAt = PREVIEW_SPENT_AT,
     addedDay = if (isPending) RelativeDay.TODAY else RelativeDay.YESTERDAY,
     isPending = isPending,
+    canRemove = photoNumber != null,
 )
 
 // Why: Carla's thread, where Bruno answered and fixed the split, then Diego through the bill's link.

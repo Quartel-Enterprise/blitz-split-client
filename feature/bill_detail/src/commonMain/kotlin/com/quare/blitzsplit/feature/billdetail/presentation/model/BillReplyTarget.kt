@@ -8,4 +8,8 @@ data class BillReplyTarget(
     val commentId: String,
     val name: String?,
     val isMe: Boolean,
-)
+) {
+    // Why: a reply to a reply names whom it answers; one to the thread's top comment doesn't need to.
+    val answeredName: String?
+        get() = name.takeIf { commentId != threadId }
+}
