@@ -118,6 +118,35 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN a local profile WHEN syncing THEN the keys of the people in the groups of the user come down`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), paymentKeys.memberKeysDownloadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN the keys of the members fail to come down WHEN syncing THEN the groups still sync and the sync fails`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            paymentKeys.memberKeysError = noConnection
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.uploadedUserIds)
+        }
+
+    @Test
     fun `GIVEN the map fails to go up WHEN syncing THEN the sync fails`() = runTest {
         // Given
         prepareScenario(storedProfile = pierre)

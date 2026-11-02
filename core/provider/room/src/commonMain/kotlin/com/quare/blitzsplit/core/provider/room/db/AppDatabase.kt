@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
+import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
@@ -30,6 +31,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
@@ -54,8 +56,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         GroupPinEntity::class,
         GroupCategoryEntity::class,
         CategoryTermEntity::class,
+        MemberPaymentKeyEntity::class,
     ],
-    version = 24,
+    version = 25,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -150,6 +153,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 23,
             to = 24,
         ),
+        AutoMigration(
+            from = 24,
+            to = 25,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -179,4 +186,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun groupCategoryDao(): GroupCategoryDao
 
     abstract fun categoryTermDao(): CategoryTermDao
+
+    abstract fun memberPaymentKeyDao(): MemberPaymentKeyDao
 }

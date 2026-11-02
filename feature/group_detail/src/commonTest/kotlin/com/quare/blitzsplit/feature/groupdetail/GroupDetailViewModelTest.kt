@@ -1608,7 +1608,12 @@ class GroupDetailViewModelTest {
             // Then
             assertNull(viewModel.uiState.value.exit.dialog)
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    route,
+                    Route.RegisterPayment(GROUP_ID, PIERRE, ANA, offersReceiverKeys = true),
+                ),
                 navigator.backStack.value,
             )
         }

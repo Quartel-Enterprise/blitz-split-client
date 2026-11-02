@@ -743,7 +743,12 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    route,
+                    Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO, offersReceiverKeys = true),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -770,7 +775,12 @@ class GroupDetailPaymentsViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, ANA)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    route,
+                    Route.RegisterPayment(GROUP_ID, PIERRE, ANA, offersReceiverKeys = true),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -860,7 +870,7 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE))
+            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE, offersReceiverKeys = true))
             val settlementId = record(
                 from = ANA,
                 to = PIERRE,
@@ -887,7 +897,7 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO))
+            navigator.navigate(Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO, offersReceiverKeys = true))
             val settlementId = record(
                 from = PIERRE,
                 to = BRUNO,
@@ -913,7 +923,7 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE))
+            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE, offersReceiverKeys = true))
 
             // When
             val settlementId = record(

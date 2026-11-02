@@ -196,6 +196,7 @@ internal class GroupScreen(
                 groupId = groupId,
                 fromMemberId = fromMemberId,
                 toMemberId = toMemberId,
+                offersReceiverKeys = true,
             ),
         )
     }

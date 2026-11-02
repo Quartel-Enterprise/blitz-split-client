@@ -16,6 +16,15 @@ class SupabasePaymentKeyRemoteDataSource(
             filter { eq("user_id", userId) }
         }.decodeList<PaymentKeyDto>()
 
+    override suspend fun fetchOthers(userId: String): List<PaymentKeyDto> = postgrest
+        .from(TABLE)
+        .select {
+            filter {
+                neq("user_id", userId)
+                eq("is_deleted", false)
+            }
+        }.decodeList<PaymentKeyDto>()
+
     private companion object {
         const val TABLE = "payment_keys"
     }

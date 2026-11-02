@@ -2,18 +2,22 @@ package com.quare.blitzsplit.core.profile.data
 
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.profile.data.datasource.MemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.dto.PaymentKeyDto
 import com.quare.blitzsplit.core.profile.data.mapper.PaymentKeyMapperImpl
 import com.quare.blitzsplit.core.profile.data.repository.PaymentKeyRepositoryImpl
+import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,6 +28,7 @@ import kotlin.test.assertTrue
 
 class PaymentKeyRepositoryImplTest {
     private lateinit var local: FakePaymentKeyLocalDataSource
+    private lateinit var memberLocal: FakeMemberPaymentKeyLocalDataSource
     private lateinit var remote: FakePaymentKeyRemoteDataSource
     private lateinit var repository: PaymentKeyRepositoryImpl
 
@@ -810,6 +815,268 @@ class PaymentKeyRepositoryImplTest {
         assertFalse(repository.observeHasPendingChanges().first())
     }
 
+    @Test
+    fun `GIVEN cached keys of another member WHEN downloading theirs THEN replaces them with those of the server`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedMemberKeys = listOf(
+                    memberEntity(
+                        id = "gone",
+                        userId = "ana",
+                    ),
+                ),
+                othersKeys = listOf(
+                    dto(
+                        id = "ana-phone",
+                        userId = "ana",
+                        type = "phone",
+                        value = "+5521987654321",
+                        updatedAt = 2L,
+                    ),
+                    dto(
+                        id = "bruno-cpf",
+                        userId = "bruno",
+                        updatedAt = 2L,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadMemberKeys(userId = "user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("ana-phone", "bruno-cpf"), memberLocal.rows.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN downloading the keys of the members THEN keeps the cached ones`() = runTest {
+        // Given
+        val cached = listOf(
+            memberEntity(
+                id = "ana-phone",
+                userId = "ana",
+            ),
+        )
+        prepareScenario(
+            storedMemberKeys = cached,
+            fetchError = IllegalStateException("offline"),
+        )
+
+        // When
+        val result = repository.downloadMemberKeys(userId = "user-1")
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals(cached, memberLocal.rows.value)
+    }
+
+    @Test
+    fun `GIVEN keys of two members WHEN observing one THEN gives only theirs with the default first`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                    addedAt = 1L,
+                ),
+                memberEntity(
+                    id = "ana-phone",
+                    userId = "ana",
+                    type = "phone",
+                    value = "+5521987654321",
+                    isDefault = true,
+                    addedAt = 2L,
+                ),
+                memberEntity(
+                    id = "bruno-cpf",
+                    userId = "bruno",
+                ),
+            ),
+        )
+
+        // When
+        val keys = repository.observeKeysOf(userId = "ana").first()
+
+        // Then
+        assertEquals(listOf("ana-phone", "ana-cpf"), keys.map { it.id })
+        assertEquals(listOf(true, false), keys.map { it.isDefault })
+    }
+
+    @Test
+    fun `GIVEN the keys of the members WHEN clearing THEN leaves none of them either`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                ),
+            ),
+        )
+
+        // When
+        repository.clear()
+
+        // Then
+        assertTrue(memberLocal.rows.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a member with a Bitcoin key added before her Pix keys WHEN observing hers THEN Pix comes first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedMemberKeys = listOf(
+                    memberEntity(
+                        id = "ana-lightning",
+                        userId = "ana",
+                        type = "lightning",
+                        value = "ana@getalby.com",
+                        isDefault = true,
+                        addedAt = 1L,
+                    ),
+                    memberEntity(
+                        id = "ana-cpf",
+                        userId = "ana",
+                        addedAt = 2L,
+                    ),
+                    memberEntity(
+                        id = "ana-phone",
+                        userId = "ana",
+                        type = "phone",
+                        value = "+5521987654321",
+                        isDefault = true,
+                        addedAt = 3L,
+                    ),
+                ),
+            )
+
+            // When
+            val keys = repository.observeKeysOf(userId = "ana").first()
+
+            // Then
+            assertEquals(listOf("ana-phone", "ana-cpf", "ana-lightning"), keys.map { it.id })
+            assertEquals(listOf(true, false, true), keys.map { it.isDefault })
+        }
+
+    @Test
+    fun `GIVEN only keys of Bruno cached WHEN observing those of Ana THEN gives none`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "bruno-cpf",
+                    userId = "bruno",
+                ),
+            ),
+        )
+
+        // When
+        val keys = repository.observeKeysOf(userId = "ana").first()
+
+        // Then
+        assertTrue(keys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a key of Ana on the server WHEN downloading the keys of the members THEN observing hers gives it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                othersKeys = listOf(
+                    dto(
+                        id = "ana-phone",
+                        userId = "ana",
+                        type = "phone",
+                        value = "+5521987654321",
+                        updatedAt = 2L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadMemberKeys(userId = "user-1")
+
+            // Then
+            assertEquals(
+                listOf(
+                    PaymentKey(
+                        id = "ana-phone",
+                        type = PaymentKeyType.PHONE,
+                        value = "+5521987654321",
+                        isDefault = true,
+                        addedAt = 1L,
+                    ),
+                ),
+                repository.observeKeysOf(userId = "ana").first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the keys of Ana open WHEN a download drops one of hers THEN gives the keys left`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                    isDefault = true,
+                ),
+                memberEntity(
+                    id = "ana-phone",
+                    userId = "ana",
+                    type = "phone",
+                    value = "+5521987654321",
+                    addedAt = 2L,
+                ),
+            ),
+            othersKeys = listOf(
+                dto(
+                    id = "ana-phone",
+                    userId = "ana",
+                    type = "phone",
+                    value = "+5521987654321",
+                    updatedAt = 2L,
+                ),
+            ),
+        )
+        val emitted = mutableListOf<List<PaymentKey>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeKeysOf(userId = "ana").collect(emitted::add)
+        }
+
+        // When
+        repository.downloadMemberKeys(userId = "user-1")
+
+        // Then
+        assertEquals(
+            listOf(listOf("ana-cpf", "ana-phone"), listOf("ana-phone")),
+            emitted.map { keys ->
+                keys.map { it.id }
+            },
+        )
+    }
+
+    private fun memberEntity(
+        id: String,
+        userId: String,
+        type: String = "cpf",
+        value: String = "12345678909",
+        isDefault: Boolean = false,
+        addedAt: Long = 1L,
+    ): MemberPaymentKeyEntity = MemberPaymentKeyEntity(
+        id = id,
+        userId = userId,
+        type = type,
+        value = value,
+        isDefault = isDefault,
+        addedAt = addedAt,
+        updatedAt = 1L,
+    )
+
     private val cpfKey = PaymentKey(
         id = "pix-1",
         type = PaymentKeyType.CPF,
@@ -843,10 +1110,12 @@ class PaymentKeyRepositoryImplTest {
         value: String = "12345678909",
         isDeleted: Boolean = false,
         updatedAt: Long,
+        userId: String = "user-1",
+        type: String = "cpf",
     ): PaymentKeyDto = PaymentKeyDto(
         id = id,
-        userId = "user-1",
-        type = "cpf",
+        userId = userId,
+        type = type,
         value = value,
         isDefault = true,
         isDeleted = isDeleted,
@@ -862,11 +1131,15 @@ class PaymentKeyRepositoryImplTest {
         remoteKeys: List<PaymentKeyDto> = emptyList(),
         upsertError: Throwable? = null,
         fetchError: Throwable? = null,
+        storedMemberKeys: List<MemberPaymentKeyEntity> = emptyList(),
+        othersKeys: List<PaymentKeyDto> = emptyList(),
     ) {
         local = FakePaymentKeyLocalDataSource(stored)
-        remote = FakePaymentKeyRemoteDataSource(remoteKeys, upsertError, fetchError)
+        memberLocal = FakeMemberPaymentKeyLocalDataSource(storedMemberKeys)
+        remote = FakePaymentKeyRemoteDataSource(remoteKeys, upsertError, fetchError, othersKeys)
         repository = PaymentKeyRepositoryImpl(
             local = local,
+            memberLocal = memberLocal,
             remote = remote,
             profileLocal = FakeKeyOwnerProfileLocalDataSource(
                 profile = if (hasProfile) {
@@ -950,10 +1223,29 @@ private class FakePaymentKeyLocalDataSource(
     }
 }
 
+private class FakeMemberPaymentKeyLocalDataSource(
+    stored: List<MemberPaymentKeyEntity>,
+) : MemberPaymentKeyLocalDataSource {
+    val rows = MutableStateFlow(stored)
+
+    override fun observeOf(userId: String): Flow<List<MemberPaymentKeyEntity>> = rows.map { all ->
+        all.filter { it.userId == userId }.sortedWith(compareBy({ it.addedAt }, { it.id }))
+    }
+
+    override suspend fun replaceAll(entities: List<MemberPaymentKeyEntity>) {
+        rows.value = entities
+    }
+
+    override suspend fun clear() {
+        rows.value = emptyList()
+    }
+}
+
 private class FakePaymentKeyRemoteDataSource(
     private val keys: List<PaymentKeyDto>,
     private val upsertError: Throwable?,
     private val fetchError: Throwable?,
+    private val othersKeys: List<PaymentKeyDto>,
 ) : PaymentKeyRemoteDataSource {
     val upserted = mutableListOf<List<PaymentKeyDto>>()
     var onUpsert: () -> Unit = {}
@@ -967,6 +1259,11 @@ private class FakePaymentKeyRemoteDataSource(
     override suspend fun fetch(userId: String): List<PaymentKeyDto> {
         fetchError?.let { throw it }
         return keys
+    }
+
+    override suspend fun fetchOthers(userId: String): List<PaymentKeyDto> {
+        fetchError?.let { throw it }
+        return othersKeys
     }
 }
 

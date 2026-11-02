@@ -21,6 +21,8 @@ data class PeopleBalances(
     ): PersonBalance? = people.firstOrNull { it.key == key && it.currency.code == currency }
 
     companion object {
+        private const val USER_KEY_PREFIX = "user:"
+
         /*
          * Why: groups in the order of their last activity, so a person is named as in the group they were last
          * active in. Each group adds the pair between this device's user and each member, as its own Saldos nets it.
@@ -55,8 +57,12 @@ data class PeopleBalances(
          * still pays each group its own pair, so two people of one name never move money between groups. Someone no
          * longer in the group is only themselves.
          */
-        fun keyOf(member: GroupMember): String = member.userId?.let { "user:$it" }
+        fun keyOf(member: GroupMember): String = member.userId?.let { "$USER_KEY_PREFIX$it" }
             ?: "name:${member.name.lowercase().split(' ', '\t', '\n').filter { it.isNotEmpty() }.joinToString(" ")}"
+
+        // Why: the account of a person keyOf made from one, whose keys "Pagar Ana" (4.5) shows; null for a name.
+        fun userIdOf(key: String): String? =
+            key.takeIf { it.startsWith(USER_KEY_PREFIX) }?.removePrefix(USER_KEY_PREFIX)
 
         private fun goneKeyOf(
             groupId: String,

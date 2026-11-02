@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.profile.data.repository
 
 import com.quare.blitzsplit.core.model.PaymentKey
+import com.quare.blitzsplit.core.profile.data.datasource.MemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.map
 
 class PaymentKeyRepositoryImpl(
     private val local: PaymentKeyLocalDataSource,
+    private val memberLocal: MemberPaymentKeyLocalDataSource,
     private val remote: PaymentKeyRemoteDataSource,
     private val profileLocal: ProfileLocalDataSource,
     private val mapper: PaymentKeyMapper,
@@ -112,7 +114,17 @@ class PaymentKeyRepositoryImpl(
         local.deleteSyncedTombstones()
     }
 
+    override fun observeKeysOf(userId: String): Flow<List<PaymentKey>> = memberLocal
+        .observeOf(userId)
+        .map(mapper::toDomainOfMember)
+        .distinctUntilChanged()
+
+    override suspend fun downloadMemberKeys(userId: String): Result<Unit> = suspendRunCatching {
+        memberLocal.replaceAll(remote.fetchOthers(userId).map(mapper::toMemberEntity))
+    }
+
     override suspend fun clear() {
         local.clear()
+        memberLocal.clear()
     }
 }

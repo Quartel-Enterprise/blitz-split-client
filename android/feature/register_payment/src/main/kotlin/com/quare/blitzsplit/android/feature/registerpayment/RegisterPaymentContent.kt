@@ -30,12 +30,17 @@ import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 
@@ -66,7 +71,15 @@ fun RegisterPaymentContent(
             onEvent = onEvent,
         )
     }
-    if (isDialog) {
+    if (state.showsReceiverKeys) {
+        PayWithKeyPane(
+            state = state,
+            isDialog = isDialog,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    } else if (isDialog) {
         DialogCard(
             isWide = false,
             spacing = 16.dp,
@@ -148,6 +161,60 @@ fun RegisterPaymentContent(
     }
 }
 
+// Why: "Pagar Ana" (4.5) in the same sheet or dialog, two columns in the 640dp sheet of a phone lying down.
+@Composable
+private fun PayWithKeyPane(
+    state: RegisterPaymentUiState,
+    isDialog: Boolean,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val money = rememberMoneyFormatter(state.currency)
+    if (isDialog) {
+        DialogCard(
+            isWide = false,
+            spacing = 16.dp,
+            snackbarHostState = snackbarHostState,
+            modifier = modifier,
+        ) {
+            PayWithKeyContent(
+                state = state,
+                layout = PayWithKeyLayout.OneColumn,
+                money = money,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .weight(
+                        weight = 1f,
+                        fill = false,
+                    ).verticalScroll(rememberScrollState()),
+            )
+        }
+    } else {
+        val isLyingDown = rememberFoldLayout().formFactor == FormFactor.PhoneLandscape
+        Box(modifier = modifier) {
+            PayWithKeyContent(
+                state = state,
+                layout = if (isLyingDown) PayWithKeyLayout.TwoColumns else PayWithKeyLayout.OneColumn,
+                money = money,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .navigationBarsPadding()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 24.dp,
+                    ),
+            )
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
+        }
+    }
+}
+
 @Composable
 private fun ConfirmButton(
     state: RegisterPaymentUiState,
@@ -188,7 +255,48 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     isOnline = isOnline,
     isSaving = false,
     isLoaded = true,
+    receiverKeys = emptyList(),
+    groupName = "Apê 302",
+    keyMethod = PaymentMethod.PIX,
+    offersReceiverKeys = true,
+    pixCode = null,
+    pixQrCode = null,
 )
+
+// Why: this device's user owes Ana, who has a Pix key of each kind and a Lightning address.
+private fun createPayPreviewState(isOnline: Boolean = true): RegisterPaymentUiState {
+    val state = createPreviewState(isOnline)
+    return state.copy(
+        from = state.to,
+        to = state.from,
+        debtMinor = 9_800L,
+        receiverKeys = listOf(
+            ReceiverKey(
+                id = "phone",
+                type = PaymentKeyType.PHONE,
+                value = "+5521987654321",
+                text = "(21) 98765-4321",
+                isDefault = true,
+            ),
+            ReceiverKey(
+                id = "email",
+                type = PaymentKeyType.EMAIL,
+                value = "ana.souza@email.com",
+                text = "ana.souza@email.com",
+                isDefault = false,
+            ),
+            ReceiverKey(
+                id = "lightning",
+                type = PaymentKeyType.LIGHTNING,
+                value = "ana@walletofsatoshi.com",
+                text = "ana@walletofsatoshi.com",
+                isDefault = true,
+            ),
+        ),
+        pixCode = "00020126360014br.gov.bcb.pix0114+5521987654321520400005303986540598.005802BR5903Ana6006BRASIL" +
+            "62070503***6304D3C1",
+    )
+}
 
 @DevicePreviews
 @Composable
@@ -210,6 +318,34 @@ private fun RegisterPaymentContentDialogOfflinePreview() {
     BlitzSplitTheme {
         RegisterPaymentContent(
             state = createPreviewState(isOnline = false),
+            isDialog = true,
+            snackbarHostState = SnackbarHostState(),
+            onWhenClick = {},
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PayWithKeyContentPreview() {
+    BlitzSplitTheme {
+        RegisterPaymentContent(
+            state = createPayPreviewState(),
+            isDialog = false,
+            snackbarHostState = SnackbarHostState(),
+            onWhenClick = {},
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PayWithKeyContentDialogOfflinePreview() {
+    BlitzSplitTheme {
+        RegisterPaymentContent(
+            state = createPayPreviewState(isOnline = false),
             isDialog = true,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},

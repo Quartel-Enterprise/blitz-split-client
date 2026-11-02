@@ -18,17 +18,22 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentTarget
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
@@ -38,6 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -60,6 +66,9 @@ class RegisterPaymentViewModel(
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val decimalSeparator: DeviceDecimalSeparator,
+    private val formatPaymentKey: FormatPaymentKey,
+    private val observeMemberPaymentKeys: ObserveMemberPaymentKeys,
+    private val encodeQrCode: EncodeQrCode,
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
     observePeopleBalances: ObservePeopleBalances,
@@ -85,6 +94,9 @@ class RegisterPaymentViewModel(
     // Why: a save that fails before Room answered has nothing to show again.
     private var hasRead = false
 
+    // Why: the receiver's keys Room gave with the latest target, shown again with it.
+    private var receiverKeys: List<ReceiverKey> = emptyList()
+
     /*
      * Why: the screen under the form, owed the notice of what it records. The entry itself, not an equal route: a
      * Saldos opened again after this one left is a later screen.
@@ -99,8 +111,10 @@ class RegisterPaymentViewModel(
      */
     init {
         observeTarget(observeGroup, observeGroupBalances, observePeopleBalances)
-            .onEach { target ->
+            .flatMapLatest { target -> keysOf(target).map { keys -> target to keys } }
+            .onEach { (target, keys) ->
                 hasRead = true
+                receiverKeys = keys
                 handle(target)
             }.launchIn(viewModelScope)
         navigator.backStack
@@ -140,6 +154,13 @@ class RegisterPaymentViewModel(
 
             RegisterPaymentUiEvent.OnConfirmClicked -> confirm()
 
+            is RegisterPaymentUiEvent.OnKeyMethodPicked -> {
+                uiState.update { it.copy(keyMethod = event.method) }
+                refreshPixCode()
+            }
+
+            RegisterPaymentUiEvent.OnMarkAsPaidClicked -> markAsPaid()
+
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
         }
@@ -162,7 +183,29 @@ class RegisterPaymentViewModel(
             isOnline = true,
             isSaving = false,
             isLoaded = false,
+            receiverKeys = emptyList(),
+            groupName = null,
+            keyMethod = PaymentMethod.PIX,
+            offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
+            pixCode = null,
+            pixQrCode = null,
         )
+    }
+
+    // Why: someone with no account (a guest, someone gone) has no key; offline, the copy the last sync left.
+    private fun keysOf(target: PaymentTarget?): Flow<List<ReceiverKey>> {
+        val userId = target?.toUserId ?: return flowOf(emptyList())
+        return observeMemberPaymentKeys(userId).map { keys ->
+            keys.map { key ->
+                ReceiverKey(
+                    id = key.id,
+                    type = key.type,
+                    value = key.value,
+                    text = formatPaymentKey(key),
+                    isDefault = key.isDefault,
+                )
+            }
+        }
     }
 
     private fun observeTarget(
@@ -189,11 +232,14 @@ class RegisterPaymentViewModel(
         balances: GroupBalances,
     ): PaymentTarget {
         val debtMinor = balances.debtOf(route.fromMemberId, route.toMemberId)
+        val receiver = group.members.firstOrNull { it.id == route.toMemberId }
         return PaymentTarget(
             currency = group.currency,
             from = group.members.firstOrNull { it.id == route.fromMemberId }?.let(::toPerson),
-            to = group.members.firstOrNull { it.id == route.toMemberId }?.let(::toPerson),
+            to = receiver?.let(::toPerson),
+            toUserId = receiver?.userId,
             debtMinor = debtMinor,
+            groupName = group.name,
             legs = listOf(
                 SettlementLeg(
                     groupId = route.groupId,
@@ -225,7 +271,9 @@ class RegisterPaymentViewModel(
             currency = person.currency,
             from = if (owesMe) other else me,
             to = if (owesMe) me else other,
+            toUserId = if (owesMe) null else PeopleBalances.userIdOf(person.key),
             debtMinor = abs(person.netMinor),
+            groupName = person.groups.singleOrNull()?.groupName,
             legs = person.legs,
             groupParts = person.groups,
         )
@@ -247,6 +295,8 @@ class RegisterPaymentViewModel(
                 to = target.to,
                 debtMinor = target.debtMinor,
                 groupParts = target.groupParts,
+                receiverKeys = receiverKeys,
+                groupName = target.groupName,
                 // Why: until something is typed, the field follows the whole debt as a sync changes it.
                 amountText = if (it.hasEditedAmount && target.groupParts.size <= 1) {
                     it.amountText
@@ -254,6 +304,20 @@ class RegisterPaymentViewModel(
                     toAmountText(target.debtMinor, target.currency)
                 },
                 isLoaded = true,
+            )
+        }
+        refreshPixCode()
+    }
+
+    // Why: a QR code is only encoded again once the code it draws changed: another key, debt or method.
+    private fun refreshPixCode() {
+        val code = uiState.value.expectedPixCode
+        if (code == uiState.value.pixCode) return
+        val qrCode = code?.let { encodeQrCode(it) }
+        uiState.update {
+            it.copy(
+                pixCode = code,
+                pixQrCode = qrCode,
             )
         }
     }
@@ -284,9 +348,32 @@ class RegisterPaymentViewModel(
 
     private fun confirm() {
         val state = uiState.value
-        val target = latest
-        if (!state.canConfirm || target == null) return
-        val amountMinor = state.amountMinor ?: return
+        if (!state.canConfirm) return
+        save(
+            amountMinor = state.amountMinor ?: return,
+            method = state.method,
+            paidAt = state.paidAt,
+        )
+    }
+
+    // Why: the payer paid the whole debt in the bank or the wallet just now; Bitcoin is none of the form's methods.
+    private fun markAsPaid() {
+        val state = uiState.value
+        if (!state.canMarkAsPaid) return
+        save(
+            amountMinor = state.debtMinor,
+            method = if (state.shownKeyMethod == PaymentMethod.PIX) SettlementMethod.PIX else SettlementMethod.OTHER,
+            paidAt = currentTimeMillis(),
+        )
+    }
+
+    private fun save(
+        amountMinor: Long,
+        method: SettlementMethod,
+        paidAt: Long,
+    ) {
+        val state = uiState.value
+        val target = latest ?: return
         uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             // Why: a pair of one group may pay part of the debt; a settling up of a single group too, through its one payment.
@@ -296,8 +383,8 @@ class RegisterPaymentViewModel(
                         .singleOrNull()
                         ?.let { leg -> listOf(leg.copy(amountMinor = amountMinor)) }
                         ?: target.legs,
-                    method = state.method,
-                    paidAt = state.paidAt,
+                    method = method,
+                    paidAt = paidAt,
                     personName = (if (state.kind == PaymentKind.PAID) state.to else state.from)?.name,
                     isPaidByMe = state.kind == PaymentKind.PAID,
                 )
@@ -308,8 +395,8 @@ class RegisterPaymentViewModel(
                     fromMemberId = leg.fromMemberId,
                     toMemberId = leg.toMemberId,
                     amountMinor = amountMinor,
-                    method = state.method,
-                    paidAt = state.paidAt,
+                    method = method,
+                    paidAt = paidAt,
                 ).map { listOf(it) }
             }
             result

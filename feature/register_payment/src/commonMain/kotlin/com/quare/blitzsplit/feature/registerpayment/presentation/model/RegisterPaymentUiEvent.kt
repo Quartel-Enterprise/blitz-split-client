@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.registerpayment.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.presentation.UiEvent
 
 sealed interface RegisterPaymentUiEvent : UiEvent {
@@ -26,6 +27,14 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
     ) : RegisterPaymentUiEvent
 
     data object OnConfirmClicked : RegisterPaymentUiEvent
+
+    // Why: "Forma de pagamento" of "Pagar Ana" (4.5): Pix or Bitcoin.
+    data class OnKeyMethodPicked(
+        val method: PaymentMethod,
+    ) : RegisterPaymentUiEvent
+
+    // Why: "Marcar como pago" of "Pagar Ana", which records the whole debt, paid now.
+    data object OnMarkAsPaidClicked : RegisterPaymentUiEvent
 
     data object OnCloseClicked : RegisterPaymentUiEvent
 }

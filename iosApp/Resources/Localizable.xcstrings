@@ -104,6 +104,17 @@
         }
       }
     },
+    "Bitcoin" : {
+      "comment" : "Pay with a key (4.5): a payment method",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitcoin"
+          }
+        }
+      }
+    },
     "%@ by the word “%@” in your map. Tap the icon to change it." : {
       "comment" : "Under a bill's description: its category, chosen by a word of the map",
       "localizations" : {
@@ -122,6 +133,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ veio da palavra “%2$@”. Veja e edite as palavras que escolhem a categoria."
+          }
+        }
+      }
+    },
+    "Copy code" : {
+      "comment" : "Pay with a key (4.5): copies the Pix code",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar código"
+          }
+        }
+      }
+    },
+    "Copy key" : {
+      "comment" : "Pay with a key (4.5): copies the default key",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar chave"
+          }
+        }
+      }
+    },
+    "Copy %@ of %@" : {
+      "comment" : "Pay with a key (4.5): the copy button of another key, for VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar %1$@ de %2$@"
           }
         }
       }
@@ -324,6 +368,17 @@
         }
       }
     },
+    "It already comes with %@." : {
+      "comment" : "Pay with a key (4.5): the amount inside the Pix code",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Já vem com %@."
+          }
+        }
+      }
+    },
     "%@ joined %@." : {
       "comment" : "A contact was added to a group; the first %@ is them, the second the group",
       "localizations" : {
@@ -419,6 +474,168 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · convidado sem app"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "comment" : "Pay with a key (4.5): closes without marking",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Depois"
+          }
+        }
+      }
+    },
+    "Lightning" : {
+      "comment" : "Pay with a key (4.5): a Bitcoin key type",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lightning"
+          }
+        }
+      }
+    },
+    "%lld groups · you owe" : {
+      "comment" : "Pay with a key (4.5): across groups, how many the debt comes from",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld group · you owe"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld groups · you owe"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld grupo · você deve"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld grupos · você deve"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Mark as paid" : {
+      "comment" : "Pay with a key (4.5): records the whole debt as paid",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marcar como pago"
+          }
+        }
+      }
+    },
+    "On-chain" : {
+      "comment" : "Pay with a key (4.5): a Bitcoin key type",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On-chain"
+          }
+        }
+      }
+    },
+    "Pay %@" : {
+      "comment" : "Pay with a key (4.5): the title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagar %@"
+          }
+        }
+      }
+    },
+    "Pay %@ · %@" : {
+      "comment" : "Pay with a key (4.5): the Mac's title, with the amount",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagar %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "Pay in your bank's app and come back to mark it as paid. Check that the bank shows %@'s name." : {
+      "comment" : "Pay with a key (4.5): the note under the keys",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pague no app do seu banco e volte para marcar como pago. Confira se o banco mostra o nome de %@."
+          }
+        }
+      }
+    },
+    "Pay in your wallet and come back to mark it as paid." : {
+      "comment" : "Pay with a key (4.5): the note under a Bitcoin key",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pague na sua carteira e volte para marcar como pago."
+          }
+        }
+      }
+    },
+    "Payment method" : {
+      "comment" : "Pay with a key (4.5): Pix or Bitcoin",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forma de pagamento"
+          }
+        }
+      }
+    },
+    "Pix copy and paste" : {
+      "comment" : "Pay with a key (4.5): the Pix code with the amount in it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pix copia e cola"
+          }
+        }
+      }
+    },
+    "Pix QR code" : {
+      "comment" : "Pay with a key (4.5): the QR code's accessibility label",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR code do Pix"
           }
         }
       }
@@ -991,6 +1208,17 @@
         }
       }
     },
+    "%@'s default key" : {
+      "comment" : "Pay with a key (4.5): the receiver's default key",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chave padrão de %@"
+          }
+        }
+      }
+    },
     "See changes" : {
       "comment" : "Opens an edited bill's changes in its Activity row",
       "localizations" : {
@@ -1116,6 +1344,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alguém"
+          }
+        }
+      }
+    },
+    "%@'s other keys" : {
+      "comment" : "Pay with a key (4.5): the receiver's other keys",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outras chaves de %@"
           }
         }
       }
@@ -3497,6 +3736,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Palavra ou frase"
+          }
+        }
+      }
+    },
+    "%@ · you owe" : {
+      "comment" : "Pay with a key (4.5): the group the debt comes from",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · você deve"
           }
         }
       }

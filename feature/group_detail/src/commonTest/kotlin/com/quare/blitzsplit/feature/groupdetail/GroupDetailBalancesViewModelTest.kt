@@ -642,7 +642,12 @@ class GroupDetailBalancesViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, CARLA, ANA)),
+            listOf(
+                Route.Home,
+                Route.Groups,
+                route,
+                Route.RegisterPayment(GROUP_ID, CARLA, ANA, offersReceiverKeys = true),
+            ),
             navigator.backStack.value,
         )
     }
@@ -704,7 +709,12 @@ class GroupDetailBalancesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.RegisterPayment(GROUP_ID, PIERRE, CARLA)),
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    route,
+                    Route.RegisterPayment(GROUP_ID, PIERRE, CARLA, offersReceiverKeys = true),
+                ),
                 navigator.backStack.value,
             )
         }

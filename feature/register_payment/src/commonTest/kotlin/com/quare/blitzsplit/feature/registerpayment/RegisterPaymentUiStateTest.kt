@@ -5,8 +5,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -210,6 +213,309 @@ class RegisterPaymentUiStateTest {
         assertTrue(showsNotice)
     }
 
+    @Test
+    fun `GIVEN this device user pays someone with a key WHEN reading the state THEN shows the receiver keys`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+        )
+
+        // When
+        val showsKeys = state.showsReceiverKeys
+
+        // Then
+        assertTrue(showsKeys)
+        assertTrue(state.canMarkAsPaid)
+    }
+
+    @Test
+    fun `GIVEN a route that offers no keys WHEN reading the state THEN shows the form`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+            offersReceiverKeys = false,
+        )
+
+        // When
+        val showsKeys = state.showsReceiverKeys
+
+        // Then
+        assertFalse(showsKeys)
+        assertFalse(state.canMarkAsPaid)
+    }
+
+    @Test
+    fun `GIVEN the device user receives from someone with keys WHEN reading the state THEN shows the form`() {
+        // Given
+        val state = state(
+            from = ana,
+            to = me,
+            receiverKeys = listOf(pixPhone),
+        )
+
+        // When
+        val showsKeys = state.showsReceiverKeys
+
+        // Then
+        assertFalse(showsKeys)
+        assertFalse(state.canMarkAsPaid)
+    }
+
+    @Test
+    fun `GIVEN two others with a receiver key WHEN reading the state THEN shows the form`() {
+        // Given
+        val state = state(
+            from = diego,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+        )
+
+        // When
+        val showsKeys = state.showsReceiverKeys
+
+        // Then
+        assertFalse(showsKeys)
+        assertFalse(state.canMarkAsPaid)
+    }
+
+    @Test
+    fun `GIVEN a receiver with no key WHEN this device user pays THEN shows the form`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+        )
+
+        // When
+        val showsKeys = state.showsReceiverKeys
+
+        // Then
+        assertFalse(showsKeys)
+        assertFalse(state.canMarkAsPaid)
+        assertNull(state.defaultKey)
+        assertTrue(state.otherKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Bitcoin keys listed first WHEN reading the methods THEN Pix comes first and the picker shows`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(lightning, pixPhone),
+        )
+
+        // When
+        val methods = state.keyMethods
+
+        // Then
+        assertEquals(listOf(PaymentMethod.PIX, PaymentMethod.BITCOIN), methods)
+        assertTrue(state.showsKeyMethodPicker)
+        assertEquals(PaymentMethod.PIX, state.shownKeyMethod)
+    }
+
+    @Test
+    fun `GIVEN only Pix keys WHEN reading the methods THEN the picker does not show`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone, pixEmail),
+        )
+
+        // When
+        val methods = state.keyMethods
+
+        // Then
+        assertEquals(listOf(PaymentMethod.PIX), methods)
+        assertFalse(state.showsKeyMethodPicker)
+    }
+
+    @Test
+    fun `GIVEN only Bitcoin keys and Pix picked WHEN reading the shown method THEN it is Bitcoin without a picker`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(lightning, onchain),
+            keyMethod = PaymentMethod.PIX,
+        )
+
+        // When
+        val shown = state.shownKeyMethod
+
+        // Then
+        assertEquals(PaymentMethod.BITCOIN, shown)
+        assertFalse(state.showsKeyMethodPicker)
+        assertEquals(lightning, state.defaultKey)
+        assertEquals(listOf(onchain), state.otherKeys)
+    }
+
+    @Test
+    fun `GIVEN both methods and Bitcoin picked WHEN reading the keys THEN shows the Bitcoin default and others`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone, pixEmail, lightning, onchain),
+            keyMethod = PaymentMethod.BITCOIN,
+        )
+
+        // When
+        val defaultKey = state.defaultKey
+
+        // Then
+        assertEquals(PaymentMethod.BITCOIN, state.shownKeyMethod)
+        assertEquals(lightning, defaultKey)
+        assertEquals(listOf(onchain), state.otherKeys)
+    }
+
+    @Test
+    fun `GIVEN Pix keys with the second one flagged WHEN reading the keys THEN the flagged one is the default`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixEmail, pixPhone, pixRandom),
+        )
+
+        // When
+        val defaultKey = state.defaultKey
+
+        // Then
+        assertEquals(pixPhone, defaultKey)
+        assertEquals(listOf(pixEmail, pixRandom), state.otherKeys)
+    }
+
+    @Test
+    fun `GIVEN Pix keys none of them flagged WHEN reading the keys THEN the first one is the default`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixEmail, pixRandom),
+        )
+
+        // When
+        val defaultKey = state.defaultKey
+
+        // Then
+        assertEquals(pixEmail, defaultKey)
+        assertEquals(listOf(pixRandom), state.otherKeys)
+    }
+
+    @Test
+    fun `GIVEN Pix shown with Bitcoin keys too WHEN reading the other keys THEN lists only the other Pix keys`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone, pixEmail, lightning, onchain),
+        )
+
+        // When
+        val otherKeys = state.otherKeys
+
+        // Then
+        assertEquals(listOf(pixEmail), otherKeys)
+    }
+
+    @Test
+    fun `GIVEN a Pix phone key and 98 reais in reais WHEN reading the expected code THEN is the known copia e cola`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            debtMinor = 9_800L,
+            amountText = "98,00",
+            receiverKeys = listOf(pixPhone),
+        )
+
+        // When
+        val code = state.expectedPixCode
+
+        // Then
+        assertEquals(
+            "00020126360014br.gov.bcb.pix0114+5521987654321520400005303986540598.005802BR5903Ana6006BRASIL" +
+                "62070503***6304D3C1",
+            code,
+        )
+    }
+
+    @Test
+    fun `GIVEN Bitcoin shown WHEN reading the expected code THEN there is no Pix code`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone, lightning),
+            keyMethod = PaymentMethod.BITCOIN,
+        )
+
+        // When
+        val code = state.expectedPixCode
+
+        // Then
+        assertNull(code)
+    }
+
+    @Test
+    fun `GIVEN a group in dollars WHEN reading the expected code THEN there is no Pix code`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            currency = GroupCurrency.USD,
+            amountText = "162.30",
+            receiverKeys = listOf(pixPhone),
+        )
+
+        // When
+        val code = state.expectedPixCode
+
+        // Then
+        assertNull(code)
+        assertTrue(state.showsReceiverKeys)
+    }
+
+    @Test
+    fun `GIVEN keys shown while saving WHEN reading whether it can mark as paid THEN it cannot`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+            isSaving = true,
+        )
+
+        // When
+        val canMarkAsPaid = state.canMarkAsPaid
+
+        // Then
+        assertFalse(canMarkAsPaid)
+    }
+
+    @Test
+    fun `GIVEN keys but nothing loaded WHEN reading whether it can mark as paid THEN it cannot`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+            isLoaded = false,
+        )
+
+        // When
+        val canMarkAsPaid = state.canMarkAsPaid
+
+        // Then
+        assertFalse(canMarkAsPaid)
+    }
+
     private val me = PaymentPerson("member-2", "Pierre", "PI", AvatarColor.BLUE, isMe = true)
     private val ana = PaymentPerson("member-1", "Ana", "AN", AvatarColor.PEACH, isMe = false)
     private val twoGroups = listOf("floripa", "ape").map { groupId ->
@@ -226,6 +532,25 @@ class RegisterPaymentUiStateTest {
 
     private val diego = PaymentPerson("member-4", "Diego", "DI", AvatarColor.SAND, isMe = false)
 
+    private val pixPhone = key("phone", PaymentKeyType.PHONE, "+5521987654321", isDefault = true)
+    private val pixEmail = key("email", PaymentKeyType.EMAIL, "ana@email.com")
+    private val pixRandom = key("random", PaymentKeyType.RANDOM, "123e4567-e89b-12d3-a456-426614174000")
+    private val lightning = key("lightning", PaymentKeyType.LIGHTNING, "ana@walletofsatoshi.com", isDefault = true)
+    private val onchain = key("onchain", PaymentKeyType.ONCHAIN, "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq")
+
+    private fun key(
+        id: String,
+        type: PaymentKeyType,
+        value: String,
+        isDefault: Boolean = false,
+    ): ReceiverKey = ReceiverKey(
+        id = id,
+        type = type,
+        value = value,
+        text = value,
+        isDefault = isDefault,
+    )
+
     private fun state(
         from: PaymentPerson? = ana,
         to: PaymentPerson? = me,
@@ -236,6 +561,9 @@ class RegisterPaymentUiStateTest {
         isSaving: Boolean = false,
         isLoaded: Boolean = true,
         groupParts: List<PersonGroupBalance> = emptyList(),
+        receiverKeys: List<ReceiverKey> = emptyList(),
+        keyMethod: PaymentMethod = PaymentMethod.PIX,
+        offersReceiverKeys: Boolean = true,
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
         from = from,
@@ -251,5 +579,11 @@ class RegisterPaymentUiStateTest {
         isOnline = isOnline,
         isSaving = isSaving,
         isLoaded = isLoaded,
+        receiverKeys = receiverKeys,
+        groupName = null,
+        keyMethod = keyMethod,
+        offersReceiverKeys = offersReceiverKeys,
+        pixCode = null,
+        pixQrCode = null,
     )
 }
