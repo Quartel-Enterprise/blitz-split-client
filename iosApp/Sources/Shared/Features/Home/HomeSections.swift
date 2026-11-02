@@ -549,8 +549,9 @@ struct HomeBillsSection: View {
             ForEach(rows.indices, id: \.self) { index in
                 rows[index]
                 if index < rows.count - 1 {
+                    // Under the text: 16 of padding, the 38 pt badge and 12 of spacing
                     Divider()
-                        .padding(.leading, 64)
+                        .padding(.leading, 66)
                 }
             }
         }
@@ -602,9 +603,10 @@ struct HomeBillsSection: View {
 private struct SkeletonBillRow: View {
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10)
+            // The category badge's size and corners
+            RoundedRectangle(cornerRadius: 38 * 0.3)
                 .fill(.fill.tertiary)
-                .frame(width: 36, height: 36)
+                .frame(width: 38, height: 38)
             VStack(alignment: .leading, spacing: 6) {
                 Capsule().fill(.fill.tertiary).frame(width: 120, height: 12)
                 Capsule().fill(.fill.quaternary).frame(width: 180, height: 10)

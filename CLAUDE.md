@@ -88,8 +88,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group, the most recent group first, pairs with you first; the pair opens Registrar pagamento in its place), and
     "Novo grupo". "Seus grupos": up to three open groups, the pinned first, then the latest activity, as Grupos draws
     them; "Ver todos" opens Grupos. "Últimas despesas": the five latest bills you paid or take part in, by day, with
-    your share and its category's badge exactly as the group's Despesas rows draw it (Pierre's call, the category as
-    it reads now, `HomeBill.category`); a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
+    your share; a bill opens its Conta over its group, and "Ver tudo" opens Atividade.
     "Rachar conta" is Grupos' (asks the group first, 7.1i; ⌘N on the Mac). There is no search on Início (it stays
     on Grupos). States: nothing until Room is read; no group yet shows only the first use's card (1.3); a new device's
     first download (an account restored on a device with no profile, until its first sync settles, `FirstDownload`)

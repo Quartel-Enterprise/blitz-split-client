@@ -378,10 +378,11 @@ private fun BillSkeletonColumn() {
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Why: the category badge's size and corners, so the rows don't jump once the bills come down.
                 SkeletonBox(
-                    width = 44.dp,
-                    height = 44.dp,
-                    shape = RoundedCornerShape(14.dp),
+                    width = 40.dp,
+                    height = 40.dp,
+                    shape = RoundedCornerShape(12.dp),
                 )
                 Column(
                     modifier = Modifier.weight(1f),
