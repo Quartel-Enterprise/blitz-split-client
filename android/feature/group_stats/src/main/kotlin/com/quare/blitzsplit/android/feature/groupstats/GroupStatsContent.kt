@@ -231,6 +231,18 @@ private fun GroupStatsScaffold(
                     modifier = Modifier.fillMaxSize(),
                 )
 
+                // Why: a tabletop keeps it above the hinge, in the top half.
+                !state.showsStats && layout == StatsLayout.TABLETOP -> TopBottomHalvesLayout(
+                    top = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.TopCenter,
+                        ) { empty() }
+                    },
+                    bottom = {},
+                    modifier = Modifier.fillMaxSize(),
+                )
+
                 !state.showsStats -> empty()
 
                 layout == StatsLayout.COLUMNS -> Row(
