@@ -43,6 +43,9 @@ struct PickPaymentView: View {
         }
         #if os(macOS)
         .frame(width: 480, height: 520)
+        #else
+        // Record payment's 540×620 form sheet with an iPad's room, which takes this sheet's place
+        .formSheetSizing()
         #endif
         .onAppear {
             if model == nil { model = PickPaymentModel() }

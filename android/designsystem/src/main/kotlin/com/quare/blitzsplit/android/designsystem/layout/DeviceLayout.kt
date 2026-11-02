@@ -81,10 +81,9 @@ fun AdaptiveScreen(
 fun rememberUsesFormDialog(): Boolean = rememberFoldLayout().formFactor in formDialogFormFactors
 
 /*
- * Why: the canvas draws Registrar pagamento, Cobrar and Atividade's filter as a dialog on a tablet and on the foldable
- * upright (its hinge across and flat), and as a sheet on a phone, lying down, on a book and on a tabletop, unlike the
- * other forms, which open full screen on any foldable. Rachar conta and Conta go further: flow 7 opens them over the
- * group on a book and a tabletop too (AppNavDisplay's opensBillOverGroup).
+ * Why: the canvas draws Atividade's filter as a dialog on a tablet and on the foldable upright (its hinge across and
+ * flat), and as a sheet on a phone, lying down, on a book and on a tabletop. The forms over a group have their own
+ * rules: Rachar conta and Conta (AppNavDisplay's opensBillOverGroup), Registrar pagamento (rememberFormPresentation).
  */
 @Composable
 fun rememberUsesGroupDialog(): Boolean = rememberFoldLayout().formFactor in groupDialogFormFactors

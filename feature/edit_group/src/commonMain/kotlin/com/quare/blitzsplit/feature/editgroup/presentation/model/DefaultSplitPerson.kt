@@ -8,6 +8,8 @@ data class DefaultSplitPerson(
     val name: String,
     val initials: String,
     val avatarColor: AvatarColor,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     // Why: "Pierre (você)".
     val isMe: Boolean,
     // Why: joined after the default was saved ("Carla entrou no grupo"), until someone saves it again.

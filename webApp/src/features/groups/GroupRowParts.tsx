@@ -84,7 +84,7 @@ export function Faces({ group }: { group: JsGroupRow }) {
   return (
     <span className="flex items-center -space-x-1.5">
       {group.faces.map((face, index) => (
-        <Avatar key={index} initial={face.initial} color={face.color} className="size-6 text-[10px] ring-2 ring-card" />
+        <Avatar key={index} initial={face.initial} color={face.color} photoUrl={face.photoUrl} className="size-6 text-[10px] ring-2 ring-card" />
       ))}
       {group.extraMemberCount > 0 && (
         <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-semibold text-muted-foreground ring-2 ring-card">

@@ -262,6 +262,7 @@ private fun buildPreviewPerson(
     name = name,
     initials = name.take(1),
     color = color,
+    photoUrl = null,
     currency = GroupCurrency.BRL,
     netMinor = netMinor,
     isGuest = isGuest,

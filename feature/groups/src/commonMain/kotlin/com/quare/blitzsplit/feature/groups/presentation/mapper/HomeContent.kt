@@ -31,6 +31,7 @@ internal fun homePeopleOf(balances: PeopleBalances): List<HomePerson> = balances
             name = person.name,
             initials = person.name?.let(Initials::of).orEmpty(),
             color = person.face?.color,
+            photoUrl = person.face?.photoUrl,
             currency = person.currency,
             netMinor = person.netMinor,
             isGuest = person.isGuest,

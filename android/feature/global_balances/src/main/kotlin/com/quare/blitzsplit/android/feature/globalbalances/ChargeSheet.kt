@@ -211,6 +211,7 @@ private fun ChargeHeader(
         AvatarBadge(
             initial = charge.initials,
             color = charge.color ?: AvatarColor.default,
+            photoUrl = charge.photoUrl,
             size = 48.dp,
         )
         Column(

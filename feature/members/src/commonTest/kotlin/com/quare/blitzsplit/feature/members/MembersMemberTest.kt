@@ -283,6 +283,7 @@ class MembersMemberTest {
         name = "Ana",
         initials = "AN",
         avatarColor = AvatarColor.PEACH,
+        photoUrl = null,
         isMe = isMe,
         hasJoined = hasJoined,
         personalLink = personalLink,

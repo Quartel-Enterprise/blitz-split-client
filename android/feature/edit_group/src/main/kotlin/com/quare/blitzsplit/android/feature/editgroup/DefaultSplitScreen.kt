@@ -14,7 +14,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DefaultSplitScreen(
     route: Route.DefaultSplit,
-    // Why: where Editar grupo is a dialog over the group, "Divisão padrão" is one over it.
+    // Why: a tablet and a book draw "Divisão padrão" as a dialog over the group, its exception as one over it.
     isDialog: Boolean,
     viewModel: DefaultSplitViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
@@ -30,6 +30,7 @@ fun DefaultSplitScreen(
             state = state,
             editor = editor,
             money = rememberMoneyFormatter(state.currency),
+            isDialog = isDialog,
             onEvent = viewModel::onEvent,
         )
     }

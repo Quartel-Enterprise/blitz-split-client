@@ -114,6 +114,7 @@ class MembersViewModelTest {
                         "Pierre",
                         "P",
                         AvatarColor.BLUE,
+                        photoUrl = null,
                         isMe = true,
                         hasJoined = true,
                         personalLink = null,
@@ -125,6 +126,7 @@ class MembersViewModelTest {
                         "Ana",
                         "AN",
                         AvatarColor.PEACH,
+                        photoUrl = null,
                         isMe = false,
                         hasJoined = false,
                         personalLink = null,
@@ -136,6 +138,7 @@ class MembersViewModelTest {
                         "Bruno",
                         "BR",
                         AvatarColor.GREEN,
+                        photoUrl = null,
                         isMe = false,
                         hasJoined = true,
                         personalLink = null,
@@ -147,6 +150,7 @@ class MembersViewModelTest {
                         "Carla",
                         "CA",
                         AvatarColor.LILAC,
+                        photoUrl = null,
                         isMe = false,
                         hasJoined = false,
                         personalLink = null,
@@ -2430,6 +2434,7 @@ class MembersViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val ana = GroupMember(
         "member-2",
@@ -2439,6 +2444,7 @@ class MembersViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val bruno = GroupMember(
         "member-3",
@@ -2448,6 +2454,7 @@ class MembersViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val carla = GroupMember(
         "member-4",
@@ -2457,6 +2464,7 @@ class MembersViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val diego = GroupMember(
         "member-5",
@@ -2466,6 +2474,7 @@ class MembersViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val anaP = GroupMember(
         "member-6",
@@ -2475,6 +2484,7 @@ class MembersViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private val carlaOnScreen = MembersMember(
@@ -2482,6 +2492,7 @@ class MembersViewModelTest {
         "Carla",
         "CA",
         AvatarColor.LILAC,
+        photoUrl = null,
         isMe = false,
         hasJoined = false,
         personalLink = null,
@@ -2494,6 +2505,7 @@ class MembersViewModelTest {
         "Bruno",
         "BR",
         AvatarColor.GREEN,
+        photoUrl = null,
         isMe = false,
         hasJoined = true,
         personalLink = null,

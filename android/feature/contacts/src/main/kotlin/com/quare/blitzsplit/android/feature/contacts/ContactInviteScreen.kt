@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.QrCodeImage
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
@@ -80,7 +81,7 @@ private val qrMaxSize = 200.dp
 @Composable
 fun ContactInviteScreen(
     route: Route.ContactInvite,
-    presentation: ContactInvitePresentation,
+    presentation: FormPresentation,
     viewModel: ContactInviteViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -114,14 +115,14 @@ fun ContactInviteScreen(
 @Composable
 internal fun ContactInviteContent(
     state: ContactInviteUiState,
-    presentation: ContactInvitePresentation,
+    presentation: FormPresentation,
     onEvent: (ContactInviteUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val title = state.name?.let { stringResource(R.string.contacts_invite_person, it) }
         ?: stringResource(R.string.contacts_invite_link)
     when (presentation) {
-        ContactInvitePresentation.BottomSheet -> Column(
+        FormPresentation.BottomSheet -> Column(
             modifier = modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -137,7 +138,7 @@ internal fun ContactInviteContent(
             InviteBodyContent(state, onEvent)
         }
 
-        ContactInvitePresentation.Dialog -> Surface(
+        FormPresentation.Dialog -> Surface(
             modifier = modifier
                 .widthIn(max = dialogWidth)
                 .fillMaxWidth()
@@ -156,7 +157,7 @@ internal fun ContactInviteContent(
             }
         }
 
-        ContactInvitePresentation.TabletopHalves -> Surface(
+        FormPresentation.TabletopHalves -> Surface(
             modifier = modifier
                 .fillMaxSize()
                 .semantics { paneTitle = title },

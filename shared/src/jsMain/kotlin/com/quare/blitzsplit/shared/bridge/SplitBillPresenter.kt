@@ -24,6 +24,7 @@ class JsBillPerson(
     val name: String,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val isMe: Boolean,
     val hasJoined: Boolean,
 )
@@ -458,6 +459,7 @@ internal fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     name = person.name,
     initials = person.initials,
     color = person.avatarColor.code,
+    photoUrl = person.photoUrl,
     isMe = person.isMe,
     hasJoined = person.hasJoined,
 )

@@ -183,6 +183,7 @@ private fun PersonFaceItem(
                 AvatarBadge(
                     initial = person.initials,
                     color = person.color ?: AvatarColor.default,
+                    photoUrl = person.photoUrl,
                     size = size,
                 )
                 if (person.isGuest) GuestBadge(modifier = Modifier.align(Alignment.BottomEnd))

@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.SheetDismissLockEffect
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
@@ -24,8 +25,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun RegisterPaymentScreen(
     route: Route,
-    // Why: a tablet and the upright foldable draw it as a dialog; a phone as a bottom sheet.
-    isDialog: Boolean,
+    // Why: a sheet on a phone, a dialog on a tablet and a foldable (a book's right half), full screen on a tabletop.
+    presentation: FormPresentation,
     viewModel: RegisterPaymentViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -39,7 +40,7 @@ fun RegisterPaymentScreen(
     SheetDismissLockEffect(isLocked = state.isSaving)
     RegisterPaymentContent(
         state = state,
-        isDialog = isDialog,
+        presentation = presentation,
         snackbarHostState = snackbarHostState,
         onWhenClick = {
             viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAtOpened)

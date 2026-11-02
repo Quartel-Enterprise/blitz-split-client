@@ -39,7 +39,7 @@ export function ChargeDialog({ presenter, state, charge }: { presenter: GlobalBa
       }}
       className="gap-4 sm:max-w-[480px]"
       pane={{
-        leading: <Avatar initial={charge.initials} color={charge.color ?? 'blue'} className="mb-1 size-12 text-base" />,
+        leading: <Avatar initial={charge.initials} color={charge.color ?? 'blue'} photoUrl={charge.photoUrl} className="mb-1 size-12 text-base" />,
         title: t('globalBalances_chargeTitle', { name }),
         description: t('globalBalances_chargeOwes', { name, amount: formatMoney(charge.amountMinor, charge.currency, charge.fractionDigits), groups }),
         body: (

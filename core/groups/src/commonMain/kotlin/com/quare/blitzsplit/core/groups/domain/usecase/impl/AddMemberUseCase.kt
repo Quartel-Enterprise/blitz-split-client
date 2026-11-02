@@ -32,6 +32,7 @@ class AddMemberUseCase(
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             addedAt = currentTimeMillis(),
         )

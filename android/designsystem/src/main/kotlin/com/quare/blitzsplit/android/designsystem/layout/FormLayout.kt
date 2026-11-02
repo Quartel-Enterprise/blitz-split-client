@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,16 +19,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
 
 /*
- * Why: "Novo grupo" and "Editar grupo" open as a 560dp dialog over the screen behind them on a tablet, and full screen
- * with a single scrolling column elsewhere. The top bar is told which, so it can drop its insets and color in a dialog.
- * Full screen, a form that hands a `secondColumn` (Novo grupo on a phone lying down) splits into two columns, each
- * scrolling on its own, `content` first; the form decides when, since its one column orders the fields differently.
+ * Why: "Novo grupo" and "Editar grupo" open as a dialog over the screen behind them wider than a phone (560dp at most,
+ * a book's half on a foldable), and full screen with a single scrolling column on a phone. The top bar is told which,
+ * so it can drop its insets and color in a dialog. Full screen, a form that hands a `secondColumn` (Novo grupo and
+ * Editar grupo on a phone lying down) splits into two columns, each
+ * scrolling on its own, `content` first (`firstColumnWidth` wide, else half: Editar grupo's icon column is 240dp); the
+ * form decides when, since its one column orders the fields differently.
  */
 @Composable
 fun FormLayout(
@@ -35,6 +39,7 @@ fun FormLayout(
     topBar: @Composable (isDialog: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     secondColumn: (@Composable ColumnScope.() -> Unit)? = null,
+    firstColumnWidth: Dp? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     if (isDialog) {
@@ -68,6 +73,7 @@ fun FormLayout(
             if (secondColumn != null) {
                 FormColumnsRow(
                     padding = padding,
+                    firstColumnWidth = firstColumnWidth,
                     first = content,
                     second = secondColumn,
                 )
@@ -97,6 +103,7 @@ fun FormLayout(
 @Composable
 private fun FormColumnsRow(
     padding: PaddingValues,
+    firstColumnWidth: Dp?,
     first: @Composable ColumnScope.() -> Unit,
     second: @Composable ColumnScope.() -> Unit,
 ) {
@@ -112,7 +119,7 @@ private fun FormColumnsRow(
     ) {
         Column(
             modifier = Modifier
-                .weight(1f)
+                .then(if (firstColumnWidth != null) Modifier.width(firstColumnWidth) else Modifier.weight(1f))
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 24.dp),
             content = first,

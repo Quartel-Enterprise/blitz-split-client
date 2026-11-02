@@ -8,6 +8,7 @@ import androidx.room3.Transaction
 import androidx.room3.Upsert
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import kotlinx.coroutines.flow.Flow
 
 // Why: below SQLite's oldest cap on bound parameters (999), which some devices still have.
@@ -377,10 +378,34 @@ interface GroupDao {
     @Query("DELETE FROM group_member WHERE id IN (:ids) AND isRemoved = 1")
     suspend fun deleteRemovedMemberRows(ids: List<String>)
 
+    @Query("SELECT * FROM member_photo")
+    fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>>
+
+    /*
+     * Why: in one go, so a face never shows without its photo between the delete and the insert; and only when a
+     * photo changed, since each sync brings them all and a write would redraw every group's faces for nothing.
+     */
+    @Transaction
+    suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>) {
+        if (getMemberPhotos().toSet() == entities.toSet()) return
+        deleteAllMemberPhotos()
+        insertMemberPhotos(entities)
+    }
+
+    @Query("SELECT * FROM member_photo")
+    suspend fun getMemberPhotos(): List<MemberPhotoEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMemberPhotos(entities: List<MemberPhotoEntity>)
+
+    @Query("DELETE FROM member_photo")
+    suspend fun deleteAllMemberPhotos()
+
     @Transaction
     suspend fun deleteAll() {
         deleteAllMembers()
         deleteAllGroups()
+        deleteAllMemberPhotos()
     }
 
     @Query("DELETE FROM group_member")

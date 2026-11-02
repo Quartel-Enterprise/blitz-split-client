@@ -20,4 +20,9 @@ data class GroupMember(
      * device until its first sync brings it.
      */
     val inviteCode: String?,
+    /*
+     * Why: the profile photo of whoever joined as this member, the device's own for this device's user; null for a
+     * name nobody joined as and for someone with no photo, whose initials show instead.
+     */
+    val photoUrl: String?,
 )

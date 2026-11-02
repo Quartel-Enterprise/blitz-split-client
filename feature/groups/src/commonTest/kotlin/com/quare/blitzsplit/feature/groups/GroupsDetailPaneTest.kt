@@ -561,6 +561,7 @@ class GroupsDetailPaneTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             )
         },
         isPending = false,

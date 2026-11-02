@@ -63,10 +63,11 @@ class FormIconAction(
 )
 
 /*
- * Why: the canvas opens Rachar conta, Dividir and Divisão padrão full screen on a phone and lying down, in two columns
- * when lying down; as a dialog (where the caller says so) they sit over the group, two columns wide on a tablet lying
- * down and one column anywhere else, a book's half included. On a tabletop a form with a board of its own (`tabletop`)
- * reads in the top half (`first`) and is filled in the bottom one (`second`); any other stays as lying down.
+ * Why: the canvas opens Rachar conta and Dividir full screen on a phone and lying down, and Divisão padrão on a phone
+ * and a foldable upright, in two columns when lying down; as a dialog (where the caller says so) they sit over the
+ * group, two columns wide on a tablet lying down and one column anywhere else, a book's half included. On a tabletop a
+ * form with a board of its own (`tabletop`) reads in the top half (`first`) and is filled in the bottom one
+ * (`second`); any other stays as lying down.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

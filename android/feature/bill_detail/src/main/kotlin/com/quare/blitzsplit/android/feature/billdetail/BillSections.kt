@@ -234,6 +234,7 @@ private fun ShareRow(
                 AvatarBadge(
                     initial = row.initials,
                     color = row.avatarColor,
+                    photoUrl = row.photoUrl,
                     size = rowAvatarSize,
                 )
             }
@@ -291,6 +292,7 @@ private fun PayerFacesRow(payers: List<BillPayer>) {
                 AvatarBadge(
                     initial = payer.initials,
                     color = payer.avatarColor,
+                    photoUrl = payer.photoUrl,
                     size = payerAvatarSize,
                 )
             }

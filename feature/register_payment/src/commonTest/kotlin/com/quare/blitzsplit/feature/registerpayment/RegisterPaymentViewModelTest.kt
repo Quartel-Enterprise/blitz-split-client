@@ -278,8 +278,28 @@ class RegisterPaymentViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(PaymentPerson(ANA, "Ana", "AN", AvatarColor.PEACH, isMe = false), state.from)
-            assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "P", AvatarColor.BLUE, isMe = true), state.to)
+            assertEquals(
+                PaymentPerson(
+                    ANA,
+                    "Ana",
+                    "AN",
+                    AvatarColor.PEACH,
+                    photoUrl = null,
+                    isMe = false,
+                ),
+                state.from,
+            )
+            assertEquals(
+                PaymentPerson(
+                    PIERRE,
+                    "Pierre Vieira",
+                    "P",
+                    AvatarColor.BLUE,
+                    photoUrl = null,
+                    isMe = true,
+                ),
+                state.to,
+            )
             assertEquals(PaymentKind.RECEIVED, state.kind)
         }
 
@@ -295,8 +315,28 @@ class RegisterPaymentViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "P", AvatarColor.BLUE, isMe = true), state.from)
-        assertEquals(PaymentPerson(BRUNO, "Bruno", "BR", AvatarColor.GREEN, isMe = false), state.to)
+        assertEquals(
+            PaymentPerson(
+                PIERRE,
+                "Pierre Vieira",
+                "P",
+                AvatarColor.BLUE,
+                photoUrl = null,
+                isMe = true,
+            ),
+            state.from,
+        )
+        assertEquals(
+            PaymentPerson(
+                BRUNO,
+                "Bruno",
+                "BR",
+                AvatarColor.GREEN,
+                photoUrl = null,
+                isMe = false,
+            ),
+            state.to,
+        )
         assertEquals(PaymentKind.PAID, state.kind)
         assertEquals(5_000L, state.debtMinor)
         assertEquals("50,00", state.amountText)
@@ -314,8 +354,28 @@ class RegisterPaymentViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(PaymentPerson(DIEGO, "Diego", "DI", AvatarColor.SAND, isMe = false), state.from)
-        assertEquals(PaymentPerson(BRUNO, "Bruno", "BR", AvatarColor.GREEN, isMe = false), state.to)
+        assertEquals(
+            PaymentPerson(
+                DIEGO,
+                "Diego",
+                "DI",
+                AvatarColor.SAND,
+                photoUrl = null,
+                isMe = false,
+            ),
+            state.from,
+        )
+        assertEquals(
+            PaymentPerson(
+                BRUNO,
+                "Bruno",
+                "BR",
+                AvatarColor.GREEN,
+                photoUrl = null,
+                isMe = false,
+            ),
+            state.to,
+        )
         assertEquals(PaymentKind.BETWEEN_OTHERS, state.kind)
         assertEquals(8_000L, state.debtMinor)
     }
@@ -1600,6 +1660,7 @@ class RegisterPaymentViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: a bill the payer paid whole for the debtor alone, so the debtor owes the payer all of it.

@@ -188,7 +188,7 @@ struct ExceptionSheet: View {
                     .foregroundStyle(person.isIncluded ? Palette.accent : .secondary)
                     .accessibilityHidden(true)
             }
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
                 .accessibilityHidden(true)
             Text(verbatim: person.isMe ? String(localized: "You") : person.name)
             Spacer()
