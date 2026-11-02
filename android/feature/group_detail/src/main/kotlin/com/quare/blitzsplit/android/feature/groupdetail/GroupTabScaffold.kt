@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -33,11 +34,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
+import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.blocksTapsWhileLoading
 import com.quare.blitzsplit.android.designsystem.layout.groupTabContainerColorOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
 private val singleColumnMaxWidth = 624.dp
@@ -62,26 +66,56 @@ internal class GroupTabFrame(
 /*
  * Why: a phone upright stacks the faces, the balance card, the tabs and the list under the bar, with "Rachar conta"
  * floating; lying down, and on a tablet lying down, the faces, the card and the tabs take a column next to the list.
- * A tablet upright centers one column.
+ * A tablet upright centers one column. Drawn alone anywhere wider than a phone upright, the home's rail stays beside
+ * it, as the canvas draws it (6.1).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GroupTabScaffold(
     frame: GroupTabFrame,
     snackbarHostState: SnackbarHostState,
     onAction: (GroupAction) -> Unit,
+    // Why: the home's rail beside the group drawn alone (WithGroupNavigationRail), on the tab it was opened from.
+    homeTab: HomeTab,
+    activityBadgeCount: Int,
+    onHomeTabClick: (HomeTab) -> Unit,
     modifier: Modifier = Modifier,
+    listContent: LazyListScope.() -> Unit,
+) {
+    WithGroupNavigationRail(
+        selected = homeTab,
+        onTabClick = onHomeTabClick,
+        activityBadgeCount = activityBadgeCount,
+        modifier = modifier,
+    ) { showsRail ->
+        GroupTabScaffoldContent(
+            frame = frame,
+            snackbarHostState = snackbarHostState,
+            onAction = onAction,
+            showsRail = showsRail,
+            listContent = listContent,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GroupTabScaffoldContent(
+    frame: GroupTabFrame,
+    snackbarHostState: SnackbarHostState,
+    onAction: (GroupAction) -> Unit,
+    showsRail: Boolean,
     listContent: LazyListScope.() -> Unit,
 ) {
     val layout = rememberDeviceLayout()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberLazyListState()
     Scaffold(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .blocksTapsWhileLoading(frame.isLoaded)
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = groupTabContainerColorOf(frame.isLoaded),
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
         topBar = {
             if (frame.isLoaded) {
                 GroupTopBar(

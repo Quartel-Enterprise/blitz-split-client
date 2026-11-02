@@ -35,6 +35,9 @@ fun GroupDetailContent(
         ),
         snackbarHostState = snackbarHostState,
         onAction = onAction,
+        homeTab = state.homeTab,
+        activityBadgeCount = state.activityUnreadCount,
+        onHomeTabClick = { tab -> onEvent(GroupDetailUiEvent.OnRailTabClicked(tab)) },
         modifier = modifier,
     ) {
         state.joinedAs?.let { name ->

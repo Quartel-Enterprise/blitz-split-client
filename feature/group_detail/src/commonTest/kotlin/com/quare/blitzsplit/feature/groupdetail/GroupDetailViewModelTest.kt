@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
@@ -41,6 +42,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -79,6 +81,7 @@ import kotlin.time.Instant
 
 class GroupDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val activityUnread = MutableStateFlow(0)
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
@@ -1016,6 +1019,104 @@ class GroupDetailViewModelTest {
         // Then
         assertEquals(listOf(Route.Home, Route.Groups, Route.Balances(GROUP_ID)), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Contatos THEN Contatos takes the groups place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnRailTabClicked(HomeTab.CONTACTS)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Atividade THEN Atividade takes the groups place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnRailTabClicked(HomeTab.ACTIVITY)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN its rail opens Grupos THEN goes back to the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnRailTabClicked(HomeTab.GROUPS)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill over the group WHEN its rail is tapped THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.BillDetail(GROUP_ID, "dinner"))
+        val event = GroupDetailUiEvent.OnRailTabClicked(HomeTab.GROUPS)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(
+            listOf(Route.Home, Route.Groups, route, Route.BillDetail(GROUP_ID, "dinner")),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group a row of Grupos opened WHEN drawn THEN its rail selects Grupos`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(HomeTab.GROUPS, state.homeTab)
+    }
+
+    @Test
+    fun `GIVEN a group Inicio opened WHEN drawn THEN its rail selects Inicio`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(routesBelow = emptyList())
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(HomeTab.HOME, state.homeTab)
+    }
+
+    @Test
+    fun `GIVEN the group drawn alone WHEN unread activity arrives THEN the Atividade tab on its rail counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            activityUnread.value = 3
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.activityUnreadCount)
+        }
 
     @Test
     fun `GIVEN a bill on the list WHEN tapping it THEN opens the bill`() = runTest(testDispatcher) {
@@ -2042,6 +2143,7 @@ class GroupDetailViewModelTest {
                 deleteGroup = DeleteGroup { groups.deleteGroup(it) },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
+                observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
@@ -23,7 +24,9 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.openGroupTab
+import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -58,6 +61,7 @@ class MembersViewModel(
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
     observeRecordedPayment: ObserveRecordedPayment,
+    observeActivityUnreadCount: ObserveActivityUnreadCount,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
@@ -75,6 +79,8 @@ class MembersViewModel(
                 isEveryoneSettled = false,
                 recordedPayment = null,
                 isLoaded = false,
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                activityUnreadCount = 0,
             ),
         )
 
@@ -122,6 +128,9 @@ class MembersViewModel(
         navigator.backStack
             .onEach { if (isGroupGone) leave() }
             .launchIn(viewModelScope)
+        observeActivityUnreadCount()
+            .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: MembersUiEvent) {
@@ -143,6 +152,8 @@ class MembersViewModel(
                 from = route,
                 tab = Route.Balances(route.groupId),
             )
+
+            is MembersUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,

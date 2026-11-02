@@ -74,17 +74,21 @@ internal fun LazyGridScope.groupsListItems(
     onLongPress: (GroupRow) -> Unit,
     // Why: the group open beside the list in a list and detail, its row or card highlighted; null on a phone.
     selectedGroupId: String?,
+    // Why: a phone lying down keeps "Saldo geral" still in the column beside the list (GroupsSideColumn).
+    showsSummary: Boolean = true,
 ) {
-    item(
-        key = "summary",
-        span = fullLine,
-        contentType = "summary",
-    ) {
-        GroupsSummaryCard(
-            summary = state.summary,
-            onEvent = onEvent,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
+    if (showsSummary) {
+        item(
+            key = "summary",
+            span = fullLine,
+            contentType = "summary",
+        ) {
+            GroupsSummaryCard(
+                summary = state.summary,
+                onEvent = onEvent,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
     }
     val open = state.openGroups
     item(

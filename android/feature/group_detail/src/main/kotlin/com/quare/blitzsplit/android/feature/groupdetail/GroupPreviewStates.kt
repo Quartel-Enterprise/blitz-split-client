@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.BalancesUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
@@ -63,8 +64,10 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     showsBillDeletedNotice = false,
     exit = previewGroupExit,
     isLoaded = true,
+    homeTab = HomeTab.GROUPS,
     joinedAs = null,
     isAccountUnprotected = false,
+    activityUnreadCount = 0,
 )
 
 internal fun createPreviewDays(): List<ExpenseDay> = listOf(
@@ -179,4 +182,6 @@ internal fun createPreviewBalancesState(): BalancesUiState = BalancesUiState(
     recordedPayment = null,
     exit = previewGroupExit,
     isLoaded = true,
+    homeTab = HomeTab.GROUPS,
+    activityUnreadCount = 0,
 )
