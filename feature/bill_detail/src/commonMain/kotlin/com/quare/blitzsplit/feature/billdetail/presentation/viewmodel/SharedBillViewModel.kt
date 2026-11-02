@@ -102,11 +102,24 @@ class SharedBillViewModel(
     // Why: the comment typed keeps its id until it is up, so sending it again after a lost answer posts it once.
     private var commentId: String? = null
 
+    // Why: whose session the page was last read with, to read it again once another one signs in.
+    private var accountUserId: String? = null
+    private var isAccountKnown = false
+
     init {
         // Why: any session comments, an anonymous one too, as the server lets it; only a device that never connected can't.
         observeAccountStatus()
-            .onEach { status -> uiState.update { it.copy(isSignedIn = status !is AccountStatus.LocalOnly) } }
-            .launchIn(viewModelScope)
+            .onEach { status ->
+                uiState.update { it.copy(isSignedIn = status !is AccountStatus.LocalOnly) }
+                val userId = userIdOf(status)
+                /*
+                 * Why: a browser sign in coming back reopens the page while its session is still being made, so a
+                 * page read before it (a link only the group opens, or not knowing a member) is read again with it.
+                 */
+                if (isAccountKnown && userId != accountUserId && uiState.value.isOnline) reload()
+                accountUserId = userId
+                isAccountKnown = true
+            }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline ->
@@ -145,6 +158,19 @@ class SharedBillViewModel(
                 // Why: a page already drawn keeps what it shows when a reload fails.
                 .onFailure { if (shown == null) uiState.update { it.copy(status = SharedBillStatus.FAILED) } }
         }
+    }
+
+    // Why: a read already under way may have left before what changed (a comment up, a session), so it starts over.
+    private fun reload() {
+        loading?.cancel()
+        loading = null
+        load()
+    }
+
+    private fun userIdOf(status: AccountStatus): String? = when (status) {
+        AccountStatus.LocalOnly -> null
+        is AccountStatus.Anonymous -> status.userId
+        is AccountStatus.Connected -> status.userId
     }
 
     private fun show(bill: SharedBill) {
@@ -188,7 +214,7 @@ class SharedBillViewModel(
                         threads = threadsOf(bill.comments, emptyList(), nowMillis, timeZone),
                     )
                 }
-                if (bill.isMember) watchExpense(bill.expenseId) else uiState.update { it.copy(canOpenInApp = false) }
+                if (bill.isMember) watchExpense(bill.expenseId) else stopWatchingExpense()
             }
         }
     }
@@ -196,6 +222,11 @@ class SharedBillViewModel(
     // Why: a link turned off or closed to the group while open shows nothing of the bill, nor "Abrir no app".
     private fun hide() {
         shown = null
+        stopWatchingExpense()
+    }
+
+    // Why: someone no longer in the group (they left meanwhile) opens it here only, whatever the device still holds.
+    private fun stopWatchingExpense() {
         watchingExpense?.cancel()
         watchingExpense = null
         uiState.update { it.copy(canOpenInApp = false) }
@@ -284,11 +315,11 @@ class SharedBillViewModel(
                             replyTarget = it.replyTarget.takeUnless { target -> target == replyTarget },
                         )
                     }
-                    load()
+                    reload()
                 }
 
                 // Why: the link changed meanwhile, so the page says what it shows now.
-                SharedBillComment.NOT_FOUND, SharedBillComment.MEMBERS_ONLY -> load()
+                SharedBillComment.NOT_FOUND, SharedBillComment.MEMBERS_ONLY -> reload()
 
                 SharedBillComment.NEEDS_NAME -> uiAction.emit(SharedBillUiAction.ShowNeedsName)
 

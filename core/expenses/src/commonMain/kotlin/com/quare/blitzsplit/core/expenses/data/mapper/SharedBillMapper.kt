@@ -9,7 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SharedBill
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillComment
 
 interface SharedBillMapper {
-    // Why: null for a visibility this version doesn't know.
+    // Why: the link's visibility is null for one this version doesn't know.
     fun toDomain(dto: BillShareLinkDto): BillShareLink
 
     // Why: null for "not_found", the bill gone or not in the caller's groups.

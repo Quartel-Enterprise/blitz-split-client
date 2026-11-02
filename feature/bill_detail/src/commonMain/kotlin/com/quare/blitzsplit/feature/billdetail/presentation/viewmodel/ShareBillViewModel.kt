@@ -52,7 +52,8 @@ class ShareBillViewModel(
                 currency = GroupCurrency.BRL,
                 memberNames = emptyList(),
                 link = null,
-                visibility = BillLinkVisibility.MEMBERS,
+                // Why: nothing picked until the server says, so a link anyone opens never shows as the group's only.
+                visibility = null,
                 isOnline = true,
                 isLoading = false,
                 isUpdating = false,
