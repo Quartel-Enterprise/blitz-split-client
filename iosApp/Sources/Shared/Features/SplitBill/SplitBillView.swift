@@ -562,26 +562,6 @@ private struct PhoneSplitBill: View {
     }
 }
 
-/// Every word of the map the description has, the one that chose marked (7.1l).
-struct MatchedTerms: View {
-    let matches: [CategoryMatch]
-
-    var body: some View {
-        HStack(spacing: 6) {
-            ForEach(Array(matches.enumerated()), id: \.offset) { index, match in
-                Text(verbatim: match.term)
-                    .font(.footnote.weight(index == 0 ? .semibold : .regular))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(index == 0 ? Palette.accent.opacity(0.16) : Color.clear, in: .rect(cornerRadius: 6))
-                    .overlay {
-                        if index != 0 { RoundedRectangle(cornerRadius: 6).stroke(.secondary.opacity(0.4)) }
-                    }
-            }
-        }
-    }
-}
-
 private struct DisclosureIndicator: View {
     var body: some View {
         Image(systemName: "chevron.forward")
@@ -761,6 +741,26 @@ private struct SeveralPayersSheet: View {
     }
 }
 #endif
+
+/// Every word of the map the description has, the one that chose marked (7.1l).
+private struct MatchedTerms: View {
+    let matches: [CategoryMatch]
+
+    var body: some View {
+        TermFlowLayout(spacing: 6) {
+            ForEach(Array(matches.enumerated()), id: \.offset) { index, match in
+                Text(verbatim: match.term)
+                    .font(.footnote.weight(index == 0 ? .semibold : .regular))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(index == 0 ? Palette.accent.opacity(0.16) : Color.clear, in: .rect(cornerRadius: 6))
+                    .overlay {
+                        if index != 0 { RoundedRectangle(cornerRadius: 6).stroke(.secondary.opacity(0.4)) }
+                    }
+            }
+        }
+    }
+}
 
 /// One row per group of "Split in which group?", which marks the group tapped.
 private struct GroupOptionRows: View {
