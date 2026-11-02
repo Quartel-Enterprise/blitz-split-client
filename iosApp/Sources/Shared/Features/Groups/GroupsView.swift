@@ -69,6 +69,8 @@ struct GroupsView: View {
     let model: GroupsModel
     #if os(iOS)
     @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
+    #else
+    @Environment(\.isNarrowWindow) private var isNarrowWindow
     #endif
 
     var body: some View {
@@ -160,12 +162,11 @@ struct GroupsView: View {
         .toolbarSearch(macSearchBinding, isShown: !state.groups.isEmpty)
         .toolbar {
             if !state.groups.isEmpty {
-                ToolbarItem(placement: .principal) {
-                    Picker("Status", selection: settledBinding) {
-                        Text("Open").tag(false)
-                        Text("Settled up").tag(true)
+                // A narrow window draws them above the table instead
+                if !isNarrowWindow {
+                    ToolbarItem(placement: .principal) {
+                        GroupsStatusPicker(model: model)
                     }
-                    .pickerStyle(.segmented)
                 }
                 // List or Grid, as in the Finder; the size is the slider under the grid and View › Grid Size. The
                 // search's results stay a list
@@ -225,14 +226,6 @@ struct GroupsView: View {
         Binding(
             get: { model.state.layout.display },
             set: { model.send(GroupsUiEventOnDisplayChanged(display: $0)) },
-        )
-    }
-
-    /// Open or Settled up, the toolbar's segments.
-    private var settledBinding: Binding<Bool> {
-        Binding(
-            get: { model.state.showsSettledGroups },
-            set: { model.send(GroupsUiEventOnShowSettledChanged(isShown: $0)) },
         )
     }
 

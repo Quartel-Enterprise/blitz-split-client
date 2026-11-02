@@ -13,9 +13,10 @@ enum MainTab: Hashable {
     case search
 }
 
-/// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable). Home is the root of
-/// the shared back stack and every other tab the entry right above it, so the first entry of `path` says which tab is
-/// in front: Groups, Balances, Contacts, Activity, or else Home, whose own stack is then the whole path.
+/// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable), on the Mac with the
+/// open groups under the tabs. Home is the root of the shared back stack and every other tab the entry right above it,
+/// so the first entry of `path` says which tab is in front: Groups, Balances, Contacts, Activity, or else Home, whose
+/// own stack is then the whole path.
 struct MainTabView: View {
     /// The shared back stack above Home: Groups, Balances, Contacts or Activity with what they opened, or what Home
     /// opened (a group, the profile, an invite opened from its link).
@@ -24,6 +25,9 @@ struct MainTabView: View {
     @State private var home = HomeModel()
     @State private var model = GroupsModel()
     @State private var showsRecoveryCode = false
+    #if os(macOS)
+    @State private var sidebar = HomeSidebarModel()
+    #endif
     #if os(iOS)
     @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
     #endif
@@ -42,6 +46,9 @@ struct MainTabView: View {
                     HomeView(model: home)
                         .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
+                #if os(macOS)
+                .measuringNarrowWindow()
+                #endif
             } label: {
                 Label(HomeCopy.tabTitle, systemImage: "house")
             }
@@ -62,6 +69,7 @@ struct MainTabView: View {
                 #if os(macOS)
                 // What the View menu's Grid Size reads and changes, only while the groups are in front
                 .focusedSceneValue(\.groupsModel, isInFront(isSearch: false) && groupsPath.isEmpty ? model : nil)
+                .measuringNarrowWindow()
                 #endif
             }
             // The shared back stack holds Balances right above Home, where its tab shows
@@ -75,11 +83,17 @@ struct MainTabView: View {
                         Color.clear
                     }
                 }
+                #if os(macOS)
+                .measuringNarrowWindow()
+                #endif
             }
             // Contacts sits right above Home too, and keeps what it opens in its own tab's stack
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
                 if isContactsShown {
                     ContactsColumns(path: tabStack(isShown: isContactsShown))
+                        #if os(macOS)
+                        .measuringNarrowWindow()
+                        #endif
                 } else {
                     Color.clear
                 }
@@ -95,6 +109,9 @@ struct MainTabView: View {
                         Color.clear
                     }
                 }
+                #if os(macOS)
+                .measuringNarrowWindow()
+                #endif
             }
             .badge(Int(home.state.activityUnreadCount))
             #if os(iOS)
@@ -110,6 +127,18 @@ struct MainTabView: View {
             #endif
         }
         .tabViewStyle(.sidebarAdaptable)
+        #if os(macOS)
+        // The open groups as Groups lists them, where the boards draw them: over Groups and a group's screens
+        .tabViewSidebarFooter {
+            if showsOpenGroups {
+                SidebarOpenGroups(
+                    groups: sidebar.state.openGroups,
+                    selectedId: selectedGroupId,
+                    onOpen: { sidebar.openGroup($0) },
+                )
+            }
+        }
+        #endif
         .glassToast(
             [
                 GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
@@ -284,6 +313,29 @@ struct MainTabView: View {
     private func isInFront(isSearch: Bool) -> Bool {
         path.first == .groups && showsSearchTab == isSearch
     }
+
+    #if os(macOS)
+    /// "Open" shows over Groups and over a group's screens, whichever tab opened them.
+    private var showsOpenGroups: Bool {
+        path.first == .groups || path.contains { route in
+            switch route {
+            case .groupDetail, .groupStats: true
+            default: false
+            }
+        }
+    }
+
+    /// The group whose screens are in front, which "Open" marks.
+    private var selectedGroupId: String? {
+        path.reversed().lazy.compactMap { route -> String? in
+            switch route {
+            case let .groupDetail(route): route.groupId
+            case let .groupStats(route): route.groupId
+            default: nil
+            }
+        }.first
+    }
+    #endif
 
     #if os(iOS)
     /// The tab bar's badges in the accent, never the system's red: Activity's unread count is news, not an error.

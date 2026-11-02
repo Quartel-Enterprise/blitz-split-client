@@ -111,6 +111,8 @@ class JsGroupDetailState(
     // Why: "Você entrou como Bruno", right after joining, and "Proteja seu acesso" under it.
     val joinedAs: String?,
     val showsProtectAccess: Boolean,
+    // Why: the home tab the group was opened from, which the sidebar selects ("home", "groups"…).
+    val homeTab: String,
 )
 
 class GroupDetailPresenter(
@@ -157,6 +159,7 @@ class GroupDetailPresenter(
                 },
                 joinedAs = state.joinedAs,
                 showsProtectAccess = state.showsProtectAccess,
+                homeTab = toJsHomeTab(state.homeTab),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

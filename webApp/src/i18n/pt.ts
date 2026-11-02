@@ -589,6 +589,7 @@ export const pt: Record<MessageKey, string> = {
   notifications_invitesDetail: 'Quando alguém entra num grupo seu',
 
   profile_title: 'Perfil',
+  profile_subtitle: 'Seu nome e suas chaves aparecem só para quem está nos seus grupos.',
   profile_visibility: 'Quem vê seu perfil',
   profile_visibilityBody: 'Seu nome, sua foto e suas chaves de pagamento aparecem só para quem está nos seus grupos. Quem não divide nenhum grupo com você não vê nada.',
   profile_visibilityOk: 'Entendi',

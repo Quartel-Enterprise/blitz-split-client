@@ -81,7 +81,38 @@ private struct WindowMeasuring: ViewModifier {
     }
 }
 
+#if os(macOS)
+extension View {
+    /// Measures what a tab draws beside the sidebar and hands it below as `isNarrowWindow`.
+    func measuringNarrowWindow() -> some View {
+        modifier(NarrowWindowMeasuring())
+    }
+}
+
+private struct NarrowWindowMeasuring: ViewModifier {
+    @State private var isNarrow = false
+
+    func body(content: Content) -> some View {
+        content
+            .environment(\.isNarrowWindow, isNarrow)
+            .onGeometryChange(for: Bool.self) { proxy in
+                proxy.size.width < 800
+            } action: { isNarrow in
+                self.isNarrow = isNarrow
+            }
+    }
+}
+#endif
+
 extension EnvironmentValues {
+    #if os(macOS)
+    /// Less than 800 pt beside the sidebar, as the boards' 768 pt "narrow window" draws it (the default 960 pt window
+    /// keeps about 810 with the sidebar open): the toolbar keeps the title and the buttons, the segments it held
+    /// (Groups' Open / Settled up, a group's tabs) go below it, in the content, and the tables drop a column (Groups'
+    /// Last activity, Expenses' Who paid).
+    @Entry var isNarrowWindow = false
+    #endif
+
     /// The whole window, measured once by the root, so a screen inside a sheet still knows what it opened over: an
     /// iPad's room opens a key and a bill as sheets (`AppRoute.presentsAsSheet(isLargeWindow:)`), an iPhone's pushes
     /// them.

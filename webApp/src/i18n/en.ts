@@ -588,6 +588,7 @@ export const en = {
   notifications_invitesDetail: 'When someone joins one of your groups',
 
   profile_title: 'Profile',
+  profile_subtitle: 'Your name and keys only show to the people in your groups.',
   profile_visibility: 'Who sees your profile',
   profile_visibilityBody: 'Your name, your photo and your payment keys only show to people in your groups. Anyone who shares no group with you sees nothing.',
   profile_visibilityOk: 'Got it',

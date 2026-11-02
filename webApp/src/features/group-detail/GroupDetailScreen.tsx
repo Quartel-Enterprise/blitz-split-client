@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
+import type { HomeTab } from '@/components/HomeShell'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
@@ -56,6 +57,8 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const membersState = members.state?.isLoaded ? members.state : null
   return (
     <GroupPage
+      groupId={route.groupId ?? ''}
+      homeTab={state.homeTab as HomeTab}
       header={state.header}
       tab={tab}
       hasExpenses={state.hasBills}

@@ -1,6 +1,7 @@
 import { AppPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { HomeSidebarProvider } from '@/components/HomeSidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
@@ -49,7 +50,9 @@ export function App() {
   if (!isReady || !backStack) return null
   return (
     <>
-      <StackLayers backStack={backStack} />
+      <HomeSidebarProvider>
+        <StackLayers backStack={backStack} />
+      </HomeSidebarProvider>
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
