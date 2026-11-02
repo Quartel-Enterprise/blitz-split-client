@@ -143,6 +143,26 @@ class HomePaneTest {
     }
 
     @Test
+    fun `GIVEN the group's Estatisticas beside the groups WHEN asking whether only the pane is above THEN it is`() {
+        // Given
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.BALANCES,
+            ),
+            Route.GroupStats("trip"),
+        )
+
+        // When
+        val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
+
+        // Then
+        assertTrue(showsOnlyPane)
+    }
+
+    @Test
     fun `GIVEN a bill over the group beside the groups WHEN asking whether only the pane is above THEN it is not`() {
         // Given
         prepareScenario(

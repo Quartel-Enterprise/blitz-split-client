@@ -3,10 +3,12 @@ import SwiftUI
 
 /// The Groups and Search tabs' stack. On iPhone, iPad upright and the Mac, one NavigationStack pushes what the groups
 /// open over them. Lying down with an iPad's room (5.1, 5.2: an iPad, an iPhone Duo open) the list keeps its column
-/// while nothing but the group's Expenses, Balances or Members is above the groups in the shared back stack: the first
-/// of them roots a second stack beside it, and with no group open yet it holds the canvas' shapes. Anything else the
-/// group or the list opens (Statistics, the profile, a joined invite) covers the whole tab, as upright and as
-/// Android's scene does, since the ViewModel ignores the list's taps under it; a sheet keeps the columns under it. The
+/// while nothing but the group's Expenses, Balances or Members, and the Statistics it opens (decision 2), is above the
+/// groups in the shared back stack: the first of them roots a second stack beside it, which pushes Statistics, and
+/// with no group open yet it holds the canvas' shapes. Anything else the group or the list opens (the profile, a joined
+/// invite) covers the whole tab, as upright and as Android's scene does, since the ViewModel ignores the list's taps
+/// under it; a sheet keeps the columns under it. An iPhone Duo open draws Statistics across its fold, over the list,
+/// as its board does. The
 /// home with no group at all is one pane on an iPad until the first group exists, while an iPhone Duo open keeps the
 /// fold's other side for the group, saying so (decision 5, each size's board). The list's stack stays the first view
 /// either way, so turning the iPad keeps its scroll.
@@ -24,9 +26,15 @@ struct GroupsColumns<ListContent: View>: View {
     @State private var division: FoldDivision?
 
     /// The column beside the list: lying down with an iPad's room (`showsListDetail`), with only the group's tabs
-    /// above the groups (sheets aside, which the path leaves out).
+    /// and its Statistics above the groups (sheets aside, which the path leaves out).
     private var showsDetail: Bool {
-        layout.showsListDetail && path.allSatisfy(\.isGroupScreen) && !showsEmptyHomeAlone
+        layout.showsListDetail && path.allSatisfy(isInColumn) && !showsEmptyHomeAlone
+    }
+
+    /// The group's tabs, and the Statistics they open, except across an iPhone Duo's fold, which splits them on it.
+    private func isInColumn(_ route: AppRoute) -> Bool {
+        if case .groupStats = route { return division?.isVertical != true }
+        return route.isGroupScreen
     }
 
     /// No group yet and no fold down the window: the empty home takes the whole tab, as the iPad's board draws it.

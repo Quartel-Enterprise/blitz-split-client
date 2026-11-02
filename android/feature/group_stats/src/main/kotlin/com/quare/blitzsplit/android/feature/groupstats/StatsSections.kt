@@ -63,6 +63,8 @@ internal fun StatsPeriodChip(
     onEvent: (GroupStatsUiEvent) -> Unit,
     onPickDates: () -> Unit,
     modifier: Modifier = Modifier,
+    // Why: the tabletop's bar has no room for the dates beside the chip, as the canvas draws it.
+    showsRange: Boolean = true,
 ) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
     Row(
@@ -137,11 +139,13 @@ internal fun StatsPeriodChip(
                 }
             }
         }
-        Text(
-            text = dates.toRangeText(state.periodRangeStyle, state.periodStartMillis, state.periodEndMillis),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (showsRange) {
+            Text(
+                text = dates.toRangeText(state.periodRangeStyle, state.periodStartMillis, state.periodEndMillis),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
