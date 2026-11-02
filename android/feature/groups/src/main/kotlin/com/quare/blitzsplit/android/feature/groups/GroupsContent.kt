@@ -106,8 +106,12 @@ fun GroupsContent(
         return
     }
     AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
-        // Why: with no group yet the empty home keeps its top bar and its one card.
-        val usesSideColumn = layout == DeviceLayout.PhoneLandscape && state.groups.isNotEmpty()
+        /*
+         * Why: with no group yet the empty home keeps its top bar and its one card; a first download draws the list
+         * from the start, so the first group arriving doesn't move "Trazendo seus grupos" to the side column.
+         */
+        val usesSideColumn = layout == DeviceLayout.PhoneLandscape &&
+            (state.groups.isNotEmpty() || state.firstDownload != null)
         /*
          * Why: the rail runs edge to edge beside the scaffold, which then leaves out the start inset
          * the rail already takes.
