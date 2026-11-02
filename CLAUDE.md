@@ -100,9 +100,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     not up yet on top of Hoje as "Aguardando envio", and says older ones load when the internet is back; a device that
     never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
     web's desktop and the Mac's inspector show the item picked beside the list ("O que mudou", "Mais em" the bill's
-    other events). Comentários lists the comments on bills ("Carla comentou em Jantar", the text under it), which
-    open the bill's Conta; a bill's attachments and its share link show only in its Conta's Histórico, never in the
-    feed nor its badge (`ActivityKind.isInFeed`). No push notifications yet.
+    other events). No push notifications nor comments yet: Comentários is a filter nothing fills.
   - The home's Grupos (5.1): each row shows your net in the group with its word ("+R$ 214,90 a receber", "−R$ 98,00 você
     deve", "R$ 0,00 · você está quitado" while others still owe, "sem despesas"), "você recebe 120,00 e deve 218,00"
     when you get and owe at once, "na fila · Mercado" while a change waits, and its last activity: the latest save of
@@ -236,8 +234,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     devem filter it, each with its total (the net always matches the home's Saldo geral; "A receber" and "A pagar"
     there count each group's net, so they can differ), "Por grupo" opens in the row (already open for someone alone
     in Você deve or Te devem), and the empty "Você não deve nada" leads to Te devem, "Ninguém te deve" to Você deve and
-    "Tudo acertado" to Grupos. "Acertar" (you owe) and "Recebi" (owed to you) open Registrar pagamento for the net
-    (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
+    "Tudo acertado" to Grupos. "Acertar" (you owe, as "Pagar Ana" while Ana has a key) and "Recebi" (owed to you)
+    open Registrar pagamento for the net (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
     amount locked while more than one group is in it, then "Pagamento de Carla registrado." on Saldos, whose Desfazer
     undoes them all in one go (never on a later Saldos, when the one it opened over closed while saving). "Cobrar"
     moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
@@ -289,22 +287,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group. Convidar's "Ir para o grupo" and "Ver quem já entrou" open it in Convidar's place (`openGroup`), so the
     group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
-    with its category over the title and Editar and Apagar in the top bar (no Compartilhar nor attachments yet). A
-    phone opens it full screen; Android tablets open it as a dialog (in a book's right half, a tabletop alike), iPad
-    and Mac as a sheet, and the web as a side sheet (a drawer on a phone), all over the group.
-  - Conta's "Comentários" (7.3c to 7.3f): anyone in the group comments, offline too (the comment waits in the queue,
-    "Na fila · sai ao reconectar", like a bill, `bill_comments`), and "Responder" answers a comment or a reply, one
-    level deep: a reply to a reply joins its thread and names whom it answers. A comment is never edited nor
-    deleted. "Enviar comentário" stays disabled until something is typed (1 to 1000 letters); the composer is pinned
-    at the bottom on a phone and under the comments in two columns. Offline, a banner says "Sem internet.
-    Comentários e fotos ficam na fila e saem ao reconectar.". "Histórico" lists what was done to the bill, by day,
-    the most recent first, never the comments: created ("Igual entre 5 · R$ 312,00", "criou a conta sem internet"
-    while it waits to go up), each edit's first change with the others under it ("trocou a categoria", "mudou a
-    divisão" with each part that moved), photos added in a row as one line, a photo removed and the share link
-    changed. It reads the device's 90 days of Atividade and, online, the bill's whole history from the server
-    (`LoadBillHistory`). "Desfazer" shows only on the latest line when it is an edit, the bill is still as that edit
-    left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
-    (`BillHistoryEntry.canUndo`).
+    with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
+    history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
+    on a phone), all over the group.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
     on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
@@ -383,8 +368,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - "Registrar pagamento" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
     record between any two members, with no confirmation by whoever received it: up to the pair's debt, never over
     ("Ana te deve R$ 162,30. Use até esse valor."), partial payments allowed, Pix / Dinheiro / Transferência / Outro
-    and "Quando" (date and time, never after now). "Acertar" opens it too: paying through the receiver's Pix key
-    (4.5) comes later, since other members' keys never reach the device. It is a bottom sheet on an Android phone
+    and "Quando" (date and time, never after now). "Acertar" opens it too, as "Pagar Ana" while Ana has a key (4.5,
+    below). It is a bottom sheet on an Android phone
     (640 dp lying down, in two columns: who paid whom and the amount, then how, when and the buttons), a 560 dp
     dialog on its tablets and foldables upright and in a book's right half, and full screen on a tabletop (✕ and
     "Registrar pagamento" on top, who and how much above the hinge, how, when and the buttons under it, while Início's
@@ -396,6 +381,28 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
     tombstone, offline too). No
     notifications nor Atividade yet.
+  - "Pagar Ana" (4.5) is what Registrar pagamento shows, in the same sheet or dialog, when this device's user pays
+    someone with an account who has a Pix or Bitcoin key: every "Acertar" (the group's Saldos, "Seu saldo neste
+    grupo", the global Saldos' `SettleUp`, Início's faces, Contatos' profile), never "Recebi", "Já pagou" nor Início's
+    "Quem pagou a quem?" (`Route.RegisterPayment.offersReceiverKeys`), so a guest, an ex-member or someone with no
+    key gets the form as before. The keys of everyone the user shares a group with sync down with the groups
+    (`member_payment_key`, read-only, replaced whole on each sync, cleared on sign out) under the server's
+    co-member rule, so it works offline on what the last sync brought. It shows "Pagar Ana", where the debt comes
+    from ("Apê 302 · você deve", "3 grupos · você deve") and the amount; Pix / Bitcoin only while Ana has both;
+    "Chave padrão de Ana" whole with its type and "Copiar chave"; for Pix in BRL "Pix copia e cola", the default
+    key's BR Code with the whole debt in it (`PixBrCode`, EMV with CRC16, city "BRASIL", the name folded to 25
+    ASCII letters) and its QR code, with "Copiar código"; "Outras chaves de Ana" with a copy button each; "Pague no
+    app do seu banco e volte para marcar como pago. Confira se o banco mostra o nome de Ana." (the wallet for
+    Bitcoin), and "Depois" (closes) and "Marcar como pago", which records the whole debt now as Pix, or Outro for
+    Bitcoin (one payment per group across groups), offline too; "Paguei outro valor ou de outro jeito" opens the
+    form in its place for a part of the debt, another method or a past day (`RegisterPaymentUiState.prefersForm`),
+    and a form that opened with no key stays one when a sync brings the first. No bank app opens by itself: Pix has
+    no standard link for it. Android 13 and later show the system's copy confirmation (a "Copiado" snackbar before), Apple and the web a
+    "Copiado" toast; Android keeps the copied key out of the clipboard's preview. A phone's sheet
+    is one column, two lying down (who, how and the default key, then the code, the other keys and the buttons);
+    the tablet's dialog (a book's right half) and the iPad's form sheet one column; an Android tabletop full screen
+    as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pagar Ana · R$ 98,00"
+    whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
     grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
     the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type

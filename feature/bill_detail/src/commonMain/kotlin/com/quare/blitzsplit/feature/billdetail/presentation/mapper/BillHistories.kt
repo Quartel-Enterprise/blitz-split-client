@@ -25,8 +25,8 @@ import kotlinx.datetime.TimeZone
 import kotlin.time.Duration.Companion.minutes
 
 /*
- * Why: photos one person adds within attachmentBurst of each other read as one line, "anexou 2 fotos"; undoableFields
- * are what "Desfazer" puts back, so an edit of anything else can't be undone from here.
+ * Why: photos one person adds within attachmentBurst of the run's latest one read as one line, "anexou 2 fotos";
+ * undoableFields are what "Desfazer" puts back, so an edit of anything else can't be undone from here.
  */
 private val attachmentBurst = 10.minutes
 private const val RECEIPT = "receipt"
