@@ -84,10 +84,15 @@ data class RegisterPaymentUiState(
     val otherKeys: List<ReceiverKey>
         get() = receiverKeys.filter { it.type.method == shownKeyMethod && it.id != defaultKey?.id }
 
-    // Why: the code pixCode should hold now, which the ViewModel encodes as a QR code once it changes.
+    /*
+     * Why: the code pixCode should hold now, which the ViewModel encodes as a QR code once it changes; none while the
+     * form is shown, so "Já pagou", "Quem pagou a quem?" and the form never encode a QR code nobody sees.
+     */
     internal val expectedPixCode: String?
         get() {
-            val key = defaultKey?.takeIf { shownKeyMethod == PaymentMethod.PIX && currency == GroupCurrency.BRL }
+            val key = defaultKey?.takeIf {
+                showsReceiverKeys && shownKeyMethod == PaymentMethod.PIX && currency == GroupCurrency.BRL
+            }
             return key?.let {
                 PixBrCode.of(
                     key = it.value,

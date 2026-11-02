@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { QrCode } from '@/features/invite/InviteDialog'
-import { t, type MessageKey } from '@/i18n'
+import { t } from '@/i18n'
+import type { PaymentKeyType } from '@/lib/paymentKey'
 
 /**
  * "Pagar Ana" (4.5), what Registrar pagamento shows while this person pays someone with a key: the key to copy, the
@@ -50,7 +51,7 @@ function copy(text: string) {
 // Why: the Pix key types as the native apps name them here ("Random key" rather than the form's "Random").
 function typeLabel(key: JsReceiverKey): string {
   if (key.type === 'RANDOM') return t('payWithKey_typeRandom')
-  return t(`paymentKey_type${key.type}` as MessageKey)
+  return t(`paymentKey_type${key.type as PaymentKeyType}`)
 }
 
 function PayWithKeyBody({

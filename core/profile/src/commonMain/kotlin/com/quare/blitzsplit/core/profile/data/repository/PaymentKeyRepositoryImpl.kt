@@ -123,8 +123,12 @@ class PaymentKeyRepositoryImpl(
         memberLocal.replaceAll(remote.fetchOthers(userId).map(mapper::toMemberEntity))
     }
 
+    // Why: other people's keys (a CPF) go even when the user's own fail to, so a sign out never leaves them behind.
     override suspend fun clear() {
-        local.clear()
-        memberLocal.clear()
+        try {
+            local.clear()
+        } finally {
+            memberLocal.clear()
+        }
     }
 }

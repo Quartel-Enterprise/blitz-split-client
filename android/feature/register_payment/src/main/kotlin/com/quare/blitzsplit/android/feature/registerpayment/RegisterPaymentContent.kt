@@ -203,9 +203,9 @@ private fun PayWithKeyPane(
     } else {
         val isLyingDown = rememberFoldLayout().formFactor == FormFactor.PhoneLandscape
         Box(modifier = modifier) {
+            // Why: the keys scroll while "Marcar como pago" stays in sight under them, as in the dialog.
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
                     .padding(
                         start = 24.dp,
@@ -220,6 +220,11 @@ private fun PayWithKeyPane(
                     money = money,
                     onEvent = onEvent,
                     onCopied = onCopied,
+                    modifier = Modifier
+                        .weight(
+                            weight = 1f,
+                            fill = false,
+                        ).verticalScroll(rememberScrollState()),
                 )
                 if (!isLyingDown) {
                     PayButtonRow(

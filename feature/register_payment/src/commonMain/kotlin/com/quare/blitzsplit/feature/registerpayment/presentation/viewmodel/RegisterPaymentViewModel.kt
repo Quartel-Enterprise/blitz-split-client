@@ -170,7 +170,10 @@ class RegisterPaymentViewModel(
 
             RegisterPaymentUiEvent.OnMarkAsPaidClicked -> markAsPaid()
 
-            RegisterPaymentUiEvent.OnPayOtherwiseClicked -> uiState.update { it.copy(prefersForm = true) }
+            RegisterPaymentUiEvent.OnPayOtherwiseClicked -> {
+                uiState.update { it.copy(prefersForm = true) }
+                refreshPixCode()
+            }
 
             // Why: a payment being saved finishes first, on every platform, so it is never left half done.
             RegisterPaymentUiEvent.OnCloseClicked -> if (!uiState.value.isSaving) leave()
