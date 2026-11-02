@@ -239,18 +239,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
     chave Pix" is on, which locks once the message is edited), "Enviar" opens the system share (a ShareLink on Apple,
     `navigator.share` or a copy on the web) and "Copiar mensagem" copies; a bottom sheet on an Android phone and a
-    560 dp dialog on its tablets, a book's right half and a tabletop's top half (its right half above the hinge lying
-    down) with the people under the scrim, a
-    sheet on iOS (the whole screen on an iPhone lying down, whom and the message beside the Pix key and the buttons;
-    a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone). It all
+    560 dp dialog on its tablets, a sheet on iOS and macOS, a 480 px dialog on the web (a drawer on a phone). It all
     works offline on the device's data, and has no "Rachar conta". An Android tablet lying down, an unfolded book, an
     iPad lying down, the web's desktop (from 1024 px) and a Mac window wide enough for the inspector list the people
     beside the one picked (`GlobalBalancesUiState.selectedPerson`, the first listed until a row is picked or once the
     filter hides the pick): their groups by name, "Carla te deve R$ 32,90" with the actions, "Por grupo" (a table on
     the web) and "O líquido já compensa os grupos: Cobrar e Recebi usam R$ 32,90. O app anota um pagamento em cada
     grupo." ("Só um grupo em aberto com Ana." for one group); the empty states take that pane. Everywhere else one
-    column with "Por grupo" in the row, the filter beside the list on a phone lying down (on an iPhone, Saldo geral
-    and the filter stay still in a 300 pt column on the left while the people scroll on the right).
+    column with "Por grupo" in the row, the filter beside the list on a phone lying down.
   - "Contatos" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Saldos' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 te deve", "R$ 0,00 · quitado") and "3 grupos" or the group's

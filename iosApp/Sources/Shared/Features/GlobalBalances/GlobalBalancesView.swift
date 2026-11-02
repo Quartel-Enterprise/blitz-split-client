@@ -91,7 +91,7 @@ struct GlobalBalancesView: View {
         #if os(macOS)
         false
         #else
-        layout.usesTwoColumns && !layout.isLarge && !showsDetail
+        layout.usesTwoColumns && !layout.isLarge
         #endif
     }
 

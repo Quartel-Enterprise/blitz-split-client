@@ -64,6 +64,7 @@ internal fun ChargeSheet(
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
     val onDismiss = { onEvent(GlobalBalancesUiEvent.OnChargeDismissed) }
+    val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
     val formFactor = rememberFoldLayout().formFactor
     if (formFactor == FormFactor.Phone || formFactor == FormFactor.PhoneLandscape) {
         ModalBottomSheet(
@@ -72,6 +73,7 @@ internal fun ChargeSheet(
         ) {
             ChargeColumn(
                 charge = charge,
+                name = name,
                 pixKey = pixKey,
                 onEvent = onEvent,
                 modifier = Modifier.padding(
@@ -82,10 +84,7 @@ internal fun ChargeSheet(
             )
         }
     } else {
-        val title = stringResource(
-            R.string.global_balances_charge_title,
-            charge.name ?: stringResource(DesignR.string.designsystem_former_member),
-        )
+        val title = stringResource(R.string.global_balances_charge_title, name)
         FoldDialog(onDismissRequest = onDismiss) {
             Surface(
                 modifier = Modifier
@@ -96,6 +95,7 @@ internal fun ChargeSheet(
             ) {
                 ChargeColumn(
                     charge = charge,
+                    name = name,
                     pixKey = pixKey,
                     onEvent = onEvent,
                     modifier = Modifier.padding(24.dp),
@@ -108,11 +108,11 @@ internal fun ChargeSheet(
 @Composable
 private fun ChargeColumn(
     charge: ChargeDraft,
+    name: String,
     pixKey: PaymentKey?,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val name = charge.name ?: stringResource(DesignR.string.designsystem_former_member)
     val message = chargeMessageOf(charge, name, pixKey)
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
