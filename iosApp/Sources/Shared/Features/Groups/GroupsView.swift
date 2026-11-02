@@ -67,6 +67,9 @@ final class GroupsModel {
 
 struct GroupsView: View {
     let model: GroupsModel
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
 
     var body: some View {
         let state = model.state
@@ -134,6 +137,12 @@ struct GroupsView: View {
         .toolbar {
             HiddenTabTitle(title: String(localized: "Groups"))
             ToolbarItemGroup(placement: .primaryAction) {
+                // A compact tab bar has no room for the search tab
+                if horizontalSizeClass != .regular, state.canSearch {
+                    Button("Search", systemImage: "magnifyingglass") {
+                        model.send(GroupsUiEventOnSearchOpened.shared)
+                    }
+                }
                 joinButton
                 profileButton
             }

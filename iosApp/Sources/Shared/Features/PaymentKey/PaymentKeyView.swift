@@ -102,7 +102,7 @@ struct PaymentKeyView: View {
         }
         .interactiveDismissDisabled(model?.state.isSaving == true)
         #if os(macOS)
-        .frame(minWidth: 460, idealWidth: 500, minHeight: 540, idealHeight: 680)
+        .frame(minWidth: 460, idealWidth: 500, minHeight: 400, idealHeight: 560)
         #endif
         .onAppear {
             if model == nil { model = PaymentKeyModel(route: route) }
@@ -134,13 +134,6 @@ private struct PaymentKeyForm: View {
             .background(Palette.groupedBackground)
         } else {
             Form {
-                #if os(macOS)
-                // A Mac sheet has no title bar, so the title heads the form
-                Section {
-                    Text(title).font(.title2.bold())
-                }
-                .listRowBackground(Color.clear)
-                #endif
                 TypeSection(model: model)
                 KeySections(model: model)
                 DisclaimerSection(method: model.state.method)

@@ -836,7 +836,7 @@ private struct PayerAmountField: View {
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             // "How much Pierre paid" reads better to VoiceOver than "How much You paid"
-            TextField(text: model.payerAmount(of: row.memberId), prompt: Text(verbatim: currency.zeroPlaceholder)) {
+            KeptTextField(text: model.payerAmount(of: row.memberId), prompt: Text(verbatim: currency.zeroPlaceholder)) {
                 Text("How much \(row.person?.name ?? String(localized: "Former member")) paid")
             }
             // A form in columns would draw that label beside the field on macOS
@@ -962,6 +962,7 @@ private struct MacBillForm: View {
                             TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
                                 Text("Description")
                             }
+                            .labelsHidden()
                         }
                         if state.showsDescriptionError {
                             Text("Say what it was, for example Groceries.")

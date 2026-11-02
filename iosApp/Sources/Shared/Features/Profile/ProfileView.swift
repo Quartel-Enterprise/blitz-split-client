@@ -768,7 +768,9 @@ private struct CategoryMapRow: View {
                     .foregroundStyle(.tertiary)
             } label: {
                 Text("Category map")
+                // The button's primary style would reach it too
                 Text("The words that pick a bill's category")
+                    .foregroundStyle(.secondary)
             }
         }
         .foregroundStyle(.primary)

@@ -88,6 +88,13 @@ struct GroupsSearchResultsList: View {
 struct GroupsSearchView: View {
     let model: GroupsModel
     @State private var layout = ScreenLayout()
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @FocusState private var isFieldFocused: Bool
+
+    /// In the groups' place, where the tab bar is compact and has no search tab: ✕ closes it, as Android's back does.
+    private var isInGroups: Bool {
+        horizontalSizeClass != .regular
+    }
 
     /// Lying down short of an iPad's room: an iPhone lying down.
     private var usesSideColumn: Bool {
@@ -99,9 +106,16 @@ struct GroupsSearchView: View {
             if usesSideColumn {
                 HStack(alignment: .top, spacing: 28) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Search")
-                            .font(.title.bold())
-                            .accessibilityAddTraits(.isHeader)
+                        HStack {
+                            Text("Search")
+                                .font(.title.bold())
+                                .accessibilityAddTraits(.isHeader)
+                            Spacer()
+                            if isInGroups {
+                                closeButton
+                                    .buttonStyle(.glass)
+                            }
+                        }
                         GroupsSearchField(model: model)
                         scopePicker
                     }
@@ -123,12 +137,30 @@ struct GroupsSearchView: View {
                     placement: .navigationBarDrawer(displayMode: .always),
                     prompt: Text("Groups, people and expenses"),
                 )
+                .searchFocused($isFieldFocused)
+                .toolbar {
+                    if isInGroups {
+                        ToolbarItem(placement: .topBarLeading) {
+                            closeButton
+                        }
+                    }
+                }
+                // Opened from the magnifier, the keyboard comes up as a search tab's does; coming back from a
+                // result keeps it down over what was found
+                .onAppear { if isInGroups, model.current.search.query.isEmpty { isFieldFocused = true } }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
         .navigationTitle("Search")
         .measuringScreenLayout($layout)
+    }
+
+    private var closeButton: some View {
+        Button("Close", systemImage: "xmark") {
+            model.send(GroupsUiEventOnSearchClosed.shared)
+        }
+        .labelStyle(.iconOnly)
     }
 
     private var scopePicker: some View {
