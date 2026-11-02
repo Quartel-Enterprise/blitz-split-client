@@ -167,6 +167,13 @@ running or waiting on the lock, `FAILED` when the last one failed, `PENDING` whe
 and `SYNCED` otherwise. The home draws a badge only for the states that ask for attention, and its "try again" goes
 through `RetrySync`, which runs in the coordinator's scope so it outlives the screen.
 
+- **The first download** (5.1d): on a device where an account already on the server was just restored
+  (`FirstDownload`, started by `CompleteSignInUseCase`), the groups' block first asks the server for every group the
+  user is in, the most recent activity first (`first_download_groups`), then brings each one down whole (the group
+  and its members, its categories, its bills, its payments, in that order for Room's foreign keys) and counts it
+  (`FirstDownload.groupArrived()`). Início, Grupos and Estatísticas draw that as "3 de 7 grupos". The bulk downloads
+  still run after it, so whatever changed meanwhile comes too; the first download ends with the loop, or with the
+  sync when it fails.
 - **Register**: `ensureRegistered()` reuses the current session or signs in anonymously. The sync never registers
   an install that has no profile yet.
 - **Pull, then push, Last-Write-Wins by `updatedAt`.** Every synced row carries `updatedAt` and `pendingSync`. A

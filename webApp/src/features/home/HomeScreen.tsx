@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
+import { DownloadProgressBar } from '@/features/groups/FirstDownload'
 import { SyncStatus } from '@/features/groups/GroupsPage'
 import { HomeSummaryCards, PeopleCard, RecentBills, YourGroups } from '@/features/home/HomeSections'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
@@ -69,14 +70,9 @@ export function HomeScreen() {
         {(state.syncBadge || state.isFirstDownload) && (
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <SyncStatus state={state} presenter={presenter} />
+              <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />
             </div>
-            {/* Why: the sync can't count the groups still to come, so the bar only says it is under way. */}
-            {state.isFirstDownload && (
-              <span role="progressbar" aria-label={t('home_syncProgress')} className="block h-1 max-w-80 overflow-hidden rounded-full bg-muted">
-                <span className="block h-full w-full animate-pulse rounded-full bg-primary/60" />
-              </span>
-            )}
+            {state.firstDownload && <DownloadProgressBar progress={state.firstDownload} className="max-w-80" />}
           </div>
         )}
 

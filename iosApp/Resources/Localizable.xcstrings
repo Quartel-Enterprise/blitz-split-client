@@ -340,6 +340,17 @@
         }
       }
     },
+    "%lld of %lld groups. You can use the app meanwhile: what has arrived shows below." : {
+      "comment" : "Groups: the first download's card, the groups that came down of those coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld grupos. Pode usar o app enquanto isso: o que já chegou aparece abaixo."
+          }
+        }
+      }
+    },
     "%lld of %lld photos" : {
       "localizations" : {
         "pt-BR" : {
@@ -466,6 +477,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ veio da palavra “%2$@”. Veja e edite as palavras que escolhem a categoria."
+          }
+        }
+      }
+    },
+    "Bringing your groups" : {
+      "comment" : "Groups: the card in the overall balance's place during a new device's first download",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trazendo seus grupos"
           }
         }
       }
@@ -1462,6 +1484,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Marcar tudo como lido"
+          }
+        }
+      }
+    },
+    "Syncing… %lld of %lld groups" : {
+      "comment" : "The sync status during a new device's first download: the groups that came down, of those coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sincronizando… %1$lld de %2$lld grupos"
+          }
+        }
+      }
+    },
+    "You can use the app meanwhile: what has arrived shows below." : {
+      "comment" : "Groups: the first download's card, before the server says how many groups are coming",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pode usar o app enquanto isso: o que já chegou aparece abaixo."
+          }
+        }
+      }
+    },
+    "Total spent so far" : {
+      "comment" : "The group statistics: the period's total while a new device's first download still brings bills down",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total gasto até agora"
           }
         }
       }

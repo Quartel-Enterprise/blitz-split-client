@@ -93,6 +93,8 @@ class JsGroupStatsState(
     val allEndMillis: Double?,
     val allRangeStyle: String,
     val totalMinor: Double,
+    // Why: "Total gasto até agora" (5.1d) while a new device's first download still brings bills down.
+    val isFirstDownload: Boolean,
     val expenseCount: Int,
     val pendingCount: Int,
     val memberCount: Int,
@@ -216,6 +218,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     allEndMillis = state.allEndMillis?.toDouble(),
     allRangeStyle = state.allRangeStyle.name.lowercase(),
     totalMinor = state.totalMinor.toDouble(),
+    isFirstDownload = state.isFirstDownload,
     expenseCount = state.expenseCount,
     pendingCount = state.pendingCount,
     memberCount = state.memberCount,

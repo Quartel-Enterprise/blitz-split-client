@@ -6,6 +6,7 @@ import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { paidText as payersText } from '@/features/groups/GroupsSearchDialog'
+import { Skeleton } from '@/features/groups/FirstDownload'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
@@ -20,11 +21,6 @@ interface SectionProps {
 const summaryHints: Record<string, MessageKey> = {
   TO_RECEIVE: 'home_summaryToReceiveHint',
   YOU_OWE: 'home_summaryToPayHint',
-}
-
-/** A gray bar where something still on its way will show, while the first download fills the browser. */
-function Skeleton({ className }: { className?: string }) {
-  return <span aria-hidden className={cn('block animate-pulse rounded-md bg-muted', className)} />
 }
 
 /**

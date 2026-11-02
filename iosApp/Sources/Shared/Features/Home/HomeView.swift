@@ -274,8 +274,8 @@ struct HomeView: View {
 
     // MARK: - Sections
 
-    /// "Offline · 1 change queued", "No response from the server" with "Try again", or "Syncing…" with a bar while
-    /// the first download fills the device: only when it asks for attention. The Mac says it as the window's subtitle.
+    /// "Offline · 1 change queued", "No response from the server" with "Try again", or "Syncing… 3 of 7 groups" with
+    /// a bar while the first download fills the device: only when it asks for attention. The Mac says it as the window's subtitle.
     @ViewBuilder
     private var syncStatus: some View {
         #if os(iOS)
@@ -284,9 +284,8 @@ struct HomeView: View {
                 SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
                     model.send(HomeUiEventOnRetrySyncClicked.shared)
                 }
-                if state.isFirstDownload {
-                    ProgressView()
-                        .progressViewStyle(.linear)
+                if let progress = state.firstDownload {
+                    DownloadProgressBar(progress: progress)
                 }
             }
             .padding(.horizontal, 4)
@@ -295,7 +294,11 @@ struct HomeView: View {
     }
 
     private var syncText: String? {
-        GroupsCopy.sync(state.syncBadge, pendingChangeCount: state.pendingChangeCount)
+        GroupsCopy.sync(
+            state.syncBadge,
+            pendingChangeCount: state.pendingChangeCount,
+            downloadProgress: state.firstDownload,
+        )
     }
 
     @ViewBuilder
