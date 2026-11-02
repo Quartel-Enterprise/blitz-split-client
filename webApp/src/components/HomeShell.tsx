@@ -216,8 +216,10 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
   if (openGroups.groups.length === 0) return null
   return (
     <div className="mt-5 hidden min-h-0 flex-col lg:flex">
-      <h2 className="px-2.5 pb-1.5 text-xs font-medium text-muted-foreground">{t('groups_openTitle')}</h2>
-      <nav aria-label={t('home_yourGroups')} className="-mx-1 flex min-h-0 flex-col gap-0.5 overflow-y-auto px-1 pb-1">
+      <h2 id="sidebarOpenGroups" className="px-2.5 pb-1.5 text-xs font-medium text-muted-foreground">
+        {t('groups_openTitle')}
+      </h2>
+      <nav aria-labelledby="sidebarOpenGroups" className="-mx-1 flex min-h-0 flex-col gap-0.5 overflow-y-auto px-1 pb-1">
         {openGroups.groups.map((group) => (
           <button
             key={group.id}

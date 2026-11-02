@@ -15,13 +15,12 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
-import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openHomeTab
@@ -110,14 +109,14 @@ class GlobalBalancesViewModel(
 
     init {
         combine(observeProfile(), observeAccount()) { profile, account ->
-            val displayName = profile?.displayName?.trim().orEmpty()
+            val badge = UserBadge.of(profile, account.status)
             uiState.update {
                 it.copy(
-                    displayName = displayName,
-                    avatarInitial = Initials.firstOf(displayName),
-                    avatarColor = profile?.avatarColor ?: AvatarColor.default,
-                    photoUrl = profile?.photo?.toImageUrl(),
-                    accountProvider = (account.status as? AccountStatus.Connected)?.provider,
+                    displayName = badge.displayName,
+                    avatarInitial = badge.avatarInitial,
+                    avatarColor = badge.avatarColor,
+                    photoUrl = badge.photoUrl,
+                    accountProvider = badge.accountProvider,
                 )
             }
         }.launchIn(viewModelScope)
