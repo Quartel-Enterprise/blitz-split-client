@@ -44,9 +44,10 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.HomeData
 import com.quare.blitzsplit.feature.groups.presentation.mapper.agedRowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.billDaysOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.groupsWithMoneyOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeGroupsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homePeopleOf
-import com.quare.blitzsplit.feature.groups.presentation.mapper.latestBillsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.latestExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
@@ -186,19 +187,23 @@ class HomeViewModel(
                 timeZone = currentTimeZone(),
             )
         }
-        combine(observeGroups(), observeGroupsMoney(), observeMapCategories()) { groups, money, categories ->
-            groupsWithMoneyOf(groups, money) to categories
-        }.map { (items, categories) ->
-            HomeData(
-                groups = items.map { it.group },
-                rows = rowsOf(items, activityClock()),
-                latestBills = latestBillsOf(items, categories),
-                pendingChangeCount = pendingChangeCountOf(items),
-            )
-        }.combine(observePinnedGroupIds(), ::Pair)
+        combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
+            .map { items ->
+                HomeData(
+                    groups = items.map { it.group },
+                    rows = rowsOf(items, activityClock()),
+                    latestExpenses = latestExpensesOf(items),
+                    pendingChangeCount = pendingChangeCountOf(items),
+                )
+            }
+            // Why: a category renamed or moved reads only the five bills again, never every group's row.
+            .combine(observeMapCategories()) { data, categories ->
+                data to homeBillsOf(data.latestExpenses, categories)
+            }.combine(observePinnedGroupIds(), ::Pair)
             // Why: the ages and the days again each minute, not the balances, so Início says "ontem" after midnight.
             .combine(minuteTicks()) { dataAndPins, _ -> dataAndPins }
-            .onEach { (data, pinnedIds) ->
+            .onEach { (dataAndBills, pinnedIds) ->
+                val (data, latestBills) = dataAndBills
                 val clock = activityClock()
                 groups = data.groups
                 rows = agedRowsOf(data.rows, clock)
@@ -207,7 +212,7 @@ class HomeViewModel(
                         isLoaded = true,
                         groupCount = rows.size,
                         groups = homeGroupsOf(rows, pinnedIds),
-                        billDays = billDaysOf(data.latestBills, clock),
+                        billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,
                         isFirstDownload = isFirstDownload(),
                     )

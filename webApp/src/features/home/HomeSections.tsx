@@ -395,7 +395,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
                 <tr key={bill.id} onClick={() => open(bill)} className="cursor-pointer hover:bg-accent">
                   <td className="px-4 py-2.5">
                     <span className="flex min-w-0 items-center gap-2.5">
-                      <CategoryBadge category={bill.category} className="size-8 rounded-lg" />
+                      <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
                       <span className="flex min-w-0 flex-col">
                         <button
                           onClick={(event) => {
@@ -452,7 +452,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
         <div aria-hidden className="divide-y border-t">
           {[0, 1, 2].map((index) => (
             <div key={index} className="flex items-center gap-3 px-4 py-3">
-              <Skeleton className="size-8 rounded-lg" />
+              <Skeleton className="size-9 rounded-lg" />
               <span className="flex flex-1 flex-col gap-2">
                 <Skeleton className="h-3 w-2/5" />
                 <Skeleton className="h-2.5 w-1/4" />

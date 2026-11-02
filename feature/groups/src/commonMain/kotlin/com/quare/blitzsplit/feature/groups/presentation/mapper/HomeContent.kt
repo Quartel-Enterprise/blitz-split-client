@@ -62,41 +62,48 @@ internal fun homeBillDaysOf(
     groups: List<GroupWithMoney>,
     categories: CategoryTree,
     clock: ActivityClock,
-): List<HomeBillDay> = billDaysOf(latestBillsOf(groups, categories), clock)
+): List<HomeBillDay> = billDaysOf(homeBillsOf(latestExpensesOf(groups), categories), clock)
 
-/*
- * Why: read again only when the bills or the categories change; the minute's tick just puts them in their days again.
- * The categories are every group's, merged, as Atividade reads them: a group's own category has the id only it uses.
- */
-internal fun latestBillsOf(
-    groups: List<GroupWithMoney>,
-    categories: CategoryTree,
-): List<DatedHomeBill> = groups
+// Why: read again only when the bills change; the five kept are all that read the categories.
+internal fun latestExpensesOf(groups: List<GroupWithMoney>): List<LatestExpense> = groups
     .flatMap { item ->
         val meId = item.group.members
             .firstOrNull { it.isMe }
             ?.id ?: return@flatMap emptyList()
-        val payersOf = PayersOfGroup(item.group)
         item.expenses.mapNotNull { expense ->
-            val myBalance = expense.balanceOf(meId) ?: return@mapNotNull null
-            DatedHomeBill(
-                spentAt = expense.spentAt,
-                bill = HomeBill(
-                    id = expense.id,
-                    groupId = item.group.id,
-                    groupName = item.group.name,
-                    description = expense.description,
-                    totalMinor = expense.amountMinor,
-                    currency = item.group.currency,
-                    payers = payersOf.of(expense),
-                    myBalanceMinor = myBalance,
-                    category = categories.resolve(expense.categoryId),
-                    isPending = expense.isPending,
-                ),
+            LatestExpense(
+                group = item.group,
+                expense = expense,
+                myBalanceMinor = expense.balanceOf(meId) ?: return@mapNotNull null,
             )
         }
-    }.sortedByDescending { it.spentAt }
+    }.sortedByDescending { it.expense.spentAt }
     .take(MAX_BILLS)
+
+/*
+ * Why: the categories are every group's, merged, as Atividade reads them: a group's own category has the id only it
+ * uses.
+ */
+internal fun homeBillsOf(
+    latest: List<LatestExpense>,
+    categories: CategoryTree,
+): List<DatedHomeBill> = latest.map { (group, expense, myBalanceMinor) ->
+    DatedHomeBill(
+        spentAt = expense.spentAt,
+        bill = HomeBill(
+            id = expense.id,
+            groupId = group.id,
+            groupName = group.name,
+            description = expense.description,
+            totalMinor = expense.amountMinor,
+            currency = group.currency,
+            payers = PayersOfGroup(group).of(expense),
+            myBalanceMinor = myBalanceMinor,
+            category = categories.resolve(expense.categoryId),
+            isPending = expense.isPending,
+        ),
+    )
+}
 
 internal fun billDaysOf(
     bills: List<DatedHomeBill>,
