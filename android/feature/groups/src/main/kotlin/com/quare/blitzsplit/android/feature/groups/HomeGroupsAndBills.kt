@@ -250,8 +250,8 @@ private fun BillDayColumn(
 }
 
 /*
- * Why: a bill: "Mercado", "Viagem Floripa · Você pagou" ("na fila · " while it waits to go up), its total and what it
- * does to your balance. Bills have no category yet, so every one wears the same receipt.
+ * Why: a bill: its category's badge, "Mercado", "Viagem Floripa · Você pagou" ("na fila · " while it waits to go up),
+ * its total and what it does to your balance.
  */
 @Composable
 internal fun HomeBillRow(
@@ -277,7 +277,7 @@ internal fun HomeBillRow(
             horizontalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Why: the category's badge, as Despesas draws it (6.1).
+            // Why: as Despesas draws it (6.1).
             CategoryBadge(category = bill.category)
             Column(
                 modifier = Modifier.weight(1f),
