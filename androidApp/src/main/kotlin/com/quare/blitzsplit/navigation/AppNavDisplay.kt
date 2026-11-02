@@ -145,6 +145,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     val groupsMetadata = remember(listDetail, isHomeEmpty) {
         homeListPaneMetadataOf(
             listDetail = listDetail,
@@ -230,7 +231,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesBillDialog,
                 )
             }
-            entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
+            /*
+             * Why: a tablet lying down draws it in the group's pane beside the groups, with its back arrow (decision 2);
+             * a book and everywhere else cover the window, the book split on its hinge.
+             */
+            entry<Route.GroupStats>(metadata = groupStatsMetadata) { route ->
+                InGroupPane { GroupStatsScreen(route) }
+            }
             // Why: a sheet over the group on a phone; like Conta, a dialog on a tablet and the upright foldable.
             entry<Route.RegisterPayment>(
                 metadata = if (usesBillDialog) billDialogMetadata else BottomSheetSceneStrategy.bottomSheet,

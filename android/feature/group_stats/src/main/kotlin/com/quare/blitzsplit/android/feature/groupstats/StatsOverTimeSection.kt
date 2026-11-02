@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -60,6 +61,9 @@ internal fun StatsOverTimeSection(
     dates: StatsTextFormatter,
     onEvent: (GroupStatsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    chartHeight: Dp = 128.dp,
+    // Why: a tabletop's top half has no room for why some grains are off, so the canvas drops it there.
+    showsGrainNote: Boolean = true,
 ) {
     val today = stringResource(R.string.group_stats_today)
     val chartTypeLabel = stringResource(R.string.group_stats_chart_type)
@@ -107,6 +111,7 @@ internal fun StatsOverTimeSection(
                 state = state,
                 description = chartDescriptionOf(state, dates, money),
                 labelOf = { bar -> dates.toBarLabel(bar, state.grain, state.hasSparseLabels, today) },
+                height = chartHeight,
             )
             val peak = state.peak
             peakLabelOf(state, dates)?.let { label ->
@@ -123,7 +128,7 @@ internal fun StatsOverTimeSection(
                     )
                 }
             }
-            grainNoteTextOf(state)?.let { note ->
+            grainNoteTextOf(state)?.takeIf { showsGrainNote }?.let { note ->
                 Text(
                     note,
                     style = MaterialTheme.typography.labelSmall,

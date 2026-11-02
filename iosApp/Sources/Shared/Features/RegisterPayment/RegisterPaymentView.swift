@@ -259,62 +259,19 @@ private struct PhoneRegisterPayment: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                VStack(spacing: 8) {
-                    PaymentFaces(from: state.from, to: state.to, size: 52)
-                    Text(verbatim: RegisterPaymentCopy.title(state))
-                        .font(.title2.bold())
-                        .multilineTextAlignment(.center)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(verbatim: RegisterPaymentCopy.debt(state))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
+        // An iPhone Duo open upright: who paid and the amount above the fold, how and when below it (6.5)
+        FoldHalves(scrollsHalves: false) {
+            Form {
+                whoAndAmount
             }
-            .listRowBackground(Color.clear)
-            if state.isAmountLocked {
-                // Across several groups only the whole net settles, so the groups it closes show instead of the field
-                Section {
-                    PersonGroupsList(groups: state.groupParts, currency: state.currency)
-                        .listRowInsets(EdgeInsets())
-                } header: {
-                    Text("By group")
-                } footer: {
-                    Text("The app records one payment in each group.")
-                }
-            } else {
-                Section {
-                    AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
-                    Button {
-                        model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
-                    } label: {
-                        Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
-                    }
-                    .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
-                } header: {
-                    Text("Amount paid")
-                } footer: {
-                    PaymentAmountHelp(state: state)
-                }
+        } bottom: {
+            Form {
+                howAndWhen
             }
-            Section("How it was paid") {
-                MethodPicker(selection: model.method)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-            }
-            Section {
-                WhenPickerRows(
-                    millis: state.paidAt,
-                    relativeDay: state.paidDay,
-                    selection: model.paidAt,
-                    latest: model.latestPaidAt,
-                    onOpen: model.openPaidAt,
-                )
-            } footer: {
-                PaymentNotes(state: state)
+        } single: {
+            Form {
+                whoAndAmount
+                howAndWhen
             }
         }
         .scrollDismissesKeyboard(.interactively)
@@ -338,6 +295,70 @@ private struct PhoneRegisterPayment: View {
                 }
                 .disabled(state.isSaving)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var whoAndAmount: some View {
+        Section {
+            VStack(spacing: 8) {
+                PaymentFaces(from: state.from, to: state.to, size: 52)
+                Text(verbatim: RegisterPaymentCopy.title(state))
+                    .font(.title2.bold())
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+                Text(verbatim: RegisterPaymentCopy.debt(state))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .listRowBackground(Color.clear)
+        if state.isAmountLocked {
+            // Across several groups only the whole net settles, so the groups it closes show instead of the field
+            Section {
+                PersonGroupsList(groups: state.groupParts, currency: state.currency)
+                    .listRowInsets(EdgeInsets())
+            } header: {
+                Text("By group")
+            } footer: {
+                Text("The app records one payment in each group.")
+            }
+        } else {
+            Section {
+                AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
+                Button {
+                    model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
+                } label: {
+                    Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
+                }
+                .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
+            } header: {
+                Text("Amount paid")
+            } footer: {
+                PaymentAmountHelp(state: state)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var howAndWhen: some View {
+        Section("How it was paid") {
+            MethodPicker(selection: model.method)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+        }
+        Section {
+            WhenPickerRows(
+                millis: state.paidAt,
+                relativeDay: state.paidDay,
+                selection: model.paidAt,
+                latest: model.latestPaidAt,
+                onOpen: model.openPaidAt,
+            )
+        } footer: {
+            PaymentNotes(state: state)
         }
     }
 }
