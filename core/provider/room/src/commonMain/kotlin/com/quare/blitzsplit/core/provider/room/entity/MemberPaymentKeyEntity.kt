@@ -7,7 +7,8 @@ import androidx.room3.PrimaryKey
 /*
  * Why: the live keys of the people this device's user shares a group with, as the server last gave them, so
  * "Pagar Ana" (4.5) shows them offline too. Read only: each sync replaces them all, which also drops a key deleted
- * or a person no longer in any group with the user.
+ * or a person no longer in any group with the user. `viewerUserId` is the account they came down for, so another
+ * account's sync drops them before anything else, even when its own download of them fails.
  */
 @Entity(
     tableName = "member_payment_key",
@@ -17,6 +18,7 @@ data class MemberPaymentKeyEntity(
     @PrimaryKey
     val id: String,
     val userId: String,
+    val viewerUserId: String,
     val type: String,
     val value: String,
     val isDefault: Boolean,

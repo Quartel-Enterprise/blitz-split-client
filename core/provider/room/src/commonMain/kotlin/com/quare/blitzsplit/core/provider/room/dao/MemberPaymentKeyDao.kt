@@ -12,11 +12,17 @@ interface MemberPaymentKeyDao {
     @Query("SELECT * FROM member_payment_key WHERE userId = :userId ORDER BY addedAt, id")
     fun observeOf(userId: String): Flow<List<MemberPaymentKeyEntity>>
 
+    @Query("SELECT * FROM member_payment_key")
+    suspend fun getAll(): List<MemberPaymentKeyEntity>
+
     @Insert
     suspend fun insert(entities: List<MemberPaymentKeyEntity>)
 
     @Query("DELETE FROM member_payment_key")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM member_payment_key WHERE viewerUserId != :viewerUserId")
+    suspend fun deleteOtherViewersKeys(viewerUserId: String)
 
     // Why: in one write, so a screen never sees the keys gone between the two.
     @Transaction

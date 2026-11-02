@@ -166,9 +166,12 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
 - **Members' payment keys**: the live keys of everyone the user shares a group with, which the server's RLS lets
-  co-members read, come down on each sync after the groups and replace `member_payment_key` whole
-  (`PaymentKeyRepository.downloadMemberKeys`), so a key removed or a group left drops off; they are never pushed,
-  and a failed download keeps the last copy for "Pagar Ana" offline and fails the sync like any other step.
+  co-members read, come down on each sync after the groups, page by page, and replace `member_payment_key` whole
+  (`PaymentKeyRepository.downloadMemberKeys`), so a key removed or a group left drops off; nothing is written when
+  they come back the same. They are never pushed, and a failed download keeps the last copy for "Pagar Ana" offline
+  and fails the sync like any other step. Each row keeps the account it came down for (`viewerUserId`), and
+  another account's sync drops them first, before the network (`downloadKeys`), so someone else's CPF never stays
+  under a new account whose download fails.
 - **Hidden contacts**: "Ocultar de Contatos" is a row of `hidden_contact` per person key (`user:<id>` or
   `name:<name in lower case, single spaces>`, no accent folding), synced by `updatedAt` like the keys, each user's own list across their devices. Showing
   again keeps the row with `isHidden = false`, so the change syncs; whether someone hidden comes back (a newer

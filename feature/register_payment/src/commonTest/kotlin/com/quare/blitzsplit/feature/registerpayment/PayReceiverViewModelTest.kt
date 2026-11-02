@@ -36,8 +36,10 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.Regis
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -247,6 +249,41 @@ class PayReceiverViewModelTest {
         assertFalse(state.canMarkAsPaid)
         assertTrue(state.canConfirm)
     }
+
+    @Test
+    fun `GIVEN the keys of Bruno shown WHEN the account of Carla takes his place THEN never shows his keys for her`() =
+        runTest(testDispatcher) {
+            // Given
+            val otherKeysRead = CompletableDeferred<Unit>()
+            prepareScenario(keysReadOf = mapOf(OTHER_USER to otherKeysRead))
+            paymentKeys.memberKeys.update { it + (OTHER_USER to listOf(emailKey.copy(isDefault = true))) }
+            val shown = mutableListOf<Pair<String?, String?>>()
+            backgroundScope.launch { viewModel.uiState.collect { shown += it.to?.name to it.defaultKey?.id } }
+            shown.clear()
+
+            // When
+            groups.groups.update { list ->
+                list.map { group ->
+                    group.copy(
+                        members = group.members.map {
+                            if (it.id == BRUNO) {
+                                it.copy(
+                                    name = "Carla",
+                                    userId = OTHER_USER,
+                                )
+                            } else {
+                                it
+                            }
+                        },
+                    )
+                }
+            }
+            otherKeysRead.complete(Unit)
+
+            // Then
+            assertFalse("Carla" to PHONE_KEY_ID in shown)
+            assertEquals("Carla" to EMAIL_KEY_ID, shown.last())
+        }
 
     @Test
     fun `GIVEN the keys shown WHEN Bruno leaves the group THEN shows the form for a former member`() =
@@ -654,6 +691,7 @@ class PayReceiverViewModelTest {
         online: Boolean = true,
         recordError: Throwable? = null,
         recordGate: CompletableDeferred<Unit>? = null,
+        keysReadOf: Map<String, CompletableDeferred<Unit>> = emptyMap(),
     ) {
         clockMillis = nowMillis
         route = Route.RegisterPayment(
@@ -742,7 +780,13 @@ class PayReceiverViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { ',' },
             formatPaymentKey = FormatPaymentKeyUseCase(),
-            observeMemberPaymentKeys = ObserveMemberPaymentKeysUseCase(paymentKeys),
+            observeMemberPaymentKeys = { userId ->
+                // Why: Room answers a new query later, which a case holds back until it completes the read.
+                flow {
+                    keysReadOf[userId]?.await()
+                    emitAll(ObserveMemberPaymentKeysUseCase(paymentKeys)(userId))
+                }
+            },
             encodeQrCode = encodeQrCode,
             observeGroup = ObserveGroupUseCase(groups),
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
@@ -762,6 +806,7 @@ class PayReceiverViewModelTest {
         const val PIERRE_USER = "pierre-user"
         const val BRUNO_USER = "bruno-user"
         const val DIEGO_USER = "diego-user"
+        const val OTHER_USER = "other-user"
         const val PHONE_KEY_ID = "key-phone"
         const val EMAIL_KEY_ID = "key-email"
         const val LIGHTNING_KEY_ID = "key-lightning"

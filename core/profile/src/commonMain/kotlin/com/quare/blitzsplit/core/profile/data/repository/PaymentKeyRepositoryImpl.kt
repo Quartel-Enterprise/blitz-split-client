@@ -97,9 +97,11 @@ class PaymentKeyRepositoryImpl(
 
     /*
      * Why: unlike the profile, another user's keys never go up as this account's, even when it has none: they
-     * are someone's CPF or wallet. Keys made before any account are this user's.
+     * are someone's CPF or wallet. Keys made before any account are this user's. Another account's members' keys
+     * go first, before the network, so a sync that fails later never leaves them under this one.
      */
     override suspend fun downloadKeys(userId: String): Result<Unit> = suspendRunCatching {
+        memberLocal.deleteOtherViewersKeys(userId)
         val remoteKeys = remote.fetch(userId)
         local.deleteOtherUsersKeys(userId)
         local.claimUnowned(userId)
@@ -119,8 +121,15 @@ class PaymentKeyRepositoryImpl(
         .map(mapper::toDomainOfMember)
         .distinctUntilChanged()
 
+    // Why: written only when something changed, so a sync with nothing new never wakes the screens that read them.
     override suspend fun downloadMemberKeys(userId: String): Result<Unit> = suspendRunCatching {
-        memberLocal.replaceAll(remote.fetchOthers(userId).map(mapper::toMemberEntity))
+        val fresh = remote.fetchOthers(userId).map { dto ->
+            mapper.toMemberEntity(
+                dto = dto,
+                viewerUserId = userId,
+            )
+        }
+        if (fresh.toSet() != memberLocal.getAll().toSet()) memberLocal.replaceAll(fresh)
     }
 
     // Why: other people's keys (a CPF) go even when the user's own fail to, so a sign out never leaves them behind.

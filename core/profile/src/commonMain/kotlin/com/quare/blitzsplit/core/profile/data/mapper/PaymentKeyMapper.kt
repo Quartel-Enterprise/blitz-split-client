@@ -28,5 +28,8 @@ interface PaymentKeyMapper {
     // Why: someone else's keys, read the same way as the user's own: each method's default first.
     fun toDomainOfMember(entities: List<MemberPaymentKeyEntity>): List<PaymentKey>
 
-    fun toMemberEntity(dto: PaymentKeyDto): MemberPaymentKeyEntity
+    fun toMemberEntity(
+        dto: PaymentKeyDto,
+        viewerUserId: String,
+    ): MemberPaymentKeyEntity
 }

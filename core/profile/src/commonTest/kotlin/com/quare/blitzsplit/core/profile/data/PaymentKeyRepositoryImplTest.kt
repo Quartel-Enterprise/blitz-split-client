@@ -1060,6 +1060,60 @@ class PaymentKeyRepositoryImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN the keys of the members of another account WHEN the download fails THEN drops them anyway`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                    viewerUserId = "user-0",
+                ),
+                memberEntity(
+                    id = "bruno-cpf",
+                    userId = "bruno",
+                ),
+            ),
+            fetchError = IllegalStateException("offline"),
+        )
+
+        // When
+        repository.downloadKeys(userId = "user-1")
+
+        // Then
+        assertEquals(listOf("bruno-cpf"), memberLocal.rows.value.map { it.id })
+    }
+
+    @Test
+    fun `GIVEN the keys of the members stored WHEN the server gives the same THEN writes nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                    isDefault = true,
+                    updatedAt = 2L,
+                ),
+            ),
+            othersKeys = listOf(
+                dto(
+                    id = "ana-cpf",
+                    userId = "ana",
+                    updatedAt = 2L,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.downloadMemberKeys(userId = "user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(0, memberLocal.writes)
+    }
+
     private fun memberEntity(
         id: String,
         userId: String,
@@ -1067,14 +1121,17 @@ class PaymentKeyRepositoryImplTest {
         value: String = "12345678909",
         isDefault: Boolean = false,
         addedAt: Long = 1L,
+        updatedAt: Long = 1L,
+        viewerUserId: String = "user-1",
     ): MemberPaymentKeyEntity = MemberPaymentKeyEntity(
         id = id,
         userId = userId,
+        viewerUserId = viewerUserId,
         type = type,
         value = value,
         isDefault = isDefault,
         addedAt = addedAt,
-        updatedAt = 1L,
+        updatedAt = updatedAt,
     )
 
     private val cpfKey = PaymentKey(
@@ -1232,8 +1289,17 @@ private class FakeMemberPaymentKeyLocalDataSource(
         all.filter { it.userId == userId }.sortedWith(compareBy({ it.addedAt }, { it.id }))
     }
 
+    var writes = 0
+
+    override suspend fun getAll(): List<MemberPaymentKeyEntity> = rows.value
+
     override suspend fun replaceAll(entities: List<MemberPaymentKeyEntity>) {
+        writes++
         rows.value = entities
+    }
+
+    override suspend fun deleteOtherViewersKeys(viewerUserId: String) {
+        rows.value = rows.value.filter { it.viewerUserId == viewerUserId }
     }
 
     override suspend fun clear() {

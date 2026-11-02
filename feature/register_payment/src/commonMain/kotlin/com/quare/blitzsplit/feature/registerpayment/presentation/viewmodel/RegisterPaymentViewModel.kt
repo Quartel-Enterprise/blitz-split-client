@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -115,13 +116,17 @@ class RegisterPaymentViewModel(
     init {
         val targets = observeTarget(observeGroup, observeGroupBalances, observePeopleBalances)
             .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
-        // Why: the receiver's keys are read again only when the receiver's account changes, not on every new balance.
+        /*
+         * Why: the receiver's keys are read again only when the receiver's account changes, not on every new balance.
+         * Each answer carries whose keys it holds, so a new receiver waits for theirs instead of showing the last one's.
+         */
         val keys = targets
             .map { it?.toUserId }
             .distinctUntilChanged()
-            .flatMapLatest(::keysOf)
-        combine(targets, keys) { target, receiverKeys -> target to receiverKeys }
-            .onEach { (target, keys) ->
+            .flatMapLatest { userId -> keysOf(userId).map { userId to it } }
+        combine(targets, keys) { target, (userId, receiverKeys) -> Triple(target, userId, receiverKeys) }
+            .filter { (target, userId) -> target?.toUserId == userId }
+            .onEach { (target, _, keys) ->
                 hasRead = true
                 receiverKeys = keys
                 handle(target)

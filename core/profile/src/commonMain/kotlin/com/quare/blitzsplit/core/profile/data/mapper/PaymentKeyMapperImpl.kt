@@ -97,9 +97,13 @@ class PaymentKeyMapperImpl : PaymentKeyMapper {
         },
     )
 
-    override fun toMemberEntity(dto: PaymentKeyDto): MemberPaymentKeyEntity = MemberPaymentKeyEntity(
+    override fun toMemberEntity(
+        dto: PaymentKeyDto,
+        viewerUserId: String,
+    ): MemberPaymentKeyEntity = MemberPaymentKeyEntity(
         id = dto.id,
         userId = dto.userId,
+        viewerUserId = viewerUserId,
         type = dto.type,
         value = dto.value,
         isDefault = dto.isDefault,
