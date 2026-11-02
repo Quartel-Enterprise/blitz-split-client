@@ -105,11 +105,14 @@ private struct JoinWithLinkContent: View {
                 pastePanel
                     .frame(width: 380)
                     .frame(maxHeight: .infinity)
-                    .background(Palette.groupedBackground, in: UnevenRoundedRectangle(
-                        topLeadingRadius: 38,
-                        bottomLeadingRadius: 38,
-                    ))
-                    .ignoresSafeArea(edges: .vertical)
+                    .background {
+                        // Why: the panel meets the screen's edge, past the trailing inset of a phone lying down.
+                        panelBackground(
+                            UnevenRoundedRectangle(topLeadingRadius: 38, bottomLeadingRadius: 38),
+                            edges: [.vertical, .trailing],
+                        )
+                    }
+                    .ignoresSafeArea(.container, edges: .vertical)
             }
             .background(Color.black.ignoresSafeArea())
         } else {
@@ -118,11 +121,13 @@ private struct JoinWithLinkContent: View {
                 pastePanel
                     .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
                     .frame(maxWidth: .infinity)
-                    .background(Palette.groupedBackground, in: UnevenRoundedRectangle(
-                        topLeadingRadius: 38,
-                        topTrailingRadius: 38,
-                    ))
-                    .ignoresSafeArea(edges: .bottom)
+                    .background {
+                        panelBackground(
+                            UnevenRoundedRectangle(topLeadingRadius: 38, topTrailingRadius: 38),
+                            edges: .bottom,
+                        )
+                    }
+                    .ignoresSafeArea(.container, edges: .bottom)
             }
             .background(Color.black.ignoresSafeArea())
         }
@@ -136,6 +141,15 @@ private struct JoinWithLinkContent: View {
         .frame(width: 480)
         #endif
     }
+
+    #if os(iOS)
+    /// The link panel's color, which reaches under the keyboard too, while the keyboard pushes the panel above it.
+    private func panelBackground(_ shape: some Shape, edges: Edge.Set) -> some View {
+        shape
+            .fill(Palette.groupedBackground)
+            .ignoresSafeArea(edges: edges)
+    }
+    #endif
 
     private var cameraArea: some View {
         // Why: only the camera reaches under the status bar; the close and flashlight buttons stay below it, where the
