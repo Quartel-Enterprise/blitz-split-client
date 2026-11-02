@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -551,6 +552,8 @@ class SplitBillUiStateTest {
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
+        groupShape = GroupShape.COOKIE,
+        groupPhotoUrl = null,
         groups = groups,
         groupSelection = null,
         currency = GroupCurrency.BRL,

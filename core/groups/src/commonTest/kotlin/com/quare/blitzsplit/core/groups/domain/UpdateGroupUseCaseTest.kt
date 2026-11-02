@@ -29,6 +29,8 @@ class UpdateGroupUseCaseTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.GREEN,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
         )
 
@@ -49,6 +51,8 @@ class UpdateGroupUseCaseTest {
             name = "Viagem Floripa",
             type = GroupType.EVENT,
             color = AvatarColor.SAND,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.EUR,
         )
 
@@ -71,6 +75,8 @@ class UpdateGroupUseCaseTest {
             name = name,
             type = GroupType.TRIP,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.BRL,
         )
 
@@ -95,6 +101,8 @@ class UpdateGroupUseCaseTest {
             name = name,
             type = GroupType.TRIP,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.BRL,
         )
 
@@ -120,6 +128,8 @@ class UpdateGroupUseCaseTest {
                 name = name,
                 type = GroupType.TRIP,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.BRL,
             )
 
@@ -143,6 +153,8 @@ class UpdateGroupUseCaseTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.GREEN,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
         )
 

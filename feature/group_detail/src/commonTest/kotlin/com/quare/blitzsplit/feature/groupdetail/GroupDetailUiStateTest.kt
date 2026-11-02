@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
@@ -333,6 +334,8 @@ class GroupDetailUiStateTest {
             groupName = "Viagem de Floripa",
             groupInitials = "VF",
             groupColor = AvatarColor.LILAC,
+            groupShape = GroupShape.COOKIE,
+            groupPhotoUrl = null,
             currency = GroupCurrency.BRL,
             faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH, photoUrl = null) },
             memberCount = memberCount,

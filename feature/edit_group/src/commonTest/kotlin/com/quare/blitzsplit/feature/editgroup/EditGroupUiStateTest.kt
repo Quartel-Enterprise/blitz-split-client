@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -210,6 +211,11 @@ class EditGroupUiStateTest {
         name = name,
         initials = "VF",
         color = AvatarColor.GREEN,
+        shape = GroupShape.COOKIE,
+        photo = null,
+        isPreparingPhoto = false,
+        showsPhotoError = false,
+        iconEditor = null,
         type = GroupType.TRIP,
         currency = GroupCurrency.BRL,
         isCurrencyLocked = false,

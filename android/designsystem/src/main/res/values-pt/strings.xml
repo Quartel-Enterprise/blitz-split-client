@@ -25,6 +25,10 @@
     <string name="designsystem_avatar_color_green">Verde</string>
     <string name="designsystem_avatar_color_lilac">Lilás</string>
     <string name="designsystem_avatar_color_sand">Areia</string>
+    <string name="designsystem_group_shape_cookie">Biscoito</string>
+    <string name="designsystem_group_shape_petal">Pétala</string>
+    <string name="designsystem_group_shape_square">Quadrado</string>
+    <string name="designsystem_group_shape_circle">Círculo</string>
     <string name="designsystem_when">Quando</string>
     <string name="designsystem_when_today">Hoje, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Ontem, %1$s · %2$s</string>

@@ -89,6 +89,8 @@
     <string name="activity_field_name">Name</string>
     <string name="activity_field_type">Type</string>
     <string name="activity_field_color">Color</string>
+    <string name="activity_field_shape">Shape</string>
+    <string name="activity_field_photo">Photo</string>
     <string name="activity_field_currency">Currency</string>
     <string name="activity_field_default_split">Default split</string>
     <string name="activity_field_category">Category</string>
@@ -96,6 +98,9 @@
     <string name="activity_visibility_members">Only who\'s in the bill</string>
     <string name="activity_visibility_anyone">Anyone with the link</string>
     <string name="activity_visibility_off">Off</string>
+    <string name="activity_photo_previous">Previous photo</string>
+    <string name="activity_photo_new">New photo</string>
+    <string name="activity_photo_none">No photo</string>
     <string name="activity_split_equal">Equal</string>
     <string name="activity_split_amount">Amounts</string>
     <string name="activity_split_percent">Percentage</string>

@@ -419,7 +419,12 @@ private struct PhoneSplitBill: View {
                         Text("Group")
                             .foregroundStyle(.primary)
                         Spacer()
-                        GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 24)
+                        GroupAvatar(
+                            initials: state.groupInitials,
+                            color: state.groupColor,
+                            photoUrl: state.groupPhotoUrl,
+                            size: 24
+                        )
                         Text(verbatim: state.groupName)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
@@ -434,7 +439,12 @@ private struct PhoneSplitBill: View {
             } else {
                 LabeledContent("Group") {
                     HStack(spacing: 8) {
-                        GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 24)
+                        GroupAvatar(
+                            initials: state.groupInitials,
+                            color: state.groupColor,
+                            photoUrl: state.groupPhotoUrl,
+                            size: 24
+                        )
                         Text(verbatim: state.groupName)
                             .lineLimit(1)
                     }
@@ -811,7 +821,7 @@ private struct GroupOptionLabel: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            GroupAvatar(initials: group.initials, color: group.color, size: 36)
+            GroupAvatar(initials: group.initials, color: group.color, photoUrl: group.photoUrl, size: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: group.name)
                     .lineLimit(1)
@@ -964,7 +974,12 @@ private struct MacBillForm: View {
                 } else {
                     LabeledContent("Group:") {
                         HStack(spacing: 6) {
-                            GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 18)
+                            GroupAvatar(
+                                initials: state.groupInitials,
+                                color: state.groupColor,
+                                photoUrl: state.groupPhotoUrl,
+                                size: 18
+                            )
                             Text(verbatim: state.groupName)
                         }
                     }

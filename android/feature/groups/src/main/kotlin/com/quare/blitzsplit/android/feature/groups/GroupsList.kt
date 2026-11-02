@@ -296,6 +296,8 @@ private fun GroupListRow(
             GroupBadge(
                 initials = group.initials,
                 color = group.color,
+                shape = group.shape,
+                photoUrl = group.photoUrl,
             )
             Column(
                 modifier = Modifier.weight(1f),

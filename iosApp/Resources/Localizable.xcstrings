@@ -481,6 +481,17 @@
         }
       }
     },
+    "Change icon or photo" : {
+      "comment" : "Edit group's button under the avatar, which opens the group icon sheet",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar ícone ou foto"
+          }
+        }
+      }
+    },
     "Choose File…" : {
       "localizations" : {
         "pt-BR" : {
@@ -497,6 +508,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escolher nas fotos"
+          }
+        }
+      }
+    },
+    "Choose Photo…" : {
+      "comment" : "The Mac's edit group button that picks a file as the group's photo",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolher foto…"
           }
         }
       }
@@ -603,6 +625,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Baixar"
+          }
+        }
+      }
+    },
+    "Group icon" : {
+      "comment" : "Title of the sheet that picks the group icon",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ícone do grupo"
           }
         }
       }
@@ -856,6 +889,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ainda não usa o Bora Rachar"
+          }
+        }
+      }
+    },
+    "Icon color" : {
+      "comment" : "VoiceOver label of the Mac's edit group colors",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cor do ícone"
           }
         }
       }
@@ -2408,6 +2452,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Use as setas para ver a próxima."
+          }
+        }
+      }
+    },
+    "Use this icon" : {
+      "comment" : "The group icon sheet's confirm button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar este ícone"
           }
         }
       }
@@ -4898,17 +4953,6 @@
         }
       }
     },
-    "Change color" : {
-      "comment" : "The edit group button under the avatar, which changes its color",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trocar cor"
-          }
-        }
-      }
-    },
     "Change link" : {
       "comment" : "Invite: the creator changes the group's invite link, and confirms it in the alert",
       "localizations" : {
@@ -5588,13 +5632,13 @@
         }
       }
     },
-    "No internet: the change holds on this %@ now and reaches the others once it reconnects." : {
+    "No internet: the change holds on this %@ now and reaches the others once it reconnects. A new photo goes up with it." : {
       "comment" : "The note at the end of edit group while offline; the device is iPhone, iPad or Mac",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sem internet: a mudança vale neste %@ agora e chega aos outros quando ele reconectar."
+            "value" : "Sem internet: a mudança vale neste %@ agora e chega aos outros quando ele reconectar. Uma foto nova sobe junto."
           }
         }
       }

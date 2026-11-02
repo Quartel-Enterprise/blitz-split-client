@@ -75,7 +75,7 @@ class PickGroupViewModelTest {
             // Then
             assertEquals(GroupSelection(groupId = TRIP_ID), state.groupSelection)
             assertEquals(
-                BillGroup(TRIP_ID, "Viagem Floripa", "VF", AvatarColor.GREEN, memberCount = 3),
+                BillGroup(TRIP_ID, "Viagem Floripa", "VF", AvatarColor.GREEN, GroupShape.SQUARE, photoUrl = null, memberCount = 3),
                 state.groups.first(),
             )
             assertEquals(listOf(TRIP_ID, HOME_ID), state.groups.map { it.id })

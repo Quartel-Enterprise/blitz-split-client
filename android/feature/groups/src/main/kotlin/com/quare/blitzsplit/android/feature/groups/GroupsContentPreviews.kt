@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.runtime.Composable
+import com.quare.blitzsplit.core.model.GroupShape
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -254,6 +255,8 @@ internal fun buildPreviewRow(
     name = name,
     initials = name.take(2).uppercase(),
     color = color,
+    shape = GroupShape.COOKIE,
+    photoUrl = null,
     faces = listOf(
         MemberFace("P", AvatarColor.BLUE, photoUrl = null),
         MemberFace("A", AvatarColor.GREEN, photoUrl = null),

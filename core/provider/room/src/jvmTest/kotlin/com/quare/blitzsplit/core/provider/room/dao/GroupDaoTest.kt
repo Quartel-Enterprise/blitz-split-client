@@ -529,6 +529,9 @@ class GroupDaoTest {
             name = "Casa da praia",
             type = "home",
             color = "peach",
+            shape = "petal",
+            photoUrl = null,
+            pendingPhoto = null,
             currency = "USD",
             updatedAt = 6L,
         )
@@ -543,6 +546,7 @@ class GroupDaoTest {
                 name = "Casa da praia",
                 type = "home",
                 color = "peach",
+                shape = "petal",
                 currency = "USD",
             ),
             dao
@@ -563,6 +567,9 @@ class GroupDaoTest {
             name = "Casa da praia",
             type = "trip",
             color = "blue",
+            shape = "cookie",
+            photoUrl = null,
+            pendingPhoto = null,
             currency = "BRL",
             updatedAt = 6L,
         )

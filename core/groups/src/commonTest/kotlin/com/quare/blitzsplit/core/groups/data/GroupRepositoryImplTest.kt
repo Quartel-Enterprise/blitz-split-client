@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.data
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
@@ -52,6 +53,7 @@ class GroupRepositoryImplTest {
     private lateinit var remote: FakeGroupRemoteDataSource
     private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var profileLocal: FakeGroupOwnerProfileLocalDataSource
+    private lateinit var photoRemote: FakeGroupPhotoRemoteDataSource
     private lateinit var repository: GroupRepositoryImpl
 
     @Test
@@ -2260,6 +2262,8 @@ class GroupRepositoryImplTest {
                 name = "Casa da praia",
                 type = GroupType.HOME,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.USD,
                 updatedAt = 7_000L,
             )
@@ -2290,6 +2294,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -2343,6 +2349,8 @@ class GroupRepositoryImplTest {
                 name = "Casa da praia",
                 type = GroupType.HOME,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
+                photo = null,
                 currency = GroupCurrency.USD,
                 updatedAt = 7_000L,
             )
@@ -2376,6 +2384,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -2395,6 +2405,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -2417,6 +2429,8 @@ class GroupRepositoryImplTest {
             name = "Casa da praia",
             type = GroupType.HOME,
             color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
             currency = GroupCurrency.USD,
             updatedAt = 7_000L,
         )
@@ -4004,6 +4018,8 @@ class GroupRepositoryImplTest {
         updatedAt = updatedAt,
         inviteCode = inviteCode,
         defaultSplit = null,
+        shape = null,
+        photoUrl = null,
     )
 
     private fun memberDto(
@@ -4081,9 +4097,11 @@ class GroupRepositoryImplTest {
             it.photoUrl.value = myPhotoUrl
         }
         deletions = InMemoryGroupDeletionRepository()
+        photoRemote = FakeGroupPhotoRemoteDataSource()
         repository = GroupRepositoryImpl(
             local = local,
             remote = remote,
+            photoRemote = photoRemote,
             profileLocal = profileLocal,
             profileMapper = ProfileMapperImpl(),
             mapper = GroupMapperImpl(),
@@ -4188,6 +4206,9 @@ private class FakeGroupLocalDataSource(
         name: String,
         type: String,
         color: String,
+        shape: String,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
         currency: String,
         updatedAt: Long,
     ) {
@@ -4198,6 +4219,9 @@ private class FakeGroupLocalDataSource(
                     name = name,
                     type = type,
                     color = color,
+                    shape = shape,
+                    photoUrl = photoUrl,
+                    pendingPhoto = pendingPhoto,
                     currency = currency,
                     updatedAt = maxOf(updatedAt, it.updatedAt + 1),
                     pendingSync = true,
@@ -4280,6 +4304,23 @@ private class FakeGroupLocalDataSource(
         }
     }
 
+    override suspend fun markGroupPhotoUploaded(
+        id: String,
+        syncedUpdatedAt: Long,
+        photoUrl: String,
+    ) {
+        groups.value = groups.value.map {
+            if (it.id == id && it.updatedAt == syncedUpdatedAt) {
+                it.copy(
+                    photoUrl = photoUrl,
+                    pendingPhoto = null,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
     override suspend fun markMemberSynced(
         id: String,
         syncedUpdatedAt: Long,
@@ -4298,6 +4339,7 @@ private class FakeGroupLocalDataSource(
                 put(
                     entity.copy(
                         pendingSync = false,
+                        pendingPhoto = null,
                         splitIncomes = current.splitIncomes,
                     ),
                 )
@@ -4397,6 +4439,25 @@ private class FakeGroupLocalDataSource(
         members.value = emptyList()
         groups.value = emptyList()
         photos.value = emptyList()
+    }
+}
+
+// Why: the URL is the bucket's public one with the version, as Supabase's; uploads are recorded in order.
+private class FakeGroupPhotoRemoteDataSource : GroupPhotoRemoteDataSource {
+    val uploads = mutableListOf<Pair<String, ByteArray>>()
+    var uploadError: Throwable? = null
+
+    override fun urlOf(
+        groupId: String,
+        version: Long,
+    ): String = "https://cdn.test/storage/v1/object/public/group-photos/$groupId/photo.jpg?v=$version"
+
+    override suspend fun upload(
+        groupId: String,
+        jpeg: ByteArray,
+    ) {
+        uploadError?.let { throw it }
+        uploads += groupId to jpeg
     }
 }
 

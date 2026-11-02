@@ -432,7 +432,12 @@ struct PhoneGroupScaffold<Sections: View>: View {
     private var top: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
-                GroupAvatar(initials: header.groupInitials, color: header.groupColor, size: 56)
+                GroupAvatar(
+                    initials: header.groupInitials,
+                    color: header.groupColor,
+                    photoUrl: header.groupPhotoUrl,
+                    size: 56
+                )
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: header.groupName)
                         .font(.title.bold())
@@ -503,8 +508,13 @@ struct MacGroupTop: View {
                     .fixedSize()
             }
             HStack(spacing: 12) {
-                GroupAvatar(initials: header.groupInitials, color: header.groupColor, size: 36)
-                    .accessibilityHidden(true)
+                GroupAvatar(
+                    initials: header.groupInitials,
+                    color: header.groupColor,
+                    photoUrl: header.groupPhotoUrl,
+                    size: 36
+                )
+                .accessibilityHidden(true)
                 GroupFaces(header: header, size: 24) { actions.select(.members) }
                 Spacer()
             }

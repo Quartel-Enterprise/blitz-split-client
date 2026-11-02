@@ -28,14 +28,23 @@ final class EditGroupModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    func photoPicked(_ data: Data?) {
+        guard let data else {
+            send(EditGroupUiEventOnPhotoUnreadable.shared)
+            return
+        }
+        send(EditGroupUiEventOnPhotoPicked(source: BlitzSplitApple.shared.toByteArray(data: data)))
+    }
+
     isolated deinit {
         holder.clear()
     }
 }
 
 /// "Edit group": a sheet over the group on iPhone, iPad and Mac, with Cancel and Save (✓) in the bar, the canvas' 540 pt
-/// form sheet with an iPad's room. The same fields as "New group": the avatar changes color on a tap, and the currency
-/// locks once the group has a bill. An iPhone lying down puts the avatar and "Change color" in one compact row.
+/// form sheet with an iPad's room. The same fields as "New group": the icon is a color or a photo (EditGroupIconSection),
+/// and the currency locks once the group has a bill. An iPhone lying down puts the avatar and "Change icon or photo" in
+/// one compact row.
 struct EditGroupView: View {
     let route: RouteEditGroup
 
@@ -111,24 +120,8 @@ private struct EditGroupForm: View {
                 }
             }
             Section {
-                let layout = usesCompactIcon
-                    ? AnyLayout(HStackLayout(spacing: 12))
-                    : AnyLayout(VStackLayout(spacing: 8))
-                layout {
-                    Button {
-                        model.send(EditGroupUiEventOnColorClicked.shared)
-                    } label: {
-                        GroupAvatar(initials: state.initials, color: state.color, size: usesCompactIcon ? 56 : 96)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Change the group's color")
-                    Button("Change color") {
-                        model.send(EditGroupUiEventOnColorClicked.shared)
-                    }
-                    .buttonStyle(.borderless)
-                }
-                .frame(maxWidth: .infinity)
-                .listRowBackground(Color.clear)
+                EditGroupIconSection(model: model, usesCompactIcon: usesCompactIcon)
+                    .listRowBackground(Color.clear)
             }
             Section {
                 HStack(spacing: 8) {
@@ -193,7 +186,9 @@ private struct EditGroupForm: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("The currency doesn’t change after the first expense.")
                     if state.showsOfflineNotice {
-                        Text("No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects.")
+                        Text(
+                            "No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects. A new photo goes up with it.",
+                        )
                     } else {
                         Text("Anyone in the group can change the name, the icon and the type.")
                     }

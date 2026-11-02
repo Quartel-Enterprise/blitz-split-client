@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -17,8 +16,10 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
@@ -222,29 +223,16 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a green group WHEN tapping its avatar THEN takes the next color of the palette`() =
+    fun `GIVEN a green group WHEN picking lilac in the form THEN the form shows lilac`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
 
             // When
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // Then
             assertEquals(AvatarColor.LILAC, viewModel.uiState.value.color)
-        }
-
-    @Test
-    fun `GIVEN a group of the last color WHEN tapping its avatar THEN wraps around to the first color`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroup = trip.copy(color = AvatarColor.entries.last()))
-
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
-
-            // Then
-            assertEquals(AvatarColor.entries.first(), viewModel.uiState.value.color)
         }
 
     @Test
@@ -375,7 +363,7 @@ class EditGroupViewModelTest {
     fun `GIVEN no internet WHEN the screen opens THEN shows the offline notice`() = runTest(testDispatcher) {
         // Given
         prepareScenario(online = false)
-        viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+        viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
         // When
         val state = viewModel.uiState.value
@@ -403,7 +391,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario()
             viewModel.onEvent(EditGroupUiEvent.OnNameChanged("Churrasco"))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
             viewModel.onEvent(EditGroupUiEvent.OnTypeSelected(GroupType.EVENT))
             viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
 
@@ -464,7 +452,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(updateError = IllegalStateException("disk full"))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -482,7 +470,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(updateError = IllegalStateException("disk full"))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
             groups.updateGroupError = null
             groups.updateGroupGate = CompletableDeferred()
@@ -500,7 +488,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isSaveHeld = true)
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
 
             // When
@@ -515,7 +503,7 @@ class EditGroupViewModelTest {
     fun `GIVEN a double tap on Salvar WHEN the save ends THEN saves only once`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isSaveHeld = true)
-        viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+        viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
         viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
         viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
 
@@ -551,7 +539,7 @@ class EditGroupViewModelTest {
     fun `GIVEN a save in flight WHEN tapping Cancelar THEN stays until the save ends`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isSaveHeld = true)
-        viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+        viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
         viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
 
         // When
@@ -579,7 +567,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isSaveHeld = true)
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
             navigator.popTo(2)
 
@@ -596,7 +584,7 @@ class EditGroupViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isSaveHeld = true)
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
             navigator.navigate(Route.Profile)
 
@@ -682,7 +670,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario()
             groups.groups.value = listOf(trip.copy(name = "Floripa 2027"))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -721,7 +709,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario()
             groups.groups.value = listOf(trip.copy(color = AvatarColor.SAND))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -741,7 +729,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario()
             groups.groups.value = listOf(trip.copy(type = GroupType.HOME))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -781,7 +769,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario()
             groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -822,7 +810,7 @@ class EditGroupViewModelTest {
             prepareScenario()
             groups.groups.value = listOf(trip.copy(name = "Floripa 2027"))
             viewModel.onEvent(EditGroupUiEvent.OnNameChanged("  Viagem Floripa  "))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -842,7 +830,7 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario(storedExpenses = listOf(dinner))
             groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -863,7 +851,7 @@ class EditGroupViewModelTest {
             prepareScenario()
             groups.groups.value = listOf(trip.copy(name = "Floripa 2027"))
             isOnline.value = false
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
@@ -992,14 +980,14 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN the avatar tapped through the palette WHEN back at its first color THEN Salvar is disabled`() =
+    fun `GIVEN another color picked WHEN back at its first color THEN Salvar is disabled`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            repeat(AvatarColor.entries.size - 1) { viewModel.onEvent(EditGroupUiEvent.OnColorClicked) }
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
             // When
-            viewModel.onEvent(EditGroupUiEvent.OnColorClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.GREEN))
 
             // Then
             assertEquals(AvatarColor.GREEN, viewModel.uiState.value.color)
@@ -1301,6 +1289,7 @@ class EditGroupViewModelTest {
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
             observeExpenses = ObserveExpensesUseCase(expenses),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            prepareProfilePhoto = { Result.success(ProfilePhoto.Pending(it)) },
         )
     }
 

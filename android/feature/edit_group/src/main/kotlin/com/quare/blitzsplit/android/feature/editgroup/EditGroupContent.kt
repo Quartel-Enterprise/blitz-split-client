@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,6 +67,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
@@ -87,7 +89,19 @@ fun EditGroupContent(
     isDialog: Boolean,
     onEvent: (EditGroupUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: "Ícone do grupo"'s "Tirar foto", null where there is no camera, and "Escolher foto".
+    onTakePhotoClick: (() -> Unit)? = null,
+    onChoosePhotoClick: () -> Unit = {},
 ) {
+    state.iconEditor?.let { editor ->
+        GroupIconSheet(
+            editor = editor,
+            initials = state.initials,
+            onEvent = onEvent,
+            onTakePhotoClick = onTakePhotoClick,
+            onChoosePhotoClick = onChoosePhotoClick,
+        )
+    }
     val usesTwoColumns = !isDialog && rememberDeviceLayout().usesTwoColumns
     FormLayout(
         isDialog = isDialog,
@@ -247,14 +261,14 @@ private fun EditGroupFieldsSection(
     )
 }
 
-// Why: tapping the avatar, or the button under it, cycles its color through the palette, as in "Novo grupo".
+// Why: tapping the avatar, or the button under it, opens "Ícone do grupo".
 @Composable
 private fun ColumnScope.IconSection(
     state: EditGroupUiState,
     onEvent: (EditGroupUiEvent) -> Unit,
     avatarSize: Dp,
 ) {
-    val changeColorLabel = stringResource(R.string.edit_group_change_color_description)
+    val changeIconLabel = stringResource(R.string.edit_group_change_icon)
     Column(
         modifier = Modifier
             .align(Alignment.CenterHorizontally)
@@ -262,25 +276,40 @@ private fun ColumnScope.IconSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        GroupBadge(
-            initials = state.initials,
-            color = state.color,
-            size = avatarSize,
-            modifier = Modifier
-                .clickable(
-                    role = Role.Button,
-                    onClick = { onEvent(EditGroupUiEvent.OnColorClicked) },
-                ).semantics { contentDescription = changeColorLabel },
-        )
-        FilledTonalButton(onClick = { onEvent(EditGroupUiEvent.OnColorClicked) }) {
+        Box(contentAlignment = Alignment.Center) {
+            GroupBadge(
+                initials = state.initials,
+                color = state.color,
+                size = avatarSize,
+                shape = state.shape,
+                photoUrl = state.photoUrl,
+                modifier = Modifier
+                    .clickable(
+                        role = Role.Button,
+                        onClick = { onEvent(EditGroupUiEvent.OnIconClicked) },
+                    ).semantics { contentDescription = changeIconLabel },
+            )
+            if (state.isPreparingPhoto) CircularProgressIndicator()
+        }
+        FilledTonalButton(onClick = { onEvent(EditGroupUiEvent.OnIconClicked) }) {
             Icon(
                 imageVector = Icons.Outlined.Palette,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
             )
             Text(
-                text = stringResource(R.string.edit_group_change_color),
+                text = changeIconLabel,
                 modifier = Modifier.padding(start = 8.dp),
+            )
+        }
+        if (state.showsPhotoError) {
+            Text(
+                text = stringResource(R.string.edit_group_photo_error),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
             )
         }
     }
@@ -543,6 +572,11 @@ private fun buildPreviewState(
     name = name,
     initials = if (name.isEmpty()) "" else "VF",
     color = AvatarColor.PEACH,
+    shape = GroupShape.COOKIE,
+    photo = null,
+    isPreparingPhoto = false,
+    showsPhotoError = false,
+    iconEditor = null,
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     isCurrencyLocked = true,

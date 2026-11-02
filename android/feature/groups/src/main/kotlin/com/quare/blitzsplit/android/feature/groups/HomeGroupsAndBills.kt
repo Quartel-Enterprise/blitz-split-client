@@ -124,6 +124,8 @@ private fun HomeGroupCard(
                 GroupBadge(
                     initials = row.initials,
                     color = row.color,
+                    shape = row.shape,
+                    photoUrl = row.photoUrl,
                     size = if (metrics.isCompact) 36.dp else 40.dp,
                 )
                 if (group.isPinned) {

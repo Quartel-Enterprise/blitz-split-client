@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -30,6 +31,7 @@ class CreateGroupUseCaseTest {
                 name = "Viagem Floripa",
                 type = GroupType.TRIP,
                 color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
                 currency = GroupCurrency.BRL,
                 members = listOf(me),
             )
@@ -245,6 +247,7 @@ class CreateGroupUseCaseTest {
                 name = "Viagem Floripa",
                 type = GroupType.TRIP,
                 color = AvatarColor.BLUE,
+                shape = GroupShape.COOKIE,
                 currency = GroupCurrency.BRL,
                 members = listOf(me, ana),
             )
@@ -287,6 +290,7 @@ class CreateGroupUseCaseTest {
         name = name,
         type = GroupType.TRIP,
         color = AvatarColor.BLUE,
+        shape = GroupShape.COOKIE,
         currency = GroupCurrency.BRL,
         members = members,
     ).getOrThrow()

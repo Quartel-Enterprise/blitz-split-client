@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
@@ -90,10 +91,10 @@ private val previewPeople: List<BillPerson> = listOf(
     ),
 )
 private val previewGroups = listOf(
-    BillGroup(PREVIEW_TRIP_ID, "Viagem Floripa", "VF", AvatarColor.PEACH, memberCount = 6),
-    BillGroup("preview-home", "Apê 302", "AP", AvatarColor.BLUE, memberCount = 2),
-    BillGroup("preview-soccer", "Futebol de quinta", "FQ", AvatarColor.GREEN, memberCount = 10),
-    BillGroup("preview-barbecue", "Churrasco de sábado", "CS", AvatarColor.SAND, memberCount = 8),
+    BillGroup(PREVIEW_TRIP_ID, "Viagem Floripa", "VF", AvatarColor.PEACH, GroupShape.COOKIE, photoUrl = null, memberCount = 6),
+    BillGroup("preview-home", "Apê 302", "AP", AvatarColor.BLUE, GroupShape.COOKIE, photoUrl = null, memberCount = 2),
+    BillGroup("preview-soccer", "Futebol de quinta", "FQ", AvatarColor.GREEN, GroupShape.COOKIE, photoUrl = null, memberCount = 10),
+    BillGroup("preview-barbecue", "Churrasco de sábado", "CS", AvatarColor.SAND, GroupShape.COOKIE, photoUrl = null, memberCount = 8),
 )
 
 internal fun createPreviewBillState(
@@ -111,6 +112,8 @@ internal fun createPreviewBillState(
     groupName = "Viagem Floripa",
     groupInitials = "VF",
     groupColor = AvatarColor.PEACH,
+    groupShape = GroupShape.COOKIE,
+    groupPhotoUrl = null,
     groups = previewGroups,
     groupSelection = groupSelection,
     currency = GroupCurrency.BRL,

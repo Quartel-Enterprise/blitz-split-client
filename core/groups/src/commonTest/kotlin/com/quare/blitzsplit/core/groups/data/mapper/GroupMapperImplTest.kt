@@ -521,7 +521,7 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(entity, userId = "user-1", photoUrl = null)
 
         // Then
         assertEquals("user-2", dto.createdBy)
@@ -536,7 +536,7 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(entity, userId = "user-1", photoUrl = null)
 
         // Then
         assertEquals("user-1", dto.createdBy)
@@ -555,7 +555,7 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(entity, userId = "user-1", photoUrl = null)
 
         // Then
         assertEquals(
@@ -570,6 +570,8 @@ class GroupMapperImplTest {
                 updatedAt = 9L,
                 inviteCode = null,
                 defaultSplit = null,
+                shape = null,
+                photoUrl = null,
             ),
             dto,
         )
@@ -798,7 +800,7 @@ class GroupMapperImplTest {
         )
 
         // When
-        val dto = mapper.toDto(entity, userId = "user-1")
+        val dto = mapper.toDto(entity, userId = "user-1", photoUrl = null)
 
         // Then
         assertNull(dto.inviteCode)
@@ -1335,7 +1337,7 @@ class GroupMapperImplTest {
         val entity = mapper.toEntity(serverGroup(dto), ownerUserId = "user-1")
 
         // When
-        val pushed = mapper.toDto(entity, userId = "user-1")
+        val pushed = mapper.toDto(entity, userId = "user-1", photoUrl = null)
 
         // Then
         assertEquals(dto, pushed.defaultSplit)
@@ -1648,6 +1650,8 @@ class GroupMapperImplTest {
         updatedAt = 2L,
         inviteCode = null,
         defaultSplit = defaultSplit,
+        shape = null,
+        photoUrl = null,
     )
 
     private fun photo(
@@ -1725,6 +1729,8 @@ class GroupMapperImplTest {
         updatedAt = 7L,
         inviteCode = inviteCode,
         defaultSplit = null,
+        shape = null,
+        photoUrl = null,
     )
 
     private fun memberDto(
