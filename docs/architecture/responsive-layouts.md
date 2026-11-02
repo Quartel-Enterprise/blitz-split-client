@@ -123,8 +123,8 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | `billSheetSizing(in: windowLayout)` | A bill's sheet: 820×640 lying down, 620×860 upright, never more than the window. Check on a device that the sheet's two columns still fit when adopting it |
 | `FoldDivision` / `.readingFoldDivision($division)` | The iPhone Duo's fold over a view, in that view's coordinates, for a layout `TwoColumnsLayout` and `FoldHalves` don't cover (a list ending at the fold, a custom overlay); `verticalFrame` and `horizontalFrame` say which way it runs |
 | `ListDetailSeparator(fold:)` | Between a list and the column beside it: the fold's band kept empty (`verticalFrame`), else a divider |
-| `FoldHalves(centersTop:scrollsHalves:top:bottom:single:)` | The Duo open upright, as a notebook, where the boards draw their own version (2.2, 3.1, 6.2, 6.5, 6.6, 7.1, 7.2): `top` above the fold, `bottom` below it, each scrolling on its own (`scrollsHalves: false` for a Form or a List in each half); `single`, the screen's one column, everywhere else |
-| `foldSheetPlacement()` / `foldFormSheetPlacement()` | On a sheet's content (`formSheetSizing()` already has the form's version, which keeps the form's size where the half allows it): with the fold running down the window (`windowFold`, read by the root) the sheet opens in the leading half, no wider than it (`presentationPlacement(.leading)`, iOS 27.0), with what it opened over in the other half; the system places it everywhere else |
+| `FoldHalves(centersTop:scrollsHalves:splits:top:bottom:single:)` | The Duo open upright, as a notebook, where the boards draw their own version (2.2, 3.1, 6.2, 6.5, 6.6, 7.1, 7.2): `top` above the fold, `bottom` below it, each scrolling on its own (`scrollsHalves: false` for a Form or a List in each half); `single`, the screen's one column, everywhere else and while `splits` is false. Its first frame takes the window's fold (`windowFold`), so a screen opening on the fold never rebuilds what it holds |
+| `foldSheetPlacement(isForm:)` | On a sheet's content (`formSheetSizing()` already has it with `isForm`, the root's sheet from `AppRoute.usesFormSheet`): with the fold running down the window (`windowFold`, read by the root over the whole window) the sheet opens in the leading half, no wider than it (`presentationPlacement(.leading)`, iOS 27.0), with what it opened over in the other half; everywhere else the system places it at its own size, the form's or the system's. A routed screen that adopts another sizing (`billSheetSizing`) needs its route's sizing at the root too |
 | `ToolbarContent.prefersVerticalBar()` / `.readingVerticalBar($isVertical)` | A toolbar item the boards put in the closed Duo's vertical bar (`axisBehavior(.verticalPreferred)`: the avatar, "Rachar conta"), and whether the bar is vertical now (`toolbarVerticalEdge`), so a button drops its title (`SplitBillButton(showsTitle:)`) or leaves the bottom bar for it |
 
 `formSheetSizing()` sizes the recovery code's, Novo grupo's and Editar perfil's sheets; `billSheetSizing` no screen
@@ -141,8 +141,8 @@ for interactions) is not read. Before building anything by hand for the Duo:
 - System sheets, alerts, menus, split views and tab bars already keep off the fold and the camera, but a form sheet
   keeps its width over the fold: `foldSheetPlacement()` moves it into the leading half.
 - Built with the 27.1 SDK, the closed Duo's vertical bars (back, glass buttons, a sheet's ✕ and ✓, tabs on the
-  camera's edge) are the system's vertical toolbars, and the open Duo keeps the tabs there too; a screen only tunes
-  them with `prefersVerticalBar()`. A `NavigationStack` nested beside another (Grupos' and Contatos' list beside the
+  camera's edge) are the system's vertical toolbars, and the open Duo lying down keeps the tabs and the bar there too;
+  a screen only tunes them with `prefersVerticalBar()`, and a button drops its title wherever the bar is vertical. A `NavigationStack` nested beside another (Grupos' and Contatos' list beside the
   detail) keeps its own horizontal toolbar and leaves about 84 pt on its trailing side for a vertical bar, so its List
   ends short of the fold; `toolbarVerticalBehavior(.disabled)` there would take the tabs' vertical bar away too, so
   it stays.

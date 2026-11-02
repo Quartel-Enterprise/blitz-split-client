@@ -52,10 +52,10 @@ struct RootView: View {
                             screen(for: route)
                         }
                 }
-                .foldSheetPlacement()
+                .foldSheetPlacement(isForm: route.usesFormSheet)
             }
             // The front half of an iPhone Duo open, with what it opened over in the other one
-            .foldSheetPlacement()
+            .foldSheetPlacement(isForm: route.usesFormSheet)
         }
         #if os(iOS)
         .fullScreenCover(item: $app.cover) { route in

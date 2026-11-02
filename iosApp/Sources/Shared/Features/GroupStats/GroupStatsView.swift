@@ -140,10 +140,10 @@ private struct StatsScroll: View {
 
     var body: some View {
         #if os(iOS)
-        if !layout.usesTwoColumns, model.state.showsStats {
+        if !layout.usesTwoColumns {
             // An iPhone Duo open upright: the total and Over time above the fold, the categories, By person and the
             // biggest bill below it (6.6)
-            FoldHalves {
+            FoldHalves(splits: model.state.showsStats) {
                 VStack(alignment: .leading, spacing: 0) {
                     StatsTopLine(model: model, pickDates: pickDates)
                     StatsHeroCard(state: model.state)

@@ -75,7 +75,12 @@ private struct WindowMeasuring: ViewModifier {
     func body(content: Content) -> some View {
         content
             .measuringScreenLayout($window)
-            .readingFoldDivision($fold)
+            // The whole window's coordinates, which a sheet is placed in, safe areas included
+            .background {
+                Color.clear
+                    .ignoresSafeArea()
+                    .readingFoldDivision($fold)
+            }
             .environment(\.windowLayout, window)
             .environment(\.windowFold, fold)
             // The first measure moves it off `.zero`, so the start counts as a change too
