@@ -1,4 +1,3 @@
-import AVFoundation
 import Observation
 import PhotosUI
 import Shared
@@ -217,23 +216,8 @@ private struct EditProfileNameSections: View {
 private struct PhotoEditor: View {
     let model: EditProfileModel
 
-    @State private var pickedPhoto: PhotosPickerItem?
     @State private var showsPhotoPicker = false
-    @State private var showsCamera = false
-
-    #if os(iOS)
-    @State private var showsCameraDenied = false
-
-    /// Why: the system camera shows a black screen when access was refused, so ask first and explain a "no".
-    private func takePhoto() async {
-        let isAllowed = switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized: true
-        case .notDetermined: await AVCaptureDevice.requestAccess(for: .video)
-        default: false
-        }
-        if isAllowed { showsCamera = true } else { showsCameraDenied = true }
-    }
-    #endif
+    @State private var takesPhoto = false
 
     var body: some View {
         let state = model.state
@@ -252,7 +236,7 @@ private struct PhotoEditor: View {
                 Menu {
                     #if os(iOS)
                     if CameraPicker.isAvailable {
-                        Button("Take photo", systemImage: "camera") { Task { await takePhoto() } }
+                        Button("Take photo", systemImage: "camera") { takesPhoto = true }
                     }
                     #endif
                     // Why: the system picker needs no photo library permission and returns one image, or nothing.
@@ -288,25 +272,9 @@ private struct PhotoEditor: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 6)
-        .photosPicker(isPresented: $showsPhotoPicker, selection: $pickedPhoto, matching: .images)
-        .onChange(of: pickedPhoto) { _, item in
-            guard let item else { return }
-            pickedPhoto = nil
-            Task { model.photoPicked(try? await item.loadTransferable(type: Data.self)) }
-        }
+        .photoLibraryPicker(isPresented: $showsPhotoPicker) { data in model.photoPicked(data) }
         #if os(iOS)
-        .fullScreenCover(isPresented: $showsCamera) {
-            CameraPicker { data in model.photoPicked(data) }
-                .ignoresSafeArea()
-        }
-        .alert("Camera access is off", isPresented: $showsCameraDenied) {
-            Button("Open Settings") {
-                if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Allow camera access in Settings to take a photo.")
-        }
+        .cameraCapture(isRequested: $takesPhoto) { data in model.photoPicked(data) }
         #endif
     }
 }

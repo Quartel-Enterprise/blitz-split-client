@@ -46,6 +46,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
 | `SupabaseBillCommentRemoteDataSource` | the `bill_comments` table (Postgrest): the comments on the bills of the user's groups |
+| `SupabaseBillAttachmentRemoteDataSource` | the `bill_attachments` table (Postgrest) and the private `bill-attachments` Storage bucket: one `{groupId}/{expenseId}/{id}.jpg` per photo, read through signed URLs |
 | `SupabaseHiddenContactRemoteDataSource` | the `hidden_contacts` table (Postgrest): the people the user hid from Contatos |
 | `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
@@ -133,6 +134,15 @@ suspend fun syncNow(): Result<Unit> {
                 } else {
                     Result.success(Unit)
                 }
+                // The bills' photos the same way, each image going up before its row
+                val attachmentsSynced = if (areGroupsSynced) {
+                    suspendRunCatching {
+                        billAttachmentRepository.download(userId).getOrThrow()
+                        billAttachmentRepository.uploadPending(userId).getOrThrow()
+                    }
+                } else {
+                    Result.success(Unit)
+                }
                 offerRecoveryCodeIfDue()
                 signOutIfScheduledAndSynced()
                 keysSynced.getOrThrow()
@@ -141,6 +151,7 @@ suspend fun syncNow(): Result<Unit> {
                 groupsSynced.getOrThrow()
                 pinsSynced.getOrThrow()
                 commentsSynced.getOrThrow()
+                attachmentsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
         }
     } finally {
@@ -324,6 +335,21 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   stamps the author) for the bills on the device, and drops a synced comment the server no longer has; the server
   drops a comment whose bill was deleted meanwhile, and the bill's `ON DELETE CASCADE` takes its comments off the
   device. Their pending flag joins `observeHasPendingChanges()` and their pending ids `syncWhenDue()`.
+- **Attachments** (`:core:expenses`): a bill's photos, and later the receipt it was read from (`bill_attachment`,
+  `bill_attachments` and the `bill-attachments` bucket on the server, 7.3g), are added and removed, never edited.
+  `BillImageEncoder` (`:core:provider:image`) makes the picked file an upright JPEG of at most 1600 px under 1.5 MB
+  (the bucket takes 2 MiB, and Android's Room reads a row through a 2 MiB window), which waits in the row
+  (`pendingJpeg`) with `pendingSync` until the sync puts it in the bucket, with upsert, and then the row. Conta observes
+  the rows without that column (`BillAttachmentRow`) and reads each pending JPEG once (`LoadBillAttachmentImage`),
+  handing the UIs its bytes (`BillAttachmentTile.localImage`) until it closes; a photo no quality brings under the
+  limit is `TOO_LARGE`. A removal is a tombstone (`isDeleted`, a newer `updatedAt`) whose
+  image the sync deletes from the bucket after the row, best effort, even for a photo that never synced, whose upload
+  may have reached the server with its answer lost. They sync after the comments, down then up, one row read and
+  sent at a time, so only one JPEG is in memory and one the bucket refuses doesn't hold the others; Last-Write-Wins
+  per row, deleted staying deleted. The server drops a row past the bill's 5 photos (1
+  receipt) or whose bill is gone, which then leaves the device on the next download, and the device checks the same
+  limit when adding (`insertWithinLimit`). The images in the bucket load through signed URLs of 2 hours, online only,
+  kept in memory by the repository and signed again 30 minutes before they expire.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 - **Activity** (`:core:activity`): the "Atividade" feed is a log the server writes (`activity_events`, by triggers

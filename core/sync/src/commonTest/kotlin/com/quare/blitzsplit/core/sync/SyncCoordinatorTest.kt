@@ -5,10 +5,14 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
@@ -69,6 +73,7 @@ class SyncCoordinatorTest {
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var categories: FakeCategoryRepository
     private lateinit var billComments: FakeBillCommentRepository
+    private lateinit var billAttachments: FakeBillAttachmentRepository
     private val categoryTerms = FakeCategoryTermRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
@@ -5165,6 +5170,554 @@ class SyncCoordinatorTest {
             assertEquals(1, account.signOutCount)
         }
 
+    @Test
+    fun `GIVEN an anonymous user and a pending photo WHEN syncing THEN pulls and pushes it under its user id`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                storedAttachments = listOf(photo(id = "receipt")),
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.uploadedUserIds)
+            assertTrue(billAttachments.attachments.value.none { it.isPending })
+        }
+
+    @Test
+    fun `GIVEN a Google account and a pending photo WHEN syncing THEN pulls and pushes it under its user id`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedAttachments = listOf(photo(id = "receipt")),
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), billAttachments.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), billAttachments.uploadedUserIds)
+            assertTrue(billAttachments.attachments.value.none { it.isPending })
+        }
+
+    @Test
+    fun `GIVEN a pending photo WHEN syncing THEN syncs the photos after the comments and before the activity`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedAttachments = listOf(photo(id = "receipt")),
+                logsCommentsAndActivity = true,
+                logsAttachments = true,
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+            assertEquals(
+                listOf(
+                    "groups download $userId",
+                    "groups upload $userId",
+                    "bills download $userId",
+                    "bills upload $userId",
+                    "payments download $userId",
+                    "payments upload $userId",
+                    "comments download $userId",
+                    "comments upload $userId",
+                    "attachments download $userId",
+                    "attachments upload $userId",
+                    "activity upload $userId",
+                    "activity download $userId",
+                ),
+                calls.filterNot {
+                    it.startsWith("profile ") || it.startsWith("keys ") || it.startsWith("preferences ")
+                },
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN neither pulls nor pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        groups.pullError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billAttachments.downloadedUserIds.isEmpty())
+        assertTrue(billAttachments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the bills fail to go up WHEN syncing THEN neither pulls nor pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        expenses.pushError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billAttachments.downloadedUserIds.isEmpty())
+        assertTrue(billAttachments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the categories fail to go up WHEN syncing THEN neither pulls nor pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        categories.pushError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billAttachments.downloadedUserIds.isEmpty())
+        assertTrue(billAttachments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the payments fail to come down WHEN syncing THEN neither pulls nor pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        settlements.pullError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billAttachments.downloadedUserIds.isEmpty())
+        assertTrue(billAttachments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the pins fail to go up WHEN syncing THEN still pulls and pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        pins.uploadError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.uploadedUserIds)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN the comments fail to come down WHEN syncing THEN still pulls and pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        billComments.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.uploadedUserIds)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN the comments fail to go up WHEN syncing THEN still pulls and pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        billComments.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.uploadedUserIds)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+        assertTrue(
+            billComments.comments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the photos fail to come down WHEN syncing THEN pushes none and still syncs the activity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        billAttachments.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billAttachments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.uploadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the photos fail to go up WHEN syncing THEN keeps the photo pending and the sync is failed`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        billAttachments.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN the photos fail to go up WHEN syncing THEN still syncs the money the comments and the activity`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                pendingBills = true,
+                pendingPayments = true,
+                storedComments = listOf(comment(id = "uber")),
+                storedAttachments = listOf(photo(id = "receipt")),
+            )
+            billAttachments.pushError = IllegalStateException("server down")
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertFalse(expenses.hasPendingChanges.value)
+            assertFalse(settlements.hasPendingChanges.value)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billComments.uploadedUserIds)
+            assertTrue(billComments.comments.value.none { it.isPending })
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.uploadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN a photos push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        billAttachments.pushError = IllegalStateException("no answer")
+        coordinator.syncNow()
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncState.PENDING, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN nothing else pending and a photo added offline WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+            billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
+            runCurrent()
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+            assertTrue(billAttachments.uploadedUserIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN a photo is added THEN pushes the photos`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = billAttachments.uploadedUserIds.size
+
+        // When
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, billAttachments.uploadedUserIds.size)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a photo added offline WHEN the device comes online THEN pushes the photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billAttachments.uploadedUserIds)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN a photos push that failed online WHEN another photo is added THEN pushes the photos again`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        billAttachments.pushError = IllegalStateException("no answer")
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
+        runCurrent()
+        billAttachments.pushError = null
+        val uploadsBefore = billAttachments.uploadedUserIds.size
+
+        // When
+        billAttachments.addAttachment(photo(id = "table"), jpeg = byteArrayOf(1))
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, billAttachments.uploadedUserIds.size)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a photos push that failed online WHEN the photo is taken off THEN pushes the photos again`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        billAttachments.pushError = IllegalStateException("no answer")
+        billAttachments.addAttachment(
+            photo(
+                id = "receipt",
+                updatedAt = 1L,
+            ),
+            jpeg = byteArrayOf(1),
+        )
+        runCurrent()
+        billAttachments.pushError = null
+        val uploadsBefore = billAttachments.uploadedUserIds.size
+
+        // When
+        // Why: the fake drops a removed photo, while the real repository keeps it pending, stamped anew.
+        billAttachments.attachments.update { list -> list.map { it.copy(updatedAt = 2L) } }
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, billAttachments.uploadedUserIds.size)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN a bills push that failed online WHEN a photo is added THEN syncs again and pushes both`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        expenses.pushError = IllegalStateException("no answer")
+        expenses.hasPendingChanges.value = true
+        expenses.pendingVersions.value = listOf(1_000L)
+        runCurrent()
+        expenses.pushError = null
+        val billUploadsBefore = expenses.uploadedUserIds.size
+        val photoUploadsBefore = billAttachments.uploadedUserIds.size
+
+        // When
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
+        runCurrent()
+
+        // Then
+        assertEquals(billUploadsBefore + 1, expenses.uploadedUserIds.size)
+        assertEquals(photoUploadsBefore + 1, billAttachments.uploadedUserIds.size)
+        assertFalse(expenses.hasPendingChanges.value)
+        assertTrue(billAttachments.attachments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN a photo added while the photos push is in flight WHEN retrying THEN pushes it in another round`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedAttachments = listOf(photo(id = "receipt")),
+                attachmentQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.retry()
+            runCurrent()
+
+            // Then
+            assertEquals(2, billAttachments.uploadedUserIds.size)
+            assertEquals(2, billAttachments.attachments.value.size)
+            assertTrue(billAttachments.attachments.value.none { it.isPending })
+        }
+
+    @Test
+    fun `GIVEN only a photo queued online WHEN signing out once synced THEN pushes it before ending the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedAttachments = listOf(photo(id = "receipt")),
+                logsAttachments = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals(listOf(userId), billAttachments.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(calls.indexOf("account sign out") > calls.lastIndexOf("attachments upload $userId"))
+        }
+
+    @Test
+    fun `GIVEN the photos push fails WHEN signing out once synced THEN keeps the session and the schedule`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedAttachments = listOf(photo(id = "receipt")),
+        )
+        billAttachments.pushError = IllegalStateException("server down")
+
+        // When
+        coordinator.signOutWhenSynced()
+        runCurrent()
+
+        // Then
+        assertEquals(0, account.signOutCount)
+        assertEquals(google, account.status)
+        assertEquals(pierre, profile.profile.value)
+        assertTrue(
+            billAttachments.attachments.value
+                .single()
+                .isPending,
+        )
+        assertTrue(account.signOutWhenSynced)
+    }
+
+    @Test
+    fun `GIVEN a photo added while the push is in flight WHEN signing out once synced THEN pushes it before`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedAttachments = listOf(photo(id = "receipt")),
+                attachmentQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(2, billAttachments.uploadedUserIds.size)
+            assertTrue(billAttachments.attachments.value.none { it.isPending })
+            assertEquals(1, account.signOutCount)
+        }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -5238,6 +5791,24 @@ class SyncCoordinatorTest {
         isPending = true,
     )
 
+    private fun photo(
+        id: String,
+        updatedAt: Long = 1L,
+    ): BillAttachment = BillAttachment(
+        id = id,
+        expenseId = "dinner-bill",
+        groupId = "dinner",
+        kind = BillAttachmentKind.PHOTO,
+        width = 1_600,
+        height = 1_200,
+        addedByUserId = FakeAccountRepository.ANONYMOUS_USER_ID,
+        addedByMemberId = "me",
+        addedAt = 1L,
+        updatedAt = updatedAt,
+        isPending = true,
+        hasPendingImage = false,
+    )
+
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {
         it.startsWith("preferences ") || it.startsWith("groups ") || it.startsWith("bills ") ||
             it.startsWith("payments ")
@@ -5273,8 +5844,11 @@ class SyncCoordinatorTest {
         pendingPayments: Boolean = false,
         firstDownloadPending: Boolean = false,
         storedComments: List<BillComment> = emptyList(),
+        storedAttachments: List<BillAttachment> = emptyList(),
         commentQueuedDuringFirstPush: Boolean = false,
         logsCommentsAndActivity: Boolean = false,
+        attachmentQueuedDuringFirstPush: Boolean = false,
+        logsAttachments: Boolean = false,
     ) {
         firstDownload = FirstDownload().also { if (firstDownloadPending) it.start() }
         account = FakeAccountRepository(initialStatus = status).also {
@@ -5294,6 +5868,7 @@ class SyncCoordinatorTest {
         activity = FakeActivityRepository()
         categories = FakeCategoryRepository()
         billComments = FakeBillCommentRepository(initialComments = storedComments)
+        billAttachments = FakeBillAttachmentRepository(initialAttachments = storedAttachments)
         // Why: only the cases that assert where the comments go log them, so the others keep their exact logs.
         val commentAndActivityCalls = if (logsCommentsAndActivity) calls else mutableListOf()
         paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
@@ -5346,6 +5921,18 @@ class SyncCoordinatorTest {
                     billComments
                 },
                 calls = commentAndActivityCalls,
+            ),
+            billAttachmentRepository = RecordingBillAttachmentRepository(
+                delegate = if (attachmentQueuedDuringFirstPush) {
+                    AttachmentDuringFirstPushBillAttachmentRepository(
+                        delegate = billAttachments,
+                        queued = photo(id = "added-during-push"),
+                    )
+                } else {
+                    billAttachments
+                },
+                // Why: only the cases that assert where the photos go log them, so the others keep their exact logs.
+                calls = if (logsAttachments) calls else mutableListOf(),
             ),
             activityRepository = RecordingActivityRepository(activity, commentAndActivityCalls),
             hiddenContactRepository = FakeHiddenContactRepository(),
@@ -5587,6 +6174,33 @@ private class RecordingBillCommentRepository(
 
     override suspend fun uploadPending(userId: String): Result<Unit> {
         calls += "comments upload $userId"
+        return delegate.uploadPending(userId)
+    }
+}
+
+// Why: a photo added while the first photos push is in flight, so one is still pending once it ends.
+private class AttachmentDuringFirstPushBillAttachmentRepository(
+    private val delegate: FakeBillAttachmentRepository,
+    private val queued: BillAttachment,
+) : BillAttachmentRepository by delegate {
+    override suspend fun uploadPending(userId: String): Result<Unit> {
+        val result = delegate.uploadPending(userId)
+        if (delegate.uploadedUserIds.size == 1) delegate.attachments.update { it + queued }
+        return result
+    }
+}
+
+private class RecordingBillAttachmentRepository(
+    private val delegate: BillAttachmentRepository,
+    private val calls: MutableList<String>,
+) : BillAttachmentRepository by delegate {
+    override suspend fun download(userId: String): Result<Unit> {
+        calls += "attachments download $userId"
+        return delegate.download(userId)
+    }
+
+    override suspend fun uploadPending(userId: String): Result<Unit> {
+        calls += "attachments upload $userId"
         return delegate.uploadPending(userId)
     }
 }

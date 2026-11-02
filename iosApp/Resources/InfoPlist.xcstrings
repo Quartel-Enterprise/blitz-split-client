@@ -38,19 +38,19 @@
       }
     },
     "NSCameraUsageDescription" : {
-      "comment" : "Why the app asks for the camera: scanning an invite's or the recovery QR code, and taking the profile photo",
+      "comment" : "Why the app asks for the camera: scanning an invite's or the recovery QR code, and taking the profile photo and a bill's photos",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "To scan the QR code of an invite or from your old device, and to take your profile photo."
+            "value" : "To scan the QR code of an invite or from your old device, and to take your profile photo and photos of bills."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para ler o QR code de um convite ou do seu aparelho antigo, e tirar a foto do seu perfil."
+            "value" : "Para ler o QR code de um convite ou do seu aparelho antigo, e tirar a foto do seu perfil e fotos das contas."
           }
         }
       }
@@ -69,6 +69,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para convidar gente da sua agenda com o link de um grupo. Os números ficam só neste aparelho."
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryAddUsageDescription" : {
+      "comment" : "Why the app asks to add to Photos: saving a bill's photo from its viewer (Download, then Save Image)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To save a bill's photos to your library."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para salvar as fotos das contas na sua galeria."
           }
         }
       }

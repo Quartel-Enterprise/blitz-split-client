@@ -8,4 +8,10 @@ sealed interface BillDetailUiAction {
     data object ShowCommentError : BillDetailUiAction
 
     data object ShowUndoError : BillDetailUiAction
+
+    data class ShowPhotoError(
+        val error: BillPhotoError,
+    ) : BillDetailUiAction
+
+    data object ShowRemovePhotoError : BillDetailUiAction
 }

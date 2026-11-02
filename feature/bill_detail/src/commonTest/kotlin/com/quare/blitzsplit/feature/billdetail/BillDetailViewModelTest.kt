@@ -11,6 +11,8 @@ import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistory
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
+import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -22,16 +24,22 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -89,6 +97,7 @@ class BillDetailViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var deletedBills: InMemoryDeletedBillRepository
     private lateinit var comments: FakeBillCommentRepository
+    private lateinit var attachments: FakeBillAttachmentRepository
     private lateinit var activity: FakeActivityRepository
     private val isOnline = MutableStateFlow(true)
     private val minutes = MutableSharedFlow<Unit>()
@@ -2509,6 +2518,7 @@ class BillDetailViewModelTest {
             it.addGate = commentGate
         }
         activity = FakeActivityRepository(initialEvents = storedEvents).also { it.historyPage = serverHistory }
+        attachments = FakeBillAttachmentRepository()
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val expenseNeverAnswers = MutableSharedFlow<Expense?>()
         viewModel = BillDetailViewModel(
@@ -2534,6 +2544,30 @@ class BillDetailViewModelTest {
             loadBillHistory = LoadBillHistoryUseCase(activity),
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
+            addBillAttachment = AddBillAttachment { expenseId, groupId, kind, source, memberId ->
+                attachments
+                    .addAttachment(
+                        BillAttachment(
+                            id = "photo-${attachments.attachments.value.size + 1}",
+                            expenseId = expenseId,
+                            groupId = groupId,
+                            kind = kind,
+                            width = 1600,
+                            height = 1200,
+                            addedByUserId = null,
+                            addedByMemberId = memberId,
+                            addedAt = nowMillis,
+                            updatedAt = nowMillis,
+                            isPending = true,
+                            hasPendingImage = true,
+                        ),
+                        jpeg = source,
+                    ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }
+            },
+            removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),
+            loadBillAttachmentUrls = LoadBillAttachmentUrlsUseCase(attachments),
+            loadBillAttachmentImage = LoadBillAttachmentImageUseCase(attachments),
+            observeBillAttachments = ObserveBillAttachmentsUseCase(attachments),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             minuteTicks = MinuteTicks { minutes },
         )

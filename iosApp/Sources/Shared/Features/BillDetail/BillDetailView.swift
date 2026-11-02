@@ -8,6 +8,11 @@ final class BillDetailModel {
     private(set) var deleteErrorCount = 0
     private(set) var commentErrorCount = 0
     private(set) var undoErrorCount = 0
+    private(set) var unreadablePhotoCount = 0
+    private(set) var tooLargePhotoCount = 0
+    private(set) var noRoomPhotoCount = 0
+    private(set) var failedPhotoCount = 0
+    private(set) var removePhotoErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<BillDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -24,9 +29,20 @@ final class BillDetailModel {
             case is BillDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is BillDetailUiActionShowCommentError: self?.commentErrorCount += 1
             case is BillDetailUiActionShowUndoError: self?.undoErrorCount += 1
+            case let photo as BillDetailUiActionShowPhotoError: self?.countPhotoError(photo.error)
+            case is BillDetailUiActionShowRemovePhotoError: self?.removePhotoErrorCount += 1
             default: break
             }
         })
+    }
+
+    private func countPhotoError(_ error: BillPhotoError) {
+        switch error {
+        case .unreadable: unreadablePhotoCount += 1
+        case .tooLarge: tooLargePhotoCount += 1
+        case .noRoom: noRoomPhotoCount += 1
+        default: failedPhotoCount += 1
+        }
     }
 
     /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: "Delete" has
@@ -47,6 +63,35 @@ final class BillDetailModel {
         )
     }
 
+    /// A photo taken or picked, as the file came; nil when the platform couldn't read it.
+    func photoPicked(_ data: Data?) {
+        guard let data else {
+            send(BillDetailUiEventOnPhotoUnreadable.shared)
+            return
+        }
+        send(BillDetailUiEventOnPhotoPicked(source: BlitzSplitApple.shared.toByteArray(data: data)))
+    }
+
+    /// The viewer, open while the ViewModel has an attachment to show; closing it any way tells the ViewModel.
+    var isViewerOpen: Binding<Bool> {
+        Binding(
+            get: { self.state.viewedAttachmentId != nil },
+            set: { isOpen in
+                if !isOpen, self.current.viewedAttachmentId != nil { self.send(BillDetailUiEventOnViewerDismissed.shared) }
+            },
+        )
+    }
+
+    /// The viewer's page, which a swipe or an arrow moves.
+    var viewedAttachmentId: Binding<String> {
+        Binding(
+            get: { self.state.viewedAttachmentId ?? "" },
+            set: { id in
+                if id != self.current.viewedAttachmentId { self.send(BillDetailUiEventOnViewerPageChanged(id: id)) }
+            },
+        )
+    }
+
     /// The alert closed without "Delete"; the ViewModel keeps it while the bill is being deleted.
     func dismissDeletion() {
         if current.deletion != nil { send(BillDetailUiEventOnDeleteDismissed.shared) }
@@ -57,7 +102,8 @@ final class BillDetailModel {
     }
 }
 
-/// "Bill": one bill of the group, what it was, who paid and how it splits, then its Comments and History (7.3). Pushed
+/// "Bill": one bill of the group, what it was, who paid, its Attachments and how it splits, then its Comments and
+/// History (7.3). Pushed
 /// over the group on iPhone, a sheet on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the
 /// Mac; Edit and Delete in the toolbar (on the Mac, in the inspector's header).
 struct BillDetailView: View {
@@ -113,7 +159,7 @@ struct BillDetailView: View {
             GlassToastMessage(text: "Couldn't send the comment. Try again.", trigger: model?.commentErrorCount ?? 0),
             GlassToastMessage(text: "Couldn't undo. Try again.", trigger: model?.undoErrorCount ?? 0),
             GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0),
-        ])
+        ] + BillAttachmentToasts.messages(model))
         .onAppear {
             if model == nil { model = BillDetailModel(route: route) }
         }
@@ -264,9 +310,10 @@ private struct ShareAvatar: View {
 }
 
 #if os(iOS)
-/// Upright and on a narrow iPad sheet: one column, the bill, its split, Comments and History, with the composer
-/// floating in glass at the bottom, above the keyboard. Lying down and on a wide iPad sheet: the bill on the left; how
-/// it splits, Comments and History on the right with the composer under them.
+/// Upright and on a narrow iPad sheet: one column, the bill, its Attachments, its split, Comments and History, with the
+/// composer floating in glass at the bottom, above the keyboard. Lying down and on a wide iPad sheet: the bill and its
+/// Attachments on the left; how it splits, Comments and History on the right with the composer under them. A photo
+/// opens full screen over it.
 private struct PhoneBillDetail: View {
     let model: BillDetailModel
 
@@ -281,7 +328,10 @@ private struct PhoneBillDetail: View {
         Group {
             if layout.usesTwoColumns {
                 TwoColumnsLayout(spacing: 0) {
-                    list { billSections }
+                    list {
+                        billSections
+                        attachmentsSection(wraps: true)
+                    }
                 } second: {
                     VStack(spacing: 0) {
                         list {
@@ -297,6 +347,7 @@ private struct PhoneBillDetail: View {
             } else {
                 list {
                     billSections
+                    attachmentsSection(wraps: false)
                     splitSection
                     talkSections
                 }
@@ -322,6 +373,9 @@ private struct PhoneBillDetail: View {
         }
         .measuringScreenLayout($layout)
         .background(Palette.groupedBackground)
+        .fullScreenCover(isPresented: model.isViewerOpen) {
+            BillAttachmentViewer(model: model)
+        }
     }
 
     private func list<Content: View>(@ViewBuilder content: () -> Content) -> some View {
@@ -383,6 +437,18 @@ private struct PhoneBillDetail: View {
                 Text("Your share")
             }
         }
+    }
+
+    /// Attachments under Your share, as the canvas draws them: a strip in one column, wrapping in the bill's own one.
+    private func attachmentsSection(wraps: Bool) -> some View {
+        Section {
+            BillAttachmentStrip(model: model, wraps: wraps, metrics: .standard)
+                .padding(.vertical, 4)
+        } header: {
+            BillAttachmentsHeader(state: state)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: wraps ? 4 : 0))
     }
 
     private var splitSection: some View {
@@ -474,7 +540,7 @@ private enum MacBillTab: Hashable {
 }
 
 /// The window's inspector on the right (decision 3, F7Mac): the bill's header with Edit…, Delete and ✕, then, in the
-/// standard window's 720 pt, the bill and its split on the left and Comments and History on the right with the
+/// standard window's 720 pt, the bill, its Attachments and its split on the left and Comments and History on the right with the
 /// composer under them. A narrow window's 330 pt inspector shows one of Bill, Comments and History at a time, the
 /// composer under Comments.
 private struct MacBillDetail: View {
@@ -537,6 +603,9 @@ private struct MacBillDetail: View {
         }
         .measuringScreenLayout($layout)
         .background(Palette.groupedBackground)
+        .sheet(isPresented: model.isViewerOpen) {
+            BillAttachmentViewer(model: model)
+        }
         // Esc closes it while the focus is in it, which it takes as it opens, so a field elsewhere keeps its own Esc
         .focusable()
         .focusEffectDisabled()
@@ -635,6 +704,11 @@ private struct MacBillDetail: View {
                         .padding(12)
                         .background(Palette.card, in: .rect(cornerRadius: 10))
                 }
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                BillAttachmentsHeader(state: state)
+                    .font(.headline)
+                BillAttachmentStrip(model: model, wraps: true, metrics: isNarrow ? .narrow : .standard)
             }
             VStack(alignment: .leading, spacing: 6) {
                 Text(verbatim: BillCopy.splitHeader(state.splitMode, count: state.participantCount))

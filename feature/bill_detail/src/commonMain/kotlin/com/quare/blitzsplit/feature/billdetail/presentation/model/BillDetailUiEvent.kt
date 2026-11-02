@@ -34,4 +34,29 @@ sealed interface BillDetailUiEvent : UiEvent {
 
     // Why: "Desfazer" on the history's latest edit.
     data object OnUndoClicked : BillDetailUiEvent
+
+    // Why: the photo taken or picked from the gallery or the files, as the file came.
+    class OnPhotoPicked(
+        val source: ByteArray,
+    ) : BillDetailUiEvent
+
+    // Why: the platform couldn't read the file picked (a cloud photo not downloaded, say).
+    data object OnPhotoUnreadable : BillDetailUiEvent
+
+    // Why: a tile of "Anexos", which opens the viewer on it.
+    data class OnAttachmentClicked(
+        val id: String,
+    ) : BillDetailUiEvent
+
+    // Why: swiping the viewer to another attachment.
+    data class OnViewerPageChanged(
+        val id: String,
+    ) : BillDetailUiEvent
+
+    data object OnViewerDismissed : BillDetailUiEvent
+
+    // Why: "Remover foto" in the viewer, offline too and with no question, as the boards draw it.
+    data class OnRemoveAttachmentClicked(
+        val id: String,
+    ) : BillDetailUiEvent
 }

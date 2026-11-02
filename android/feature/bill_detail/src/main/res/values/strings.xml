@@ -75,6 +75,41 @@
     <string name="bill_detail_change_none">—</string>
     <string name="bill_detail_change_note">%1$s · %2$s</string>
     <string name="bill_detail_change_spoken">%1$s, changed to %2$s</string>
+    <string name="bill_detail_attachments">Attachments</string>
+    <string name="bill_detail_attachment_photo">Photo %d</string>
+    <string name="bill_detail_attachment_receipt">Receipt</string>
+    <string name="bill_detail_attachment_receipt_badge">Receipt</string>
+    <string name="bill_detail_attachment_pending_badge">Queued</string>
+    <string name="bill_detail_attachment_sub">%1$s · %2$s</string>
+    <string name="bill_detail_attachment_today">today</string>
+    <string name="bill_detail_attachment_yesterday">yesterday</string>
+    <string name="bill_detail_attachment_open">Open</string>
+    <string name="bill_detail_add_photo">Add photo</string>
+    <string name="bill_detail_add_photo_sub">Camera or gallery</string>
+    <string name="bill_detail_take_photo">Take photo</string>
+    <string name="bill_detail_choose_photo">Choose from gallery</string>
+    <string name="bill_detail_photo_unreadable">Couldn\'t open that image. Pick another one.</string>
+    <string name="bill_detail_photo_too_large">This photo is too large. Pick another one.</string>
+    <string name="bill_detail_photo_no_room">This bill already has 5 photos.</string>
+    <string name="bill_detail_photo_failed">Couldn\'t attach the photo. Try again.</string>
+    <string name="bill_detail_remove_photo_error">Couldn\'t remove the photo. Try again.</string>
+    <string name="bill_detail_viewer_close">Close</string>
+    <string name="bill_detail_viewer_photo_title">Photo %1$d of %2$d</string>
+    <string name="bill_detail_viewer_download">Download</string>
+    <string name="bill_detail_viewer_remove">Remove photo</string>
+    <string name="bill_detail_viewer_added_today">%1$s attached it today at %2$s</string>
+    <string name="bill_detail_viewer_added_yesterday">%1$s attached it yesterday at %2$s</string>
+    <string name="bill_detail_viewer_added_other">%1$s attached it on %2$s at %3$s</string>
+    <string name="bill_detail_viewer_read_today">%1$s read the receipt today at %2$s</string>
+    <string name="bill_detail_viewer_read_yesterday">%1$s read the receipt yesterday at %2$s</string>
+    <string name="bill_detail_viewer_read_other">%1$s read the receipt on %2$s at %3$s</string>
+    <string name="bill_detail_viewer_can_remove">Anyone in the group can remove it.</string>
+    <string name="bill_detail_viewer_swipe">Swipe sideways to see the next one.</string>
+    <string name="bill_detail_viewer_no_image">The photo shows up when you\'re back online.</string>
+    <string name="bill_detail_photo_saved">Photo saved to the gallery</string>
+    <string name="bill_detail_photo_save_error">Couldn\'t save the photo. Try again.</string>
+    <string name="bill_detail_photo_file_name">blitz-split-photo-%d.jpg</string>
+    <string name="bill_detail_receipt_file_name">blitz-split-receipt.jpg</string>
     <plurals name="bill_detail_history_photos_added">
         <item quantity="one">attached a photo</item>
         <item quantity="other">attached %d photos</item>
@@ -106,5 +141,9 @@
     <plurals name="bill_detail_mode_shares">
         <item quantity="one">By shares among %d</item>
         <item quantity="other">By shares among %d</item>
+    </plurals>
+    <plurals name="bill_detail_attachments_count">
+        <item quantity="one">%1$d of %2$d photo</item>
+        <item quantity="other">%1$d of %2$d photos</item>
     </plurals>
 </resources>

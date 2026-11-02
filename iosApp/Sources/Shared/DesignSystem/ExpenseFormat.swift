@@ -90,7 +90,7 @@ enum ExpenseFormat {
     }
 
     /// "Oct 28" or "28 de out.".
-    private static func shortDate(_ millis: Int64) -> String {
+    static func shortDate(_ millis: Int64) -> String {
         date(of: millis).formatted(.dateTime.day().month(.abbreviated))
     }
 

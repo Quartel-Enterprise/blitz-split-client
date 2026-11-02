@@ -6,6 +6,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
+import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
 import com.quare.blitzsplit.core.provider.room.dao.CategoryTermDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
@@ -24,6 +25,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import com.quare.blitzsplit.core.provider.room.entity.CategoryTermEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
@@ -62,8 +64,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         MemberPhotoEntity::class,
         MemberPaymentKeyEntity::class,
         BillCommentEntity::class,
+        BillAttachmentEntity::class,
     ],
-    version = 27,
+    version = 28,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -170,6 +173,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 26,
             to = 27,
         ),
+        AutoMigration(
+            from = 27,
+            to = 28,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -203,4 +210,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun memberPaymentKeyDao(): MemberPaymentKeyDao
 
     abstract fun billCommentDao(): BillCommentDao
+
+    abstract fun billAttachmentDao(): BillAttachmentDao
 }

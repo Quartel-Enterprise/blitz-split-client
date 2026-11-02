@@ -14,6 +14,7 @@ import { formatMoney, formatNames } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
+import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from './BillAttachments'
 import { BillComments, CommentComposer } from './BillComments'
 import { BillDeleteDialog } from './BillDeleteDialog'
 import { BillHistory } from './BillHistory'
@@ -26,7 +27,8 @@ type Money = (minor: number) => string
  * tablet, a drawer on the phone. Editar opens Editar conta in its place, so the panel closes while it is `isCovered`
  * and keeps its presenter, coming back as it was when Editar conta closes. Closing it any way is the ViewModel's back.
  *
- * The bill comes first, then Comentários and Histórico, with the composer pinned under them: from the desktop the
+ * The bill comes first, its photos ("Anexos", opening in a lightbox) between "Sua parte" and the split, as the board
+ * draws them, then Comentários and Histórico, with the composer pinned under them: from the desktop the
  * 880 px panel puts the bill on the left and the conversation on the right, each scrolling on its own; the tablet's
  * 560 px panel and the phone's drawer scroll it all in one column over the composer.
  */
@@ -40,7 +42,13 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     if (action === 'delete-error') toast(t('billDetail_deleteError'))
     if (action === 'comment-error') toast(t('billDetail_commentError'))
     if (action === 'undo-error') toast(t('billDetail_undoError'))
+    if (action === 'photo-unreadable') toast(t('billDetail_photoUnreadable'))
+    if (action === 'photo-no-room') toast(t('billDetail_photoNoRoom'))
+    if (action === 'photo-too-large') toast(t('billDetail_photoTooLarge'))
+    if (action === 'photo-error') toast(t('billDetail_photoError'))
+    if (action === 'remove-photo-error') toast(t('billDetail_removePhotoError'))
   })
+  const localPhotoUrls = useLocalPhotoUrls(state?.attachments ?? [])
   if (!presenter || !state?.isLoaded) return null
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
@@ -65,6 +73,9 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     </>
   )
   const composer = (className: string) => <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className={className} />
+  const attachments = <BillAttachments presenter={presenter} state={state} localUrls={localPhotoUrls} />
+  // Why: outside the panel, like the delete dialog, so the lightbox covers the whole window over the drawer too.
+  const viewer = <AttachmentViewer presenter={presenter} state={state} localUrls={localPhotoUrls} />
   const deletion = state.deletion && (
     <BillDeleteDialog
       deletion={state.deletion}
@@ -80,6 +91,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <BillBody
         state={state}
         money={money}
+        attachments={attachments}
         title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>}
         description={<SheetDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</SheetDescription>}
       />
@@ -117,6 +129,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
             )}
           </SheetContent>
         </Sheet>
+        {viewer}
         {deletion}
       </>
     )
@@ -135,6 +148,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
             <BillBody
               state={state}
               money={money}
+              attachments={attachments}
               title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
               description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>}
             />
@@ -144,6 +158,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
           {composer('shrink-0 border-t px-4 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]')}
         </DrawerContent>
       </Drawer>
+      {viewer}
       {deletion}
     </>
   )
@@ -168,8 +183,8 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
   )
 }
 
-/** The bill: what, when, how much and who paid, "Sua parte" for someone in it, and each person's part. */
-function BillBody({ state, money, title, description }: { state: JsBillDetailState; money: Money; title: ReactNode; description: ReactNode }) {
+/** The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. */
+function BillBody({ state, money, attachments, title, description }: { state: JsBillDetailState; money: Money; attachments: ReactNode; title: ReactNode; description: ReactNode }) {
   const paid = paidText(state.payers)
   const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
   return (
@@ -208,6 +223,8 @@ function BillBody({ state, money, title, description }: { state: JsBillDetailSta
         </div>
         {state.showsMyPart && state.myBalanceMinor != null && <MyPart balance={state.myBalanceMinor} note={state.myPartNote} money={money} />}
       </div>
+
+      {attachments}
 
       <section aria-labelledby="bill-split-title" className="flex min-w-0 flex-col gap-2">
         <h3 id="bill-split-title" className="text-sm font-medium">
