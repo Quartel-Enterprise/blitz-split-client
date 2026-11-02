@@ -86,6 +86,7 @@ struct JoinPickView: View {
         .sheet(isPresented: newMemberShown) {
             if let model {
                 NewMemberSheet(model: model)
+                    .foldSheetPlacement()
             }
         }
         // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.

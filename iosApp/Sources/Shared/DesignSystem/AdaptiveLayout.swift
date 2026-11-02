@@ -58,9 +58,10 @@ extension View {
 }
 
 extension View {
-    /// The root's measure of the whole window: hands it to every view below as `windowLayout` and reports each
-    /// measure to `onMeasure`. The size lives in this modifier's own state, so a live resize (Stage Manager, Split
-    /// View) redraws only the views that read `windowLayout`, never the root's body.
+    /// The root's measure of the whole window: hands it to every view below as `windowLayout`, with the iPhone Duo's
+    /// fold over it as `windowFold`, and reports each measure to `onMeasure`. The size lives in this modifier's own
+    /// state, so a live resize (Stage Manager, Split View) redraws only the views that read `windowLayout`, never the
+    /// root's body.
     func measuringWindow(onMeasure: @escaping (ScreenLayout) -> Void) -> some View {
         modifier(WindowMeasuring(onMeasure: onMeasure))
     }
@@ -69,11 +70,19 @@ extension View {
 private struct WindowMeasuring: ViewModifier {
     let onMeasure: (ScreenLayout) -> Void
     @State private var window = ScreenLayout()
+    @State private var fold: FoldDivision?
 
     func body(content: Content) -> some View {
         content
             .measuringScreenLayout($window)
+            // The whole window's coordinates, which a sheet is placed in, safe areas included
+            .background {
+                Color.clear
+                    .ignoresSafeArea()
+                    .readingFoldDivision($fold)
+            }
             .environment(\.windowLayout, window)
+            .environment(\.windowFold, fold)
             // The first measure moves it off `.zero`, so the start counts as a change too
             .onChange(of: window) { _, newWindow in
                 onMeasure(newWindow)
