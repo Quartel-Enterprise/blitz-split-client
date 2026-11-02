@@ -199,6 +199,7 @@ class GroupMapperImpl : GroupMapper {
         defaultSplit = dto.defaultSplit?.toString(),
         // Why: never on the server; applyRemoteGroup leaves the ones this device has alone.
         splitIncomes = null,
+        pendingPhoto = null,
     )
 
     override fun toEntity(

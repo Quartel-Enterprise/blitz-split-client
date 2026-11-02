@@ -83,7 +83,12 @@ internal fun GroupIconSheet(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp),
             )
-            HorizontalDivider(modifier = Modifier.padding(top = 20.dp, bottom = 8.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(
+                    top = 20.dp,
+                    bottom = 8.dp,
+                ),
+            )
             PhotoItem(Icons.Outlined.PhotoLibrary, stringResource(R.string.edit_group_choose_photo)) {
                 onEvent(EditGroupUiEvent.OnIconDismissed)
                 onChoosePhotoClick()

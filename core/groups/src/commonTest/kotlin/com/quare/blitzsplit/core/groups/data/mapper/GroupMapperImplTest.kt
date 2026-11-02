@@ -435,6 +435,8 @@ class GroupMapperImplTest {
                 defaultSplit = null,
                 splitIncomes = null,
                 shape = "square",
+                photoUrl = null,
+                pendingPhoto = null,
             ),
             entity,
         )
@@ -649,6 +651,9 @@ class GroupMapperImplTest {
                 inviteCode = null,
                 defaultSplit = null,
                 splitIncomes = null,
+                shape = null,
+                photoUrl = null,
+                pendingPhoto = null,
             ),
             entity,
         )

@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.contacts
 
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.ObserveContactBookUseCase
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -17,6 +16,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 
 /*

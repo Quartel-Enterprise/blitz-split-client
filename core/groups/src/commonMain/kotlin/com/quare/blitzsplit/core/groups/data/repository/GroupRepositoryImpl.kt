@@ -233,8 +233,7 @@ class GroupRepositoryImpl(
                             photoUrl = photoUrlOf(it),
                         )
                     },
-                )
-                .forEach { dto ->
+                ).forEach { dto ->
                     dto.inviteCode?.let {
                         local.updateInviteCode(
                             id = dto.id,

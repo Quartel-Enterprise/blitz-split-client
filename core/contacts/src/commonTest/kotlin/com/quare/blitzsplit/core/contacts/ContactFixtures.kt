@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.core.contacts
 
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.contacts.domain.model.ContactGroup
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -15,6 +14,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 
 // Test data the contacts tests share: groups, their members, bills and payments, and contacts.

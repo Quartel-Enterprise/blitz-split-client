@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.billdetail
 
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
@@ -40,6 +39,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator

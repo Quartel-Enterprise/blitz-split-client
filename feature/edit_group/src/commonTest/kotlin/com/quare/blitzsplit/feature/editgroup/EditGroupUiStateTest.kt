@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import kotlin.test.Test

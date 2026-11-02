@@ -223,17 +223,16 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a green group WHEN picking lilac in the form THEN the form shows lilac`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN a green group WHEN picking lilac in the form THEN the form shows lilac`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
-            // Then
-            assertEquals(AvatarColor.LILAC, viewModel.uiState.value.color)
-        }
+        // Then
+        assertEquals(AvatarColor.LILAC, viewModel.uiState.value.color)
+    }
 
     @Test
     fun `GIVEN a trip WHEN picking the home type THEN the form shows home`() = runTest(testDispatcher) {
@@ -980,19 +979,18 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN another color picked WHEN back at its first color THEN Salvar is disabled`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
+    fun `GIVEN another color picked WHEN back at its first color THEN Salvar is disabled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
 
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.GREEN))
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.GREEN))
 
-            // Then
-            assertEquals(AvatarColor.GREEN, viewModel.uiState.value.color)
-            assertFalse(viewModel.uiState.value.canSave)
-        }
+        // Then
+        assertEquals(AvatarColor.GREEN, viewModel.uiState.value.color)
+        assertFalse(viewModel.uiState.value.canSave)
+    }
 
     @Test
     fun `GIVEN the form WHEN the name only gains surrounding spaces THEN Salvar stays disabled`() =

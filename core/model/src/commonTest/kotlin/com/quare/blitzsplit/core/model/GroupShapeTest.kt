@@ -11,7 +11,7 @@ class GroupShapeTest {
         val shape = GroupShape.entries.last()
 
         // When
-        val next = shape.next()
+        val next = shape.toNext()
 
         // Then
         assertEquals(GroupShape.entries.first(), next)

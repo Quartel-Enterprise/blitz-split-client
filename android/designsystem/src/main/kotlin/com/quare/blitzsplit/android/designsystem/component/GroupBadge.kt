@@ -32,6 +32,14 @@ import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupShape
 
+// Why: the boards' 50% 12px 50% 12px on their 48 px badge, a leaf with two round corners.
+private val petalShape = RoundedCornerShape(
+    topStartPercent = 50,
+    topEndPercent = 25,
+    bottomEndPercent = 50,
+    bottomStartPercent = 25,
+)
+
 /*
  * Why: a group's avatar, its initials ("VF") on one of the palette's colors in the group's shape, or its photo in
  * that shape. The initials stay under the photo, so they show while it loads or when it fails to.
@@ -76,7 +84,7 @@ fun groupShapeOf(
     size: Dp,
 ): Shape = when (shape) {
     GroupShape.COOKIE -> CookieShape
-    GroupShape.PETAL -> PetalShape
+    GroupShape.PETAL -> petalShape
     GroupShape.SQUARE -> groupShapeOf(size)
     GroupShape.CIRCLE -> CircleShape
 }
@@ -86,14 +94,6 @@ fun groupShapeOf(
  * of the side below it, so the small badges of the lists stay squares instead of turning into circles.
  */
 fun groupShapeOf(size: Dp): Shape = RoundedCornerShape(min(16.dp, size / 3))
-
-// Why: the boards' 50% 12px 50% 12px on their 48 px badge, a leaf with two round corners.
-private val PetalShape = RoundedCornerShape(
-    topStartPercent = 50,
-    topEndPercent = 25,
-    bottomEndPercent = 50,
-    bottomStartPercent = 25,
-)
 
 // Why: the boards' "50% / 60% 60% 40% 40%", rounder on top than at the bottom, which RoundedCornerShape can't draw.
 private object CookieShape : Shape {

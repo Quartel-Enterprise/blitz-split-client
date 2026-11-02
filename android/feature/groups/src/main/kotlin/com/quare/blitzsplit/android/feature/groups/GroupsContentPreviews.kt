@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.runtime.Composable
-import com.quare.blitzsplit.core.model.GroupShape
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -13,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupGridSize
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge

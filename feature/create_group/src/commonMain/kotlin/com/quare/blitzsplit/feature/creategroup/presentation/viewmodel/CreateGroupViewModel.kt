@@ -10,8 +10,8 @@ import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -96,7 +96,7 @@ class CreateGroupViewModel(
             CreateGroupUiEvent.OnShapeAndColorClicked -> uiState.update {
                 it.copy(
                     color = it.color.toNextColor(),
-                    shape = it.shape.next(),
+                    shape = it.shape.toNext(),
                 )
             }
 

@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.mapper
 
 import com.quare.blitzsplit.core.activity.domain.model.ActivityChange
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.model.ActivityField
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -19,6 +18,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryChange
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEntry

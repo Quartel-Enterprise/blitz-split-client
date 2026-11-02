@@ -301,7 +301,7 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a peach cookie WHEN tapping Android's avatar THEN takes the next color and the next shape`() =
+    fun `GIVEN a peach cookie WHEN tapping the Android avatar THEN takes the next color and the next shape`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(profile = pierre.copy(avatarColor = AvatarColor.BLUE))
@@ -316,7 +316,7 @@ class CreateGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN Android's avatar WHEN tapping it twenty times THEN shows every color with every shape once`() =
+    fun `GIVEN the Android avatar WHEN tapping it twenty times THEN shows every color with every shape once`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -333,17 +333,16 @@ class CreateGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN the Apple apps' and the web's avatar WHEN tapping it THEN the shape stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN the Apple and web avatar WHEN tapping it THEN the shape stays`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
 
-            // Then
-            assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
-        }
+        // Then
+        assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
+    }
 
     @Test
     fun `GIVEN a trip WHEN picking home THEN the group is a home`() = runTest(testDispatcher) {
