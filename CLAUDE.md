@@ -370,12 +370,14 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
     with an iPad's room, the avatar beside "Trocar cor" on an iPhone lying down) and a dialog on the web; on Android
     full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
-    anywhere wider, in a book's right half (a tabletop drawn like the book). Its last row, under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
+    anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
+    under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
   - "Divisão padrão" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), in its
     dialog's place on the web (a drawer on a phone), and on Android full screen on a phone and a foldable upright, a
-    dialog on a tablet (920 dp in two columns lying down, 560 dp upright) and in a book's right half in one column (a
-    tabletop drawn like the book); iOS's sheet grows to 820×640 lying down and 620×860 upright with an iPad's room. It sets how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
+    dialog on a tablet (920 dp in two columns lying down, 560 dp upright) and in a book's right half in one column (off
+    the hinge as every dialog); iOS's sheet grows to 820×640 lying down and 620×860 upright with an iPad's room. It sets
+    how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
     percentages they give (`IncomePercents`). "Numa conta de R$ 100,00: Pierre R$ 75,00 · Ana R$ 25,00" with the bar

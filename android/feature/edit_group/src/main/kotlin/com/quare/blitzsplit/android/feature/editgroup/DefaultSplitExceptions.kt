@@ -37,9 +37,11 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.ChoiceChipSurface
@@ -170,11 +172,20 @@ internal fun ExceptionSheet(
 ) {
     val onDismiss = { onEvent(DefaultSplitUiEvent.OnExceptionDismissed) }
     if (isDialog) {
-        FoldDialog(onDismissRequest = onDismiss) {
+        val title = stringResource(R.string.default_split_exception_title)
+        FoldDialog(
+            onDismissRequest = onDismiss,
+            // Why: like every dialog route, a stray tap outside keeps the parts typed.
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
+        ) {
             Surface(
                 modifier = Modifier
                     .widthIn(max = exceptionDialogWidth)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .semantics { paneTitle = title },
                 shape = MaterialTheme.shapes.extraLarge,
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
             ) {
