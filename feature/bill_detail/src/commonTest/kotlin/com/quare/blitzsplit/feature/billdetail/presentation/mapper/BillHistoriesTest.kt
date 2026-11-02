@@ -497,6 +497,57 @@ class BillHistoriesTest {
     }
 
     @Test
+    fun `GIVEN the payer changed after an edit of the split WHEN building THEN the old payer gets its cents`() {
+        // Given
+        val events = listOf(
+            event(
+                id = "payer",
+                amountMinor = 10_000,
+                changes = listOf(change(ActivityField.PAYERS, payers(ANA to 10_000), payers(BRUNO to 10_000))),
+            ),
+            event(
+                id = "split",
+                occurredAt = now - 2 * HOUR,
+                amountMinor = 10_000,
+                changes = listOf(
+                    change(
+                        ActivityField.SPLIT,
+                        split(SplitMode.EQUAL, ANA to 1, PIERRE to 1, CARLA to 1),
+                        split(SplitMode.EQUAL, ANA to 1, PIERRE to 1, BRUNO to 1),
+                    ),
+                ),
+            ),
+        )
+        val bill = expense(payers = listOf(ExpensePayer(BRUNO, 48_000)))
+
+        // When
+        val split = historyOf(events, bill, group, now, TimeZone.UTC)
+            .flatMap { it.entries }
+            .flatMap { it.changes }
+            .filterIsInstance<BillHistoryChange.Split>()
+            .single()
+
+        // Then
+        assertEquals(
+            listOf(
+                BillHistoryPart(
+                    "Bruno",
+                    isMe = false,
+                    beforeMinor = null,
+                    afterMinor = 3_333,
+                ),
+                BillHistoryPart(
+                    "Carla",
+                    isMe = false,
+                    beforeMinor = 3_333,
+                    afterMinor = null,
+                ),
+            ),
+            split.parts,
+        )
+    }
+
+    @Test
     fun `GIVEN a split whose percentages do not add up WHEN building the history THEN names the modes with no parts`() {
         // Given
         val events = listOf(
@@ -1101,6 +1152,26 @@ class BillHistoriesTest {
         // Given
         val event =
             event(changes = listOf(change(ActivityField.PAYERS, payers(FORMER to 48_000), payers(ANA to 48_000))))
+
+        // When
+        val undo = undoOf(event, expense(), group)
+
+        // Then
+        assertNull(undo)
+    }
+
+    @Test
+    fun `GIVEN an edit that left a split in Valores WHEN undoing THEN there is nothing to undo`() {
+        // Given
+        val event = event(
+            changes = listOf(
+                change(
+                    ActivityField.SPLIT,
+                    split(SplitMode.AMOUNT, ANA to 20_000, PIERRE to 14_000, BRUNO to 14_000),
+                    split(SplitMode.EQUAL, ANA to 1, PIERRE to 1, BRUNO to 1),
+                ),
+            ),
+        )
 
         // When
         val undo = undoOf(event, expense(), group)

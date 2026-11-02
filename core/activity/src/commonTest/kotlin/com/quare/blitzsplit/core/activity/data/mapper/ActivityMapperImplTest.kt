@@ -629,6 +629,36 @@ class ActivityMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a photo added whose data has a split mode WHEN reading it THEN its code is the attachment kind`() {
+        // Given
+        val entity = entity(
+            kind = "attachment_added",
+            data = """{"split_mode":"equal","attachment_kind":"receipt"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("receipt", event?.code)
+    }
+
+    @Test
+    fun `GIVEN a link changed whose data has a split mode WHEN reading it THEN its code is the visibility`() {
+        // Given
+        val entity = entity(
+            kind = "bill_link_changed",
+            data = """{"split_mode":"equal","visibility":"anyone"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("anyone", event?.code)
+    }
+
+    @Test
     fun `GIVEN a bill with no code in its data WHEN reading it THEN has no code nor shares count`() {
         // Given
         val entity = entity(

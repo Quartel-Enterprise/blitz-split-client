@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -173,6 +174,8 @@ class BillDetailViewModel(
             }.launchIn(viewModelScope)
         // Why: "Hoje" becomes "Ontem" at midnight on a bill left open.
         minuteTicks()
+            .map { SpentDay.dateOf(currentTimeMillis(), currentTimeZone()) }
+            .distinctUntilChanged()
             .onEach {
                 showThreads()
                 showHistory()

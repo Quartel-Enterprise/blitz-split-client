@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.activity.data.dto.ActivityEventDto
 import com.quare.blitzsplit.core.activity.data.dto.ActivityReadDto
 import com.quare.blitzsplit.core.activity.data.dto.ActivityReadMarkDto
 import com.quare.blitzsplit.core.activity.data.dto.ChargeEventDto
+import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Order
 
@@ -82,16 +83,29 @@ class SupabaseActivityRemoteDataSource(
             limit(limit)
         }.decodeList<ActivityEventDto>()
 
-    override suspend fun fetchEventsAbout(targetId: String): List<ActivityEventDto> = postgrest
-        .from(EVENTS)
-        .select {
-            filter { eq("target_id", targetId) }
-            order(
-                column = "seq",
-                order = Order.DESCENDING,
-            )
-            limit(PAGE_SIZE)
-        }.decodeList<ActivityEventDto>()
+    // Why: the bill's whole history, page after page; its comments aren't history, so they never take a page's room.
+    override suspend fun fetchEventsAbout(targetId: String): List<ActivityEventDto> {
+        val events = mutableListOf<ActivityEventDto>()
+        do {
+            val cursor = events.lastOrNull()?.seq
+            val page = postgrest
+                .from(EVENTS)
+                .select {
+                    filter {
+                        eq("target_id", targetId)
+                        neq("kind", ActivityKind.COMMENT_ADDED.code)
+                        cursor?.let { lt("seq", it) }
+                    }
+                    order(
+                        column = "seq",
+                        order = Order.DESCENDING,
+                    )
+                    limit(PAGE_SIZE)
+                }.decodeList<ActivityEventDto>()
+            events += page
+        } while (page.size.toLong() == PAGE_SIZE)
+        return events
+    }
 
     // Why: a charge that went up once and whose answer was lost goes up again as the same event, which stays one.
     override suspend fun insertCharges(events: List<ChargeEventDto>) {

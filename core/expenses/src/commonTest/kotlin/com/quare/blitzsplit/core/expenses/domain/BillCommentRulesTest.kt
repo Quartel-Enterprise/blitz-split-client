@@ -77,4 +77,28 @@ class BillCommentRulesTest {
         // Then
         assertTrue(isValid)
     }
+
+    @Test
+    fun `GIVEN a comment of 1000 emoji WHEN checking it THEN each emoji counts as one letter`() {
+        // Given
+        val body = "\uD83D\uDE00".repeat(1_000)
+
+        // When
+        val isValid = BillCommentRules.isBodyValid(body)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN a comment of 1001 emoji WHEN checking it THEN it is invalid`() {
+        // Given
+        val body = "\uD83D\uDE00".repeat(1_001)
+
+        // When
+        val isValid = BillCommentRules.isBodyValid(body)
+
+        // Then
+        assertFalse(isValid)
+    }
 }

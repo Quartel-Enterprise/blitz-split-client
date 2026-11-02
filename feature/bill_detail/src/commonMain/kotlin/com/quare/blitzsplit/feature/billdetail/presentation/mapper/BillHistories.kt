@@ -52,8 +52,11 @@ internal fun historyOf(
     timeZone: TimeZone,
 ): List<BillHistoryDay> {
     val undoId = events.firstOrNull()?.takeIf { undoOf(it, expense, group) != null }?.id
+    val payersAfter = payersAfterEachOf(events, expense)
     val entries = listOfNotNull(pendingEntryOf(events, expense, group, nowMillis)) +
-        buildAttachmentRuns(events).mapNotNull { (event, count) -> entryOf(event, count, group, expense, undoId) }
+        buildAttachmentRuns(events).mapNotNull { (event, count) ->
+            entryOf(event, count, group, expense, undoId, payersAfter.getValue(event.id))
+        }
     return entries
         .groupBy { SpentDay.dateOf(it.occurredAt, timeZone) }
         .map { (date, dayEntries) ->
@@ -78,6 +81,8 @@ internal fun undoOf(
     if (event.kind != ActivityKind.BILL_EDITED || event.changes.isEmpty()) return null
     if (expense.isPending || expense.items != null) return null
     if (event.changes.any { it.field !in undoableFields || !expense.matches(it) }) return null
+    // Why: a split by items is stored as Valores, so putting one back would lose its items.
+    if (event.changes.any { it.field == ActivityField.SPLIT && it.before.code == SplitMode.AMOUNT.code }) return null
     val memberIds = group.members.mapTo(HashSet()) { it.id }
     if (event.changes.any { change -> change.before.memberIds.any { it !in memberIds } }) return null
     val changes = event.changes.associateBy { it.field }
@@ -191,12 +196,29 @@ private fun buildAttachmentRuns(events: List<ActivityEvent>): List<Pair<Activity
     return gathered
 }
 
+/*
+ * Why: who paid right after each event, from the bill as it is now back through each change of the payers, so an old
+ * split's cents go to the payers the bill had then.
+ */
+private fun payersAfterEachOf(
+    events: List<ActivityEvent>,
+    expense: Expense,
+): Map<String, List<String>> {
+    var payerIds = expense.payers.map { it.memberId }
+    return events.associate { event ->
+        val after = payerIds
+        event.changes.firstOrNull { it.field == ActivityField.PAYERS }?.let { payerIds = it.before.memberIds }
+        event.id to after
+    }
+}
+
 private fun entryOf(
     event: ActivityEvent,
     attachmentCount: Int,
     group: Group,
     expense: Expense,
     undoId: String?,
+    payerIds: List<String>,
 ): BillHistoryEntry? {
     val kind = when (event.kind) {
         ActivityKind.BILL_CREATED -> BillHistoryKind.CREATED
@@ -219,7 +241,7 @@ private fun entryOf(
         actorPhotoUrl = actor.photoUrl,
         actorIsMe = actorMember?.isMe == true,
         occurredAt = event.occurredAt,
-        changes = changesOf(event, group, expense),
+        changes = changesOf(event, group, expense, payerIds),
         amountMinor = event.amountMinor.takeIf { kind == BillHistoryKind.CREATED },
         splitMode = event.code?.takeIf { kind == BillHistoryKind.CREATED }?.let(SplitMode::fromCodeOrNull),
         sharesCount = event.sharesCount.takeIf { kind == BillHistoryKind.CREATED },
@@ -235,6 +257,7 @@ private fun changesOf(
     event: ActivityEvent,
     group: Group,
     expense: Expense,
+    payerIds: List<String>,
 ): List<BillHistoryChange> {
     if (event.kind != ActivityKind.BILL_EDITED) return emptyList()
     val byField = event.changes.associateBy { it.field }
@@ -245,7 +268,7 @@ private fun changesOf(
             ActivityField.SPENT_AT -> BillHistoryChange.SpentAt(change.before.millis, change.after.millis)
             ActivityField.CATEGORY -> BillHistoryChange.Category(change.before.code, change.after.code)
             ActivityField.PAYERS -> payersChangeOf(change, group)
-            ActivityField.SPLIT -> splitChangeOf(change, byField, event, group, expense)
+            ActivityField.SPLIT -> splitChangeOf(change, byField, event, group, expense, payerIds)
             else -> null
         }
     }
@@ -279,20 +302,20 @@ private fun splitChangeOf(
     event: ActivityEvent,
     group: Group,
     expense: Expense,
+    payerIds: List<String>,
 ): BillHistoryChange.Split {
     val afterTotal = byField[ActivityField.AMOUNT]?.after?.minor ?: event.amountMinor ?: expense.amountMinor
     val beforeTotal = byField[ActivityField.AMOUNT]?.before?.minor ?: afterTotal
     val payers = byField[ActivityField.PAYERS]
-    val currentPayerIds = expense.payers.map { it.memberId }
     val before = partsOf(
         side = change.before,
         totalMinor = beforeTotal,
-        payerIds = payers?.before?.memberValues?.map { it.memberId } ?: currentPayerIds,
+        payerIds = payers?.before?.memberValues?.map { it.memberId } ?: payerIds,
     )
     val after = partsOf(
         side = change.after,
         totalMinor = afterTotal,
-        payerIds = payers?.after?.memberValues?.map { it.memberId } ?: currentPayerIds,
+        payerIds = payers?.after?.memberValues?.map { it.memberId } ?: payerIds,
     )
     val parts = movedPartsOf(before, after, group)
     return BillHistoryChange.Split(

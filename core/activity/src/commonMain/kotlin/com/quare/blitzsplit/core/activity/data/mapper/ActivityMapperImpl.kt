@@ -45,11 +45,7 @@ class ActivityMapperImpl : ActivityMapper {
             occurredAt = entity.occurredAt,
             subject = data.findText("description") ?: data.findText("name"),
             amountMinor = data.findLong("amount_minor"),
-            code = data.findText("split_mode")
-                ?: data.findText("type")
-                ?: data.findText("method")
-                ?: data.findText("attachment_kind")
-                ?: data.findText("visibility"),
+            code = codeOf(kind, data),
             fromMemberId = data.findText("from_member_id"),
             toMemberId = data.findText("to_member_id"),
             changes = (data["changes"] as? JsonArray).orEmpty().mapNotNull(::changeOf),
@@ -57,6 +53,16 @@ class ActivityMapperImpl : ActivityMapper {
             body = data.findText("body"),
             isPending = entity.pendingSync,
         )
+    }
+
+    // Why: a photo's kind and the link's visibility by their own keys, so another key in the same data never wins.
+    private fun codeOf(
+        kind: ActivityKind,
+        data: JsonObject,
+    ): String? = when (kind) {
+        ActivityKind.ATTACHMENT_ADDED, ActivityKind.ATTACHMENT_REMOVED -> data.findText("attachment_kind")
+        ActivityKind.BILL_LINK_CHANGED -> data.findText("visibility")
+        else -> data.findText("split_mode") ?: data.findText("type") ?: data.findText("method")
     }
 
     override fun toEntity(dto: ActivityEventDto): ActivityEventEntity = ActivityEventEntity(
