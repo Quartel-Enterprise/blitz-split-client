@@ -149,8 +149,9 @@ struct ProfileView: View {
                 }
             }
             .formStyle(.grouped)
-            .onChange(of: scrollRequest) {
-                guard let pane else { return }
+            // Also as the form comes back from Ajustes' Categories, which drew the map in its place
+            .onChange(of: scrollRequest, initial: true) {
+                guard let pane, scrollRequest > 0 else { return }
                 withAnimation { proxy.scrollTo(pane, anchor: .top) }
             }
         }
@@ -272,6 +273,7 @@ private struct PreferencesSection: View {
             }
             .foregroundStyle(.primary)
             #endif
+            CategoryMapRow(model: model)
         }
     }
 }
@@ -748,5 +750,27 @@ extension AccountProvider {
 private extension Bundle {
     var appVersion: String {
         infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+    }
+}
+
+/// Preferences › "Category map" (flow 9): pushed on iPhone and iPad; on the Mac, whose profile is Ajustes, it picks
+/// Ajustes' Categories section instead (`AppModel`).
+private struct CategoryMapRow: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Button {
+            model.send(ProfileUiEventOnCategoryMapClicked.shared)
+        } label: {
+            LabeledContent {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            } label: {
+                Text("Category map")
+                Text("The words that pick a bill's category")
+            }
+        }
+        .foregroundStyle(.primary)
     }
 }

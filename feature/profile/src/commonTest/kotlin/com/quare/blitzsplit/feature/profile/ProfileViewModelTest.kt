@@ -3359,6 +3359,18 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile WHEN tapping the category map THEN opens it over the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCategoryMapClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.CategoryMap), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN only notification preferences not uploaded WHEN the profile opens THEN lists them as pending`() =
         runTest(testDispatcher) {
             // Given

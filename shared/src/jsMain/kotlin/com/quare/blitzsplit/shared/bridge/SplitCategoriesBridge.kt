@@ -158,6 +158,11 @@ class SplitCategoriesPresenter internal constructor(
         send(SplitBillUiEvent.OnCategoryClicked)
     }
 
+    // Why: the "Mapa de categorias" card (9.0), which opens the map over the bill.
+    fun openMap() {
+        send(SplitBillUiEvent.OnCategoryMapClicked)
+    }
+
     fun changeQuery(text: String) {
         send(SplitBillUiEvent.OnCategoryQueryChanged(text))
     }

@@ -1,17 +1,23 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomCategoryTermLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomGroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomSettlementLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SettlementLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SettlementRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseCategoryTermRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseGroupCategoryRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseSettlementRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
@@ -19,16 +25,21 @@ import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.CategoryRepositoryImpl
+import com.quare.blitzsplit.core.expenses.data.repository.CategoryTermRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.data.repository.SettlementRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTeachRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.DeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
@@ -36,6 +47,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
@@ -43,14 +56,20 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
+import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
+import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
@@ -58,6 +77,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCa
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
@@ -65,11 +86,16 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUse
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.OfferCategoryTeachUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
@@ -120,4 +146,18 @@ val expenseModule = module {
     factoryOf(::ObserveCategoryTreeUseCase).bind<ObserveCategoryTree>()
     factoryOf(::SaveGroupCategoryUseCase).bind<SaveGroupCategory>()
     factoryOf(::DeleteGroupCategoryUseCase).bind<DeleteGroupCategory>()
+    factoryOf(::ObserveMapCategoriesUseCase).bind<ObserveMapCategories>()
+    singleOf(::RoomCategoryTermLocalDataSource).bind<CategoryTermLocalDataSource>()
+    singleOf(::SupabaseCategoryTermRemoteDataSource).bind<CategoryTermRemoteDataSource>()
+    singleOf(::CategoryTermMapperImpl).bind<CategoryTermMapper>()
+    singleOf(::CategoryTermRepositoryImpl).bind<CategoryTermRepository>()
+    factoryOf(::ObserveCategoryMapUseCase).bind<ObserveCategoryMap>()
+    factoryOf(::SaveCategoryTermUseCase).bind<SaveCategoryTerm>()
+    factoryOf(::RemoveCategoryTermUseCase).bind<RemoveCategoryTerm>()
+    factoryOf(::RestoreCategoryMapUseCase).bind<RestoreCategoryMap>()
+    // Why: one for the whole app, since Rachar conta posts the question that the group's Despesas asks.
+    singleOf(::InMemoryCategoryTeachRepository).bind<CategoryTeachRepository>()
+    factoryOf(::OfferCategoryTeachUseCase).bind<OfferCategoryTeach>()
+    factoryOf(::ObserveCategoryTeachOfferUseCase).bind<ObserveCategoryTeachOffer>()
+    factoryOf(::ConsumeCategoryTeachOfferUseCase).bind<ConsumeCategoryTeachOffer>()
 }

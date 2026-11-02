@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
@@ -62,6 +63,7 @@ class SignOutUseCaseTest {
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
+                categoryTermRepository = FakeCategoryTermRepository(),
                 activityRepository = FakeActivityRepository(),
                 hiddenContactRepository = FakeHiddenContactRepository(),
                 firstDownload = FirstDownload(),

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">No terms</string>
+    <string name="category_map_title">Category map</string>
+    <string name="category_map_search">Search terms</string>
+    <string name="category_map_add">Add term</string>
+    <string name="category_map_more">More options</string>
+    <string name="category_map_restore">Restore default</string>
+    <string name="category_map_back">Back</string>
+    <string name="category_map_intro">When a bill\'s title has one of these words, its category comes by itself. “Uber home” becomes Transport.</string>
+    <string name="category_map_intro_offline">The map works offline: changes count right away on this device and reach your others once back online.</string>
+    <string name="category_map_device_only">Your map stays on this device only. To take it to your other devices, sign in with Google or Apple in your Profile.</string>
+    <string name="category_map_open_profile">Open Profile</string>
+    <string name="category_map_longest_wins">When two terms match a title, the longest one wins.</string>
+    <string name="category_map_no_result">No term with “%1$s”</string>
+    <string name="category_map_no_result_body">Add it and bills with this word in their title arrive with the right category.</string>
+    <string name="category_map_add_query">Add “%1$s”</string>
+    <string name="category_map_empty_title">Your map is empty</string>
+    <string name="category_map_empty_body">Without terms, the category doesn\'t come from the title: you pick it on each bill.</string>
+    <string name="category_map_group_category"> · %1$s\'s category</string>
+    <string name="category_map_only_main">Only %1$s</string>
+    <string name="category_map_only_in_group">only in %1$s</string>
+    <string name="category_map_no_terms_yet">No terms yet.</string>
+    <string name="category_map_add_in">Add term in %1$s</string>
+    <string name="category_map_tip">Tap a term to change its category or remove it. It matches the whole word, ignoring accents and case.</string>
+    <string name="category_map_queued">queued</string>
+    <string name="category_map_term_action">%1$s, %2$s. Edit</string>
+    <string name="category_map_new_term">New term</string>
+    <string name="category_map_edit_term">Edit term</string>
+    <string name="category_map_term_label">Word or phrase</string>
+    <string name="category_map_term_help">Matches the whole word, ignoring accents and case.</string>
+    <string name="category_map_term_help_app">An app term. Restore default brings it back as it came.</string>
+    <string name="category_map_term_duplicate">“%1$s” already picks %2$s. Each term has one category.</string>
+    <string name="category_map_term_too_short">Use at least 2 letters.</string>
+    <string name="category_map_term_too_long">Use at most 30 letters.</string>
+    <string name="category_map_term_invalid">Use only letters, digits and spaces.</string>
+    <string name="category_map_category">Category</string>
+    <string name="category_map_category_help">It can be the category or a subcategory.</string>
+    <string name="category_map_category_help_edit">Changing it here moves the term to another category.</string>
+    <string name="category_map_category_help_move">Moving takes the term out of %1$s.</string>
+    <string name="category_map_example">Example</string>
+    <string name="category_map_example_move">If moved</string>
+    <string name="category_map_remove">Remove</string>
+    <string name="category_map_cancel">Cancel</string>
+    <string name="category_map_save">Save</string>
+    <string name="category_map_move_to">Move to %1$s</string>
+    <string name="category_map_removed">“%1$s” left the map</string>
+    <string name="category_map_undo">Undo</string>
+    <string name="category_map_restore_title">Restore the default map?</string>
+    <string name="category_map_restore_body">The app\'s 60 terms come back as they came, including those you removed or moved.</string>
+    <string name="category_map_restore_own_one">The term you created, “%1$s”, stays.</string>
+    <string name="category_map_restore_confirm">Restore</string>
+    <string name="category_map_save_error">Couldn\'t save the map. Try again.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d term</item>
+        <item quantity="other">%d terms</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subcategory</item>
+        <item quantity="other">%d subcategories</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d term with “%2$s”</item>
+        <item quantity="other">%1$d terms with “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d change queued</item>
+        <item quantity="other">Offline · %d changes queued</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">The %d terms you created stay.</item>
+        <item quantity="other">The %d terms you created stay.</item>
+    </plurals>
+</resources>

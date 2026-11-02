@@ -273,7 +273,7 @@
     <string name="split_bill_category_by_term">%1$s pela palavra “%2$s” do seu mapa. Toque no ícone para trocar.</string>
     <string name="split_bill_category_by_longest">%1$d palavras do mapa casaram. Vale “%2$s”, a mais longa: %3$s.</string>
     <string name="split_bill_category_no_term">Nenhuma palavra do seu mapa. A conta fica em Outros; toque no ícone para escolher.</string>
-    <string name="split_bill_category_changed">Você escolheu %1$s. Pelo mapa seria %2$s (“%3$s”).</string>
+    <string name="split_bill_category_changed">Você escolheu %1$s. Pelo mapa seria %2$s (“%3$s”). Ao salvar, perguntamos se o mapa aprende.</string>
     <string name="split_bill_category_picked">Categoria: %s. Toque no ícone para trocar.</string>
     <string name="split_bill_category_title">Categoria</string>
     <string name="split_bill_category_new">Nova</string>
@@ -344,4 +344,7 @@
         <item quantity="one">A %1$d conta com %2$s passa para %3$s. A categoria some para todo o %4$s.</item>
         <item quantity="other">As %1$d contas com %2$s passam para %3$s. A categoria some para todo o %4$s.</item>
     </plurals>
+    <string name="split_bill_category_map">Mapa de categorias</string>
+    <string name="split_bill_category_map_by_term">%1$s veio da palavra “%2$s”. Veja e edite as palavras que escolhem a categoria.</string>
+    <string name="split_bill_category_map_detail">Veja e edite as palavras que escolhem a categoria pelo título da conta.</string>
 </resources>

@@ -1,7 +1,8 @@
 #if os(macOS)
 import SwiftUI
 
-/// The sections Ajustes' sidebar lists, in the order the profile's form draws them (F4Mac).
+/// The sections Ajustes' sidebar lists, in the order the profile's form draws them (F4Mac), then Categories, the
+/// category map (9.1), which takes the form's place.
 enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
     case profile
     case keys
@@ -9,6 +10,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
     case appearance
     case notifications
     case privacy
+    case categories
 
     var id: Self { self }
 
@@ -20,6 +22,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
         case .appearance: "Appearance"
         case .notifications: "Notifications"
         case .privacy: "Privacy and about"
+        case .categories: "Categories"
         }
     }
 
@@ -31,13 +34,15 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
         case .appearance: "circle.lefthalf.filled"
         case .notifications: "bell"
         case .privacy: "hand.raised"
+        case .categories: "tag"
         }
     }
 }
 
 /// Ajustes (⌘,): the Mac's profile lives in its Settings window, as the notes ask, never pushed over the groups. The
-/// sidebar lists the profile's sections and scrolls the form to the one picked; a narrow window (under 700 pt, as
-/// Saldos' inspector) hides it behind the toolbar's sidebar button, one column. A key and deleting the account open
+/// sidebar lists the profile's sections and scrolls the form to the one picked, and Categories shows the category map
+/// in the form's place (whatever opens the map opens it here, `AppModel.requestedSettingsPane`); a narrow window
+/// (under 700 pt, as Saldos' inspector) hides it behind the toolbar's sidebar button, one column. A key and deleting the account open
 /// as sheets on this window (`AppModel.settingsSheet`). Until a profile exists, and once signing out erases it, there
 /// is nothing to set, so the window closes.
 struct SettingsView: View {
@@ -66,7 +71,11 @@ struct SettingsView: View {
                     }
                     .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
                 } detail: {
-                    ProfileView(model: model, pane: pane, scrollRequest: scrollRequest)
+                    if pane == .categories {
+                        MacCategoryMapPane()
+                    } else {
+                        ProfileView(model: model, pane: pane, scrollRequest: scrollRequest)
+                    }
                 }
                 .onGeometryChange(for: Bool.self, of: { $0.size.width < 700 }) { isNarrow in
                     columnVisibility = isNarrow ? .detailOnly : .all
@@ -88,6 +97,12 @@ struct SettingsView: View {
         .tint(Palette.accent)
         // Closing the window closes its sheet, which the main window waits on
         .onDisappear { app.settingsSheet = nil }
+        // The profile or the category map opened from anywhere picks its section, also as the window opens
+        .onChange(of: app.requestedSettingsPane, initial: true) { _, requested in
+            guard let requested else { return }
+            pick(requested)
+            app.requestedSettingsPane = nil
+        }
         .onChange(of: app.hasProfile, initial: true) { _, hasProfile in
             if hasProfile {
                 if model == nil { model = ProfileModel() }

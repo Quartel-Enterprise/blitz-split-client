@@ -6,6 +6,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
+import com.quare.blitzsplit.core.provider.room.dao.CategoryTermDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
@@ -21,6 +22,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.CategoryTermEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupCategoryEntity
@@ -51,8 +53,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         HiddenContactEntity::class,
         GroupPinEntity::class,
         GroupCategoryEntity::class,
+        CategoryTermEntity::class,
     ],
-    version = 23,
+    version = 24,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -143,6 +146,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 22,
             to = 23,
         ),
+        AutoMigration(
+            from = 23,
+            to = 24,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -170,4 +177,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun groupPinDao(): GroupPinDao
 
     abstract fun groupCategoryDao(): GroupCategoryDao
+
+    abstract fun categoryTermDao(): CategoryTermDao
 }

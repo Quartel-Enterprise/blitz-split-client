@@ -21,6 +21,8 @@ data class GroupDetailUiState(
     val exit: GroupExitState,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: "Ensinar ao mapa?" (9.3e) after a bill of this group was saved in a category picked by hand.
+    val teach: CategoryTeach?,
     // Why: the home tab the screen was opened from, which Android's rail beside it selects.
     val homeTab: HomeTab,
     // Why: "Você entrou como Bruno", right after joining the group through its link (3.3).

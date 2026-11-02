@@ -120,6 +120,10 @@ internal fun CategoryPickerContent(
                     state = state,
                     onEvent = onEvent,
                 )
+                CategoryMapCard(
+                    state = state,
+                    onEvent = onEvent,
+                )
                 SectionLabel(stringResource(R.string.split_bill_category_all))
                 CategoryBranchesList(
                     state = state,

@@ -91,6 +91,7 @@ dependencies {
     implementation(projects.android.feature.paymentKey)
     implementation(projects.android.feature.deleteAccount)
     implementation(projects.android.feature.notificationSettings)
+    implementation(projects.android.feature.categoryMap)
 
     // Koin
     implementation(project.dependencies.platform(libs.koin.bom))

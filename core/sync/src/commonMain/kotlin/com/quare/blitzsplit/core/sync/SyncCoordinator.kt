@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
@@ -44,6 +45,7 @@ class SyncCoordinator(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
+    private val categoryTermRepository: CategoryTermRepository,
     private val activityRepository: ActivityRepository,
     private val hiddenContactRepository: HiddenContactRepository,
     private val firstDownload: FirstDownload,
@@ -137,6 +139,11 @@ class SyncCoordinator(
             notificationPreferencesRepository.downloadPreferences(userId).getOrThrow()
             notificationPreferencesRepository.uploadPendingPreferences(userId).getOrThrow()
         }
+        // Why: the person's category map (flow 9), theirs alone like the keys.
+        val termsSynced = suspendRunCatching {
+            categoryTermRepository.download(userId).getOrThrow()
+            categoryTermRepository.uploadPending(userId).getOrThrow()
+        }
         /*
          * Why: the bills and the payments after their groups, which they need on the device to come
          * down and on the server to go up, and after the group's categories, so a bill never reaches
@@ -180,6 +187,7 @@ class SyncCoordinator(
         signOutIfScheduledAndSynced()
         keysSynced.getOrThrow()
         preferencesSynced.getOrThrow()
+        termsSynced.getOrThrow()
         groupsSynced.getOrThrow()
         pinsSynced.getOrThrow()
         activitySynced.getOrThrow()
@@ -206,6 +214,7 @@ class SyncCoordinator(
                     // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
                     suspendRunCatching { paymentKeyRepository.clear() }
                     suspendRunCatching { notificationPreferencesRepository.clear() }
+                    suspendRunCatching { categoryTermRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { activityRepository.clear() }
                     suspendRunCatching { hiddenContactRepository.clear() }
@@ -255,7 +264,8 @@ class SyncCoordinator(
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
      * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions, the hidden
-     * contacts and the pins makes each new change count, while one going out triggers nothing.
+     * contacts, the pins and the category map's terms makes each new change count, while one going out triggers
+     * nothing.
      */
     private suspend fun syncWhenDue() {
         var couldSync = false
@@ -266,6 +276,7 @@ class SyncCoordinator(
             observePendingMoneyVersions(),
             hiddenContactRepository.observeHidden(),
             groupPinRepository.observePinnedGroupIds(),
+            categoryTermRepository.observeChanges(),
         ) { lists -> lists.toList() }
         combine(
             connectivityObserver.observe(),
@@ -309,6 +320,7 @@ class SyncCoordinator(
         // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
         paymentKeyRepository.clear()
         notificationPreferencesRepository.clear()
+        categoryTermRepository.clear()
         groupRepository.clear()
         activityRepository.clear()
         hiddenContactRepository.clear()
@@ -318,7 +330,10 @@ class SyncCoordinator(
     private fun observeHasPendingChanges(): Flow<Boolean> = combine(
         profileRepository.observeHasPendingChanges(),
         paymentKeyRepository.observeHasPendingChanges(),
-        notificationPreferencesRepository.observeHasPendingChanges(),
+        combine(
+            notificationPreferencesRepository.observeHasPendingChanges(),
+            categoryTermRepository.observeHasPendingChanges(),
+        ) { hasPendingPreferences, hasPendingTerms -> hasPendingPreferences || hasPendingTerms },
         groupRepository.observeHasPendingChanges(),
         combine(
             expenseRepository.observeHasPendingChanges(),

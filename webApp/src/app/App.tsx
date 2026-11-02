@@ -23,6 +23,7 @@ import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
 import { MembersScreen } from '@/features/members/MembersScreen'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
+import { CategoryMapScreen } from '@/features/category-map/CategoryMapScreen'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog'
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
@@ -48,7 +49,24 @@ export function App() {
   useBrowserHistory(app, backStack)
 
   if (!isReady || !backStack) return null
-  const top = backStack[backStack.length - 1]
+  return (
+    <>
+      <StackLayers backStack={backStack} />
+      <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
+    </>
+  )
+}
+
+/**
+ * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)
+ * covers Rachar conta, and so does whatever the map opens (Abrir Perfil): those draw as a stack of their own over
+ * the bill, which stays mounted with what was typed while it is anywhere under them.
+ */
+function StackLayers({ backStack }: { backStack: JsRoute[] }) {
+  const mapIndex = backStack.findIndex((route, index) => route.name === 'category-map' && backStack[index - 1]?.name === 'split-bill')
+  const isMapOverBill = mapIndex > 0
+  const stack = isMapOverBill ? backStack.slice(0, mapIndex) : backStack
+  const top = stack[stack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
   // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
   // bill and the group's editor open over the group's expenses (a bill from the home over the home) the same way, and a payment over its balances,
@@ -64,19 +82,19 @@ export function App() {
   const isEditGroup = top.name === 'edit-group'
   // Why: "Divisão padrão" takes Editar grupo's place, which stays mounted under it with what was typed.
   const isDefaultSplit = top.name === 'default-split'
-  const editGroup = isEditGroup ? top : isDefaultSplit && backStack[backStack.length - 2]?.name === 'edit-group' ? backStack[backStack.length - 2] : undefined
+  const editGroup = isEditGroup ? top : isDefaultSplit && stack[stack.length - 2]?.name === 'edit-group' ? stack[stack.length - 2] : undefined
   // Why: Acertar and Recebi of Saldos settle up across groups in the same dialog, over Saldos.
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
   const isDialog =
     isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
-  let pageIndex = backStack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
+  let pageIndex = stack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
-  const bill = backStack[pageIndex]?.name === 'bill-detail' ? backStack[pageIndex] : undefined
+  const bill = stack[pageIndex]?.name === 'bill-detail' ? stack[pageIndex] : undefined
   if (bill) pageIndex -= 1
-  const page = backStack[pageIndex]
+  const page = stack[pageIndex]
   const pageName = page?.name ?? (isPaymentKey || isDeleteAccount ? 'profile' : 'home')
   return (
     <>
@@ -88,14 +106,18 @@ export function App() {
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
-      {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} />}
+      {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isMapOverBill} />}
+      {isMapOverBill && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
+          <StackLayers backStack={backStack.slice(mapIndex)} />
+        </div>
+      )}
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isDefaultSplit} />}
       {isDefaultSplit && <DefaultSplitDialog key={top.groupId} route={top} />}
       {isPickPayment && <PickPaymentDialog />}
       {isRegisterPayment && (
         <RegisterPaymentDialog key={`${top.groupId ?? top.personKey}/${top.fromMemberId ?? top.currency}/${top.toMemberId ?? ''}`} route={top} />
       )}
-      <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
 }
@@ -136,6 +158,8 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
     case 'profile':
     case 'edit-profile':
       return <ProfileScreen />
+    case 'category-map':
+      return <CategoryMapScreen />
     default:
       return <WelcomeScreen />
   }

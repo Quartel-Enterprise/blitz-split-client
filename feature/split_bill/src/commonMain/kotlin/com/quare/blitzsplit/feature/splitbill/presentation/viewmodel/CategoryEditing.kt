@@ -1,9 +1,11 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
@@ -31,13 +33,14 @@ internal class CategoryEditing(
     private val scope: CoroutineScope,
     private val observeCategoryTree: ObserveCategoryTree,
     private val observeExpenses: ObserveExpenses,
+    private val observeCategoryMap: ObserveCategoryMap,
     private val saveGroupCategory: SaveGroupCategory,
     private val deleteGroupCategory: DeleteGroupCategory,
     private val emit: suspend (SplitBillUiAction) -> Unit,
     private val onCategoryChanged: () -> Unit,
 ) {
-    // Why: the words of the map (flow 9) that suggest a bill's category from its description.
-    private val terms = DefaultCategoryTerms.terms
+    // Why: the person's map (flow 9), whose words suggest a bill's category from its description.
+    private var terms: List<CategoryTerm> = DefaultCategoryTerms.terms
 
     // Why: the group's categories and how its bills use them, as a sync or a change here moves them.
     fun observe(groupId: Flow<String>) {
@@ -45,6 +48,12 @@ internal class CategoryEditing(
             .flatMapLatest { id -> combine(observeCategoryTree(id), observeExpenses(id), ::Pair) }
             .onEach { (tree, expenses) -> change { it.withCategories(tree, expenses).withCategoryMatched(terms) } }
             .launchIn(scope)
+        // Why: a term changed in the map, on this device or synced, chooses again while the category isn't picked.
+        observeCategoryMap()
+            .onEach { map ->
+                terms = map.terms.map { it.asTerm }
+                change { it.withCategoryMatched(terms) }
+            }.launchIn(scope)
     }
 
     // Why: until the category is picked by hand, the description's words choose it (7.1).

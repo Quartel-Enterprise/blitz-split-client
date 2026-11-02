@@ -25,6 +25,9 @@ object CategoryMatcher {
             .sortedWith(compareByDescending<CategoryMatch> { keyOf(it.term).length }.thenBy { it.start })
     }
 
+    // Why: the title's words as typed, accents and case kept, which "Ensinar ao mapa" offers (9.3f).
+    fun titleWordsOf(title: String): List<String> = wordsOf(title).map { title.substring(it.start, it.end) }
+
     // Why: what a term is matched as, lowercase without accents and single spaces, also the map's key.
     fun keyOf(term: String): String = wordsOf(term).joinToString(" ") { it.text }
 

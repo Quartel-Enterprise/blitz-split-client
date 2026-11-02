@@ -100,6 +100,7 @@ suspend fun syncNow(): Result<Unit> {
                     paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
                 }
                 val preferencesSynced = suspendRunCatching { /* download, then upload */ }
+                val termsSynced = suspendRunCatching { /* the category map: download, then upload */ }
                 var areGroupsSynced = false
                 val groupsSynced = suspendRunCatching {
                     groupRepository.downloadGroups(userId).getOrThrow()
@@ -126,6 +127,7 @@ suspend fun syncNow(): Result<Unit> {
                 signOutIfScheduledAndSynced()
                 keysSynced.getOrThrow()
                 preferencesSynced.getOrThrow()
+                termsSynced.getOrThrow()
                 groupsSynced.getOrThrow()
                 pinsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
@@ -283,6 +285,11 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   `deleteGoneFromServer`; deleting one is a tombstone (`isDeleted`, its subcategories too) the server keeps deleted,
   and its bills keep the id: `CategoryTree.resolve` reads them as its parent or "Outros", so a delete never rewrites
   any bill. Its pending flag and versions join the bills' and payments' in `observePendingMoneyVersions`.
+- **Category map** (`:core:expenses`): each person's changes to the app's 60 terms (`category_term`, one row per
+  folded word, `category_terms` keyed by user and word on the server), owned like the payment keys
+  (`ownerUserId`, claimed by the first sync, dropped on a switch, cleared on sign out). A null category is a term
+  removed and `isDeleted` a change "Restaurar padrão" undid, which stays so its version still wins; the download is
+  Last-Write-Wins per word, a newer server row winning even over a change not pushed yet.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 - **Activity** (`:core:activity`): the "Atividade" feed is a log the server writes (`activity_events`, by triggers

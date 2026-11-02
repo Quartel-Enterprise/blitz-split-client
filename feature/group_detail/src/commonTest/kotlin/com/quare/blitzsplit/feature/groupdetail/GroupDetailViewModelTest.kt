@@ -3,29 +3,40 @@ package com.quare.blitzsplit.feature.groupdetail
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -56,6 +67,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import kotlinx.coroutines.CompletableDeferred
@@ -91,6 +103,8 @@ class GroupDetailViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var viewModel: GroupDetailViewModel
+    private val teach = InMemoryCategoryTeachRepository()
+    private val terms = FakeCategoryTermRepository()
     private lateinit var account: FakeAccountRepository
     private val actions = mutableListOf<GroupDetailUiAction>()
     private val deletedBills = InMemoryDeletedBillRepository()
@@ -133,6 +147,116 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(listOf(AppCategory.FOOD_MARKET.key, AppCategory.OTHER.key), rows.map { it.category.id })
+        }
+
+    @Test
+    fun `GIVEN a bill saved in a category the map would not pick WHEN the screen shows THEN asks to teach it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            teach.post(teachOffer)
+            val state = viewModel.uiState.value
+
+            // Then
+            val asking = state.teach
+            assertEquals(AppCategory.LEISURE_SPORTS.key, asking?.category?.id)
+            assertEquals(AppCategory.HOME_RENT.key, asking?.mapCategory?.id)
+            assertEquals(listOf("aluguel", "prancha"), asking?.words?.map { it.term })
+            assertEquals("prancha", asking?.selectedKey)
+            assertEquals(
+                AppCategory.HOME_RENT.key,
+                asking
+                    ?.words
+                    ?.first()
+                    ?.currentCategory
+                    ?.id,
+            )
+            assertEquals(null, teach.observeOffer().first())
+        }
+
+    @Test
+    fun `GIVEN the teach question WHEN teaching the word picked THEN the map sends it to the bill category`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            teach.post(teachOffer)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            val picking = viewModel.uiState.value.teach
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("aluguel"))
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertTrue(picking?.isPickingWord ?: false)
+            assertEquals(null, viewModel.uiState.value.teach)
+            val change = terms.changes.value.single()
+            assertEquals("aluguel" to AppCategory.LEISURE_SPORTS.key, change.term to change.categoryId)
+        }
+
+    @Test
+    fun `GIVEN a word in another group category WHEN teaching it THEN says where it moves from and moves it`() =
+        runTest(testDispatcher) {
+            // Given
+            terms.changes.value = listOf(termChange("prancha", BEACH_CATEGORY_ID), termChange("da", BEACH_CATEGORY_ID))
+            prepareScenario(groupCategories = listOf(beachCategory))
+            teach.post(teachOffer)
+
+            // When
+            val asking = viewModel.uiState.value.teach
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked("prancha"))
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+
+            // Then
+            assertEquals(listOf("aluguel", "da", "prancha"), asking?.words?.map { it.term })
+            assertEquals(
+                BEACH_CATEGORY_ID,
+                asking
+                    ?.words
+                    ?.last()
+                    ?.currentCategory
+                    ?.id,
+            )
+            val change = terms.changes.value.first { it.key == "prancha" }
+            assertEquals(AppCategory.LEISURE_SPORTS.key, change.categoryId)
+        }
+
+    @Test
+    fun `GIVEN a word of a group no longer on the device WHEN asking to teach THEN it is new in the map`() =
+        runTest(testDispatcher) {
+            // Given
+            terms.changes.value = listOf(termChange("prancha", "gone-category"), termChange("da", "gone-category"))
+            prepareScenario()
+
+            // When
+            teach.post(teachOffer)
+
+            // Then
+            val words = viewModel.uiState.value.teach
+                ?.words
+            assertEquals(listOf("aluguel", "prancha"), words?.map { it.term })
+            assertEquals(null, words?.last()?.currentCategory)
+        }
+
+    @Test
+    fun `GIVEN the teach question WHEN not now or another group THEN nothing goes into the map`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            teach.post(teachOffer.copy(groupId = "another-group"))
+            val otherGroup = viewModel.uiState.value.teach
+            teach.post(teachOffer)
+            viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+
+            // Then
+            assertEquals(null, otherGroup)
+            assertEquals(null, viewModel.uiState.value.teach)
+            assertTrue(terms.changes.value.isEmpty())
         }
 
     @Test
@@ -2121,6 +2245,36 @@ class GroupDetailViewModelTest {
             )
         }
 
+    private val beachCategory = GroupCategory(
+        id = BEACH_CATEGORY_ID,
+        groupId = "another-group",
+        parentId = null,
+        name = "Praia",
+        icon = CategoryIcon.SUN,
+        createdByMemberId = null,
+        isDeleted = false,
+        isPending = false,
+    )
+
+    private fun termChange(
+        term: String,
+        categoryId: String,
+    ): CategoryTermChange = CategoryTermChange(
+        key = term,
+        term = term,
+        categoryId = categoryId,
+        isRestored = false,
+        isPending = false,
+    )
+
+    private val teachOffer = CategoryTeachOffer(
+        expenseId = "bill-1",
+        groupId = GROUP_ID,
+        title = "Aluguel da prancha",
+        categoryId = AppCategory.LEISURE_SPORTS.key,
+        mapCategoryId = AppCategory.HOME_RENT.key,
+    )
+
     private fun TestScope.prepareScenario(
         storedGroup: Group = trip,
         storedExpenses: List<Expense> = emptyList(),
@@ -2134,8 +2288,10 @@ class GroupDetailViewModelTest {
         routesBelow: List<Route> = listOf(Route.Groups),
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
+        groupCategories: List<GroupCategory> = emptyList(),
     ) {
         route = Route.GroupDetail(GROUP_ID, joinedAs = joinedAs)
+        val categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         account = FakeAccountRepository(initialStatus = accountStatus)
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
             it.exitOutcome = exitOutcome
@@ -2157,7 +2313,14 @@ class GroupDetailViewModelTest {
             currentTimeZone = { timeZone },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
-            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            teachUseCases = CategoryTeachUseCases(
+                observeOffer = ObserveCategoryTeachOfferUseCase(teach),
+                consumeOffer = ConsumeCategoryTeachOfferUseCase(teach),
+                observeMap = ObserveCategoryMapUseCase(terms),
+                observeMapCategories = ObserveMapCategoriesUseCase(categories),
+                saveTerm = SaveCategoryTermUseCase(terms) { nowMillis },
+            ),
             observeAccount = ObserveAccountUseCase(account),
             useCases = GroupScreenUseCases(
                 navigator = navigator,
@@ -2186,6 +2349,7 @@ class GroupDetailViewModelTest {
 
     private companion object {
         const val GROUP_ID = "group-1"
+        const val BEACH_CATEGORY_ID = "beach"
         const val ANA = "member-1"
         const val PIERRE = "member-2"
         const val BRUNO = "member-3"

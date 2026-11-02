@@ -115,6 +115,17 @@
         }
       }
     },
+    "%@ came from the word “%@”. See and edit the words that pick the category." : {
+      "comment" : "Category map card",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ veio da palavra “%2$@”. Veja e edite as palavras que escolhem a categoria."
+          }
+        }
+      }
+    },
     "%@ is the most used in %@." : {
       "comment" : "Category picker",
       "localizations" : {
@@ -408,6 +419,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · convidado sem app"
+          }
+        }
+      }
+    },
+    "%@'s category" : {
+      "comment" : "A group's main category in the map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "categoria do %@"
+          }
+        }
+      }
+    },
+    "%@, %@. Edit" : {
+      "comment" : "VoiceOver label of a term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@. Editar"
           }
         }
       }
@@ -1043,6 +1076,28 @@
         }
       }
     },
+    "%lld terms" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld termos"
+          }
+        }
+      }
+    },
+    "%lld terms with “%@”" : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld termos com “%2$@”"
+          }
+        }
+      }
+    },
     "Show %@" : {
       "comment" : "Applies Activity's filters; %@ is how many items they show",
       "localizations" : {
@@ -1386,6 +1441,39 @@
         }
       }
     },
+    "1 subcategory" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 subcategoria"
+          }
+        }
+      }
+    },
+    "1 term" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 termo"
+          }
+        }
+      }
+    },
+    "1 term with “%@”" : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 termo com “%@”"
+          }
+        }
+      }
+    },
     "A subcategory uses the icon of %@." : {
       "comment" : "New category: inside another",
       "localizations" : {
@@ -1397,6 +1485,17 @@
         }
       }
     },
+    "Add Term" : {
+      "comment" : "Mac settings",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar Termo"
+          }
+        }
+      }
+    },
     "Add exception" : {
       "comment" : "Default split",
       "localizations" : {
@@ -1404,6 +1503,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adicionar exceção"
+          }
+        }
+      }
+    },
+    "Add it and bills with this word in their title arrive with the right category." : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione e as contas com essa palavra no título já chegam com a categoria certa."
+          }
+        }
+      }
+    },
+    "Add term" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar termo"
+          }
+        }
+      }
+    },
+    "Add term in %@" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar termo em %@"
+          }
+        }
+      }
+    },
+    "Add “%@”" : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar “%@”"
           }
         }
       }
@@ -1426,6 +1569,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Todas as categorias"
+          }
+        }
+      }
+    },
+    "An app term. Restore default brings it back as it came." : {
+      "comment" : "Edit term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termo do app. Restaurar padrão traz de volta como veio."
           }
         }
       }
@@ -1492,6 +1646,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bar"
+          }
+        }
+      }
+    },
+    "Bill saved in %@, not in %@, which the map suggested. Teach the map?" : {
+      "comment" : "Despesas, after saving",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta salva em %1$@, e não em %2$@, que o mapa sugeriu. Ensinar ao mapa?"
+          }
+        }
+      }
+    },
+    "Bill saved in %@. Teach the map?" : {
+      "comment" : "Despesas, after saving a bill whose category was picked by hand",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta salva em %@. Ensinar ao mapa?"
+          }
+        }
+      }
+    },
+    "Bills already saved don't change. You can undo it in the Category map." : {
+      "comment" : "Teach the map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As contas já salvas não mudam. Dá para desfazer no Mapa de categorias."
           }
         }
       }
@@ -1584,6 +1771,17 @@
         }
       }
     },
+    "Categories" : {
+      "comment" : "Mac Settings tab",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categorias"
+          }
+        }
+      }
+    },
     "Category" : {
       "comment" : "Title of the category picker",
       "localizations" : {
@@ -1591,6 +1789,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Categoria"
+          }
+        }
+      }
+    },
+    "Category Map…" : {
+      "comment" : "Mac category menu",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa de Categorias…"
+          }
+        }
+      }
+    },
+    "Category map" : {
+      "comment" : "Title, profile row and card",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapa de categorias"
           }
         }
       }
@@ -1613,6 +1833,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Categoria: %@. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "Changing it here moves the term to another category." : {
+      "comment" : "Edit term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar aqui move o termo para outra categoria."
           }
         }
       }
@@ -1679,6 +1910,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não deu para salvar a categoria. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't save the map. Try again." : {
+      "comment" : "Toast",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para salvar o mapa. Tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't teach the map. Try again." : {
+      "comment" : "Toast",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para ensinar o mapa. Tente de novo."
           }
         }
       }
@@ -1804,6 +2057,17 @@
         }
       }
     },
+    "Edit term" : {
+      "comment" : "Title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar termo"
+          }
+        }
+      }
+    },
     "Edit “%@”…" : {
       "comment" : "Mac menu: edit a group's category",
       "localizations" : {
@@ -1877,6 +2141,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ingressos"
+          }
+        }
+      }
+    },
+    "Example" : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exemplo"
           }
         }
       }
@@ -2112,6 +2387,17 @@
         }
       }
     },
+    "If moved" : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se mover"
+          }
+        }
+      }
+    },
     "Inside" : {
       "comment" : "New category: its parent",
       "localizations" : {
@@ -2167,6 +2453,17 @@
         }
       }
     },
+    "It can be the category or a subcategory." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pode ser a categoria ou uma subcategoria."
+          }
+        }
+      }
+    },
     "It has subcategories, so it stays a main category." : {
       "comment" : "Edit category: why it can't go inside another",
       "localizations" : {
@@ -2174,6 +2471,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tem subcategorias, então continua principal."
+          }
+        }
+      }
+    },
+    "Leaves %@: titles with “%@” go to %@." : {
+      "comment" : "Teach the map: a word already in the map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sai de %1$@: títulos com “%2$@” vão para %3$@."
           }
         }
       }
@@ -2200,6 +2508,17 @@
         }
       }
     },
+    "Matches the whole word, ignoring accents and case." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casa com a palavra inteira, sem ligar para acento ou maiúscula."
+          }
+        }
+      }
+    },
     "Most used in the group" : {
       "comment" : "Why a category is suggested",
       "localizations" : {
@@ -2207,6 +2526,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mais usada no grupo"
+          }
+        }
+      }
+    },
+    "Move to %@" : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover para %@"
+          }
+        }
+      }
+    },
+    "Moving takes the term out of %@." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mover tira o termo de %@."
           }
         }
       }
@@ -2266,6 +2607,17 @@
         }
       }
     },
+    "New in the map. Titles with “%@” go to %@." : {
+      "comment" : "Teach the map: a word",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nova no mapa. Títulos com “%1$@” vão para %2$@."
+          }
+        }
+      }
+    },
     "New subcategory" : {
       "comment" : "Title",
       "localizations" : {
@@ -2273,6 +2625,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nova subcategoria"
+          }
+        }
+      }
+    },
+    "New term" : {
+      "comment" : "Title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novo termo"
           }
         }
       }
@@ -2310,6 +2673,39 @@
         }
       }
     },
+    "No term with “%@”" : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum termo com “%@”"
+          }
+        }
+      }
+    },
+    "No terms" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum termo"
+          }
+        }
+      }
+    },
+    "No terms yet." : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum termo ainda."
+          }
+        }
+      }
+    },
     "No word of your map. The bill stays in Other; tap the icon to pick one." : {
       "comment" : "Under a bill's description",
       "localizations" : {
@@ -2339,6 +2735,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nenhuma: categoria principal"
+          }
+        }
+      }
+    },
+    "Offline · 1 change queued" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline · 1 alteração na fila"
           }
         }
       }
@@ -2383,6 +2790,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Só %@"
+          }
+        }
+      }
+    },
+    "Open Profile" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Perfil"
           }
         }
       }
@@ -2522,6 +2940,17 @@
         }
       }
     },
+    "Remove Term" : {
+      "comment" : "Mac settings",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover Termo"
+          }
+        }
+      }
+    },
     "Remove exception" : {
       "comment" : "Exception by category",
       "localizations" : {
@@ -2555,6 +2984,50 @@
         }
       }
     },
+    "Restore" : {
+      "comment" : "Button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar"
+          }
+        }
+      }
+    },
+    "Restore Default…" : {
+      "comment" : "Mac settings",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar Padrão…"
+          }
+        }
+      }
+    },
+    "Restore default" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar padrão"
+          }
+        }
+      }
+    },
+    "Restore the default map?" : {
+      "comment" : "Alert",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar o mapa padrão?"
+          }
+        }
+      }
+    },
     "Ride-hailing" : {
       "comment" : "An app category",
       "localizations" : {
@@ -2584,6 +3057,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Buscar categoria"
+          }
+        }
+      }
+    },
+    "Search terms" : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar termo"
+          }
+        }
+      }
+    },
+    "See and edit the words that pick a bill's category from its title." : {
+      "comment" : "Category map card",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veja e edite as palavras que escolhem a categoria pelo título da conta."
           }
         }
       }
@@ -2698,6 +3193,50 @@
         }
       }
     },
+    "Tap a term to change its category or remove it. It matches the whole word, ignoring accents and case." : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque num termo para mudar a categoria ou remover. Casa com a palavra inteira, sem ligar para acento ou maiúscula."
+          }
+        }
+      }
+    },
+    "Teach" : {
+      "comment" : "Button",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensinar"
+          }
+        }
+      }
+    },
+    "Teach the map" : {
+      "comment" : "Title",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensinar ao mapa"
+          }
+        }
+      }
+    },
+    "Term" : {
+      "comment" : "Mac table column",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termo"
+          }
+        }
+      }
+    },
     "The %lld bills with %@ move to %@. The category goes for all of %@." : {
       "comment" : "Delete category",
       "localizations" : {
@@ -2709,6 +3248,28 @@
         }
       }
     },
+    "The %lld terms you created stay." : {
+      "comment" : "Restore the default map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os %lld termos que você criou continuam."
+          }
+        }
+      }
+    },
+    "The app's 60 terms come back as they came, including those you removed or moved." : {
+      "comment" : "Restore the default map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os 60 termos do app voltam como vieram, inclusive os que você removeu ou mudou de categoria."
+          }
+        }
+      }
+    },
     "The category goes for all of %@." : {
       "comment" : "Delete category",
       "localizations" : {
@@ -2716,6 +3277,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "A categoria some para todo o %@."
+          }
+        }
+      }
+    },
+    "The map works offline: changes count right away on this device and reach your others once back online." : {
+      "comment" : "Category map offline",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O mapa funciona sem internet: as mudanças valem na hora neste aparelho e vão para os outros quando reconectar."
+          }
+        }
+      }
+    },
+    "The term you created, “%@”, stays." : {
+      "comment" : "Restore the default map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O termo que você criou, “%@”, continua."
+          }
+        }
+      }
+    },
+    "The words that pick a bill's category" : {
+      "comment" : "Profile row",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As palavras que escolhem a categoria da conta"
           }
         }
       }
@@ -2808,6 +3402,39 @@
         }
       }
     },
+    "Use at least 2 letters." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use pelo menos 2 letras."
+          }
+        }
+      }
+    },
+    "Use at most 30 letters." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use no máximo 30 letras."
+          }
+        }
+      }
+    },
+    "Use only letters, digits and spaces." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use só letras, números e espaço."
+          }
+        }
+      }
+    },
     "Water" : {
       "comment" : "An app category",
       "localizations" : {
@@ -2819,6 +3446,61 @@
         }
       }
     },
+    "When a bill's title has one of these words, its category comes by itself. “Uber home” becomes Transport." : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando o título da conta tem uma destas palavras, a categoria vem sozinha. “Uber para casa” vira Transporte."
+          }
+        }
+      }
+    },
+    "When two terms match a title, the longest one wins." : {
+      "comment" : "Category map search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando duas palavras casam num título, o termo mais longo ganha."
+          }
+        }
+      }
+    },
+    "Which word of “%@” should pick %@ on the next bills?" : {
+      "comment" : "Teach the map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qual palavra de “%1$@” deve escolher %2$@ nas próximas contas?"
+          }
+        }
+      }
+    },
+    "Without terms, the category doesn't come from the title: you pick it on each bill." : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem termos, a categoria não vem pelo título: você escolhe em cada conta."
+          }
+        }
+      }
+    },
+    "Word or phrase" : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palavra ou frase"
+          }
+        }
+      }
+    },
     "You picked %@. By the map it would be %@ (“%@”)." : {
       "comment" : "Under a bill's description: the category picked by hand differs from the map's",
       "localizations" : {
@@ -2826,6 +3508,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você escolheu %1$@. Pelo mapa seria %2$@ (“%3$@”)."
+          }
+        }
+      }
+    },
+    "You picked %@. By the map it would be %@ (“%@”). On saving, we ask whether the map learns." : {
+      "comment" : "Under a bill's description",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você escolheu %1$@. Pelo mapa seria %2$@ (“%3$@”). Ao salvar, perguntamos se o mapa aprende."
+          }
+        }
+      }
+    },
+    "Your map is empty" : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu mapa está vazio"
+          }
+        }
+      }
+    },
+    "Your map stays on this device only. To take it to your other devices, sign in with Google or Apple in your Profile." : {
+      "comment" : "Category map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu mapa fica só neste aparelho. Para levar a outros aparelhos, entre com Google ou Apple no Perfil."
           }
         }
       }
@@ -3195,7 +3910,7 @@
       }
     },
     "Dismiss" : {
-      "comment" : "Closes a card",
+      "comment" : "Closes a card, and the category map's notices",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
@@ -4062,6 +4777,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Em aberto · %lld"
+          }
+        }
+      }
+    },
+    "only in %@" : {
+      "comment" : "A group's category in the map",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "só no %@"
           }
         }
       }
@@ -7974,7 +8700,7 @@
       }
     },
     "More options" : {
-      "comment" : "VoiceOver: a contact's ⋯ menu",
+      "comment" : "VoiceOver: a contact's ⋯ menu, and the category map's",
       "localizations" : {
         "pt-BR" : {
           "stringUnit" : {
@@ -10737,6 +11463,17 @@
         }
       }
     },
+    "“%@” already picks %@. Each term has one category." : {
+      "comment" : "New term",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@” já escolhe %2$@. Cada termo tem uma categoria só."
+          }
+        }
+      }
+    },
     "“%@” can only be deleted once everyone has settled up." : {
       "comment" : "Why the group can't be deleted yet; %@ is the group's name",
       "localizations" : {
@@ -11530,6 +12267,17 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "“%@” left the map" : {
+      "comment" : "Category map: a term removed",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” saiu do mapa"
           }
         }
       }

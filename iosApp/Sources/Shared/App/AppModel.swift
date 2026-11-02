@@ -13,9 +13,14 @@ final class AppModel {
     /// a sheet. Nil until the root first measures the window, so nothing is pushed or presented by a guess; it only
     /// changes when the window crosses the threshold, never on each step of a live resize.
     private(set) var isLargeWindow: Bool?
-    /// How many times the shared code opened the profile on the Mac, whose profile lives in Ajustes (⌘,): each one
-    /// opens the Settings window (`RootView`) instead of pushing it over the groups.
+    /// How many times the shared code opened the profile or the category map on the Mac, which live in Ajustes (⌘,):
+    /// each one opens the Settings window (`RootView`) instead of pushing it over the groups.
     private(set) var settingsRequestCount = 0
+    #if os(macOS)
+    /// The section of Ajustes the last of those asked for (the profile, or Categories for the map), until Ajustes picks
+    /// it (`SettingsView`).
+    var requestedSettingsPane: ProfileSettingsPane?
+    #endif
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -36,16 +41,17 @@ final class AppModel {
         })
     }
 
-    /// The Mac never pushes the profile: any screen that opens it (the groups' avatar, "Protect your access", a
-    /// browser sign in coming back) opens Ajustes and leaves the back stack as it was, so nothing is drawn over the
-    /// groups. What Ajustes opens (a key, deleting the account) only ever sits on top: a screen the main window opens
+    /// The Mac never pushes the profile nor the category map: any screen that opens them (the groups' avatar, "Protect
+    /// your access", a browser sign in coming back; the profile's "Category map", Split a bill's "Category Map…") opens
+    /// Ajustes on their section and leaves the back stack as it was, so nothing is drawn over the groups or the bill. What Ajustes opens (a key, deleting the account) only ever sits on top: a screen the main window opens
     /// over it while the main window can't take clicks (a link opened from outside, a menu command) closes it, since
     /// one back stack has one top. Everywhere else the back stack is drawn as the shared code moves it.
     private func backStackChanged(_ value: Any?) {
         let routes = Self.routes(of: value)
         #if os(macOS)
-        if routes.count > 1, routes.last == .profile {
+        if routes.count > 1, let last = routes.last, last == .profile || last == .categoryMap {
             holder.viewModel.navigator.popTo(size: Int32(routes.count - 1))
+            requestedSettingsPane = last == .categoryMap ? .categories : .profile
             settingsRequestCount += 1
             return
         }

@@ -222,6 +222,9 @@ sealed interface SplitBillUiEvent : UiEvent {
 
     data object OnCategoryDismissed : Categories
 
+    // Why: the "Mapa de categorias" card between Sugeridas and Todas as categorias (9.0).
+    data object OnCategoryMapClicked : SplitBillUiEvent
+
     /*
      * Why: "Nova" (a main category), "Nova em Alimentação" (its subcategory) or "Criar “Pet”" from a search with the
      * text typed (7.7c, 7.8, 7.8b).

@@ -32,6 +32,7 @@ private val exportedToApple = listOf(
     projects.feature.registerPayment,
     projects.feature.globalBalances,
     projects.feature.groupStats,
+    projects.feature.categoryMap,
     projects.feature.activity,
     projects.feature.contacts,
 )

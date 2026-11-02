@@ -45,6 +45,7 @@ class GroupDetailViewModel(
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
     observeCategoryTree: ObserveCategoryTree,
+    teachUseCases: CategoryTeachUseCases,
     observeAccount: ObserveAccount,
     useCases: GroupScreenUseCases,
 ) : ViewModel() {
@@ -58,6 +59,7 @@ class GroupDetailViewModel(
                 showsBillDeletedNotice = false,
                 exit = GroupExitState.idle,
                 isLoaded = false,
+                teach = null,
                 homeTab = useCases.navigator.backStack.value
                     .findHomeTabUnder(route),
                 joinedAs = route.joinedAs,
@@ -89,12 +91,22 @@ class GroupDetailViewModel(
     private var categoryTree = CategoryTree.appOnly
     private var showAgain: (() -> Unit)? = null
 
+    private val teaching = CategoryTeaching(
+        groupId = route.groupId,
+        useCases = teachUseCases,
+        scope = viewModelScope,
+        read = { uiState.value.teach },
+        write = { teach -> uiState.update { it.copy(teach = teach) } },
+        showError = { uiAction.emit(GroupDetailUiAction.ShowTeachError) },
+    )
+
     init {
         observeCategoryTree(route.groupId)
             .onEach { tree ->
                 categoryTree = tree
                 if (!screen.isGroupGone) showAgain?.invoke()
             }.launchIn(viewModelScope)
+        teaching.watch(observeCategoryTree(route.groupId))
         screen.watch(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
@@ -169,6 +181,14 @@ class GroupDetailViewModel(
             GroupDetailUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             GroupDetailUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
+
+            GroupDetailUiEvent.OnTeachClicked -> teaching.open()
+
+            GroupDetailUiEvent.OnTeachDismissed -> teaching.dismiss()
+
+            is GroupDetailUiEvent.OnTeachWordPicked -> teaching.pick(event.key)
+
+            GroupDetailUiEvent.OnTeachConfirmed -> teaching.confirm()
 
             GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
         }

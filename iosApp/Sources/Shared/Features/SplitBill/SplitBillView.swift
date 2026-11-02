@@ -1187,6 +1187,10 @@ private struct MacCategoryMenu: View {
             Button("New Category…") {
                 model.send(SplitBillUiEventOnNewCategoryClicked(parentId: nil, name: ""))
             }
+            // The map lives in Ajustes › Categories on the Mac (9.0), which this opens (`AppModel`)
+            Button("Category Map…") {
+                model.send(SplitBillUiEventOnCategoryMapClicked.shared)
+            }
         } label: {
             CategoryBadge(category: state.category, size: 22)
         }

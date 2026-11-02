@@ -1,8 +1,10 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -12,12 +14,15 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.OfferCategoryTeachUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -37,6 +42,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEven
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -58,6 +64,9 @@ class BillCategoryViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var categories: FakeCategoryRepository
+    private lateinit var terms: FakeCategoryTermRepository
+    private lateinit var teach: InMemoryCategoryTeachRepository
+    private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
 
     @BeforeTest
@@ -457,11 +466,102 @@ class BillCategoryViewModelTest {
         updatedByMemberId = null,
     )
 
+    @Test
+    fun `GIVEN pizzaria added to the map WHEN typing it THEN the bill is Restaurante by that word`() = runTest {
+        // Given
+        prepareScenario(
+            termChanges = listOf(
+                CategoryTermChange(
+                    key = "pizzaria",
+                    term = "pizzaria",
+                    categoryId = AppCategory.FOOD_RESTAURANT.key,
+                    isRestored = false,
+                    isPending = true,
+                ),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Pizzaria do centro"))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(AppCategory.FOOD_RESTAURANT.key, state.category.id)
+        assertEquals(CategoryHint.BY_TERM, state.categoryHint)
+    }
+
+    @Test
+    fun `GIVEN a category picked by hand the map would not pick WHEN saving THEN asks to teach the map`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("180,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Aluguel da prancha"))
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.LEISURE_SPORTS.key))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        val offer = teach.observeOffer().first()
+        assertEquals(AppCategory.LEISURE_SPORTS.key, offer?.categoryId)
+        assertEquals(AppCategory.HOME_RENT.key, offer?.mapCategoryId)
+        assertEquals("Aluguel da prancha", offer?.title)
+        assertEquals(GROUP_ID, offer?.groupId)
+    }
+
+    @Test
+    fun `GIVEN a bill split from the group Saldos WHEN saving a category picked by hand THEN nothing asks to teach`() =
+        runTest {
+            // Given
+            prepareScenario(below = Route.Balances(GROUP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("180,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Aluguel da prancha"))
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryPicked(AppCategory.LEISURE_SPORTS.key))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(Route.Balances(GROUP_ID), navigator.backStack.value.last())
+            assertNull(teach.observeOffer().first())
+        }
+
+    @Test
+    fun `GIVEN the category the map picked WHEN saving THEN nothing asks to teach`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("312,00"))
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado"))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertNull(teach.observeOffer().first())
+    }
+
+    @Test
+    fun `GIVEN the picker WHEN tapping the map card THEN opens the category map over the bill`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryMapClicked)
+
+        // Then
+        assertEquals(Route.CategoryMap, navigator.backStack.value.last())
+    }
+
     private fun prepareScenario(
         storedGroup: Group = home,
         stored: List<Expense> = emptyList(),
         groupCategories: List<GroupCategory> = emptyList(),
         expenseId: String? = null,
+        termChanges: List<CategoryTermChange> = emptyList(),
+        below: Route = Route.GroupDetail(GROUP_ID, joinedAs = null),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = stored)
@@ -471,8 +571,10 @@ class BillCategoryViewModelTest {
             expenseId = expenseId,
             picksGroupFirst = false,
         )
-        val navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null))
+        terms = FakeCategoryTermRepository(initialChanges = termChanges)
+        teach = InMemoryCategoryTeachRepository()
+        navigator = BackStackNavigator(startRoute = Route.Groups).also {
+            it.navigate(below)
             it.navigate(route)
         }
         val deletedBills = InMemoryDeletedBillRepository()
@@ -492,6 +594,8 @@ class BillCategoryViewModelTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = { flowOf(emptyList()) },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            observeCategoryMap = ObserveCategoryMapUseCase(terms),
+            offerCategoryTeach = OfferCategoryTeachUseCase(teach),
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
             deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },

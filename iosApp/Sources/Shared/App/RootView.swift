@@ -119,6 +119,7 @@ struct RootView: View {
         case .editProfile: EditProfileView()
         case .deleteAccount: DeleteAccountView()
         case .notificationSettings: NotificationSettingsView()
+        case .categoryMap: CategoryMapView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         }
     }

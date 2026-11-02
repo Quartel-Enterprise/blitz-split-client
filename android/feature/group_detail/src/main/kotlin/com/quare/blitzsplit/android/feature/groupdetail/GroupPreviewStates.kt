@@ -66,6 +66,7 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     showsBillDeletedNotice = false,
     exit = previewGroupExit,
     isLoaded = true,
+    teach = null,
     homeTab = HomeTab.GROUPS,
     joinedAs = null,
     isAccountUnprotected = false,

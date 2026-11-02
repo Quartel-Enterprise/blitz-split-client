@@ -273,7 +273,7 @@
     <string name="split_bill_category_by_term">%1$s by the word “%2$s” in your map. Tap the icon to change it.</string>
     <string name="split_bill_category_by_longest">%1$d words of the map matched. “%2$s” wins, the longest: %3$s.</string>
     <string name="split_bill_category_no_term">No word of your map. The bill stays in Other; tap the icon to pick one.</string>
-    <string name="split_bill_category_changed">You picked %1$s. By the map it would be %2$s (“%3$s”).</string>
+    <string name="split_bill_category_changed">You picked %1$s. By the map it would be %2$s (“%3$s”). On saving, we ask whether the map learns.</string>
     <string name="split_bill_category_picked">Category: %s. Tap the icon to change it.</string>
     <string name="split_bill_category_title">Category</string>
     <string name="split_bill_category_new">New</string>
@@ -344,4 +344,7 @@
         <item quantity="one">The %1$d bill with %2$s moves to %3$s. The category goes for all of %4$s.</item>
         <item quantity="other">The %1$d bills with %2$s move to %3$s. The category goes for all of %4$s.</item>
     </plurals>
+    <string name="split_bill_category_map">Category map</string>
+    <string name="split_bill_category_map_by_term">%1$s came from the word “%2$s”. See and edit the words that pick the category.</string>
+    <string name="split_bill_category_map_detail">See and edit the words that pick a bill\'s category from its title.</string>
 </resources>

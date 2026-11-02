@@ -58,6 +58,7 @@ enum AppRoute: Hashable, Identifiable {
     case editProfile
     case deleteAccount
     case notificationSettings
+    case categoryMap
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
 
@@ -93,6 +94,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteEditProfile: self = .editProfile
         case is RouteDeleteAccount: self = .deleteAccount
         case is RouteNotificationSettings: self = .notificationSettings
+        case is RouteCategoryMap: self = .categoryMap
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         default: self = .welcome
         }
@@ -137,11 +139,12 @@ enum AppRoute: Hashable, Identifiable {
         }
     }
 
-    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, and
-    /// on the Mac "Who are you" inside the invite's.
+    /// Pushed inside the sheet under it rather than over the window: the default split inside Edit group's sheet, the
+    /// category map inside Split a bill's (9.0), and on the Mac "Who are you" inside the invite's. From the profile the
+    /// map is pushed as any screen; the Mac never pushes it, since it lives in Ajustes (`AppModel`).
     var pushesInSheet: Bool {
         switch self {
-        case .defaultSplit:
+        case .defaultSplit, .categoryMap:
             return true
         case .joinPick:
             #if os(macOS)

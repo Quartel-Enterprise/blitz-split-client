@@ -182,6 +182,7 @@ class GroupDetailUiStateTest {
         showsBillDeletedNotice = false,
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
+        teach = null,
         homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,

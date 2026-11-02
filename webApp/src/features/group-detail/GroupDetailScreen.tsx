@@ -19,6 +19,7 @@ import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge } from '@/lib/categories'
 import { cn } from '@/lib/utils'
+import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage } from './GroupPage'
 
@@ -42,6 +43,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
     presenter?.billDeletedNoticeShown()
   }, [presenter, showsBillDeletedNotice])
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
+  useCategoryTeachNotice(presenter, state?.teach)
   if (!presenter || !state?.isLoaded) return null
 
   return (
@@ -84,6 +86,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
           onDismiss={() => presenter.dismissPaymentDelete()}
         />
       )}
+      {state.teach?.isPickingWord && <CategoryTeachDialog presenter={presenter} teach={state.teach} />}
     </GroupPage>
   )
 }

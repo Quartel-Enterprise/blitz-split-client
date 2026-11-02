@@ -63,7 +63,7 @@ const splitTitles: Record<string, MessageKey> = {
  * Dividir's back, the payer sheets' dismissal or the bill's close. With a bill to edit it is "Editar conta", over
  * Conta, and can delete the bill.
  */
-export function SplitBillDialog({ route }: { route: JsRoute }) {
+export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; isCovered?: boolean }) {
   const presenter = usePresenter(() => new SplitBillPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsSplitBillState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -120,6 +120,8 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
     />
   )
 
+  // Why: "Mapa de categorias" covers it (9.0); it stays mounted, so the bill comes back as it was.
+  if (isCovered) return null
   return (
     <>
       <ResponsiveDialog

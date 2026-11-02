@@ -24,6 +24,8 @@ class FakeCategoryRepository(
     override fun observeGroupCategories(groupId: String): Flow<List<GroupCategory>> =
         groupCategories.map { list -> list.filter { it.groupId == groupId } }
 
+    override fun observeAllGroupCategories(): Flow<List<GroupCategory>> = groupCategories
+
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
     override fun observePendingVersions(): Flow<List<Long>> = pendingVersions
