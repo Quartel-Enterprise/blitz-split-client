@@ -498,7 +498,7 @@ private struct MacGroupScreen: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            MacGroupTop(header: model.state.header, actions: model.actions)
+            MacGroupTop(header: model.state.header, tab: model.tab, actions: model.actions)
             switch model.tab {
             case .expenses: MacGroupExpenses(model: model)
             case .balances:
@@ -524,6 +524,7 @@ private struct MacGroupExpenses: View {
     let model: GroupDetailModel
 
     @State private var selection = Set<String>()
+    @Environment(\.isNarrowWindow) private var isNarrowWindow
 
     private var state: GroupDetailUiState {
         model.state
@@ -586,9 +587,12 @@ private struct MacGroupExpenses: View {
                     .foregroundStyle(.secondary)
             }
             .width(min: 50, ideal: 60, max: 80)
-            TableColumn("Who paid") { item in
-                Text(verbatim: item.expense.flatMap(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
-                    .foregroundStyle(.secondary)
+            // A narrow window keeps Who paid out, as the board's narrow window draws it
+            if !isNarrowWindow {
+                TableColumn("Who paid") { item in
+                    Text(verbatim: item.expense.flatMap(payerText) ?? item.payment.map(PaymentCopy.kindAndMethod) ?? "")
+                        .foregroundStyle(.secondary)
+                }
             }
             TableColumn("Total") { item in
                 Text(verbatim: currency.format(item.expense?.totalMinor ?? item.payment?.amountMinor ?? 0))

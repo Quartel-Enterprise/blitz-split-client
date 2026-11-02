@@ -5,16 +5,21 @@ import SwiftUI
 /// The Mac's home: "Overall balance", "To get back" and "To pay" over a zebra table of the groups that the
 /// toolbar's Open / Settled up segments pick, or the open groups as the grid's cards, with the size slider below
 /// them as in the Finder. Clicking a row or a card opens the group; its ⋯ and its right click hold the group's
-/// actions. Settled up stays a table.
+/// actions. Settled up stays a table. A narrow window puts the segments above the cards and drops Last activity.
 struct GroupsTable: View {
     let model: GroupsModel
 
     @State private var selection: String?
+    @Environment(\.isNarrowWindow) private var isNarrowWindow
 
     var body: some View {
         let state = model.state
         let rows = (state.showsSettledGroups ? state.settledGroups : state.openGroups).map(GroupItem.init)
         VStack(alignment: .leading, spacing: 16) {
+            if isNarrowWindow {
+                GroupsStatusPicker(model: model)
+                    .fixedSize()
+            }
             GroupsSummaryCards(summary: state.summary, send: { model.send($0) })
             if state.showsGrid, !state.showsSettledGroups {
                 GroupsGridPane(model: model)
@@ -44,19 +49,21 @@ struct GroupsTable: View {
                     }
                 }
             }
-            .width(min: 180, ideal: 260)
+            .width(min: 160, ideal: 200)
             TableColumn("Members") { item in
                 Text(verbatim: GroupsCopy.memberNames(item.row))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-            .width(min: 120, ideal: 200)
-            TableColumn("Last activity") { item in
-                Text(verbatim: GroupsCopy.activityColumn(item.row))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+            .width(min: 110, ideal: 150)
+            if !isNarrowWindow {
+                TableColumn("Last activity") { item in
+                    Text(verbatim: GroupsCopy.activityColumn(item.row))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                .width(min: 110, ideal: 150)
             }
-            .width(min: 120, ideal: 220)
             TableColumn("Your balance") { item in
                 Text(verbatim: item.balance)
                     .fontWeight(.semibold)
@@ -64,7 +71,7 @@ struct GroupsTable: View {
                     .foregroundStyle(Palette.balance(item.row.isSettled ? 0 : item.row.netMinor))
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .width(min: 110, ideal: 130)
+            .width(min: 110, ideal: 120)
             TableColumn(String()) { item in
                 GroupRowMenuButton(group: item.row, isOnline: state.exit.isOnline, send: { model.send($0) })
             }
@@ -91,6 +98,27 @@ struct GroupsTable: View {
             model.send(GroupsUiEventOnGroupClicked(groupId: groupId))
             selection = nil
         }
+    }
+}
+
+/// Open or Settled up: the toolbar's segments, above the table in a narrow window.
+struct GroupsStatusPicker: View {
+    let model: GroupsModel
+
+    var body: some View {
+        Picker("Status", selection: settledBinding) {
+            Text("Open").tag(false)
+            Text("Settled up").tag(true)
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
+    }
+
+    private var settledBinding: Binding<Bool> {
+        Binding(
+            get: { model.state.showsSettledGroups },
+            set: { model.send(GroupsUiEventOnShowSettledChanged(isShown: $0)) },
+        )
     }
 }
 

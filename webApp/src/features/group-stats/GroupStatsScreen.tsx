@@ -3,6 +3,8 @@ import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStats
 import { useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { homeTabLabel, type HomeTab } from '@/components/HomeShell'
+import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -43,7 +45,9 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const [isPickingDates, setPickingDates] = useState(false)
   const [isPeriodDrawerOpen, setPeriodDrawerOpen] = useState(false)
+  const openHomeTab = useOpenHomeTab()
   if (!presenter || !state?.isLoaded) return null
+  const homeTab = state.homeTab as HomeTab
 
   const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)
   const range = formatRange(state.periodRangeStyle, state.periodStartMillis, state.periodEndMillis)
@@ -54,144 +58,150 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-10 flex h-14 items-center gap-1 border-b bg-background/95 px-2 backdrop-blur sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('stats_back', { group: state.groupName })} onClick={() => presenter.back()}>
-          <ArrowLeft />
-        </Button>
-        <span className="flex min-w-0 flex-1 flex-col md:hidden">
-          <span className="truncate font-semibold">{t('stats_title')}</span>
-          <span className="truncate text-xs text-muted-foreground">{state.groupName}</span>
-        </span>
-        <nav aria-label={t('groupDetail_breadcrumb')} className="mr-auto hidden items-center gap-1.5 text-sm md:flex">
-          <span className="text-muted-foreground">{t('groups_title')}</span>
-          <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
-          <button
-            type="button"
-            onClick={() => presenter.back()}
-            className="truncate rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
-          >
-            {state.groupName}
-          </button>
-          <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
-          <span aria-current="page" className="font-medium">
-            {t('stats_title')}
+    <PageShell selected={homeTab} groups={{ selectedId: route.groupId ?? '' }} phoneBars="none">
+      <div className="flex min-h-dvh flex-col">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-1 border-b bg-background/95 px-2 backdrop-blur md:hidden">
+          <Button variant="ghost" size="icon" aria-label={t('stats_back', { group: state.groupName })} onClick={() => presenter.back()}>
+            <ArrowLeft />
+          </Button>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate font-semibold">{t('stats_title')}</span>
+            <span className="truncate text-xs text-muted-foreground">{state.groupName}</span>
           </span>
-        </nav>
-      </header>
+        </header>
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
-        <div className="flex items-stretch gap-4 md:items-end">
-          <div className="hidden min-w-0 flex-1 flex-col gap-1 md:flex">
-            <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('stats_title')}</h1>
-            <span className="text-sm text-muted-foreground">{state.showsPeriodPicker ? `${state.groupName} · ${range}` : state.groupName}</span>
-          </div>
-          {state.showsPeriodPicker &&
-            (isDesktop ? (
-              <PeriodMenu state={state} onPick={pickPeriod} />
-            ) : (
-              <button type="button" aria-haspopup="dialog" onClick={() => setPeriodDrawerOpen(true)} className={cn(controlClass, 'justify-between')}>
-                <PeriodTriggerLabel state={state} />
-              </button>
-            ))}
-        </div>
-
-        {state.showsStats && <SummaryCards state={state} money={money} />}
-
-        {state.showsStats && (
-          <div className="grid items-start gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
-            <CategoriesCard state={state} money={money} className={cardClass} />
-            <div className="flex min-w-0 flex-col gap-4 md:gap-5">
-              <OverTimeCard state={state} presenter={presenter} money={money} />
-              {state.biggestExpense && (
-                <section aria-labelledby="statsBiggest" className={cardClass}>
-                  <h2 id="statsBiggest" className="text-[15px] font-semibold">
-                    {t('stats_biggest')}
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => presenter.openBiggestExpense()}
-                    className="-m-2 flex items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
-                  >
-                    <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
-                      <ReceiptText className="size-4" />
-                    </span>
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate font-medium">{state.biggestExpense.description}</span>
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        {state.biggestExpense.isPending && <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />}
-                        {paidByText(formatDayTime(state.biggestExpense.spentAt, 'other'), state.biggestExpense.payers)}
-                      </span>
-                    </span>
-                    <span className="font-semibold tabular-nums">{money(state.biggestExpense.amountMinor)}</span>
-                  </button>
-                </section>
-              )}
+        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 sm:gap-5 md:px-8 md:py-7 lg:px-10 lg:py-8">
+          <nav aria-label={t('groupDetail_breadcrumb')} className="-mb-1 hidden items-center gap-1.5 text-[13px] md:flex">
+            <button
+              type="button"
+              onClick={() => openHomeTab(homeTab)}
+              className="rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              {homeTabLabel(homeTab)}
+            </button>
+            <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
+            <button
+              type="button"
+              onClick={() => presenter.back()}
+              className="truncate rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              {state.groupName}
+            </button>
+            <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
+            <span aria-current="page">{t('stats_title')}</span>
+          </nav>
+          <div className="flex items-stretch gap-4 md:items-end">
+            <div className="hidden min-w-0 flex-1 flex-col gap-1 md:flex">
+              <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('stats_title')}</h1>
+              <span className="text-sm text-muted-foreground">{state.showsPeriodPicker ? `${state.groupName} · ${range}` : state.groupName}</span>
             </div>
-            <PeopleCard state={state} presenter={presenter} money={money} />
-          </div>
-        )}
-
-        {state.isGroupEmpty && (
-          <EmptyCard title={t('stats_emptyTitle')} body={t('stats_emptyBody')}>
-            <Button onClick={() => presenter.splitBill()}>{t('groupDetail_splitBill')}</Button>
-          </EmptyCard>
-        )}
-        {state.isPeriodEmpty && state.allStartMillis != null && state.allEndMillis != null && (
-          <EmptyCard
-            title={periodEmptyTitle(state)}
-            body={t('stats_periodEmptyBody', { range: formatRange(state.allRangeStyle, state.allStartMillis, state.allEndMillis) })}
-          >
-            <Button variant="outline" onClick={() => presenter.showWholePeriod()}>
-              {t(state.isTrip ? 'stats_seeWholeTrip' : 'stats_seeWholePeriod')}
-            </Button>
-          </EmptyCard>
-        )}
-      </main>
-
-      {!isDesktop && (
-        <Drawer open={isPeriodDrawerOpen} onOpenChange={setPeriodDrawerOpen}>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle>{t('stats_period')}</DrawerTitle>
-              <DrawerDescription>{t('stats_periodDrawerBody')}</DrawerDescription>
-            </DrawerHeader>
-            <div role="radiogroup" aria-label={t('stats_period')} className="mx-4 flex flex-col overflow-hidden rounded-xl border">
-              {state.periodOptions.map((option) => (
-                <button
-                  key={option.period}
-                  type="button"
-                  role="radio"
-                  aria-checked={option.period === state.period}
-                  onClick={() => pickPeriod(option)}
-                  className="flex min-h-14 items-center justify-between gap-3 border-b px-4 py-2 text-left last:border-b-0"
-                >
-                  <PeriodOptionText option={option} isTrip={state.isTrip} />
-                  {option.period === state.period && <Check aria-hidden className="size-[18px] text-primary" />}
+            {state.showsPeriodPicker &&
+              (isDesktop ? (
+                <PeriodMenu state={state} onPick={pickPeriod} />
+              ) : (
+                <button type="button" aria-haspopup="dialog" onClick={() => setPeriodDrawerOpen(true)} className={cn(controlClass, 'justify-between')}>
+                  <PeriodTriggerLabel state={state} />
                 </button>
               ))}
+          </div>
+
+          {state.showsStats && <SummaryCards state={state} money={money} />}
+
+          {state.showsStats && (
+            <div className="grid items-start gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
+              <CategoriesCard state={state} money={money} className={cardClass} />
+              <div className="flex min-w-0 flex-col gap-4 md:gap-5">
+                <OverTimeCard state={state} presenter={presenter} money={money} />
+                {state.biggestExpense && (
+                  <section aria-labelledby="statsBiggest" className={cardClass}>
+                    <h2 id="statsBiggest" className="text-[15px] font-semibold">
+                      {t('stats_biggest')}
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => presenter.openBiggestExpense()}
+                      className="-m-2 flex items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
+                    >
+                      <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+                        <ReceiptText className="size-4" />
+                      </span>
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="truncate font-medium">{state.biggestExpense.description}</span>
+                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          {state.biggestExpense.isPending && <span aria-hidden className="size-1.5 rounded-full bg-orange-500" />}
+                          {paidByText(formatDayTime(state.biggestExpense.spentAt, 'other'), state.biggestExpense.payers)}
+                        </span>
+                      </span>
+                      <span className="font-semibold tabular-nums">{money(state.biggestExpense.amountMinor)}</span>
+                    </button>
+                  </section>
+                )}
+              </div>
+              <PeopleCard state={state} presenter={presenter} money={money} />
             </div>
-            <DrawerFooter>
-              <Button variant="outline" onClick={() => setPeriodDrawerOpen(false)}>
-                {t('common_close')}
+          )}
+
+          {state.isGroupEmpty && (
+            <EmptyCard title={t('stats_emptyTitle')} body={t('stats_emptyBody')}>
+              <Button onClick={() => presenter.splitBill()}>{t('groupDetail_splitBill')}</Button>
+            </EmptyCard>
+          )}
+          {state.isPeriodEmpty && state.allStartMillis != null && state.allEndMillis != null && (
+            <EmptyCard
+              title={periodEmptyTitle(state)}
+              body={t('stats_periodEmptyBody', { range: formatRange(state.allRangeStyle, state.allStartMillis, state.allEndMillis) })}
+            >
+              <Button variant="outline" onClick={() => presenter.showWholePeriod()}>
+                {t(state.isTrip ? 'stats_seeWholeTrip' : 'stats_seeWholePeriod')}
               </Button>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      )}
-      {isPickingDates && (
-        <PickDatesDialog
-          isDesktop={isDesktop}
-          initialStart={state.periodStartMillis}
-          initialEnd={state.periodEndMillis}
-          onPick={(start, end) => {
-            setPickingDates(false)
-            presenter.pickDates(start, end)
-          }}
-          onClose={() => setPickingDates(false)}
-        />
-      )}
-    </div>
+            </EmptyCard>
+          )}
+        </main>
+
+        {!isDesktop && (
+          <Drawer open={isPeriodDrawerOpen} onOpenChange={setPeriodDrawerOpen}>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>{t('stats_period')}</DrawerTitle>
+                <DrawerDescription>{t('stats_periodDrawerBody')}</DrawerDescription>
+              </DrawerHeader>
+              <div role="radiogroup" aria-label={t('stats_period')} className="mx-4 flex flex-col overflow-hidden rounded-xl border">
+                {state.periodOptions.map((option) => (
+                  <button
+                    key={option.period}
+                    type="button"
+                    role="radio"
+                    aria-checked={option.period === state.period}
+                    onClick={() => pickPeriod(option)}
+                    className="flex min-h-14 items-center justify-between gap-3 border-b px-4 py-2 text-left last:border-b-0"
+                  >
+                    <PeriodOptionText option={option} isTrip={state.isTrip} />
+                    {option.period === state.period && <Check aria-hidden className="size-[18px] text-primary" />}
+                  </button>
+                ))}
+              </div>
+              <DrawerFooter>
+                <Button variant="outline" onClick={() => setPeriodDrawerOpen(false)}>
+                  {t('common_close')}
+                </Button>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        )}
+        {isPickingDates && (
+          <PickDatesDialog
+            isDesktop={isDesktop}
+            initialStart={state.periodStartMillis}
+            initialEnd={state.periodEndMillis}
+            onPick={(start, end) => {
+              setPickingDates(false)
+              presenter.pickDates(start, end)
+            }}
+            onClose={() => setPickingDates(false)}
+          />
+        )}
+      </div>
+    </PageShell>
   )
 }
 

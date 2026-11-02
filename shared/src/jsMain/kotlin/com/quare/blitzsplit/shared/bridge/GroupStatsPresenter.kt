@@ -117,6 +117,8 @@ class JsGroupStatsState(
     val showsStats: Boolean,
     val showsPeriodPicker: Boolean,
     val isLoaded: Boolean,
+    // Why: the home tab the group was opened from, which the sidebar selects ("home", "groups"…).
+    val homeTab: String,
 )
 
 class JsStatsSubcategory(
@@ -257,6 +259,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     showsStats = state.showsStats,
     showsPeriodPicker = state.showsPeriodPicker,
     isLoaded = state.isLoaded,
+    homeTab = toJsHomeTab(state.homeTab),
 )
 
 private fun toPeriodCode(period: StatsPeriod): String = period.name.lowercase().replace('_', '-')

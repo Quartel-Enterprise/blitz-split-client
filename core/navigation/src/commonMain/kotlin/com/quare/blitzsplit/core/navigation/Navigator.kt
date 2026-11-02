@@ -23,6 +23,12 @@ interface Navigator {
         route: Route,
     )
 
+    // Why: the same with several routes, bottom first: a group the sidebar opens from Início puts Grupos under it.
+    fun replaceAbove(
+        size: Int,
+        routes: List<Route>,
+    )
+
     /*
      * Why: a native back gesture (SwiftUI's swipe, the browser's back button) already moved the
      * screen; the back stack only catches up with how many entries remain.
