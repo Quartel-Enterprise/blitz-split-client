@@ -113,7 +113,11 @@ final class AppModel {
     /// The entries above the root, but the ones the sheets show. A native back gesture shortens it, and
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
-        get { Array(windowStack.dropFirst().dropLast(modalCount + (billInspector == nil ? 0 : 1))) }
+        get {
+            let modals = modalCount
+            let inspected = inspectorBill(above: modals) == nil ? 0 : 1
+            return Array(windowStack.dropFirst().dropLast(modals + inspected))
+        }
         set {
             guard newValue.count < path.count else { return }
             holder.viewModel.navigator.popTo(size: Int32(newValue.count + 1))
@@ -242,19 +246,25 @@ final class AppModel {
     /// rather than a sheet, the top entry or the one right under what opens as a sheet over it (editing the bill), so
     /// the screen behind it still takes clicks. Closing it pops it and whatever is over it. Nil off the Mac.
     var billInspector: RouteBillDetail? {
-        get {
-            #if os(macOS)
-            let index = windowStack.count - 1 - modalCount
-            guard index >= 1, case let .billDetail(route) = windowStack[index] else { return nil }
-            return route
-            #else
-            return nil
-            #endif
-        }
+        get { inspectorBill(above: modalCount) }
         set {
-            guard newValue == nil, billInspector != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1 - modalCount))
+            let modals = modalCount
+            guard newValue == nil, inspectorBill(above: modals) != nil else { return }
+            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1 - modals))
         }
+    }
+
+    /// The bill right under the `modals` entries the sheets show, while the root draws the tabs, which hold the
+    /// inspector (`RootView`): any other root draws the bill in its path.
+    private func inspectorBill(above modals: Int) -> RouteBillDetail? {
+        #if os(macOS)
+        let stack = windowStack
+        let index = stack.count - 1 - modals
+        guard root == .home, index >= 1, case let .billDetail(route) = stack[index] else { return nil }
+        return route
+        #else
+        return nil
+        #endif
     }
 
     /// The top entry when it covers the whole screen (the invite reader on iPhone and iPad). Closing it pops it.

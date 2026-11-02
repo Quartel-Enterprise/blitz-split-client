@@ -353,6 +353,7 @@ private struct MacBillDetail: View {
     let model: BillDetailModel
 
     @State private var layout = ScreenLayout()
+    @FocusState private var isFocused: Bool
 
     private var state: BillDetailUiState {
         model.state
@@ -383,6 +384,14 @@ private struct MacBillDetail: View {
         }
         .measuringScreenLayout($layout)
         .background(Palette.groupedBackground)
+        // Esc closes it while the focus is in it, which it takes as it opens, so a field elsewhere keeps its own Esc
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onExitCommand {
+            model.send(BillDetailUiEventOnBackClicked.shared)
+        }
     }
 
     private var header: some View {
@@ -421,8 +430,6 @@ private struct MacBillDetail: View {
             }
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
-            // Esc closes it with the focus anywhere in the window, as it closed the sheet
-            .keyboardShortcut(.cancelAction)
             .help(Text("Close"))
         }
     }
