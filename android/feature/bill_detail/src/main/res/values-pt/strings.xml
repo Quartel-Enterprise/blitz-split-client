@@ -147,4 +147,30 @@
         <item quantity="many">%1$d de %2$d fotos</item>
         <item quantity="other">%1$d de %2$d fotos</item>
     </plurals>
+    <string name="bill_detail_share">Compartilhar</string>
+    <string name="share_bill_title">Compartilhar conta</string>
+    <string name="share_bill_subtitle">%1$s · %2$s</string>
+    <string name="share_bill_close">Fechar</string>
+    <string name="share_bill_copy">Copiar</string>
+    <string name="share_bill_copied">Copiado</string>
+    <string name="share_bill_loading">Gerando o link</string>
+    <string name="share_bill_failed">Não deu para gerar o link.</string>
+    <string name="share_bill_retry">Tentar de novo</string>
+    <string name="share_bill_who_can_open">Quem pode abrir</string>
+    <string name="share_bill_members">Só quem está na conta</string>
+    <plurals name="share_bill_members_named">
+        <item quantity="one">%s entra com a própria conta para ver e comentar.</item>
+        <item quantity="many">%s entram com a própria conta para ver e comentar.</item>
+        <item quantity="other">%s entram com a própria conta para ver e comentar.</item>
+    </plurals>
+    <string name="share_bill_members_anyone_in_group">Quem está no grupo entra com a própria conta para ver e comentar.</string>
+    <string name="share_bill_anyone">Qualquer pessoa com o link</string>
+    <string name="share_bill_anyone_detail">Vê sem entrar. Para comentar, entra com uma conta, mesmo sem estar no grupo.</string>
+    <string name="share_bill_note">O link mostra a conta, quem pagou, a parte de cada um, os anexos e os comentários. Saldos e outras contas do grupo não aparecem.</string>
+    <string name="share_bill_offline">Compartilhar precisa de internet.</string>
+    <string name="share_bill_disable">Desativar link</string>
+    <string name="share_bill_send">Enviar link</string>
+    <string name="share_bill_message">Conta “%1$s” no Bora Rachar: %2$s</string>
+    <string name="share_bill_update_error">Não deu para mudar quem pode abrir. Tente de novo.</string>
+    <string name="share_bill_disable_error">Não deu para desativar o link. Tente de novo.</string>
 </resources>

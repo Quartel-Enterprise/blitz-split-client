@@ -1,4 +1,4 @@
-import { Pencil, Trash2, X } from 'lucide-react'
+import { Pencil, Share2, Trash2, X } from 'lucide-react'
 import { BillDetailPresenter, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -20,7 +20,7 @@ import { BillDeleteDialog } from './BillDeleteDialog'
 import { BillHistory } from './BillHistory'
 import { splitTitles } from './billHistoryText'
 
-type Money = (minor: number) => string
+export type Money = (minor: number) => string
 
 /**
  * "Conta", a bill of the group: a side panel over Despesas do grupo (which stays mounted under it) on desktop and
@@ -167,10 +167,15 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
 const titleClass = 'truncate text-lg leading-6 font-semibold'
 const descriptionClass = 'text-[13px] text-muted-foreground'
 
-/** Editar and Apagar, which do nothing until the bill is read and while it is being deleted. */
+/** Compartilhar, Editar and Apagar, which do nothing until the bill is read and while it is being deleted. */
 function BillActions({ presenter, state }: { presenter: BillDetailPresenter; state: JsBillDetailState }) {
   return (
     <>
+      <Button variant="ghost" size="sm" disabled={!state.areActionsEnabled} onClick={() => presenter.share()}>
+        <Share2 />
+        {/* Why: three actions beside the group's name leave the phone's header no room for a third label. */}
+        <span className="max-sm:sr-only">{t('billDetail_share')}</span>
+      </Button>
       <Button variant="ghost" size="sm" disabled={!state.areActionsEnabled} onClick={() => presenter.edit()}>
         <Pencil />
         {t('billDetail_edit')}
@@ -183,8 +188,12 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
   )
 }
 
+/** What the bill's body reads: Conta's state, or a bill's link page's, which has no "Sua parte" nor queue. */
+export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent' | 'totalMinor' | 'payers' | 'splitMode' | 'participantCount' | 'people'> &
+  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote'>>
+
 /** The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. */
-function BillBody({ state, money, attachments, title, description }: { state: JsBillDetailState; money: Money; attachments: ReactNode; title: ReactNode; description: ReactNode }) {
+export function BillBody({ state, money, attachments, title, description }: { state: BillBodyState; money: Money; attachments: ReactNode; title: ReactNode; description: ReactNode }) {
   const paid = paidText(state.payers)
   const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
   return (

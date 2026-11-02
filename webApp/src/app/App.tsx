@@ -5,6 +5,7 @@ import { HomeSidebarProvider } from '@/components/HomeSidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
+import { ShareBillDialog } from '@/features/bill-detail/ShareBillDialog'
 import { ContactInviteDialog } from '@/features/contacts/ContactInviteDialog'
 import { ContactsScreen } from '@/features/contacts/ContactsScreen'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
@@ -27,6 +28,7 @@ import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog'
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
+import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
@@ -83,6 +85,8 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   const isContactInvite = top.name === 'contact-invite'
   const isJoinWithLink = top.name === 'join-with-link'
   const isSplitBill = top.name === 'split-bill'
+  // Why: "Compartilhar conta" opens over Conta, which stays open under it.
+  const isShareBill = top.name === 'share-bill'
   const isEditGroup = top.name === 'edit-group'
   // Why: "Divisão padrão" takes Editar grupo's place, which stays mounted under it with what was typed.
   const isDefaultSplit = top.name === 'default-split'
@@ -92,7 +96,7 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
   const isDialog =
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSplitBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isRegisterPayment || isPickPayment || isPaymentKey || isDeleteAccount
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isDefaultSplit && editGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -103,7 +107,8 @@ function StackLayers({ backStack }: { backStack: JsRoute[] }) {
   return (
     <>
       <Screen name={pageName} route={page} />
-      {bill && <BillDetailSheet key={`bill:${bill.groupId}/${bill.expenseId}`} route={bill} isCovered={bill !== top} />}
+      {bill && <BillDetailSheet key={`bill:${bill.groupId}/${bill.expenseId}`} route={bill} isCovered={bill !== top && !isShareBill} />}
+      {isShareBill && <ShareBillDialog key={`${top.groupId}/${top.expenseId}`} route={top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
       {isCreateGroup && <CreateGroupDialog />}
@@ -161,6 +166,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <ProfileScreen />
     case 'category-map':
       return <CategoryMapScreen />
+    // Why: a bill's link (7.3h), a page of its own outside the home's frame.
+    case 'shared-bill':
+      return route ? <SharedBillScreen key={route.sharedBillCode} route={route} /> : null
     default:
       return <WelcomeScreen />
   }

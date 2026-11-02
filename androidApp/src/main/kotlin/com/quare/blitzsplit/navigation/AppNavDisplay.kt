@@ -27,6 +27,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
+import com.quare.blitzsplit.android.feature.billdetail.ShareBillScreen
 import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
 import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
@@ -272,6 +273,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 BillDetailScreen(
                     route = route,
                     isDialog = opensBillOverGroup,
+                )
+            }
+            // Why: "Compartilhar conta" over Conta, opened as Convidar of Contatos: a sheet, a dialog or the tabletop's halves.
+            entry<Route.ShareBill>(metadata = formPresentationMetadata) { route ->
+                val presentation = remember { formPresentation }
+                ShareBillScreen(
+                    route = route,
+                    presentation = presentation,
                 )
             }
             /*

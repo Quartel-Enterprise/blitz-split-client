@@ -25,8 +25,6 @@ data class BillAttachmentTile(
     val addedDay: RelativeDay,
     // Why: "Na fila" until the photo is up.
     val isPending: Boolean,
-) {
-    // Why: "Remover foto" in the viewer; the receipt that filled the bill stays.
-    val canRemove: Boolean
-        get() = !isReceipt
-}
+    // Why: "Remover foto" in Conta's viewer, never the receipt that filled the bill nor anything on a bill's link.
+    val canRemove: Boolean,
+)

@@ -146,4 +146,29 @@
         <item quantity="one">%1$d of %2$d photo</item>
         <item quantity="other">%1$d of %2$d photos</item>
     </plurals>
+    <string name="bill_detail_share">Share</string>
+    <string name="share_bill_title">Share bill</string>
+    <string name="share_bill_subtitle">%1$s · %2$s</string>
+    <string name="share_bill_close">Close</string>
+    <string name="share_bill_copy">Copy</string>
+    <string name="share_bill_copied">Copied</string>
+    <string name="share_bill_loading">Making the link</string>
+    <string name="share_bill_failed">Couldn\'t make the link.</string>
+    <string name="share_bill_retry">Try again</string>
+    <string name="share_bill_who_can_open">Who can open it</string>
+    <string name="share_bill_members">Only people in the bill</string>
+    <plurals name="share_bill_members_named">
+        <item quantity="one">%s opens it with their own account to see and comment.</item>
+        <item quantity="other">%s open it with their own account to see and comment.</item>
+    </plurals>
+    <string name="share_bill_members_anyone_in_group">Whoever is in the group opens it with their own account to see and comment.</string>
+    <string name="share_bill_anyone">Anyone with the link</string>
+    <string name="share_bill_anyone_detail">Sees it without signing in. To comment, they sign in with an account, even outside the group.</string>
+    <string name="share_bill_note">The link shows the bill, who paid, each one\'s part, the attachments and the comments. Balances and the group\'s other bills don\'t show.</string>
+    <string name="share_bill_offline">Sharing needs the internet.</string>
+    <string name="share_bill_disable">Turn off link</string>
+    <string name="share_bill_send">Send link</string>
+    <string name="share_bill_message">Bill “%1$s” on Blitz Split: %2$s</string>
+    <string name="share_bill_update_error">Couldn\'t change who can open it. Try again.</string>
+    <string name="share_bill_disable_error">Couldn\'t turn off the link. Try again.</string>
 </resources>

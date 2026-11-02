@@ -1083,6 +1083,84 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN the bill is open WHEN tapping Compartilhar THEN opens Compartilhar conta over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    groupRoute,
+                    route,
+                    Route.ShareBill(
+                        groupId = GROUP_ID,
+                        expenseId = EXPENSE_ID,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Compartilhar conta already open WHEN tapping Compartilhar again THEN it opens once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(4, navigator.backStack.value.size)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Compartilhar THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a native back already closed the bill WHEN tapping Compartilhar THEN nothing opens over the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping Compartilhar THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN the device user owes WHEN tapping Apagar THEN asks with the description and their balance`() =
         runTest(testDispatcher) {
             // Given

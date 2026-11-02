@@ -43,6 +43,7 @@ import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.historyOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.myPartNoteOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.payersOf
+import com.quare.blitzsplit.feature.billdetail.presentation.mapper.replyTargetOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.threadsOf
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.tilesOf
@@ -51,7 +52,6 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAc
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -236,6 +236,8 @@ class BillDetailViewModel(
             BillDetailUiEvent.OnBackClicked -> leave()
 
             BillDetailUiEvent.OnEditClicked -> edit()
+
+            BillDetailUiEvent.OnShareClicked -> share()
 
             BillDetailUiEvent.OnDeleteClicked -> askToDelete()
 
@@ -426,22 +428,20 @@ class BillDetailViewModel(
         }
     }
 
-    // Why: a reply to a reply joins its thread and names whom it answers.
+    // Why: only while Conta is on top, as Editar: a second tap mustn't stack the sheet twice.
+    private fun share() {
+        if (!uiState.value.areActionsEnabled || !isOnTop()) return
+        navigator.navigate(
+            Route.ShareBill(
+                groupId = route.groupId,
+                expenseId = route.expenseId,
+            ),
+        )
+    }
+
     private fun replyTo(commentId: String) {
-        val thread = uiState.value.threads.firstOrNull { thread ->
-            thread.comment.id == commentId || thread.replies.any { it.id == commentId }
-        } ?: return
-        val comment = (listOf(thread.comment) + thread.replies).first { it.id == commentId }
-        uiState.update {
-            it.copy(
-                replyTarget = BillReplyTarget(
-                    threadId = thread.comment.id,
-                    commentId = comment.id,
-                    name = comment.authorName,
-                    isMe = comment.isMe,
-                ),
-            )
-        }
+        val target = replyTargetOf(uiState.value.threads, commentId) ?: return
+        uiState.update { it.copy(replyTarget = target) }
     }
 
     private fun sendComment() {
@@ -461,7 +461,7 @@ class BillDetailViewModel(
                 groupId = route.groupId,
                 body = state.commentDraft,
                 threadId = replyTarget?.threadId,
-                replyToName = replyTarget?.name?.takeIf { replyTarget.commentId != replyTarget.threadId },
+                replyToName = replyTarget?.answeredName,
                 authorMemberId = me?.id,
                 authorName = me?.name,
             ).onFailure {

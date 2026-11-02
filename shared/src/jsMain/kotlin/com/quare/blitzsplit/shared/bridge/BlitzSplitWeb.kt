@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -18,6 +19,15 @@ import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import org.w3c.dom.Worker
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+
+/*
+ * Why: a bill's link kept through the browser's sign in. Google's and Apple's pages take a minute or two, so a stash
+ * older than the window was a sign in given up on.
+ */
+private const val SHARED_BILL_LEFT_TO_SIGN_IN = "blitzsplit.sharedBillLeftToSignIn"
+private val sharedBillSignInWindow = 15.minutes
 
 /*
  * Why: what React calls. Only plain types cross into TypeScript: strings, booleans, arrays,
@@ -33,13 +43,43 @@ fun startBlitzSplit(sqliteWorker: Worker) {
 }
 
 /*
- * Why: the page of a group's invite, blitzsplit.com/g/<code>, or of a member's, blitzsplit.com/g/<code>/<member>,
- * opens it once; the address goes back to the app's own.
+ * Why: the page of a group's invite, blitzsplit.com/g/<code>, of a member's, blitzsplit.com/g/<code>/<member>, or of a
+ * bill's link, blitzsplit.com/c/<code>, opens it once; the address goes back to the app's own. A bill's link left to
+ * sign in (its "Entrar") opens again once the browser comes back.
  */
 private fun openInviteLink(launchUrl: String) {
-    if (InviteLink.targetOf(launchUrl) == null) return
-    KoinPlatform.getKoin().get<LinkInbox>().receive(launchUrl)
-    window.history.replaceState(null, "", "/")
+    val inbox = KoinPlatform.getKoin().get<LinkInbox>()
+    val sharedBillLeftToSignIn = takeSharedBillLeftToSignIn()
+    if (InviteLink.targetOf(launchUrl) != null || SharedBillLink.codeOf(launchUrl) != null) {
+        inbox.receive(launchUrl)
+        window.history.replaceState(null, "", "/")
+    } else {
+        sharedBillLeftToSignIn?.let(inbox::receive)
+    }
+}
+
+// Why: the browser's sign in leaves the page, so a bill's link is kept, with when, for the load it comes back on.
+internal fun keepSharedBillForSignIn(link: String) {
+    try {
+        window.sessionStorage.setItem(SHARED_BILL_LEFT_TO_SIGN_IN, "${Clock.System.now().toEpochMilliseconds()} $link")
+    } catch (_: Throwable) {
+        // Why: storage blocked (a private window, site data off): signing in still works, the link just doesn't reopen.
+    }
+}
+
+// Why: read once on every load, so a sign in given up on (Boas-vindas' "Usar sem conta") never opens it later.
+private fun takeSharedBillLeftToSignIn(): String? = try {
+    window.sessionStorage
+        .getItem(SHARED_BILL_LEFT_TO_SIGN_IN)
+        ?.also { window.sessionStorage.removeItem(SHARED_BILL_LEFT_TO_SIGN_IN) }
+        ?.split(" ", limit = 2)
+        ?.takeIf { it.size == 2 }
+        ?.let { (keptAt, link) ->
+            val age = Clock.System.now().toEpochMilliseconds() - (keptAt.toLongOrNull() ?: return@let null)
+            link.takeIf { age in 0..sharedBillSignInWindow.inWholeMilliseconds }
+        }
+} catch (_: Throwable) {
+    null
 }
 
 class JsWatch internal constructor(

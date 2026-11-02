@@ -10,11 +10,16 @@ import { t } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
 
+/** What "Comentários" reads: Conta's state, or a bill's link page's, which names the same things the same way. */
+export type CommentsState = Pick<JsBillDetailState, 'threads' | 'commentCount' | 'showsNoComments'>
+export type ComposerState = Pick<JsBillDetailState, 'commentDraft' | 'replyTarget' | 'canSendComment'>
+export type ComposerPresenter = Pick<BillDetailPresenter, 'changeComment' | 'sendComment' | 'cancelReply'>
+
 /**
  * "Comentários", with its count: each comment and, one level under it, its replies, in the order they were written.
- * "Responder" on any of them points the composer at it.
+ * "Responder" on any of them points the composer at it; without `onReply` (no composer to answer in) it doesn't show.
  */
-export function BillComments({ state, onReply }: { state: JsBillDetailState; onReply: (commentId: string) => void }) {
+export function BillComments({ state, onReply }: { state: CommentsState; onReply?: (commentId: string) => void }) {
   return (
     <section aria-labelledby="bill-comments-title" className="flex flex-col">
       <h3 id="bill-comments-title" className="flex justify-between text-sm font-medium">
@@ -50,7 +55,7 @@ export function postedText(millis: number, day: string): string {
   return `${formatShortDate(millis)}, ${time}`
 }
 
-function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isReply?: boolean; onReply: (commentId: string) => void }) {
+function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isReply?: boolean; onReply?: (commentId: string) => void }) {
   const name = row.isMe ? t('splitBill_you') : (row.authorName ?? t('billDetail_commentSomeone'))
   const posted = postedText(row.postedAt, row.postedDay)
   return (
@@ -77,9 +82,11 @@ function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isR
             {t('billDetail_commentPending')}
           </span>
         )}
-        <Button variant="link" size="sm" className="h-7 self-start px-0 text-[13px] text-muted-foreground" onClick={() => onReply(row.id)}>
-          {t('billDetail_reply')}
-        </Button>
+        {onReply && (
+          <Button variant="link" size="sm" className="h-7 self-start px-0 text-[13px] text-muted-foreground" onClick={() => onReply(row.id)}>
+            {t('billDetail_reply')}
+          </Button>
+        )}
       </div>
     </article>
   )
@@ -89,7 +96,7 @@ function Comment({ row, isReply = false, onReply }: { row: JsBillCommentRow; isR
  * "Escreva um comentário" and its send button, under "Respondendo a Diego" while a reply is picked. It sends offline
  * too: the comment waits in the queue. ⌘ or Ctrl with Enter sends, Enter alone breaks the line.
  */
-export function CommentComposer({ presenter, state, inputRef, className }: { presenter: BillDetailPresenter; state: JsBillDetailState; inputRef: Ref<HTMLTextAreaElement>; className?: string }) {
+export function CommentComposer({ presenter, state, inputRef, className }: { presenter: ComposerPresenter; state: ComposerState; inputRef: Ref<HTMLTextAreaElement>; className?: string }) {
   const [draft, setDraft] = useDraft(state.commentDraft, (text) => presenter.changeComment(text))
   const target = state.replyTarget
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {

@@ -105,7 +105,7 @@ final class BillDetailModel {
 /// "Bill": one bill of the group, what it was, who paid, its Attachments and how it splits, then its Comments and
 /// History (7.3). Pushed
 /// over the group on iPhone, a sheet on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the
-/// Mac; Edit and Delete in the toolbar (on the Mac, in the inspector's header).
+/// Mac; Share, Edit and Delete in the toolbar (on the Mac, in the inspector's header).
 struct BillDetailView: View {
     let route: RouteBillDetail
 
@@ -175,6 +175,12 @@ struct BillDetailView: View {
                     model?.send(BillDetailUiEventOnBackClicked.shared)
                 }
             }
+        }
+        ToolbarItem(placement: .primaryAction) {
+            Button("Share", systemImage: "square.and.arrow.up") {
+                model?.send(BillDetailUiEventOnShareClicked.shared)
+            }
+            .disabled(model?.state.areActionsEnabled != true)
         }
         ToolbarItem(placement: .primaryAction) {
             Button("Edit") {
@@ -539,7 +545,7 @@ private enum MacBillTab: Hashable {
     case bill, comments, history
 }
 
-/// The window's inspector on the right (decision 3, F7Mac): the bill's header with Edit…, Delete and ✕, then, in the
+/// The window's inspector on the right (decision 3, F7Mac): the bill's header with Share, Edit…, Delete and ✕, then, in the
 /// standard window's 720 pt, the bill, its Attachments and its split on the left and Comments and History on the right with the
 /// composer under them. A narrow window's 330 pt inspector shows one of Bill, Comments and History at a time, the
 /// composer under Comments.
@@ -648,6 +654,12 @@ private struct MacBillDetail: View {
                     .lineLimit(1)
             }
             Spacer(minLength: 8)
+            Button("Share", systemImage: "square.and.arrow.up") {
+                model.send(BillDetailUiEventOnShareClicked.shared)
+            }
+            .labelStyle(.iconOnly)
+            .help(Text("Share"))
+            .disabled(!state.areActionsEnabled)
             Button {
                 model.send(BillDetailUiEventOnEditClicked.shared)
             } label: {

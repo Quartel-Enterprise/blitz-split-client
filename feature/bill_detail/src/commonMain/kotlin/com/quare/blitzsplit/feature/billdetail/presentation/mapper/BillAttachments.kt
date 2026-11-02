@@ -40,6 +40,7 @@ internal fun tilesOf(
                 timeZone = timeZone,
             ),
             isPending = attachment.isPending,
+            canRemove = !isReceipt,
         )
     }
 }

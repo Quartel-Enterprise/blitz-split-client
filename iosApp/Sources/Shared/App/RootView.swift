@@ -119,6 +119,7 @@ struct RootView: View {
         case .pickPayment: PickPaymentView()
         case let .splitBill(route): SplitBillView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
+        case let .shareBill(route): ShareBillView(route: route)
         case let .editGroup(route): EditGroupView(route: route)
         case let .defaultSplit(route): DefaultSplitView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)

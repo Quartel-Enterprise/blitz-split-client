@@ -258,6 +258,80 @@ class BillCommentsTest {
         assertEquals("https://photos/ana.jpg", row.photoUrl)
     }
 
+    @Test
+    fun `GIVEN no member known WHEN gathering the threads THEN each comment goes by the name it was written under`() {
+        // Given
+        val comments = listOf(
+            comment(
+                id = "c1",
+                authorMemberId = ANA,
+                authorName = "Ana",
+                postedAt = now - 2 * HOUR,
+            ),
+            comment(
+                id = "r1",
+                authorMemberId = null,
+                authorName = "Diego",
+                threadId = "c1",
+                replyToName = "Ana",
+                viaLink = true,
+                postedAt = now - HOUR,
+            ),
+        )
+
+        // When
+        val thread = threadsOf(comments, emptyList(), now, TimeZone.UTC).single()
+
+        // Then
+        assertEquals("Ana", thread.comment.authorName)
+        assertEquals("AN", thread.comment.initials)
+        assertEquals(AvatarColor.default, thread.comment.avatarColor)
+        assertNull(thread.comment.photoUrl)
+        assertFalse(thread.comment.isMe)
+        val reply = thread.replies.single()
+        assertEquals("Diego", reply.authorName)
+        assertTrue(reply.viaLink)
+        assertEquals("Ana", reply.replyToName)
+    }
+
+    @Test
+    fun `GIVEN the members listed WHEN gathering the threads THEN the comment of the device user is theirs`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = PIERRE,
+                authorName = "Pierre V",
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, group.members, now, TimeZone.UTC).single().comment
+
+        // Then
+        assertTrue(row.isMe)
+        assertEquals("Pierre", row.authorName)
+        assertEquals("P", row.initials)
+        assertEquals(AvatarColor.BLUE, row.avatarColor)
+    }
+
+    @Test
+    fun `GIVEN no member known and no name WHEN gathering the threads THEN it has no name nor initials`() {
+        // Given
+        val comments = listOf(
+            comment(
+                authorMemberId = null,
+                authorName = null,
+            ),
+        )
+
+        // When
+        val row = threadsOf(comments, emptyList(), now, TimeZone.UTC).single().comment
+
+        // Then
+        assertNull(row.authorName)
+        assertEquals("", row.initials)
+    }
+
     private val now = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
 
     private val group = Group(

@@ -8,6 +8,9 @@ sealed interface BillDetailUiEvent : UiEvent {
     // Why: "Editar conta" in the top bar.
     data object OnEditClicked : BillDetailUiEvent
 
+    // Why: "Compartilhar" in the top bar, which opens "Compartilhar conta".
+    data object OnShareClicked : BillDetailUiEvent
+
     // Why: "Apagar conta" in the top bar, which asks first.
     data object OnDeleteClicked : BillDetailUiEvent
 

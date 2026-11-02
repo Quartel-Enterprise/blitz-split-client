@@ -21,7 +21,7 @@ class JsRoute internal constructor(
 
     /*
      * Why: the group of "invite", "group-detail", "register-payment", "split-bill",
-     * "bill-detail", "edit-group", "default-split" and "group-stats", null for every other route.
+     * "bill-detail", "share-bill", "edit-group", "default-split" and "group-stats", null for every other route.
      */
     val groupId: String? = when (route) {
         is Route.Invite -> route.groupId
@@ -29,6 +29,7 @@ class JsRoute internal constructor(
         is Route.RegisterPayment -> route.groupId
         is Route.SplitBill -> route.groupId
         is Route.BillDetail -> route.groupId
+        is Route.ShareBill -> route.groupId
         is Route.EditGroup -> route.groupId
         is Route.DefaultSplit -> route.groupId
         is Route.GroupStats -> route.groupId
@@ -41,10 +42,11 @@ class JsRoute internal constructor(
      */
     val groupTab: String? = (route as? Route.GroupDetail)?.tab?.let(::toJsGroupTab)
 
-    // Why: the bill of "bill-detail", and of "split-bill" when it edits one; null for every other route.
+    // Why: the bill of "bill-detail" and "share-bill", and of "split-bill" when it edits one; null for any other route.
     val expenseId: String? = when (route) {
         is Route.SplitBill -> route.expenseId
         is Route.BillDetail -> route.expenseId
+        is Route.ShareBill -> route.expenseId
         else -> null
     }
 
@@ -63,6 +65,9 @@ class JsRoute internal constructor(
         else -> null
     }
     val currency: String? = (route as? Route.SettleUp)?.currency?.code
+
+    // Why: the code of "shared-bill", a bill's link, which keys its page; null for every other route.
+    val sharedBillCode: String? = (route as? Route.SharedBill)?.code
 
     // Why: the invite code of "join-invite" and "join-pick", null for every other route.
     val inviteCode: String? = when (route) {

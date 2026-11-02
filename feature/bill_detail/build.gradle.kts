@@ -10,7 +10,9 @@ kotlin {
             api(projects.core.navigation)
             api(projects.core.expenses)
             implementation(projects.core.groups)
+            implementation(projects.core.account)
             implementation(projects.core.activity)
+            implementation(projects.core.profile)
             implementation(projects.core.utils)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -21,7 +23,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.groups.testing)
             implementation(projects.core.expenses.testing)
+            implementation(projects.core.account.testing)
             implementation(projects.core.activity.testing)
+            implementation(projects.core.profile.testing)
         }
     }
 }

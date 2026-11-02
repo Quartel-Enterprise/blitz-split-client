@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
+import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
@@ -158,6 +159,10 @@ object BlitzSplitApple : KoinComponent {
 
     fun createBillDetailViewModel(route: Route.BillDetail): ViewModelHolder<BillDetailViewModel> =
         ViewModelHolder(BillDetailViewModel::class) { get { parametersOf(route) } }
+
+    // Why: "Compartilhar conta" over Conta; a bill's link page is the web's only, as the apps don't claim /c/.
+    fun createShareBillViewModel(route: Route.ShareBill): ViewModelHolder<ShareBillViewModel> =
+        ViewModelHolder(ShareBillViewModel::class) { get { parametersOf(route) } }
 
     fun createGroupStatsViewModel(route: Route.GroupStats): ViewModelHolder<GroupStatsViewModel> =
         ViewModelHolder(GroupStatsViewModel::class) { get { parametersOf(route) } }
