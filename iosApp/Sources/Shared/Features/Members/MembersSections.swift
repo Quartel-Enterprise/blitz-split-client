@@ -419,7 +419,7 @@ private func personalInviteText(invite: PersonalInvite, currency: GroupCurrency)
     if count == 0 {
         return Text("Whoever opens this link joins straight in as \(name), without picking from the list. It works once.")
     }
-    return Text("Whoever opens this link joins straight in as \(name), without picking from the list, and already sees a \(share) share in the \(count) bills added so far. It works once.")
+    return Text("Whoever opens this link joins straight in as \(name), without picking from the list, and already sees their \(share) share in the \(count) bills added so far. It works once.")
 }
 
 #if os(iOS)

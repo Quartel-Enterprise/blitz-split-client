@@ -12,8 +12,8 @@
     <string name="members_personal_invite">Personal invite for %s</string>
     <string name="members_personal_message">Whoever opens this link joins straight in as %s, without picking from the list. It works once.</string>
     <plurals name="members_personal_message_bills">
-        <item quantity="one">Whoever opens this link joins straight in as %1$s, without picking from the list, and already sees a %2$s share in the bill added so far. It works once.</item>
-        <item quantity="other">Whoever opens this link joins straight in as %1$s, without picking from the list, and already sees a %2$s share in the %3$d bills added so far. It works once.</item>
+        <item quantity="one">Whoever opens this link joins straight in as %1$s, without picking from the list, and already sees their %2$s share in the bill added so far. It works once.</item>
+        <item quantity="other">Whoever opens this link joins straight in as %1$s, without picking from the list, and already sees their %2$s share in the %3$d bills added so far. It works once.</item>
     </plurals>
     <string name="members_personal_copy">Copy link</string>
     <string name="members_personal_copied">Copied</string>

@@ -16711,7 +16711,7 @@
         }
       }
     },
-    "Whoever opens this link joins straight in as %@, without picking from the list, and already sees a %@ share in the %lld bills added so far. It works once." : {
+    "Whoever opens this link joins straight in as %@, without picking from the list, and already sees their %@ share in the %lld bills added so far. It works once." : {
       "comment" : "Explains a member's personal invite link when bills already give them a part; the first %@ is the member, the second their parts, %lld how many bills",
       "localizations" : {
         "en" : {
@@ -16720,13 +16720,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Whoever opens this link joins straight in as %1$@, without picking from the list, and already sees a %2$@ share in the bill added so far. It works once."
+                  "value" : "Whoever opens this link joins straight in as %1$@, without picking from the list, and already sees their %2$@ share in the bill added so far. It works once."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Whoever opens this link joins straight in as %1$@, without picking from the list, and already sees a %2$@ share in the %3$lld bills added so far. It works once."
+                  "value" : "Whoever opens this link joins straight in as %1$@, without picking from the list, and already sees their %2$@ share in the %3$lld bills added so far. It works once."
                 }
               }
             }

@@ -31,9 +31,11 @@ data class Expense(
     fun balanceOf(memberId: String): Long? {
         val isInBill = payers.any { it.memberId == memberId } || shares.any { it.memberId == memberId }
         if (!isInBill) return null
-        val paid = payers.filter { it.memberId == memberId }.sumOf { it.amountMinor }
-        return paid - shareOf(memberId)
+        return paidBy(memberId) - shareOf(memberId)
     }
+
+    // Why: what the member paid of the bill; 0 for someone who paid nothing.
+    fun paidBy(memberId: String): Long = payers.filter { it.memberId == memberId }.sumOf { it.amountMinor }
 
     // Why: the member's part of the bill, what the split puts on them; 0 for someone not in it.
     fun shareOf(memberId: String): Long = shares.filter { it.memberId == memberId }.sumOf { it.amountMinor }
