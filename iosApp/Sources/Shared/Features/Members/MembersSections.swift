@@ -115,11 +115,13 @@ private struct MembersOverlays: ViewModifier {
             .sheet(isPresented: editorShown) {
                 if let model {
                     MemberNameSheet(model: model)
+                        .foldSheetPlacement()
                 }
             }
             .sheet(isPresented: personalInviteShown) {
                 if let model {
                     PersonalInviteSheet(model: model)
+                        .foldSheetPlacement()
                 }
             }
             .alert(removeTitle, isPresented: removalShown, presenting: model?.state.memberToRemove) { member in

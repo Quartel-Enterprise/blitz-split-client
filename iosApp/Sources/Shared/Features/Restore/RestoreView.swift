@@ -107,6 +107,7 @@ struct RestoreView: View {
             QRScannerView { content in
                 model.send(RestoreUiEventOnQrScanned(content: content))
             }
+            .foldSheetPlacement()
         }
     }
 }

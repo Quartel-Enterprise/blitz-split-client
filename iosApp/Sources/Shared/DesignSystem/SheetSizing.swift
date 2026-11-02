@@ -7,6 +7,7 @@ extension View {
     /// Cobrar): the system's form sheet, about 540 pt wide on iPad.
     func formSheetSizing() -> some View {
         presentationSizing(.form)
+            .foldSheetPlacement(isForm: true)
     }
 
     /// A bill (Rachar conta, Conta): 820×640 where the window lies down and 620×860 upright, as the canvas draws them

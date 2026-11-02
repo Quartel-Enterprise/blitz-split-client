@@ -308,10 +308,10 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "Por
     categoria" take the first column and the rest the second: on Android each scrolling on its own, "Ao longo do
     tempo" on top of the second, then "Por pessoa" and "Maior despesa"; on iOS both in one scroll, "Por pessoa"
-    first, as each board draws it. A
-    book puts the same two columns one per half of the hinge; a tabletop (Android) a small bar with the period, the
-    total and "Ao longo do tempo" side by side in the top half, against the hinge, and "Por categoria" and "Por pessoa"
-    side by side in the bottom half, scrolling, without the grains' note nor "Maior despesa". The web from the tablet
+    first, as each board draws it. A book puts the same two columns one per half of the hinge; a tabletop (Android)
+    a small bar with the period, the total and "Ao longo do tempo" side by side in the top half, against the hinge,
+    and "Por categoria" and "Por pessoa" side by side in the bottom half, scrolling, without the grains' note nor
+    "Maior despesa". The web from the tablet
     up and the Mac put "Ao longo do tempo" and "Maior despesa" in a second column, with four summary cards.
   - Any member may edit or delete a bill. "Editar conta" is "Rachar conta" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Qualquer pessoa do grupo pode editar ou apagar." and "Apagar
@@ -566,6 +566,18 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     detail and
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
     [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
+  - The iPhone Duo (iOS 27.1): closed, the system's vertical bar on the camera's edge holds Back, the screen's glass
+    buttons, the avatar and "Rachar conta" (only its +, the group's Adicionar pessoa too) over the tabs
+    (`prefersVerticalBar()`), and the group's bottom bar moves into it; open lying down the system keeps that bar.
+    Open lying down, every two-column screen
+    splits on the fold with nothing in its band (Grupos' and Contatos' lists end at it, Saldos, Estatísticas with
+    the total and categories before it and Por pessoa after it), and a form sheet opens in the leading half
+    (`foldSheetPlacement()`). Open upright, as a notebook, Convidar (QR and link on top), Convite (the group on top),
+    the group (the header and "Seu saldo" on top, the tabs and what they hold below, on every tab), Registrar
+    pagamento (who and how much on top, how and when below), Estatísticas (the total and Ao longo do tempo on top),
+    Rachar conta (valor and descrição on top) and Dividir (the summary and modes on top, the people below) split on
+    the fold (`FoldHalves`); everything else is an iPad's upright. Pix and Bitcoin keys stay a sheet in the leading
+    half lying down, not the boards' two columns.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
