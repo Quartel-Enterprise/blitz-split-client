@@ -60,6 +60,12 @@ final class BalancesModel {
         )
     }
 
+    /// The page around the tab once the group is read, nil before.
+    var loadedPage: GroupTabPage? {
+        guard state.isLoaded else { return nil }
+        return GroupTabPage(header: state.header, hasExpenses: state.hasBills, showsSplitBill: state.showsSplitBillButton)
+    }
+
     isolated deinit {
         holder.clear()
     }
@@ -106,22 +112,11 @@ struct BalancesView: View {
                 GroupTabLoading(groupId: route.groupId, tab: .balances)
             }
         }
-        .remembersGroupHeader(
-            model?.state.header,
-            isLoaded: model?.state.isLoaded == true,
-            hasExpenses: model?.state.hasBills == true,
-            groupId: route.groupId,
-        )
-        .groupScreenBars(
+        .groupTabBars(
             tab: .balances,
             host: .balances(route),
-            header: GroupHeaderMemory.shown(
-                model?.state.header,
-                isLoaded: model?.state.isLoaded == true,
-                groupId: route.groupId,
-            ),
-            hasExpenses: model?.state.hasBills == true,
-            showsSplitBill: model?.state.showsSplitBillButton == true,
+            loaded: model?.loadedPage,
+            groupId: route.groupId,
             showsInlineTitle: showsInlineTitle,
             exit: model?.state.exit,
             actions: model?.actions ?? .disabled,

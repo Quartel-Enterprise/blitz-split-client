@@ -42,8 +42,9 @@ three entries carry `NavDisplay.transitionSpec` and `popTransitionSpec` metadata
 NavDisplay's crossfade and keep the tab left drawn under the next one, which stays see-through until loaded
 (`groupTabContainerColorOf`); Apple sets the back stack in a transaction that disables animations and the next tab
 draws the header the one left drew (`AppModel.backStackChanged`, `GroupHeaderMemory`); the web, which never animates
-a route, draws the page the tab left drew the same way (`noteBackStack`, `GroupPageLoading`). Opening or leaving the
-group keeps its transition and its empty first frame.
+a route, draws the page the tab left drew the same way (`noteBackStack`, `GroupPageLoading`). Both carry only what
+Despesas or Saldos drew, never what Membros (which draws its own header) left, and forget a group once none of its
+tabs is on the back stack. Opening or leaving the group keeps its transition and its empty first frame.
 
 A flow two screens share takes the ViewModel's `Navigator` along: `ProviderSignInController` (`:core:sync`),
 created by the Welcome and Restore ViewModels, opens the next screen once a Google or Apple sign in is done.

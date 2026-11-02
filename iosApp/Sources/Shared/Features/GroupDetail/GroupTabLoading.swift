@@ -1,36 +1,47 @@
 import Shared
 import SwiftUI
 
-/// The group's header as Expenses or Balances last drew it. Switching between a group's tabs only changes what is
-/// under them (`AppRoute.isGroupTabSwitch`), so the tab opened draws this header at once while it reads the group,
-/// instead of an empty screen. Only right after a tab switch: any other move of the back stack forgets which group
-/// may use it, so a group opened later never shows a header older than what the device holds.
+/// What Expenses or Balances draw around their content once they have read the group: the header and the bars' state.
+struct GroupTabPage: Equatable {
+    let header: GroupHeader
+    let hasExpenses: Bool
+    let showsSplitBill: Bool
+}
+
+/// The page Expenses or Balances last drew for each group. Switching between a group's tabs only changes what is
+/// under them (`AppRoute.isGroupTabSwitch`), so the tab opened draws the page the tab left drew at once while it reads
+/// the group, instead of an empty screen. Only right after a switch from Expenses or Balances, the tabs that draw this
+/// page (Members draws its own), and only while a tab of the group is on the back stack, so a group opened later never
+/// shows a page older than what the device holds.
 enum GroupHeaderMemory {
-    private static var headers: [String: RememberedHeader] = [:]
+    private static var pages: [String: GroupTabPage] = [:]
     private static var switchedGroupId: String?
 
-    struct RememberedHeader {
-        let header: GroupHeader
-        let hasExpenses: Bool
+    static func remember(_ page: GroupTabPage, groupId: String) {
+        pages[groupId] = page
     }
 
-    static func remember(_ header: GroupHeader, hasExpenses: Bool, groupId: String) {
-        headers[groupId] = RememberedHeader(header: header, hasExpenses: hasExpenses)
+    /// Called by `AppModel` on every move of the back stack, from the entry that was on top to the new entries.
+    static func backStackMoved(from left: AppRoute?, to routes: [AppRoute]) {
+        switchedGroupId = left.flatMap { left in
+            routes.last.flatMap { top in
+                drawsPage(left) && left.isGroupTabSwitch(to: top) ? top.tabGroupId : nil
+            }
+        }
+        let groupIds = Set(routes.compactMap(\.tabGroupId))
+        pages = pages.filter { groupIds.contains($0.key) }
     }
 
-    /// Called by `AppModel` on every move of the back stack: the group whose tab just took another's place, or nil.
-    static func backStackMoved(switchingTabOf groupId: String?) {
-        switchedGroupId = groupId
-    }
-
-    /// The header a tab's bars draw: its own once it has read the group, else the one the tab it replaced drew.
-    static func shown(_ header: GroupHeader?, isLoaded: Bool, groupId: String) -> GroupHeader? {
-        isLoaded ? header : self.header(of: groupId)?.header
-    }
-
-    static func header(of groupId: String) -> RememberedHeader? {
+    static func page(of groupId: String) -> GroupTabPage? {
         guard switchedGroupId == groupId else { return nil }
-        return headers[groupId]
+        return pages[groupId]
+    }
+
+    private static func drawsPage(_ route: AppRoute) -> Bool {
+        switch route {
+        case .groupDetail, .balances: true
+        default: false
+        }
     }
 }
 
@@ -45,7 +56,7 @@ struct GroupTabLoading: View {
     #endif
 
     var body: some View {
-        if let remembered = GroupHeaderMemory.header(of: groupId) {
+        if let remembered = GroupHeaderMemory.page(of: groupId) {
             #if os(macOS)
             VStack(alignment: .leading, spacing: 0) {
                 MacGroupTop(header: remembered.header, actions: .disabled)
@@ -71,11 +82,31 @@ struct GroupTabLoading: View {
 }
 
 extension View {
-    /// Keeps the header this tab draws, once it has read the group, for the next tab of the group to draw at once.
-    func remembersGroupHeader(_ header: GroupHeader?, isLoaded: Bool, hasExpenses: Bool, groupId: String) -> some View {
-        onChange(of: isLoaded ? header : nil, initial: true) { _, header in
-            guard let header else { return }
-            GroupHeaderMemory.remember(header, hasExpenses: hasExpenses, groupId: groupId)
+    /// The group screen's bars for Expenses or Balances: drawn from the tab's own page once it has read the group, else
+    /// from the page the tab it replaced drew, which it keeps for the next tab of the group once it has its own.
+    func groupTabBars(
+        tab: GroupTab,
+        host: AppRoute,
+        loaded: GroupTabPage?,
+        groupId: String,
+        showsInlineTitle: Bool,
+        exit: GroupExitState?,
+        actions: GroupScreenActions,
+    ) -> some View {
+        let page = loaded ?? GroupHeaderMemory.page(of: groupId)
+        return onChange(of: loaded, initial: true) { _, loaded in
+            guard let loaded else { return }
+            GroupHeaderMemory.remember(loaded, groupId: groupId)
         }
+        .groupScreenBars(
+            tab: tab,
+            host: host,
+            header: page?.header,
+            hasExpenses: page?.hasExpenses == true,
+            showsSplitBill: page?.showsSplitBill == true,
+            showsInlineTitle: showsInlineTitle,
+            exit: exit,
+            actions: actions,
+        )
     }
 }
