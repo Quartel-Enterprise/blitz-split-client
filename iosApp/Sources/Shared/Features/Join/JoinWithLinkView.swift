@@ -138,16 +138,19 @@ private struct JoinWithLinkContent: View {
     }
 
     private var cameraArea: some View {
-        // Why: the camera reaches under the status bar, and its inset puts the close and flashlight buttons below it.
-        GeometryReader { proxy in
-            cameraLayers(model.state, topInset: proxy.safeAreaInsets.top)
-        }
-        .environment(\.colorScheme, .dark)
-        .clipped()
-        .ignoresSafeArea(edges: .top)
+        // Why: only the camera reaches under the status bar; the close and flashlight buttons stay below it, where the
+        // system hands their taps to the app.
+        cameraOverlay(model.state)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background {
+                cameraBackground(model.state)
+                    .clipped()
+                    .ignoresSafeArea(edges: .top)
+            }
+            .environment(\.colorScheme, .dark)
     }
 
-    private func cameraLayers(_ state: JoinWithLinkUiState, topInset: CGFloat) -> some View {
+    private func cameraBackground(_ state: JoinWithLinkUiState) -> some View {
         ZStack {
             Color.black
             if state.cameraAccess == .granted {
@@ -161,9 +164,13 @@ private struct JoinWithLinkContent: View {
             // The design's scrim, dark toward the edges, so the white marks and text read over a bright room.
             RadialGradient(colors: [.clear, .black.opacity(0.7)], center: .center, startRadius: 0, endRadius: 360)
                 .allowsHitTesting(false)
-            VStack(spacing: 0) {
-                topBar(state, topInset: topInset)
-                Spacer(minLength: 8)
+        }
+    }
+
+    private func cameraOverlay(_ state: JoinWithLinkUiState) -> some View {
+        VStack(spacing: 8) {
+            topBar(state)
+            Group {
                 if state.cameraAccess == .denied {
                     cameraDenied
                 } else if state.isCameraUnavailable {
@@ -171,13 +178,17 @@ private struct JoinWithLinkContent: View {
                 } else {
                     viewfinder(state)
                 }
-                Spacer(minLength: 8)
             }
-            .padding(.horizontal, 16)
+            // Why: with the keyboard up on a small iPhone the camera area gets short; only this part is cut, so the
+            // close button never goes back under the status bar nor this text over the link panel.
+            .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+            .clipped()
+            .padding(.bottom, 8)
         }
+        .padding(.horizontal, 16)
     }
 
-    private func topBar(_ state: JoinWithLinkUiState, topInset: CGFloat) -> some View {
+    private func topBar(_ state: JoinWithLinkUiState) -> some View {
         HStack {
             Button("Close", systemImage: "xmark") {
                 model.send(JoinWithLinkUiEventOnCloseClicked.shared)
@@ -211,9 +222,9 @@ private struct JoinWithLinkContent: View {
             }
         }
         #if os(iOS)
-        .padding(.top, topInset + 8)
+        .padding(.top, 8)
         #else
-        .padding(.top, topInset + 16)
+        .padding(.top, 16)
         #endif
     }
 
