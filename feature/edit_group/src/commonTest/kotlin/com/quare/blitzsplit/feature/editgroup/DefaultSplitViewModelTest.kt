@@ -1,5 +1,9 @@
 package com.quare.blitzsplit.feature.editgroup
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -129,7 +133,7 @@ class DefaultSplitViewModelTest {
 
             // Then
             assertEquals(
-                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L)),
+                GROUP_ID to GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L), emptyList()),
                 groups.savedDefaultSplits.single(),
             )
             assertEquals(mapOf(PIERRE to 900_000L, ANA to 300_000L), groups.savedIncomes[GROUP_ID])
@@ -271,7 +275,7 @@ class DefaultSplitViewModelTest {
 
         // Then
         assertEquals(
-            GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L)),
+            GroupDefaultSplit(DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 0L), emptyList()),
             groups.savedDefaultSplits.single().second,
         )
     }
@@ -409,6 +413,7 @@ class DefaultSplitViewModelTest {
     private val threeToOne = GroupDefaultSplit(
         mode = DefaultSplitMode.SHARES,
         weights = mapOf(PIERRE to 3L, ANA to 1L),
+        exceptions = emptyList(),
     )
 
     private fun percent(
@@ -417,6 +422,7 @@ class DefaultSplitViewModelTest {
     ): GroupDefaultSplit = GroupDefaultSplit(
         mode = DefaultSplitMode.PERCENT,
         weights = mapOf(PIERRE to pierre, ANA to ana),
+        exceptions = emptyList(),
     )
 
     private fun member(
@@ -452,6 +458,97 @@ class DefaultSplitViewModelTest {
         updatedAt = 0L,
     )
 
+    @Test
+    fun `GIVEN Partes 3 to 1 WHEN adding Mercado split equally and saving THEN the group keeps the exception`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+            val opened = viewModel.uiState.value
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD_MARKET.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionSaveClicked)
+            val added = viewModel.uiState.value
+            viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+            // Then
+            assertFalse(opened.canSaveException)
+            assertEquals(
+                listOf(
+                    CategorySplit(AppCategory.FOOD_MARKET.key, DefaultSplitMode.EQUAL, mapOf(PIERRE to 1L, ANA to 1L)),
+                ),
+                added.exceptions,
+            )
+            assertTrue(added.hasChanges)
+            assertEquals(
+                AppCategory.FOOD_MARKET.key,
+                added.exceptionRows
+                    .single()
+                    .category.id,
+            )
+            assertEquals(
+                added.exceptions,
+                groups.savedDefaultSplits
+                    .single()
+                    .second
+                    ?.exceptions,
+            )
+        }
+
+    @Test
+    fun `GIVEN an exception WHEN changing it to percentages that do not add up THEN it waits until they do`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionModeSelected(DefaultSplitMode.PERCENT))
+            val even = viewModel.uiState.value
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionPercentChanged(PIERRE, "40"))
+            val short = viewModel.uiState.value
+
+            // Then
+            assertEquals(mapOf(PIERRE to 50L, ANA to 50L), even.exceptionEditor?.figures?.weights)
+            assertTrue(even.canSaveException)
+            assertEquals(10L, short.exceptionEditor?.remainingPercent)
+            assertFalse(short.canSaveException)
+        }
+
+    @Test
+    fun `GIVEN an exception for Mercado WHEN adding another for Mercado THEN it is taken and removing empties it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(defaultSplit = threeToOne.copy(exceptions = listOf(market))))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD_MARKET.key))
+            val taken = viewModel.uiState.value
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionDismissed)
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionClicked(AppCategory.FOOD_MARKET.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionRemoveClicked)
+
+            // Then
+            assertTrue(taken.isExceptionCategoryTaken)
+            assertFalse(taken.canSaveException)
+            val state = viewModel.uiState.value
+            assertTrue(state.exceptions.isEmpty())
+            assertTrue(state.hasChanges)
+            assertNull(state.exceptionEditor)
+        }
+
+    private val market = CategorySplit(
+        AppCategory.FOOD_MARKET.key,
+        DefaultSplitMode.EQUAL,
+        mapOf(
+            PIERRE to 1L,
+            ANA to 1L,
+        ),
+    )
+
     private fun prepareScenario(
         storedGroup: Group = home,
         storedIncomes: Map<String, Long> = emptyMap(),
@@ -478,6 +575,7 @@ class DefaultSplitViewModelTest {
             getSplitIncomes = GetSplitIncomesUseCase(groups),
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
+            observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
     }

@@ -1617,6 +1617,7 @@ class RegisterPaymentViewModelTest {
         payers = listOf(ExpensePayer(payer, amountMinor)),
         shares = listOf(ExpenseShare(debtor, amountMinor, weight = amountMinor)),
         items = null,
+        categoryId = null,
         spentAt = nowMillis - HOUR,
         isPending = false,
         updatedAt = nowMillis - HOUR,

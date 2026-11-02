@@ -16,6 +16,8 @@ final class SplitBillModel {
     private(set) var shownItem: ItemEditor?
     private(set) var saveErrorCount = 0
     private(set) var deleteErrorCount = 0
+    private(set) var categorySaveErrorCount = 0
+    private(set) var categoryDeleteErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<SplitBillViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -39,6 +41,8 @@ final class SplitBillModel {
             switch action {
             case is SplitBillUiActionShowSaveError: self?.saveErrorCount += 1
             case is SplitBillUiActionShowDeleteError: self?.deleteErrorCount += 1
+            case is SplitBillUiActionShowCategorySaveError: self?.categorySaveErrorCount += 1
+            case is SplitBillUiActionShowCategoryDeleteError: self?.categoryDeleteErrorCount += 1
             default: break
             }
         })
@@ -147,6 +151,8 @@ struct SplitBillView: View {
         )
         .glassToast("Couldn't save the bill. Try again.", trigger: model?.saveErrorCount ?? 0)
         .glassToast("Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0)
+        .glassToast("Couldn't save the category. Try again.", trigger: model?.categorySaveErrorCount ?? 0)
+        .glassToast("Couldn't delete the category. Try again.", trigger: model?.categoryDeleteErrorCount ?? 0)
         // VoiceOver says the settled pair warning when it shows and when the pair or how it ends up changes, never on
         // each digit of the amount (7.4b).
         .onChange(of: model?.state.settledPair?.announcementKey) { _, key in
@@ -308,6 +314,9 @@ private struct PhoneSplitBill: View {
         .navigationDestination(isPresented: splitShown) {
             PhoneSplitEditor(model: model)
         }
+        .navigationDestination(isPresented: categoryShown) {
+            CategoryPickerView(model: model)
+        }
         .sheet(isPresented: groupShown) {
             GroupSheet(model: model)
         }
@@ -346,16 +355,33 @@ private struct PhoneSplitBill: View {
             AmountHelp(state: state)
         }
         Section {
-            TextField("What was it? E.g. Groceries", text: model.billDescription)
-                .textInputAutocapitalization(.sentences)
-                .submitLabel(.done)
-                .focused($focusedField, equals: .description)
+            HStack(spacing: 12) {
+                // The category's icon opens "Category" (7.7)
+                Button {
+                    model.send(SplitBillUiEventOnCategoryClicked.shared)
+                } label: {
+                    CategoryBadge(category: state.category, size: 32)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Category: \(CategoryCopy.path(state.category, parent: state.categoryParent)). Change it")
+                TextField("What was it? E.g. Groceries", text: model.billDescription)
+                    .textInputAutocapitalization(.sentences)
+                    .submitLabel(.done)
+                    .focused($focusedField, equals: .description)
+            }
         } header: {
             Text("Description")
         } footer: {
             if state.showsDescriptionError {
                 Text("Say what it was, for example Groceries.")
                     .foregroundStyle(Palette.negative)
+            } else {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(verbatim: CategoryPickerCopy.hint(state))
+                    if !state.isEditing, state.categoryMatches.count > 1 {
+                        MatchedTerms(matches: state.categoryMatches)
+                    }
+                }
             }
         }
     }
@@ -493,6 +519,16 @@ private struct PhoneSplitBill: View {
         }
     }
 
+    /// Back on "Category" (the button, a swipe) keeps the bill's category.
+    private var categoryShown: Binding<Bool> {
+        Binding(
+            get: { model.state.categoryPicker != nil },
+            set: { shown in
+                if !shown, model.current.categoryPicker != nil { model.send(SplitBillUiEventOnCategoryDismissed.shared) }
+            },
+        )
+    }
+
     /// Back on "Split" (the button, a swipe) leaves the bill's split as it was.
     private var splitShown: Binding<Bool> {
         Binding(
@@ -523,6 +559,26 @@ private struct PhoneSplitBill: View {
                 if model.current.payerAmounts != nil { model.send(SplitBillUiEventOnSeveralPayersDismissed.shared) }
             },
         )
+    }
+}
+
+/// Every word of the map the description has, the one that chose marked (7.1l).
+struct MatchedTerms: View {
+    let matches: [CategoryMatch]
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(Array(matches.enumerated()), id: \.offset) { index, match in
+                Text(verbatim: match.term)
+                    .font(.footnote.weight(index == 0 ? .semibold : .regular))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(index == 0 ? Palette.accent.opacity(0.16) : Color.clear, in: .rect(cornerRadius: 6))
+                    .overlay {
+                        if index != 0 { RoundedRectangle(cornerRadius: 6).stroke(.secondary.opacity(0.4)) }
+                    }
+            }
+        }
     }
 }
 
@@ -901,13 +957,23 @@ private struct MacBillForm: View {
                 }
                 LabeledContent("Description:") {
                     VStack(alignment: .leading, spacing: 4) {
-                        TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
-                            Text("Description")
+                        HStack(spacing: 8) {
+                            MacCategoryMenu(model: model)
+                            TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
+                                Text("Description")
+                            }
                         }
                         if state.showsDescriptionError {
                             Text("Say what it was, for example Groceries.")
                                 .font(.callout)
                                 .foregroundStyle(Palette.negative)
+                        } else {
+                            Text(verbatim: CategoryPickerCopy.hint(state))
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                            if !state.isEditing, state.categoryMatches.count > 1 {
+                                MatchedTerms(matches: state.categoryMatches)
+                            }
                         }
                     }
                 }
@@ -1007,6 +1073,22 @@ private struct MacBillForm: View {
         .sheet(isPresented: groupShown) {
             MacGroupPicker(model: model)
         }
+        // "New Category…" is a sheet over the bill's sheet (7.8)
+        .sheet(isPresented: categoryFormShown) {
+            NavigationStack {
+                CategoryFormView(model: model)
+            }
+            .frame(width: 480, height: 560)
+        }
+    }
+
+    private var categoryFormShown: Binding<Bool> {
+        Binding(
+            get: { model.state.categoryForm != nil },
+            set: { shown in
+                if !shown, model.current.categoryForm != nil { model.send(SplitBillUiEventOnCategoryFormDismissed.shared) }
+            },
+        )
     }
 
     /// The pop-up moves the bill to another group in one go: the ViewModel's selection opens, marks and closes at once.
@@ -1060,6 +1142,61 @@ private struct MacBillForm: View {
                 }
             },
         )
+    }
+}
+
+/// The Mac's category button: a menu with a submenu per main category ("Only Food", its subcategories, "New in
+/// Food…"), "Edit “Churrasco”…" for the group's own, and "New Category…" (7.7, 7.8).
+private struct MacCategoryMenu: View {
+    let model: SplitBillModel
+
+    private var state: SplitBillUiState {
+        model.state
+    }
+
+    var body: some View {
+        Menu {
+            ForEach(state.categories.branches, id: \.category.id) { branch in
+                if branch.category.isOther {
+                    Button(CategoryCopy.name(branch.category)) {
+                        model.send(SplitBillUiEventOnCategoryPicked(categoryId: branch.category.id))
+                    }
+                } else {
+                    Menu(CategoryCopy.name(branch.category)) {
+                        Button("Only \(CategoryCopy.name(branch.category))") {
+                            model.send(SplitBillUiEventOnCategoryPicked(categoryId: branch.category.id))
+                        }
+                        ForEach(branch.subcategories, id: \.id) { sub in
+                            Button(CategoryCopy.name(sub)) {
+                                model.send(SplitBillUiEventOnCategoryPicked(categoryId: sub.id))
+                            }
+                        }
+                        Divider()
+                        Button("New in \(CategoryCopy.name(branch.category))…") {
+                            model.send(SplitBillUiEventOnNewCategoryClicked(parentId: branch.category.id, name: ""))
+                        }
+                        ForEach(([branch.category] + branch.subcategories).filter(\.isGroupCategory), id: \.id) { own in
+                            Button("Edit “\(CategoryCopy.name(own))”…") {
+                                model.send(SplitBillUiEventOnEditCategoryClicked(categoryId: own.id))
+                            }
+                        }
+                    }
+                }
+            }
+            Divider()
+            Button("New Category…") {
+                model.send(SplitBillUiEventOnNewCategoryClicked(parentId: nil, name: ""))
+            }
+            // The map lives in Ajustes › Categories on the Mac (9.0), which this opens (`AppModel`)
+            Button("Category Map…") {
+                model.send(SplitBillUiEventOnCategoryMapClicked.shared)
+            }
+        } label: {
+            CategoryBadge(category: state.category, size: 22)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .accessibilityLabel("Category: \(CategoryCopy.path(state.category, parent: state.categoryParent)). Change it")
     }
 }
 

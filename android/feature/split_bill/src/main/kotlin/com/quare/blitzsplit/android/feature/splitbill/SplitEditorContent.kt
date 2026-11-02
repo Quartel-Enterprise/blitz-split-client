@@ -86,6 +86,7 @@ internal fun SplitEditorContent(
                     editorMode = editor.mode,
                     isOffDefault = state.isSplitEditorOffDefault,
                     onEvent = onEvent,
+                    exceptionName = state.defaultSplitException?.let { categoryNameOf(it) },
                 )
             }
             ConnectedButtonRow(

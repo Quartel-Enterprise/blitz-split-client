@@ -9,6 +9,7 @@ final class GroupDetailModel {
     private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
+    private(set) var teachErrorCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -27,6 +28,7 @@ final class GroupDetailModel {
             case is GroupDetailUiActionShowLeaveError: self?.leaveErrorCount += 1
             case is GroupDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
+            case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
             default: break
             }
         })
@@ -169,6 +171,19 @@ struct GroupDetailView: View {
             onUndo: { model?.send(GroupDetailUiEventOnUndoPaymentClicked.shared) },
             onShown: { model?.send(GroupDetailUiEventOnRecordedPaymentNoticeShown.shared) },
         )
+        .glassToast("Couldn't teach the map. Try again.", trigger: model?.teachErrorCount ?? 0)
+        .safeAreaInset(edge: .bottom) {
+            // "Teach the map?" belongs to Expenses, the tab the bill landed on
+            if let model, model.tab == .expenses, let teach = model.state.teach, !teach.isPickingWord {
+                CategoryTeachBanner(teach: teach, model: model)
+            }
+        }
+        .sheet(isPresented: teachShown) {
+            if let model, let teach = model.state.teach {
+                NavigationStack { CategoryTeachSheet(teach: teach, model: model) }
+                    .formSheetSizing()
+            }
+        }
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
             if members == nil { members = MembersModel(route: route) }
@@ -179,6 +194,16 @@ struct GroupDetailView: View {
     private var addPerson: (() -> Void)? {
         guard model?.tab == .members, let members, members.state.isLoaded else { return nil }
         return { members.send(MembersUiEventOnAddClicked.shared) }
+    }
+
+    /// "Teach the map" (9.3f) while the person picks the word; closing it any way is "Not now".
+    private var teachShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.teach?.isPickingWord == true },
+            set: { shown in
+                if !shown, model?.current.teach != nil { model?.send(GroupDetailUiEventOnTeachDismissed.shared) }
+            },
+        )
     }
 
     /// Dismissing the alert any other way than "Delete" closes the confirmation in the ViewModel too.
@@ -249,7 +274,7 @@ private func payerText(_ row: ExpenseRow) -> String? {
     ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
 }
 
-/// No categories yet: every bill gets the same receipt, and a payment the banknote.
+/// A payment's banknote (a bill draws its category's badge instead).
 struct ExpenseIcon: View {
     var size: CGFloat = 38
     var systemName = "receipt"
@@ -370,6 +395,8 @@ private struct PhoneExpenseSections: View {
 /// An entry of the day: its icon, a title and a meta line (with the orange dot while queued), and its amounts.
 private struct PhoneDayRow<Amounts: View>: View {
     let systemImage: String
+    /// A bill's category, drawn in place of the icon (6.1); nil for a payment.
+    var category: Shared.Category?
     let title: String
     let meta: String
     let isPending: Bool
@@ -377,7 +404,11 @@ private struct PhoneDayRow<Amounts: View>: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            ExpenseIcon(systemName: systemImage)
+            if let category {
+                CategoryBadge(category: category, size: 38)
+            } else {
+                ExpenseIcon(systemName: systemImage)
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: title)
                     .lineLimit(1)
@@ -404,7 +435,7 @@ private struct PhoneExpenseRow: View {
     let currency: GroupCurrency
 
     var body: some View {
-        PhoneDayRow(systemImage: "receipt", title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
+        PhoneDayRow(systemImage: "receipt", category: row.category, title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
             Text(verbatim: currency.format(row.totalMinor))
                 .monospacedDigit()
             MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: currency)
@@ -529,7 +560,11 @@ private struct MacGroupExpenses: View {
         Table(of: DayEntryItem.self, selection: $selection) {
             TableColumn("Expense") { item in
                 HStack(spacing: 8) {
-                    ExpenseIcon(size: 24, systemName: item.payment == nil ? "receipt" : "banknote")
+                    if let expense = item.expense {
+                        CategoryBadge(category: expense.category, size: 24)
+                    } else {
+                        ExpenseIcon(size: 24, systemName: "banknote")
+                    }
                     Text(verbatim: item.expense?.description_ ?? item.payment.map(PaymentCopy.title) ?? "")
                         .lineLimit(1)
                     if item.payment != nil {

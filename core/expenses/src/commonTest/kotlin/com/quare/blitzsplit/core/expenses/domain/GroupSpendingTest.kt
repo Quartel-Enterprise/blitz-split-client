@@ -102,6 +102,7 @@ class GroupSpendingTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = Instant.parse(spentAt).toEpochMilliseconds(),
         isPending = isPending,
         updatedAt = 0L,

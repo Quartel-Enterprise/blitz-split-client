@@ -79,6 +79,18 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: the notice went away without Desfazer.
     data object OnRecordedPaymentNoticeShown : GroupDetailUiEvent
 
+    // Why: "Ensinar" on "Ensinar ao mapa?" (9.3e), which asks which word of the title.
+    data object OnTeachClicked : GroupDetailUiEvent
+
+    // Why: "Agora não", or "Cancelar" on "Ensinar ao mapa".
+    data object OnTeachDismissed : GroupDetailUiEvent
+
+    data class OnTeachWordPicked(
+        val key: String,
+    ) : GroupDetailUiEvent
+
+    data object OnTeachConfirmed : GroupDetailUiEvent
+
     // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
     data object OnProtectAccessClicked : GroupDetailUiEvent
 }

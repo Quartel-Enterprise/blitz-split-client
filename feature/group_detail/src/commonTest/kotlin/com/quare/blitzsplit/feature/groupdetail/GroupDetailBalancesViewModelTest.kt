@@ -3,8 +3,11 @@ package com.quare.blitzsplit.feature.groupdetail
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
@@ -15,14 +18,22 @@ import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
@@ -47,11 +58,13 @@ import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
+import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.CategoryTeachUseCases
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupScreenUseCases
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -73,6 +86,8 @@ import kotlin.time.Instant
 class GroupDetailBalancesViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val activityUnread = MutableStateFlow(0)
+    private val teach = InMemoryCategoryTeachRepository()
+    private val terms = FakeCategoryTermRepository()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -110,6 +125,29 @@ class GroupDetailBalancesViewModelTest {
         assertFalse(state.showsSplitBillButton)
         assertFalse(state.showsDebtNote)
     }
+
+    @Test
+    fun `GIVEN Saldos picked WHEN a bill asks to teach the map THEN it never asks even back on Despesas`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            teach.post(
+                CategoryTeachOffer(
+                    expenseId = "bill-1",
+                    groupId = GROUP_ID,
+                    title = "Aluguel da prancha",
+                    categoryId = AppCategory.LEISURE_SPORTS.key,
+                    mapCategoryId = AppCategory.HOME_RENT.key,
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(GroupTab.EXPENSES))
+
+            // Then
+            assertNull(viewModel.uiState.value.teach)
+            assertNull(teach.observeOffer().first())
+        }
 
     @Test
     fun `GIVEN a group without bills WHEN Saldos opens THEN says nobody owes anything yet`() = runTest(testDispatcher) {
@@ -830,6 +868,7 @@ class GroupDetailBalancesViewModelTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = paidAt,
         isPending = false,
         updatedAt = paidAt,
@@ -873,12 +912,21 @@ class GroupDetailBalancesViewModelTest {
         isRoomRead.value = isRoomReadAtStart
         recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { nowMillis }
         val observeStoredGroup = ObserveGroupUseCase(groups)
+        val categories = FakeCategoryRepository()
         viewModel = GroupDetailViewModel(
             route = route,
             currentTimeMillis = { nowMillis },
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
+            observeCategoryTree = ObserveCategoryTreeUseCase(categories),
+            teachUseCases = CategoryTeachUseCases(
+                observeOffer = ObserveCategoryTeachOfferUseCase(teach),
+                consumeOffer = ConsumeCategoryTeachOfferUseCase(teach),
+                observeMap = ObserveCategoryMapUseCase(terms),
+                observeMapCategories = ObserveMapCategoriesUseCase(categories),
+                saveTerm = SaveCategoryTermUseCase(terms) { nowMillis },
+            ),
             observeAccount = ObserveAccountUseCase(FakeAccountRepository(initialStatus = AccountStatus.LocalOnly)),
             useCases = GroupScreenUseCases(
                 navigator = navigator,

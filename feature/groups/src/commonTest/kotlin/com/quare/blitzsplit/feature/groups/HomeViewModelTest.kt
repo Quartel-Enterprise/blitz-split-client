@@ -1910,6 +1910,7 @@ class HomeViewModelTest {
         updatedAt = spentAt,
         updatedByMemberId = null,
         items = null,
+        categoryId = null,
     )
 
     private fun payment(

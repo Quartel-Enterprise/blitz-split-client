@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -115,6 +116,7 @@ private fun ExpenseEntryRow(
 ) {
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+        leading = { CategoryBadge(category = expense.category) },
         title = expense.description,
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnExpenseClicked(expense.id)) },
@@ -155,6 +157,8 @@ internal fun EntryFrameRow(
     onClick: () -> Unit,
     modifier: Modifier,
     meta: @Composable () -> Unit,
+    // Why: a bill's category badge in place of the icon (6.1); a payment keeps its icon.
+    leading: (@Composable () -> Unit)? = null,
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -171,7 +175,7 @@ internal fun EntryFrameRow(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            EntryIconTile(icon)
+            if (leading != null) leading() else EntryIconTile(icon)
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),

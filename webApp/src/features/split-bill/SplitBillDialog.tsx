@@ -28,8 +28,10 @@ import { t, type MessageKey } from '@/i18n'
 import { formatTimeAgo } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol, formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
+import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
+import { categoryFormPane, categoryHint, categoryPane, CategoryDeleteDialog } from './CategoryPane'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
 
@@ -61,13 +63,16 @@ const splitTitles: Record<string, MessageKey> = {
  * Dividir's back, the payer sheets' dismissal or the bill's close. With a bill to edit it is "Editar conta", over
  * Conta, and can delete the bill.
  */
-export function SplitBillDialog({ route }: { route: JsRoute }) {
+export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; isCovered?: boolean }) {
   const presenter = usePresenter(() => new SplitBillPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsSplitBillState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  const isWide = useMediaQuery('(min-width: 1024px)')
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) => {
     if (action === 'save-error') toast(t('splitBill_saveError'))
     else if (action === 'delete-error') toast(t('billDetail_deleteError'))
+    else if (action === 'category-save-error') toast(t('splitBill_categorySaveError'))
+    else if (action === 'category-delete-error') toast(t('splitBill_categoryDeleteError'))
   })
   if (!presenter || !state?.isLoaded) return null
 
@@ -78,9 +83,13 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
   const isPayerOpen = state.isPayerOpen
   const isGroupOpen = state.groupSelection != null
   const payerAmounts = state.payerAmounts
+  const categoryForm = state.categories.form
+  const isCategoryOpen = state.categories.isPickerOpen
   const onOpenChange = (open: boolean) => {
     if (open) return
-    if (items && !isDesktop && state.itemEditor) presenter.items.dismissItem()
+    if (categoryForm) presenter.categories.dismissForm()
+    else if (isCategoryOpen) presenter.categories.dismiss()
+    else if (items && !isDesktop && state.itemEditor) presenter.items.dismissItem()
     else if (items && !isDesktop && state.feeEditor) presenter.items.dismissFee()
     else if (items) presenter.items.dismiss()
     else if (editor) presenter.dismissSplit()
@@ -91,7 +100,9 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
   }
 
   let pane: PaneParts
-  if (items && state.itemEditor && !isDesktop) pane = itemPane(presenter.items, state, state.itemEditor, money)
+  if (categoryForm) pane = categoryFormPane(presenter.categories, state, categoryForm)
+  else if (isCategoryOpen) pane = categoryPane(presenter.categories, state, isWide)
+  else if (items && state.itemEditor && !isDesktop) pane = itemPane(presenter.items, state, state.itemEditor, money)
   else if (items && state.feeEditor && !isDesktop) pane = feePane(presenter.items, state, state.feeEditor)
   else if (items) pane = itemsPane(presenter.items, state, items, splitLead(state, items.totalMinor, money), money, signed)
   else if (editor) pane = splitPane(presenter, state, editor, money)
@@ -109,13 +120,15 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
     />
   )
 
+  // Why: "Mapa de categorias" covers it (9.0); it stays mounted, so the bill comes back as it was.
+  if (isCovered) return null
   return (
     <>
       <ResponsiveDialog
         isDesktop={isDesktop}
         pane={pane}
         onOpenChange={onOpenChange}
-        className={cn('gap-5', items ? 'sm:max-w-[640px] lg:max-w-[920px]' : editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
+        className={cn('gap-5', categoryForm || isCategoryOpen ? 'sm:max-w-[520px] lg:max-w-[760px]' : items ? 'sm:max-w-[640px] lg:max-w-[920px]' : editor ? 'sm:max-w-[520px]' : 'sm:max-w-[520px] lg:max-w-[760px]')}
       />
       {isDesktop && items && <ItemsOverlayDialogs presenter={presenter.items} state={state} money={money} />}
       {items && <ItemDeleteDialog presenter={presenter.items} state={state} money={money} />}
@@ -123,6 +136,7 @@ export function SplitBillDialog({ route }: { route: JsRoute }) {
       {isDesktop && !editor && isPayerOpen && <PayerDialog presenter={presenter} state={state} money={money} />}
       {isDesktop && !editor && payerAmounts && <SeveralPayersDialog presenter={presenter} state={state} amounts={payerAmounts} money={money} />}
       {deletion}
+      {state.categories.deletion && <CategoryDeleteDialog presenter={presenter.categories} state={state} deletion={state.categories.deletion} />}
     </>
   )
 }
@@ -222,19 +236,42 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             <Label htmlFor={descriptionId} className={cn(state.showsDescriptionError && 'text-destructive')}>
               {t('splitBill_description')}
             </Label>
-            <Input
-              id={descriptionId}
-              autoComplete="off"
-              value={description}
-              placeholder={t('splitBill_descriptionPlaceholder')}
-              aria-invalid={state.showsDescriptionError}
-              aria-describedby={state.showsDescriptionError ? descriptionHelpId : undefined}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-            {state.showsDescriptionError && (
-              <p id={descriptionHelpId} className="text-[13px] text-destructive">
-                {t('splitBill_descriptionError')}
-              </p>
+            <div className="flex items-center gap-2">
+              {/* Why: the category's icon opens "Categoria" (7.7). */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-10 shrink-0 p-0"
+                aria-label={t('splitBill_categoryChange', { name: categoryPath(state.categories.category, state.categories.parent) })}
+                onClick={() => presenter.categories.open()}
+              >
+                <CategoryBadge category={state.categories.category} className="size-9" />
+              </Button>
+              <Input
+                id={descriptionId}
+                autoComplete="off"
+                value={description}
+                placeholder={t('splitBill_descriptionPlaceholder')}
+                aria-invalid={state.showsDescriptionError}
+                aria-describedby={descriptionHelpId}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </div>
+            <p id={descriptionHelpId} className={cn('text-[13px]', state.showsDescriptionError ? 'text-destructive' : 'text-muted-foreground')}>
+              {state.showsDescriptionError ? t('splitBill_descriptionError') : categoryHint(state)}
+            </p>
+            {!state.isEditing && state.categories.matches.length > 1 && (
+              <div className="flex flex-wrap gap-2">
+                {state.categories.matches.map((match, index) => (
+                  <span
+                    key={match.term}
+                    className={cn('rounded-lg px-2.5 py-0.5 text-sm', index === 0 ? 'bg-secondary text-secondary-foreground' : 'border border-border text-muted-foreground')}
+                  >
+                    {match.term}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -252,7 +289,13 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
           />
           <div className="flex flex-col gap-1.5">
             <span className="text-sm font-medium">{t('splitBill_split')}</span>
-            <SplitSummary presenter={presenter} split={state.split} summary={state.splitSummary} money={money} />
+            <SplitSummary
+              presenter={presenter}
+              split={state.split}
+              summary={state.splitSummary}
+              exceptionName={state.categories.defaultSplitException ? categoryName(state.categories.defaultSplitException) : undefined}
+              money={money}
+            />
           </div>
         </div>
       </div>
@@ -468,9 +511,21 @@ function useNow(intervalMs: number): number {
 }
 
 /** "Divisão": the faces of who is in, "Igual entre 5" and "R$ 62,40 cada · Diego não participa"; opens "Dividir". */
-function SplitSummary({ presenter, split, summary, money }: { presenter: SplitBillPresenter; split: JsSplitEditor; summary: JsSplitFact[]; money: Money }) {
+function SplitSummary({
+  presenter,
+  split,
+  summary,
+  exceptionName,
+  money,
+}: {
+  presenter: SplitBillPresenter
+  split: JsSplitEditor
+  summary: JsSplitFact[]
+  exceptionName?: string
+  money: Money
+}) {
   const title = t(splitTitles[split.mode] ?? 'splitBill_splitEqual', { count: split.includedCount })
-  const details = splitSummary(summary, money)
+  const details = splitSummary(summary, money, exceptionName)
   const faces = split.included.slice(0, 3)
   const extra = split.included.length - faces.length
   return (

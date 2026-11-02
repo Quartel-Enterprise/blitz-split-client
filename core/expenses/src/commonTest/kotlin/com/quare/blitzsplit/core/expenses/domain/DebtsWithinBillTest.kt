@@ -284,6 +284,7 @@ class DebtsWithinBillTest {
         payers = payers,
         shares = shares,
         items = null,
+        categoryId = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,

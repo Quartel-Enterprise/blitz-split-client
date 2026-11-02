@@ -79,7 +79,8 @@ internal class GroupScreen(
     )
 
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
-    private var isGroupGone = false
+    var isGroupGone = false
+        private set
 
     // Why: "Fixar na Início" or "Desafixar da Início", as the header last showed it.
     var isPinned = false

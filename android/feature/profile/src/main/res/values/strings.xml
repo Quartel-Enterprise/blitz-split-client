@@ -94,4 +94,6 @@
     <string name="profile_unlink_offline">Needs an internet connection.</string>
     <string name="profile_unlink_failed">Couldn\'t disconnect. Try again.</string>
     <string name="profile_unlink_confirm">Disconnect</string>
+    <string name="profile_category_map">Category map</string>
+    <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
 </resources>

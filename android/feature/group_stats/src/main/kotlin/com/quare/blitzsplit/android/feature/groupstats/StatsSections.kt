@@ -375,7 +375,7 @@ private fun StatsPersonRowItem(
 }
 
 @Composable
-private fun StatsAmountBarIndicator(fraction: Float) {
+internal fun StatsAmountBarIndicator(fraction: Float) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

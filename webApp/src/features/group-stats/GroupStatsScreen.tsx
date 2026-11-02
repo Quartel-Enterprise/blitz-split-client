@@ -16,6 +16,7 @@ import { t, type MessageKey } from '@/i18n'
 import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
 import { formatMoney, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { CategoriesCard } from './CategoriesCard'
 import { StatsChart } from './StatsChart'
 import {
   formatRange,
@@ -98,7 +99,8 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
         {state.showsStats && <SummaryCards state={state} money={money} />}
 
         {state.showsStats && (
-          <div className="grid items-start gap-4 md:grid-cols-2 md:gap-5">
+          <div className="grid items-start gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
+            <CategoriesCard state={state} money={money} className={cardClass} />
             <div className="flex min-w-0 flex-col gap-4 md:gap-5">
               <OverTimeCard state={state} presenter={presenter} money={money} />
               {state.biggestExpense && (

@@ -46,7 +46,7 @@ struct BoraRacharApp: App {
         #endif
 
         #if os(macOS)
-        // Ajustes (⌘,): the profile, as the canvas draws it on the Mac
+        // Ajustes (⌘,): the profile, as the canvas draws it on the Mac, and Categories, the category map (9.1)
         Settings {
             SettingsView(app: app)
         }

@@ -27,9 +27,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.categoryPath
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
@@ -46,6 +48,21 @@ internal fun BillSummaryColumn(
     dates: DateTimeTextFormatter,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Why: the bill's category over its title, "Alimentação › Mercado" (7.3).
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CategoryBadge(
+                category = state.category,
+                size = 28.dp,
+            )
+            Text(
+                text = categoryPath(state.category, state.categoryParent),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Text(
             text = state.description,
             modifier = Modifier.semantics { heading() },

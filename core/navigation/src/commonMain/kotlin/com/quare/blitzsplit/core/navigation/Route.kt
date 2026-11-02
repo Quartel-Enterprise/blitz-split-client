@@ -39,6 +39,12 @@ sealed interface Route {
     // Why: "Notificações", a screen of its own on Android and iOS; the web and macOS keep it in the profile.
     data object NotificationSettings : Route
 
+    /*
+     * Why: "Mapa de categorias" (flow 9), from Perfil › Preferências and from "Categoria" (9.0); the Mac keeps it in
+     * its Ajustes.
+     */
+    data object CategoryMap : Route
+
     // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
     data class Invite(
         val groupId: String,

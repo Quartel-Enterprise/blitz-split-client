@@ -65,11 +65,17 @@ internal fun splitTitleOf(split: SplitEditor): String {
 internal fun splitSubtitleOrNull(
     summary: List<SplitFact>,
     money: MoneyFormatter,
+    // Why: "Exceção do grupo para Mercado" in place of "Padrão do grupo" (7.1k).
+    exceptionName: String? = null,
 ): String? = summary
     .map { fact ->
-        factTextOf(
-            fact = fact,
-            money = money,
-        )
+        if (fact == SplitFact.GroupDefault && exceptionName != null) {
+            stringResource(R.string.split_bill_group_exception, exceptionName)
+        } else {
+            factTextOf(
+                fact = fact,
+                money = money,
+            )
+        }
     }.takeIf { it.isNotEmpty() }
     ?.joinToString(PART_SEPARATOR)

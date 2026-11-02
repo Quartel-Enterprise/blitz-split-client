@@ -100,12 +100,15 @@ suspend fun syncNow(): Result<Unit> {
                     paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
                 }
                 val preferencesSynced = suspendRunCatching { /* download, then upload */ }
+                val termsSynced = suspendRunCatching { /* the category map: download, then upload */ }
                 var areGroupsSynced = false
                 val groupsSynced = suspendRunCatching {
                     groupRepository.downloadGroups(userId).getOrThrow()
                     groupRepository.uploadPendingGroups(userId).getOrThrow()
                     areGroupsSynced = true
-                    // A bill needs its group and members on both sides first
+                    // A bill needs its group, members and the group's categories on both sides first
+                    categoryRepository.download(userId).getOrThrow()
+                    categoryRepository.uploadPending(userId).getOrThrow()
                     expenseRepository.downloadExpenses(userId).getOrThrow()
                     expenseRepository.uploadPendingExpenses(userId).getOrThrow()
                     settlementRepository.downloadSettlements(userId).getOrThrow()
@@ -124,6 +127,7 @@ suspend fun syncNow(): Result<Unit> {
                 signOutIfScheduledAndSynced()
                 keysSynced.getOrThrow()
                 preferencesSynced.getOrThrow()
+                termsSynced.getOrThrow()
                 groupsSynced.getOrThrow()
                 pinsSynced.getOrThrow()
             }.also { result -> lastSyncFailed.value = result.isFailure }
@@ -273,6 +277,19 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   pushes. The server checks an upsert against its insert policy with the row as sent, where `created_by` must be the
   user pushing, so the client always sends itself as `created_by` and the trigger keeps who recorded it. Balances
   (`GroupBalances`) are worked out on the device from the bills and payments in Room, never stored.
+- **Categories** (`:core:expenses`): a bill stores its category in `categoryId` (`category_id` on the server), the
+  key of one of the app's (`food.market`, `AppCategory`, never stored in a table) or the id of one of its group's
+  (`group_category`, `group_categories` on the server), and null for "Outros" never picked. A group's category is a
+  Last-Write-Wins row of its group with the same `ON DELETE CASCADE`, synced right after the groups and before the
+  bills (so a bill never reaches another device before its category), down then up, with
+  `deleteGoneFromServer`; deleting one is a tombstone (`isDeleted`, its subcategories too) the server keeps deleted,
+  and its bills keep the id: `CategoryTree.resolve` reads them as its parent or "Outros", so a delete never rewrites
+  any bill. Its pending flag and versions join the bills' and payments' in `observePendingMoneyVersions`.
+- **Category map** (`:core:expenses`): each person's changes to the app's 60 terms (`category_term`, one row per
+  folded word, `category_terms` keyed by user and word on the server), owned like the payment keys
+  (`ownerUserId`, claimed by the first sync, dropped on a switch, cleared on sign out). A null category is a term
+  removed and `isDeleted` a change "Restaurar padrão" undid, which stays so its version still wins; the download is
+  Last-Write-Wins per word, a newer server row winning even over a change not pushed yet.
 - **Recovery code**: after the first successful sync of an anonymous user whose prompt is `NOT_DUE`, it asks the
   server for a recovery code.
 - **Activity** (`:core:activity`): the "Atividade" feed is a log the server writes (`activity_events`, by triggers

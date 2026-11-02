@@ -1240,6 +1240,7 @@ class EditGroupViewModelTest {
     private val threeToOne = GroupDefaultSplit(
         mode = DefaultSplitMode.SHARES,
         weights = mapOf(PIERRE to 3L, ANA to 1L),
+        exceptions = emptyList(),
     )
 
     private val dinner = Expense(
@@ -1262,6 +1263,7 @@ class EditGroupViewModelTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 1_000L,
         isPending = false,
         updatedAt = 1_000L,

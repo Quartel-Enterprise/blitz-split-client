@@ -20,7 +20,9 @@ import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
+import { CategoryBadge } from '@/lib/categories'
 import { cn } from '@/lib/utils'
+import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage } from './GroupPage'
 
@@ -46,6 +48,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
     presenter?.billDeletedNoticeShown()
   }, [presenter, showsBillDeletedNotice])
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
+  useCategoryTeachNotice(presenter, state?.teach)
   if (!presenter || !state?.isLoaded) return null
 
   const tab = state.tab as GroupTab
@@ -74,6 +77,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
           onDismiss={() => presenter.dismissPaymentDelete()}
         />
       )}
+      {state.teach?.isPickingWord && <CategoryTeachDialog presenter={presenter} teach={state.teach} />}
       {membersPresenter && membersState && <MembersDialogs presenter={membersPresenter} state={membersState} />}
     </GroupPage>
   )
@@ -254,7 +258,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
   const balance = expense.myBalanceMinor
   return (
     <DayRow
-      icon={<ReceiptText className="size-4" />}
+      icon={<CategoryBadge category={expense.category} className="size-full rounded-[inherit]" />}
       title={expense.description}
       meta={paid}
       amount={formatMoney(expense.totalMinor, currency, fractionDigits)}

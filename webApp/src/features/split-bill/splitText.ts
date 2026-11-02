@@ -111,8 +111,10 @@ export function splitStatus(editor: JsSplitEditor, money: Money): SplitStatus {
  * "R$ 62,40 cada · Diego não participa", the line under Rachar conta's "Divisão", "Padrão do grupo" first while the
  * bill keeps the group's default split.
  */
-export function splitSummary(facts: JsSplitFact[], money: Money): string {
-  return facts.map((fact) => splitFactText(fact, money, 'summary')).join(' · ')
+export function splitSummary(facts: JsSplitFact[], money: Money, exceptionName?: string): string {
+  return facts
+    .map((fact) => (fact.kind === 'group-default' && exceptionName ? t('splitBill_groupException', { name: exceptionName }) : splitFactText(fact, money, 'summary')))
+    .join(' · ')
 }
 
 const defaultModes: Record<string, MessageKey> = {

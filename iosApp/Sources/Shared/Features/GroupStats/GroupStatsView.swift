@@ -152,6 +152,7 @@ private struct StatsScroll: View {
                                 #if os(iOS)
                                 StatsHeroCard(state: state)
                                 #endif
+                                StatsCategoriesSection(state: state, pieSize: 112)
                                 StatsPeopleSection(model: model)
                             }
                             VStack(alignment: .leading, spacing: 0) {
@@ -165,6 +166,7 @@ private struct StatsScroll: View {
                         #else
                         StatsHeroCard(state: state)
                         #endif
+                        StatsCategoriesSection(state: state)
                         StatsPeopleSection(model: model)
                         StatsOverTimeSection(model: model)
                         StatsBiggestSection(model: model)
@@ -429,7 +431,7 @@ private struct StatsPersonLine: View {
     }
 }
 
-private struct StatsAmountBar: View {
+struct StatsAmountBar: View {
     let fraction: Double
 
     var body: some View {

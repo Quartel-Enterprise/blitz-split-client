@@ -33,6 +33,8 @@ class JsExpenseRow(
     val payers: Array<JsExpenseRowPayer>,
     val totalMinor: Double,
     val myBalanceMinor: Double?,
+    // Why: the row's icon, the category the bill reads as.
+    val category: JsCategory,
     val isPending: Boolean,
 )
 
@@ -65,6 +67,26 @@ class JsExpenseDay(
     val entries: Array<JsDayEntry>,
 )
 
+// Why: a word of the bill's title "Ensinar ao mapa" offers; currentCategory null for one new in the map.
+class JsTeachWord(
+    val term: String,
+    val key: String,
+    val currentCategory: JsCategory?,
+)
+
+// Why: "Ensinar ao mapa?" (9.3e) and, while isPickingWord, "Ensinar ao mapa" (9.3f).
+class JsCategoryTeach(
+    val title: String,
+    val category: JsCategory,
+    val categoryParent: JsCategory?,
+    val mapCategory: JsCategory?,
+    val mapCategoryParent: JsCategory?,
+    val words: Array<JsTeachWord>,
+    val selectedKey: String?,
+    val isPickingWord: Boolean,
+    val isSaving: Boolean,
+)
+
 // Why: the group's screen, its header over whichever tab is picked.
 class JsGroupDetailState(
     val header: JsGroupHeader,
@@ -85,6 +107,7 @@ class JsGroupDetailState(
     val showsSplitBillButton: Boolean,
     val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
+    val teach: JsCategoryTeach?,
     // Why: "Você entrou como Bruno", right after joining, and "Proteja seu acesso" under it.
     val joinedAs: String?,
     val showsProtectAccess: Boolean,
@@ -117,6 +140,21 @@ class GroupDetailPresenter(
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
+                teach = state.teach?.let { teach ->
+                    JsCategoryTeach(
+                        title = teach.title,
+                        category = toJsCategory(teach.category),
+                        categoryParent = teach.categoryParent?.let(::toJsCategory),
+                        mapCategory = teach.mapCategory?.let(::toJsCategory),
+                        mapCategoryParent = teach.mapCategoryParent?.let(::toJsCategory),
+                        words = teach.words
+                            .map { JsTeachWord(it.term, it.key, it.currentCategory?.let(::toJsCategory)) }
+                            .toTypedArray(),
+                        selectedKey = teach.selectedKey,
+                        isPickingWord = teach.isPickingWord,
+                        isSaving = teach.isSaving,
+                    )
+                },
                 joinedAs = state.joinedAs,
                 showsProtectAccess = state.showsProtectAccess,
             )
@@ -132,6 +170,7 @@ class GroupDetailPresenter(
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
                 GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
+                GroupDetailUiAction.ShowTeachError -> "teach-error"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -235,6 +274,22 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnRecordedPaymentNoticeShown)
     }
 
+    fun teach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachClicked)
+    }
+
+    fun dismissTeach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachDismissed)
+    }
+
+    fun pickTeachWord(key: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachWordPicked(key))
+    }
+
+    fun confirmTeach() {
+        viewModel.onEvent(GroupDetailUiEvent.OnTeachConfirmed)
+    }
+
     fun dispose() {
         holder.clear()
     }
@@ -265,6 +320,7 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
         }.toTypedArray(),
     totalMinor = row.totalMinor.toDouble(),
     myBalanceMinor = row.myBalanceMinor?.toDouble(),
+    category = toJsCategory(row.category),
     isPending = row.isPending,
 )
 

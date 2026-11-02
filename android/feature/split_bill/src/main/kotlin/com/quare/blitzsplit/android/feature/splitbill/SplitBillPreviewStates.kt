@@ -1,7 +1,10 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryMatch
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
@@ -127,6 +130,21 @@ internal fun createPreviewBillState(
     itemDeletion = null,
     feeEditor = null,
     defaultSplit = null,
+    categories = CategoryTree.appOnly,
+    categoryId = AppCategory.FOOD_MARKET.key,
+    isCategoryPicked = false,
+    categoryMatches = listOf(
+        CategoryMatch(
+            term = "mercado",
+            categoryId = AppCategory.FOOD_MARKET.key,
+            start = 0,
+            end = 7,
+        ),
+    ),
+    categoryUsage = mapOf(AppCategory.FOOD_RESTAURANT.key to 3),
+    categoryPicker = null,
+    categoryForm = null,
+    categoryDeletion = null,
     conflict = conflict,
     settledPair = settledPair,
     deletion = null,

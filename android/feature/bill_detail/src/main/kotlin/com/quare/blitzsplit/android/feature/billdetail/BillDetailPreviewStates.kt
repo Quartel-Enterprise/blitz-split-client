@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -46,6 +48,8 @@ internal fun createPreviewBillDetailState(
                 isMe = isMePayer,
             ),
         ),
+        categoryId = AppCategory.FOOD_MARKET.key,
+        categories = CategoryTree.appOnly,
         isPending = isPending,
         myBalanceMinor = if (isMePayer) PREVIEW_TOTAL_MINOR - PREVIEW_SHARE_MINOR else -PREVIEW_SHARE_MINOR,
         myPartNote = if (isMePayer) {

@@ -71,4 +71,30 @@
     <string name="default_split_row_income">Renda por mês · %d%% de cada conta</string>
     <string name="default_split_row_new">%s · acabou de entrar</string>
     <string name="default_split_me">%s (você)</string>
+    <string name="default_split_exceptions">Exceções por categoria</string>
+    <string name="default_split_exceptions_none">Nenhuma. Todas as categorias seguem a divisão acima.</string>
+    <string name="default_split_exception_add">Adicionar exceção</string>
+    <string name="default_split_exception_title">Exceção por categoria</string>
+    <string name="default_split_exception_lead">Despesas desta categoria dividem de outro jeito.</string>
+    <string name="default_split_exception_category">Categoria</string>
+    <string name="default_split_exception_how">Como dividir</string>
+    <string name="default_split_exception_equal_all">Igual entre todos</string>
+    <string name="default_split_exception_shares">Partes, %s</string>
+    <string name="default_split_exception_percent">Porcentagem, %s</string>
+    <string name="default_split_exception_example">Numa conta de %1$s no %2$s: %3$s</string>
+    <string name="default_split_exception_pick">Escolha uma categoria para a exceção.</string>
+    <string name="default_split_exception_taken">%s já tem uma exceção.</string>
+    <string name="default_split_exception_save">Salvar exceção</string>
+    <string name="default_split_exception_remove">Remover exceção</string>
+    <string name="default_split_exception_percent_error">A soma dá %1$d%%. Faltam %2$d%%.</string>
+    <string name="default_split_exception_percent_over">A soma dá %1$d%%. Passou %2$d%%.</string>
+    <string name="default_split_exception_mode_equal">Igual</string>
+    <string name="default_split_exception_mode_shares">Partes</string>
+    <string name="default_split_exception_mode_percent">Porcentagem</string>
+    <plurals name="default_split_exception_equal_among">
+        <item quantity="one">Igual entre %d</item>
+        <item quantity="other">Igual entre %d</item>
+    </plurals>
+    <string name="default_split_exception_shares_two">%1$d para %2$d</string>
+    <string name="default_split_exception_percent_value">%d%%</string>
 </resources>

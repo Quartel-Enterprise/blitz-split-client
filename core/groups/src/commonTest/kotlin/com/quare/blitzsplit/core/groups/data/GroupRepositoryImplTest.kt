@@ -3531,7 +3531,7 @@ class GroupRepositoryImplTest {
                 ),
             ),
         )
-        val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("m-1" to 75L, "m-2" to 25L))
+        val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("m-1" to 75L, "m-2" to 25L), emptyList())
 
         // When
         val result = repository.updateDefaultSplit("group-1", split, mapOf("m-1" to 900_000L), updatedAt = 9L)
@@ -3558,12 +3558,12 @@ class GroupRepositoryImplTest {
             {"id":"group-1","created_by":"user-1","name":"Apê 302","type":"home","color":"blue","currency":"BRL",
             "added_at":1,"updated_at":2,"invite_code":"abc",
             "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
-            "exceptions":[{"category":"food","mode":"equal"}]}}
+            "rounding":[{"category":"food","mode":"equal"}]}}
             """.trimIndent(),
         )
         prepareScenario(remoteGroups = listOf(serverRow))
         repository.downloadGroups("user-1").getOrThrow()
-        val split = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf("m-1" to 60L, "m-2" to 40L))
+        val split = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf("m-1" to 60L, "m-2" to 40L), emptyList())
 
         // When
         repository.updateDefaultSplit("group-1", split, emptyMap(), updatedAt = 9L).getOrThrow()
@@ -3574,7 +3574,7 @@ class GroupRepositoryImplTest {
             .single()
             .single()
             .defaultSplit!!
-        assertEquals(serverRow.defaultSplit!!["exceptions"], pushed["exceptions"])
+        assertEquals(serverRow.defaultSplit!!["rounding"], pushed["rounding"])
         assertEquals("\"percent\"", pushed["mode"].toString())
         assertEquals(
             """[{"member_id":"m-1","weight":60},{"member_id":"m-2","weight":40}]""",

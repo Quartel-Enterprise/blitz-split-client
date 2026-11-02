@@ -109,11 +109,26 @@ class JsGroupStatsState(
     val hasSparseLabels: Boolean,
     val grainNotes: Array<String>,
     val biggestExpense: JsStatsBiggestExpense?,
+    // Why: "Por categoria" and the pie, the largest first.
+    val categories: Array<JsStatsCategory>,
     val isGroupEmpty: Boolean,
     val isPeriodEmpty: Boolean,
     val showsStats: Boolean,
     val showsPeriodPicker: Boolean,
     val isLoaded: Boolean,
+)
+
+class JsStatsSubcategory(
+    val category: JsCategory,
+    val amountMinor: Double,
+)
+
+class JsStatsCategory(
+    val category: JsCategory,
+    val amountMinor: Double,
+    val percent: Int,
+    val barFraction: Double,
+    val subcategories: Array<JsStatsSubcategory>,
 )
 
 class GroupStatsPresenter(
@@ -224,6 +239,18 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
             isPending = expense.isPending,
         )
     },
+    categories = state.categories
+        .map { row ->
+            JsStatsCategory(
+                category = toJsCategory(row.category),
+                amountMinor = row.amountMinor.toDouble(),
+                percent = row.percent,
+                barFraction = row.barFraction,
+                subcategories = row.subcategories
+                    .map { JsStatsSubcategory(toJsCategory(it.category), it.amountMinor.toDouble()) }
+                    .toTypedArray(),
+            )
+        }.toTypedArray(),
     isGroupEmpty = state.isGroupEmpty,
     isPeriodEmpty = state.isPeriodEmpty,
     showsStats = state.showsStats,

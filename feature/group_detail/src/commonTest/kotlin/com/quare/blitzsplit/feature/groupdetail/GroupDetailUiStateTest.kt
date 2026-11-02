@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
@@ -351,6 +352,7 @@ class GroupDetailUiStateTest {
         showsBillDeletedNotice = false,
         exit = GroupExitState.idle,
         isLoaded = isLoaded,
+        teach = null,
         homeTab = HomeTab.GROUPS,
         joinedAs = joinedAs,
         isAccountUnprotected = isAccountUnprotected,
@@ -373,6 +375,7 @@ class GroupDetailUiStateTest {
                 ),
                 totalMinor = 12_000,
                 myBalanceMinor = -6_000,
+                category = CategoryTree.appOnly.other,
                 isPending = false,
             ),
         ),

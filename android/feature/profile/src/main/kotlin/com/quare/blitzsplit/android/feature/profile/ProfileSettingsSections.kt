@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Sell
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -80,6 +81,21 @@ internal fun PreferencesSection(
                 state.activeNotificationCount,
                 state.activeNotificationCount,
             ),
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: "Mapa de categorias" (flow 9), the words that pick a bill's category from its title.
+        SectionRow(
+            icon = Icons.Outlined.Sell,
+            headline = stringResource(R.string.profile_category_map),
+            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnCategoryMapClicked) },
+            supporting = stringResource(R.string.profile_category_map_detail),
             trailing = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,

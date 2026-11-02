@@ -109,6 +109,7 @@ class ObserveExpenseUseCaseTest {
             ),
         ),
         items = null,
+        categoryId = null,
         spentAt = 5_000L,
         isPending = false,
         updatedAt = 2_000L,

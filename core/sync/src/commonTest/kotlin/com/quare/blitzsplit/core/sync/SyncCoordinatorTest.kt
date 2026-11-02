@@ -6,6 +6,8 @@ import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -60,6 +62,7 @@ class SyncCoordinatorTest {
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
+    private val categoryTerms = FakeCategoryTermRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -91,6 +94,40 @@ class SyncCoordinatorTest {
         assertTrue(result.isSuccess)
         assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.downloadedUserIds)
         assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a term changed on the device WHEN syncing THEN the map comes down and goes up under the user id`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            categoryTerms.saveTerm(
+                term = "pizzaria",
+                categoryId = "food.restaurant",
+                updatedAt = 1L,
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), categoryTerms.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), categoryTerms.uploadedUserIds)
+            assertTrue(categoryTerms.changes.value.none { it.isPending })
+        }
+
+    @Test
+    fun `GIVEN the map fails to go up WHEN syncing THEN the sync fails`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        categoryTerms.pushError = noConnection
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
     }
 
     @Test
@@ -4803,6 +4840,8 @@ class SyncCoordinatorTest {
             groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
+            categoryRepository = FakeCategoryRepository(),
+            categoryTermRepository = categoryTerms,
             activityRepository = activity,
             hiddenContactRepository = FakeHiddenContactRepository(),
             firstDownload = firstDownload,

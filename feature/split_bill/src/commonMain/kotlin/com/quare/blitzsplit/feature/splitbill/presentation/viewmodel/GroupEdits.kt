@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -8,6 +10,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -46,6 +49,14 @@ internal fun createInitialBillState(
         itemDeletion = null,
         feeEditor = null,
         defaultSplit = null,
+        categories = CategoryTree.appOnly,
+        categoryId = null,
+        isCategoryPicked = false,
+        categoryMatches = emptyList(),
+        categoryUsage = emptyMap(),
+        categoryPicker = null,
+        categoryForm = null,
+        categoryDeletion = null,
         conflict = null,
         settledPair = null,
         deletion = null,
@@ -113,4 +124,47 @@ internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
     itemDeletion = null,
     feeEditor = null,
     defaultSplit = null,
+    // Why: one of the last group's own categories means nothing in another; the app's stay picked.
+    categoryId = categoryId?.takeIf { AppCategory.fromKeyOrNull(it) != null },
+    isCategoryPicked = isCategoryPicked && AppCategory.fromKeyOrNull(categoryId) != null,
+    categoryPicker = null,
+    categoryForm = null,
+    categoryDeletion = null,
 )
+
+/*
+ * Why: whoever this device's user is pays by default; someone else's choice stays while they're in the group. A bill
+ * being edited keeps its payer even after they left it, so saving never moves who paid. Several payers keep theirs in
+ * severalPayers, until every one of them left a new bill.
+ */
+internal fun SplitBillUiState.withGroupShown(
+    group: Group,
+    people: List<BillPerson>,
+): SplitBillUiState {
+    val severalPayers = severalPayers
+        ?.withPeople(people, group.currency, keepsFormer = isEditing)
+        ?.takeIf { it.payers.isNotEmpty() }
+    val payerId = if (severalPayers != null) {
+        ""
+    } else {
+        payerId.takeIf { id -> people.any { it.id == id } || (isEditing && id.isNotEmpty()) }
+            ?: people.firstOrNull { it.isMe }?.id
+            ?: people.firstOrNull()?.id.orEmpty()
+    }
+    return copy(
+        groupId = group.id,
+        groupName = group.name,
+        groupInitials = Initials.of(group.name),
+        groupColor = group.color,
+        currency = group.currency,
+        people = people,
+        payerId = payerId,
+        severalPayers = severalPayers,
+        // Why: the payer of a bill being edited stays marked after they left the group.
+        payerSelection = payerSelection?.takeIf { selection ->
+            selection.memberId.let { id -> id == null || id == payerId || people.any { it.id == id } }
+        },
+        payerAmounts = payerAmounts?.withPeople(people, group.currency, keepsFormer = isEditing),
+        isLoaded = true,
+    )
+}

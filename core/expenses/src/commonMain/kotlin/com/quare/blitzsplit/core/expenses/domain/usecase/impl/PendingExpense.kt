@@ -17,6 +17,7 @@ internal fun pendingExpenseOf(
     splitMode: SplitMode,
     shares: List<ExpenseShare>,
     items: BillItems?,
+    categoryId: String?,
     spentAt: Long,
     now: Long,
 ): Expense = Expense(
@@ -29,6 +30,7 @@ internal fun pendingExpenseOf(
     payers = payers,
     shares = shares,
     items = items,
+    categoryId = categoryId,
     spentAt = spentAt,
     isPending = true,
     updatedAt = now,

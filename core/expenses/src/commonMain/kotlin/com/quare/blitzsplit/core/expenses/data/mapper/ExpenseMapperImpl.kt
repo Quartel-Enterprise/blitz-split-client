@@ -61,6 +61,7 @@ class ExpenseMapperImpl : ExpenseMapper {
             payers = payers,
             shares = shares,
             items = items,
+            categoryId = entity.categoryId,
             spentAt = entity.spentAt,
             isPending = entity.pendingSync,
             updatedAt = entity.updatedAt,
@@ -96,6 +97,7 @@ class ExpenseMapperImpl : ExpenseMapper {
             },
         ),
         itemsJson = expense.items?.let { json.encodeToString(toDto(it, updatedAt = createdAt)) },
+        categoryId = expense.categoryId,
         spentAt = expense.spentAt,
         isDeleted = false,
         addedAt = createdAt,
@@ -115,6 +117,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         sharesJson = json.encodeToString(dto.shares),
         // Why: items another version saved the bill without (an older updated_at) no longer give its shares.
         itemsJson = dto.items?.takeIf { it.updatedAt == dto.updatedAt }?.let { json.encodeToString(it) },
+        categoryId = dto.categoryId,
         spentAt = dto.spentAt,
         isDeleted = dto.isDeleted,
         addedAt = dto.addedAt,
@@ -143,6 +146,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         items = entity.itemsJson
             ?.let { text -> decodeOrNull { decodeItems(text) } }
             ?.copy(updatedAt = entity.updatedAt),
+        categoryId = entity.categoryId,
         spentAt = entity.spentAt,
         isDeleted = entity.isDeleted,
         addedAt = entity.addedAt,
