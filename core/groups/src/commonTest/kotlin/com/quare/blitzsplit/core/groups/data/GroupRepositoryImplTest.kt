@@ -3923,6 +3923,429 @@ class GroupRepositoryImplTest {
         assertTrue(local.photos.value.isEmpty())
     }
 
+    @Test
+    fun `GIVEN groups on the server WHEN listing the first download THEN returns their ids in the server order`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(id = "group-recent"),
+                    groupDto(id = "group-middle"),
+                    groupDto(id = "group-old"),
+                ),
+            )
+
+            // When
+            val result = repository.fetchFirstDownloadGroupIds()
+
+            // Then
+            assertEquals(listOf("group-recent", "group-middle", "group-old"), result.getOrNull())
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN listing the first download THEN returns the error`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            fetchError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.fetchFirstDownloadGroupIds()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN a group with members on the server WHEN downloading it THEN stores them synced and owned by the user`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        createdBy = "user-2",
+                        inviteCode = "abc123",
+                    ),
+                ),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        name = "Ana",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = "user-1",
+                        name = "Pierre",
+                    ),
+                    memberDto(
+                        id = "m-3",
+                        groupId = "group-1",
+                        userId = null,
+                        name = "Bruno",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            val stored = local.group("group-1")
+            assertEquals("user-1", stored?.ownerUserId)
+            assertEquals("user-2", stored?.createdBy)
+            assertEquals(false, stored?.pendingSync)
+            assertEquals("abc123", stored?.inviteCode)
+            assertEquals(listOf(false, true, false), listOf("m-1", "m-2", "m-3").map { local.member(it)?.isMe })
+            assertFalse(repository.observeHasPendingChanges().first())
+        }
+
+    @Test
+    fun `GIVEN members on the server WHEN downloading their group THEN only those with an account have joined`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        name = "Ana",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = null,
+                        name = "Bruno",
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            val members = repository
+                .observeGroups()
+                .first()
+                .single()
+                .members
+            assertEquals(listOf(true, false), members.map { it.hasJoined })
+            assertEquals(listOf(false, false), members.map { it.isMe })
+        }
+
+    @Test
+    fun `GIVEN two groups on the server WHEN downloading one of them THEN only it and its members come down`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(id = "group-1"),
+                    groupDto(id = "group-2"),
+                ),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-2",
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            assertEquals(listOf("group-1"), local.groups.value.map { it.id })
+            assertEquals(listOf("m-1"), local.members.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN synced rows the server no longer has WHEN downloading one group THEN deletes none of them`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(id = "group-1"),
+                group(id = "group-gone"),
+                group(
+                    id = "group-other-user",
+                    ownerUserId = "user-2",
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-gone-from-group-1",
+                    groupId = "group-1",
+                ),
+                member(
+                    id = "m-of-gone-group",
+                    groupId = "group-gone",
+                ),
+                member(
+                    id = "m-of-other-user",
+                    groupId = "group-other-user",
+                ),
+            ),
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroup(
+            userId = "user-1",
+            groupId = "group-1",
+        )
+
+        // Then
+        assertEquals(
+            setOf("group-1", "group-gone", "group-other-user"),
+            local.groups.value
+                .map { it.id }
+                .toSet(),
+        )
+        assertEquals(
+            setOf("m-gone-from-group-1", "m-of-gone-group", "m-of-other-user", "m-1"),
+            local.members.value
+                .map { it.id }
+                .toSet(),
+        )
+        assertTrue(deletions.observeDeletions().first().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a newer server copy of a stored group WHEN downloading that group THEN the server copy wins`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        name = "Viagem",
+                        updatedAt = 5L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 9L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("Viagem Floripa", stored?.name)
+            assertEquals(9L, stored?.updatedAt)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN an older server copy of a stored group WHEN downloading that group THEN keeps the device change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        name = "Viagem Floripa",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        name = "Viagem",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            val stored = local.group("group-1")
+            assertEquals("Viagem Floripa", stored?.name)
+            assertEquals(9L, stored?.updatedAt)
+            assertEquals(true, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a newer server copy of a stored member WHEN downloading its group THEN the server copy wins`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana",
+                        updatedAt = 5L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            val stored = local.member("m-1")
+            assertEquals("Ana Paula", stored?.name)
+            assertEquals("user-2", stored?.userId)
+            assertEquals(false, stored?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN an older server copy of a stored member WHEN downloading its group THEN keeps the device change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana Paula",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                ),
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        name = "Ana",
+                        updatedAt = 5L,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-1",
+            )
+
+            // Then
+            assertEquals("Ana Paula", local.member("m-1")?.name)
+            assertEquals(true, local.member("m-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group deleted after the list was read WHEN downloading it THEN succeeds and stores nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-gone",
+                        groupId = "group-gone",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroup(
+                userId = "user-1",
+                groupId = "group-gone",
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(local.groups.value.isEmpty())
+            assertTrue(local.members.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN downloading one group THEN returns the error and stores nothing`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    name = "Viagem",
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    name = "Viagem Floripa",
+                    updatedAt = 9L,
+                ),
+            ),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-1",
+                    groupId = "group-1",
+                ),
+            ),
+            fetchError = IllegalStateException("server down"),
+        )
+
+        // When
+        val result = repository.downloadGroup(
+            userId = "user-1",
+            groupId = "group-1",
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("Viagem", local.group("group-1")?.name)
+        assertTrue(local.members.value.isEmpty())
+    }
+
     private fun group(
         id: String,
         name: String = "Viagem Floripa",
