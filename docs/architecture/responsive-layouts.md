@@ -63,11 +63,12 @@ drawn like it (Convidar's "Trocar o link?" in a book's right half and a tabletop
 dialogs in a book's right half).
 
 Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
-Perfil, Editar perfil and the keys on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
+Perfil, Editar perfil, the keys and Estatísticas on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
 "Não estou na lista", the profile's dialogs and Excluir conta),
-`TopBottomHalvesLayout` (Convidar and Convite on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
+`TopBottomHalvesLayout` (Convidar, Convite and Estatísticas on a tabletop), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:
 their layout math (right to left, a hinge band partly off the layout) has only run in previews. Each flow's
 responsive slice adopts them (see below) and checks them on the Pixel Fold and Galaxy Z Fold emulators then.
+Estatísticas in the group's pane on a tablet lying down has only run in builds too.
 `FoldDialog` and `FoldDialogSceneStrategy` already draw every dialog route.
 
 The two `rememberUses…Dialog` rules are the presentations of today. A flow whose boards draw something else on a
@@ -128,7 +129,7 @@ The pieces in `iosApp/Sources/Shared/DesignSystem`:
 | `ToolbarContent.prefersVerticalBar()` / `.readingVerticalBar($isVertical)` | A toolbar item the boards put in the closed Duo's vertical bar (`axisBehavior(.verticalPreferred)`: the avatar, "Rachar conta"), and whether the bar is vertical now (`toolbarVerticalEdge`), so a button drops its title (`SplitBillButton(showsTitle:)`) or leaves the bottom bar for it |
 
 `formSheetSizing()` sizes the recovery code's, Novo grupo's and Editar perfil's sheets; `billSheetSizing` no screen
-uses yet.
+uses yet. Not checked on a device yet: Estatísticas in an iPad's group pane.
 
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind
