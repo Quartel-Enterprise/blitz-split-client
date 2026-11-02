@@ -168,17 +168,22 @@ private struct JoinWithLinkContent: View {
     }
 
     private func cameraOverlay(_ state: JoinWithLinkUiState) -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 8) {
             topBar(state)
-            Spacer(minLength: 8)
-            if state.cameraAccess == .denied {
-                cameraDenied
-            } else if state.isCameraUnavailable {
-                cameraUnavailable
-            } else {
-                viewfinder(state)
+            Group {
+                if state.cameraAccess == .denied {
+                    cameraDenied
+                } else if state.isCameraUnavailable {
+                    cameraUnavailable
+                } else {
+                    viewfinder(state)
+                }
             }
-            Spacer(minLength: 8)
+            // Why: with the keyboard up on a small iPhone the camera area gets short; only this part is cut, so the
+            // close button never goes back under the status bar nor this text over the link panel.
+            .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+            .clipped()
+            .padding(.bottom, 8)
         }
         .padding(.horizontal, 16)
     }
