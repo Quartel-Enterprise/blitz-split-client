@@ -3,29 +3,32 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 import com.quare.blitzsplit.core.expenses.data.dto.BillAttachmentDto
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentRow
 
 class BillAttachmentMapperImpl : BillAttachmentMapper {
-    override fun toDomain(entity: BillAttachmentEntity): BillAttachment? {
-        val kind = BillAttachmentKind.fromCodeOrNull(entity.kind) ?: return null
+    override fun toDomain(row: BillAttachmentRow): BillAttachment? {
+        val kind = BillAttachmentKind.fromCodeOrNull(row.kind) ?: return null
         return BillAttachment(
-            id = entity.id,
-            expenseId = entity.expenseId,
-            groupId = entity.groupId,
+            id = row.id,
+            expenseId = row.expenseId,
+            groupId = row.groupId,
             kind = kind,
-            width = entity.width,
-            height = entity.height,
-            addedByUserId = entity.addedByUserId,
-            addedByMemberId = entity.addedByMemberId,
-            addedAt = entity.addedAt,
-            updatedAt = entity.updatedAt,
-            isPending = entity.pendingSync,
-            pendingImage = entity.pendingJpeg?.let(::PendingJpeg),
+            width = row.width,
+            height = row.height,
+            addedByUserId = row.addedByUserId,
+            addedByMemberId = row.addedByMemberId,
+            addedAt = row.addedAt,
+            updatedAt = row.updatedAt,
+            isPending = row.pendingSync,
+            hasPendingImage = row.hasPendingJpeg,
         )
     }
 
-    override fun toEntity(attachment: BillAttachment): BillAttachmentEntity = BillAttachmentEntity(
+    override fun toEntity(
+        attachment: BillAttachment,
+        jpeg: ByteArray,
+    ): BillAttachmentEntity = BillAttachmentEntity(
         id = attachment.id,
         expenseId = attachment.expenseId,
         groupId = attachment.groupId,
@@ -37,7 +40,7 @@ class BillAttachmentMapperImpl : BillAttachmentMapper {
         addedAt = attachment.addedAt,
         updatedAt = attachment.updatedAt,
         isDeleted = false,
-        pendingJpeg = attachment.pendingImage?.jpeg,
+        pendingJpeg = jpeg,
         pendingSync = attachment.isPending,
     )
 

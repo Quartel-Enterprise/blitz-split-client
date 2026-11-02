@@ -9,11 +9,12 @@ import kotlinx.datetime.TimeZone
 
 /*
  * Why: "Anexos" (7.3g) as Room orders them, the receipt first, the photos numbered in the order they were added. Each
- * draws from `imageUrls`, its JPEG as a data URI or its signed URL, or a placeholder without either.
+ * draws its JPEG added here, else its signed URL, else a placeholder.
  */
 internal fun tilesOf(
     attachments: List<BillAttachment>,
     imageUrls: Map<String, String>,
+    localImages: Map<String, ByteArray>,
     group: Group,
     nowMillis: Long,
     timeZone: TimeZone,
@@ -25,6 +26,7 @@ internal fun tilesOf(
         BillAttachmentTile(
             id = attachment.id,
             isReceipt = isReceipt,
+            localImage = localImages[attachment.id],
             imageUrl = imageUrls[attachment.id],
             width = attachment.width,
             height = attachment.height,

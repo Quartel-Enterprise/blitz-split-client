@@ -3,8 +3,8 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 import com.quare.blitzsplit.core.expenses.data.dto.BillAttachmentDto
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentRow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -16,21 +16,21 @@ class BillAttachmentMapperImplTest {
     @Test
     fun `GIVEN a stored photo waiting to go up WHEN mapping to the domain THEN reads every field with its image`() {
         // Given
-        val entity = entity(
+        val row = row(
             addedByUserId = null,
-            pendingJpeg = jpeg,
             pendingSync = true,
+            hasPendingJpeg = true,
         )
 
         // When
-        val attachment = mapper.toDomain(entity)
+        val attachment = mapper.toDomain(row)
 
         // Then
         assertEquals(
             attachment(
                 addedByUserId = null,
                 isPending = true,
-                pendingImage = PendingJpeg(jpeg),
+                hasPendingImage = true,
             ),
             attachment,
         )
@@ -39,10 +39,10 @@ class BillAttachmentMapperImplTest {
     @Test
     fun `GIVEN a synced photo WHEN mapping to the domain THEN reads it not pending and with no image`() {
         // Given
-        val entity = entity()
+        val row = row()
 
         // When
-        val attachment = mapper.toDomain(entity)
+        val attachment = mapper.toDomain(row)
 
         // Then
         assertEquals(attachment(), attachment)
@@ -51,10 +51,10 @@ class BillAttachmentMapperImplTest {
     @Test
     fun `GIVEN a stored receipt WHEN mapping to the domain THEN reads it as the receipt`() {
         // Given
-        val entity = entity(kind = "receipt")
+        val row = row(kind = "receipt")
 
         // When
-        val attachment = mapper.toDomain(entity)
+        val attachment = mapper.toDomain(row)
 
         // Then
         assertEquals(BillAttachmentKind.RECEIPT, attachment?.kind)
@@ -63,10 +63,10 @@ class BillAttachmentMapperImplTest {
     @Test
     fun `GIVEN a kind this version does not know WHEN mapping to the domain THEN leaves it out`() {
         // Given
-        val entity = entity(kind = "video")
+        val row = row(kind = "video")
 
         // When
-        val attachment = mapper.toDomain(entity)
+        val attachment = mapper.toDomain(row)
 
         // Then
         assertNull(attachment)
@@ -78,11 +78,11 @@ class BillAttachmentMapperImplTest {
         val attachment = attachment(
             addedByUserId = null,
             isPending = true,
-            pendingImage = PendingJpeg(jpeg),
+            hasPendingImage = true,
         )
 
         // When
-        val entity = mapper.toEntity(attachment)
+        val entity = mapper.toEntity(attachment, jpeg)
 
         // Then
         assertEquals(
@@ -96,15 +96,15 @@ class BillAttachmentMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a receipt with no image WHEN mapping it to store THEN stores its kind code and no JPEG`() {
+    fun `GIVEN a receipt WHEN mapping it to store THEN stores its kind code`() {
         // Given
         val attachment = attachment(kind = BillAttachmentKind.RECEIPT)
 
         // When
-        val entity = mapper.toEntity(attachment)
+        val entity = mapper.toEntity(attachment, jpeg)
 
         // Then
-        assertEquals(entity(kind = "receipt"), entity)
+        assertEquals(entity(kind = "receipt"), entity.copy(pendingJpeg = null))
     }
 
     @Test
@@ -184,7 +184,7 @@ class BillAttachmentMapperImplTest {
         kind: BillAttachmentKind = BillAttachmentKind.PHOTO,
         addedByUserId: String? = "user-ana",
         isPending: Boolean = false,
-        pendingImage: PendingJpeg? = null,
+        hasPendingImage: Boolean = false,
     ): BillAttachment = BillAttachment(
         id = "photo-1",
         expenseId = "bill-1",
@@ -197,7 +197,27 @@ class BillAttachmentMapperImplTest {
         addedAt = 10L,
         updatedAt = 20L,
         isPending = isPending,
-        pendingImage = pendingImage,
+        hasPendingImage = hasPendingImage,
+    )
+
+    private fun row(
+        kind: String = "photo",
+        addedByUserId: String? = "user-ana",
+        pendingSync: Boolean = false,
+        hasPendingJpeg: Boolean = false,
+    ): BillAttachmentRow = BillAttachmentRow(
+        id = "photo-1",
+        expenseId = "bill-1",
+        groupId = "group-1",
+        kind = kind,
+        width = 1_600,
+        height = 1_200,
+        addedByUserId = addedByUserId,
+        addedByMemberId = "member-ana",
+        addedAt = 10L,
+        updatedAt = 20L,
+        pendingSync = pendingSync,
+        hasPendingJpeg = hasPendingJpeg,
     )
 
     private fun entity(

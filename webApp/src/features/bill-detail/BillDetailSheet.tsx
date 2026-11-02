@@ -14,7 +14,7 @@ import { formatMoney, formatNames } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
-import { AttachmentViewer, BillAttachments } from './BillAttachments'
+import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from './BillAttachments'
 import { BillComments, CommentComposer } from './BillComments'
 import { BillDeleteDialog } from './BillDeleteDialog'
 import { BillHistory } from './BillHistory'
@@ -44,9 +44,11 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     if (action === 'undo-error') toast(t('billDetail_undoError'))
     if (action === 'photo-unreadable') toast(t('billDetail_photoUnreadable'))
     if (action === 'photo-no-room') toast(t('billDetail_photoNoRoom'))
+    if (action === 'photo-too-large') toast(t('billDetail_photoTooLarge'))
     if (action === 'photo-error') toast(t('billDetail_photoError'))
     if (action === 'remove-photo-error') toast(t('billDetail_removePhotoError'))
   })
+  const localPhotoUrls = useLocalPhotoUrls(state?.attachments ?? [])
   if (!presenter || !state?.isLoaded) return null
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
@@ -71,9 +73,9 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     </>
   )
   const composer = (className: string) => <CommentComposer presenter={presenter} state={state} inputRef={composerRef} className={className} />
-  const attachments = <BillAttachments presenter={presenter} state={state} />
+  const attachments = <BillAttachments presenter={presenter} state={state} localUrls={localPhotoUrls} />
   // Why: outside the panel, like the delete dialog, so the lightbox covers the whole window over the drawer too.
-  const viewer = <AttachmentViewer presenter={presenter} state={state} />
+  const viewer = <AttachmentViewer presenter={presenter} state={state} localUrls={localPhotoUrls} />
   const deletion = state.deletion && (
     <BillDeleteDialog
       deletion={state.deletion}

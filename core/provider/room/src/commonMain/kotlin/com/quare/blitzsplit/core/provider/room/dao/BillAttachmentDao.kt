@@ -6,6 +6,7 @@ import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentRow
 import kotlinx.coroutines.flow.Flow
 
 // Why: below SQLite's oldest cap on bound parameters (999), which some devices still have.
@@ -15,10 +16,15 @@ private const val MAX_ATTACHMENT_IDS_PER_QUERY = 500
 interface BillAttachmentDao {
     // Why: the receipt first, then the photos in the order they were added (7.3g).
     @Query(
-        "SELECT * FROM bill_attachment WHERE expenseId = :expenseId AND isDeleted = 0 " +
-            "ORDER BY kind = 'receipt' DESC, addedAt, id",
+        "SELECT id, expenseId, groupId, kind, width, height, addedByUserId, addedByMemberId, addedAt, updatedAt, " +
+            "pendingSync, pendingJpeg IS NOT NULL AS hasPendingJpeg FROM bill_attachment " +
+            "WHERE expenseId = :expenseId AND isDeleted = 0 ORDER BY kind = 'receipt' DESC, addedAt, id",
     )
-    fun observeAttachments(expenseId: String): Flow<List<BillAttachmentEntity>>
+    fun observeAttachments(expenseId: String): Flow<List<BillAttachmentRow>>
+
+    // Why: the image added here, read once when Conta first draws it; null once it is up.
+    @Query("SELECT pendingJpeg FROM bill_attachment WHERE id = :id")
+    suspend fun getPendingJpeg(id: String): ByteArray?
 
     @Query("SELECT EXISTS(SELECT 1 FROM bill_attachment WHERE pendingSync = 1)")
     fun observeHasPending(): Flow<Boolean>

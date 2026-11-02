@@ -39,8 +39,15 @@ class BillAttachmentRepositoryImpl(
 
     override fun observePendingVersions(): Flow<List<String>> = local.observePendingVersions().distinctUntilChanged()
 
-    override suspend fun addAttachment(attachment: BillAttachment): Result<Boolean> = suspendRunCatching {
-        local.insertWithinLimit(mapper.toEntity(attachment), attachment.kind.limit)
+    override suspend fun addAttachment(
+        attachment: BillAttachment,
+        jpeg: ByteArray,
+    ): Result<Boolean> = suspendRunCatching {
+        local.insertWithinLimit(mapper.toEntity(attachment, jpeg), attachment.kind.limit)
+    }
+
+    override suspend fun getPendingImage(id: String): Result<ByteArray?> = suspendRunCatching {
+        local.getPendingJpeg(id)
     }
 
     override suspend fun removeAttachment(
@@ -95,7 +102,7 @@ class BillAttachmentRepositoryImpl(
 
     override suspend fun getImageUrls(attachments: List<BillAttachment>): Result<Map<String, String>> =
         suspendRunCatching {
-            val paths = attachments.filter { it.pendingImage == null }.associate { it.id to it.storagePath }
+            val paths = attachments.filter { !it.hasPendingImage }.associate { it.id to it.storagePath }
             urlsMutex.withLock {
                 val now = currentTimeMillis()
                 val missing = paths.values.filter { path ->

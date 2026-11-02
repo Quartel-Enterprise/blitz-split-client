@@ -10,13 +10,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
@@ -292,15 +292,16 @@ class BillDetailAttachmentsTest {
     fun `GIVEN only photos added here not up yet WHEN the bill opens online THEN asks no URL and draws their JPEG`() =
         runTest(testDispatcher) {
             // Given
-            val jpeg = PendingJpeg(byteArrayOf(1, 2, 3))
+            val jpeg = byteArrayOf(1, 2, 3)
             prepareScenario(
                 storedAttachments = listOf(
                     attachment(
                         id = PHOTO_A,
                         isPending = true,
-                        pendingImage = jpeg,
+                        hasPendingImage = true,
                     ),
                 ),
+                pendingImages = mapOf(PHOTO_A to jpeg),
             )
 
             // When
@@ -309,7 +310,8 @@ class BillDetailAttachmentsTest {
 
             // Then
             assertTrue(attachments.urlRequests.isEmpty())
-            assertEquals(jpeg.dataUri, tile.imageUrl)
+            assertTrue(jpeg.contentEquals(tile.localImage))
+            assertNull(tile.imageUrl)
             assertTrue(tile.isPending)
         }
 
@@ -401,22 +403,23 @@ class BillDetailAttachmentsTest {
     fun `GIVEN a photo added here WHEN the sync takes it up THEN keeps drawing its JPEG without asking its URL`() =
         runTest(testDispatcher) {
             // Given
-            val jpeg = PendingJpeg(byteArrayOf(1, 2, 3))
+            val jpeg = byteArrayOf(1, 2, 3)
             val pending = attachment(
                 id = PHOTO_A,
                 isPending = true,
-                pendingImage = jpeg,
+                hasPendingImage = true,
             )
             prepareScenario(
                 storedAttachments = listOf(pending),
                 imageUrls = mapOf(PHOTO_A to URL_A),
+                pendingImages = mapOf(PHOTO_A to jpeg),
             )
 
             // When
             attachments.attachments.value = listOf(
                 pending.copy(
                     isPending = false,
-                    pendingImage = null,
+                    hasPendingImage = false,
                 ),
             )
 
@@ -424,7 +427,8 @@ class BillDetailAttachmentsTest {
             // Why: no placeholder blinks while a signed URL comes, nor a second download of the same photo.
             val tile = viewModel.uiState.value.attachments
                 .single()
-            assertEquals(jpeg.dataUri, tile.imageUrl)
+            assertTrue(jpeg.contentEquals(tile.localImage))
+            assertEquals(listOf(PHOTO_A), attachments.imageRequests)
             assertFalse(tile.isPending)
             assertTrue(attachments.urlRequests.isEmpty())
         }
@@ -541,7 +545,8 @@ class BillDetailAttachmentsTest {
             assertEquals(EXPENSE_ID, added.expenseId)
             assertEquals(GROUP_ID, added.groupId)
             assertEquals(PIERRE, added.addedByMemberId)
-            assertTrue(added.pendingImage?.jpeg.contentEquals(picked))
+            assertTrue(added.hasPendingImage)
+            assertTrue(picked.contentEquals(attachments.pendingImages[added.id]))
             assertFalse(viewModel.uiState.value.isAddingPhoto)
             assertTrue(actions.isEmpty())
         }
@@ -563,7 +568,7 @@ class BillDetailAttachmentsTest {
             assertTrue(tile.isAddedByMe)
             assertEquals("Pierre", tile.adderName)
             assertTrue(tile.isPending)
-            assertEquals(PendingJpeg(picked).dataUri, tile.imageUrl)
+            assertTrue(picked.contentEquals(tile.localImage))
             assertEquals(RelativeDay.TODAY, tile.addedDay)
             assertEquals(1, state.photoCount)
             assertTrue(attachments.urlRequests.isEmpty())
@@ -1118,7 +1123,7 @@ class BillDetailAttachmentsTest {
         addedByMemberId: String? = ANA,
         addedAt: Long = earlierToday,
         isPending: Boolean = false,
-        pendingImage: PendingJpeg? = null,
+        hasPendingImage: Boolean = false,
     ): BillAttachment = BillAttachment(
         id = id,
         expenseId = expenseId,
@@ -1131,7 +1136,7 @@ class BillDetailAttachmentsTest {
         addedAt = addedAt,
         updatedAt = addedAt,
         isPending = isPending,
-        pendingImage = pendingImage,
+        hasPendingImage = hasPendingImage,
     )
 
     private val receipt = attachment(
@@ -1147,6 +1152,7 @@ class BillDetailAttachmentsTest {
         isRoomRead: Boolean = true,
         online: Boolean = true,
         imageUrls: Map<String, String> = emptyMap(),
+        pendingImages: Map<String, ByteArray> = emptyMap(),
         urlsError: Throwable? = null,
         hasRoom: Boolean = true,
         isUnreadable: Boolean = false,
@@ -1164,6 +1170,7 @@ class BillDetailAttachmentsTest {
         }
         attachments = FakeBillAttachmentRepository(initialAttachments = storedAttachments).also {
             it.imageUrls = imageUrls
+            it.pendingImages += pendingImages
             it.urlsError = urlsError
             it.hasRoom = hasRoom
             it.addError = addError
@@ -1216,12 +1223,14 @@ class BillDetailAttachmentsTest {
                             addedAt = nowMillis,
                             updatedAt = nowMillis,
                             isPending = true,
-                            pendingImage = PendingJpeg(source),
+                            hasPendingImage = true,
                         ),
+                        jpeg = source,
                     ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }
             },
             removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),
             loadBillAttachmentUrls = LoadBillAttachmentUrlsUseCase(attachments),
+            loadBillAttachmentImage = LoadBillAttachmentImageUseCase(attachments),
             observeBillAttachments = ObserveBillAttachmentsUseCase(attachments),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             // Why: at once, then on each minute, as SystemMinuteTicks.

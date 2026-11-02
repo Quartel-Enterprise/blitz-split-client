@@ -43,6 +43,7 @@ import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -55,6 +56,7 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
+import platform.Foundation.create
 import platform.posix.memcpy
 
 /*
@@ -207,5 +209,18 @@ object BlitzSplitApple : KoinComponent {
     @OptIn(ExperimentalForeignApi::class)
     fun toByteArray(data: NSData): ByteArray = ByteArray(data.length.toInt()).apply {
         if (isNotEmpty()) usePinned { pinned -> memcpy(pinned.addressOf(0), data.bytes, data.length) }
+    }
+
+    // Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
+    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+    fun toData(bytes: ByteArray): NSData = if (bytes.isEmpty()) {
+        NSData()
+    } else {
+        bytes.usePinned { pinned ->
+            NSData.create(
+                bytes = pinned.addressOf(0),
+                length = bytes.size.toULong(),
+            )
+        }
     }
 }

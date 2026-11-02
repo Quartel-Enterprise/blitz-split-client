@@ -8,7 +8,6 @@ import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -29,14 +28,24 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
-private const val DATA_URI_PREFIX = "data:"
 private const val JPEG_MIME_TYPE = "image/jpeg"
 private const val CONNECT_TIMEOUT_MILLIS = 15_000
 private const val READ_TIMEOUT_MILLIS = 30_000
 
-// Why: one photo to keep, the image the screen draws (a data URI or an https URL) and the file's name in the gallery.
+// Why: the photo "Baixar" keeps: the JPEG added on this device that isn't up yet, or the bucket's signed https URL.
+sealed interface GalleryPhotoSource {
+    class Local(
+        val bytes: ByteArray,
+    ) : GalleryPhotoSource
+
+    class Remote(
+        val url: String,
+    ) : GalleryPhotoSource
+}
+
+// Why: one photo to keep, waiting for the storage permission, and the file's name in the gallery.
 private class PendingPhoto(
-    val imageUrl: String,
+    val source: GalleryPhotoSource,
     val fileName: String,
 )
 
@@ -46,7 +55,9 @@ private class PendingPhoto(
  * then (the manifest stops declaring it from Android 10). A refusal saves nothing and says nothing, as a cancel.
  */
 @Composable
-fun rememberGalleryPhotoSaver(onResult: (isSaved: Boolean) -> Unit): (imageUrl: String, fileName: String) -> Unit {
+fun rememberGalleryPhotoSaver(
+    onResult: (isSaved: Boolean) -> Unit,
+): (source: GalleryPhotoSource, fileName: String) -> Unit {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val currentOnResult by rememberUpdatedState(onResult)
@@ -61,8 +72,8 @@ fun rememberGalleryPhotoSaver(onResult: (isSaved: Boolean) -> Unit): (imageUrl: 
         if (isGranted && photo != null) save(photo)
     }
     return remember(context, permission) {
-        { imageUrl, fileName ->
-            val photo = PendingPhoto(imageUrl, fileName)
+        { source, fileName ->
+            val photo = PendingPhoto(source, fileName)
             if (context.canWriteToGallery()) {
                 save(photo)
             } else {
@@ -78,7 +89,10 @@ private fun Context.canWriteToGallery(): Boolean = Build.VERSION.SDK_INT >= Buil
     PackageManager.PERMISSION_GRANTED
 
 private suspend fun Context.savePhotoToGallery(photo: PendingPhoto): Boolean = withContext(Dispatchers.IO) {
-    val bytes = readImageBytes(photo.imageUrl) ?: return@withContext false
+    val bytes = when (val source = photo.source) {
+        is GalleryPhotoSource.Local -> source.bytes
+        is GalleryPhotoSource.Remote -> downloadImageBytes(source.url)
+    } ?: return@withContext false
     val folder = getString(R.string.platform_app_name)
     try {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -93,30 +107,22 @@ private suspend fun Context.savePhotoToGallery(photo: PendingPhoto): Boolean = w
     }
 }
 
-// Why: a photo added on this device is still a data URI until it is up; any other is the server's signed URL.
-private fun readImageBytes(imageUrl: String): ByteArray? = if (imageUrl.startsWith(DATA_URI_PREFIX)) {
+// Why: the server's signed URL; an expired one or no internet saves nothing.
+private fun downloadImageBytes(url: String): ByteArray? = try {
+    val connection = URL(url).openConnection() as HttpURLConnection
+    connection.connectTimeout = CONNECT_TIMEOUT_MILLIS
+    connection.readTimeout = READ_TIMEOUT_MILLIS
     try {
-        Base64.decode(imageUrl.substringAfter(','), Base64.DEFAULT)
-    } catch (malformed: IllegalArgumentException) {
-        null
-    }
-} else {
-    try {
-        val connection = URL(imageUrl).openConnection() as HttpURLConnection
-        connection.connectTimeout = CONNECT_TIMEOUT_MILLIS
-        connection.readTimeout = READ_TIMEOUT_MILLIS
-        try {
-            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                connection.inputStream.use { it.readBytes() }
-            } else {
-                null
-            }
-        } finally {
-            connection.disconnect()
+        if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+            connection.inputStream.use { it.readBytes() }
+        } else {
+            null
         }
-    } catch (failure: IOException) {
-        null
+    } finally {
+        connection.disconnect()
     }
+} catch (failure: IOException) {
+    null
 }
 
 // Why: pending until written, so the gallery never shows a half written photo; a failed write leaves no row behind.

@@ -3,10 +3,10 @@ package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.provider.image.BillImageEncoder
+import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
@@ -26,10 +26,10 @@ class AddBillAttachmentUseCase(
         addedByMemberId: String?,
     ): Result<BillAttachmentAddition> {
         val image = suspendRunCatching { encodeImage(source) }.getOrElse { error ->
-            return if (error is UnsupportedImageException) {
-                Result.success(BillAttachmentAddition.UNREADABLE)
-            } else {
-                Result.failure(error)
+            return when (error) {
+                is UnsupportedImageException -> Result.success(BillAttachmentAddition.UNREADABLE)
+                is ImageTooLargeException -> Result.success(BillAttachmentAddition.TOO_LARGE)
+                else -> Result.failure(error)
             }
         }
         val now = currentTimeMillis()
@@ -45,9 +45,9 @@ class AddBillAttachmentUseCase(
             addedAt = now,
             updatedAt = now,
             isPending = true,
-            pendingImage = PendingJpeg(image.jpeg),
+            hasPendingImage = true,
         )
-        return repository.addAttachment(attachment).map { added ->
+        return repository.addAttachment(attachment, image.jpeg).map { added ->
             if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM
         }
     }

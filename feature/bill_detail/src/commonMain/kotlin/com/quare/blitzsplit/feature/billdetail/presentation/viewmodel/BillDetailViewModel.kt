@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
@@ -79,6 +80,7 @@ class BillDetailViewModel(
     private val updateExpense: UpdateExpense,
     private val addBillAttachment: AddBillAttachment,
     private val removeBillAttachment: RemoveBillAttachment,
+    private val loadBillAttachmentImage: LoadBillAttachmentImage,
     loadBillAttachmentUrls: LoadBillAttachmentUrls,
     loadBillHistory: LoadBillHistory,
     observeGroup: ObserveGroup,
@@ -139,10 +141,10 @@ class BillDetailViewModel(
     private var imageUrls: Map<String, String> = emptyMap()
 
     /*
-     * Why: the JPEG of each photo added here, encoded once, and kept once it is up: the screen draws it until it
-     * closes, with no blink nor second download while its signed URL comes.
+     * Why: the JPEG of each photo added here, read once, and kept once it is up: the screen draws it until it closes
+     * or the photo goes, with no blink nor second download while its signed URL comes.
      */
-    private var localImages: Map<String, String> = emptyMap()
+    private var localImages: Map<String, ByteArray> = emptyMap()
 
     // Why: one read of the bill's group, shared by the bill and by what deleting it unsettles.
     private val group: SharedFlow<Group?> = observeGroup(route.groupId)
@@ -187,9 +189,8 @@ class BillDetailViewModel(
         val attachments = observeBillAttachments(route.expenseId)
             .onEach { attachments ->
                 this.attachments = attachments
-                localImages = localImages + attachments
-                    .filter { it.id !in localImages }
-                    .mapNotNull { attachment -> attachment.pendingImage?.let { attachment.id to it.dataUri } }
+                localImages = localImages.filterKeys { id -> attachments.any { it.id == id } } +
+                    loadLocalImages(attachments)
                 showAttachments()
             }.shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         /*
@@ -199,7 +200,7 @@ class BillDetailViewModel(
          */
         viewModelScope.launch {
             combine(attachments, connectivityObserver.observe(), minuteTicks()) { attachments, isOnline, _ ->
-                attachments.filter { it.pendingImage == null && it.id !in localImages }.takeIf { isOnline }
+                attachments.filter { !it.hasPendingImage && it.id !in localImages }.takeIf { isOnline }
             }.collectLatest { remoteAttachments ->
                 if (remoteAttachments.isNullOrEmpty()) return@collectLatest
                 loadBillAttachmentUrls(remoteAttachments).onSuccess { urls ->
@@ -347,15 +348,21 @@ class BillDetailViewModel(
         uiState.update {
             it.copy(
                 attachments = tilesOf(
-                    attachments,
-                    imageUrls + localImages,
-                    group,
-                    currentTimeMillis(),
-                    currentTimeZone(),
+                    attachments = attachments,
+                    imageUrls = imageUrls,
+                    localImages = localImages,
+                    group = group,
+                    nowMillis = currentTimeMillis(),
+                    timeZone = currentTimeZone(),
                 ),
             )
         }
     }
+
+    private suspend fun loadLocalImages(attachments: List<BillAttachment>): Map<String, ByteArray> = attachments
+        .filter { it.hasPendingImage && it.id !in localImages }
+        .mapNotNull { attachment -> loadBillAttachmentImage(attachment.id).getOrNull()?.let { attachment.id to it } }
+        .toMap()
 
     private fun view(attachmentId: String) {
         if (uiState.value.attachments.none { it.id == attachmentId }) return
@@ -379,6 +386,7 @@ class BillDetailViewModel(
                         BillAttachmentAddition.ADDED -> null
                         BillAttachmentAddition.NO_ROOM -> BillPhotoError.NO_ROOM
                         BillAttachmentAddition.UNREADABLE -> BillPhotoError.UNREADABLE
+                        BillAttachmentAddition.TOO_LARGE -> BillPhotoError.TOO_LARGE
                     }
                 },
                 onFailure = { BillPhotoError.FAILED },

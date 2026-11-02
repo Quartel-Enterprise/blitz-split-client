@@ -41,8 +41,8 @@ class SupabaseBillAttachmentRemoteDataSource(
         .createSignedUrls(
             expiresIn = expiresIn,
             paths = paths,
-        ).filter { it.error == null && it.path != null }
-        .associate { it.path.orEmpty() to it.signedURL }
+        ).filter { it.error == null }
+        .associate { it.path to it.signedURL }
 
     private companion object {
         const val BUCKET = "bill-attachments"

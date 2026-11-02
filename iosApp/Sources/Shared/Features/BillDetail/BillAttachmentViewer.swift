@@ -83,8 +83,7 @@ struct BillAttachmentViewer: View {
     @ViewBuilder
     private func download(_ attachment: BillAttachmentTile) -> some View {
         let label = Label("Download", systemImage: "square.and.arrow.down")
-        if let url = attachment.imageUrl {
-            let file = AttachmentFile(url: url, fileName: BillCopy.attachmentFileName(attachment))
+        if let file = AttachmentFile(attachment, fileName: BillCopy.attachmentFileName(attachment)) {
             #if os(macOS)
             Button {
                 exportsFile = true
@@ -137,9 +136,9 @@ struct BillAttachmentViewer: View {
     }
 
     private func page(_ attachment: BillAttachmentTile) -> some View {
-        AttachmentImage(id: attachment.id, url: attachment.imageUrl, contentMode: .fit) {
+        AttachmentImage(attachment: attachment, contentMode: .fit) {
             // Online, a nil URL is a signed URL on the way (or tried again each minute)
-            if attachment.imageUrl == nil, !state.isOnline {
+            if attachment.localImage == nil, attachment.imageUrl == nil, !state.isOnline {
                 VStack(spacing: 10) {
                     Image(systemName: "icloud.slash")
                         .font(.largeTitle)

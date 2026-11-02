@@ -55,7 +55,7 @@ class LoadBillAttachmentUrlsUseCaseTest {
         addedAt = 1L,
         updatedAt = 1L,
         isPending = false,
-        pendingImage = null,
+        hasPendingImage = false,
     )
 
     private fun prepareScenario(

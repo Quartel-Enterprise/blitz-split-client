@@ -7,8 +7,8 @@ import com.quare.blitzsplit.core.expenses.data.mapper.BillAttachmentMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.BillAttachmentRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -121,7 +121,7 @@ class BillAttachmentRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN a photo added offline WHEN observing the bill THEN shows it pending with its image`() = runTest {
+    fun `GIVEN a photo added offline WHEN observing the bill THEN shows it pending with an image here`() = runTest {
         // Given
         prepareScenario(
             stored = listOf(
@@ -138,7 +138,32 @@ class BillAttachmentRepositoryImplTest {
 
         // Then
         assertTrue(attachment.isPending)
-        assertEquals(PendingJpeg(jpeg), attachment.pendingImage)
+        assertTrue(attachment.hasPendingImage)
+    }
+
+    @Test
+    fun `GIVEN a photo added offline WHEN reading its image THEN is its JPEG`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(pendingPhoto(id = "photo-1")))
+
+        // When
+        val image = repository.getPendingImage("photo-1")
+
+        // Then
+        assertTrue(jpeg.contentEquals(image.getOrNull()))
+    }
+
+    @Test
+    fun `GIVEN a photo already up WHEN reading its image THEN there is none here`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(entity(id = "photo-1")))
+
+        // When
+        val image = repository.getPendingImage("photo-1")
+
+        // Then
+        assertTrue(image.isSuccess)
+        assertEquals(null, image.getOrNull())
     }
 
     @Test
@@ -208,11 +233,11 @@ class BillAttachmentRepositoryImplTest {
         val photo = attachment(
             id = "photo-1",
             kind = BillAttachmentKind.PHOTO,
-            pendingImage = PendingJpeg(jpeg),
+            hasPendingImage = true,
         )
 
         // When
-        val result = repository.addAttachment(photo)
+        val result = repository.addAttachment(photo, jpeg)
 
         // Then
         assertEquals(true, result.getOrNull())
@@ -230,11 +255,11 @@ class BillAttachmentRepositoryImplTest {
         val receipt = attachment(
             id = "receipt-1",
             kind = BillAttachmentKind.RECEIPT,
-            pendingImage = PendingJpeg(jpeg),
+            hasPendingImage = true,
         )
 
         // When
-        repository.addAttachment(receipt)
+        repository.addAttachment(receipt, jpeg)
 
         // Then
         assertEquals(listOf("receipt-1" to 1), local.insertLimits)
@@ -251,7 +276,7 @@ class BillAttachmentRepositoryImplTest {
             )
 
             // When
-            val result = repository.addAttachment(photo)
+            val result = repository.addAttachment(photo, jpeg)
 
             // Then
             assertEquals(false, result.getOrNull())
@@ -265,11 +290,11 @@ class BillAttachmentRepositoryImplTest {
         val photo = attachment(
             id = "photo-1",
             kind = BillAttachmentKind.PHOTO,
-            pendingImage = PendingJpeg(jpeg),
+            hasPendingImage = true,
         )
 
         // When
-        val result = repository.addAttachment(photo)
+        val result = repository.addAttachment(photo, jpeg)
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
@@ -592,7 +617,7 @@ class BillAttachmentRepositoryImplTest {
             attachment(id = "photo-1"),
             attachment(
                 id = "photo-2",
-                pendingImage = PendingJpeg(jpeg),
+                hasPendingImage = true,
             ),
             attachment(id = "photo-3"),
         )
@@ -615,7 +640,7 @@ class BillAttachmentRepositoryImplTest {
         val attachments = listOf(
             attachment(
                 id = "photo-1",
-                pendingImage = PendingJpeg(jpeg),
+                hasPendingImage = true,
             ),
         )
 
@@ -728,7 +753,7 @@ class BillAttachmentRepositoryImplTest {
     private fun attachment(
         id: String,
         kind: BillAttachmentKind = BillAttachmentKind.PHOTO,
-        pendingImage: PendingJpeg? = null,
+        hasPendingImage: Boolean = false,
     ): BillAttachment = BillAttachment(
         id = id,
         expenseId = BILL_ID,
@@ -740,8 +765,8 @@ class BillAttachmentRepositoryImplTest {
         addedByMemberId = "member-ana",
         addedAt = 1L,
         updatedAt = 1L,
-        isPending = pendingImage != null,
-        pendingImage = pendingImage,
+        isPending = hasPendingImage,
+        hasPendingImage = hasPendingImage,
     )
 
     private fun pendingPhoto(
@@ -861,9 +886,27 @@ private class FakeBillAttachmentLocalDataSource(
     val applied = mutableListOf<List<BillAttachmentEntity>>()
     val goneCalls = mutableListOf<Pair<String, Set<String>>>()
 
-    override fun observeAttachments(expenseId: String): Flow<List<BillAttachmentEntity>> = entities.map { list ->
-        list.filter { it.expenseId == expenseId && !it.isDeleted }
+    override fun observeAttachments(expenseId: String): Flow<List<BillAttachmentRow>> = entities.map { list ->
+        list.filter { it.expenseId == expenseId && !it.isDeleted }.map { entity ->
+            BillAttachmentRow(
+                id = entity.id,
+                expenseId = entity.expenseId,
+                groupId = entity.groupId,
+                kind = entity.kind,
+                width = entity.width,
+                height = entity.height,
+                addedByUserId = entity.addedByUserId,
+                addedByMemberId = entity.addedByMemberId,
+                addedAt = entity.addedAt,
+                updatedAt = entity.updatedAt,
+                pendingSync = entity.pendingSync,
+                hasPendingJpeg = entity.pendingJpeg != null,
+            )
+        }
     }
+
+    override suspend fun getPendingJpeg(id: String): ByteArray? =
+        entities.value.firstOrNull { it.id == id }?.pendingJpeg
 
     override fun observeHasPending(): Flow<Boolean> = entities.map { list -> list.any { it.pendingSync } }
 

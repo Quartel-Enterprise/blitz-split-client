@@ -58,6 +58,7 @@ import coil3.compose.AsyncImage
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -78,12 +79,6 @@ private class TileSize(
     val thumbHeight: Dp,
 )
 
-// Why: "Tirar foto" opens the camera, null where there is none; "Escolher da galeria" the system photo picker.
-class BillPhotoPickers(
-    val onTakePhotoClick: (() -> Unit)?,
-    val onChoosePhotoClick: () -> Unit,
-)
-
 /*
  * Why: "Anexos" (7.3): the receipt that filled the bill first, then up to 5 photos, then "Adicionar foto" while there
  * is room; one row scrolling sideways in one column, wrapping in two columns, as the canvas draws them.
@@ -94,7 +89,7 @@ internal fun BillAttachmentsSection(
     state: BillDetailUiState,
     wraps: Boolean,
     dates: DateTimeTextFormatter,
-    pickers: BillPhotoPickers,
+    pickers: PhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
     val size = if (rememberFoldLayout().formFactor == FormFactor.PhoneLandscape) shortTile else regularTile
@@ -176,9 +171,10 @@ private fun AttachmentTile(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            attachment.imageUrl?.let { url ->
+            // Why: the photo added here until it is up, else the bucket's signed URL.
+            (attachment.localImage ?: attachment.imageUrl)?.let { image ->
                 AsyncImage(
-                    model = url,
+                    model = image,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.matchParentSize(),
@@ -234,7 +230,7 @@ private fun AddPhotoTile(
     isEnabled: Boolean,
     isAdding: Boolean,
     size: TileSize,
-    pickers: BillPhotoPickers,
+    pickers: PhotoPickers,
 ) {
     var isMenuOpen by remember { mutableStateOf(false) }
     val takePhoto = pickers.onTakePhotoClick

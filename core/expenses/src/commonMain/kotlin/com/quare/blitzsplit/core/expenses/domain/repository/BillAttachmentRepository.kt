@@ -13,7 +13,13 @@ interface BillAttachmentRepository {
     fun observePendingVersions(): Flow<List<String>>
 
     // Why: on the device first, offline included; false when the bill has no room left for its kind.
-    suspend fun addAttachment(attachment: BillAttachment): Result<Boolean>
+    suspend fun addAttachment(
+        attachment: BillAttachment,
+        jpeg: ByteArray,
+    ): Result<Boolean>
+
+    // Why: the JPEG of one added here and not up yet, read apart so observing the bill never reads the images.
+    suspend fun getPendingImage(id: String): Result<ByteArray?>
 
     // Why: any member takes one off, offline too, as a tombstone the sync takes up.
     suspend fun removeAttachment(

@@ -64,6 +64,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
@@ -100,6 +101,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
@@ -202,4 +204,5 @@ val expenseModule = module {
     factoryOf(::AddBillAttachmentUseCase).bind<AddBillAttachment>()
     factoryOf(::RemoveBillAttachmentUseCase).bind<RemoveBillAttachment>()
     factoryOf(::LoadBillAttachmentUrlsUseCase).bind<LoadBillAttachmentUrls>()
+    factoryOf(::LoadBillAttachmentImageUseCase).bind<LoadBillAttachmentImage>()
 }

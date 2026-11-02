@@ -5503,7 +5503,7 @@ class SyncCoordinatorTest {
             )
             coordinator.start()
             runCurrent()
-            billAttachments.addAttachment(photo(id = "receipt"))
+            billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
             runCurrent()
 
             // When
@@ -5523,7 +5523,7 @@ class SyncCoordinatorTest {
         val uploadsBefore = billAttachments.uploadedUserIds.size
 
         // When
-        billAttachments.addAttachment(photo(id = "receipt"))
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
         runCurrent()
 
         // Then
@@ -5541,7 +5541,7 @@ class SyncCoordinatorTest {
         )
         coordinator.start()
         runCurrent()
-        billAttachments.addAttachment(photo(id = "receipt"))
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
         runCurrent()
 
         // When
@@ -5560,13 +5560,13 @@ class SyncCoordinatorTest {
         coordinator.start()
         runCurrent()
         billAttachments.pushError = IllegalStateException("no answer")
-        billAttachments.addAttachment(photo(id = "receipt"))
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
         runCurrent()
         billAttachments.pushError = null
         val uploadsBefore = billAttachments.uploadedUserIds.size
 
         // When
-        billAttachments.addAttachment(photo(id = "table"))
+        billAttachments.addAttachment(photo(id = "table"), jpeg = byteArrayOf(1))
         runCurrent()
 
         // Then
@@ -5587,6 +5587,7 @@ class SyncCoordinatorTest {
                 id = "receipt",
                 updatedAt = 1L,
             ),
+            jpeg = byteArrayOf(1),
         )
         runCurrent()
         billAttachments.pushError = null
@@ -5617,7 +5618,7 @@ class SyncCoordinatorTest {
         val photoUploadsBefore = billAttachments.uploadedUserIds.size
 
         // When
-        billAttachments.addAttachment(photo(id = "receipt"))
+        billAttachments.addAttachment(photo(id = "receipt"), jpeg = byteArrayOf(1))
         runCurrent()
 
         // Then
@@ -5805,7 +5806,7 @@ class SyncCoordinatorTest {
         addedAt = 1L,
         updatedAt = updatedAt,
         isPending = true,
-        pendingImage = null,
+        hasPendingImage = false,
     )
 
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {

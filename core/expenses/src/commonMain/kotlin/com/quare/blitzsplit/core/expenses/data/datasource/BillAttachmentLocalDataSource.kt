@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.core.expenses.data.datasource
 
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentRow
 import kotlinx.coroutines.flow.Flow
 
 interface BillAttachmentLocalDataSource {
-    fun observeAttachments(expenseId: String): Flow<List<BillAttachmentEntity>>
+    fun observeAttachments(expenseId: String): Flow<List<BillAttachmentRow>>
+
+    suspend fun getPendingJpeg(id: String): ByteArray?
 
     fun observeHasPending(): Flow<Boolean>
 

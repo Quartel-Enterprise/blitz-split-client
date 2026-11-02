@@ -51,6 +51,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormColumns
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 
@@ -58,7 +59,7 @@ private val singleColumnMaxWidth = 592.dp
 private val sectionSpacing = 16.dp
 private val twoColumnsStartPadding = 56.dp
 private val twoColumnsEndPadding = 24.dp
-private val previewPickers = BillPhotoPickers(
+private val previewPickers = PhotoPickers(
     onTakePhotoClick = {},
     onChoosePhotoClick = {},
 )
@@ -75,7 +76,7 @@ fun BillDetailContent(
     state: BillDetailUiState,
     isDialog: Boolean,
     snackbarHostState: SnackbarHostState,
-    pickers: BillPhotoPickers,
+    pickers: PhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -308,7 +309,7 @@ private fun BillColumnsLayout(
     fillsHeight: Boolean,
     columnsPadding: PaddingValues,
     scrollPadding: PaddingValues,
-    pickers: BillPhotoPickers,
+    pickers: PhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {

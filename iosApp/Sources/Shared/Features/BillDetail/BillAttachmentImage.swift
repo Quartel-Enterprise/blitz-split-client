@@ -1,4 +1,5 @@
 import CoreTransferable
+import Shared
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -12,58 +13,55 @@ import UIKit
 typealias AttachmentPlatformImage = UIImage
 #endif
 
-/// The bytes behind a bill's attachment: a photo added on this device and not up yet comes as a
-/// `data:image/jpeg;base64,…` URI, which AsyncImage doesn't load, and one already up as an https signed URL.
-nonisolated enum AttachmentSource {
-    /// The JPEG inside a data URI, nil for any other URL.
-    static func dataUriBytes(_ url: String) -> Data? {
-        guard url.hasPrefix("data:"), let comma = url.firstIndex(of: ",") else { return nil }
-        return Data(base64Encoded: String(url[url.index(after: comma)...]), options: .ignoreUnknownCharacters)
-    }
+/// A photo added on this device and not up yet, held as its JPEG and its decoded image.
+///
+/// Why: the tile hands the JPEG as a KotlinByteArray, the same instance on every state, and turning it into `Data`
+/// copies it, so each attachment is copied and decoded once, not on every redraw of the strip or the
+/// viewer. Keyed by the attachment's id, since the photo it holds never changes; a hit wins even once the tile has no
+/// bytes left (the photo went up), so the strip doesn't load it again from the signed URL.
+private enum DecodedAttachments {
+    static let jpegs: NSCache<NSString, NSData> = {
+        let cache = NSCache<NSString, NSData>()
+        cache.totalCostLimit = 64 * 1024 * 1024
+        return cache
+    }()
 
-    /// The image's bytes, decoded from the data URI or downloaded from the signed URL.
-    static func bytes(_ url: String) async throws -> Data {
-        if url.hasPrefix("data:") {
-            guard let data = dataUriBytes(url) else { throw URLError(.cannotDecodeContentData) }
-            return data
-        }
-        guard let remote = URL(string: url) else { throw URLError(.badURL) }
-        let (data, _) = try await URLSession.shared.data(from: remote)
+    static let images = NSCache<NSString, AttachmentPlatformImage>()
+
+    /// The JPEG of `id`, copied out of `bytes` on the first call only; nil while neither the cache nor the tile has it.
+    static func jpeg(id: String, bytes: KotlinByteArray?) -> Data? {
+        if let cached = jpegs.object(forKey: id as NSString) { return cached as Data }
+        guard let bytes else { return nil }
+        let data = copy(bytes)
+        jpegs.setObject(data as NSData, forKey: id as NSString, cost: data.count)
         return data
     }
-}
 
-/// Why: a data URI is decoded once, not on every redraw of the strip or the viewer. Keyed by the attachment's id,
-/// since the photo it holds never changes, and comparing the multi-megabyte URI on each lookup would cost as much.
-private enum DecodedAttachments {
-    static let cache = NSCache<NSString, AttachmentPlatformImage>()
-
-    static func image(id: String, url: String) -> AttachmentPlatformImage? {
-        if let cached = cache.object(forKey: id as NSString) { return cached }
-        guard let data = AttachmentSource.dataUriBytes(url), let image = AttachmentPlatformImage(data: data) else {
-            return nil
-        }
-        cache.setObject(image, forKey: id as NSString)
+    static func image(id: String, bytes: KotlinByteArray?) -> AttachmentPlatformImage? {
+        if let cached = images.object(forKey: id as NSString) { return cached }
+        guard let data = jpeg(id: id, bytes: bytes), let image = AttachmentPlatformImage(data: data) else { return nil }
+        images.setObject(image, forKey: id as NSString)
         return image
+    }
+
+    /// One copy on the Kotlin side (`NSData(bytes:length:)`), not a call per byte.
+    private static func copy(_ bytes: KotlinByteArray) -> Data {
+        BlitzSplitApple.shared.toData(bytes: bytes) as Data
     }
 }
 
-/// A bill's photo, cropped to fill a tile or fit in the viewer; `placeholder` while it loads, when it fails, and for
-/// a photo never loaded on this device while offline (a nil URL).
+/// A bill's photo, cropped to fill a tile or fit in the viewer: the JPEG added on this device while it has one, else
+/// the signed URL; `placeholder` while it loads, when it fails, and for a photo never loaded on this device while
+/// offline (no bytes and a nil URL).
 struct AttachmentImage<Placeholder: View>: View {
-    let id: String
-    let url: String?
+    let attachment: BillAttachmentTile
     let contentMode: ContentMode
     @ViewBuilder let placeholder: () -> Placeholder
 
     var body: some View {
-        if let url, url.hasPrefix("data:") {
-            if let image = DecodedAttachments.image(id: id, url: url) {
-                drawn(image: platformImage(image))
-            } else {
-                placeholder()
-            }
-        } else if let url, let remote = URL(string: url) {
+        if let image = DecodedAttachments.image(id: attachment.id, bytes: attachment.localImage) {
+            drawn(image: platformImage(image))
+        } else if let url = attachment.imageUrl, let remote = URL(string: url) {
             AsyncImage(url: remote) { phase in
                 if let image = phase.image {
                     drawn(image: image)
@@ -94,12 +92,37 @@ struct AttachmentImage<Placeholder: View>: View {
 /// "Download": the attachment as a JPEG named "blitz-split-photo-2.jpg" ("bora-rachar-foto-2.jpg"), for the share
 /// sheet's Save Image on iOS and the save panel on the Mac. The shared code always stores a JPEG.
 nonisolated struct AttachmentFile: Transferable {
-    let url: String
+    enum Source {
+        /// The JPEG added on this device, exported as it is.
+        case jpeg(Data)
+        /// The signed URL, downloaded once the person saves.
+        case remote(URL)
+    }
+
+    let source: Source
     let fileName: String
+
+    /// Nil while there is nothing to save: no bytes on this device and no signed URL (offline, never loaded here).
+    @MainActor
+    init?(_ attachment: BillAttachmentTile, fileName: String) {
+        if let jpeg = DecodedAttachments.jpeg(id: attachment.id, bytes: attachment.localImage) {
+            source = .jpeg(jpeg)
+        } else if let url = attachment.imageUrl, let remote = URL(string: url) {
+            source = .remote(remote)
+        } else {
+            return nil
+        }
+        self.fileName = fileName
+    }
 
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(exportedContentType: .jpeg) { file in
-            try await AttachmentSource.bytes(file.url)
+            switch file.source {
+            case let .jpeg(data):
+                data
+            case let .remote(url):
+                try await URLSession.shared.data(from: url).0
+            }
         }
         .suggestedFileName { $0.fileName }
     }

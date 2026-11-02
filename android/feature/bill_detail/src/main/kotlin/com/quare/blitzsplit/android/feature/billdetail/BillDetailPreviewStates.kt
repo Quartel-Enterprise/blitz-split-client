@@ -140,6 +140,7 @@ private fun createPreviewAttachment(
 ): BillAttachmentTile = BillAttachmentTile(
     id = id,
     isReceipt = photoNumber == null,
+    localImage = null,
     imageUrl = null,
     width = null,
     height = null,

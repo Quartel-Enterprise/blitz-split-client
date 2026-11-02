@@ -88,9 +88,8 @@
     <string name="bill_detail_add_photo_sub">Câmera ou galeria</string>
     <string name="bill_detail_take_photo">Tirar foto</string>
     <string name="bill_detail_choose_photo">Escolher da galeria</string>
-    <string name="bill_detail_camera_denied">Permita a câmera nas configurações para tirar a foto.</string>
-    <string name="bill_detail_camera_settings">Configurações</string>
     <string name="bill_detail_photo_unreadable">Não deu para abrir essa imagem. Escolha outra.</string>
+    <string name="bill_detail_photo_too_large">Essa foto é grande demais. Escolha outra.</string>
     <string name="bill_detail_photo_no_room">Esta conta já tem 5 fotos.</string>
     <string name="bill_detail_photo_failed">Não deu para anexar a foto. Tente de novo.</string>
     <string name="bill_detail_remove_photo_error">Não deu para remover a foto. Tente de novo.</string>

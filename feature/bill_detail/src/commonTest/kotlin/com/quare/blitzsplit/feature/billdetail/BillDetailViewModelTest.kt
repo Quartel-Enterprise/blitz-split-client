@@ -18,7 +18,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -29,6 +28,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentUrlsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
@@ -2559,12 +2559,14 @@ class BillDetailViewModelTest {
                             addedAt = nowMillis,
                             updatedAt = nowMillis,
                             isPending = true,
-                            pendingImage = PendingJpeg(source),
+                            hasPendingImage = true,
                         ),
+                        jpeg = source,
                     ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }
             },
             removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),
             loadBillAttachmentUrls = LoadBillAttachmentUrlsUseCase(attachments),
+            loadBillAttachmentImage = LoadBillAttachmentImageUseCase(attachments),
             observeBillAttachments = ObserveBillAttachmentsUseCase(attachments),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             minuteTicks = MinuteTicks { minutes },

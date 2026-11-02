@@ -2164,6 +2164,16 @@
         }
       }
     },
+    "This photo is too large. Pick another one." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essa foto é grande demais. Escolha outra."
+          }
+        }
+      }
+    },
     "Through the invite link" : {
       "comment" : "Activity: how someone joined a group",
       "localizations" : {

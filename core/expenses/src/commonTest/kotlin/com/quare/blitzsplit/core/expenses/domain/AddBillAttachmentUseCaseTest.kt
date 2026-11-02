@@ -3,10 +3,10 @@ package com.quare.blitzsplit.core.expenses.domain
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
-import com.quare.blitzsplit.core.expenses.domain.model.PendingJpeg
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.provider.image.BillImage
+import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
 import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -46,10 +46,11 @@ class AddBillAttachmentUseCaseTest {
                     addedAt = 7_000L,
                     updatedAt = 7_000L,
                     isPending = true,
-                    pendingImage = PendingJpeg(encodedJpeg),
+                    hasPendingImage = true,
                 ),
                 saved,
             )
+            assertTrue(encodedJpeg.contentEquals(repository.pendingImages.getValue(saved.id)))
         }
 
     @Test
@@ -151,6 +152,19 @@ class AddBillAttachmentUseCaseTest {
 
         // Then
         assertEquals(BillAttachmentAddition.UNREADABLE, result.getOrNull())
+        assertTrue(repository.attachments.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a photo too large at every quality WHEN adding it THEN says so and stores nothing`() = runTest {
+        // Given
+        prepareScenario(encodeError = ImageTooLargeException())
+
+        // When
+        val result = addAttachment(kind = BillAttachmentKind.PHOTO)
+
+        // Then
+        assertEquals(BillAttachmentAddition.TOO_LARGE, result.getOrNull())
         assertTrue(repository.attachments.value.isEmpty())
     }
 

@@ -86,7 +86,8 @@ class RoomBillAttachmentLocalDataSourceTest {
         assertTrue(added)
         val stored = dataSource.observeAttachments(MY_BILL).first().single()
         assertTrue(stored.pendingSync)
-        assertTrue(jpeg.contentEquals(stored.pendingJpeg))
+        assertTrue(stored.hasPendingJpeg)
+        assertTrue(jpeg.contentEquals(dataSource.getPendingJpeg(stored.id)))
         assertTrue(dataSource.observeHasPending().first())
     }
 
@@ -319,7 +320,8 @@ class RoomBillAttachmentLocalDataSourceTest {
         // Then
         val stored = dataSource.observeAttachments(MY_BILL).first().single()
         assertFalse(stored.pendingSync)
-        assertNull(stored.pendingJpeg)
+        assertFalse(stored.hasPendingJpeg)
+        assertNull(dataSource.getPendingJpeg(stored.id))
         assertFalse(dataSource.observeHasPending().first())
     }
 
@@ -366,7 +368,8 @@ class RoomBillAttachmentLocalDataSourceTest {
         // Then
         val stored = dataSource.observeAttachments(MY_BILL).first().single()
         assertTrue(stored.pendingSync)
-        assertTrue(jpeg.contentEquals(stored.pendingJpeg))
+        assertTrue(stored.hasPendingJpeg)
+        assertTrue(jpeg.contentEquals(dataSource.getPendingJpeg(stored.id)))
     }
 
     @Test
@@ -473,7 +476,7 @@ class RoomBillAttachmentLocalDataSourceTest {
         // Then
         val stored = dataSource.observeAttachments(MY_BILL).first().single()
         assertEquals(100 to true, stored.width to stored.pendingSync)
-        assertTrue(jpeg.contentEquals(stored.pendingJpeg))
+        assertTrue(jpeg.contentEquals(dataSource.getPendingJpeg(stored.id)))
     }
 
     @Test

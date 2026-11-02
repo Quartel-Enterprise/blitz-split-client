@@ -88,9 +88,8 @@
     <string name="bill_detail_add_photo_sub">Camera or gallery</string>
     <string name="bill_detail_take_photo">Take photo</string>
     <string name="bill_detail_choose_photo">Choose from gallery</string>
-    <string name="bill_detail_camera_denied">Allow the camera in Settings to take a photo.</string>
-    <string name="bill_detail_camera_settings">Settings</string>
     <string name="bill_detail_photo_unreadable">Couldn\'t open that image. Pick another one.</string>
+    <string name="bill_detail_photo_too_large">This photo is too large. Pick another one.</string>
     <string name="bill_detail_photo_no_room">This bill already has 5 photos.</string>
     <string name="bill_detail_photo_failed">Couldn\'t attach the photo. Try again.</string>
     <string name="bill_detail_remove_photo_error">Couldn\'t remove the photo. Try again.</string>

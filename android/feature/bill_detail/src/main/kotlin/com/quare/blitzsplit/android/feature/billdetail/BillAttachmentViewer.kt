@@ -58,6 +58,7 @@ import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.platform.GalleryPhotoSource
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
@@ -77,7 +78,7 @@ private val viewerContent = Color.White
 internal fun BillAttachmentViewerDialog(
     state: BillDetailUiState,
     snackbarHostState: SnackbarHostState,
-    onDownloadClick: (imageUrl: String, fileName: String) -> Unit,
+    onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
     val index = state.viewedAttachmentIndex ?: return
@@ -122,7 +123,7 @@ private fun ViewerContent(
     state: BillDetailUiState,
     index: Int,
     snackbarHostState: SnackbarHostState,
-    onDownloadClick: (imageUrl: String, fileName: String) -> Unit,
+    onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
     onEvent: (BillDetailUiEvent) -> Unit,
     // Why: the book's half is a card off the screen's edges; full screen keeps clear of the system bars instead.
     isInHalf: Boolean,
@@ -191,7 +192,7 @@ private fun ViewerContent(
 private fun ViewerTopBar(
     attachment: BillAttachmentTile,
     photoCount: Int,
-    onDownloadClick: (imageUrl: String, fileName: String) -> Unit,
+    onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
     onEvent: (BillDetailUiEvent) -> Unit,
 ) {
     val number = attachment.photoNumber
@@ -233,11 +234,11 @@ private fun ViewerTopBar(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        val imageUrl = attachment.imageUrl
+        val source = gallerySourceOf(attachment)
         // Why: a photo never loaded on this device (offline) has nothing to keep yet.
         IconButton(
-            onClick = { imageUrl?.let { onDownloadClick(it, fileName) } },
-            enabled = imageUrl != null,
+            onClick = { source?.let { onDownloadClick(it, fileName) } },
+            enabled = source != null,
         ) {
             Icon(
                 imageVector = Icons.Outlined.Download,
@@ -269,11 +270,12 @@ private fun ViewerPageBox(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        val imageUrl = attachment.imageUrl
-        if (imageUrl == null && isOnline) {
+        // Why: the photo added here until it is up, else the bucket's signed URL.
+        val image = attachment.localImage ?: attachment.imageUrl
+        if (image == null && isOnline) {
             // Why: online, its signed URL is on the way (or tried again each minute).
             CircularProgressIndicator(color = viewerContent)
-        } else if (imageUrl == null) {
+        } else if (image == null) {
             // Why: offline, a photo another device added and this one never loaded.
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -293,7 +295,7 @@ private fun ViewerPageBox(
             }
         } else {
             AsyncImage(
-                model = imageUrl,
+                model = image,
                 contentDescription = attachmentTitleOf(attachment),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize(),
@@ -301,6 +303,11 @@ private fun ViewerPageBox(
         }
     }
 }
+
+// Why: "Baixar" keeps the bytes added here as they are, and downloads anything else from its signed URL.
+private fun gallerySourceOf(attachment: BillAttachmentTile): GalleryPhotoSource? =
+    attachment.localImage?.let(GalleryPhotoSource::Local)
+        ?: attachment.imageUrl?.let(GalleryPhotoSource::Remote)
 
 // Why: "Ana anexou ontem às 22:40", who can remove it and how to see the next, and the queue while it isn't up.
 @Composable

@@ -75,6 +75,7 @@ enum BillAttachmentToasts {
     static func messages(_ model: BillDetailModel?) -> [GlassToastMessage] {
         [
             GlassToastMessage(text: "Couldn't open this image. Choose another one.", trigger: model?.unreadablePhotoCount ?? 0),
+            GlassToastMessage(text: "This photo is too large. Pick another one.", trigger: model?.tooLargePhotoCount ?? 0),
             GlassToastMessage(
                 text: "This bill already has \(Int(model?.state.photoLimit ?? 5)) photos.",
                 trigger: model?.noRoomPhotoCount ?? 0,
@@ -185,7 +186,7 @@ private struct BillAttachmentTileView: View {
     }
 
     private var thumbnail: some View {
-        AttachmentImage(id: attachment.id, url: attachment.imageUrl, contentMode: .fill) {
+        AttachmentImage(attachment: attachment, contentMode: .fill) {
             Image(systemName: attachment.isReceipt ? "receipt" : "photo")
                 .font(.title3)
                 .foregroundStyle(.secondary)

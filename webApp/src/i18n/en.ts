@@ -390,6 +390,8 @@ export const en = {
   billDetail_photoOffline: "The photo shows up once you're back online.",
   billDetail_photoUnreadable: "Couldn't open this image. Pick another one.",
   billDetail_photoNoRoom: 'This bill already has 5 photos.',
+  billDetail_photoTooLarge: 'This photo is too large. Pick another one.',
+  billDetail_downloadPhotoError: "Couldn't download the photo. Try again.",
   billDetail_photoError: "Couldn't attach the photo. Try again.",
   billDetail_removePhotoError: "Couldn't remove the photo. Try again.",
   billDetail_photoFileName: 'blitz-split-photo-{number}',

@@ -391,6 +391,8 @@ export const pt: Record<MessageKey, string> = {
   billDetail_photoOffline: 'A foto aparece quando a internet voltar.',
   billDetail_photoUnreadable: 'Não deu para abrir essa imagem. Escolha outra.',
   billDetail_photoNoRoom: 'Esta conta já tem 5 fotos.',
+  billDetail_photoTooLarge: 'Essa foto é grande demais. Escolha outra.',
+  billDetail_downloadPhotoError: 'Não deu para baixar a foto. Tente de novo.',
   billDetail_photoError: 'Não deu para anexar a foto. Tente de novo.',
   billDetail_removePhotoError: 'Não deu para remover a foto. Tente de novo.',
   billDetail_photoFileName: 'bora-rachar-foto-{number}',

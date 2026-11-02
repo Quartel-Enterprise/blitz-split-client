@@ -8,4 +8,7 @@ enum class BillAttachmentAddition {
 
     // Why: the picked file is no image this platform decodes.
     UNREADABLE,
+
+    // Why: a photo so detailed no quality brings it under the limit.
+    TOO_LARGE,
 }

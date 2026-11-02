@@ -9,6 +9,7 @@ final class BillDetailModel {
     private(set) var commentErrorCount = 0
     private(set) var undoErrorCount = 0
     private(set) var unreadablePhotoCount = 0
+    private(set) var tooLargePhotoCount = 0
     private(set) var noRoomPhotoCount = 0
     private(set) var failedPhotoCount = 0
     private(set) var removePhotoErrorCount = 0
@@ -38,6 +39,7 @@ final class BillDetailModel {
     private func countPhotoError(_ error: BillPhotoError) {
         switch error {
         case .unreadable: unreadablePhotoCount += 1
+        case .tooLarge: tooLargePhotoCount += 1
         case .noRoom: noRoomPhotoCount += 1
         default: failedPhotoCount += 1
         }

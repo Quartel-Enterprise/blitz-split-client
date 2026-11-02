@@ -339,8 +339,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   `bill_attachments` and the `bill-attachments` bucket on the server, 7.3g), are added and removed, never edited.
   `BillImageEncoder` (`:core:provider:image`) makes the picked file an upright JPEG of at most 1600 px under 1.5 MB
   (the bucket takes 2 MiB, and Android's Room reads a row through a 2 MiB window), which waits in the row
-  (`pendingJpeg`) with `pendingSync` until the sync puts it in the bucket, with upsert, and then the row; the UIs draw
-  it from a data URI meanwhile, until Conta closes. A removal is a tombstone (`isDeleted`, a newer `updatedAt`) whose
+  (`pendingJpeg`) with `pendingSync` until the sync puts it in the bucket, with upsert, and then the row. Conta observes
+  the rows without that column (`BillAttachmentRow`) and reads each pending JPEG once (`LoadBillAttachmentImage`),
+  handing the UIs its bytes (`BillAttachmentTile.localImage`) until it closes; a photo no quality brings under the
+  limit is `TOO_LARGE`. A removal is a tombstone (`isDeleted`, a newer `updatedAt`) whose
   image the sync deletes from the bucket after the row, best effort, even for a photo that never synced, whose upload
   may have reached the server with its answer lost. They sync after the comments, down then up, one row read and
   sent at a time, so only one JPEG is in memory and one the bucket refuses doesn't hold the others; Last-Write-Wins

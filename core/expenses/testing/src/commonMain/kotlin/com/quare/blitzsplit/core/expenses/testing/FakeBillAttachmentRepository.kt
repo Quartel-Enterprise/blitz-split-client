@@ -20,6 +20,11 @@ class FakeBillAttachmentRepository(
     val downloadedUserIds = mutableListOf<String>()
     val urlRequests = mutableListOf<List<String>>()
     var imageUrls: Map<String, String> = emptyMap()
+
+    // Why: the JPEG of each attachment added here and not up yet, by its id, as Room keeps it.
+    val pendingImages = mutableMapOf<String, ByteArray>()
+    val imageRequests = mutableListOf<String>()
+    var imageError: Throwable? = null
     var addError: Throwable? = null
     var hasRoom = true
     var removeError: Throwable? = null
@@ -35,11 +40,21 @@ class FakeBillAttachmentRepository(
     override fun observePendingVersions(): Flow<List<String>> =
         attachments.map { list -> list.filter { it.isPending }.map { "${it.id}:${it.updatedAt}" } }
 
-    override suspend fun addAttachment(attachment: BillAttachment): Result<Boolean> {
+    override suspend fun addAttachment(
+        attachment: BillAttachment,
+        jpeg: ByteArray,
+    ): Result<Boolean> {
         addError?.let { return Result.failure(it) }
         if (!hasRoom) return Result.success(false)
+        pendingImages[attachment.id] = jpeg
         attachments.update { it + attachment }
         return Result.success(true)
+    }
+
+    override suspend fun getPendingImage(id: String): Result<ByteArray?> {
+        imageRequests += id
+        imageError?.let { return Result.failure(it) }
+        return Result.success(pendingImages[id])
     }
 
     override suspend fun removeAttachment(
@@ -56,11 +71,12 @@ class FakeBillAttachmentRepository(
     override suspend fun uploadPending(userId: String): Result<Unit> {
         uploadedUserIds += userId
         pushError?.let { return Result.failure(it) }
+        pendingImages.clear()
         attachments.update { list ->
             list.map {
                 it.copy(
                     isPending = false,
-                    pendingImage = null,
+                    hasPendingImage = false,
                 )
             }
         }
@@ -76,6 +92,6 @@ class FakeBillAttachmentRepository(
     override suspend fun getImageUrls(attachments: List<BillAttachment>): Result<Map<String, String>> {
         urlRequests += attachments.map { it.id }
         urlsError?.let { return Result.failure(it) }
-        return Result.success(imageUrls.filterKeys { id -> attachments.any { it.id == id && it.pendingImage == null } })
+        return Result.success(imageUrls.filterKeys { id -> attachments.any { it.id == id && !it.hasPendingImage } })
     }
 }

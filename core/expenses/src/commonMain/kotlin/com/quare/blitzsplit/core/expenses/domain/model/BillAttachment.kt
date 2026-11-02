@@ -14,8 +14,8 @@ data class BillAttachment(
     val updatedAt: Long,
     // Why: added or taken off here and not up yet ("Na fila").
     val isPending: Boolean,
-    // Why: the image added here, until it is in the bucket; the others are read through signed URLs.
-    val pendingImage: PendingJpeg?,
+    // Why: its image was added here and is not in the bucket yet; the others are read through signed URLs.
+    val hasPendingImage: Boolean,
 ) {
     // Why: where the image lives in the `bill-attachments` bucket.
     val storagePath: String

@@ -51,7 +51,7 @@ internal inline fun encodeUnderLimit(encode: (quality: Int) -> ByteArray): ByteA
         val jpeg = encode(quality)
         if (jpeg.size <= BILL_IMAGE_MAX_BYTES) return jpeg
     }
-    throw UnsupportedImageException()
+    throw ImageTooLargeException()
 }
 
 internal expect fun createBillImageEncoder(): BillImageEncoder

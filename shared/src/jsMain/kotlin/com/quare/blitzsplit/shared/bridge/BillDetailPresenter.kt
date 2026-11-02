@@ -150,10 +150,14 @@ class JsBillHistoryDay(
     val entries: Array<JsBillHistoryEntry>,
 )
 
-// Why: one of "Anexos"; imageUrl a data URI until the photo is up, then a signed URL, null offline.
+/*
+ * Why: one of "Anexos": localImage (an Int8Array, the same one on every state, so the page makes one object URL per
+ * id) for a photo added here, else imageUrl, the signed URL, null offline or until it is signed.
+ */
 class JsBillAttachment(
     val id: String,
     val isReceipt: Boolean,
+    val localImage: ByteArray?,
     val imageUrl: String?,
     val width: Int?,
     val height: Int?,
@@ -283,8 +287,8 @@ class BillDetailPresenter(
     }
 
     /*
-     * Why: "delete-error", "comment-error", "undo-error", "photo-unreadable", "photo-no-room", "photo-error" or
-     * "remove-photo-error", a toast in the page's words.
+     * Why: "delete-error", "comment-error", "undo-error", "photo-unreadable", "photo-no-room", "photo-too-large",
+     * "photo-error" or "remove-photo-error", a toast in the page's words.
      */
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
@@ -298,6 +302,7 @@ class BillDetailPresenter(
                 is BillDetailUiAction.ShowPhotoError -> when (action.error) {
                     BillPhotoError.UNREADABLE -> "photo-unreadable"
                     BillPhotoError.NO_ROOM -> "photo-no-room"
+                    BillPhotoError.TOO_LARGE -> "photo-too-large"
                     BillPhotoError.FAILED -> "photo-error"
                 }
 
@@ -559,6 +564,7 @@ private fun toJsBillHistoryPart(part: BillHistoryPart): JsBillHistoryPart = JsBi
 private fun toJsBillAttachment(tile: BillAttachmentTile): JsBillAttachment = JsBillAttachment(
     id = tile.id,
     isReceipt = tile.isReceipt,
+    localImage = tile.localImage,
     imageUrl = tile.imageUrl,
     width = tile.width,
     height = tile.height,
