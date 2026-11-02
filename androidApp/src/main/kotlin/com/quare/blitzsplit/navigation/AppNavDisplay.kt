@@ -36,6 +36,8 @@ import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
+import com.quare.blitzsplit.android.feature.editgroup.rememberUsesDefaultSplitDialog
+import com.quare.blitzsplit.android.feature.editgroup.rememberUsesEditGroupDialog
 import com.quare.blitzsplit.android.feature.editprofile.EditProfileScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
@@ -111,6 +113,18 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      */
     val usesDeleteAccountDialog = usesFormDialog || formFactor == FormFactor.Book || formFactor == FormFactor.Tabletop
     val deleteAccountMetadata = if (usesDeleteAccountDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
+    val usesEditGroupDialog = rememberUsesEditGroupDialog()
+    val editGroupMetadata = if (usesEditGroupDialog) {
+        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
+    } else {
+        emptyMap()
+    }
+    val usesDefaultSplitDialog = rememberUsesDefaultSplitDialog()
+    val defaultSplitMetadata = if (usesDefaultSplitDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
@@ -203,18 +217,18 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     )
                 }
             }
-            // Why: a tablet keeps the group behind the form; elsewhere, foldables included, it opens full screen.
-            entry<Route.EditGroup>(metadata = formDialogMetadata) { route ->
+            // Why: wider than a phone the group stays behind the form, in a book's right half on a foldable.
+            entry<Route.EditGroup>(metadata = editGroupMetadata) { route ->
                 EditGroupScreen(
                     route = route,
-                    isDialog = usesFormDialog,
+                    isDialog = usesEditGroupDialog,
                 )
             }
-            // Why: over Editar grupo, the same way: a dialog on a tablet, full screen elsewhere (two columns lying down).
-            entry<Route.DefaultSplit>(metadata = formDialogMetadata) { route ->
+            // Why: over Editar grupo: a dialog on a tablet and a book, full screen on a phone and a foldable upright.
+            entry<Route.DefaultSplit>(metadata = defaultSplitMetadata) { route ->
                 DefaultSplitScreen(
                     route = route,
-                    isDialog = usesFormDialog,
+                    isDialog = usesDefaultSplitDialog,
                 )
             }
             // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.

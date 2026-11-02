@@ -38,13 +38,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
+import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
+import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.PersonalInvite
 
-// Why: a bottom sheet on every device, as short as its content, over whichever layout the screen has.
+/*
+ * Why: a bottom sheet, as short as its content, over whichever layout the screen has; a book (and a tabletop) draws it
+ * as a dialog in its right half instead, since a sheet would cross the hinge.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PersonalInviteSheet(
@@ -52,8 +59,31 @@ internal fun PersonalInviteSheet(
     groupName: String,
     onEvent: (MembersUiEvent) -> Unit,
 ) {
+    val onDismiss = { onEvent(MembersUiEvent.OnPersonalInviteDismissed) }
+    val placement = rememberDialogPlacement()
+    if (placement != DialogPlacement.Centered) {
+        FoldDialog(
+            onDismissRequest = onDismiss,
+            placement = placement,
+        ) {
+            val title = stringResource(R.string.members_personal_invite, invite.member.name)
+            Surface(
+                modifier = Modifier.alertDialogPane(title),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                PersonalInviteColumn(
+                    invite = invite,
+                    groupName = groupName,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(top = 24.dp),
+                )
+            }
+        }
+        return
+    }
     ModalBottomSheet(
-        onDismissRequest = { onEvent(MembersUiEvent.OnPersonalInviteDismissed) },
+        onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     ) {
         PersonalInviteColumn(
@@ -69,9 +99,10 @@ private fun PersonalInviteColumn(
     invite: PersonalInvite,
     groupName: String,
     onEvent: (MembersUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
             .padding(

@@ -278,7 +278,7 @@ private fun DefaultSplitSharesPreview() {
                     createPreviewPerson("2", "Ana", parts = 1),
                 ),
             ),
-            isDialog = false,
+            isDialog = rememberUsesDefaultSplitDialog(),
             onEvent = {},
         )
     }
@@ -301,7 +301,7 @@ private fun DefaultSplitPercentErrorPreview() {
                     createPreviewPerson("2", "Ana", percent = "15"),
                 ),
             ),
-            isDialog = false,
+            isDialog = rememberUsesDefaultSplitDialog(),
             onEvent = {},
         )
     }
@@ -325,7 +325,7 @@ private fun DefaultSplitNewMemberPreview() {
                     createPreviewPerson("3", "Carla", parts = 1).copy(isNew = true),
                 ),
             ),
-            isDialog = false,
+            isDialog = rememberUsesDefaultSplitDialog(),
             onEvent = {},
         )
     }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -23,10 +22,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 
-// Why: "Adicionar pessoa" and "Renomear" ask the same thing, a name free in the group, with nicknames when it isn't.
+/*
+ * Why: "Adicionar pessoa" and "Renomear" ask the same thing, a name free in the group, with nicknames when it isn't.
+ * A book asks in its right half, over the group.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun MemberNameDialog(
@@ -35,9 +39,9 @@ internal fun MemberNameDialog(
 ) {
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = { onEvent(MembersUiEvent.OnEditorDismissed) },
-        title = { Text(stringResource(if (editor.isAdding) R.string.members_add else R.string.members_rename)) },
+        title = stringResource(if (editor.isAdding) R.string.members_add else R.string.members_rename),
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
@@ -85,5 +89,6 @@ internal fun MemberNameDialog(
                 Text(stringResource(R.string.members_cancel))
             }
         },
+        placement = rememberDialogPlacement(),
     )
 }
