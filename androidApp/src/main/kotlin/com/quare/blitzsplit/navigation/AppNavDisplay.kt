@@ -262,16 +262,21 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             entry<Route.GroupStats> { route -> GroupStatsScreen(route) }
             // Why: a sheet over the group on a phone, a dialog wider (a book's right half), full screen on a tabletop.
-            // Why: the content follows the same presentation as the metadata, so a fold change redraws both together.
             entry<Route.RegisterPayment>(metadata = registerPaymentMetadata) { route ->
+                /*
+                 * Why: an open scene keeps the way it opened when the fold changes under it (a book's dialog stays a
+                 * dialog on a tabletop), so its content keeps that way too.
+                 */
+                val presentation = remember { registerPaymentPresentation }
                 RegisterPaymentScreen(
                     route = route,
-                    presentation = registerPaymentPresentation,
+                    presentation = presentation,
                 )
             }
             // Why: "Quem pagou a quem?" from Início, opened the way Registrar pagamento opens, whose place it gives.
             entry<Route.PickPayment>(metadata = pickPaymentMetadata) {
-                PickPaymentScreen(isDialog = usesPickPaymentDialog)
+                val isDialog = remember { usesPickPaymentDialog }
+                PickPaymentScreen(isDialog = isDialog)
             }
             // Why: the home's Saldos tab, over Início.
             entry<Route.GlobalBalances> { route -> GlobalBalancesScreen(route) }
@@ -279,9 +284,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Activity> { route -> ActivityScreen(route) }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(metadata = registerPaymentMetadata) { route ->
+                val presentation = remember { registerPaymentPresentation }
                 RegisterPaymentScreen(
                     route = route,
-                    presentation = registerPaymentPresentation,
+                    presentation = presentation,
                 )
             }
             // Why: the home's Contatos tab, over the groups; a wide window draws the profile or the agenda beside it.

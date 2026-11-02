@@ -344,7 +344,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
     (between others), which all open "Registrar pagamento". Once there were bills and nobody owes anything, "Todo
-    mundo acertou" offers "Apagar grupo".
+    mundo acertou" offers "Apagar grupo". An Android tabletop (6.2) draws Saldos alone, full screen, even where its
+    other tabs stay beside Grupos' list lying down: a one-line bar, the tabs and "Seu saldo neste grupo" above the
+    hinge, and the pairs under it, "Com você" beside "Entre os outros" while both have one, with no "Rachar conta".
   - "Seu saldo neste grupo" sits above the tabs of Despesas, Saldos and Membros while the group has a bill: "R$ 0,00 ·
     você está quitado" when settled, and its "Acertar" opens Registrar pagamento with whoever you owe the most, hidden
     when you owe nobody.
@@ -353,7 +355,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     ("Ana te deve R$ 162,30. Use até esse valor."), partial payments allowed, Pix / Dinheiro / Transferência / Outro
     and "Quando" (date and time, never after now). "Acertar" opens it too: paying through the receiver's Pix key
     (4.5) comes later, since other members' keys never reach the device. It is a bottom sheet on an Android phone
-    and a dialog on its tablets, a sheet on iOS and macOS, a dialog on the web (a drawer on a phone). It works
+    (640 dp lying down, in two columns: who paid whom and the amount, then how, when and the buttons), a 560 dp
+    dialog on its tablets and foldables upright and in a book's right half, and full screen on a tabletop (✕ and
+    "Registrar pagamento" on top, who and how much above the hinge, how, when and the buttons under it, while Início's
+    "Quem pagou a quem?" stays a dialog there, being short); a sheet on
+    iOS (in two columns on an iPhone lying down, its confirm the bar's ✓; the 540×620 form sheet with an iPad's room,
+    Início's "Quem pagou a quem?" too) and macOS, a dialog on the web (a drawer on a phone). It works
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Ex-membro"
     and closes only once the debt or the group is gone. A payment is never edited: "Pagamento de Ana registrado."
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
