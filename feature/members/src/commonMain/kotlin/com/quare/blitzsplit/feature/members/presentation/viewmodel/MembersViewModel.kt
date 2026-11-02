@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.MemberBillParts
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
@@ -55,8 +56,8 @@ class MembersViewModel(
     private val removeMember: RemoveMember,
     private val releaseMember: ReleaseMember,
     observeGroup: ObserveGroup,
-    observeGroupBalances: ObserveGroupBalances,
     observeExpenses: ObserveExpenses,
+    observeSettlements: ObserveSettlements,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
@@ -91,15 +92,15 @@ class MembersViewModel(
 
     /*
      * Why: a sync may bring other members' changes, bills and payments while the screen is open. A group that goes is
-     * the group's screen's to close.
+     * the group's screen's to close. The bills are read once, for the balances and the personal invite alike.
      */
     init {
         combine(
             observeGroup(route.groupId),
-            observeGroupBalances(route.groupId),
             observeExpenses(route.groupId),
-        ) { group, balances, expenses ->
-            this.balances = balances
+            observeSettlements(route.groupId),
+        ) { group, expenses, settlements ->
+            this.balances = GroupBalances.of(expenses, settlements)
             this.expenses = expenses
             if (group != null) show(group)
         }.launchIn(viewModelScope)
@@ -216,15 +217,14 @@ class MembersViewModel(
         isLinkCopied: Boolean,
     ): PersonalInvite? {
         val link = member.personalLink ?: return null
-        // Why: a bill at 0% for the member puts nothing in their name.
-        val parts = expenses.map { it.shareOf(member.id) }.filter { it > 0L }
+        val parts = MemberBillParts.of(expenses, member.id)
         return PersonalInvite(
             member = member,
             link = link,
             displayLink = InviteLink.displayOf(link),
             isLinkCopied = isLinkCopied,
-            billCount = parts.size,
-            billShareMinor = parts.sum(),
+            billCount = parts.billCount,
+            billShareMinor = parts.shareMinor,
         )
     }
 

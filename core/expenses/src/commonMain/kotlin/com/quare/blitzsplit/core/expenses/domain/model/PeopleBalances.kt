@@ -139,7 +139,7 @@ data class PeopleBalances(
             netMinor: Long,
         ): Long? {
             val shareMinor = bills.sumOf { (memberId, expense) -> expense.shareOf(memberId) }
-            val paidMinor = bills.sumOf { (memberId, expense) -> expense.paidBy(memberId) }
+            val paidMinor = bills.sumOf { (memberId, expense) -> expense.paidAmountOf(memberId) }
             return paidMinor.takeIf { it > 0 && shareMinor - it == netMinor }
         }
 

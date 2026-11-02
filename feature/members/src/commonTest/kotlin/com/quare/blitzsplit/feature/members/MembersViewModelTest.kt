@@ -8,7 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -2679,8 +2679,8 @@ class MembersViewModelTest {
             observeGroup = ObserveGroup { groupId ->
                 isRoomRead.flatMapLatest { isRead -> if (isRead) observeGroup(groupId) else emptyFlow() }
             },
-            observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observeExpenses = ObserveExpensesUseCase(expenses),
+            observeSettlements = ObserveSettlementsUseCase(settlements),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
