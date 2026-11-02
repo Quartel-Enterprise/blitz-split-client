@@ -305,8 +305,7 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group. Convidar's "Ir para o grupo" and "Ver quem já entrou" open it in Convidar's place (`openGroup`), so the
     group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
-    with its category over the title and Editar and Apagar in the top bar (no Compartilhar nor
-    attachments yet). A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
+    with its category over the title and Editar and Apagar in the top bar (no Compartilhar yet). A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
     main window's inspector (720 pt, 330 pt in a window under 1180 pt, the bill beside its split from 600 pt, ✕ and Esc
     closing it, another bill or whatever the group opens taking its place), and the web as a side sheet (a drawer on a
@@ -324,6 +323,15 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     (`LoadBillHistory`). "Desfazer" shows only on the latest line when it is an edit, the bill is still as that edit
     left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
     (`BillHistoryEntry.canUndo`).
+  - Conta's "Anexos" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's and the
+    web's files), offline too ("Na fila" until the photo is up, drawn from the device meanwhile), and removes any of
+    them from the viewer ("Remover foto", no question, as the boards draw none). "Anexos · 2 de 5 fotos" lists the
+    receipt the bill was read from first (badge "Cupom", never removed from Conta; reading it is 7.1e), then the photos
+    as "Foto 2" with who added it and when, since the server keeps no caption, then "Adicionar foto" while there is
+    room. The viewer pages through them full screen ("Foto 1 de 2", "Ana anexou ontem às 22:40") with Baixar (the
+    gallery on Android, the share sheet on iOS, a file on the Mac and the web). Each photo is an upright JPEG of at most
+    1600 px under 1.5 MB (`BillImageEncoder`), in the private `bill-attachments` bucket, read through signed URLs, so a
+    photo added on another device shows only online. Histórico says who added or removed them; the feed doesn't.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
     on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
