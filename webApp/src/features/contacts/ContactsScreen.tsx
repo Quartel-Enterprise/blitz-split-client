@@ -258,7 +258,7 @@ function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isS
         isSelected && 'bg-muted',
       )}
     >
-      <Avatar initial={row.initials} color={row.color} className="size-8 text-xs" />
+      <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">
           <MatchedName row={row} />
@@ -331,7 +331,7 @@ function HiddenSection({ presenter, state }: { presenter: ContactsPresenter; sta
                   onClick={() => presenter.openContact(row.key)}
                   className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-2.5 py-1.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
-                  <Avatar initial={row.initials} color={row.color} className="size-8 text-xs" />
+                  <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate text-sm font-medium">{row.name}</span>
                     <span className="truncate text-xs text-muted-foreground">

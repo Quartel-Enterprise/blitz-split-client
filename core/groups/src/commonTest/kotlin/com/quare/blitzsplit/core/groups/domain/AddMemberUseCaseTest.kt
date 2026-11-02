@@ -296,6 +296,7 @@ class AddMemberUseCaseTest {
                 hasJoined = index == 0,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             )
         },
         isPending = false,

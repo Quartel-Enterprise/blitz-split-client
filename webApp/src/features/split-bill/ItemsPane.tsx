@@ -99,7 +99,7 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
                 </span>
                 <span aria-hidden className="flex -space-x-2">
                   {row.consumers.slice(0, faceCount).map((person) => (
-                    <Avatar key={person.id} initial={person.initials} color={person.color} className="size-6 border-2 border-card text-[9px]" />
+                    <Avatar key={person.id} initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-6 border-2 border-card text-[9px]" />
                   ))}
                 </span>
                 <span role="cell" className="w-24 shrink-0 text-right font-mono text-[13px] tabular-nums">
@@ -140,7 +140,7 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
           <ul className="flex flex-col divide-y overflow-hidden rounded-lg border">
             {items.people.map((row) => (
               <li key={row.person.id} className="flex min-h-12 items-center gap-2.5 px-3 py-1.5">
-                <Avatar initial={row.person.initials} color={row.person.color} className="size-7 text-[11px]" />
+                <Avatar initial={row.person.initials} color={row.person.color} photoUrl={row.person.photoUrl} className="size-7 text-[11px]" />
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate font-medium">{personName(row.person)}</span>
                   <span className="truncate text-xs text-muted-foreground">{itemsPersonSubtitle(row, money)}</span>
@@ -298,7 +298,7 @@ function ItemPersonRow({ presenter, editor, line, state, money }: { presenter: S
           className={cn('size-4 shrink-0 accent-primary', editor.isStatusError && 'outline outline-destructive')}
         />
       )}
-      <Avatar initial={person.initials} color={person.color} className={cn('size-7 text-[11px]', !isIn && 'opacity-50')} />
+      <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={cn('size-7 text-[11px]', !isIn && 'opacity-50')} />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className={cn('truncate font-medium', !isIn && 'text-muted-foreground')}>{personName(person)}</span>
         <span className={cn('truncate font-mono text-xs tabular-nums', line.isError ? 'text-destructive' : 'text-muted-foreground')}>

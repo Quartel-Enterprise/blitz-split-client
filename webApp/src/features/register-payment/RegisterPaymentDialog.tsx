@@ -15,6 +15,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { payWithKeyPane } from './PayWithKeyPane'
 
 const formId = 'register-payment-form'
 const amountId = 'register-payment-amount'
@@ -65,7 +66,8 @@ export function RegisterPaymentDialog({ route }: { route: JsRoute }) {
   // Why: the person the sentence is about, the other one besides "você" when one of them is this person.
   const names = { name: state.kind === 'received' ? from : to, from, to }
   const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)
-  const pane: PaneParts = {
+  // Why: paying someone with a key opens "Pagar Ana" (4.5); anything else records a payment made outside.
+  const pane: PaneParts = state.showsReceiverKeys ? payWithKeyPane(presenter, state, money) : {
     leading: <PairFaces from={state.from} to={state.to} />,
     title: t(words.title, names),
     description: t(words.debt, { ...names, amount: money(state.debtMinor) }),
@@ -101,7 +103,7 @@ function personName(person: JsPaymentPerson | null | undefined): string {
 /** A member's face, blank for someone no longer in the group, as Saldos draws them; also "Quem pagou a quem?"'s. */
 export function PersonFace({ person, className = 'size-10 text-sm' }: { person: JsPaymentPerson | null | undefined; className?: string }) {
   if (!person) return <span className={cn('rounded-full bg-muted', className)} />
-  return <Avatar initial={person.initials} color={person.color} className={className} />
+  return <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={className} />
 }
 
 /** Whoever paid → whoever received, at the top. */

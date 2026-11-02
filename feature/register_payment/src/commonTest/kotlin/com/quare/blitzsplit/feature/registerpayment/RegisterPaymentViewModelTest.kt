@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -26,6 +27,9 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
+import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
@@ -59,6 +63,7 @@ import kotlin.time.Instant
 
 class RegisterPaymentViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val paymentKeys = FakePaymentKeyRepository()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -278,8 +283,28 @@ class RegisterPaymentViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(PaymentPerson(ANA, "Ana", "AN", AvatarColor.PEACH, isMe = false), state.from)
-            assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "P", AvatarColor.BLUE, isMe = true), state.to)
+            assertEquals(
+                PaymentPerson(
+                    ANA,
+                    "Ana",
+                    "AN",
+                    AvatarColor.PEACH,
+                    photoUrl = null,
+                    isMe = false,
+                ),
+                state.from,
+            )
+            assertEquals(
+                PaymentPerson(
+                    PIERRE,
+                    "Pierre Vieira",
+                    "P",
+                    AvatarColor.BLUE,
+                    photoUrl = null,
+                    isMe = true,
+                ),
+                state.to,
+            )
             assertEquals(PaymentKind.RECEIVED, state.kind)
         }
 
@@ -295,8 +320,28 @@ class RegisterPaymentViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(PaymentPerson(PIERRE, "Pierre Vieira", "P", AvatarColor.BLUE, isMe = true), state.from)
-        assertEquals(PaymentPerson(BRUNO, "Bruno", "BR", AvatarColor.GREEN, isMe = false), state.to)
+        assertEquals(
+            PaymentPerson(
+                PIERRE,
+                "Pierre Vieira",
+                "P",
+                AvatarColor.BLUE,
+                photoUrl = null,
+                isMe = true,
+            ),
+            state.from,
+        )
+        assertEquals(
+            PaymentPerson(
+                BRUNO,
+                "Bruno",
+                "BR",
+                AvatarColor.GREEN,
+                photoUrl = null,
+                isMe = false,
+            ),
+            state.to,
+        )
         assertEquals(PaymentKind.PAID, state.kind)
         assertEquals(5_000L, state.debtMinor)
         assertEquals("50,00", state.amountText)
@@ -314,8 +359,28 @@ class RegisterPaymentViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(PaymentPerson(DIEGO, "Diego", "DI", AvatarColor.SAND, isMe = false), state.from)
-        assertEquals(PaymentPerson(BRUNO, "Bruno", "BR", AvatarColor.GREEN, isMe = false), state.to)
+        assertEquals(
+            PaymentPerson(
+                DIEGO,
+                "Diego",
+                "DI",
+                AvatarColor.SAND,
+                photoUrl = null,
+                isMe = false,
+            ),
+            state.from,
+        )
+        assertEquals(
+            PaymentPerson(
+                BRUNO,
+                "Bruno",
+                "BR",
+                AvatarColor.GREEN,
+                photoUrl = null,
+                isMe = false,
+            ),
+            state.to,
+        )
         assertEquals(PaymentKind.BETWEEN_OTHERS, state.kind)
         assertEquals(8_000L, state.debtMinor)
     }
@@ -1600,6 +1665,7 @@ class RegisterPaymentViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: a bill the payer paid whole for the debtor alone, so the debtor owes the payer all of it.
@@ -1659,6 +1725,7 @@ class RegisterPaymentViewModelTest {
             GROUP_ID,
             fromMemberId = from,
             toMemberId = to,
+            offersReceiverKeys = true,
         )
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
@@ -1692,6 +1759,9 @@ class RegisterPaymentViewModelTest {
             currentTimeMillis = { clockMillis },
             currentTimeZone = { timeZone },
             decimalSeparator = { decimalSeparator },
+            formatPaymentKey = FormatPaymentKeyUseCase(),
+            observeMemberPaymentKeys = ObserveMemberPaymentKeysUseCase(paymentKeys),
+            encodeQrCode = EncodeQrCodeUseCase(),
             observeGroup = if (isGroupRead) ObserveGroupUseCase(groups) else ObserveGroup { groupNeverAnswers },
             observeGroupBalances = if (areBalancesRead) {
                 ObserveGroupBalancesUseCase(expenses, settlements)

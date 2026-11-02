@@ -41,7 +41,7 @@ or `Storage`, never on the client. The URL, the publishable key and the Google w
 | Remote data source | Talks to |
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
-| `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile |
+| `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile, and those of everyone the user shares a group with ("Pagar Ana") |
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link; the `leave_group` and `delete_group` functions and the `removed_groups` table |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
@@ -165,6 +165,13 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   deleted on the server. Deleting the default writes the key that takes over in the same upsert. Two devices may each mark a default offline, so readers
   take the flagged key with the newest `updatedAt` (`PaymentKeyMapper`). The server keeps the newer row too: a
   trigger ignores an upsert older than the stored one.
+- **Members' payment keys**: the live keys of everyone the user shares a group with, which the server's RLS lets
+  co-members read, come down on each sync after the groups, page by page, and replace `member_payment_key` whole
+  (`PaymentKeyRepository.downloadMemberKeys`), so a key removed or a group left drops off; nothing is written when
+  they come back the same. They are never pushed, and a failed download keeps the last copy for "Pagar Ana" offline
+  and fails the sync like any other step. Each row keeps the account it came down for (`viewerUserId`), and
+  another account's sync drops them first, before the network (`downloadKeys`), so someone else's CPF never stays
+  under a new account whose download fails.
 - **Hidden contacts**: "Ocultar de Contatos" is a row of `hidden_contact` per person key (`user:<id>` or
   `name:<name in lower case, single spaces>`, no accent folding), synced by `updatedAt` like the keys, each user's own list across their devices. Showing
   again keeps the row with `isHidden = false`, so the change syncs; whether someone hidden comes back (a newer
@@ -192,6 +199,14 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     (`GroupDao.deleteRemovedMembers`). A newer server row in the meantime (someone joined as that member, or
     renamed it) brings the member back, as Last-Write-Wins says, and the other devices lose it through
     `deleteGoneFromServer`.
+  - **Member photos**: read only, outside Last-Write-Wins. Each group download also reads `id` and `avatar_url` of
+    every profile the server lets the user see (their own and their groups' members', by its row level security),
+    beside the groups and members, and the answer takes the place of the whole `member_photo` table, one row per
+    account with a photo (`GroupDao.replaceMemberPhotos`, which writes nothing when no photo changed), so a removed
+    photo or someone no longer in a group leaves too. A failed read keeps the photos the device had and lets the
+    sync go on. Each upload changes the photo's URL (`?v=`), so the image caches never show the old one. The faces
+    of this device's user take the local profile's photo instead (`GroupRepository.observeGroups`), one picked
+    offline included, and a member nobody joined as has none.
   - **Invite code**: the server makes each group's code (`invite_code`, the `blitzsplit.com/g/<code>` of "Convidar")
     when the group first goes up, and no client sends it. The push reads it back from the upsert's answer,
     since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both

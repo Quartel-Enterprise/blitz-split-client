@@ -21,6 +21,7 @@
     <string name="register_payment_confirm_paid">Confirmar pagamento</string>
     <string name="register_payment_confirm_between">Registrar pagamento</string>
     <string name="register_payment_cancel">Cancelar</string>
+    <string name="register_payment_screen_title">Registrar pagamento</string>
     <string name="register_payment_close">Fechar</string>
     <string name="register_payment_save_error">Não deu para registrar o pagamento. Tente de novo.</string>
     <string name="register_payment_former_member">Ex-membro</string>
@@ -29,4 +30,31 @@
     <string name="register_payment_pick_pair">%1$s → %2$s</string>
     <string name="register_payment_pick_empty_title">Ninguém deve nada agora</string>
     <string name="register_payment_pick_empty_body">Quando alguém dever, é só escolher aqui quem pagou.</string>
+    <string name="register_payment_pay_title">Pagar %s</string>
+    <string name="register_payment_pay_group">%s · você deve</string>
+    <plurals name="register_payment_pay_groups">
+        <item quantity="one">%d grupo · você deve</item>
+        <item quantity="other">%d grupos · você deve</item>
+    </plurals>
+    <string name="register_payment_pay_method_pix">Pix</string>
+    <string name="register_payment_pay_method_bitcoin">Bitcoin</string>
+    <string name="register_payment_pay_default_key">Chave padrão de %s</string>
+    <string name="register_payment_pay_copy_key">Copiar chave</string>
+    <string name="register_payment_pay_pix_code">Pix copia e cola</string>
+    <string name="register_payment_pay_pix_code_amount">Já vem com %s.</string>
+    <string name="register_payment_pay_copy_code">Copiar código</string>
+    <string name="register_payment_pay_other_keys">Outras chaves de %s</string>
+    <string name="register_payment_pay_copy_other">Copiar %1$s de %2$s</string>
+    <string name="register_payment_pay_note_pix">Pague no app do seu banco e volte para marcar como pago. Confira se o banco mostra o nome de %s.</string>
+    <string name="register_payment_pay_note_bitcoin">Pague na sua carteira e volte para marcar como pago.</string>
+    <string name="register_payment_pay_later">Depois</string>
+    <string name="register_payment_pay_mark_paid">Marcar como pago</string>
+    <string name="register_payment_pay_type_cpf">CPF</string>
+    <string name="register_payment_pay_type_phone">Celular</string>
+    <string name="register_payment_pay_type_email">E-mail</string>
+    <string name="register_payment_pay_type_random">Chave aleatória</string>
+    <string name="register_payment_pay_type_lightning">Lightning</string>
+    <string name="register_payment_pay_type_onchain">On-chain</string>
+    <string name="register_payment_pay_otherwise">Paguei outro valor ou de outro jeito</string>
+    <string name="register_payment_pay_copied">Copiado</string>
 </resources>

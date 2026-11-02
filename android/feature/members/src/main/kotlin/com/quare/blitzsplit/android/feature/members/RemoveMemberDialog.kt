@@ -3,9 +3,10 @@ package com.quare.blitzsplit.android.feature.members
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 
-// Why: "Remover do grupo" asks first, since a removal reaches every device on the next sync.
+// Why: "Remover do grupo" asks first, since a removal reaches every device on the next sync; a book asks in its right half.
 @Composable
 internal fun RemoveMemberDialog(
     name: String,
@@ -17,5 +18,6 @@ internal fun RemoveMemberDialog(
         confirmLabel = stringResource(R.string.members_remove_confirm),
         onConfirm = { onEvent(MembersUiEvent.OnRemoveConfirmed) },
         onDismiss = { onEvent(MembersUiEvent.OnRemoveDismissed) },
+        placement = rememberDialogPlacement(),
     )
 }

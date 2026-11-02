@@ -126,7 +126,7 @@ export function GroupPage({
               >
                 <span aria-hidden className="flex">
                   {header.faces.map((face, index) => (
-                    <Avatar key={index} initial={face.initials} color={face.color} className={cn('size-7 border-2 border-background text-[11px]', index > 0 && '-ml-1.5')} />
+                    <Avatar key={index} initial={face.initials} color={face.color} photoUrl={face.photoUrl} className={cn('size-7 border-2 border-background text-[11px]', index > 0 && '-ml-1.5')} />
                   ))}
                   {header.extraMemberCount > 0 && (
                     <span className="-ml-1.5 flex h-7 min-w-7 items-center justify-center rounded-full border-2 border-background bg-muted px-1.5 text-[11px] font-semibold">

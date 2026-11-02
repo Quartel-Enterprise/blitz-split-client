@@ -19,6 +19,7 @@ import org.koin.mp.KoinPlatform
 class JsMemberFace(
     val initial: String,
     val color: String,
+    val photoUrl: String?,
 )
 
 class JsGroupRow(
@@ -335,7 +336,7 @@ internal fun toJsGroupRow(row: GroupRow): JsGroupRow = JsGroupRow(
     name = row.name,
     initials = row.initials,
     color = row.color.code,
-    faces = row.faces.map { JsMemberFace(it.initial, it.color.code) }.toTypedArray(),
+    faces = row.faces.map { JsMemberFace(it.initial, it.color.code, it.photoUrl) }.toTypedArray(),
     extraMemberCount = row.extraMemberCount,
     memberCount = row.memberCount,
     isPending = row.isPending,

@@ -83,7 +83,7 @@ export function ContactProfileView({
         </Button>
       )}
       <header className="flex items-center gap-3.5">
-        <Avatar initial={contact.initials} color={contact.color} className="size-12 text-lg @md:size-14" />
+        <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="size-12 text-lg @md:size-14" />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2 className="truncate text-xl font-semibold tracking-tight @md:text-2xl">{name}</h2>
           <div className="flex flex-wrap items-center gap-2">

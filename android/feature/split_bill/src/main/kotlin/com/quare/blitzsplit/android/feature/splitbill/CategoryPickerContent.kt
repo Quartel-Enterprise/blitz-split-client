@@ -49,7 +49,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
-import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormColumns
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
@@ -70,8 +70,7 @@ internal fun CategoryPickerContent(
     snackbarHostState: SnackbarHostState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val layout = rememberDeviceLayout()
-    val usesTwoColumns = if (isDialog) layout.isTablet && layout.isLandscape else layout.isLandscape
+    val usesTwoColumns = rememberUsesFormColumns(isDialog)
     val branch = state.openCategoryBranch
     ColumnsFormLayout(
         chrome = FormChrome(

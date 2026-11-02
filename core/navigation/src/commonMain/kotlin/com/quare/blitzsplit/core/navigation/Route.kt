@@ -106,6 +106,11 @@ sealed interface Route {
         val groupId: String,
         val fromMemberId: String,
         val toMemberId: String,
+        /*
+         * Why: Acertar opens "Pagar Ana" (4.5) first, the receiver's keys, while this device's user pays someone who
+         * has one; Início's "Quem pagou a quem?" only records a payment, so it opens the form straight away.
+         */
+        val offersReceiverKeys: Boolean,
     ) : Route
 
     /*

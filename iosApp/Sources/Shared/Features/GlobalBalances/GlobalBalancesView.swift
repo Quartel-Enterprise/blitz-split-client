@@ -419,7 +419,7 @@ private struct PersonFace: View {
     var body: some View {
         Group {
             if let color = row.color {
-                AvatarPhoto(initial: row.initials, color: color, photoUrl: nil, size: size)
+                AvatarPhoto(initial: row.initials, color: color, photoUrl: row.photoUrl, size: size)
             } else {
                 Circle()
                     .fill(.fill.tertiary)
@@ -794,7 +794,7 @@ private struct ChargeSheet: View {
     private var whomSection: some View {
         Section {
             HStack(spacing: 12) {
-                AvatarPhoto(initial: charge.initials, color: charge.color ?? .blue, photoUrl: nil, size: 36)
+                AvatarPhoto(initial: charge.initials, color: charge.color ?? .blue, photoUrl: charge.photoUrl, size: 36)
                     .accessibilityHidden(true)
                 Text("\(name) owes you \(Text(verbatim: charge.currency.format(charge.amountMinor)).foregroundStyle(Palette.accent).bold()) · \(GlobalBalancesCopy.groupsText(names: charge.groupNames))")
                     .font(.subheadline)

@@ -166,6 +166,7 @@ class GroupsViewModel(
                     groupId = groupId,
                     fromMemberId = fromMemberId,
                     toMemberId = toMemberId,
+                    offersReceiverKeys = true,
                 ),
             )
         },

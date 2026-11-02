@@ -407,6 +407,7 @@ class BillCategoryViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
     private val ana = pierre.copy(
         id = ANA,

@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.sync.exit.GroupExitController
 import com.quare.blitzsplit.core.sync.exit.GroupExitTarget
@@ -169,7 +170,11 @@ internal class GroupScreen(
     }
 
     fun open(next: Route) {
-        if (isOnTop()) useCases.navigator.navigate(next)
+        useCases.navigator.openFromGroupScreen(
+            from = route,
+            groupId = groupId,
+            next = next,
+        )
     }
 
     // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.
@@ -196,6 +201,7 @@ internal class GroupScreen(
                 groupId = groupId,
                 fromMemberId = fromMemberId,
                 toMemberId = toMemberId,
+                offersReceiverKeys = true,
             ),
         )
     }

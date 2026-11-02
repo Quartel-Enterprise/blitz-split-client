@@ -255,7 +255,7 @@ struct GroupFaces: View {
             HStack(spacing: 8) {
                 HStack(spacing: -size * 0.25) {
                     ForEach(Array(header.faces.enumerated()), id: \.offset) { _, face in
-                        AvatarPhoto(initial: face.initials, color: face.color, photoUrl: nil, size: size)
+                        AvatarPhoto(initial: face.initials, color: face.color, photoUrl: face.photoUrl, size: size)
                             .overlay(Circle().strokeBorder(Palette.groupedBackground, lineWidth: 2))
                     }
                     if header.extraMemberCount > 0 {

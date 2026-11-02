@@ -52,6 +52,7 @@ internal fun rowOf(
             MemberFace(
                 initial = Initials.firstOf(it.name),
                 color = it.avatarColor,
+                photoUrl = it.photoUrl,
             )
         },
         extraMemberCount = (group.members.size - MAX_FACES).coerceAtLeast(0),

@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -31,6 +33,11 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 fun GroupDetailScreen(
     route: Route.GroupDetail,
     membersTab: @Composable (SnackbarHostState) -> GroupTabBody,
+    /*
+     * Why: the tab picked, for the app: a tabletop lying down draws Saldos alone, full screen, where the other tabs
+     * stay beside the list (6.2).
+     */
+    onTabChanged: (GroupTab) -> Unit = {},
     viewModel: GroupDetailViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,12 +77,24 @@ fun GroupDetailScreen(
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
+    val currentOnTabChanged by rememberUpdatedState(onTabChanged)
+    /*
+     * Why: a tab tapped reaches the app in the tap, with the ViewModel, so a tabletop's scene changes in the same frame
+     * as the tab instead of drawing the old layout once; the effect covers the tab the group opens on.
+     */
+    val onEvent: (GroupDetailUiEvent) -> Unit = remember(viewModel) {
+        { event ->
+            if (event is GroupDetailUiEvent.OnTabSelected) currentOnTabChanged(event.tab)
+            viewModel.onEvent(event)
+        }
+    }
+    LaunchedEffect(state.tab) { currentOnTabChanged(state.tab) }
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
     GroupDetailContent(
         state = state,
         snackbarHostState = snackbarHostState,
         membersTab = membersTab(snackbarHostState),
-        onEvent = viewModel::onEvent,
+        onEvent = onEvent,
     )
     state.teach?.takeIf { it.isPickingWord }?.let {
         CategoryTeachDialog(

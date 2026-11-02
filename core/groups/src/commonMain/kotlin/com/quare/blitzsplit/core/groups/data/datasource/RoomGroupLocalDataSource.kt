@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.data.datasource
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import kotlinx.coroutines.flow.Flow
 
 class RoomGroupLocalDataSource(
@@ -13,6 +14,12 @@ class RoomGroupLocalDataSource(
     override fun observeMembers(): Flow<List<GroupMemberEntity>> = dao.observeMembers()
 
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()
+
+    override fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>> = dao.observeMemberPhotos()
+
+    override suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>) {
+        dao.replaceMemberPhotos(entities)
+    }
 
     override suspend fun getPendingGroups(ownerUserId: String): List<GroupEntity> = dao.getPendingGroups(ownerUserId)
 

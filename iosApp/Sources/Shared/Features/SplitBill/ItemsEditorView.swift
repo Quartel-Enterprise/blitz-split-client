@@ -121,7 +121,7 @@ private struct ConsumerFaces: View {
     var body: some View {
         HStack(spacing: -size / 3) {
             ForEach(people.prefix(3), id: \.id) { person in
-                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
                     .overlay(Circle().strokeBorder(Palette.card, lineWidth: 2))
             }
         }
@@ -162,7 +162,7 @@ private struct ItemsPersonRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: row.person.initials, color: row.person.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: row.person.initials, color: row.person.avatarColor, photoUrl: row.person.photoUrl, size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: SplitBillCopy.name(row.person))
                 if showsDetail {
@@ -189,7 +189,7 @@ private struct ItemsPeopleStrip: View {
             HStack(spacing: 8) {
                 ForEach(items.personRows, id: \.person.id) { row in
                     HStack(spacing: 8) {
-                        AvatarPhoto(initial: row.person.initials, color: row.person.avatarColor, photoUrl: nil, size: 28)
+                        AvatarPhoto(initial: row.person.initials, color: row.person.avatarColor, photoUrl: row.person.photoUrl, size: 28)
                         VStack(alignment: .leading, spacing: 0) {
                             Text(verbatim: SplitBillCopy.name(row.person))
                                 .font(.caption)
@@ -348,7 +348,7 @@ private struct ItemPersonRowView: View {
                     )
                     .accessibilityHidden(true)
             }
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
                 .opacity(isIn ? 1 : 0.5)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: SplitBillCopy.name(person))

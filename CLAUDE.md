@@ -250,8 +250,8 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     devem filter it, each with its total (the net always matches the home's Saldo geral; "A receber" and "A pagar"
     there count each group's net, so they can differ), "Por grupo" opens in the row (already open for someone alone
     in Você deve or Te devem), and the empty "Você não deve nada" leads to Te devem, "Ninguém te deve" to Você deve and
-    "Tudo acertado" to Grupos. "Acertar" (you owe) and "Recebi" (owed to you) open Registrar pagamento for the net
-    (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
+    "Tudo acertado" to Grupos. "Acertar" (you owe, as "Pagar Ana" while Ana has a key) and "Recebi" (owed to you)
+    open Registrar pagamento for the net (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the
     amount locked while more than one group is in it, then "Pagamento de Carla registrado." on Saldos, whose Desfazer
     undoes them all in one go (never on a later Saldos, when the one it opened over closed while saving). "Cobrar"
     moves no money: each platform writes the message ("ficou R$ 32,90 dos grupos …", a guest's bills and what they already paid while those numbers add up, the default Pix key while "Incluir minha
@@ -304,8 +304,11 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     group never stacks over itself.
   - A bill tapped there opens "Conta" (`Route.BillDetail`): the bill, "Sua parte" and the split over every member,
     with its category over the title and Editar and Apagar in the top bar (no Compartilhar, comments, attachments nor
-    history yet). A phone opens it full screen; Android tablets open it as a dialog, iPad and Mac as a sheet, and the web as a side sheet (a drawer
-    on a phone), all over the group.
+    history yet). A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
+    half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
+    main window's inspector (720 pt, 330 pt in a window under 1180 pt, the bill beside its split from 600 pt, ✕ and Esc
+    closing it, another bill or whatever the group opens taking its place), and the web as a side sheet (a drawer on a
+    phone), all over the group.
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
     on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so
@@ -368,38 +371,74 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     "Liberar nome", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
     after "Liberar o nome Carla?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
     the group and Carla goes back to "Ainda não entrou", keeping the name, color and bills, with a new personal
-    link. The released person gets no notice: the group just leaves their devices on the next sync.
+    link. The released person gets no notice: the group just leaves their devices on the next sync. On Android its
+    dialogs (rename, add, remove, release, and "Convite pessoal", a bottom sheet elsewhere) open in a book's right half;
+    a phone lying down, Android and iPhone, draws it in the group's two columns, the header and balance on the left.
   - "Saldos" (`GroupTab.BALANCES`) is the group's tab: each pair once, already netted (no simplifying debts across the
     group), "Com você" then "Entre os outros", from the bills' payers and shares (`GroupBalances`, several payers
     included) minus the payments recorded. Rows end in "Acertar" (you owe), "Recebi" (owed to you) or "Já pagou"
     (between others), which all open "Registrar pagamento". Once there were bills and nobody owes anything, "Todo
-    mundo acertou" offers "Apagar grupo".
+    mundo acertou" offers "Apagar grupo". An Android tabletop (6.2) draws Saldos alone, full screen, even where its
+    other tabs stay beside Grupos' list lying down: a one-line bar, the tabs and "Seu saldo neste grupo" above the
+    hinge, and the pairs under it, "Com você" beside "Entre os outros" while both have one, with no "Rachar conta".
   - "Seu saldo neste grupo" sits above the tabs of Despesas, Saldos and Membros while the group has a bill: "R$ 0,00 ·
     você está quitado" when settled, and its "Acertar" opens Registrar pagamento with whoever you owe the most, hidden
     when you owe nobody.
   - "Registrar pagamento" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
     record between any two members, with no confirmation by whoever received it: up to the pair's debt, never over
     ("Ana te deve R$ 162,30. Use até esse valor."), partial payments allowed, Pix / Dinheiro / Transferência / Outro
-    and "Quando" (date and time, never after now). "Acertar" opens it too: paying through the receiver's Pix key
-    (4.5) comes later, since other members' keys never reach the device. It is a bottom sheet on an Android phone
-    and a dialog on its tablets, a sheet on iOS and macOS, a dialog on the web (a drawer on a phone). It works
+    and "Quando" (date and time, never after now). "Acertar" opens it too, as "Pagar Ana" while Ana has a key (4.5,
+    below). It is a bottom sheet on an Android phone
+    (640 dp lying down, in two columns: who paid whom and the amount, then how, when and the buttons), a 560 dp
+    dialog on its tablets and foldables upright and in a book's right half, and full screen on a tabletop (✕ and
+    "Registrar pagamento" on top, who and how much above the hinge, how, when and the buttons under it, while Início's
+    "Quem pagou a quem?" stays a dialog there, being short); a sheet on
+    iOS (in two columns on an iPhone lying down, its confirm the bar's ✓; the 540×620 form sheet with an iPad's room,
+    Início's "Quem pagou a quem?" too) and macOS, a dialog on the web (a drawer on a phone). It works
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Ex-membro"
     and closes only once the debt or the group is gone. A payment is never edited: "Pagamento de Ana registrado."
     offers "Desfazer", and the payment shows in Despesas as an "acerto", where tapping it asks "Apagar este acerto?" (a
     tombstone, offline too). No
     notifications nor Atividade yet.
+  - "Pagar Ana" (4.5) is what Registrar pagamento shows, in the same sheet or dialog, when this device's user pays
+    someone with an account who has a Pix or Bitcoin key: every "Acertar" (the group's Saldos, "Seu saldo neste
+    grupo", the global Saldos' `SettleUp`, Início's faces, Contatos' profile), never "Recebi", "Já pagou" nor Início's
+    "Quem pagou a quem?" (`Route.RegisterPayment.offersReceiverKeys`), so a guest, an ex-member or someone with no
+    key gets the form as before. The keys of everyone the user shares a group with sync down with the groups
+    (`member_payment_key`, read-only, replaced whole on each sync, cleared on sign out) under the server's
+    co-member rule, so it works offline on what the last sync brought. It shows "Pagar Ana", where the debt comes
+    from ("Apê 302 · você deve", "3 grupos · você deve") and the amount; Pix / Bitcoin only while Ana has both;
+    "Chave padrão de Ana" whole with its type and "Copiar chave"; for Pix in BRL "Pix copia e cola", the default
+    key's BR Code with the whole debt in it (`PixBrCode`, EMV with CRC16, city "BRASIL", the name folded to 25
+    ASCII letters) and its QR code, with "Copiar código"; "Outras chaves de Ana" with a copy button each; "Pague no
+    app do seu banco e volte para marcar como pago. Confira se o banco mostra o nome de Ana." (the wallet for
+    Bitcoin), and "Depois" (closes) and "Marcar como pago", which records the whole debt now as Pix, or Outro for
+    Bitcoin (one payment per group across groups), offline too; "Paguei outro valor ou de outro jeito" opens the
+    form in its place for a part of the debt, another method or a past day (`RegisterPaymentUiState.prefersForm`),
+    and a form that opened with no key stays one when a sync brings the first. No bank app opens by itself: Pix has
+    no standard link for it. Android 13 and later show the system's copy confirmation (a "Copiado" snackbar before), Apple and the web a
+    "Copiado" toast; Android keeps the copied key out of the clipboard's preview. A phone's sheet
+    is one column, two lying down (who, how and the default key, then the code, the other keys and the buttons);
+    the tablet's dialog (a book's right half) and the iPad's form sheet one column; an Android tabletop full screen
+    as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pagar Ana · R$ 98,00"
+    whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Editar grupo, Sair do grupo and Apagar grupo. "Editar
     grupo" (`Route.EditGroup`) has Novo grupo's fields: tapping
     the avatar or "Trocar cor" cycles its color (groups have no photo yet), the name has 1 to 40 letters and the type
     stays editable. Moeda locks once the group has a bill on the device ("Não muda
     depois da primeira despesa"), with no server check. Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
-    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS, a dialog on the web and
-    on Android tablets. Its last row, under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
+    rest stays. Salvar stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
+    with an iPad's room, the avatar beside "Trocar cor" on an iPhone lying down) and a dialog on the web; on Android
+    full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
+    anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
+    under Moeda, is "Divisão padrão" with the group's way ("Igual", "Partes"…).
   - "Divisão padrão" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Editar grupo, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), in its
-    dialog's place on the web (a drawer on a phone), and the way Editar grupo opens on Android (a dialog on a
-    tablet). It sets how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
+    dialog's place on the web (a drawer on a phone), and on Android full screen on a phone and a foldable upright, a
+    dialog on a tablet (920 dp in two columns lying down, 560 dp upright) and in a book's right half in one column (off
+    the hinge as every dialog). It sets
+    how the group's new bills split: Igual (who is in it, everyone by default), Partes, Porcentagem
     (whole numbers adding up to 100, else "A soma dá 90%. Faltam 10%." and Salvar disabled) or Pela renda, whose
     incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
     percentages they give (`IncomePercents`). "Numa conta de R$ 100,00: Pierre R$ 75,00 · Ana R$ 25,00" with the bar
@@ -412,7 +451,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     precisar.", until someone saves). Two columns lying down (the ways to split, the people with the example), in
     the Mac's sheet, an iPad lying down and the web from 1024 px. "Exceções por categoria" (6.7f) lists the categories
     that split their own way ("Nenhuma. Todas as categorias seguem a divisão acima."): "Adicionar exceção" opens
-    "Exceção por categoria" (a bottom sheet on Android, a sheet on iOS and macOS, in the dialog's place on the web),
+    "Exceção por categoria" (a bottom sheet on Android where Divisão padrão is full screen, a 480 dp dialog where it
+    is a dialog, in a book's right half; a sheet on iOS and macOS, 540 pt with an iPad's room; in the dialog's place
+    on the web),
     one main category or subcategory (each at most once) split by Igual (who is in it), Partes or Porcentagem (whole
     numbers adding up to 100), with its own example, saved with the rest of the default by Salvar
     (`GroupDefaultSplit.exceptions`, `ExceptionEditor`). A new bill of that category, or of a subcategory of it
@@ -455,7 +496,12 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     Last-Write-Wins row). Conta, Despesas and Dividir name up to two payers ("Ana e Bruno pagaram", the device's
     user first, `PayerOrder`) and count more ("3 pessoas pagaram"), and Dividir marks each of several payers "Pagou
     parte da conta"; Conta's "Sua parte" names whom the bill puts it on, as Saldos does
-    (`GroupBalances.findDebtsWithin`).
+    (`GroupBalances.findDebtsWithin`). On a fold (flow 7) Rachar conta, Dividir, Itens and Editar conta open in a
+    book's right half with the group under the scrim, "Quem pagou", "Várias pessoas pagaram", "Rachar em qual grupo?",
+    Quando's date (in the book only) and every confirmation in that half too; a tabletop splits a new bill in two
+    full screen (`TabletopForm`): the amount, Dividir's modes or the items on top, the rest and Salvar or Pronto
+    below, Item and Categoria opening above the hinge, while Editar conta and Conta open as the book's dialog. The
+    iPad's Rachar conta is a bill sheet (820×640 lying down, 620×860 upright).
   - "Itens da conta" (7.5, `SplitBillUiState.itemsEditor`) is Dividir's fifth mode, "Itens": it opens in Dividir's
     place (pushed on iOS, the sheet's next page on the Mac, a 920 px dialog on the web, 640 px on a tablet, a drawer on
     a phone), and a bill already split by its items opens Dividir straight on it. Each item has a name (1 to 60

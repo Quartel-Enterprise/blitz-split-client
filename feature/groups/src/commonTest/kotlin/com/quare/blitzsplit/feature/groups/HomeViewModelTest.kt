@@ -1837,6 +1837,7 @@ class HomeViewModelTest {
         groupId = "trio",
         fromMemberId = "member-Ana",
         toMemberId = "member-Pierre",
+        offersReceiverKeys = true,
     )
 
     private fun hoursAgo(hours: Int): Long = now - hours.hours.inWholeMilliseconds
@@ -1886,6 +1887,7 @@ class HomeViewModelTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     // Why: one payer for the whole bill, split over the members given.

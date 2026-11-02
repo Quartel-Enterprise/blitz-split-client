@@ -126,6 +126,11 @@ struct SplitBillView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: SplitBillModel?
 
+    #if os(iOS)
+    /// The window under the sheet, which sizes it.
+    @Environment(\.windowLayout) private var windowLayout
+    #endif
+
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
@@ -142,6 +147,10 @@ struct SplitBillView: View {
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isDeleting == true)
+        #if os(iOS)
+        // The canvas' 820×640 sheet lying down and 620×860 upright with an iPad's room
+        .billSheetSizing(in: windowLayout)
+        #endif
         .billDeletionAlert(
             model?.state.deletion,
             currency: model?.state.currency,
@@ -239,7 +248,7 @@ private struct SplitFaces: View {
     var body: some View {
         HStack(spacing: -size * 0.3) {
             ForEach(people.prefix(4), id: \.id) { person in
-                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
                     .overlay(Circle().strokeBorder(Palette.card, lineWidth: 1.5))
             }
         }
@@ -451,7 +460,7 @@ private struct PhoneSplitBill: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     } else if let payer = state.payer {
-                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: nil, size: 24)
+                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: payer.photoUrl, size: 24)
                         Text(verbatim: SplitBillCopy.name(payer))
                             .foregroundStyle(.secondary)
                     } else if state.isPayerFormerMember {
@@ -632,7 +641,7 @@ private struct PayerSheet: View {
                         model.send(SplitBillUiEventOnPayerPicked(memberId: person.id))
                     } label: {
                         HStack(spacing: 12) {
-                            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: 32)
+                            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(verbatim: SplitBillCopy.name(person))
                                 if !person.hasJoined {
@@ -828,7 +837,7 @@ private struct PayerAmountFace: View {
 
     var body: some View {
         if let person = row.person {
-            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: nil, size: size)
+            AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
         } else {
             Circle()
                 .fill(.fill.tertiary)

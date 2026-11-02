@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.InviteDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.JoinGroupResultDto
+import com.quare.blitzsplit.core.groups.data.dto.MemberPhotoDto
 import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
@@ -24,13 +25,18 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
+import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapperImpl
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -44,6 +50,7 @@ class GroupRepositoryImplTest {
     private lateinit var local: FakeGroupLocalDataSource
     private lateinit var remote: FakeGroupRemoteDataSource
     private lateinit var deletions: InMemoryGroupDeletionRepository
+    private lateinit var profileLocal: FakeGroupOwnerProfileLocalDataSource
     private lateinit var repository: GroupRepositoryImpl
 
     @Test
@@ -3474,6 +3481,7 @@ class GroupRepositoryImplTest {
         hasJoined = false,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun removedMember(
@@ -3502,6 +3510,7 @@ class GroupRepositoryImplTest {
                 hasJoined = true,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 id = "new-2",
@@ -3511,6 +3520,7 @@ class GroupRepositoryImplTest {
                 hasJoined = false,
                 userId = null,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = true,
@@ -3595,6 +3605,322 @@ class GroupRepositoryImplTest {
 
         // Then
         assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `GIVEN photos on the device WHEN downloading THEN the server photos take the place of every one`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            storedPhotos = listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana-old.jpg",
+                ),
+                MemberPhotoEntity(
+                    userId = "user-3",
+                    photoUrl = "https://photos/bruno.jpg",
+                ),
+            ),
+            remoteMemberPhotos = listOf(
+                MemberPhotoDto(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana-new.jpg",
+                ),
+                MemberPhotoDto(
+                    userId = "user-4",
+                    photoUrl = "https://photos/carla.jpg",
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(
+            listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana-new.jpg",
+                ),
+                MemberPhotoEntity(
+                    userId = "user-4",
+                    photoUrl = "https://photos/carla.jpg",
+                ),
+            ),
+            local.photos.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a photo someone removed WHEN downloading THEN it leaves the device`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            storedPhotos = listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana.jpg",
+                ),
+            ),
+            remoteMemberPhotos = listOf(
+                MemberPhotoDto(
+                    userId = "user-2",
+                    photoUrl = null,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(local.photos.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN profiles with and without a photo WHEN downloading THEN only the ones with a photo are kept`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMemberPhotos = listOf(
+                    MemberPhotoDto(
+                        userId = "user-2",
+                        photoUrl = "https://photos/ana.jpg",
+                    ),
+                    MemberPhotoDto(
+                        userId = "user-3",
+                        photoUrl = null,
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1")
+
+            // Then
+            assertEquals(
+                listOf(
+                    MemberPhotoEntity(
+                        userId = "user-2",
+                        photoUrl = "https://photos/ana.jpg",
+                    ),
+                ),
+                local.photos.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a member with a photo on the server WHEN downloading THEN the group shows their photo`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(groupDto(id = "group-1")),
+            remoteMembers = listOf(
+                memberDto(
+                    id = "m-2",
+                    groupId = "group-1",
+                    userId = "user-2",
+                    name = "Ana",
+                ),
+                memberDto(
+                    id = "m-3",
+                    groupId = "group-1",
+                    userId = null,
+                    name = "Bruno",
+                ),
+            ),
+            remoteMemberPhotos = listOf(
+                MemberPhotoDto(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana.jpg",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        val members = repository
+            .observeGroups()
+            .first()
+            .single()
+            .members
+        assertEquals(listOf("https://photos/ana.jpg", null), members.map { it.photoUrl })
+    }
+
+    @Test
+    fun `GIVEN the photos fail to load WHEN downloading THEN it succeeds and keeps the photos the device had`() =
+        runTest {
+            // Given
+            val storedPhotos = listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/ana.jpg",
+                ),
+            )
+            prepareScenario(
+                remoteGroups = listOf(groupDto(id = "group-1")),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = "user-2",
+                    ),
+                ),
+                storedPhotos = storedPhotos,
+                memberPhotosError = IllegalStateException("server down"),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(storedPhotos, local.photos.value)
+            assertEquals(listOf("m-2"), local.members.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the groups fail to load WHEN downloading THEN asks for no photo and keeps the ones it had`() = runTest {
+        // Given
+        val storedPhotos = listOf(
+            MemberPhotoEntity(
+                userId = "user-2",
+                photoUrl = "https://photos/ana.jpg",
+            ),
+        )
+        prepareScenario(
+            fetchError = IllegalStateException("server down"),
+            storedPhotos = storedPhotos,
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(0, remote.photoFetches)
+        assertEquals(storedPhotos, local.photos.value)
+    }
+
+    @Test
+    fun `GIVEN the groups are observed WHEN a member photo changes on the device THEN the group shows the new photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(carlaJoined),
+                storedPhotos = listOf(
+                    MemberPhotoEntity(
+                        userId = "user-2",
+                        photoUrl = "https://photos/carla-old.jpg",
+                    ),
+                ),
+            )
+            val emissions = mutableListOf<List<Group>>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.observeGroups().collect(emissions::add)
+            }
+
+            // When
+            local.photos.value = listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/carla-new.jpg",
+                ),
+            )
+
+            // Then
+            assertEquals(
+                listOf("https://photos/carla-old.jpg", "https://photos/carla-new.jpg"),
+                emissions.map {
+                    it
+                        .single()
+                        .members
+                        .single()
+                        .photoUrl
+                },
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups are observed WHEN the profile photo changes THEN this device user shows the new photo`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(pierreMember, carlaJoined),
+                storedPhotos = listOf(
+                    MemberPhotoEntity(
+                        userId = "user-1",
+                        photoUrl = "https://photos/pierre-synced.jpg",
+                    ),
+                ),
+                myPhotoUrl = null,
+            )
+            val emissions = mutableListOf<List<Group>>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.observeGroups().collect(emissions::add)
+            }
+
+            // When
+            profileLocal.photoUrl.value = "https://photos/pierre-local.jpg"
+
+            // Then
+            assertEquals(
+                listOf(listOf(null, null), listOf("https://photos/pierre-local.jpg", null)),
+                emissions.map { groups -> groups.single().members.map { it.photoUrl } },
+            )
+        }
+
+    @Test
+    fun `GIVEN a photo picked offline WHEN observing the groups THEN this device user shows it as a data URI`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                storedMembers = listOf(pierreMember),
+                myPhotoUrl = "https://photos/pierre-old.jpg",
+            )
+            profileLocal.pendingPhoto = byteArrayOf(1, 2, 3)
+
+            // When
+            val groups = repository.observeGroups().first()
+
+            // Then
+            assertEquals(
+                "data:image/jpeg;base64,AQID",
+                groups
+                    .single()
+                    .members
+                    .single()
+                    .photoUrl,
+            )
+        }
+
+    @Test
+    fun `GIVEN photos on the device WHEN clearing THEN the device has none`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(carlaJoined),
+            storedPhotos = listOf(
+                MemberPhotoEntity(
+                    userId = "user-2",
+                    photoUrl = "https://photos/carla.jpg",
+                ),
+            ),
+        )
+
+        // When
+        repository.clear()
+
+        // Then
+        assertTrue(local.photos.value.isEmpty())
     }
 
     private fun group(
@@ -3717,11 +4043,16 @@ class GroupRepositoryImplTest {
         exitError: Throwable? = null,
         removedGroups: List<RemovedGroupDto> = emptyList(),
         removedGroupsError: Throwable? = null,
+        storedPhotos: List<MemberPhotoEntity> = emptyList(),
+        remoteMemberPhotos: List<MemberPhotoDto> = emptyList(),
+        memberPhotosError: Throwable? = null,
+        myPhotoUrl: String? = null,
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
             it.memberWriteError = memberWriteError
             it.groupWriteError = groupWriteError
+            it.photos.value = storedPhotos
         }
         remote = FakeGroupRemoteDataSource(
             groups = remoteGroups,
@@ -3740,12 +4071,18 @@ class GroupRepositoryImplTest {
             it.exitError = exitError
             it.removedGroups = removedGroups
             it.removedGroupsError = removedGroupsError
+            it.memberPhotos = remoteMemberPhotos
+            it.memberPhotosError = memberPhotosError
+        }
+        profileLocal = FakeGroupOwnerProfileLocalDataSource(profileOwnerUserId).also {
+            it.photoUrl.value = myPhotoUrl
         }
         deletions = InMemoryGroupDeletionRepository()
         repository = GroupRepositoryImpl(
             local = local,
             remote = remote,
-            profileLocal = FakeGroupOwnerProfileLocalDataSource(profileOwnerUserId),
+            profileLocal = profileLocal,
+            profileMapper = ProfileMapperImpl(),
             mapper = GroupMapperImpl(),
             deletions = deletions,
         )
@@ -3759,6 +4096,7 @@ private class FakeGroupLocalDataSource(
 ) : GroupLocalDataSource {
     val groups = MutableStateFlow(storedGroups)
     val members = MutableStateFlow(storedMembers)
+    val photos = MutableStateFlow<List<MemberPhotoEntity>>(emptyList())
     val groupWrites = mutableListOf<Pair<GroupEntity, List<GroupMemberEntity>>>()
     var insertError: Throwable? = null
 
@@ -3787,6 +4125,12 @@ private class FakeGroupLocalDataSource(
     override fun observeGroups(): Flow<List<GroupEntity>> = groups
 
     override fun observeMembers(): Flow<List<GroupMemberEntity>> = members
+
+    override fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>> = photos
+
+    override suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>) {
+        photos.value = entities
+    }
 
     override fun observeHasPending(): Flow<Boolean> = combine(groups, members) { groupRows, memberRows ->
         groupRows.any { it.pendingSync } || memberRows.any { it.pendingSync }
@@ -4049,22 +4393,31 @@ private class FakeGroupLocalDataSource(
     override suspend fun clear() {
         members.value = emptyList()
         groups.value = emptyList()
+        photos.value = emptyList()
     }
 }
 
 private class FakeGroupOwnerProfileLocalDataSource(
     private val ownerUserId: String?,
 ) : ProfileLocalDataSource {
-    override fun observe(): Flow<ProfileEntity?> = error("unused")
+    // Why: the profile's own photo, which this device's user's member shows.
+    val photoUrl = MutableStateFlow<String?>(null)
 
-    override suspend fun get(): ProfileEntity = ProfileEntity(
+    // Why: a photo picked offline, not uploaded yet.
+    var pendingPhoto: ByteArray? = null
+
+    override fun observe(): Flow<ProfileEntity?> = photoUrl.map(::profile)
+
+    override suspend fun get(): ProfileEntity = profile(photoUrl.value)
+
+    private fun profile(photoUrl: String?): ProfileEntity = ProfileEntity(
         id = "profile-1",
         displayName = "Pierre",
         avatarColor = "lilac",
-        photoUrl = null,
+        photoUrl = photoUrl,
         updatedAt = 1L,
         pendingSync = false,
-        pendingPhoto = null,
+        pendingPhoto = pendingPhoto,
         ownerUserId = ownerUserId,
     )
 
@@ -4120,6 +4473,11 @@ private class FakeGroupRemoteDataSource(
     val askedRemovedGroupIds = mutableListOf<List<String>>()
     var removedGroupsError: Throwable? = null
 
+    // Why: the profiles' photos the server lets this user read.
+    var memberPhotos: List<MemberPhotoDto> = emptyList()
+    var memberPhotosError: Throwable? = null
+    var photoFetches = 0
+
     override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> {
         calls += "groups"
         onUpsertGroups()
@@ -4149,6 +4507,12 @@ private class FakeGroupRemoteDataSource(
     override suspend fun fetchMembers(): List<GroupMemberDto> {
         fetchError?.let { throw it }
         return members
+    }
+
+    override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> {
+        photoFetches++
+        memberPhotosError?.let { throw it }
+        return memberPhotos
     }
 
     override suspend fun fetchInvite(code: String): InviteDto? = error("unused")

@@ -21,6 +21,7 @@
     <string name="register_payment_confirm_paid">Confirm payment</string>
     <string name="register_payment_confirm_between">Record payment</string>
     <string name="register_payment_cancel">Cancel</string>
+    <string name="register_payment_screen_title">Record payment</string>
     <string name="register_payment_close">Close</string>
     <string name="register_payment_save_error">Couldn\'t record the payment. Try again.</string>
     <string name="register_payment_former_member">Former member</string>
@@ -29,4 +30,31 @@
     <string name="register_payment_pick_pair">%1$s → %2$s</string>
     <string name="register_payment_pick_empty_title">Nobody owes anything right now</string>
     <string name="register_payment_pick_empty_body">When someone owes, just pick here who paid.</string>
+    <string name="register_payment_pay_title">Pay %s</string>
+    <string name="register_payment_pay_group">%s · you owe</string>
+    <plurals name="register_payment_pay_groups">
+        <item quantity="one">%d group · you owe</item>
+        <item quantity="other">%d groups · you owe</item>
+    </plurals>
+    <string name="register_payment_pay_method_pix">Pix</string>
+    <string name="register_payment_pay_method_bitcoin">Bitcoin</string>
+    <string name="register_payment_pay_default_key">%s\'s default key</string>
+    <string name="register_payment_pay_copy_key">Copy key</string>
+    <string name="register_payment_pay_pix_code">Pix copy and paste</string>
+    <string name="register_payment_pay_pix_code_amount">It already comes with %s.</string>
+    <string name="register_payment_pay_copy_code">Copy code</string>
+    <string name="register_payment_pay_other_keys">%s\'s other keys</string>
+    <string name="register_payment_pay_copy_other">Copy %1$s of %2$s</string>
+    <string name="register_payment_pay_note_pix">Pay in your bank\'s app and come back to mark it as paid. Check that the bank shows %s\'s name.</string>
+    <string name="register_payment_pay_note_bitcoin">Pay in your wallet and come back to mark it as paid.</string>
+    <string name="register_payment_pay_later">Later</string>
+    <string name="register_payment_pay_mark_paid">Mark as paid</string>
+    <string name="register_payment_pay_type_cpf">CPF</string>
+    <string name="register_payment_pay_type_phone">Phone</string>
+    <string name="register_payment_pay_type_email">Email</string>
+    <string name="register_payment_pay_type_random">Random key</string>
+    <string name="register_payment_pay_type_lightning">Lightning</string>
+    <string name="register_payment_pay_type_onchain">On-chain</string>
+    <string name="register_payment_pay_otherwise">I paid another amount or another way</string>
+    <string name="register_payment_pay_copied">Copied</string>
 </resources>

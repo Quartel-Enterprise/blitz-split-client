@@ -188,7 +188,7 @@ struct MemberFaces: View {
     var body: some View {
         HStack(spacing: -6) {
             ForEach(Array(group.faces.enumerated()), id: \.offset) { _, face in
-                AvatarPhoto(initial: face.initial, color: face.color, photoUrl: nil, size: 20)
+                AvatarPhoto(initial: face.initial, color: face.color, photoUrl: face.photoUrl, size: 20)
             }
             if group.extraMemberCount > 0 {
                 Text(verbatim: "+\(group.extraMemberCount)")

@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 // In-memory PaymentKeyRepository: the state is public so a test can set and read it, every call is
 // recorded, and the failure knobs are public vars.
@@ -20,6 +21,11 @@ class FakePaymentKeyRepository(
     var pullError: Throwable? = null
     var clearError: Throwable? = null
     var clearCount = 0
+
+    // Why: someone else's keys, by their user id, as the last sync cached them.
+    val memberKeys = MutableStateFlow<Map<String, List<PaymentKey>>>(emptyMap())
+    val memberKeysDownloadedUserIds = mutableListOf<String>()
+    var memberKeysError: Throwable? = null
 
     override fun observeKeys(): Flow<List<PaymentKey>> = keys
 
@@ -55,10 +61,18 @@ class FakePaymentKeyRepository(
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 
+    override fun observeKeysOf(userId: String): Flow<List<PaymentKey>> = memberKeys.map { it[userId].orEmpty() }
+
+    override suspend fun downloadMemberKeys(userId: String): Result<Unit> {
+        memberKeysDownloadedUserIds += userId
+        return memberKeysError?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
+
     override suspend fun clear() {
         clearCount++
         clearError?.let { throw it }
         keys.value = emptyList()
+        memberKeys.value = emptyMap()
         hasPendingChanges.value = false
     }
 }

@@ -11,6 +11,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -78,6 +79,7 @@ fun SplitBillContent(
             }
         },
         modifier = modifier,
+        tabletop = TabletopForm.ConfirmAtBottom,
     )
 }
 

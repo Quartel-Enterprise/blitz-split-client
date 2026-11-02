@@ -312,6 +312,7 @@ class EditAfterPaymentViewModelTest {
         hasJoined = true,
         userId = null,
         inviteCode = null,
+        photoUrl = null,
     )
 
     private fun prepareScenario(storedSettlements: List<Settlement> = listOf(brunoPaidAna)) {

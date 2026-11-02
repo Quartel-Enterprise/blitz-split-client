@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -24,8 +25,14 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PaymentKey
+import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
+import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
@@ -53,6 +60,8 @@ import kotlin.test.assertTrue
 
 class SettleUpViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private lateinit var paymentKeys: FakePaymentKeyRepository
+    private lateinit var route: Route.SettleUp
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
@@ -220,9 +229,162 @@ class SettleUpViewModelTest {
         )
     }
 
-    private val route = Route.SettleUp(
-        personKey = "user:carla",
-        currency = GroupCurrency.BRL,
+    @Test
+    fun `GIVEN you owe Carla across groups and she has a key WHEN settling up opens THEN shows her keys for the net`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = youOweCarlaAcrossGroups,
+                carlaKeys = listOf(carlaPhoneKey),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            val expected = PixBrCode.of(
+                key = "+5521987654321",
+                amountMinor = 4_000L,
+                receiverName = "Carla",
+            )
+            assertTrue(state.showsReceiverKeys)
+            assertTrue(state.canMarkAsPaid)
+            assertEquals("carla-phone", state.defaultKey?.id)
+            assertEquals("+55 (21) 98765-4321", state.defaultKey?.text)
+            assertNull(state.groupName)
+            assertEquals(expected, state.pixCode)
+            assertEquals(EncodeQrCodeUseCase()(expected), state.pixQrCode)
+        }
+
+    @Test
+    fun `GIVEN you owe Carla in one group WHEN settling up opens THEN names that group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            bills = listOf(owes(APE, ME_APE, CARLA_APE, 9_800L)),
+            carlaKeys = listOf(carlaPhoneKey),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsReceiverKeys)
+        assertEquals(APE, state.groupName)
+    }
+
+    @Test
+    fun `GIVEN Carla owes you and you have keys WHEN settling up opens THEN shows the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(carlaKeys = listOf(carlaPhoneKey))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertFalse(state.showsReceiverKeys)
+            assertFalse(state.canMarkAsPaid)
+            assertNull(state.pixCode)
+        }
+
+    @Test
+    fun `GIVEN you owe Carla who is a guest WHEN settling up opens THEN shows the form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            bills = youOweCarlaAcrossGroups,
+            carlaUserId = null,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.isLoaded)
+        assertEquals(PaymentKind.PAID, state.kind)
+        assertTrue(state.receiverKeys.isEmpty())
+        assertFalse(state.showsReceiverKeys)
+    }
+
+    @Test
+    fun `GIVEN you owe Carla with no key cached WHEN settling up opens THEN shows the form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = youOweCarlaAcrossGroups)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertFalse(state.showsReceiverKeys)
+        }
+
+    @Test
+    fun `GIVEN Carla keys across groups WHEN tapping Marcar como pago THEN records one payment per group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = youOweCarlaAcrossGroups,
+                carlaKeys = listOf(carlaPhoneKey),
+                clockMillis = LATER,
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            val recorded = settlements.recordedSettlements
+            assertEquals(listOf(FLORIPA, APE), recorded.map { it.groupId })
+            assertEquals(listOf(ME_FLORIPA, CARLA_APE), recorded.map { it.fromMemberId })
+            assertEquals(listOf(CARLA_FLORIPA, ME_APE), recorded.map { it.toMemberId })
+            assertEquals(listOf(5_000L, 1_000L), recorded.map { it.amountMinor })
+            assertTrue(recorded.all { it.method == SettlementMethod.PIX })
+            assertTrue(recorded.all { it.paidAt == LATER })
+            assertEquals(
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null)),
+                navigator.backStack.value,
+            )
+            assertEquals(
+                RecordedPayment.SettledUp(
+                    recorded.map { it.id },
+                    personName = "Carla",
+                    isPaidByMe = true,
+                ),
+                recordedPayments.observeRecorded().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla keys in one group WHEN tapping Marcar como pago THEN records the whole debt in that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = listOf(owes(APE, ME_APE, CARLA_APE, 9_800L)),
+                carlaKeys = listOf(carlaPhoneKey),
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("10,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(listOf(APE), settlements.recordedSettlements.map { it.groupId })
+            assertEquals(listOf(9_800L), settlements.recordedSettlements.map { it.amountMinor })
+        }
+
+    private val carlaPhoneKey = PaymentKey(
+        id = "carla-phone",
+        type = PaymentKeyType.PHONE,
+        value = "+5521987654321",
+        isDefault = true,
+        addedAt = 1L,
+    )
+
+    // Why: you owe Carla 50,00 in Floripa while she owes you 10,00 in the Apê: a net of 40,00 you pay her.
+    private val youOweCarlaAcrossGroups = listOf(
+        owes(FLORIPA, ME_FLORIPA, CARLA_FLORIPA, 5_000L),
+        owes(APE, CARLA_APE, ME_APE, 1_000L),
     )
 
     private val defaultBills = listOf(
@@ -256,6 +418,7 @@ class SettleUpViewModelTest {
         id: String,
         meId: String,
         carlaId: String,
+        carlaUserId: String?,
     ): Group = Group(
         id = id,
         name = id,
@@ -271,15 +434,17 @@ class SettleUpViewModelTest {
                 hasJoined = true,
                 userId = "pierre",
                 inviteCode = null,
+                photoUrl = null,
             ),
             GroupMember(
                 carlaId,
                 "Carla",
                 AvatarColor.LILAC,
                 isMe = false,
-                hasJoined = true,
-                userId = "carla",
+                hasJoined = carlaUserId != null,
+                userId = carlaUserId,
                 inviteCode = null,
+                photoUrl = null,
             ),
         ),
         isPending = false,
@@ -292,12 +457,22 @@ class SettleUpViewModelTest {
     private fun TestScope.prepareScenario(
         bills: List<Expense> = defaultBills,
         recordGate: CompletableDeferred<Unit>? = null,
+        carlaUserId: String? = CARLA_USER,
+        carlaKeys: List<PaymentKey> = emptyList(),
+        clockMillis: Long = NOW,
     ) {
+        route = Route.SettleUp(
+            personKey = carlaUserId?.let { "user:$it" } ?: "name:carla",
+            currency = GroupCurrency.BRL,
+        )
+        paymentKeys = FakePaymentKeyRepository().also {
+            it.memberKeys.value = mapOf(CARLA_USER to carlaKeys)
+        }
         groups = FakeGroupRepository(
             initialGroups = listOf(
-                group(FLORIPA, ME_FLORIPA, CARLA_FLORIPA),
-                group(APE, ME_APE, CARLA_APE),
-                group(CHURRASCO, ME_CHURRASCO, CARLA_CHURRASCO),
+                group(FLORIPA, ME_FLORIPA, CARLA_FLORIPA, carlaUserId),
+                group(APE, ME_APE, CARLA_APE, carlaUserId),
+                group(CHURRASCO, ME_CHURRASCO, CARLA_CHURRASCO, carlaUserId),
             ),
         )
         expenses = FakeExpenseRepository(initialExpenses = bills)
@@ -312,11 +487,14 @@ class SettleUpViewModelTest {
             route = route,
             navigator = navigator,
             recordSettlement = RecordSettlementUseCase(settlements, recordedPayments) { NOW },
-            settleUp = SettleUpUseCase(settlements, recordedPayments) { NOW },
+            settleUp = SettleUpUseCase(settlements, recordedPayments) { clockMillis },
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),
-            currentTimeMillis = { NOW },
+            currentTimeMillis = { clockMillis },
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { ',' },
+            formatPaymentKey = FormatPaymentKeyUseCase(),
+            observeMemberPaymentKeys = ObserveMemberPaymentKeysUseCase(paymentKeys),
+            encodeQrCode = EncodeQrCodeUseCase(),
             observeGroup = ObserveGroupUseCase(groups),
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
             observePeopleBalances = ObservePeopleBalancesUseCase(
@@ -330,6 +508,8 @@ class SettleUpViewModelTest {
 
     private companion object {
         const val NOW = 1_000L
+        const val LATER = 5_000L
+        const val CARLA_USER = "carla"
         const val FLORIPA = "floripa"
         const val APE = "ape"
         const val CHURRASCO = "churrasco"

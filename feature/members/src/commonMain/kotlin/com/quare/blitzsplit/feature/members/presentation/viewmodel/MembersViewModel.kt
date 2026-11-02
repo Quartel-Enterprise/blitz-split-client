@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RenameMember
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openFromGroupScreen
 import com.quare.blitzsplit.core.presentation.CopiedFeedback
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
@@ -98,11 +99,12 @@ class MembersViewModel(
 
     fun onEvent(event: MembersUiEvent) {
         when (event) {
-            MembersUiEvent.OnShareClicked -> if (isOnTop()) {
-                navigator.navigate(
-                    Route.Invite(route.groupId, isNewGroup = false),
-                )
-            }
+            // Why: over the group, or in the place of its bill the Mac draws beside it.
+            MembersUiEvent.OnShareClicked -> navigator.openFromGroupScreen(
+                from = route,
+                groupId = route.groupId,
+                next = Route.Invite(route.groupId, isNewGroup = false),
+            )
 
             MembersUiEvent.OnAddClicked -> openEditor(
                 memberId = null,
@@ -185,6 +187,7 @@ class MembersViewModel(
         name = member.name,
         initials = Initials.ofMember(member.name, member.isMe),
         avatarColor = member.avatarColor,
+        photoUrl = member.photoUrl,
         isMe = member.isMe,
         hasJoined = member.hasJoined,
         personalLink = member.inviteCode?.let { memberCode ->
@@ -393,6 +396,4 @@ class MembersViewModel(
     private fun send(action: MembersUiAction) {
         viewModelScope.launch { uiAction.emit(action) }
     }
-
-    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 }

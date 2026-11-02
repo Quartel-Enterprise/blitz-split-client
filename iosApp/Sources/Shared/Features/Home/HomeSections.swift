@@ -124,7 +124,7 @@ private struct PersonFace: View {
             AvatarPhoto(
                 initial: person.initials,
                 color: color,
-                photoUrl: nil,
+                photoUrl: person.photoUrl,
                 size: size,
                 font: .system(size: size * 0.34, weight: .semibold),
             )

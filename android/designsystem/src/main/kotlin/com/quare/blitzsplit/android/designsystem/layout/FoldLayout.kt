@@ -28,6 +28,9 @@ import androidx.window.layout.WindowMetricsCalculator
 // Why: the canvas' hinge-gap, the band nothing crosses on a book or a tabletop, whatever width the hinge reports.
 val HingeBand: Dp = 24.dp
 
+// Why: the canvas' tabletop screens keep their halves 48dp apart around the hinge, a thumb's room off its crease.
+val TabletopGap: Dp = 48.dp
+
 internal val TabletSmallestWidth: Dp = 600.dp
 
 // Why: a foldable's inner screen is under 960dp on its longest side, a tablet's is not.

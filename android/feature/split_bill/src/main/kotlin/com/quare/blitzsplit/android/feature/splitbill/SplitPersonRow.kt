@@ -119,6 +119,7 @@ internal fun SplitPersonRow(
             AvatarBadge(
                 initial = row.person.initials,
                 color = row.person.avatarColor,
+                photoUrl = row.person.photoUrl,
                 size = 36.dp,
                 modifier = Modifier.alpha(if (isDimmed) DIMMED_ALPHA else 1f),
             )

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.profile.data.mapper
 
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.profile.data.dto.PaymentKeyDto
+import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 
 interface PaymentKeyMapper {
@@ -23,4 +24,12 @@ interface PaymentKeyMapper {
         dto: PaymentKeyDto,
         ownerUserId: String,
     ): PaymentKeyEntity
+
+    // Why: someone else's keys, read the same way as the user's own: each method's default first.
+    fun toDomainOfMember(entities: List<MemberPaymentKeyEntity>): List<PaymentKey>
+
+    fun toMemberEntity(
+        dto: PaymentKeyDto,
+        viewerUserId: String,
+    ): MemberPaymentKeyEntity
 }

@@ -3,10 +3,12 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
@@ -20,7 +22,17 @@ class JsPaymentPerson(
     val name: String,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val isMe: Boolean,
+)
+
+// Why: a key of the receiver for "Pagar Ana" (4.5): value is what is copied, text how it reads.
+class JsReceiverKey(
+    val id: String,
+    // Why: the PaymentKeyType's name ("PHONE").
+    val type: String,
+    val value: String,
+    val text: String,
 )
 
 // Why: amounts in the currency's minor unit and instants in epoch millis, as numbers JavaScript reads exactly.
@@ -53,6 +65,20 @@ class JsRegisterPaymentState(
     val isSaving: Boolean,
     val canConfirm: Boolean,
     val isLoaded: Boolean,
+    // Why: "Pagar Ana" (4.5) takes the form's place while this person pays someone with a key.
+    val showsReceiverKeys: Boolean,
+    val groupName: String?,
+    // Why: the PaymentMethod's names, "PIX" or "BITCOIN": those the receiver has keys of, and the one shown.
+    val keyMethods: Array<String>,
+    val showsKeyMethodPicker: Boolean,
+    val keyMethod: String,
+    val defaultKey: JsReceiverKey?,
+    val otherKeys: Array<JsReceiverKey>,
+    // Why: "Pix copia e cola" with the whole debt in it, and its QR code's modules row by row, pixQrSize by pixQrSize.
+    val pixCode: String?,
+    val pixQrSize: Int,
+    val pixQrModules: Array<Boolean>,
+    val canMarkAsPaid: Boolean,
 )
 
 class RegisterPaymentPresenter(
@@ -94,6 +120,20 @@ class RegisterPaymentPresenter(
                 isSaving = state.isSaving,
                 canConfirm = state.canConfirm,
                 isLoaded = state.isLoaded,
+                showsReceiverKeys = state.showsReceiverKeys,
+                groupName = state.groupName,
+                keyMethods = state.keyMethods.map(PaymentMethod::name).toTypedArray(),
+                showsKeyMethodPicker = state.showsKeyMethodPicker,
+                keyMethod = state.shownKeyMethod.name,
+                defaultKey = state.defaultKey?.let(::toJsReceiverKey),
+                otherKeys = state.otherKeys.map(::toJsReceiverKey).toTypedArray(),
+                pixCode = state.pixCode,
+                pixQrSize = state.pixQrCode?.size ?: 0,
+                pixQrModules = state.pixQrCode
+                    ?.modules
+                    .orEmpty()
+                    .toTypedArray(),
+                canMarkAsPaid = state.canMarkAsPaid,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -141,6 +181,22 @@ class RegisterPaymentPresenter(
         viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
     }
 
+    // Why: a PaymentMethod's name; an unknown one is ignored.
+    fun pickKeyMethod(name: String) {
+        val method = PaymentMethod.entries.firstOrNull { it.name == name } ?: return
+        viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(method))
+    }
+
+    // Why: "Marcar como pago", once paid in the bank or the wallet.
+    fun markAsPaid() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+    }
+
+    // Why: "Paguei outro valor ou de outro jeito", which opens the form in place of "Pagar Ana".
+    fun payOtherwise() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnPayOtherwiseClicked)
+    }
+
     fun close() {
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
     }
@@ -155,5 +211,13 @@ internal fun toJsPaymentPerson(person: PaymentPerson): JsPaymentPerson = JsPayme
     name = person.name,
     initials = person.initials,
     color = person.avatarColor.code,
+    photoUrl = person.photoUrl,
     isMe = person.isMe,
+)
+
+private fun toJsReceiverKey(key: ReceiverKey): JsReceiverKey = JsReceiverKey(
+    id = key.id,
+    type = key.type.name,
+    value = key.value,
+    text = key.text,
 )

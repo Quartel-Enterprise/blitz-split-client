@@ -323,7 +323,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
           const name = person.isMe ? t('stats_you', { name: nameOrFormer(person.name) }) : nameOrFormer(person.name)
           return (
             <div key={person.memberId} className="flex items-center gap-2.5">
-              <Avatar initial={person.initials} color={person.color} className="size-7 text-[11px]" />
+              <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
               <span className="w-[108px] shrink-0 truncate font-medium">{name}</span>
               <span role="img" aria-label={`${name}: ${money(person.amountMinor)}`} className="flex h-2 min-w-0 flex-1 rounded-full bg-muted">
                 <span className="rounded-full bg-primary" style={{ width: `${person.barFraction * 100}%` }} />

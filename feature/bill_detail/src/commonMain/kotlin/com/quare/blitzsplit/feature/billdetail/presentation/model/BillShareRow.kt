@@ -9,6 +9,8 @@ data class BillShareRow(
     val name: String?,
     val initials: String,
     val avatarColor: AvatarColor,
+    // Why: the profile photo over the initials, null for someone with none or nobody joined as.
+    val photoUrl: String?,
     val isMe: Boolean,
     // Why: "Ainda não entrou".
     val hasJoined: Boolean,

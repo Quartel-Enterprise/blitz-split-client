@@ -82,6 +82,7 @@ object ContactBook {
             key = key,
             name = named.name,
             color = named.avatarColor,
+            photoUrl = named.photoUrl,
             userId = parts.firstNotNullOfOrNull { it.member.userId },
             groups = parts.map { it.group },
             nets = nets,
