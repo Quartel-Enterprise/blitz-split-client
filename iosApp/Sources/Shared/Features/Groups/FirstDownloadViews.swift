@@ -63,7 +63,10 @@ extension GroupsCopy {
         guard let progress, let groupCount = progress.groupCount?.intValue else {
             return String(localized: "Syncing…")
         }
-        return String(localized: "Syncing… \(Int(progress.arrivedGroupCount)) of \(groupCount) groups")
+        let arrived = Int(progress.arrivedGroupCount)
+        return groupCount == 1
+            ? String(localized: "Syncing… \(arrived) of 1 group")
+            : String(localized: "Syncing… \(arrived) of \(groupCount) groups")
     }
 
     /// "3 of 7 groups. You can use the app meanwhile: what has arrived shows below."
@@ -71,8 +74,11 @@ extension GroupsCopy {
         guard let groupCount = progress.groupCount?.intValue else {
             return String(localized: "You can use the app meanwhile: what has arrived shows below.")
         }
-        return String(
-            localized: "\(Int(progress.arrivedGroupCount)) of \(groupCount) groups. You can use the app meanwhile: what has arrived shows below.",
-        )
+        let arrived = Int(progress.arrivedGroupCount)
+        return groupCount == 1
+            ? String(localized: "\(arrived) of 1 group. You can use the app meanwhile: what has arrived shows below.")
+            : String(
+                localized: "\(arrived) of \(groupCount) groups. You can use the app meanwhile: what has arrived shows below.",
+            )
     }
 }

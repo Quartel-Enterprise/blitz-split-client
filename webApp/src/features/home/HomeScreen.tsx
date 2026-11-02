@@ -67,7 +67,7 @@ export function HomeScreen() {
         </div>
         {state.showsHome && <Shortcuts presenter={presenter} state={state} variant="tiles" />}
 
-        {(state.syncBadge || state.isFirstDownload) && (
+        {(state.syncBadge || state.firstDownload) && (
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />

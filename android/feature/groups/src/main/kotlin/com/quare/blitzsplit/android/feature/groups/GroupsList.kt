@@ -78,28 +78,25 @@ internal fun LazyGridScope.groupsListItems(
     showsSummary: Boolean = true,
 ) {
     val firstDownload = state.firstDownload
-    if (firstDownload != null) {
+    // Why: "Trazendo seus grupos" takes Saldo geral's place while the first download brings the groups down.
+    if (showsSummary) {
         item(
-            key = "first-download",
+            key = if (firstDownload != null) "first-download" else "summary",
             span = fullLine,
             contentType = "summary",
         ) {
-            GroupsFirstDownloadCard(
-                progress = firstDownload,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
-        }
-    } else if (showsSummary) {
-        item(
-            key = "summary",
-            span = fullLine,
-            contentType = "summary",
-        ) {
-            GroupsSummaryCard(
-                summary = state.summary,
-                onEvent = onEvent,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
+            if (firstDownload != null) {
+                GroupsFirstDownloadCard(
+                    progress = firstDownload,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            } else {
+                GroupsSummaryCard(
+                    summary = state.summary,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
         }
     }
     val open = state.openGroups

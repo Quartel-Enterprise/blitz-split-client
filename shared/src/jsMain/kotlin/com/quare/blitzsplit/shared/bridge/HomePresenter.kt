@@ -96,9 +96,10 @@ class JsHomeState(
     val syncBadge: String?,
     val pendingChangeCount: Int,
     val canRetrySync: Boolean,
-    // Why: "Sincronizando…" with the bar and the skeletons, while an account's first download fills the browser.
-    val isFirstDownload: Boolean,
-    // Why: "3 de 7 grupos" and the bar's share, null when there is no first download.
+    /*
+     * Why: "Sincronizando… 3 de 7 grupos" with the bar and the skeletons, while an account's first download fills the
+     * browser; null when there is none.
+     */
     val firstDownload: JsDownloadProgress?,
     val isLoaded: Boolean,
     val showsFirstUse: Boolean,
@@ -139,7 +140,6 @@ class HomePresenter {
                 syncBadge = state.syncBadge?.name,
                 pendingChangeCount = state.pendingChangeCount,
                 canRetrySync = state.canRetrySync,
-                isFirstDownload = state.isFirstDownload,
                 firstDownload = state.firstDownload?.toJsDownloadProgress(),
                 isLoaded = state.isLoaded,
                 showsFirstUse = state.showsFirstUse,

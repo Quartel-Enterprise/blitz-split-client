@@ -431,7 +431,6 @@ private fun EmptyGroupsColumn(
     }
 }
 
-// Why: the chip only shows while the sync asks for attention; Grupos and Início draw it alike.
 @Composable
 private fun syncingLabelOf(progress: DownloadProgress?): String {
     val groupCount = progress?.groupCount ?: return stringResource(R.string.groups_sync_syncing)
@@ -443,6 +442,7 @@ private fun syncingLabelOf(progress: DownloadProgress?): String {
     )
 }
 
+// Why: the chip only shows while the sync asks for attention; Grupos and Início draw it alike.
 @Composable
 internal fun SyncBadgeChip(
     badge: SyncBadge?,

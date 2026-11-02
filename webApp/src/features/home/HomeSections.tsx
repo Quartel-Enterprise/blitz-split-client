@@ -58,7 +58,7 @@ export function HomeSummaryCards({ presenter, state }: SectionProps) {
           </span>
         ))}
         <span className="text-xs text-muted-foreground">
-          {t(state.isFirstDownload ? 'home_summaryFirstDownloadHint' : isSettled ? 'home_summarySettledHint' : (summaryHints[summary.kind] ?? 'home_summarySettledHint'))}
+          {t(state.firstDownload ? 'home_summaryFirstDownloadHint' : isSettled ? 'home_summarySettledHint' : (summaryHints[summary.kind] ?? 'home_summarySettledHint'))}
         </span>
       </section>
       <SplitCard
@@ -166,7 +166,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
       document.removeEventListener('pointerdown', hide)
     }
   }, [tip])
-  if (!state.showsPeople && !state.isFirstDownload) return null
+  if (!state.showsPeople && !state.firstDownload) return null
 
   const people = Array.from(state.people)
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
@@ -358,7 +358,7 @@ function PendingDot() {
  */
 export function RecentBills({ presenter, state }: SectionProps) {
   const rows = Array.from(state.billDays).flatMap((day) => Array.from(day.bills).map((bill) => ({ bill, day: formatDayLabel(day.dayStartMillis, day.relativeDay) })))
-  if (rows.length === 0 && !state.isFirstDownload) return null
+  if (rows.length === 0 && !state.firstDownload) return null
   const open = (bill: JsHomeBill) => presenter.openBill(bill.groupId, bill.id)
   const shareClass = (bill: JsHomeBill) => cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))
   return (
