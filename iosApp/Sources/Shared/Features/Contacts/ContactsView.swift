@@ -102,8 +102,7 @@ struct ContactsColumns: View {
 
     /// The fold of an iPhone Duo open as a book, which the list ends at and the profile starts after.
     private var verticalFold: CGRect? {
-        guard let division, division.isVertical else { return nil }
-        return division.frame
+        division?.verticalFrame
     }
 
     /// The list's column: as wide as the canvas draws it (320 on an iPhone lying down, 400 with an iPad's room, 360
@@ -127,13 +126,7 @@ struct ContactsColumns: View {
                     }
                     .frame(width: showsDetail ? listWidth : nil)
                     if showsDetail {
-                        if let verticalFold {
-                            Color.clear
-                                .frame(width: verticalFold.width)
-                        } else {
-                            Divider()
-                                .ignoresSafeArea()
-                        }
+                        ListDetailSeparator(fold: verticalFold)
                         NavigationStack {
                             ContactsPane(model: model)
                         }

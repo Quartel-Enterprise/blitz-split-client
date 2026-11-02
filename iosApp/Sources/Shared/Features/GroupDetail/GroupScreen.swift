@@ -383,8 +383,6 @@ struct PhoneGroupScaffold<Sections: View>: View {
     let actions: GroupScreenActions
     @ViewBuilder let sections: Sections
 
-    @State private var division: FoldDivision?
-
     var body: some View {
         Group {
             if usesTwoColumns {
@@ -393,25 +391,25 @@ struct PhoneGroupScaffold<Sections: View>: View {
                         .frame(width: 328)
                     list(withHeader: false)
                 }
-            } else if let fold = division?.horizontalFrame {
-                VStack(spacing: 0) {
+            } else {
+                // An iPhone Duo open upright: the header and the card above the fold, the tabs below it
+                FoldHalves(scrollsHalves: false) {
                     summary
                         .scrollBounceBehavior(.basedOnSize)
-                        .frame(height: max(0, fold.minY))
-                    Color.clear
-                        .frame(height: fold.height)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                } bottom: {
                     list(withHeader: false)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
+                } single: {
+                    list(withHeader: true)
+                        .frame(maxWidth: 640)
+                        .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: 640)
-                .frame(maxWidth: .infinity)
-            } else {
-                list(withHeader: true)
-                    .frame(maxWidth: 640)
-                    .frame(maxWidth: .infinity)
             }
         }
         .background(Palette.groupedBackground)
-        .readingFoldDivision($division)
     }
 
     /// The header and the card beside or above the tabs.

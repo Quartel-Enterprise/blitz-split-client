@@ -58,6 +58,22 @@ extension FoldDivision {
     }
 }
 
+/// Where a list and the column beside it meet: the iPhone Duo's fold band, kept empty (`fold`, its `verticalFrame`),
+/// or a divider anywhere without one.
+struct ListDetailSeparator: View {
+    let fold: CGRect?
+
+    var body: some View {
+        if let fold {
+            Color.clear
+                .frame(width: fold.width)
+        } else {
+            Divider()
+                .ignoresSafeArea()
+        }
+    }
+}
+
 extension EnvironmentValues {
     /// The iPhone Duo's fold over the whole window, read once by the root (`measuringWindow`), so a sheet knows which
     /// half of the window it opens in. Nil wherever `FoldDivision` is.

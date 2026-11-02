@@ -229,8 +229,7 @@ private struct ActivityColumns<ListContent: View, Detail: View>: View {
     #endif
 
     private var verticalFold: CGRect? {
-        guard let division, division.isVertical else { return nil }
-        return division.frame
+        division?.verticalFrame
     }
 
     var body: some View {

@@ -37,8 +37,7 @@ struct TwoColumnsLayout<First: View, Second: View>: View {
     }
 
     private var verticalFold: CGRect? {
-        guard let division, division.isVertical else { return nil }
-        return division.frame
+        division?.verticalFrame
     }
 
     var body: some View {

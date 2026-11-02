@@ -55,13 +55,7 @@ struct GroupsColumns<ListContent: View>: View {
             }
             .frame(width: showsDetail ? listWidth : nil)
             if showsDetail {
-                if let band = division?.verticalFrame {
-                    Color.clear
-                        .frame(width: band.width)
-                } else {
-                    Divider()
-                        .ignoresSafeArea()
-                }
+                ListDetailSeparator(fold: division?.verticalFrame)
                 NavigationStack(path: panePath) {
                     paneRoot
                         .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }

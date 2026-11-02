@@ -74,6 +74,7 @@ struct GroupStatsView: View {
                     isPickingDates = false
                     model.send(GroupStatsUiEventOnCustomPeriodPicked(startMillis: start, endMillis: end))
                 }
+                .foldSheetPlacement()
             }
         }
         .onAppear {

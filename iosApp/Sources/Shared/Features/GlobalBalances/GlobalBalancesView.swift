@@ -99,14 +99,8 @@ struct GlobalBalancesView: View {
                     GlobalBalancesList(model: model, showsDetail: showsDetail)
                         .frame(width: showsDetail ? fold?.minX : nil)
                     if showsDetail {
-                        if let fold {
-                            // An iPhone Duo open: the people before the fold, the person picked after it
-                            Color.clear
-                                .frame(width: fold.width)
-                        } else {
-                            Divider()
-                                .ignoresSafeArea()
-                        }
+                        // An iPhone Duo open: the people before the fold, the person picked after it
+                        ListDetailSeparator(fold: fold)
                         PersonInspector(model: model)
                             .frame(width: fold == nil ? PersonInspector.width : nil)
                     }
