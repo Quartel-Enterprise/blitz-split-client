@@ -2,7 +2,9 @@ package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -36,7 +38,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -55,6 +56,7 @@ class MembersViewModel(
     private val releaseMember: ReleaseMember,
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
+    observeExpenses: ObserveExpenses,
 ) : ViewModel() {
     val uiState: StateFlow<MembersUiState>
         field = MutableStateFlow(
@@ -85,16 +87,22 @@ class MembersViewModel(
         hasBills = false,
     )
 
+    private var expenses: List<Expense> = emptyList()
+
     /*
      * Why: a sync may bring other members' changes, bills and payments while the screen is open. A group that goes is
      * the group's screen's to close.
      */
     init {
-        combine(observeGroup(route.groupId), observeGroupBalances(route.groupId), ::Pair)
-            .onEach { (group, balances) ->
-                this.balances = balances
-                if (group != null) show(group)
-            }.launchIn(viewModelScope)
+        combine(
+            observeGroup(route.groupId),
+            observeGroupBalances(route.groupId),
+            observeExpenses(route.groupId),
+        ) { group, balances, expenses ->
+            this.balances = balances
+            this.expenses = expenses
+            if (group != null) show(group)
+        }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: MembersUiEvent) {
@@ -208,11 +216,15 @@ class MembersViewModel(
         isLinkCopied: Boolean,
     ): PersonalInvite? {
         val link = member.personalLink ?: return null
+        // Why: a bill at 0% for the member puts nothing in their name.
+        val parts = expenses.map { it.shareOf(member.id) }.filter { it > 0L }
         return PersonalInvite(
             member = member,
             link = link,
             displayLink = InviteLink.displayOf(link),
             isLinkCopied = isLinkCopied,
+            billCount = parts.size,
+            billShareMinor = parts.sum(),
         )
     }
 

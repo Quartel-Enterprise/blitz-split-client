@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
@@ -365,10 +366,75 @@ class MembersViewModelTest {
                     link = carlaLink,
                     displayLink = "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
                     isLinkCopied = false,
+                    billCount = 0,
+                    billShareMinor = 0,
                 ),
                 viewModel.uiState.value.personalInvite,
             )
             assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN bills with a part for Carla WHEN tapping her personal invite THEN counts those bills and her parts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes,
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-4",
+                        splitWith = listOf("member-2", "member-4"),
+                        amountMinor = 3_000,
+                    ),
+                    expense(
+                        "bill-3",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-2"),
+                    ),
+                    expense(
+                        "bill-4",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1"),
+                    ).let { it.copy(shares = it.shares + ExpenseShare("member-4", 0, weight = 0)) },
+                ),
+            )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals(2, invite?.billCount)
+            assertEquals(6_500L, invite?.billShareMinor)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN a sync brings a bill with her part THEN the invite counts it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            expenses.expenses.value =
+                listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                )
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals(1, invite?.billCount)
+            assertEquals(5_000L, invite?.billShareMinor)
         }
 
     @Test
@@ -658,6 +724,8 @@ class MembersViewModelTest {
                     link = carlaLink,
                     displayLink = "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z",
                     isLinkCopied = false,
+                    billCount = 0,
+                    billShareMinor = 0,
                 ),
                 viewModel.uiState.value.personalInvite,
             )
@@ -2612,6 +2680,7 @@ class MembersViewModelTest {
                 isRoomRead.flatMapLatest { isRead -> if (isRead) observeGroup(groupId) else emptyFlow() }
             },
             observeGroupBalances = ObserveGroupBalancesUseCase(expenses, settlements),
+            observeExpenses = ObserveExpensesUseCase(expenses),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

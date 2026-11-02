@@ -138,9 +138,7 @@ data class PeopleBalances(
             bills: List<Pair<String, Expense>>,
             netMinor: Long,
         ): Long? {
-            val shareMinor = bills.sumOf { (memberId, expense) ->
-                expense.shares.filter { it.memberId == memberId }.sumOf { it.amountMinor }
-            }
+            val shareMinor = bills.sumOf { (memberId, expense) -> expense.shareOf(memberId) }
             val paidMinor = bills.sumOf { (memberId, expense) ->
                 expense.payers.filter { it.memberId == memberId }.sumOf { it.amountMinor }
             }

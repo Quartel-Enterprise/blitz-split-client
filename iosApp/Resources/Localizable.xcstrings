@@ -16710,6 +16710,47 @@
           }
         }
       }
+    },
+    "Whoever opens this link joins straight in as %@, without picking from the list, and already sees a %@ share in the %lld bills added so far. It works once." : {
+      "comment" : "Explains a member's personal invite link when bills already give them a part; the first %@ is the member, the second their parts, %lld how many bills",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Whoever opens this link joins straight in as %1$@, without picking from the list, and already sees a %2$@ share in the bill added so far. It works once."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Whoever opens this link joins straight in as %1$@, without picking from the list, and already sees a %2$@ share in the %3$lld bills added so far. It works once."
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Quem abrir este link entra direto como %1$@, sem escolher na lista, e já vê a parte de %2$@ na despesa lançada. Ele vale uma vez."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Quem abrir este link entra direto como %1$@, sem escolher na lista, e já vê a parte de %2$@ nas %3$lld despesas lançadas. Ele vale uma vez."
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

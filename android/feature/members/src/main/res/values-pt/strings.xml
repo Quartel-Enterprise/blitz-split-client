@@ -11,6 +11,10 @@
     <string name="members_rename">Renomear</string>
     <string name="members_personal_invite">Convite pessoal para %s</string>
     <string name="members_personal_message">Quem abrir este link entra direto como %s, sem escolher na lista. Ele vale uma vez.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Quem abrir este link entra direto como %1$s, sem escolher na lista, e já vê a parte de %2$s na despesa lançada. Ele vale uma vez.</item>
+        <item quantity="other">Quem abrir este link entra direto como %1$s, sem escolher na lista, e já vê a parte de %2$s nas %3$d despesas lançadas. Ele vale uma vez.</item>
+    </plurals>
     <string name="members_personal_copy">Copiar link</string>
     <string name="members_personal_copied">Copiado</string>
     <string name="members_personal_share">Compartilhar com %s</string>
