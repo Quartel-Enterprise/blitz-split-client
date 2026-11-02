@@ -25,7 +25,6 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
-import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
@@ -100,7 +99,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
      * a foldable upright, in a book's right half and in a tabletop's top half, never over the hinge.
      */
     val formFactor = rememberFoldLayout().formFactor
-    val usesCreateGroupDialog = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val isWiderThanPhone = formFactor != FormFactor.Phone && formFactor != FormFactor.PhoneLandscape
+    val usesCreateGroupDialog = isWiderThanPhone
     val createGroupMetadata = if (usesCreateGroupDialog) {
         FoldDialogSceneStrategy.dialogMetadataOf(
             properties = dialogProperties,
@@ -131,21 +131,19 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         emptyMap()
     }
-    val usesBillDialog = rememberUsesGroupDialog()
-    val billDialogMetadata = if (usesBillDialog) {
+    /*
+     * Why: flow 7 draws Rachar conta and Conta as a dialog over the group anywhere wider than a phone: 560dp on a tablet
+     * and a foldable upright, 920dp on a tablet lying down, in a book's right half with the group under the scrim. A
+     * tabletop splits a new bill on its hinge, full screen, and draws Conta and Editar conta as the book does.
+     */
+    val opensBillOverGroup = isWiderThanPhone
+    val billOverGroupMetadata = if (opensBillOverGroup) {
         FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
     } else {
         emptyMap()
     }
-    /*
-     * Why: Conta (7.3) is the group's dialog, and a book draws it too, in its right half with the group in the other;
-     * a tabletop like the book, above its hinge lying down.
-     */
-    val usesBillDetailDialog = usesBillDialog || formFactor == FormFactor.Book || formFactor == FormFactor.Tabletop
-    val billDetailMetadata = if (usesBillDetailDialog) {
-        FoldDialogSceneStrategy.dialogMetadataOf(dialogProperties)
-    } else {
-        emptyMap()
+    val splitsBillAsDialog = { route: Route.SplitBill ->
+        opensBillOverGroup && !(formFactor == FormFactor.Tabletop && route.expenseId == null)
     }
     /*
      * Why: Registrar pagamento and Convidar of Contatos open the same way: a sheet on a phone, a dialog wider (a book's
@@ -260,18 +258,20 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesDefaultSplitDialog,
                 )
             }
-            // Why: a tablet and the upright foldable keep the group behind the bill; elsewhere it opens full screen.
-            entry<Route.SplitBill>(metadata = billDialogMetadata) { route ->
+            // Why: the group stays behind the bill wider than a phone, but under a new bill on a tabletop's hinge.
+            entry<Route.SplitBill>(
+                metadata = { route -> if (splitsBillAsDialog(route)) billOverGroupMetadata else emptyMap() },
+            ) { route ->
                 SplitBillScreen(
                     route = route,
-                    isDialog = usesBillDialog,
+                    isDialog = splitsBillAsDialog(route),
                 )
             }
-            // Why: like Rachar conta, a tablet and the upright foldable keep the group behind the bill.
-            entry<Route.BillDetail>(metadata = billDetailMetadata) { route ->
+            // Why: like Rachar conta, the group stays behind the bill wider than a phone, a tabletop included.
+            entry<Route.BillDetail>(metadata = billOverGroupMetadata) { route ->
                 BillDetailScreen(
                     route = route,
-                    isDialog = usesBillDetailDialog,
+                    isDialog = opensBillOverGroup,
                 )
             }
             /*

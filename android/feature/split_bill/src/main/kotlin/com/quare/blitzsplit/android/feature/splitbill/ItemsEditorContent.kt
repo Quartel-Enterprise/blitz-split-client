@@ -43,7 +43,9 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsItemRow
@@ -71,6 +73,8 @@ internal fun ItemsEditorContent(
     val money = rememberMoneyFormatter(state.currency)
     val layout = rememberDeviceLayout()
     val rowMinHeight = if (layout.isLandscape && !isDialog) 52.dp else 60.dp
+    // Why: the tabletop keeps the top half for what each one pays and whether it closes.
+    val isTabletop = rememberUsesTabletopHalves(isDialog)
     ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(R.string.split_bill_items_title),
@@ -88,12 +92,14 @@ internal fun ItemsEditorContent(
         isDialog = isDialog,
         snackbarHostState = snackbarHostState,
         first = {
-            SplitSummaryRow(
-                state = state,
-                totalMinor = items.totalMinor,
-                icon = Icons.Outlined.Restaurant,
-                money = money,
-            )
+            if (!isTabletop) {
+                SplitSummaryRow(
+                    state = state,
+                    totalMinor = items.totalMinor,
+                    icon = Icons.Outlined.Restaurant,
+                    money = money,
+                )
+            }
             ItemsStatusCard(
                 items = items,
                 money = money,
@@ -156,6 +162,7 @@ internal fun ItemsEditorContent(
                 onEvent = onEvent,
             )
         },
+        tabletop = TabletopForm.ConfirmAtBottom,
     )
 }
 

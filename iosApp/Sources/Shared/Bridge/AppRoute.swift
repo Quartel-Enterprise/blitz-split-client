@@ -98,9 +98,9 @@ enum AppRoute: Hashable, Identifiable {
     var id: Self { self }
 
     /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key,
-    /// a bill and Edit profile open as a form sheet and on the Mac as a sheet (a key on Ajustes' window,
-    /// `opensInSettings`; the Mac edits the profile inline, so never Edit profile), as the canvas draws them; an iPhone,
-    /// lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill,
+    /// a bill and Edit profile open as a form sheet and on the Mac a key as a sheet (on Ajustes' window,
+    /// `opensInSettings`; the Mac edits the profile inline, so never Edit profile, and shows a bill in the window's
+    /// inspector), as the canvas draws them; an iPhone, lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill,
     /// recording a payment (settling up across groups and Início's "Who paid whom?" included) and Contacts' invite are
     /// sheets everywhere. The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
     /// on the Mac it is a sheet, or the popover of the group behind it (`AppModel.invitePopover`). The invite reader is
@@ -123,9 +123,16 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return false
             #endif
-        case .paymentKey, .billDetail, .editProfile:
+        case .paymentKey, .editProfile:
             #if os(macOS)
             return true
+            #else
+            return isLargeWindow
+            #endif
+        // The Mac draws the bill in the main window's inspector (`AppModel.billInspector`)
+        case .billDetail:
+            #if os(macOS)
+            return false
             #else
             return isLargeWindow
             #endif
@@ -170,6 +177,15 @@ enum AppRoute: Hashable, Identifiable {
     var usesFormSheet: Bool {
         switch self {
         case .createGroup, .contactInvite, .editProfile, .editGroup, .registerPayment, .settleUp, .pickPayment: true
+        default: false
+        }
+    }
+
+    /// A bill's screen (Rachar conta, Conta), which the root's sheet keeps at the bill's size with an iPad's room
+    /// (`billSheetSizing(in:)`), the iPhone Duo's fold included (`foldSheetPlacement(isBill:)`).
+    var usesBillSheet: Bool {
+        switch self {
+        case .splitBill, .billDetail: true
         default: false
         }
     }

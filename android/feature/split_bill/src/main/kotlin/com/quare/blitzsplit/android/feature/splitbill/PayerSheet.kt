@@ -18,15 +18,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +53,6 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 private const val SUBTITLE_SEPARATOR = " · "
 
 // Why: "Quem pagou" marks a person until "Pronto"; dismissing it keeps whoever paid before.
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PayerSheet(
     state: SplitBillUiState,
@@ -65,13 +60,9 @@ internal fun PayerSheet(
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    ModalBottomSheet(
+    BillSheet(
+        title = stringResource(R.string.split_bill_payer),
         onDismissRequest = { onEvent(SplitBillUiEvent.OnPayerDismissed) },
-        sheetState = rememberBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
-        ),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         PayerColumn(
             state = state,
@@ -83,20 +74,15 @@ internal fun PayerSheet(
 }
 
 // Why: "Várias pessoas pagaram" takes the place of "Quem pagou"; dismissing it keeps whoever paid before.
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SeveralPayersSheet(
     amounts: PayerAmounts,
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    ModalBottomSheet(
+    BillSheet(
+        title = stringResource(R.string.split_bill_several_payers_title),
         onDismissRequest = { onEvent(SplitBillUiEvent.OnSeveralPayersDismissed) },
-        sheetState = rememberBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
-        ),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         SeveralPayersColumn(
             amounts = amounts,

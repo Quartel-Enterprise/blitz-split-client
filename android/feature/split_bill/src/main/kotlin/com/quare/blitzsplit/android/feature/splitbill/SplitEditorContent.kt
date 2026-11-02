@@ -34,7 +34,9 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -55,6 +57,8 @@ internal fun SplitEditorContent(
 ) {
     val money = rememberMoneyFormatter(state.currency)
     val rowMinHeight = if (rememberDeviceLayout().isLandscape) 52.dp else 60.dp
+    // Why: the tabletop keeps the top half for the summary, the mode and whether it adds up.
+    val isTabletop = rememberUsesTabletopHalves(isDialog)
     ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(R.string.split_bill_split_title),
@@ -103,15 +107,17 @@ internal fun SplitEditorContent(
                 editor = editor,
                 money = money,
             )
-            Text(
-                text = if (state.defaultSplit != null) {
-                    stringResource(R.string.split_bill_hint_default)
-                } else {
-                    modeHintOf(editor.mode, money)
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (!isTabletop) {
+                Text(
+                    text = if (state.defaultSplit != null) {
+                        stringResource(R.string.split_bill_hint_default)
+                    } else {
+                        modeHintOf(editor.mode, money)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         },
         second = {
             SplitPeopleList(
@@ -122,6 +128,7 @@ internal fun SplitEditorContent(
                 onEvent = onEvent,
             )
         },
+        tabletop = TabletopForm.ConfirmInBar,
     )
 }
 

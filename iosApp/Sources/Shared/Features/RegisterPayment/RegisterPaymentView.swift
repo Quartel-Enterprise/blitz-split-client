@@ -88,11 +88,20 @@ struct RegisterPaymentView: View {
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
-                #if os(macOS)
-                MacRegisterPayment(model: model)
-                #else
-                PhoneRegisterPayment(model: model)
-                #endif
+                // Paying someone with a key opens "Pay Ana" (4.5); anything else records a payment made outside
+                if model.state.showsReceiverKeys {
+                    #if os(macOS)
+                    MacPayWithKey(model: model)
+                    #else
+                    PhonePayWithKey(model: model)
+                    #endif
+                } else {
+                    #if os(macOS)
+                    MacRegisterPayment(model: model)
+                    #else
+                    PhoneRegisterPayment(model: model)
+                    #endif
+                }
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
                     #if os(macOS)

@@ -112,10 +112,15 @@ button, the edge swipe): the `NavigationStack` already moved, so the setter only
 entries remain with `popTo`. When the root is `.home` (Início), `RootView` swaps the stack for `MainTabView`, the
 `TabView` with `.tabViewStyle(.sidebarAdaptable)` (a tab bar on iPhone, a sidebar on iPad and Mac).
 
-Some routes open as a sheet instead of a push (`AppRoute.presentsAsSheet`: a payment key, and a bill on iPad and
-Mac). `AppModel.sheet` shows the top entry when it is one, and `path` leaves it out. When the two top entries are
+Some routes open as a sheet instead of a push (`AppRoute.presentsAsSheet`: a payment key, and a bill on iPad).
+`AppModel.sheet` shows the top entry when it is one, and `path` leaves it out. When the two top entries are
 both sheets ("Editar conta" over a bill's "Conta"), `AppModel.stackedSheet` presents the second over the first
-instead of replacing it, and closing either pops the shared stack down to what is still shown. On the Mac, a group's
+instead of replacing it, and closing either pops the shared stack down to what is still shown. On the Mac a bill's
+Conta is `AppModel.billInspector` instead, the main window's `.inspector` beside the group, which `path` leaves out
+too: "Editar conta" opens as a sheet over the window with the inspector still shown, and closing it pops it and
+whatever was over it. The group beside it still takes clicks, so what the group opens then takes the bill's place,
+another bill included (`Navigator.openFromGroupScreen`, a `replaceTop` while its own bill is right above it, for the
+group's tabs and Membros' Compartilhar alike; the profile goes over the bill, since Ajustes opens it). On the Mac, a group's
 Convidar over the group is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
 group's "Convidar pessoas" draws it (`.invitePopover(host:)`), Membros' Compartilhar while that tab is picked; closing
 it pops it the same way.

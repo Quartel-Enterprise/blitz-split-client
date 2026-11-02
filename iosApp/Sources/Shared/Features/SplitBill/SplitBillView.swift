@@ -126,6 +126,11 @@ struct SplitBillView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: SplitBillModel?
 
+    #if os(iOS)
+    /// The window under the sheet, which sizes it.
+    @Environment(\.windowLayout) private var windowLayout
+    #endif
+
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
@@ -142,6 +147,10 @@ struct SplitBillView: View {
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isDeleting == true)
+        #if os(iOS)
+        // The canvas' 820×640 sheet lying down and 620×860 upright with an iPad's room
+        .billSheetSizing(in: windowLayout)
+        #endif
         .billDeletionAlert(
             model?.state.deletion,
             currency: model?.state.currency,

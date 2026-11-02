@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
+import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
@@ -32,6 +33,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
+import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
@@ -58,9 +60,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         GroupCategoryEntity::class,
         CategoryTermEntity::class,
         MemberPhotoEntity::class,
+        MemberPaymentKeyEntity::class,
         BillCommentEntity::class,
     ],
-    version = 26,
+    version = 27,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -163,6 +166,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 25,
             to = 26,
         ),
+        AutoMigration(
+            from = 26,
+            to = 27,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -192,6 +199,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun groupCategoryDao(): GroupCategoryDao
 
     abstract fun categoryTermDao(): CategoryTermDao
+
+    abstract fun memberPaymentKeyDao(): MemberPaymentKeyDao
 
     abstract fun billCommentDao(): BillCommentDao
 }

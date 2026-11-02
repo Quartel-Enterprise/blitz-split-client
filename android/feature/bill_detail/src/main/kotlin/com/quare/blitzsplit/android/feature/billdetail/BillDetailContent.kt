@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -39,6 +40,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
@@ -47,6 +49,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormColumns
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
@@ -55,13 +58,12 @@ private val singleColumnMaxWidth = 592.dp
 private val sectionSpacing = 16.dp
 private val twoColumnsStartPadding = 56.dp
 private val twoColumnsEndPadding = 24.dp
-private val twoColumnsFormFactors = setOf(FormFactor.PhoneLandscape, FormFactor.TabletLandscape)
 
 /*
  * Why: the canvas (7.3) opens Conta full screen on a phone, in two columns lying down, with the comment field pinned
  * at the bottom upright and under the comments in two columns; on a tablet and the upright foldable it is a dialog
  * over the group, 920dp and two columns on a tablet lying down, one 560dp column upright; a book draws that column in
- * its right half and a tabletop like the book (FoldDialog), the group in the other half.
+ * its right half and a tabletop in its half above the hinge (FoldDialog), the group in the other half.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +74,8 @@ fun BillDetailContent(
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val usesTwoColumns = rememberFoldLayout().formFactor in twoColumnsFormFactors
+    // Why: a dialog is two columns wide on a tablet lying down only, one column in a book's or a tabletop's half.
+    val usesTwoColumns = rememberUsesFormColumns(isDialog)
     if (isDialog) {
         DialogCard(
             isWide = usesTwoColumns,
@@ -414,6 +417,34 @@ private fun BillDetailContentPendingPreview() {
 @Composable
 private fun BillDetailContentReplyOfflinePreview() {
     PreviewBillDetailContent(createPreviewBillDetailState(isReplyingOffline = true))
+}
+
+// Why: a preview draws no dialog window, so the book's right half, where Conta opens, is drawn by hand around it.
+@Preview(
+    name = "Book",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun BillDetailContentBookPreview() {
+    BlitzSplitTheme {
+        Surface(color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                Box(modifier = Modifier.width(376.dp)) {
+                    BillDetailContent(
+                        state = createPreviewBillDetailState(),
+                        isDialog = true,
+                        snackbarHostState = SnackbarHostState(),
+                        onEvent = {},
+                    )
+                }
+            }
+        }
+    }
 }
 
 // Why: as AppNavDisplay opens it: a dialog anywhere wider than a phone, full screen on one.

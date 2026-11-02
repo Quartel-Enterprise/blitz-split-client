@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -10,7 +9,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
+import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.splitbill.presentation.model.FeeEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemDeletion
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
@@ -29,6 +30,7 @@ internal fun DeleteItemDialog(
         confirmLabel = stringResource(R.string.split_bill_item_delete_confirm),
         onConfirm = { onEvent(SplitBillUiEvent.OnItemDeleteConfirmed) },
         onDismiss = { onEvent(SplitBillUiEvent.OnItemDeleteDismissed) },
+        placement = rememberDialogPlacement(),
     )
 }
 
@@ -42,15 +44,11 @@ internal fun FeeDialog(
     val isService = editor.fee == ItemsFee.SERVICE
     val fieldLabel = if (isService) R.string.split_bill_fee_service_field else R.string.split_bill_fee_couvert_field
     val help = if (isService) R.string.split_bill_fee_service_help else R.string.split_bill_fee_couvert_help
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = { onEvent(SplitBillUiEvent.OnFeeDismissed) },
-        title = {
-            Text(
-                stringResource(
-                    if (isService) R.string.split_bill_fee_service_title else R.string.split_bill_fee_couvert_title,
-                ),
-            )
-        },
+        title = stringResource(
+            if (isService) R.string.split_bill_fee_service_title else R.string.split_bill_fee_couvert_title,
+        ),
         text = {
             OutlinedTextField(
                 value = editor.valueText,
@@ -79,5 +77,6 @@ internal fun FeeDialog(
                 Text(stringResource(R.string.split_bill_cancel))
             }
         },
+        placement = rememberDialogPlacement(),
     )
 }

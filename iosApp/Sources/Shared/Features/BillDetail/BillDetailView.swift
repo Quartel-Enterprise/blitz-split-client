@@ -58,8 +58,8 @@ final class BillDetailModel {
 }
 
 /// "Bill": one bill of the group, what it was, who paid and how it splits, then its Comments and History (7.3). Pushed
-/// over the group on iPhone, a form sheet on iPad and a sheet on the Mac's window; Edit and Delete in the toolbar (on
-/// the Mac, in the sheet's header).
+/// over the group on iPhone, a sheet on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the
+/// Mac; Edit and Delete in the toolbar (on the Mac, in the inspector's header).
 struct BillDetailView: View {
     let route: RouteBillDetail
 
@@ -68,9 +68,10 @@ struct BillDetailView: View {
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    /// The window under the sheet, not the sheet: whether this bill is a sheet that closes or a pushed screen.
-    @Environment(\.windowLayout) private var windowLayout
     #endif
+    /// The window under the sheet or the inspector, not them: whether this bill is a sheet that closes or a pushed
+    /// screen, and how wide the Mac's inspector is.
+    @Environment(\.windowLayout) private var windowLayout
 
     var body: some View {
         Group {
@@ -82,9 +83,6 @@ struct BillDetailView: View {
                 #endif
             } else {
                 Palette.groupedBackground.ignoresSafeArea()
-                    #if os(macOS)
-                    .frame(width: 560, height: 480)
-                    #endif
             }
         }
         #if os(iOS)
@@ -93,9 +91,16 @@ struct BillDetailView: View {
         // On iPhone the bill keeps the group's own bars, without the app's tabs
         .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
         .toolbar { toolbar }
-        // With an iPad's room the sheet is the canvas' 820×640 lying down, wide enough for the two columns; a pushed
-        // screen takes the size it is given
+        // A sheet with an iPad's room, 820×640 lying down and 620×860 upright as the canvas draws it, wide enough for the
+        // two columns lying down; a pushed screen takes the size it is given
         .billSheetSizing(in: windowLayout)
+        #else
+        // Set while the bill loads too, so the inspector opens at its width rather than jumping to it
+        .inspectorColumnWidth(
+            min: MacBillInspector.narrowWidth,
+            ideal: MacBillInspector.width(in: windowLayout),
+            max: MacBillInspector.wideWidth,
+        )
         #endif
         .billDeletionAlert(
             model?.state.deletion,
@@ -463,34 +468,30 @@ private struct PhoneBillDetail: View {
 #endif
 
 #if os(macOS)
-/// What the narrow window's sheet shows, one at a time.
+/// What the narrow inspector shows, one at a time.
 private enum MacBillTab: Hashable {
     case bill, comments, history
 }
 
-/// The sheet on the window: the bill's header with Edit… and Delete, then, 720 pt wide, the bill and its split on the
-/// left and Comments and History on the right with the composer under them. A window too narrow for that gets a
-/// 330 pt sheet showing one of Bill, Comments and History at a time, the composer under Comments. Either fits the
-/// window's 560 pt minimum height.
+/// The window's inspector on the right (decision 3, F7Mac): the bill's header with Edit…, Delete and ✕, then, in the
+/// standard window's 720 pt, the bill and its split on the left and Comments and History on the right with the
+/// composer under them. A narrow window's 330 pt inspector shows one of Bill, Comments and History at a time, the
+/// composer under Comments.
 private struct MacBillDetail: View {
     let model: BillDetailModel
 
-    @Environment(\.windowLayout) private var windowLayout
+    @State private var layout = ScreenLayout()
     @State private var tab = MacBillTab.bill
+    @FocusState private var isFocused: Bool
     @FocusState private var isComposing: Bool
 
     private var state: BillDetailUiState {
         model.state
     }
 
-    /// The 720 pt sheet and the window's edge around it.
+    /// The inspector itself, not the window: two columns from 600 pt, as the 720 pt inspector draws them.
     private var isNarrow: Bool {
-        windowLayout.size.width > 0 && windowLayout.size.width < 760
-    }
-
-    private var height: CGFloat {
-        guard windowLayout.size.height > 0 else { return 520 }
-        return min(640, max(400, windowLayout.size.height - 40))
+        layout.size.width > 0 && layout.size.width < MacBillInspector.twoColumnsWidth
     }
 
     var body: some View {
@@ -533,18 +534,17 @@ private struct MacBillDetail: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            Divider()
-            HStack {
-                Spacer()
-                Button("Close") {
-                    model.send(BillDetailUiEventOnBackClicked.shared)
-                }
-                .keyboardShortcut(.cancelAction)
-            }
-            .controlSize(.large)
-            .padding(16)
         }
-        .frame(width: isNarrow ? 330 : 720, height: height)
+        .measuringScreenLayout($layout)
+        .background(Palette.groupedBackground)
+        // Esc closes it while the focus is in it, which it takes as it opens, so a field elsewhere keeps its own Esc
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onExitCommand {
+            model.send(BillDetailUiEventOnBackClicked.shared)
+        }
     }
 
     @ViewBuilder
@@ -603,6 +603,12 @@ private struct MacBillDetail: View {
             }
             .help(Text(BillCopy.delete))
             .disabled(!state.areActionsEnabled)
+            Button("Close", systemImage: "xmark") {
+                model.send(BillDetailUiEventOnBackClicked.shared)
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+            .help(Text("Close"))
         }
     }
 
@@ -727,6 +733,21 @@ private struct MacBillDetail: View {
                 }
             }
         }
+    }
+}
+
+/// The inspector's widths the canvas draws: 720 pt in the standard window, 330 pt in a narrow one, where the window
+/// would leave the groups too little room beside 720 pt.
+private enum MacBillInspector {
+    static let wideWidth: CGFloat = 720
+    static let narrowWidth: CGFloat = 330
+    /// The bill and its split beside Comments and History from here, as the 720 pt inspector draws them.
+    static let twoColumnsWidth: CGFloat = 600
+    /// The narrowest window that keeps the sidebar and a list beside the 720 pt inspector.
+    static let wideWindowWidth: CGFloat = 1180
+
+    static func width(in window: ScreenLayout) -> CGFloat {
+        window.size.width >= wideWindowWidth ? wideWidth : narrowWidth
     }
 }
 #endif

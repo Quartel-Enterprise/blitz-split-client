@@ -412,6 +412,7 @@ class PickPaymentViewModelTest {
                         TRIP,
                         fromMemberId = BRUNO,
                         toMemberId = PIERRE,
+                        offersReceiverKeys = false,
                     ),
                 ),
                 navigator.backStack.value,

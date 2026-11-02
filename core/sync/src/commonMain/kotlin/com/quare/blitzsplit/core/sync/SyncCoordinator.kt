@@ -163,6 +163,13 @@ class SyncCoordinator(
             settlementRepository.downloadSettlements(userId).getOrThrow()
             settlementRepository.uploadPendingSettlements(userId).getOrThrow()
         }
+        /*
+         * Why: "Pagar Ana" (4.5) shows the keys of the people the user shares a group with, which the server decides
+         * by the groups it holds, so after they went up. All at once, so a key deleted or someone gone leaves too.
+         */
+        val memberKeysSynced = suspendRunCatching {
+            paymentKeyRepository.downloadMemberKeys(userId).getOrThrow()
+        }
         // Why: the pins need their groups too, but only order Início, so one that fails never holds the money back.
         val pinsSynced = if (areGroupsSynced) {
             suspendRunCatching {
@@ -200,6 +207,7 @@ class SyncCoordinator(
         preferencesSynced.getOrThrow()
         termsSynced.getOrThrow()
         groupsSynced.getOrThrow()
+        memberKeysSynced.getOrThrow()
         pinsSynced.getOrThrow()
         commentsSynced.getOrThrow()
         activitySynced.getOrThrow()

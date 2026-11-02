@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 26,
-    "identityHash": "de374179649cd07c5597b4baf0cdf104",
+    "identityHash": "0b90128ca485c20ada30bf49df5ebaf9",
     "entities": [
       {
         "tableName": "profile",
@@ -1190,8 +1190,8 @@
         }
       },
       {
-        "tableName": "bill_comment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `expenseId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `authorUserId` TEXT, `authorMemberId` TEXT, `authorName` TEXT, `threadId` TEXT, `replyToName` TEXT, `body` TEXT NOT NULL, `viaLink` INTEGER NOT NULL, `postedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`expenseId`) REFERENCES `expense`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "member_payment_key",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` TEXT NOT NULL, `viewerUserId` TEXT NOT NULL, `type` TEXT NOT NULL, `value` TEXT NOT NULL, `isDefault` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1200,63 +1200,44 @@
             "notNull": true
           },
           {
-            "fieldPath": "expenseId",
-            "columnName": "expenseId",
+            "fieldPath": "userId",
+            "columnName": "userId",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "groupId",
-            "columnName": "groupId",
+            "fieldPath": "viewerUserId",
+            "columnName": "viewerUserId",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "authorUserId",
-            "columnName": "authorUserId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "authorMemberId",
-            "columnName": "authorMemberId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "authorName",
-            "columnName": "authorName",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "threadId",
-            "columnName": "threadId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "replyToName",
-            "columnName": "replyToName",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "body",
-            "columnName": "body",
+            "fieldPath": "type",
+            "columnName": "type",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "viaLink",
-            "columnName": "viaLink",
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDefault",
+            "columnName": "isDefault",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "postedAt",
-            "columnName": "postedAt",
+            "fieldPath": "addedAt",
+            "columnName": "addedAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "pendingSync",
-            "columnName": "pendingSync",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -1269,33 +1250,20 @@
         },
         "indices": [
           {
-            "name": "index_bill_comment_expenseId",
+            "name": "index_member_payment_key_userId",
             "unique": false,
             "columnNames": [
-              "expenseId"
+              "userId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_bill_comment_expenseId` ON `${TABLE_NAME}` (`expenseId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "expense",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "expenseId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_member_payment_key_userId` ON `${TABLE_NAME}` (`userId`)"
           }
         ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'de374179649cd07c5597b4baf0cdf104')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0b90128ca485c20ada30bf49df5ebaf9')"
     ]
   }
 }

@@ -23,6 +23,15 @@ interface PaymentKeyRepository {
     // Why: after a switch, another user's keys give way to this user's, even ones not pushed yet.
     suspend fun downloadKeys(userId: String): Result<Unit>
 
-    // Why: a sign out leaves no key on the device.
+    /*
+     * Why: "Pagar Ana" (4.5): the live keys of someone this user shares a group with, as the last sync brought them,
+     * so they work offline too; each method's default first, Pix first.
+     */
+    fun observeKeysOf(userId: String): Flow<List<PaymentKey>>
+
+    // Why: every key of the people in the user's groups at once, which drops one deleted or of someone gone.
+    suspend fun downloadMemberKeys(userId: String): Result<Unit>
+
+    // Why: a sign out leaves no key on the device, the user's own nor anyone else's.
     suspend fun clear()
 }

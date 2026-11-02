@@ -4,38 +4,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.paneTitle
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
@@ -56,7 +47,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PaymentKeyType
+import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 
@@ -79,6 +73,40 @@ fun RegisterPaymentContent(
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
     // Why: a sheet and a dialog sit over the group and wait for the form; full screen, the tabletop draws its bar first.
+    if (state.showsReceiverKeys) {
+        PayWithKeyPane(
+            state = state,
+            presentation = presentation,
+            money = money,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    } else {
+        FormPane(
+            state = state,
+            presentation = presentation,
+            money = money,
+            dates = dates,
+            snackbarHostState = snackbarHostState,
+            onWhenClick = onWhenClick,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun FormPane(
+    state: RegisterPaymentUiState,
+    presentation: FormPresentation,
+    money: MoneyFormatter,
+    dates: DateTimeTextFormatter,
+    snackbarHostState: SnackbarHostState,
+    onWhenClick: () -> Unit,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     when (presentation) {
         FormPresentation.Dialog -> if (state.isLoaded) {
             DialogContent(
@@ -245,7 +273,6 @@ private fun SheetContent(
  * Why: a tabletop (6.5): full screen under a bar with ✕, who paid whom and the amount in the top half, facing whoever
  * reads, and how, when and the buttons in the bottom one, within thumb reach. Each half scrolls on its own.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TabletopContent(
     state: RegisterPaymentUiState,
@@ -256,82 +283,58 @@ private fun TabletopContent(
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val title = stringResource(R.string.register_payment_screen_title)
-    Surface(
-        modifier = modifier
-            .fillMaxSize()
-            .semantics { paneTitle = title },
-        color = MaterialTheme.colorScheme.surface,
+    TabletopScaffold(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onEvent = onEvent,
+        modifier = modifier,
     ) {
-        Box(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-            Column {
-                TopAppBar(
-                    title = { Text(title) },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { onEvent(RegisterPaymentUiEvent.OnCloseClicked) },
-                            enabled = !state.isSaving,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Close,
-                                contentDescription = stringResource(R.string.register_payment_close),
-                            )
-                        }
-                    },
-                    windowInsets = WindowInsets(0),
-                )
-                if (state.isLoaded) {
-                    TopBottomHalvesLayout(
-                        modifier = Modifier.weight(1f),
-                        gap = TabletopGap,
-                        top = {
-                            // Why: the summary sits on the hinge, as the canvas draws it, and scrolls once it doesn't fit.
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.BottomStart,
-                            ) {
-                                RegisterPaymentSummaryColumn(
-                                    state = state,
-                                    money = money,
-                                    onEvent = onEvent,
-                                    modifier = Modifier
-                                        .verticalScroll(rememberScrollState())
-                                        .padding(horizontal = 48.dp),
-                                )
-                            }
-                        },
-                        bottom = {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(rememberScrollState())
-                                    .imePadding()
-                                    .padding(
-                                        start = 48.dp,
-                                        end = 48.dp,
-                                        bottom = 24.dp,
-                                    ),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                RegisterPaymentDetailsColumn(
-                                    state = state,
-                                    dates = dates,
-                                    onWhenClick = onWhenClick,
-                                    onEvent = onEvent,
-                                )
-                                TextButtonsRow(
-                                    state = state,
-                                    onEvent = onEvent,
-                                    modifier = Modifier.align(Alignment.End),
-                                )
-                            }
-                        },
-                    )
-                }
-            }
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter),
+        if (state.isLoaded) {
+            TopBottomHalvesLayout(
+                modifier = Modifier.weight(1f),
+                gap = TabletopGap,
+                top = {
+                    // Why: the summary sits on the hinge, as the canvas draws it, and scrolls once it doesn't fit.
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomStart,
+                    ) {
+                        RegisterPaymentSummaryColumn(
+                            state = state,
+                            money = money,
+                            onEvent = onEvent,
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 48.dp),
+                        )
+                    }
+                },
+                bottom = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .imePadding()
+                            .padding(
+                                start = 48.dp,
+                                end = 48.dp,
+                                bottom = 24.dp,
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        RegisterPaymentDetailsColumn(
+                            state = state,
+                            dates = dates,
+                            onWhenClick = onWhenClick,
+                            onEvent = onEvent,
+                        )
+                        TextButtonsRow(
+                            state = state,
+                            onEvent = onEvent,
+                            modifier = Modifier.align(Alignment.End),
+                        )
+                    }
+                },
             )
         }
     }
@@ -427,7 +430,49 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     isOnline = isOnline,
     isSaving = false,
     isLoaded = true,
+    receiverKeys = emptyList(),
+    groupName = "Apê 302",
+    keyMethod = PaymentMethod.PIX,
+    offersReceiverKeys = true,
+    prefersForm = false,
+    pixCode = null,
+    pixQrCode = null,
 )
+
+// Why: this device's user owes Ana, who has a Pix key of each kind and a Lightning address.
+private fun createPayPreviewState(isOnline: Boolean = true): RegisterPaymentUiState {
+    val state = createPreviewState(isOnline)
+    return state.copy(
+        from = state.to,
+        to = state.from,
+        debtMinor = 9_800L,
+        receiverKeys = listOf(
+            ReceiverKey(
+                id = "phone",
+                type = PaymentKeyType.PHONE,
+                value = "+5521987654321",
+                text = "(21) 98765-4321",
+                isDefault = true,
+            ),
+            ReceiverKey(
+                id = "email",
+                type = PaymentKeyType.EMAIL,
+                value = "ana.souza@email.com",
+                text = "ana.souza@email.com",
+                isDefault = false,
+            ),
+            ReceiverKey(
+                id = "lightning",
+                type = PaymentKeyType.LIGHTNING,
+                value = "ana@walletofsatoshi.com",
+                text = "ana@walletofsatoshi.com",
+                isDefault = true,
+            ),
+        ),
+        pixCode = "00020126360014br.gov.bcb.pix0114+5521987654321520400005303986540598.005802BR5903Ana6006BRASIL" +
+            "62070503***6304D3C1",
+    )
+}
 
 @DevicePreviews
 @Composable
@@ -457,6 +502,34 @@ private fun RegisterPaymentContentDialogOfflinePreview() {
     }
 }
 
+@DevicePreviews
+@Composable
+private fun PayWithKeyContentPreview() {
+    BlitzSplitTheme {
+        RegisterPaymentContent(
+            state = createPayPreviewState(),
+            presentation = FormPresentation.BottomSheet,
+            snackbarHostState = SnackbarHostState(),
+            onWhenClick = {},
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun PayWithKeyContentDialogOfflinePreview() {
+    BlitzSplitTheme {
+        RegisterPaymentContent(
+            state = createPayPreviewState(isOnline = false),
+            presentation = FormPresentation.Dialog,
+            snackbarHostState = SnackbarHostState(),
+            onWhenClick = {},
+            onEvent = {},
+        )
+    }
+}
+
 @Preview(
     name = "Tabletop",
     device = "spec:width=841dp,height=673dp,orientation=landscape",
@@ -467,6 +540,25 @@ private fun RegisterPaymentContentTabletopPreview() {
         BlitzSplitTheme {
             RegisterPaymentContent(
                 state = createPreviewState(),
+                presentation = FormPresentation.TabletopHalves,
+                snackbarHostState = SnackbarHostState(),
+                onWhenClick = {},
+                onEvent = {},
+            )
+        }
+    }
+}
+
+@Preview(
+    name = "Tabletop · Pagar Ana",
+    device = "spec:width=841dp,height=673dp,orientation=landscape",
+)
+@Composable
+private fun PayWithKeyContentTabletopPreview() {
+    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
+        BlitzSplitTheme {
+            RegisterPaymentContent(
+                state = createPayPreviewState(),
                 presentation = FormPresentation.TabletopHalves,
                 snackbarHostState = SnackbarHostState(),
                 onWhenClick = {},
