@@ -14,6 +14,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupTabBody
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -31,6 +32,11 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 fun GroupDetailScreen(
     route: Route.GroupDetail,
     membersTab: @Composable (SnackbarHostState) -> GroupTabBody,
+    /*
+     * Why: the tab picked, for the app: a tabletop lying down draws Saldos alone, full screen, where the other tabs
+     * stay beside the list (6.2).
+     */
+    onTabChanged: (GroupTab) -> Unit = {},
     viewModel: GroupDetailViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,6 +76,7 @@ fun GroupDetailScreen(
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
+    LaunchedEffect(state.tab) { onTabChanged(state.tab) }
     BackHandler { viewModel.onEvent(GroupDetailUiEvent.OnBackClicked) }
     GroupDetailContent(
         state = state,

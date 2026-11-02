@@ -24,8 +24,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun RegisterPaymentScreen(
     route: Route,
-    // Why: a tablet and the upright foldable draw it as a dialog; a phone as a bottom sheet.
-    isDialog: Boolean,
+    // Why: a sheet on a phone, a dialog on a tablet and a foldable (a book's right half), full screen on a tabletop.
+    presentation: RegisterPaymentPresentation,
     viewModel: RegisterPaymentViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -39,7 +39,7 @@ fun RegisterPaymentScreen(
     SheetDismissLockEffect(isLocked = state.isSaving)
     RegisterPaymentContent(
         state = state,
-        isDialog = isDialog,
+        presentation = presentation,
         snackbarHostState = snackbarHostState,
         onWhenClick = {
             viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAtOpened)

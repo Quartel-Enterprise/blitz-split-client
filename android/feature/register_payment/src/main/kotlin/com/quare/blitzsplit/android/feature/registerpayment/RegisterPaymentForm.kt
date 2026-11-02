@@ -62,6 +62,32 @@ internal fun RegisterPaymentFormColumn(
     onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        RegisterPaymentSummaryColumn(
+            state = state,
+            money = money,
+            onEvent = onEvent,
+        )
+        RegisterPaymentDetailsColumn(
+            state = state,
+            dates = dates,
+            onWhenClick = onWhenClick,
+            onEvent = onEvent,
+        )
+    }
+}
+
+// Why: what to read, the canvas' first column lying down and the top half on a tabletop: who paid whom and how much.
+@Composable
+internal fun RegisterPaymentSummaryColumn(
+    state: RegisterPaymentUiState,
+    money: MoneyFormatter,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         PaymentHeader(
             state = state,
             money = money,
@@ -71,6 +97,22 @@ internal fun RegisterPaymentFormColumn(
             money = money,
             onEvent = onEvent,
         )
+    }
+}
+
+// Why: the controls, the canvas' second column lying down and the bottom half on a tabletop: how, when, what it does.
+@Composable
+internal fun RegisterPaymentDetailsColumn(
+    state: RegisterPaymentUiState,
+    dates: DateTimeTextFormatter,
+    onWhenClick: () -> Unit,
+    onEvent: (RegisterPaymentUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         MethodSection(
             method = state.method,
             onEvent = onEvent,

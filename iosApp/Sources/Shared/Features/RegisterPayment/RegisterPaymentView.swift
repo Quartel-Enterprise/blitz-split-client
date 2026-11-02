@@ -69,7 +69,7 @@ final class RegisterPaymentModel {
 
 /// "Record payment": a payment from one member to another made outside the app, which settles their debt, or, from
 /// the home's Balances, settling up with someone across groups. A sheet over the group (or Balances) on iPhone, iPad
-/// and Mac, as Split a bill is; it closes by itself once saved, or when the debt is gone.
+/// (the 540×620 form sheet) and Mac; it closes by itself once saved, or when the debt is gone.
 struct RegisterPaymentView: View {
     /// Its ViewModel, for a pair of one group or someone across groups.
     private let makeHolder: () -> ViewModelHolder<RegisterPaymentViewModel>
@@ -101,6 +101,10 @@ struct RegisterPaymentView: View {
             }
         }
         .interactiveDismissDisabled(model?.state.isSaving == true)
+        #if os(iOS)
+        // The canvas' 540×620 form sheet with an iPad's room; an iPhone's sheet keeps the system's width
+        .formSheetSizing()
+        #endif
         .glassToast("Couldn't record the payment. Try again.", trigger: model?.saveErrorCount ?? 0)
         .onAppear {
             if model == nil { model = RegisterPaymentModel(holder: makeHolder()) }
@@ -242,84 +246,49 @@ private struct PaymentAmountHelp: View {
 }
 
 #if os(iOS)
+/// One grouped form on an iPhone upright and in the iPad's 540×620 form sheet; in an iPhone's sheet lying down two,
+/// side by side, as the canvas draws it: who paid whom and the amount, then how and when, each scrolling on its own,
+/// with the confirm as the bar's ✓ since the short sheet has no room for the button under the form.
 private struct PhoneRegisterPayment: View {
     let model: RegisterPaymentModel
+
+    /// The sheet's own size, which decides the columns.
+    @State private var layout = ScreenLayout()
 
     private var state: RegisterPaymentUiState {
         model.state
     }
 
     var body: some View {
-        Form {
-            Section {
-                VStack(spacing: 8) {
-                    PaymentFaces(from: state.from, to: state.to, size: 52)
-                    Text(verbatim: RegisterPaymentCopy.title(state))
-                        .font(.title2.bold())
-                        .multilineTextAlignment(.center)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(verbatim: RegisterPaymentCopy.debt(state))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .listRowBackground(Color.clear)
-            if state.isAmountLocked {
-                // Across several groups only the whole net settles, so the groups it closes show instead of the field
-                Section {
-                    PersonGroupsList(groups: state.groupParts, currency: state.currency)
-                        .listRowInsets(EdgeInsets())
-                } header: {
-                    Text("By group")
-                } footer: {
-                    Text("The app records one payment in each group.")
+        Group {
+            if layout.usesTwoColumns {
+                TwoColumnsLayout(spacing: 8) {
+                    Form { summarySections }
+                } second: {
+                    Form { detailSections }
                 }
             } else {
-                Section {
-                    AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
-                    Button {
-                        model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
-                    } label: {
-                        Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
-                    }
-                    .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
-                } header: {
-                    Text("Amount paid")
-                } footer: {
-                    PaymentAmountHelp(state: state)
+                Form {
+                    summarySections
+                    detailSections
                 }
-            }
-            Section("How it was paid") {
-                MethodPicker(selection: model.method)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-            }
-            Section {
-                WhenPickerRows(
-                    millis: state.paidAt,
-                    relativeDay: state.paidDay,
-                    selection: model.paidAt,
-                    latest: model.latestPaidAt,
-                    onOpen: model.openPaidAt,
-                )
-            } footer: {
-                PaymentNotes(state: state)
+                .safeAreaInset(edge: .bottom) {
+                    PrimaryButton(
+                        title: RegisterPaymentCopy.confirm(state),
+                        isEnabled: state.canConfirm,
+                        isLoading: state.isSaving,
+                    ) {
+                        confirm()
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 8)
+                }
             }
         }
         .scrollDismissesKeyboard(.interactively)
-        .safeAreaInset(edge: .bottom) {
-            PrimaryButton(
-                title: RegisterPaymentCopy.confirm(state),
-                isEnabled: state.canConfirm,
-                isLoading: state.isSaving,
-            ) {
-                model.send(RegisterPaymentUiEventOnConfirmClicked.shared)
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 8)
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
         .navigationTitle("Record payment")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -329,6 +298,85 @@ private struct PhoneRegisterPayment: View {
                 }
                 .disabled(state.isSaving)
             }
+            if layout.usesTwoColumns {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(RegisterPaymentCopy.confirm(state), systemImage: "checkmark") {
+                        confirm()
+                    }
+                    .buttonStyle(.glassProminent)
+                    .disabled(!state.canConfirm || state.isSaving)
+                }
+            }
+        }
+    }
+
+    private func confirm() {
+        model.send(RegisterPaymentUiEventOnConfirmClicked.shared)
+    }
+
+    /// Who paid whom, what is owed, and the amount (or the groups a net across groups closes).
+    @ViewBuilder
+    private var summarySections: some View {
+        Section {
+            VStack(spacing: 8) {
+                PaymentFaces(from: state.from, to: state.to, size: 52)
+                Text(verbatim: RegisterPaymentCopy.title(state))
+                    .font(.title2.bold())
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+                Text(verbatim: RegisterPaymentCopy.debt(state))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .listRowBackground(Color.clear)
+        if state.isAmountLocked {
+            // Across several groups only the whole net settles, so the groups it closes show instead of the field
+            Section {
+                PersonGroupsList(groups: state.groupParts, currency: state.currency)
+                    .listRowInsets(EdgeInsets())
+            } header: {
+                Text("By group")
+            } footer: {
+                Text("The app records one payment in each group.")
+            }
+        } else {
+            Section {
+                AmountField(currency: state.currency, text: model.amount, label: "Amount paid")
+                Button {
+                    model.send(RegisterPaymentUiEventOnFullDebtClicked.shared)
+                } label: {
+                    Label("The whole debt", systemImage: state.isFullDebt ? "checkmark.circle.fill" : "circle")
+                }
+                .accessibilityAddTraits(state.isFullDebt ? .isSelected : [])
+            } header: {
+                Text("Amount paid")
+            } footer: {
+                PaymentAmountHelp(state: state)
+            }
+        }
+    }
+
+    /// How and when it was paid, and what recording it does.
+    @ViewBuilder
+    private var detailSections: some View {
+        Section("How it was paid") {
+            MethodPicker(selection: model.method)
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+        }
+        Section {
+            WhenPickerRows(
+                millis: state.paidAt,
+                relativeDay: state.paidDay,
+                selection: model.paidAt,
+                latest: model.latestPaidAt,
+                onOpen: model.openPaidAt,
+            )
+        } footer: {
+            PaymentNotes(state: state)
         }
     }
 }
