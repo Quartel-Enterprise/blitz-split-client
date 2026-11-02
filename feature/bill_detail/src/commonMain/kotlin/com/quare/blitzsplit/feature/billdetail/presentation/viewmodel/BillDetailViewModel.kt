@@ -71,7 +71,7 @@ class BillDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val addBillComment: AddBillComment,
     private val updateExpense: UpdateExpense,
-    private val loadBillHistory: LoadBillHistory,
+    loadBillHistory: LoadBillHistory,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
     observeExpenses: ObserveExpenses,

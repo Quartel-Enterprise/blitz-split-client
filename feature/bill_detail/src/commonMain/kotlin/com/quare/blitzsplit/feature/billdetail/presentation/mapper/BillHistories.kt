@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillLinkVisibility
 import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
-import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -23,13 +22,14 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEnt
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryKind
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryPart
 import kotlinx.datetime.TimeZone
+import kotlin.time.Duration.Companion.minutes
 
-// Why: photos one person adds within this long of each other read as one line, "anexou 2 fotos".
-private const val ATTACHMENT_BURST_MILLIS = 10 * 60 * 1000L
-
+/*
+ * Why: photos one person adds within attachmentBurst of each other read as one line, "anexou 2 fotos"; undoableFields
+ * are what "Desfazer" puts back, so an edit of anything else can't be undone from here.
+ */
+private val attachmentBurst = 10.minutes
 private const val RECEIPT = "receipt"
-
-// Why: the fields "Desfazer" puts back; an edit of anything else can't be undone from here.
 private val undoableFields = setOf(
     ActivityField.AMOUNT,
     ActivityField.DESCRIPTION,
@@ -37,17 +37,6 @@ private val undoableFields = setOf(
     ActivityField.CATEGORY,
     ActivityField.PAYERS,
     ActivityField.SPLIT,
-)
-
-// Why: the bill as "Desfazer" saves it, the latest edit's "before" over the bill as it is now.
-internal data class BillUndo(
-    val description: String,
-    val amountMinor: Long,
-    val payers: List<ExpensePayer>,
-    val splitMode: SplitMode,
-    val shares: List<ExpenseShare>,
-    val categoryId: String?,
-    val spentAt: Long,
 )
 
 /*
@@ -64,7 +53,7 @@ internal fun historyOf(
 ): List<BillHistoryDay> {
     val undoId = events.firstOrNull()?.takeIf { undoOf(it, expense) != null }?.id
     val entries = listOfNotNull(pendingEntryOf(events, expense, group, nowMillis)) +
-        gatherAttachments(events).mapNotNull { (event, count) -> entryOf(event, count, group, expense, undoId) }
+        buildAttachmentRuns(events).mapNotNull { (event, count) -> entryOf(event, count, group, expense, undoId) }
     return entries
         .groupBy { SpentDay.dateOf(it.occurredAt, timeZone) }
         .map { (date, dayEntries) ->
@@ -173,7 +162,7 @@ private fun pendingEntryOf(
 }
 
 // Why: the photos one person added one after the other, the most recent first, as one line with their count.
-private fun gatherAttachments(events: List<ActivityEvent>): List<Pair<ActivityEvent, Int>> {
+private fun buildAttachmentRuns(events: List<ActivityEvent>): List<Pair<ActivityEvent, Int>> {
     val gathered = mutableListOf<Pair<ActivityEvent, Int>>()
     events.forEach { event ->
         val last = gathered.lastOrNull()
@@ -184,7 +173,7 @@ private fun gatherAttachments(events: List<ActivityEvent>): List<Pair<ActivityEv
             last.first.code != RECEIPT &&
             event.actorMemberId == last.first.actorMemberId &&
             event.actorUserId == last.first.actorUserId &&
-            last.first.occurredAt - event.occurredAt <= ATTACHMENT_BURST_MILLIS
+            last.first.occurredAt - event.occurredAt <= attachmentBurst.inWholeMilliseconds
         if (joinsLast) {
             gathered[gathered.lastIndex] = last.first to last.second + 1
         } else {
@@ -329,12 +318,6 @@ private fun namesOf(
     value: ActivityValue,
     group: Group,
 ): List<String?> = value.memberIds.map { id -> group.members.firstOrNull { it.id == id }?.name }
-
-private data class HistoryActor(
-    val name: String?,
-    val initials: String,
-    val color: AvatarColor,
-)
 
 private fun actorOf(
     member: GroupMember?,
