@@ -191,7 +191,7 @@ configuration and run in parallel, and pass `--continue` so one failure doesn't 
 | Android UI | `android/`, `androidApp/` | The debug APK and Android lint, unless the full build already ran |
 | Apple UI | `iosApp/`, or the API Swift sees: `shared/`, the modules `shared/build.gradle.kts` exports (`core/{model,presentation,navigation,expenses}`, every `feature/*`), `version.properties` | Regenerate the Xcode project, build both schemes |
 | Web UI | `webApp/`, or the API TypeScript sees: `shared/src/jsMain`, `feature/*/src/commonMain/**/presentation` | The production build of the web app |
-| Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd*`, `scripts/jscpd/` | The duplication check |
+| Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd.sh`, `.github/workflows/duplication.yml` | The duplication check |
 
 **Shared Kotlin**:
 

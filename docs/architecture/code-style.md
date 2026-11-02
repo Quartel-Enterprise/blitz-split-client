@@ -323,8 +323,12 @@ the apps: clones of 70 tokens or more with at least 5 lines of code in each copy
 
 `.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code. jscpd only compares files of
 the same language (`.ts` and `.tsx` count as one), so a screen drawn by Compose, SwiftUI and React is never a clone.
-The script runs the jscpd release `scripts/jscpd/package.json` pins, with every dependency its lockfile locks, so it
-needs Node.js 18 or later and nothing else.
+The check itself is shared with the other Quare apps in
+[copied-code-check](https://github.com/Quartel-Enterprise/copied-code-check): `scripts/cpd.sh` is its wrapper, which
+never changes, and runs the release that the `Quartel-Enterprise/copied-code-check@X.Y.Z` line of `duplication.yml`
+pins, with the jscpd release it locks. It needs Node.js 18 or later, plus `curl`, `tar` and access to github.com
+the first time it runs a release. A change to how the check counts
+goes to that repository, then a bump of the line here (Dependabot proposes it).
 
 `.jscpd-baseline.json` holds how many lines of code of each file are copied today. A file with more fails the check:
 extract the copied code into one place the callers use (a use case or coordinator under the ViewModels, a component of
@@ -335,4 +339,4 @@ path with the name (the part before the first dot plus the extension, so `Foo.an
 and `Foo.kt` to `Foo.swift` doesn't) and copied lines of a listed path whose file is gone. A file renamed with its
 copied code needs `--allow-new`, like any new copy. `--allow-new` is for a copy on purpose (an `actual` per platform
 that happens to match): say why in the pull request, where CI raises one warning and lists each file whose copied lines
-grew against main in the job summary.
+grew against the base branch (`main`, for most pull requests) in the job summary.
