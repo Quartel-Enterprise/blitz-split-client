@@ -2,8 +2,11 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
@@ -41,6 +44,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -63,6 +67,8 @@ class SyncCoordinatorTest {
     private lateinit var pins: FakeGroupPinRepository
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var settlements: FakeSettlementRepository
+    private lateinit var categories: FakeCategoryRepository
+    private lateinit var billComments: FakeBillCommentRepository
     private val categoryTerms = FakeCategoryTermRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
@@ -4695,6 +4701,441 @@ class SyncCoordinatorTest {
         assertEquals(1, activity.clearCalls)
     }
 
+    @Test
+    fun `GIVEN a Google account and a pending comment WHEN syncing THEN pulls and pushes it under its user id`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedComments = listOf(comment(id = "uber")),
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), billComments.downloadedUserIds)
+            assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), billComments.uploadedUserIds)
+            assertTrue(billComments.comments.value.none { it.isPending })
+        }
+
+    @Test
+    fun `GIVEN a pending comment WHEN syncing THEN syncs the comments after the payments and before the activity`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedComments = listOf(comment(id = "uber")),
+                logsCommentsAndActivity = true,
+            )
+
+            // When
+            val result = coordinator.syncNow()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val userId = FakeAccountRepository.ANONYMOUS_USER_ID
+            assertEquals(
+                listOf(
+                    "groups download $userId",
+                    "groups upload $userId",
+                    "bills download $userId",
+                    "bills upload $userId",
+                    "payments download $userId",
+                    "payments upload $userId",
+                    "comments download $userId",
+                    "comments upload $userId",
+                    "activity upload $userId",
+                    "activity download $userId",
+                ),
+                calls.filterNot {
+                    it.startsWith("profile ") || it.startsWith("keys ") || it.startsWith("preferences ")
+                },
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups fail to come down WHEN syncing THEN neither pulls nor pushes the comments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        groups.pullError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billComments.downloadedUserIds.isEmpty())
+        assertTrue(billComments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billComments.comments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the categories fail to go up WHEN syncing THEN neither pulls nor pushes the comments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        categories.pushError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billComments.downloadedUserIds.isEmpty())
+        assertTrue(billComments.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bills fail to go up WHEN syncing THEN neither pulls nor pushes the comments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        expenses.pushError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billComments.downloadedUserIds.isEmpty())
+        assertTrue(billComments.uploadedUserIds.isEmpty())
+        assertTrue(
+            billComments.comments.value
+                .single()
+                .isPending,
+        )
+    }
+
+    @Test
+    fun `GIVEN the payments fail to come down WHEN syncing THEN neither pulls nor pushes the comments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        settlements.pullError = IllegalStateException("offline")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billComments.downloadedUserIds.isEmpty())
+        assertTrue(billComments.uploadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the pins fail to go up WHEN syncing THEN still pulls and pushes the comments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        pins.uploadError = IllegalStateException("rejected")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billComments.downloadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billComments.uploadedUserIds)
+        assertTrue(billComments.comments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN the comments fail to come down WHEN syncing THEN pushes none and still syncs the activity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        billComments.pullError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(billComments.uploadedUserIds.isEmpty())
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.uploadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the comments fail to go up WHEN syncing THEN fails keeps the comment pending and is failed`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        billComments.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(
+            billComments.comments.value
+                .single()
+                .isPending,
+        )
+        assertEquals(SyncState.FAILED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN the comments fail to go up WHEN syncing THEN still syncs the money and the activity`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            pendingBills = true,
+            pendingPayments = true,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        billComments.pushError = IllegalStateException("server down")
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertFalse(expenses.hasPendingChanges.value)
+        assertFalse(settlements.hasPendingChanges.value)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.uploadedUserIds)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), activity.downloadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a comments push that failed WHEN the device goes offline THEN the sync state is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedComments = listOf(comment(id = "uber")),
+        )
+        billComments.pushError = IllegalStateException("no answer")
+        coordinator.syncNow()
+
+        // When
+        isOnline.value = false
+
+        // Then
+        assertEquals(SyncState.PENDING, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN nothing else pending and a comment written offline WHEN observing the sync state THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                online = false,
+            )
+            coordinator.start()
+            runCurrent()
+            billComments.addComment(comment(id = "uber"))
+            runCurrent()
+
+            // When
+            val state = coordinator.observeState().first()
+
+            // Then
+            assertEquals(SyncState.PENDING, state)
+        }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN a comment is written THEN pushes the comments`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = billComments.uploadedUserIds.size
+
+        // When
+        billComments.addComment(comment(id = "uber"))
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, billComments.uploadedUserIds.size)
+        assertTrue(billComments.comments.value.none { it.isPending })
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a comment written offline WHEN the device comes online THEN pushes the comments`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        coordinator.start()
+        runCurrent()
+        billComments.addComment(comment(id = "uber"))
+        runCurrent()
+
+        // When
+        isOnline.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), billComments.uploadedUserIds)
+        assertTrue(billComments.comments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN a comments push that failed online WHEN another comment is written THEN pushes the comments again`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.start()
+            runCurrent()
+            billComments.pushError = IllegalStateException("no answer")
+            billComments.addComment(comment(id = "uber"))
+            runCurrent()
+            billComments.pushError = null
+            val uploadsBefore = billComments.uploadedUserIds.size
+
+            // When
+            billComments.addComment(comment(id = "pizza"))
+            runCurrent()
+
+            // Then
+            assertEquals(uploadsBefore + 1, billComments.uploadedUserIds.size)
+            assertTrue(billComments.comments.value.none { it.isPending })
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a bills push that failed online WHEN a comment is written THEN syncs again and pushes both`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        expenses.pushError = IllegalStateException("no answer")
+        expenses.hasPendingChanges.value = true
+        expenses.pendingVersions.value = listOf(1_000L)
+        runCurrent()
+        expenses.pushError = null
+        val billUploadsBefore = expenses.uploadedUserIds.size
+        val commentUploadsBefore = billComments.uploadedUserIds.size
+
+        // When
+        billComments.addComment(comment(id = "uber"))
+        runCurrent()
+
+        // Then
+        assertEquals(billUploadsBefore + 1, expenses.uploadedUserIds.size)
+        assertEquals(commentUploadsBefore + 1, billComments.uploadedUserIds.size)
+        assertFalse(expenses.hasPendingChanges.value)
+        assertTrue(billComments.comments.value.none { it.isPending })
+    }
+
+    @Test
+    fun `GIVEN a comment written while the comments push is in flight WHEN retrying THEN pushes it in another round`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedComments = listOf(comment(id = "uber")),
+                commentQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.retry()
+            runCurrent()
+
+            // Then
+            assertEquals(2, billComments.uploadedUserIds.size)
+            assertEquals(2, billComments.comments.value.size)
+            assertTrue(billComments.comments.value.none { it.isPending })
+        }
+
+    @Test
+    fun `GIVEN only a comment queued online WHEN signing out once synced THEN pushes it before ending the session`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedComments = listOf(comment(id = "uber")),
+                logsCommentsAndActivity = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            val userId = FakeAccountRepository.CONNECTED_USER_ID
+            assertEquals(listOf(userId), billComments.uploadedUserIds)
+            assertEquals(1, account.signOutCount)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertTrue(calls.indexOf("account sign out") > calls.lastIndexOf("comments upload $userId"))
+        }
+
+    @Test
+    fun `GIVEN the comments push fails WHEN signing out once synced THEN keeps the session and the schedule`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedComments = listOf(comment(id = "uber")),
+            )
+            billComments.pushError = IllegalStateException("server down")
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(0, account.signOutCount)
+            assertEquals(google, account.status)
+            assertEquals(pierre, profile.profile.value)
+            assertTrue(
+                billComments.comments.value
+                    .single()
+                    .isPending,
+            )
+            assertTrue(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN a comment written while the push is in flight WHEN signing out once synced THEN pushes it before`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedComments = listOf(comment(id = "uber")),
+                commentQueuedDuringFirstPush = true,
+            )
+
+            // When
+            coordinator.signOutWhenSynced()
+            runCurrent()
+
+            // Then
+            assertEquals(2, billComments.uploadedUserIds.size)
+            assertTrue(billComments.comments.value.none { it.isPending })
+            assertEquals(1, account.signOutCount)
+        }
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
@@ -4752,6 +5193,21 @@ class SyncCoordinatorTest {
         updatedAt = 0L,
     )
 
+    private fun comment(id: String): BillComment = BillComment(
+        id = id,
+        expenseId = "dinner-bill",
+        groupId = "dinner",
+        authorUserId = FakeAccountRepository.ANONYMOUS_USER_ID,
+        authorMemberId = "me",
+        authorName = "Pierre",
+        threadId = null,
+        replyToName = null,
+        body = "Paguei o Uber",
+        viaLink = false,
+        postedAt = 1L,
+        isPending = true,
+    )
+
     private fun callsWithoutPreferencesAndGroups(): List<String> = calls.filterNot {
         it.startsWith("preferences ") || it.startsWith("groups ") || it.startsWith("bills ") ||
             it.startsWith("payments ")
@@ -4786,6 +5242,9 @@ class SyncCoordinatorTest {
         pendingBills: Boolean = false,
         pendingPayments: Boolean = false,
         firstDownloadPending: Boolean = false,
+        storedComments: List<BillComment> = emptyList(),
+        commentQueuedDuringFirstPush: Boolean = false,
+        logsCommentsAndActivity: Boolean = false,
     ) {
         firstDownload = FirstDownload().also { if (firstDownloadPending) it.start() }
         account = FakeAccountRepository(initialStatus = status).also {
@@ -4803,6 +5262,10 @@ class SyncCoordinatorTest {
         expenses = FakeExpenseRepository().also { it.hasPendingChanges.value = pendingBills }
         settlements = FakeSettlementRepository().also { it.hasPendingChanges.value = pendingPayments }
         activity = FakeActivityRepository()
+        categories = FakeCategoryRepository()
+        billComments = FakeBillCommentRepository(initialComments = storedComments)
+        // Why: only the cases that assert where the comments go log them, so the others keep their exact logs.
+        val commentAndActivityCalls = if (logsCommentsAndActivity) calls else mutableListOf()
         paymentVersionsAgain = MutableSharedFlow(extraBufferCapacity = 1)
         isOnline = MutableStateFlow(online)
         pullGate = CompletableDeferred()
@@ -4841,10 +5304,20 @@ class SyncCoordinatorTest {
             groupPinRepository = FakeGroupPinRepository().also { pins = it },
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
-            categoryRepository = FakeCategoryRepository(),
+            categoryRepository = categories,
             categoryTermRepository = categoryTerms,
-            billCommentRepository = FakeBillCommentRepository(),
-            activityRepository = activity,
+            billCommentRepository = RecordingBillCommentRepository(
+                delegate = if (commentQueuedDuringFirstPush) {
+                    CommentDuringFirstPushBillCommentRepository(
+                        delegate = billComments,
+                        queued = comment(id = "written-during-push"),
+                    )
+                } else {
+                    billComments
+                },
+                calls = commentAndActivityCalls,
+            ),
+            activityRepository = RecordingActivityRepository(activity, commentAndActivityCalls),
             hiddenContactRepository = FakeHiddenContactRepository(),
             firstDownload = firstDownload,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
@@ -5058,5 +5531,47 @@ private class RecordingSettlementRepository(
     override suspend fun uploadPendingSettlements(userId: String): Result<Unit> {
         calls += "payments upload $userId"
         return delegate.uploadPendingSettlements(userId)
+    }
+}
+
+// Why: a comment written while the first comments push is in flight, so one is still pending once it ends.
+private class CommentDuringFirstPushBillCommentRepository(
+    private val delegate: FakeBillCommentRepository,
+    private val queued: BillComment,
+) : BillCommentRepository by delegate {
+    override suspend fun uploadPending(userId: String): Result<Unit> {
+        val result = delegate.uploadPending(userId)
+        if (delegate.uploadedUserIds.size == 1) delegate.comments.update { it + queued }
+        return result
+    }
+}
+
+private class RecordingBillCommentRepository(
+    private val delegate: BillCommentRepository,
+    private val calls: MutableList<String>,
+) : BillCommentRepository by delegate {
+    override suspend fun download(userId: String): Result<Unit> {
+        calls += "comments download $userId"
+        return delegate.download(userId)
+    }
+
+    override suspend fun uploadPending(userId: String): Result<Unit> {
+        calls += "comments upload $userId"
+        return delegate.uploadPending(userId)
+    }
+}
+
+private class RecordingActivityRepository(
+    private val delegate: ActivityRepository,
+    private val calls: MutableList<String>,
+) : ActivityRepository by delegate {
+    override suspend fun uploadPendingActivity(userId: String): Result<Unit> {
+        calls += "activity upload $userId"
+        return delegate.uploadPendingActivity(userId)
+    }
+
+    override suspend fun downloadActivity(userId: String): Result<Unit> {
+        calls += "activity download $userId"
+        return delegate.downloadActivity(userId)
     }
 }
