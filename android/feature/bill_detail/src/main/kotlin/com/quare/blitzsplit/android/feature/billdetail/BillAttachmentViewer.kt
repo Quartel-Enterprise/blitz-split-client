@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -165,7 +166,10 @@ private fun ViewerContent(
                     .fillMaxWidth(),
                 key = { page -> attachments[page].id },
             ) { page ->
-                ViewerPageBox(attachments[page])
+                ViewerPageBox(
+                    attachment = attachments[page],
+                    isOnline = state.isOnline,
+                )
             }
             ViewerFooter(
                 attachment = current,
@@ -252,7 +256,10 @@ private fun ViewerTopBar(
 }
 
 @Composable
-private fun ViewerPageBox(attachment: BillAttachmentTile) {
+private fun ViewerPageBox(
+    attachment: BillAttachmentTile,
+    isOnline: Boolean,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -263,7 +270,10 @@ private fun ViewerPageBox(attachment: BillAttachmentTile) {
         contentAlignment = Alignment.Center,
     ) {
         val imageUrl = attachment.imageUrl
-        if (imageUrl == null) {
+        if (imageUrl == null && isOnline) {
+            // Why: online, its signed URL is on the way (or tried again each minute).
+            CircularProgressIndicator(color = viewerContent)
+        } else if (imageUrl == null) {
             // Why: offline, a photo another device added and this one never loaded.
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

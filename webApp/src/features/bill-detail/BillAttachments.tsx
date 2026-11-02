@@ -193,6 +193,9 @@ export function AttachmentViewer({ presenter, state }: { presenter: BillDetailPr
                   height={attachment.height ?? undefined}
                   className="max-h-full max-w-full rounded-sm object-contain shadow-2xl"
                 />
+              ) : state.isOnline ? (
+                // Why: online, its signed URL is on the way (or tried again each minute)
+                <Loader2 aria-hidden className="size-8 animate-spin text-white/80" />
               ) : (
                 <div className="flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center gap-3 rounded-lg bg-white/10 p-6 text-center text-sm text-white/80">
                   <ImageOff aria-hidden className="size-8" />

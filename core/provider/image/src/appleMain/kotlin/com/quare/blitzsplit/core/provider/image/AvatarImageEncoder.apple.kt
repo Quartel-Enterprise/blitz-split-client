@@ -129,11 +129,16 @@ internal class AppleBillImageEncoder : BillImageEncoder {
         )
         CGImageRelease(upright)
         flat ?: throw UnsupportedImageException()
-        BillImage(
-            jpeg = encodeUnderLimit(flat::toJpeg),
-            width = outputWidth,
-            height = outputHeight,
-        ).also { CGImageRelease(flat) }
+        // Why: released also when no quality fits the limit, which throws.
+        try {
+            BillImage(
+                jpeg = encodeUnderLimit(flat::toJpeg),
+                width = outputWidth,
+                height = outputHeight,
+            )
+        } finally {
+            CGImageRelease(flat)
+        }
     }
 }
 

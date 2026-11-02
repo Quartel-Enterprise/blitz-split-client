@@ -138,7 +138,8 @@ struct BillAttachmentViewer: View {
 
     private func page(_ attachment: BillAttachmentTile) -> some View {
         AttachmentImage(id: attachment.id, url: attachment.imageUrl, contentMode: .fit) {
-            if attachment.imageUrl == nil {
+            // Online, a nil URL is a signed URL on the way (or tried again each minute)
+            if attachment.imageUrl == nil, !state.isOnline {
                 VStack(spacing: 10) {
                     Image(systemName: "icloud.slash")
                         .font(.largeTitle)

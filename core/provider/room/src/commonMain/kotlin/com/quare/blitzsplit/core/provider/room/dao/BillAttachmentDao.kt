@@ -121,13 +121,15 @@ interface BillAttachmentDao {
 
     /*
      * Why: Last-Write-Wins against a change not up yet, which stays when it is newer. A tombstone takes it off the
-     * device, and one of a bill no longer here is skipped.
+     * device, and one of a bill no longer here is skipped. A row already as the server has it isn't written again, so
+     * a sync that changed nothing doesn't make every open Conta read its photos' JPEGs again.
      */
     @Transaction
     suspend fun applyRemote(entities: List<BillAttachmentEntity>) {
         val kept = entities.filter { remote ->
             val local = getAttachment(remote.id)
-            local == null || !local.pendingSync || remote.isDeleted || remote.updatedAt > local.updatedAt
+            local != remote &&
+                (local == null || !local.pendingSync || remote.isDeleted || remote.updatedAt > local.updatedAt)
         }
         kept
             .filter { it.isDeleted }

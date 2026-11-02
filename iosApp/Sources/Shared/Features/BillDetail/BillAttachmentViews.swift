@@ -286,6 +286,8 @@ private struct BillAddPhotoTile: View {
         .cameraCapture(isRequested: $takesPhoto, device: .rear) { data in model.photoPicked(data) }
         #else
         .fileImporter(isPresented: $importsFile, allowedContentTypes: [.image]) { result in
+            // A cancelled panel picked nothing, so it says nothing either
+            if case let .failure(error) = result, (error as? CocoaError)?.code == .userCancelled { return }
             model.photoPicked(Self.read(result))
         }
         #endif

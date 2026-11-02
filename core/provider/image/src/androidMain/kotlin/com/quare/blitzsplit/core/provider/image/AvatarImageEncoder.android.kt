@@ -40,11 +40,16 @@ internal class AndroidBillImageEncoder : BillImageEncoder {
         }
         val size = findBillImageSize(decoded.width, decoded.height)
         val output = decoded.createOnWhite(Rect(0, 0, decoded.width, decoded.height), size.width, size.height)
-        BillImage(
-            jpeg = encodeUnderLimit(output::toJpeg),
-            width = size.width,
-            height = size.height,
-        ).also { output.recycle() }
+        // Why: recycled also when no quality fits the limit, which throws.
+        try {
+            BillImage(
+                jpeg = encodeUnderLimit(output::toJpeg),
+                width = size.width,
+                height = size.height,
+            )
+        } finally {
+            output.recycle()
+        }
     }
 }
 
