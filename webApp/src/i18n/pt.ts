@@ -268,6 +268,8 @@ export const pt: Record<MessageKey, string> = {
   members_cancel: 'Cancelar',
   members_changeError: 'Não deu para salvar a mudança. Tente de novo.',
   members_personalMessage: 'Quem abrir este link entra direto como {name}, sem escolher na lista. Ele vale uma vez.',
+  members_personalMessageBillOne: 'Quem abrir este link entra direto como {name}, sem escolher na lista, e já vê a parte de {amount} na despesa lançada. Ele vale uma vez.',
+  members_personalMessageBillOther: 'Quem abrir este link entra direto como {name}, sem escolher na lista, e já vê a parte de {amount} nas {count} despesas lançadas. Ele vale uma vez.',
   members_personalLinkLabel: 'Link pessoal',
   members_copy: 'Copiar',
   members_copied: 'Copiado',
