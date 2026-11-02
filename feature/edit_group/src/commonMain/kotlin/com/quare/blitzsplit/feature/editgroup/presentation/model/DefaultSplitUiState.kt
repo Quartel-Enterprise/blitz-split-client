@@ -107,7 +107,7 @@ data class DefaultSplitUiState(
             ExceptionRow(
                 exception = exception,
                 category = categories.resolve(exception.categoryId),
-                includedCount = people.count { exception.weights[it.id]?.let { weight -> weight > 0 } ?: true },
+                includedCount = people.count { exception.asDefault.weightOf(it.id) > 0 },
                 totalCount = people.size,
             )
         }

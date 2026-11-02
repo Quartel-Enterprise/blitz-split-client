@@ -322,6 +322,8 @@ class SplitBillViewModel(
     ) {
         // Why: a group that comes back before this screen is on top again keeps it open.
         isGroupGone = group == null
+        // Why: a category or bills change arriving before the screen leaves never redraws a deleted group's people.
+        if (group == null) shownGroup = null
         when {
             group == null -> handleGroupGone()
 

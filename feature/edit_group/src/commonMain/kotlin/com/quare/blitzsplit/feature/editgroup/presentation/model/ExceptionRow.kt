@@ -12,11 +12,9 @@ data class ExceptionRow(
     val includedCount: Int,
     val totalCount: Int,
 ) {
-    // Why: "3 para 1", "75% e 25%": the weights of who is in, in the group's order.
-    fun valuesOf(memberIds: List<String>): List<Long> = memberIds.mapNotNull { id ->
-        exception.weights[id]?.takeIf {
-            it >
-                0
-        }
+    // Why: "3 para 1", "75% e 25%": who is in, in the group's order, a newcomer as a bill of it starts them.
+    fun valuesOf(memberIds: List<String>): List<Long> {
+        val split = exception.asDefault
+        return memberIds.map(split::weightOf).filter { it > 0 }
     }
 }

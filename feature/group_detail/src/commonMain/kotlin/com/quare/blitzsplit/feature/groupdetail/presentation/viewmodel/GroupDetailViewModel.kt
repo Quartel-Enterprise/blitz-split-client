@@ -84,7 +84,10 @@ class GroupDetailViewModel(
         },
     )
 
-    // Why: the group's categories the rows' icons read from, and the last rows shown, redrawn when they change.
+    /*
+     * Why: the group's categories the rows' icons read from, and the last rows shown, redrawn when they change; never
+     * once the group is gone, whose categories its deletion takes along.
+     */
     private var categoryTree = CategoryTree.appOnly
     private var showAgain: (() -> Unit)? = null
 
@@ -101,7 +104,7 @@ class GroupDetailViewModel(
         observeCategoryTree(route.groupId)
             .onEach { tree ->
                 categoryTree = tree
-                showAgain?.invoke()
+                if (!screen.isGroupGone) showAgain?.invoke()
             }.launchIn(viewModelScope)
         teaching.watch(observeCategoryTree(route.groupId))
         screen.watch(

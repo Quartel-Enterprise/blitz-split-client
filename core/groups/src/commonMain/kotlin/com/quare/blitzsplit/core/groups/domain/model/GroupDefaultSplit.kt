@@ -24,6 +24,13 @@ data class GroupDefaultSplit(
         .filterNotNull()
         .firstNotNullOfOrNull { id -> exceptions.firstOrNull { it.categoryId == id } }
 
+    /*
+     * Why: "Igual" with everyone in splits as a group without a default does, so a bill no exception covers opens
+     * with no "Padrão do grupo" notice, and with no exception either it is saved as none.
+     */
+    val isEveryoneEqually: Boolean
+        get() = mode == DefaultSplitMode.EQUAL && weights.values.all { it > 0 }
+
     // Why: what someone who joined after it was saved starts with: in for "Igual", 1 part, 0%.
     fun weightOf(memberId: String): Long = weights[memberId] ?: newcomerWeight
 
