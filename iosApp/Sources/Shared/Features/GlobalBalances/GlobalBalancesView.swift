@@ -73,6 +73,8 @@ struct GlobalBalancesView: View {
     @State private var model: GlobalBalancesModel?
     /// The whole screen, the column beside the list included, so showing it never changes what decides it.
     @State private var layout = ScreenLayout()
+    /// The iPhone Duo's fold, which the list ends at and the person picked starts after (iOS 27.1).
+    @State private var division: FoldDivision?
 
     /// The canvas' list and detail: lying down with an iPad's room (an iPad, an iPhone Duo open), a Mac window wide
     /// enough for the inspector.
@@ -88,12 +90,21 @@ struct GlobalBalancesView: View {
         Group {
             if let model, model.state.isLoaded {
                 HStack(spacing: 0) {
-                    GlobalBalancesList(model: model, showsDetail: showsDetail)
-                    if showsDetail {
-                        Divider()
-                            .ignoresSafeArea()
+                    if showsDetail, let fold = division?.verticalFrame {
+                        // An iPhone Duo open: the people before the fold, the person picked after it
+                        GlobalBalancesList(model: model, showsDetail: showsDetail)
+                            .frame(width: fold.minX)
+                        Color.clear
+                            .frame(width: fold.width)
                         PersonInspector(model: model)
-                            .frame(width: PersonInspector.width)
+                    } else {
+                        GlobalBalancesList(model: model, showsDetail: showsDetail)
+                        if showsDetail {
+                            Divider()
+                                .ignoresSafeArea()
+                            PersonInspector(model: model)
+                                .frame(width: PersonInspector.width)
+                        }
                     }
                 }
             } else {
@@ -101,6 +112,7 @@ struct GlobalBalancesView: View {
             }
         }
         .measuringScreenLayout($layout)
+        .readingFoldDivision($division)
         .navigationTitle("Balances")
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
@@ -129,6 +141,7 @@ struct GlobalBalancesView: View {
                 }
                 .accessibilityLabel("Profile")
             }
+            .prefersVerticalBar()
         }
         .glassToast([
             GlassToastMessage(text: "Coming soon", trigger: model?.comingSoonCount ?? 0),
@@ -144,6 +157,7 @@ struct GlobalBalancesView: View {
         .sheet(isPresented: model?.isCharging ?? .constant(false)) {
             if let model, let charge = model.state.charge {
                 ChargeSheet(model: model, charge: charge)
+                    .foldSheetPlacement()
             }
         }
         .onAppear {

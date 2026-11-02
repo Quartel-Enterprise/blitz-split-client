@@ -43,3 +43,68 @@ private func foldDivision(in proxy: GeometryProxy) -> FoldDivision? {
     return FoldDivision(frame: region.frame, isActive: region.isActive)
 }
 #endif
+
+extension FoldDivision {
+    /// The fold where it runs down the view (an iPhone Duo open as a book, or flat lying down), the line two columns
+    /// meet on; nil where it runs across or there is none.
+    var verticalFrame: CGRect? {
+        isVertical ? frame : nil
+    }
+
+    /// The fold where it runs across the view (an iPhone Duo open upright, as a notebook), the line a top and a
+    /// bottom half meet on; nil where it runs down or there is none.
+    var horizontalFrame: CGRect? {
+        isVertical ? nil : frame
+    }
+}
+
+extension EnvironmentValues {
+    /// The iPhone Duo's fold over the whole window, read once by the root (`measuringWindow`), so a sheet knows which
+    /// half of the window it opens in. Nil wherever `FoldDivision` is.
+    @Entry var windowFold: FoldDivision?
+}
+
+extension View {
+    /// A sheet the boards draw in the front half of an iPhone Duo open lying down or as a book: the leading half,
+    /// with what it opened over in the other one (iOS 27's `presentationPlacement`). Everywhere else, the iPhone Duo
+    /// upright and closed included, the system places it. Put it on the sheet's content, as a detent.
+    func foldSheetPlacement() -> some View {
+        modifier(FoldSheetPlacement())
+    }
+}
+
+private struct FoldSheetPlacement: ViewModifier {
+    @Environment(\.windowFold) private var fold
+
+    func body(content: Content) -> some View {
+        #if os(iOS)
+        if #available(iOS 27.0, *) {
+            // One view whatever the fold, so opening or folding the device never rebuilds the sheet's content
+            content
+                .presentationPlacement(fold?.verticalFrame != nil ? .leading : .automatic)
+                .presentationSizing(FoldHalfSizing(foldStart: fold?.verticalFrame?.minX))
+        } else {
+            content
+        }
+        #else
+        content
+        #endif
+    }
+}
+
+/// A form sheet no wider than the half before the fold, its margins included, so it never runs over it; the form's
+/// own size anywhere else.
+private struct FoldHalfSizing: PresentationSizing {
+    /// Where the fold starts, nil without one down the window.
+    let foldStart: CGFloat?
+
+    /// What the sheet keeps clear of the screen's edge and of the fold, on either side.
+    private static let margin: CGFloat = 10
+
+    func proposedSize(for root: PresentationSizingRoot, context: PresentationSizingContext) -> ProposedViewSize {
+        let form = FormPresentationSizing.form.proposedSize(for: root, context: context)
+        guard let foldStart else { return form }
+        let half = foldStart - Self.margin * 2
+        return ProposedViewSize(width: min(form.width ?? half, half), height: form.height)
+    }
+}

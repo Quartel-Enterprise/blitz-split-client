@@ -239,6 +239,7 @@ struct ContactsView: View {
                 }
                 .accessibilityLabel("Profile")
             }
+            .prefersVerticalBar()
         }
         .glassToast([
             GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model.changeErrorCount),

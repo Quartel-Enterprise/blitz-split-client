@@ -557,6 +557,17 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     detail and
     opens a key and a bill as sheets; its copy still says "iPhone". How each screen picks its layout:
     [docs/architecture/responsive-layouts.md](docs/architecture/responsive-layouts.md).
+  - The iPhone Duo (iOS 27.1): closed, the system's vertical bar on the camera's edge holds Back, the screen's glass
+    buttons, the avatar and "Rachar conta" (only its +, the group's Adicionar pessoa too) over the tabs
+    (`prefersVerticalBar()`), and the group's bottom bar moves into it. Open lying down, every two-column screen
+    splits on the fold with nothing in its band (Grupos' and Contatos' lists end at it, Saldos, Estatísticas with
+    the total and categories before it and Por pessoa after it), and a form sheet opens in the leading half
+    (`foldSheetPlacement()`). Open upright, as a notebook, Convidar (QR and link on top), Convite (the group on top),
+    the group (the header and "Seu saldo" on top, the tabs and what they hold below, on every tab), Registrar
+    pagamento (who and how much on top, how and when below), Estatísticas (the total and Ao longo do tempo on top),
+    Rachar conta (valor and descrição on top) and Dividir (the summary and modes on top, the people below) split on
+    the fold (`FoldHalves`); everything else is an iPad's upright. Pix and Bitcoin keys stay a sheet in the leading
+    half lying down, not the boards' two columns.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
