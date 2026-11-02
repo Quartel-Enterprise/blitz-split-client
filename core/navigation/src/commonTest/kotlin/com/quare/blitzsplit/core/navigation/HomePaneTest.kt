@@ -124,7 +124,7 @@ class HomePaneTest {
     }
 
     @Test
-    fun `GIVEN only a tab of a group above the groups WHEN asking whether only the pane is above THEN it is`() {
+    fun `GIVEN only a tab of a group above the groups WHEN asking if only the pane is above THEN it is`() {
         // Given
         prepareScenario(
             Route.Groups,
@@ -143,7 +143,7 @@ class HomePaneTest {
     }
 
     @Test
-    fun `GIVEN the group's Estatisticas beside the groups WHEN asking whether only the pane is above THEN it is`() {
+    fun `GIVEN the Estatisticas of the group beside the groups WHEN asking if only the pane is above THEN it is`() {
         // Given
         prepareScenario(
             Route.Groups,
