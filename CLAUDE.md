@@ -347,7 +347,9 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
     members signed in; "Qualquer pessoa" to anyone, and any device with an account (an anonymous one too) comments
     there, in the group or not, online only. "Entrar" goes through the app's own sign in (Boas-vindas without a
     profile, else Perfil) and the link opens again when the browser's Google or Apple sign in comes back within 15
-    minutes (never after "Usar sem conta"); a member with the bill on the device gets "Abrir no app".
+    minutes, or once Boas-vindas makes the profile on the page ("Usar sem conta"). A link only the group opens
+    offers "Entrar" until the device has a Google or Apple account; a member with the bill on the device gets "Abrir
+    no app".
   - "Estatísticas" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Despesas and Saldos;
     "Estatísticas" with text on the web from the tablet up), with Back and no "Rachar conta". It counts only the bills
     on the device, those in the queue too ("7 despesas, 1 na fila", the orange dot), never the payments of Saldos, so

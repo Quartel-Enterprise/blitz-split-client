@@ -59,7 +59,7 @@ export function SharedBillScreen({ route }: { route: JsRoute }) {
           <Problem icon={<Link2Off className="size-10" />} title={t('sharedBill_notFoundTitle')} message={t('sharedBill_notFoundBody')} onLeave={() => presenter.close()} />
         )}
         {state.status === 'members-only' && (
-          <Problem icon={<Lock className="size-10" />} title={t('sharedBill_membersOnlyTitle')} message={t('sharedBill_membersOnlyBody')} onLeave={() => presenter.close()}>
+          <Problem icon={<Lock className="size-10" />} title={t('sharedBill_membersOnlyTitle')} message={t(state.showsSignIn ? 'sharedBill_membersOnlyBody' : 'sharedBill_membersOnlyOutsideBody')} onLeave={() => presenter.close()}>
             {state.showsSignIn && (
               <Button size="lg" onClick={() => presenter.signIn()}>
                 {t('sharedBill_signIn')}

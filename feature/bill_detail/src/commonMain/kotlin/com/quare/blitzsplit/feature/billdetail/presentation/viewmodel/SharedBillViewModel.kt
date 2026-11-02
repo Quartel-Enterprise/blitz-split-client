@@ -67,6 +67,7 @@ class SharedBillViewModel(
                 status = SharedBillStatus.LOADING,
                 isOnline = true,
                 isSignedIn = false,
+                hasLinkedAccount = false,
                 canOpenInApp = false,
                 groupName = "",
                 currency = GroupCurrency.BRL,
@@ -110,7 +111,12 @@ class SharedBillViewModel(
         // Why: any session comments, an anonymous one too, as the server lets it; only a device that never connected can't.
         observeAccountStatus()
             .onEach { status ->
-                uiState.update { it.copy(isSignedIn = status !is AccountStatus.LocalOnly) }
+                uiState.update {
+                    it.copy(
+                        isSignedIn = status !is AccountStatus.LocalOnly,
+                        hasLinkedAccount = status is AccountStatus.Connected,
+                    )
+                }
                 val userId = userIdOf(status)
                 /*
                  * Why: a browser sign in coming back reopens the page while its session is still being made, so a
@@ -254,18 +260,19 @@ class SharedBillViewModel(
     private fun openInApp() {
         val bill = shown ?: return
         if (!uiState.value.canOpenInApp || !isOnTop()) return
-        navigator.navigateBack()
-        navigator.navigate(
-            Route.GroupDetail(
-                groupId = bill.groupId,
-                joinedAs = null,
-                tab = GroupTab.EXPENSES,
-            ),
-        )
-        navigator.navigate(
-            Route.BillDetail(
-                groupId = bill.groupId,
-                expenseId = bill.expenseId,
+        // Why: in one step, so the web never draws Despesas without its Conta in between.
+        navigator.replaceAbove(
+            size = navigator.backStack.value.size - 1,
+            routes = listOf(
+                Route.GroupDetail(
+                    groupId = bill.groupId,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+                Route.BillDetail(
+                    groupId = bill.groupId,
+                    expenseId = bill.expenseId,
+                ),
             ),
         )
     }

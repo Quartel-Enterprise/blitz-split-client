@@ -16,6 +16,8 @@ data class SharedBillUiState(
     val isOnline: Boolean,
     // Why: "Entrar" in the header and "Entrar para comentar" while not.
     val isSignedIn: Boolean,
+    // Why: a Google or Apple account, the only one a link the group opens may be waiting for.
+    val hasLinkedAccount: Boolean,
     // Why: someone in the group with the bill on this device, who opens it in the app ("Abrir no app").
     val canOpenInApp: Boolean,
     // Why: "Bruno compartilhou esta conta do grupo Viagem Floripa" names the group.
@@ -70,7 +72,14 @@ data class SharedBillUiState(
 
     // Why: "Entrar" in the header, also over a link only the group opens.
     val showsSignIn: Boolean
-        get() = !isSignedIn && (status == SharedBillStatus.OPEN || status == SharedBillStatus.MEMBERS_ONLY)
+        get() = when (status) {
+            SharedBillStatus.OPEN -> !isSignedIn
+
+            // Why: only the group's own Google or Apple account opens it, so an anonymous one may sign in too.
+            SharedBillStatus.MEMBERS_ONLY -> !hasLinkedAccount
+
+            else -> false
+        }
 
     // Why: the composer only for someone signed in; it goes straight to the server.
     val showsComposer: Boolean

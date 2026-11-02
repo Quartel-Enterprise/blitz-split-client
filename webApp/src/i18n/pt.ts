@@ -1783,6 +1783,7 @@ export const pt: Record<MessageKey, string> = {
   sharedBill_notFoundBody: 'Quem compartilhou pode ter desativado o link ou apagado a conta.',
   sharedBill_membersOnlyTitle: 'Só quem está no grupo abre esta conta',
   sharedBill_membersOnlyBody: 'Entre com a conta que você usa no grupo.',
+  sharedBill_membersOnlyOutsideBody: 'Sua conta não está no grupo desta conta. Peça a quem compartilhou para te chamar.',
   sharedBill_failedTitle: 'Não deu para abrir a conta',
   sharedBill_offline: 'Sem internet.',
   sharedBill_retry: 'Tentar de novo',

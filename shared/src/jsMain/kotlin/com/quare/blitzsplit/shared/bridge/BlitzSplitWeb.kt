@@ -8,13 +8,19 @@ import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
@@ -40,6 +46,7 @@ fun startBlitzSplit(sqliteWorker: Worker) {
     val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
     MainScope().launch { handleBrowserCallback(launchUrl) }
     openInviteLink(launchUrl)
+    openSharedBillOnceProfileMade()
 }
 
 /*
@@ -58,6 +65,19 @@ private fun openInviteLink(launchUrl: String) {
     }
 }
 
+// Why: Boas-vindas without the browser ("Usar sem conta") makes the profile on this page, which goes back to the bill.
+private fun openSharedBillOnceProfileMade() {
+    val inbox = KoinPlatform.getKoin().get<LinkInbox>()
+    val observeProfile = KoinPlatform.getKoin().get<ObserveProfile>()
+    observeProfile()
+        .map { profile -> profile != null }
+        .distinctUntilChanged()
+        .dropWhile { hasProfile -> hasProfile }
+        .filter { hasProfile -> hasProfile }
+        .onEach { takeSharedBillLeftToSignIn()?.let(inbox::receive) }
+        .launchIn(MainScope())
+}
+
 // Why: the browser's sign in leaves the page, so a bill's link is kept, with when, for the load it comes back on.
 internal fun keepSharedBillForSignIn(link: String) {
     try {
@@ -67,7 +87,7 @@ internal fun keepSharedBillForSignIn(link: String) {
     }
 }
 
-// Why: read once on every load, so a sign in given up on (Boas-vindas' "Usar sem conta") never opens it later.
+// Why: read once, so a sign in given up on never opens it on a later load.
 private fun takeSharedBillLeftToSignIn(): String? = try {
     window.sessionStorage
         .getItem(SHARED_BILL_LEFT_TO_SIGN_IN)

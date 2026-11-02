@@ -1782,6 +1782,7 @@ export const en = {
   sharedBill_notFoundBody: 'Whoever shared it may have turned the link off or deleted the bill.',
   sharedBill_membersOnlyTitle: 'Only people in the group open this bill',
   sharedBill_membersOnlyBody: 'Sign in with the account you use in the group.',
+  sharedBill_membersOnlyOutsideBody: "Your account isn't in this bill's group. Ask whoever shared it to invite you.",
   sharedBill_failedTitle: "Couldn't open the bill",
   sharedBill_offline: 'No internet.',
   sharedBill_retry: 'Try again',

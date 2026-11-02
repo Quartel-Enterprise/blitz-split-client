@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadSharedBillUseC
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeBillShareLinkRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -378,10 +379,27 @@ class SharedBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN someone signed in outside the group WHEN the link is only for the group THEN offers no Entrar`() =
+    fun `GIVEN an anonymous account WHEN the link is only for the group THEN offers Entrar for the group account`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(sharedBill = SharedBill.MembersOnly)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isSignedIn)
+            assertTrue(state.showsSignIn)
+        }
+
+    @Test
+    fun `GIVEN a Google account outside the group WHEN the link is only for the group THEN offers no Entrar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                sharedBill = SharedBill.MembersOnly,
+                accountStatus = AccountStatus.Connected("user-pierre", AccountProvider.GOOGLE),
+            )
 
             // When
             val state = viewModel.uiState.value
