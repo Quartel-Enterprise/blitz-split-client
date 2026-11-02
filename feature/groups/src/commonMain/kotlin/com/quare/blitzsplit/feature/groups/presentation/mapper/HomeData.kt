@@ -7,6 +7,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 internal data class HomeData(
     val groups: List<Group>,
     val rows: List<GroupRow>,
-    val latestBills: List<DatedHomeBill>,
+    val latestExpenses: List<LatestExpense>,
     val pendingChangeCount: Int,
 )
