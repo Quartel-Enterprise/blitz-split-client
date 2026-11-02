@@ -57,18 +57,22 @@ Run the `androidApp` module from Android Studio, or build it from the terminal:
 ./gradlew :androidApp:assembleDebug
 ```
 
-A debug build is signed with your machine's `~/.android/debug.keystore`, so a group's invite link
-(`blitzsplit.com/g/<code>`) only opens the app once that key's SHA-256 is in blitzsplit.com's `assetlinks.json`:
-otherwise Android fails the App Links verification and the link opens in the browser.
-On Android 12 or later, `adb shell pm get-app-links com.quare.blitzsplit` says `verified` once it works, `none` while
-the verification hasn't run yet, and a failure (`legacy_failure`, or a verifier error code such as `1024`) while the
-key is missing. Add the fingerprint that `keytool -list -v -keystore ~/.android/debug.keystore -storepass android` prints to
-`webApp/public/.well-known/assetlinks.json` and to the same file in `blitz-split-site`, whose pushes to `main` deploy
-blitzsplit.com. Android reads the file through Google's Digital Asset Links API, which keeps the old one for up to an
-hour (the `maxAge` of
-`https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://blitzsplit.com&relation=delegate_permission/common.handle_all_urls`):
-until it lists your key, verification keeps failing. Then run
-`adb shell pm verify-app-links --re-verify com.quare.blitzsplit`.
+A group's invite link (`blitzsplit.com/g/<code>`) opens the app once Android verifies it against blitzsplit.com's
+`assetlinks.json`, which lists only the store's signing keys. A debug build is signed with your machine's
+`~/.android/debug.keystore`, so its verification fails and the link opens in the browser. Don't add your debug key to
+the file: a debug keystore is unencrypted with a well-known password, and whoever copied it could sign an app that
+receives the invites. On Android 12 or later, approve the domain for your build instead, again after each fresh
+install:
+
+```shell
+adb shell pm set-app-links-user-selection --user cur --package com.quare.blitzsplit true blitzsplit.com
+```
+
+`adb shell pm get-app-links --user cur com.quare.blitzsplit` then lists blitzsplit.com under "Enabled" (the domain's
+own state stays `none` or a failure such as `legacy_failure`). Android 8 to 11 asks which app opens the link instead.
+To trust a new store signing key, edit `public/.well-known/assetlinks.json` in `blitz-split-site`, whose pushes to
+`main` deploy blitzsplit.com and which is the copy Android reads, and keep `webApp/public/.well-known` the same.
+Android reads it through Google's Digital Asset Links API, which caches it for up to an hour.
 
 ## Build and run the Apple app
 
