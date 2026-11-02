@@ -12,13 +12,10 @@ class CategoryTree private constructor(
     val branches: List<CategoryBranch>,
     private val groupCategories: Map<String, GroupCategory>,
 ) {
-    private val live: Map<String, Category> = branches
-        .flatMap { listOf(it.category) + it.subcategories }
-        .associateBy { it.id }
-
     // Why: every category one can pick, main ones and subcategories, in the order they are listed.
-    val all: List<Category>
-        get() = branches.flatMap { listOf(it.category) + it.subcategories }
+    val all: List<Category> = branches.flatMap { listOf(it.category) + it.subcategories }
+
+    private val live: Map<String, Category> = all.associateBy { it.id }
 
     val other: Category
         get() = live.getValue(AppCategory.OTHER.key)
@@ -62,13 +59,14 @@ class CategoryTree private constructor(
         // Why: two levels, so a deleted subcategory reaches a live category in at most two steps.
         private const val MAX_DEPTH = 3
 
-        // Why: the app's alone, for a bill whose group has no category of its own.
-        val appOnly: CategoryTree
-            get() = of(emptyList())
-
         fun of(groupCategories: List<GroupCategory>): CategoryTree {
             val liveGroup = groupCategories.filterNot { it.isDeleted }
             val groupMains = liveGroup.filter { it.parentId == null }
+            // Why: a group main category's color goes by its place among all of them, so deleting one moves none.
+            val colorIndexes = groupCategories
+                .filter { it.parentId == null }
+                .mapIndexed { index, main -> main.id to index }
+                .toMap()
             val appBranches = AppCategory.mains.map { main ->
                 val category = appCategoryOf(main)
                 CategoryBranch(
@@ -77,11 +75,11 @@ class CategoryTree private constructor(
                         groupSubcategoriesOf(liveGroup, category),
                 )
             }
-            val groupBranches = groupMains.mapIndexed { index, main ->
+            val groupBranches = groupMains.map { main ->
                 val category = groupCategoryOf(
                     category = main,
                     icon = main.icon ?: CategoryIcon.DOTS,
-                    color = AvatarColor.entries[index % AvatarColor.entries.size],
+                    color = AvatarColor.entries[colorIndexes.getValue(main.id) % AvatarColor.entries.size],
                 )
                 CategoryBranch(
                     category = category,
@@ -94,6 +92,9 @@ class CategoryTree private constructor(
                 groupCategories = groupCategories.associateBy { it.id },
             )
         }
+
+        // Why: the app's alone, for a bill whose group has no category of its own; built once, as it never changes.
+        val appOnly: CategoryTree by lazy { of(emptyList()) }
 
         private fun groupSubcategoriesOf(
             groupCategories: List<GroupCategory>,

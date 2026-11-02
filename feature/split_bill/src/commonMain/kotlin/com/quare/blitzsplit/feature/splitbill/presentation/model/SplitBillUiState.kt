@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
-import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryBranch
@@ -323,9 +322,12 @@ data class SplitBillUiState(
     val showsOfflineNotice: Boolean
         get() = !isOnline
 
-    // Why: what Salvar stores: none while it reads as "Outros" without being picked.
+    /*
+     * Why: what Salvar stores: none while it reads as "Outros" without being picked, and the id as it is otherwise, so
+     * a deleted category keeps reading as its parent and one whose row hasn't come down yet isn't saved as "Outros".
+     */
     val categoryIdToSave: String?
-        get() = category.id.takeUnless { categoryId == null && it == AppCategory.OTHER.key }
+        get() = categoryId
 
     // Why: "Qualquer pessoa do grupo pode editar ou apagar." under the form when editing, unless a warning says more.
     val showsAnyoneCanEditHint: Boolean

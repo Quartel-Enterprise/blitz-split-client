@@ -333,8 +333,8 @@ class SyncCoordinator(
     }.distinctUntilChanged()
 
     /*
-     * Why: the versions of the bills and the payments waiting to go up, which change with each one saved. Kept apart,
-     * so a bill going up while a payment of the same version is saved still counts as a change.
+     * Why: the versions of the bills, the payments and the group categories waiting to go up, which change with each
+     * one saved. Kept apart, so a bill going up while a payment of the same version is saved still counts as a change.
      */
     private fun observePendingMoneyVersions(): Flow<List<List<Long>>> = combine(
         expenseRepository.observePendingVersions(),

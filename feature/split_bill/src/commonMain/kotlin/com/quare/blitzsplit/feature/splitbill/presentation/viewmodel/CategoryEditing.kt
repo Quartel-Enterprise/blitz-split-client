@@ -177,14 +177,15 @@ internal class CategoryEditing(
 
     // Why: back to the picker; a bill that had it reads as where its bills go.
     private fun delete() {
-        val deletion = uiState.value.categoryDeletion?.takeIf { !it.isDeleting } ?: return
+        val before = uiState.value
+        val deletion = before.categoryDeletion?.takeIf { !it.isDeleting } ?: return
+        // Why: read before the delete, as Room's tombstone may reach the tree, and re-resolve the bill, first.
+        val wasBills = before.category.id == deletion.category.id || before.category.parentId == deletion.category.id
         uiState.update { it.copy(categoryDeletion = deletion.copy(isDeleting = true)) }
         scope.launch {
             deleteGroupCategory(deletion.category.id)
                 .onSuccess {
                     uiState.update { state ->
-                        val wasBills = state.category.id == deletion.category.id ||
-                            state.category.parentId == deletion.category.id
                         state.copy(
                             categoryDeletion = null,
                             categoryForm = null,
