@@ -29,6 +29,27 @@ internal fun LazyListScope.balanceItems(
     onAction: (GroupAction) -> Unit,
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
+    balancesStateItems(
+        state = state,
+        onAction = onAction,
+    )
+    withYouItems(
+        state = state,
+        money = money,
+        onEvent = onEvent,
+    )
+    betweenOthersItems(
+        state = state,
+        money = money,
+        onEvent = onEvent,
+    )
+}
+
+// Why: nothing to settle yet, or "Todo mundo acertou" once there were bills and nobody owes anything.
+internal fun LazyListScope.balancesStateItems(
+    state: GroupDetailUiState,
+    onAction: (GroupAction) -> Unit,
+) {
     when {
         state.isBalancesEmpty -> item(key = "balances-empty") { EmptyBalancesCard() }
 
@@ -39,6 +60,13 @@ internal fun LazyListScope.balanceItems(
             )
         }
     }
+}
+
+internal fun LazyListScope.withYouItems(
+    state: GroupDetailUiState,
+    money: MoneyFormatter,
+    onEvent: (GroupDetailUiEvent) -> Unit,
+) {
     debtSection(
         key = "with-you",
         debts = state.myDebts,
@@ -47,6 +75,14 @@ internal fun LazyListScope.balanceItems(
         title = { stringResource(R.string.group_detail_balances_with_you) },
         hint = { state.header.myBalance?.let { withYouHintOf(it, money) } },
     )
+}
+
+// Why: "Entre os outros", then the note on how the pairs are netted.
+internal fun LazyListScope.betweenOthersItems(
+    state: GroupDetailUiState,
+    money: MoneyFormatter,
+    onEvent: (GroupDetailUiEvent) -> Unit,
+) {
     debtSection(
         key = "between-others",
         debts = state.otherDebts,
