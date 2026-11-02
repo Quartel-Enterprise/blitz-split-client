@@ -21,12 +21,12 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 
-private val chartHeight = 128.dp
 private val minBarHeight = 4.dp
 private val dotRadius = 5.dp
 private val dotBorder = 2.dp
@@ -44,6 +44,7 @@ internal fun StatsChartImage(
     state: GroupStatsUiState,
     description: String,
     labelOf: (StatsBar) -> String,
+    height: Dp,
     modifier: Modifier = Modifier,
 ) {
     val primary = MaterialTheme.colorScheme.primary
@@ -55,7 +56,7 @@ internal fun StatsChartImage(
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(chartHeight)
+                .height(height)
                 .semantics { contentDescription = description },
         ) {
             if (bars.isEmpty()) return@Canvas

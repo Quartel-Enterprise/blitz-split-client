@@ -112,6 +112,18 @@ class HomePaneTest {
     }
 
     @Test
+    fun `GIVEN only the Estatisticas of a group above the groups WHEN reading the pane THEN is that group`() {
+        // Given
+        prepareScenario(Route.Groups, Route.GroupStats("trip"))
+
+        // When
+        val groupId = navigator.backStack.value.groupBesideGroupsOrNull()
+
+        // Then
+        assertEquals("trip", groupId)
+    }
+
+    @Test
     fun `GIVEN Saldos right above the groups WHEN reading the group beside them THEN there is none`() {
         // Given
         prepareScenario(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL, charge = null))
@@ -124,7 +136,7 @@ class HomePaneTest {
     }
 
     @Test
-    fun `GIVEN only a tab of a group above the groups WHEN asking whether only the pane is above THEN it is`() {
+    fun `GIVEN only a tab of a group above the groups WHEN asking if only the pane is above THEN it is`() {
         // Given
         prepareScenario(
             Route.Groups,
@@ -133,6 +145,26 @@ class HomePaneTest {
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
             ),
+        )
+
+        // When
+        val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
+
+        // Then
+        assertTrue(showsOnlyPane)
+    }
+
+    @Test
+    fun `GIVEN the Estatisticas of the group beside the groups WHEN asking if only the pane is above THEN it is`() {
+        // Given
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                tab = GroupTab.BALANCES,
+            ),
+            Route.GroupStats("trip"),
         )
 
         // When
