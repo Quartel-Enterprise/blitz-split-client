@@ -211,7 +211,8 @@ private struct MembersSection: View {
                     .focused($isDraftFocused)
                     .submitLabel(.next)
                     .onSubmit {
-                        let adds = state.canAddMember
+                        // The ViewModel's state now: the watcher may not have brought the last keystroke yet
+                        let adds = model.current.canAddMember
                         model.send(CreateGroupUiEventOnAddMemberClicked.shared)
                         // Only after a name went in: Return on an empty draft lets the keyboard go
                         if adds { isDraftFocused = true }

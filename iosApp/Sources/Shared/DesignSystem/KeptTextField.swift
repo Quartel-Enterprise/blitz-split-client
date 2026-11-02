@@ -22,7 +22,9 @@ struct KeptTextField<Label: View>: View {
                 // The field handing back the text it was given is no edit
                 guard typed != text else { return }
                 text = typed
-                if text != typed { shown = text }
+                // Why: an emptied field stays empty while the ViewModel keeps its value until a number comes (the
+                // Mac's Quantity), else the old number would come back and the next digit land after it
+                if text != typed, !typed.isEmpty { shown = text }
             }
             .onChange(of: text, initial: true) {
                 // Why: the ViewModel's text now, not the change's: a quick keystroke may already have moved past it

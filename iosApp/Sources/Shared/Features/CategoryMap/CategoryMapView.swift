@@ -58,7 +58,9 @@ struct CategoryMapView: View {
 
 struct CategoryMapScreen: View {
     let model: CategoryMapModel
+    #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
 
     @State private var layout = ScreenLayout()
 

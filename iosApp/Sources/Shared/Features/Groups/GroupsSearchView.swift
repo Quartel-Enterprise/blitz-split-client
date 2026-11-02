@@ -82,18 +82,18 @@ struct GroupsSearchResultsList: View {
 }
 
 #if os(iOS)
-/// The search tab, or Groups' place with a compact width: a large "Search" title, the field under it, and All / Groups
+/// The search tab, or Groups' place on an iPhone: a large "Search" title, the field under it, and All / Groups
 /// / People / Expenses as segments. An iPhone lying down (5.2) puts the title, the field and the segments in a 300 pt
 /// column on the left and the results on the right.
 struct GroupsSearchView: View {
     let model: GroupsModel
     @State private var layout = ScreenLayout()
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
     @FocusState private var isFieldFocused: Bool
 
     /// In the groups' place, where the tab bar is compact and has no search tab: ✕ closes it, as Android's back does.
     private var isInGroups: Bool {
-        horizontalSizeClass != .regular
+        !hasSearchTabRoom
     }
 
     /// Lying down short of an iPad's room: an iPhone lying down.

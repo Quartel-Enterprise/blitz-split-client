@@ -2,8 +2,8 @@ import Shared
 import SwiftUI
 
 /// The tabs of the canvas, all built: Home first, then Groups, Balances, Contacts and Activity. Search, once there is a
-/// group, is a search tab with a regular width (an iPad) and opens in Groups' place from its magnifier with a compact
-/// one (an iPhone); the Mac searches from Groups' toolbar instead.
+/// group, is a search tab with an iPad's room (`hasSearchTabRoom`) and opens in Groups' place from its magnifier on an
+/// iPhone; the Mac searches from Groups' toolbar instead.
 enum MainTab: Hashable {
     case home
     case groups
@@ -25,7 +25,7 @@ struct MainTabView: View {
     @State private var model = GroupsModel()
     @State private var showsRecoveryCode = false
     #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
     #endif
 
     init(path: Binding<[AppRoute]>) {
@@ -243,7 +243,7 @@ struct MainTabView: View {
         )
     }
 
-    /// The search tab is selected: only a regular width has one, the Mac searches in the groups' toolbar. Read
+    /// The search tab is selected: only an iPad's room has one, the Mac searches in the groups' toolbar. Read
     /// from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups until the watcher catches up.
     private var showsSearchTab: Bool {
         #if os(iOS)
@@ -253,11 +253,11 @@ struct MainTabView: View {
         #endif
     }
 
-    /// Why: a compact tab bar holds five items, the search tab included, and puts the rest under "More". The five
-    /// tabs stay, and the search opens from Groups' magnifier in the groups' place; an iPad's room keeps the tab.
+    /// The five tabs stay, and with no room for a sixth (`hasSearchTabRoom`) the search opens from Groups' magnifier
+    /// in the groups' place; an iPad's room keeps the tab.
     private var hasSearchTab: Bool {
         #if os(iOS)
-        horizontalSizeClass == .regular && model.state.canSearch
+        hasSearchTabRoom && model.state.canSearch
         #else
         false
         #endif
@@ -267,7 +267,7 @@ struct MainTabView: View {
     /// observes: nothing else redraws it as the search opens.
     private var showsSearchInGroups: Bool {
         #if os(iOS)
-        horizontalSizeClass != .regular && model.state.isSearching
+        !hasSearchTabRoom && model.state.isSearching
         #else
         false
         #endif
@@ -325,3 +325,14 @@ struct MainTabView: View {
         }
     }
 }
+
+#if os(iOS)
+extension EnvironmentValues {
+    /// Only an iPad's room, both size classes regular, has a search tab. A compact tab bar holds five items and
+    /// puts the rest under "More", and a Plus or Max iPhone lying down, regular in width, still draws that bar, so
+    /// the width alone would flip the search between a tab and Groups' magnifier as it turns.
+    var hasSearchTabRoom: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+}
+#endif

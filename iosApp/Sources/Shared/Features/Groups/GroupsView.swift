@@ -68,7 +68,7 @@ final class GroupsModel {
 struct GroupsView: View {
     let model: GroupsModel
     #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.hasSearchTabRoom) private var hasSearchTabRoom
     #endif
 
     var body: some View {
@@ -138,7 +138,7 @@ struct GroupsView: View {
             HiddenTabTitle(title: String(localized: "Groups"))
             ToolbarItemGroup(placement: .primaryAction) {
                 // A compact tab bar has no room for the search tab
-                if horizontalSizeClass != .regular, state.canSearch {
+                if !hasSearchTabRoom, state.canSearch {
                     Button("Search", systemImage: "magnifyingglass") {
                         model.send(GroupsUiEventOnSearchOpened.shared)
                     }
